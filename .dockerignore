@@ -1,0 +1,8 @@
+.git
+ui/dist/
+ui/node_modules/
+.gitignore
+.gitattributes
+vendor/
+data/
+release/

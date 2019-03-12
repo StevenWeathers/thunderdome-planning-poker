@@ -40,10 +40,44 @@ Goal is to build a Planning Poker application utilizing Websockets and supportin
 }
 ```
 
-## Building with Go
+## Building and running with Docker
+
+Prefered way of building and running the application
 
 ```
+docker build -t thunderdome
+docker run --name thunder -p 8080:8080 thunderdome
+```
+
+## Building with Go
+
+Will be adding Makefile soon...
+
+```
+statik -src=ui/dist -dest=vendor/thunderdome
 go build
+```
+
+## Building the Vue.js UI
+
+### Project setup
+```
+npm install
+```
+
+### Compiles and minifies for production
+```
+npm run build
+```
+
+### Run your tests
+```
+npm run test
+```
+
+### Lints and fixes files
+```
+npm run lint
 ```
 
 # Let the Pointing Battles begin!

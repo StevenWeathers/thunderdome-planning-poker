@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <title>Thunderdome | Let the Pointing Battles Begin!</title>
+  <script>
+    window.addEventListener("load", function (evt) {
+
+      var output = document.getElementById("output");
+      var input = document.getElementById("input");
+      var ws = new WebSocket("ws://localhost:8080/echo");
+
+      var print = function (message) {
+        var d = document.createElement("div");
+        d.innerHTML = message;
+        output.appendChild(d);
+      };
+
+      ws.onmessage = function (evt) {
+        print("RESPONSE: " + evt.data);
+      }
+      ws.onerror = function (evt) {
+        print("ERROR: " + evt.data);
+      }
+
+      document.getElementById("send").onclick = function (evt) {
+        if (!ws) {
+          return false;
+        }
+        print("SEND: " + input.value);
+        ws.send(input.value);
+        return false;
+      };
+
+    });
+  </script>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but ui doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+
+</html>
