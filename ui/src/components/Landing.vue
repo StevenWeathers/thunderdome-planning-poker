@@ -1,19 +1,15 @@
 <template>
   <div class="columns">
     <div class="column">
-        <p>Click "Send" to send a message to the server.<br />
-        You can change the message and send multiple times.
-        </p>
-
-        <form>
-            <b-field label="Name">
-                <b-input v-model="name" id="input"></b-input>
+        <form v-on:submit="createBattle">
+            <b-field label="Your Name">
+                <b-input v-model="creatorName" placeholder="Enter your name" required></b-input>
             </b-field>
-            <button id="send" class="button is-success">Send</button>
+            <b-field label="Battle Name">
+                <b-input v-model="battleName" placeholder="Enter a battle name" required></b-input>
+            </b-field>
+            <button class="button is-primary">Create a Story Battle</button>
         </form>
-    </div>
-    <div class="column">            
-        <div id="output"></div>
     </div>
   </div>
 </template>
@@ -21,9 +17,39 @@
 <script>
 export default {
   name: 'Landing',
+  methods: {
+      createBattle: function (event) {
+        event.preventDefault()
+        const router = this.$router
+
+        const {
+            creatorName,
+            battleName
+        } = this
+
+        fetch('/api/battle', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                creatorName,
+                battleName
+            })
+        })
+            .then(function(response) {
+                return response.json()
+            })
+            .then(function(battle) {
+                router.push(`/battle/${battle.id}`)
+            });
+        
+    }
+  },
   data() {
         return {
-            name: 'Thunderdome'
+            creatorName: '',
+            battleName: ''
         }
     }
 }

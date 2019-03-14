@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"net/http"
 	"time"
 
@@ -15,43 +14,13 @@ import (
 
 var upgrader = websocket.Upgrader{} // use default options
 
-// getEnv gets environment variable matching key string
-// and if it finds none uses fallback string
-// returning either the matching or fallback string
-func getEnv(key string, fallback string) string {
-	var result = os.Getenv(key)
-
-	if result == "" {
-		result = fallback
-	}
-
-	return result
-}
-
-func echo(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer c.Close()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
-	}
+type Battle struct {
+	BattleId string `json:"id"`
+	CreatorId string `json:"creatorId"`
 }
 
 func main() {
-	var listenPort = fmt.Sprintf(":%s", getEnv("PORT", "8080"))
+	var listenPort = fmt.Sprintf(":%s", GetEnv("PORT", "8080"))
 
 	statikFS, err := fs.New()
 	if err != nil {
@@ -62,7 +31,8 @@ func main() {
 	router := mux.NewRouter()
 	router.PathPrefix("/css/").Handler(staticHandler)
 	router.PathPrefix("/js/").Handler(staticHandler)
-	router.HandleFunc("/echo", echo)
+	router.HandleFunc("/api/battle", CreateBattleHandler).Methods("POST")
+	router.HandleFunc("/api/battle/{id}", BattleHandler)
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.URL.Path = "/"
 		staticHandler.ServeHTTP(w, r)

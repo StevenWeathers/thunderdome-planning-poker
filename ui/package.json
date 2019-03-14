@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "buefy": "^0.7.3",
-    "vue": "^2.6.6"
+    "vue": "^2.6.6",
+    "vue-router": "^3.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.5.0",

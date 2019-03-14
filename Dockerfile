@@ -24,7 +24,7 @@ RUN adduser -D -g '' appuser
 # Create the data dir
 RUN mkdir /data
 # Copy the go source
-COPY ./main.go $GOPATH/src/mypackage/myapp/
+COPY ./*.go $GOPATH/src/mypackage/myapp/
 # Copy our static assets
 COPY --from=builderNode /vueapp/dist $GOPATH/src/mypackage/myapp/public
 # Set working dir
