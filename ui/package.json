@@ -1,59 +1,35 @@
 {
-  "name": "thunderdome-planning-poker",
-  "version": "0.0.1",
-  "description": "Planning Poker App",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/StevenWeathers/thunderdome-planning-poker.git"
-  },
-  "author": "Steven Weathers",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/StevenWeathers/thunderdome-planning-poker/issues"
-  },
-  "homepage": "https://github.com/StevenWeathers/thunderdome-planning-poker#readme",
-  "private": true,
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "buefy": "^0.7.3",
-    "vue": "^2.6.6",
-    "vue-router": "^3.0.2"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.5.0",
-    "@vue/cli-plugin-eslint": "^3.5.0",
-    "@vue/cli-service": "^3.5.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "vue-template-compiler": "^2.5.21"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
+    "name": "thunderdome-planning-poker",
+    "version": "0.0.1",
+    "description": "Planning Poker App",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/StevenWeathers/thunderdome-planning-poker.git"
     },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
+    "author": "Steven Weathers",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/StevenWeathers/thunderdome-planning-poker/issues"
+    },
+    "homepage": "https://github.com/StevenWeathers/thunderdome-planning-poker#readme",
+    "private": true,
+    "scripts": {
+        "build": "cross-env NODE_ENV=production webpack",
+        "dev": "webpack-dev-server --content-base public"
+    },
+    "devDependencies": {
+        "copy-webpack-plugin": "^5.0.3",
+        "cross-env": "^5.2.0",
+        "css-loader": "^2.1.1",
+        "mini-css-extract-plugin": "^0.6.0",
+        "navaid": "^1.0.3",
+        "serve": "^11.0.0",
+        "standard": "^12.0.1",
+        "style-loader": "^0.23.1",
+        "svelte": "^3.0.0",
+        "svelte-loader": "2.13.3",
+        "webpack": "^4.30.0",
+        "webpack-cli": "^3.3.0",
+        "webpack-dev-server": "^3.3.1"
     }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
 }

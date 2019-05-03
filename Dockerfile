@@ -3,13 +3,13 @@
 ############################
 FROM node:10.14.1-alpine as builderNode
 
-RUN mkdir /vueapp
-COPY ./ui /vueapp
-WORKDIR /vueapp
+RUN mkdir /webapp
+COPY ./ui /webapp
+WORKDIR /webapp
 # install node packages
 RUN npm set progress=false
 RUN npm install
-# Build the vue.js app
+# Build the web app
 RUN npm run build
 ############################
 # STEP 2 build executable binary
@@ -26,7 +26,7 @@ RUN mkdir /data
 # Copy the go source
 COPY ./*.go $GOPATH/src/mypackage/myapp/
 # Copy our static assets
-COPY --from=builderNode /vueapp/dist $GOPATH/src/mypackage/myapp/public
+COPY --from=builderNode /webapp/dist $GOPATH/src/mypackage/myapp/public
 # Set working dir
 WORKDIR $GOPATH/src/mypackage/myapp/
 # Get static asset bundler tool
