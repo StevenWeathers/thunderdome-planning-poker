@@ -8,14 +8,14 @@
     const ws = new WebSocket(`${socketExtension}://${window.location.host}/api/battle/${battleId}`)
 
     let message = ''
-    let responseOutput = ''
+    let responses = []
 
     ws.onmessage = function (evt) {
-        responseOutput = `RESPONSE: ${evt.data}`
+        responses[responses.length] = `${evt.data}`
     }
 
     ws.onerror = function (e) {
-        responseOutput = `ERROR: ${e}`
+        console.log(`ERROR: ${e}`)
     }
 
     function sendMessage(e) {
@@ -52,6 +52,12 @@
         </form>
     </div>
     <div class="column">            
-        <p>{responseOutput}</p>
+        <h2>Responses:</h2>
+
+        {#each responses as response}
+            <div class="notification is-success">
+                {response}
+            </div>
+        {/each}
     </div>
   </div>
