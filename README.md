@@ -58,7 +58,7 @@ statik -src=ui/dist -dest=vendor/thunderdome
 go build
 ```
 
-## Building the Vue.js UI
+## Building the Webapp UI
 
 ### Project setup
 ```
@@ -68,16 +68,6 @@ npm install
 ### Compiles and minifies for production
 ```
 npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
 ```
 
 # Let the Pointing Battles begin!
