@@ -9,10 +9,7 @@ import (
 	_ "thunderdome/statik"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
-	"github.com/gorilla/websocket"
 )
-
-var upgrader = websocket.Upgrader{} // use default options
 
 type Battle struct {
 	BattleId string `json:"id"`
@@ -21,6 +18,8 @@ type Battle struct {
 
 func main() {
 	var listenPort = fmt.Sprintf(":%s", GetEnv("PORT", "8080"))
+	hub := newHub()
+	go hub.run()
 
 	statikFS, err := fs.New()
 	if err != nil {
@@ -32,7 +31,9 @@ func main() {
 	router.PathPrefix("/css/").Handler(staticHandler)
 	router.PathPrefix("/js/").Handler(staticHandler)
 	router.HandleFunc("/api/battle", CreateBattleHandler).Methods("POST")
-	router.HandleFunc("/api/battle/{id}", BattleHandler)
+	router.HandleFunc("/api/battle/{id}", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(hub, w, r)
+	})
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.URL.Path = "/"
 		staticHandler.ServeHTTP(w, r)
