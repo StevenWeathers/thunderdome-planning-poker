@@ -26,12 +26,6 @@
     onDestroy(() => ws.close())
 </script>
 
-<style>
-    p  {
-        font-size: 14px;
-    }
-</style>
-
 <div class="columns">
     <div class="column">
         <h1>Battle: {battleId}</h1>
@@ -41,11 +35,18 @@
         </p>
 
         <form on:submit={sendMessage}>
-            <div>
-                <input bind:value={message} placeholder="Enter a message" />
+            <div class="field">
+                <label class="label">Message</label>
+                <div class="control">
+                    <input bind:value={message} placeholder="Enter a message" class="input" required />
+                </div>
             </div>
 
-            <button class="button is-success" type="submit">Send</button>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-success" type="submit">Send</button>
+                </div>
+            </div>
         </form>
     </div>
     <div class="column">            

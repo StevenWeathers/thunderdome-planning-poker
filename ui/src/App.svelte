@@ -22,16 +22,16 @@
     router.listen()
 </script>
 
-<style>
-	:global(body) {
-        font-size: 18px;
-    }
-</style>
-
 <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="/">
             Thunderdome
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
         </a>
     </div>
 </nav>
@@ -45,3 +45,12 @@
         {/if}
     </div>
 </section>
+
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      <a href="https://github.com/StevenWeathers/thunderdome-planning-poker">Thunderdome</a> by <a href="http://stevenweathers.com">Steven Weathers</a>. The source code is licensed
+      <a href="http://www.apache.org/licenses/">Apache 2.0</a>.
+    </p>
+  </div>
+</footer>
