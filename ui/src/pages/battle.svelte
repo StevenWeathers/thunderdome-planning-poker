@@ -3,7 +3,9 @@
 
     export let battleId = 0
 
-    const ws = new WebSocket(`ws://${window.location.host}/api/battle/${battleId}`)
+    const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
+
+    const ws = new WebSocket(`${socketExtension}://${window.location.host}/api/battle/${battleId}`)
 
     let message = ''
     let responseOutput = ''
