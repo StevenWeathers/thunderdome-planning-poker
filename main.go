@@ -29,6 +29,7 @@ func main() {
 	router := mux.NewRouter()
 	router.PathPrefix("/css/").Handler(staticHandler)
 	router.PathPrefix("/js/").Handler(staticHandler)
+	router.PathPrefix("/img/").Handler(staticHandler)
 	router.HandleFunc("/api/battle", CreateBattleHandler).Methods("POST")
 	router.HandleFunc("/api/battle/{id}", serveWs)
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
