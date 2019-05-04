@@ -1,7 +1,7 @@
 <script>
     import navaid from 'navaid'
-    import LandingPage from './pages/landing.svelte'
-    import BattlePage from './pages/battle.svelte'
+    import LandingPage from './pages/Landing.svelte'
+    import BattlePage from './pages/Battle.svelte'
 
     // Setup router
     let router = navaid()

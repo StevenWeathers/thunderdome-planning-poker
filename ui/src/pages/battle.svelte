@@ -1,7 +1,10 @@
 <script>
     import { onDestroy } from 'svelte'
+    import PointCard from '../components/PointCard.svelte'
 
     export let battleId = 0
+    let points = ['1', '2', '3', '5', '8', '13', '?']
+    let vote = '3'
 
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
 
@@ -18,41 +21,28 @@
         console.log(`ERROR: ${e}`)
     }
 
-    function sendMessage(e) {
-        e.preventDefault()
-        console.log("SEND: " + message)
-            
-        ws.send(message)
-    }
-
     onDestroy(() => ws.close())
+
+    function handleVote(event) {
+        vote = event.detail.point
+        ws.send(vote)
+    }
 </script>
 
 <div class="columns">
     <div class="column">
-        <h1>Battle: {battleId}</h1>
-        <p>
-            Click "Send" to send a message to the server.<br />
-            You can change the message and send multiple times.
-        </p>
+        <h1 class="title">Battle: {battleId}</h1>
 
-        <form on:submit={sendMessage}>
-            <div class="field">
-                <label class="label">Message</label>
-                <div class="control">
-                    <input bind:value={message} placeholder="Enter a message" class="input" required />
+        <div class="columns">
+            {#each points as point}
+                <div class="column">
+                    <PointCard point={point} active={vote === point} on:voted={handleVote} />
                 </div>
-            </div>
-
-            <div class="field">
-                <div class="control">
-                    <button class="button is-success" type="submit">Send</button>
-                </div>
-            </div>
-        </form>
+            {/each}
+        </div>
     </div>
     <div class="column">            
-        <h2>Responses:</h2>
+        <h2>Votes:</h2>
 
         {#each responses as response}
             <div class="notification is-success">
