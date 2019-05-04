@@ -2,10 +2,13 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 func CreateBattleHandler(w http.ResponseWriter, r *http.Request) {
-	newBattle := &Battle{ BattleId: "1", CreatorId: "1" }
+	id, _ := uuid.NewUUID()	
+	newBattle := &Battle{ BattleId: id.String(), CreatorId: "1" }
 
 	RespondWithJSON(w, http.StatusOK, newBattle)
 }
