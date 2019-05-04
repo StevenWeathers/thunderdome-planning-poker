@@ -55,7 +55,7 @@ func (s subscription) readPump() {
             }
             break
         }
-        m := message{msg, s.room}
+        m := message{msg, s.arena}
         h.broadcast <- m
     }
 }
