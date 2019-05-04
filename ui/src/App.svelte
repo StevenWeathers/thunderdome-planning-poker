@@ -6,17 +6,23 @@
     // Setup router
     let router = navaid()
     
-    let currentPage = 'landing'
-    let pageParams = {}
+    let currentPage = {
+        name: 'landing',
+        params: {},
+    }
 
     router
         .on('/', () => {
-            pageParams = {}
-            currentPage = 'landing'
+            currentPage = {
+                name: 'landing',
+                params: {},
+            }
         })
         .on('/battle/:battleId', params => {
-            pageParams = params
-            currentPage = 'battle'
+            currentPage = {
+                name: 'battle',
+                params,
+            }
         })
 
     router.listen()
@@ -38,10 +44,10 @@
 
 <section class="section">
     <div class="container">
-        {#if currentPage === 'landing'}
+        {#if currentPage.name === 'landing'}
             <LandingPage />
-        {:else if currentPage === 'battle'}
-            <BattlePage {...pageParams} />
+        {:else if currentPage.name === 'battle'}
+            <BattlePage {...currentPage.params} />
         {/if}
     </div>
 </section>
