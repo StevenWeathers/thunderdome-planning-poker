@@ -4,7 +4,7 @@
 
     export let battleId = 0
     let points = ['1', '2', '3', '5', '8', '13', '?']
-    let vote = '3'
+    let vote = ''
 
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
 
