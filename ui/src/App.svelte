@@ -1,34 +1,33 @@
 <script>
-    import navaid from 'navaid'
+    import Navaid from 'navaid'
+    import { onDestroy } from 'svelte'
 
-    import LandingPage from './pages/Landing.svelte'
-    import BattlePage from './pages/Battle.svelte'
+    import Landing from './pages/Landing.svelte'
+    import Battle from './pages/Battle.svelte'
     import RegisterPage from './pages/Register.svelte'
     import { user } from './stores.js'
 
-    // Setup router
-    let router = navaid()
-    
     let currentPage = {
-        name: 'landing',
-        params: {},
+        route: Landing,
+        params: {}
     }
 
-    router
+    const router = Navaid('/')
         .on('/', () => {
             currentPage = {
-                name: 'landing',
-                params: {},
+                route: Landing,
+                params: {}
             }
         })
         .on('/battle/:battleId', params => {
             currentPage = {
-                name: 'battle',
-                params,
+                route: Battle,
+                params
             }
         })
+        .listen()
 
-    router.listen()
+    onDestroy(router.unlisten)
 </script>
 
 <style>
@@ -50,11 +49,7 @@
     {#if !$user.id}
         <RegisterPage />
     {:else}
-        {#if currentPage.name === 'landing'}
-            <LandingPage />
-        {:else if currentPage.name === 'battle'}
-            <BattlePage {...currentPage.params} />
-        {/if}
+        <svelte:component this={currentPage.route} {...currentPage.params} />
     {/if}
     </div>
 </section>

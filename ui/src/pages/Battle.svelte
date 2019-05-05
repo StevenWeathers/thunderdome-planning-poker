@@ -42,6 +42,10 @@
     }
 </script>
 
+<svelte:head>
+	<title>Battle {battleId} | Thunderdome</title>
+</svelte:head>
+
 <div class="columns">
     <div class="column">
         <h1 class="title">Battle: {battleId}</h1>
