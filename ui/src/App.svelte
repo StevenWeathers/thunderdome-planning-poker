@@ -58,7 +58,8 @@
   <div class="content has-text-centered">
     <p>
       <a href="https://github.com/StevenWeathers/thunderdome-planning-poker">Thunderdome</a> by <a href="http://stevenweathers.com">Steven Weathers</a>. The source code is licensed
-      <a href="http://www.apache.org/licenses/">Apache 2.0</a>.
+      <a href="http://www.apache.org/licenses/">Apache 2.0</a>.<br />
+        Powered by <a href="https://svelte.dev/">Svelte</a> and <a href="https://golang.org/">Go</a>
     </p>
   </div>
 </footer>
