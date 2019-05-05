@@ -1,45 +1,45 @@
 <script>
     import { user } from '../stores.js'
 
-    let creatorName = ''
-    let battleName = ''
+    let userName = ''
 
-    function createBattle(e) {
+    function createUser(e) {
         e.preventDefault()
-        const data = {
-            battleName,
-            creatorId: $user.id
-        }
         
-        fetch('/api/battle', {
+        fetch('/api/user', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({
+                userName
+            })
         })
             .then(function(response) {
                 return response.json()
             })
-            .then(function(battle) {
-                window.location.href = `/battle/${battle.id}`
+            .then(function(createdUser) {
+                user.create({
+                    id: createdUser.id,
+                    name: createdUser.name
+                })
             });
     }
 </script>
 
 <div class="columns">
     <div class="column">
-        <form on:submit={createBattle}>
+        <form on:submit={createUser}>
             <div class="field">
-                <label class="label">Battle Name</label>
+                <label class="label">Name</label>
                 <div class="control">
-                    <input bind:value={battleName} placeholder="Enter a battle name" class="input" required />
+                    <input bind:value={userName} placeholder="Enter your name" class="input" required />
                 </div>
             </div>
             
             <div class="field">
                 <div class="control">
-                    <button class="button is-success" type="submit">Create a Story Battle</button>
+                    <button class="button is-success" type="submit">Register</button>
                 </div>
             </div>
         </form>

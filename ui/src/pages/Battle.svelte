@@ -1,6 +1,8 @@
 <script>
     import { onDestroy } from 'svelte'
+
     import PointCard from '../components/PointCard.svelte'
+    import { user } from '../stores.js'
 
     export let battleId = 0
     let points = ['1', '2', '3', '5', '8', '13', '?']
@@ -13,6 +15,10 @@
     let message = ''
     let responses = []
 
+    ws.onopen = function() {
+        ws.send(`${$user.name} has joined the battle`)
+    }
+
     ws.onmessage = function (evt) {
         responses[responses.length] = `${evt.data}`
     }
@@ -21,11 +27,18 @@
         console.log(`ERROR: ${e}`)
     }
 
-    onDestroy(() => ws.close())
+    function teardownWs() {
+        ws.send(`${$user.name} has retreated from battle`)
+        ws.close()
+    }
+
+    // on page/browser exit teardown ws by sending exit event and close ws
+    onDestroy(teardownWs)
+    window.onbeforeunload = teardownWs
 
     function handleVote(event) {
         vote = event.detail.point
-        ws.send(vote)
+        ws.send(`${$user.name} voted ${vote}`)
     }
 </script>
 
@@ -50,4 +63,4 @@
             </div>
         {/each}
     </div>
-  </div>
+</div>

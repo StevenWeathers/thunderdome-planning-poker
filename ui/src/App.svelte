@@ -1,7 +1,10 @@
 <script>
     import navaid from 'navaid'
+
     import LandingPage from './pages/Landing.svelte'
     import BattlePage from './pages/Battle.svelte'
+    import RegisterPage from './pages/Register.svelte'
+    import { user } from './stores.js'
 
     // Setup router
     let router = navaid()
@@ -44,11 +47,15 @@
 
 <section class="section">
     <div class="container">
+    {#if !$user.id}
+        <RegisterPage />
+    {:else}
         {#if currentPage.name === 'landing'}
             <LandingPage />
         {:else if currentPage.name === 'battle'}
             <BattlePage {...currentPage.params} />
         {/if}
+    {/if}
     </div>
 </section>
 

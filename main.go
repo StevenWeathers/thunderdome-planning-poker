@@ -11,11 +11,6 @@ import (
 	"github.com/rakyll/statik/fs"
 )
 
-type Battle struct {
-	BattleId string `json:"id"`
-	CreatorId string `json:"creatorId"`
-}
-
 func main() {
 	var listenPort = fmt.Sprintf(":%s", GetEnv("PORT", "8080"))
 	go h.run()
@@ -30,6 +25,7 @@ func main() {
 	router.PathPrefix("/css/").Handler(staticHandler)
 	router.PathPrefix("/js/").Handler(staticHandler)
 	router.PathPrefix("/img/").Handler(staticHandler)
+	router.HandleFunc("/api/user", RegisterUserHandler).Methods("POST")
 	router.HandleFunc("/api/battle", CreateBattleHandler).Methods("POST")
 	router.HandleFunc("/api/battle/{id}", serveWs)
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
