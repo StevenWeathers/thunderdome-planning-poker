@@ -6,6 +6,7 @@
     import { warrior } from '../stores.js'
 
     export let battleId = 0
+    const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
     let points = ['1', '2', '3', '5', '8', '13', '?']
     let vote = ''
     let battle = {
@@ -14,6 +15,8 @@
         warriors: [],
         votes: []
     }
+    let responses = []
+    let handleVote = () => {}
 
     fetch(`/api/battle/${battleId}`)
         .then(function(response) {
@@ -27,95 +30,70 @@
         })
         .then(function(b) {
             battle = b
+
+            const ws = new WebSocket(`${socketExtension}://${window.location.host}/api/arena/${battleId}`)
+
+            ws.onmessage = function (evt) {
+                const parsedEvent = JSON.parse(evt.data)
+                const warriorId = parsedEvent.id
+                let eventWarrior = battle.warriors.find(w => w.id === warriorId)
+                let response = ''
+
+                switch(parsedEvent.type) {
+                    case "joined":
+                        const joinedWarrior = {
+                            name: parsedEvent.value,
+                            id: warriorId
+                        }
+                        if (!eventWarrior) {
+                            battle.warriors[battle.warriors.length] = joinedWarrior
+                        }                
+                        
+                        response = `${joinedWarrior.name} has joined the battle.`
+                        break;
+                    case "retreat":
+                        battle.warriors = battle.warriors.filter(w => w.id !== warriorId)
+                        
+                        response = `${eventWarrior.name} has retreated from battle.`
+                        break;
+                    case "vote":
+                        const vote = parsedEvent.value
+                        const currentVote = battle.votes.find(v => v.warriorId === warriorId)
+                        if (currentVote) {
+                            currentVote.vote = vote
+                        } else {
+                            battle.votes[battle.votes.length] = {
+                                warriorId,
+                                vote
+                            }
+                        }
+
+                        response = `${eventWarrior.name} voted ${parsedEvent.value}.`
+                    default:
+                        break;
+                }
+
+                responses[responses.length] = response;
+            }
+
+            ws.onerror = function (e) {
+                console.log(`ERROR: ${e}`)
+            }
+
+            handleVote = (event) => {
+                vote = event.detail.point
+
+                ws.send(JSON.stringify({
+                    type: 'vote',
+                    id: $warrior.id,
+                    value: vote
+                }))
+            }
         })
         .catch(function(e) {
             console.log(e.message)
             window.location.href = '/'
         })
-
-    const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
-
-    const ws = new WebSocket(`${socketExtension}://${window.location.host}/api/arena/${battleId}`)
-
-    let message = ''
-    let responses = []
-
-    ws.onopen = function() {
-        ws.send(JSON.stringify({
-            type: 'join',
-            id: $warrior.id,
-            value: $warrior.name
-        }))
-    }
-
-    ws.onmessage = function (evt) {
-        const parsedEvent = JSON.parse(evt.data)
-        const warriorId = parsedEvent.id
-        let eventWarrior = battle.warriors.find(w => w.id === warriorId)
-        let response = ''
-
-        switch(parsedEvent.type) {
-            case "join":
-                const joinedWarrior = {
-                    name: parsedEvent.value,
-                    id: warriorId
-                }
-                if (!eventWarrior) {
-                    battle.warriors[battle.warriors.length] = joinedWarrior
-                }                
-                
-                response = `${joinedWarrior.name} has joined the battle.`
-                break;
-            case "retreat":
-                battle.warriors = battle.warriors.filter(w => w.id !== warriorId)
-                
-                response = `${eventWarrior.name} has retreated from battle.`
-                break;
-            case "vote":
-                const vote = parsedEvent.value
-                const currentVote = battle.votes.find(v => v.warriorId === warriorId)
-                if (currentVote) {
-                    currentVote.vote = vote
-                } else {
-                    battle.votes[battle.votes.length] = {
-                        warriorId,
-                        vote
-                    }
-                }
-
-                response = `${eventWarrior.name} voted ${parsedEvent.value}.`
-            default:
-                break;
-        }
-
-        responses[responses.length] = response;
-    }
-
-    ws.onerror = function (e) {
-        console.log(`ERROR: ${e}`)
-    }
-
-    function teardownWs() {
-        ws.send(JSON.stringify({
-            type: 'retreat',
-            id: $warrior.id
-        }))
-        ws.close()
-    }
-
-    // on page/browser exit teardown ws by sending exit event and close ws
-    onDestroy(teardownWs)
-    window.onbeforeunload = teardownWs
-
-    function handleVote(event) {
-        vote = event.detail.point
-
-        ws.send(JSON.stringify({
-            type: 'vote',
-            id: $warrior.id,
-            value: vote
-        }))
-    }
 </script>
 
 <svelte:head>

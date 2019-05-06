@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"os"
 	"net/http"
+	"os"
 )
 
-// getEnv gets environment variable matching key string
+// GetEnv gets environment variable matching key string
 // and if it finds none uses fallback string
 // returning either the matching or fallback string
 func GetEnv(key string, fallback string) string {
@@ -19,7 +19,7 @@ func GetEnv(key string, fallback string) string {
 	return result
 }
 
-// responsdWithJSON takes a payload and writes the response
+// RespondWithJSON takes a payload and writes the response
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
 
