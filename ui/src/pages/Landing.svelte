@@ -1,14 +1,13 @@
 <script>
-    import { user } from '../stores.js'
+    import { warrior } from '../stores.js'
 
-    let creatorName = ''
     let battleName = ''
 
     function createBattle(e) {
         e.preventDefault()
         const data = {
             battleName,
-            creatorId: $user.id
+            leaderId: $warrior.id
         }
         
         fetch('/api/battle', {

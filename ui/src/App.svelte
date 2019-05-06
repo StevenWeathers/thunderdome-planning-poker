@@ -5,7 +5,7 @@
     import Landing from './pages/Landing.svelte'
     import Battle from './pages/Battle.svelte'
     import RegisterPage from './pages/Register.svelte'
-    import { user } from './stores.js'
+    import { warrior } from './stores.js'
 
     let currentPage = {
         route: Landing,
@@ -46,7 +46,7 @@
 
 <section class="section">
     <div class="container">
-    {#if !$user.id}
+    {#if !$warrior.id}
         <RegisterPage />
     {:else}
         <svelte:component this={currentPage.route} {...currentPage.params} />

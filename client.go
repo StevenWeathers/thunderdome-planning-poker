@@ -37,6 +37,12 @@ type connection struct {
     send chan []byte
 }
 
+type SocketEvent struct {
+    EventType string `json:"type"`
+    WarriorId string `json:"id"`
+    EventValue string `json:"value"`
+}
+
 // readPump pumps messages from the websocket connection to the hub.
 func (s subscription) readPump() {
     c := s.conn

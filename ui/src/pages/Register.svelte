@@ -1,27 +1,27 @@
 <script>
-    import { user } from '../stores.js'
+    import { warrior } from '../stores.js'
 
-    let userName = ''
+    let warriorName = ''
 
-    function createUser(e) {
+    function createWarrior(e) {
         e.preventDefault()
         
-        fetch('/api/user', {
+        fetch('/api/warrior', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                userName
+                warriorName
             })
         })
             .then(function(response) {
                 return response.json()
             })
-            .then(function(createdUser) {
-                user.create({
-                    id: createdUser.id,
-                    name: createdUser.name
+            .then(function(newWarrior) {
+                warrior.create({
+                    id: newWarrior.id,
+                    name: newWarrior.name
                 })
             });
     }
@@ -29,11 +29,11 @@
 
 <div class="columns">
     <div class="column">
-        <form on:submit={createUser}>
+        <form on:submit={createWarrior}>
             <div class="field">
                 <label class="label">Name</label>
                 <div class="control">
-                    <input bind:value={userName} placeholder="Enter your name" class="input" required />
+                    <input bind:value={warriorName} placeholder="Enter your name" class="input" required />
                 </div>
             </div>
             

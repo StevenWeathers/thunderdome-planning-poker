@@ -25,9 +25,10 @@ func main() {
 	router.PathPrefix("/css/").Handler(staticHandler)
 	router.PathPrefix("/js/").Handler(staticHandler)
 	router.PathPrefix("/img/").Handler(staticHandler)
-	router.HandleFunc("/api/user", RegisterUserHandler).Methods("POST")
+	router.HandleFunc("/api/warrior", RecruitWarriorHandler).Methods("POST")
 	router.HandleFunc("/api/battle", CreateBattleHandler).Methods("POST")
-	router.HandleFunc("/api/battle/{id}", serveWs)
+	router.HandleFunc("/api/battle/{id}", GetBattlePlansHandler)
+	router.HandleFunc("/api/arena/{id}", serveWs)
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.URL.Path = "/"
 		staticHandler.ServeHTTP(w, r)

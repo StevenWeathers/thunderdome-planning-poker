@@ -7,27 +7,24 @@ Goal is to build a Planning Poker application utilizing Websockets and supportin
 
 ```json
 {
-    "gameId": 1,
+    "battleId": "uuid",
     "name": "Build a Planning Poker app",
-    "creator": {
-        "id": 1,
-        "name": "Ricky Bobby",
-    },
-    "gamers": [
+    "leaderId": "uuid",
+    "warriors": [
         {
-            "id": 1,
+            "id": "uuid",
             "name": "Sweeney Todd",
             "active": true
         }
     ],
     "stories": [
         {
-            "id": 1,
+            "id": "uuid",
             "name": "Build the Planning Poker Data Model",
             "refId": "[Story Tracking ID here]",
             "votes": [
                 {
-                    "voterId": 1,
+                    "warriorId": "uuid",
                     "vote": "3"
                 }
             ],
