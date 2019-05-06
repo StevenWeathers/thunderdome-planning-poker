@@ -38,7 +38,7 @@ func CreateBattleHandler(w http.ResponseWriter, r *http.Request) {
 		BattleId: id,
 		LeaderId: leaderId,
 		BattleName: keyVal["battleName"],
-		Warriors: []*Warrior{Warriors[leaderId]} }
+		Warriors: make([]*Warrior, 0) }
 
 	RespondWithJSON(w, http.StatusOK, Battles[id])
 }

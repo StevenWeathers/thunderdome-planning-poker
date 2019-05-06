@@ -2,6 +2,7 @@ package main
 
 import (
     "log"
+    "encoding/json"
     "net/http"
     "time"
 
@@ -61,6 +62,28 @@ func (s subscription) readPump() {
             }
             break
         }
+
+        keyVal := make(map[string]string)
+        json.Unmarshal(msg, &keyVal) // check for errors
+        warriorId := keyVal["id"]
+        battleId := s.arena
+        
+        switch keyVal["type"] {
+        case "join":
+            Battles[battleId].Warriors = append(Battles[battleId].Warriors, Warriors[warriorId])
+        case "retreat":
+            var warriorIndex int
+            for i := range Battles[battleId].Warriors {
+                if Battles[battleId].Warriors[i].WarriorId == warriorId {
+                    warriorIndex = i
+                    break;
+                }
+            }
+
+            Battles[battleId].Warriors = append(Battles[battleId].Warriors[:warriorIndex], Battles[battleId].Warriors[warriorIndex+1:]...)
+        default:
+        }
+
         m := message{msg, s.arena}
         h.broadcast <- m
     }
@@ -87,6 +110,7 @@ func (s *subscription) writePump() {
                 c.write(websocket.CloseMessage, []byte{})
                 return
             }
+            log.Println(string(message))
             if err := c.write(websocket.TextMessage, message); err != nil {
                 return
             }

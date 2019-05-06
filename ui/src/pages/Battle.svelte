@@ -25,6 +25,10 @@
             }
         })
         .then(function(b) {
+            // do this until backend can always return empty array
+            // if (b.warriors === null) {
+            //     b.warriors = []
+            // }
             battle = b
         })
         .catch(function(e) {
@@ -42,27 +46,35 @@
     ws.onopen = function() {
         ws.send(JSON.stringify({
             type: 'join',
-            id: $warrior.id
+            id: $warrior.id,
+            value: $warrior.name
         }))
     }
 
     ws.onmessage = function (evt) {
         const parsedEvent = JSON.parse(evt.data)
-        const eventWarrior = battle.warriors.find(w => w.id === parsedEvent.id) || {
-            name: 'John Smith'
-        }
-        const warriorName = eventWarrior.name
+        let eventWarrior = battle.warriors.find(w => w.id === parsedEvent.id)
         let response = ''
 
         switch(parsedEvent.type) {
             case "join":
-                response = `${warriorName} has joined the battle.`
+                const joinedWarrior = {
+                    name: parsedEvent.value,
+                    id: parsedEvent.id
+                }
+                if (!eventWarrior) {
+                    battle.warriors[battle.warriors.length] = joinedWarrior
+                }                
+                
+                response = `${joinedWarrior.name} has joined the battle.`
                 break;
             case "retreat":
-                response = `${warriorName} has retreated from battle.`
+                battle.warriors = battle.warriors.filter(w => w.id !== eventWarrior.id)
+                
+                response = `${eventWarrior.name} has retreated from battle.`
                 break;
             case "vote":
-                response = `${warriorName} voted ${parsedEvent.value}.`
+                response = `${eventWarrior.name} voted ${parsedEvent.value}.`
             default:
                 break;
         }
@@ -125,7 +137,7 @@
         <div class="column">
             <h3 class="is-size-2">Users</h3>
 
-            {#each battle.warriors as war}
+            {#each battle.warriors as war (war.id)}
                 <WarriorCard warrior={war} isLeader={war.id === battle.leaderId} voted={vote && war.id === $warrior.id} />
             {/each}
         </div>
