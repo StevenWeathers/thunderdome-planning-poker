@@ -48,18 +48,21 @@
 
     ws.onmessage = function (evt) {
         const parsedEvent = JSON.parse(evt.data)
-        const eventWarrior = battle.warriors.find(w => w.id === parsedEvent.id)
+        const eventWarrior = battle.warriors.find(w => w.id === parsedEvent.id) || {
+            name: 'John Smith'
+        }
+        const warriorName = eventWarrior.name
         let response = ''
 
         switch(parsedEvent.type) {
             case "join":
-                response = `${eventWarrior.name} has joined the battle.`
+                response = `${warriorName} has joined the battle.`
                 break;
             case "retreat":
-                response = `${eventWarrior.name} has retreated from battle.`
+                response = `${warriorName} has retreated from battle.`
                 break;
             case "vote":
-                response = `${eventWarrior.name} voted ${parsedEvent.value}.`
+                response = `${warriorName} voted ${parsedEvent.value}.`
             default:
                 break;
         }
