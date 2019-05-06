@@ -14,11 +14,17 @@ type Battle struct {
 	LeaderId string `json:"leaderId"`
 	BattleName string `json:"name"`
 	Warriors []*Warrior `json:"warriors"`
+	Votes []*Vote `json:"votes"`
 }
 
 type Warrior struct {
 	WarriorId string `json:"id"`
 	WarriorName string `json:"name"`
+}
+
+type Vote struct {
+	WarriorId string `json:"warriorId"`
+	VoteValue string `json:"vote"`
 }
 
 var Warriors = make(map[string]*Warrior)
@@ -38,7 +44,8 @@ func CreateBattleHandler(w http.ResponseWriter, r *http.Request) {
 		BattleId: id,
 		LeaderId: leaderId,
 		BattleName: keyVal["battleName"],
-		Warriors: make([]*Warrior, 0) }
+		Warriors: make([]*Warrior, 0),
+		Votes: make([]*Vote, 0) }
 
 	RespondWithJSON(w, http.StatusOK, Battles[id])
 }

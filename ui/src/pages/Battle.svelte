@@ -11,7 +11,8 @@
     let battle = {
         name: '',
         leaderId: '',
-        warriors: []
+        warriors: [],
+        votes: []
     }
 
     fetch(`/api/battle/${battleId}`)
@@ -25,10 +26,6 @@
             }
         })
         .then(function(b) {
-            // do this until backend can always return empty array
-            // if (b.warriors === null) {
-            //     b.warriors = []
-            // }
             battle = b
         })
         .catch(function(e) {
@@ -53,14 +50,15 @@
 
     ws.onmessage = function (evt) {
         const parsedEvent = JSON.parse(evt.data)
-        let eventWarrior = battle.warriors.find(w => w.id === parsedEvent.id)
+        const warriorId = parsedEvent.id
+        let eventWarrior = battle.warriors.find(w => w.id === warriorId)
         let response = ''
 
         switch(parsedEvent.type) {
             case "join":
                 const joinedWarrior = {
                     name: parsedEvent.value,
-                    id: parsedEvent.id
+                    id: warriorId
                 }
                 if (!eventWarrior) {
                     battle.warriors[battle.warriors.length] = joinedWarrior
@@ -69,11 +67,22 @@
                 response = `${joinedWarrior.name} has joined the battle.`
                 break;
             case "retreat":
-                battle.warriors = battle.warriors.filter(w => w.id !== eventWarrior.id)
+                battle.warriors = battle.warriors.filter(w => w.id !== warriorId)
                 
                 response = `${eventWarrior.name} has retreated from battle.`
                 break;
             case "vote":
+                const vote = parsedEvent.value
+                const currentVote = battle.votes.find(v => v.warriorId === warriorId)
+                if (currentVote) {
+                    currentVote.vote = vote
+                } else {
+                    battle.votes[battle.votes.length] = {
+                        warriorId,
+                        vote
+                    }
+                }
+
                 response = `${eventWarrior.name} voted ${parsedEvent.value}.`
             default:
                 break;
@@ -138,7 +147,7 @@
             <h3 class="is-size-2">Users</h3>
 
             {#each battle.warriors as war (war.id)}
-                <WarriorCard warrior={war} isLeader={war.id === battle.leaderId} voted={vote && war.id === $warrior.id} />
+                <WarriorCard warrior={war} isLeader={war.id === battle.leaderId} voted={battle.votes.find(v => v.warriorId === war.id)} />
             {/each}
         </div>
     </div>

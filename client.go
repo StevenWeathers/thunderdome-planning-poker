@@ -81,6 +81,24 @@ func (s subscription) readPump() {
             }
 
             Battles[battleId].Warriors = append(Battles[battleId].Warriors[:warriorIndex], Battles[battleId].Warriors[warriorIndex+1:]...)
+        case "vote":
+            vote := keyVal["value"]
+            voteUpdated := false
+            for i := range Battles[battleId].Votes {
+                if Battles[battleId].Votes[i].WarriorId == warriorId {
+                    Battles[battleId].Votes[i].VoteValue = vote
+                    voteUpdated = true
+                    break;
+                }
+            }
+
+            if !voteUpdated {
+                newVote := &Vote{
+                    WarriorId: warriorId,
+                    VoteValue: vote }
+    
+                Battles[battleId].Votes = append(Battles[battleId].Votes, newVote)
+            }
         default:
         }
 
