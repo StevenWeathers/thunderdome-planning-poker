@@ -22,7 +22,7 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 
 	// Maximum message size allowed from peer.
-	maxMessageSize = 512
+	maxMessageSize = 1024 * 1024
 )
 
 var upgrader = websocket.Upgrader{
@@ -46,27 +46,29 @@ type SocketEvent struct {
 	EventValue string `json:"value"`
 }
 
+func CreateSocketEvent(EventType string, WarriorID string, EventValue string) []byte {
+	newEvent := &SocketEvent{
+		EventType:  EventType,
+		WarriorID:  WarriorID,
+		EventValue: EventValue}
+
+	event, _ := json.Marshal(newEvent)
+
+	return event
+}
+
 // readPump pumps messages from the websocket connection to the hub.
 func (s subscription) readPump() {
 	c := s.conn
 	defer func() {
+		BattleID := s.arena
+		WarriorID := s.warriorID
 		log.Println(s.warriorID + " has left the arena")
-		var warriorIndex int
-		for i := range Battles[s.arena].Warriors {
-			if Battles[s.arena].Warriors[i].WarriorID == s.warriorID {
-				warriorIndex = i
-				break
-			}
-		}
 
-		Battles[s.arena].Warriors = append(Battles[s.arena].Warriors[:warriorIndex], Battles[s.arena].Warriors[warriorIndex+1:]...)
+		RetreatWarrior(BattleID, WarriorID)
 
-		joinEvent := &SocketEvent{
-			EventType:  "retreat",
-			WarriorID:  s.warriorID,
-			EventValue: ""}
-		event, _ := json.Marshal(joinEvent)
-		m := message{event, s.arena}
+		retreatEvent := CreateSocketEvent("retreat", WarriorID, "")
+		m := message{retreatEvent, BattleID}
 		h.broadcast <- m
 
 		h.unregister <- s
@@ -91,23 +93,28 @@ func (s subscription) readPump() {
 
 		switch keyVal["type"] {
 		case "vote":
-			vote := keyVal["value"]
-			voteUpdated := false
-			for i := range Battles[battleID].Votes {
-				if Battles[battleID].Votes[i].WarriorID == warriorID {
-					Battles[battleID].Votes[i].VoteValue = vote
-					voteUpdated = true
-					break
-				}
-			}
+			voteObj := make(map[string]string)
+			json.Unmarshal([]byte(keyVal["value"]), &voteObj)
+			VoteValue := voteObj["voteValue"]
+			PlanID := voteObj["planId"]
+			log.Println(VoteValue)
+			log.Println(PlanID)
 
-			if !voteUpdated {
-				newVote := &Vote{
-					WarriorID: warriorID,
-					VoteValue: vote}
-
-				Battles[battleID].Votes = append(Battles[battleID].Votes, newVote)
-			}
+			battle := SetVote(battleID, warriorID, PlanID, VoteValue)
+			updatedBattle, _ := json.Marshal(battle)
+			msg = CreateSocketEvent("vote", warriorID, string(updatedBattle))
+		case "addPlan":
+			battle := CreatePlan(battleID, keyVal["value"])
+			updatedBattle, _ := json.Marshal(battle)
+			msg = CreateSocketEvent("planAdded", warriorID, string(updatedBattle))
+		case "activatePlan":
+			battle := ActivatePlanVoting(battleID, keyVal["value"])
+			updatedBattle, _ := json.Marshal(battle)
+			msg = CreateSocketEvent("planActivated", warriorID, string(updatedBattle))
+		case "endPlanVoting":
+			battle := EndPlanVoting(battleID, keyVal["value"])
+			updatedBattle, _ := json.Marshal(battle)
+			msg = CreateSocketEvent("votingEnded", warriorID, string(updatedBattle))
 		default:
 		}
 
@@ -163,10 +170,13 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		value, _ := url.PathUnescape(warrior.Value)
 		keyVal := make(map[string]string)
 		json.Unmarshal([]byte(value), &keyVal) // check for errors
+
 		warriorID = keyVal["id"]
 		warriorName = keyVal["name"]
 
-		if Warriors[warriorID] == nil {
+		_, warErr := GetWarrior(warriorID)
+
+		if warErr != nil {
 			Warriors[warriorID] = &Warrior{
 				WarriorID:   warriorID,
 				WarriorName: warriorName}
@@ -174,22 +184,20 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ws, err := upgrader.Upgrade(w, r, nil)
-	vars := mux.Vars(r)
 	if err != nil {
 		log.Println(err)
 		return
 	}
+
+	vars := mux.Vars(r)
 	c := &connection{send: make(chan []byte, 256), ws: ws}
 	s := subscription{c, vars["id"], warriorID}
 	h.register <- s
 
-	Battles[s.arena].Warriors = append(Battles[s.arena].Warriors, Warriors[warriorID])
-	joinEvent := &SocketEvent{
-		EventType:  "joined",
-		WarriorID:  warriorID,
-		EventValue: warriorName}
-	event, _ := json.Marshal(joinEvent)
-	m := message{event, s.arena}
+	AddWarriorToBattle(s.arena, warriorID)
+
+	joinedEvent := CreateSocketEvent("joined", warriorID, warriorName)
+	m := message{joinedEvent, s.arena}
 	h.broadcast <- m
 
 	go s.writePump()

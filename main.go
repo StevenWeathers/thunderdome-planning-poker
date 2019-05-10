@@ -27,7 +27,7 @@ func main() {
 	router.PathPrefix("/img/").Handler(staticHandler)
 	router.HandleFunc("/api/warrior", RecruitWarriorHandler).Methods("POST")
 	router.HandleFunc("/api/battle", CreateBattleHandler).Methods("POST")
-	router.HandleFunc("/api/battle/{id}", GetBattlePlansHandler)
+	router.HandleFunc("/api/battle/{id}", GetBattleHandler)
 	router.HandleFunc("/api/arena/{id}", serveWs)
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.URL.Path = "/"

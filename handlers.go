@@ -5,36 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
-
-// Battle aka arena
-type Battle struct {
-	BattleID   string     `json:"id"`
-	LeaderID   string     `json:"leaderId"`
-	BattleName string     `json:"name"`
-	Warriors   []*Warrior `json:"warriors"`
-	Votes      []*Vote    `json:"votes"`
-}
-
-// Warrior aka user
-type Warrior struct {
-	WarriorID   string `json:"id"`
-	WarriorName string `json:"name"`
-}
-
-// Vote structure
-type Vote struct {
-	WarriorID string `json:"warriorId"`
-	VoteValue string `json:"vote"`
-}
-
-// Warriors stores all warriors in memory
-var Warriors = make(map[string]*Warrior)
-
-// Battles stores all battles in memory
-var Battles = make(map[string]*Battle)
 
 // CreateBattleHandler handles creating a battle (arena)
 func CreateBattleHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,19 +14,12 @@ func CreateBattleHandler(w http.ResponseWriter, r *http.Request) {
 
 	keyVal := make(map[string]string)
 	json.Unmarshal(body, &keyVal) // check for errors
-	leaderID := keyVal["leaderId"]
+	LeaderID := keyVal["leaderId"]
+	BattleName := keyVal["battleName"]
 
-	newID, _ := uuid.NewUUID()
-	id := newID.String()
+	newBattle := CreateBattle(LeaderID, BattleName)
 
-	Battles[id] = &Battle{
-		BattleID:   id,
-		LeaderID:   leaderID,
-		BattleName: keyVal["battleName"],
-		Warriors:   make([]*Warrior, 0),
-		Votes:      make([]*Vote, 0)}
-
-	RespondWithJSON(w, http.StatusOK, Battles[id])
+	RespondWithJSON(w, http.StatusOK, newBattle)
 }
 
 // RecruitWarriorHandler registeres a user as a warrior in memory
@@ -63,23 +28,24 @@ func RecruitWarriorHandler(w http.ResponseWriter, r *http.Request) {
 
 	keyVal := make(map[string]string)
 	json.Unmarshal(body, &keyVal) // check for errors
+	WarriorName := keyVal["warriorName"]
 
-	newID, _ := uuid.NewUUID()
-	id := newID.String()
-	Warriors[id] = &Warrior{WarriorID: id, WarriorName: keyVal["warriorName"]}
+	newWarrior := CreateWarrior(WarriorName)
 
-	RespondWithJSON(w, http.StatusOK, Warriors[id])
+	RespondWithJSON(w, http.StatusOK, newWarrior)
 }
 
-// GetBattlePlansHandler looks up battle in memory or returns notfound status
-func GetBattlePlansHandler(w http.ResponseWriter, r *http.Request) {
+// GetBattleHandler looks up battle in memory or returns notfound status
+func GetBattleHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
+	BattleID := vars["id"]
 
-	if battle, ok := Battles[id]; ok {
-		RespondWithJSON(w, http.StatusOK, battle)
-	} else {
+	battle, err := GetBattle(BattleID)
+
+	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
+
+	RespondWithJSON(w, http.StatusOK, battle)
 }

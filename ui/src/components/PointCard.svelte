@@ -5,6 +5,7 @@
     
     export let point = '1'
     export let active = false
+    export let isLocked = true
 
     function vote() {
         dispatch('voted', {
@@ -16,6 +17,6 @@
 <style>
 </style>
 
-<button class="button is-outlined is-large is-size-2 has-text-weight-bold {active ? 'is-success' : ''}" on:click={vote}>
+<button class="button is-outlined is-large is-size-2 has-text-weight-bold {active ? 'is-success' : ''}" on:click={vote} disabled={isLocked}>
     {point}
 </button>
