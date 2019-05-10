@@ -52,12 +52,16 @@ docker run --name thunder -p 8080:8080 thunderdome
 ```
 go get github.com/rakyll/statik
 go get -d -v
+cd src
 npm install
+cd ..
 ```
 
 ### Build static assets
 ```
+cd src
 npm run build
+cd ..
 ```
 
 ### bundle up static assets
