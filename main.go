@@ -7,6 +7,7 @@ import (
 	"time"
 
 	_ "thunderdome/statik"
+
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 )
@@ -20,7 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 	staticHandler := http.FileServer(statikFS)
-	
+
 	router := mux.NewRouter()
 	router.PathPrefix("/css/").Handler(staticHandler)
 	router.PathPrefix("/js/").Handler(staticHandler)
@@ -33,7 +34,7 @@ func main() {
 		r.URL.Path = "/"
 		staticHandler.ServeHTTP(w, r)
 	})
-	
+
 	srv := &http.Server{
 		Handler: router,
 		Addr:    listenPort,

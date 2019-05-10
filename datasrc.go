@@ -8,13 +8,13 @@ import (
 
 // Battle aka arena
 type Battle struct {
-	BattleID   string     `json:"id"`
-	LeaderID   string     `json:"leaderId"`
-	BattleName string     `json:"name"`
-	Warriors   []*Warrior `json:"warriors"`
-	Plans	   []*Plan	  `json:"plans"`
-	VotingLocked bool	  `json:"votingLocked"`
-	ActivePlanID string	  `json:"activePlanId"`
+	BattleID     string     `json:"id"`
+	LeaderID     string     `json:"leaderId"`
+	BattleName   string     `json:"name"`
+	Warriors     []*Warrior `json:"warriors"`
+	Plans        []*Plan    `json:"plans"`
+	VotingLocked bool       `json:"votingLocked"`
+	ActivePlanID string     `json:"activePlanId"`
 }
 
 // Warrior aka user
@@ -31,11 +31,11 @@ type Vote struct {
 
 // Plan aka Story structure
 type Plan struct {
-	PlanID 		string 		`json:"id"`
-	PlanName 	string 		`json:"name"`
-	Votes   	[]*Vote 	`json:"votes"`
-	Points		string 		`json:"points"`
-	Active 		bool 		`json:"active"`
+	PlanID   string  `json:"id"`
+	PlanName string  `json:"name"`
+	Votes    []*Vote `json:"votes"`
+	Points   string  `json:"points"`
+	Active   bool    `json:"active"`
 }
 
 // Warriors stores all warriors in memory
@@ -50,11 +50,11 @@ func CreateBattle(LeaderID string, BattleName string) *Battle {
 	id := newID.String()
 
 	Battles[id] = &Battle{
-		BattleID:   id,
-		LeaderID:   LeaderID,
-		BattleName: BattleName,
-		Warriors:   make([]*Warrior, 0),
-		Plans:      make([]*Plan, 0),
+		BattleID:     id,
+		LeaderID:     LeaderID,
+		BattleName:   BattleName,
+		Warriors:     make([]*Warrior, 0),
+		Plans:        make([]*Plan, 0),
 		VotingLocked: true,
 		ActivePlanID: ""}
 
@@ -65,9 +65,9 @@ func CreateBattle(LeaderID string, BattleName string) *Battle {
 func GetBattle(BattleID string) (*Battle, error) {
 	if battle, ok := Battles[BattleID]; ok {
 		return battle, nil
-	} else {
-		return nil, errors.New("Not found")
 	}
+
+	return nil, errors.New("Not found")
 }
 
 // CreateWarrior adds a new warrior to the map
@@ -84,16 +84,17 @@ func CreateWarrior(WarriorName string) *Warrior {
 func GetWarrior(WarriorID string) (*Warrior, error) {
 	if warrior, ok := Warriors[WarriorID]; ok {
 		return warrior, nil
-	} else {
-		return nil, errors.New("Not found")
 	}
+
+	return nil, errors.New("Not found")
 }
 
+// AddWarriorToBattle adds a warrior by ID to the battle by ID
 func AddWarriorToBattle(BattleID string, WarriorID string) {
 	Battles[BattleID].Warriors = append(Battles[BattleID].Warriors, Warriors[WarriorID])
 }
 
-// ReatreatWarrior removes a warrior from the current battle by ID
+// RetreatWarrior removes a warrior from the current battle by ID
 func RetreatWarrior(BattleID string, WarriorID string) {
 	var warriorIndex int
 	for i := range Battles[BattleID].Warriors {
@@ -113,9 +114,9 @@ func CreatePlan(BattleID string, PlanName string) *Battle {
 
 	newPlan := &Plan{PlanID: id,
 		PlanName: PlanName,
-		Votes: make([]*Vote, 0),
-		Points: "",
-		Active: false} 
+		Votes:    make([]*Vote, 0),
+		Points:   "",
+		Active:   false}
 
 	Battles[BattleID].Plans = append(Battles[BattleID].Plans, newPlan)
 

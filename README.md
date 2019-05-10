@@ -48,23 +48,26 @@ docker run --name thunder -p 8080:8080 thunderdome
 
 ## Building with Go
 
-Will be adding Makefile soon...
-
+### Install dependencies
 ```
-statik -src=ui/dist -dest=vendor/thunderdome
-go build
-```
-
-## Building the Webapp UI
-
-### Project setup
-```
+go get github.com/rakyll/statik
+go get -d -v
 npm install
 ```
 
-### Compiles and minifies for production
+### Build static assets
 ```
 npm run build
+```
+
+### bundle up static assets
+```
+statik -src=ui/dist -dest=vendor/thunderdome
+```
+
+### Build for current OS
+```
+go build
 ```
 
 # Let the Pointing Battles begin!

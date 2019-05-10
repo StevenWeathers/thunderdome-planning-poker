@@ -46,6 +46,7 @@ type SocketEvent struct {
 	EventValue string `json:"value"`
 }
 
+// CreateSocketEvent makes a SocketEvent struct and turns it into json []byte
 func CreateSocketEvent(EventType string, WarriorID string, EventValue string) []byte {
 	newEvent := &SocketEvent{
 		EventType:  EventType,
@@ -166,21 +167,21 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		log.Println("error in reading warrior cookie : " + err.Error() + "\n")
 		w.WriteHeader(http.StatusBadRequest)
 		return
-	} else {
-		value, _ := url.PathUnescape(warrior.Value)
-		keyVal := make(map[string]string)
-		json.Unmarshal([]byte(value), &keyVal) // check for errors
+	}
 
-		warriorID = keyVal["id"]
-		warriorName = keyVal["name"]
+	value, _ := url.PathUnescape(warrior.Value)
+	keyVal := make(map[string]string)
+	json.Unmarshal([]byte(value), &keyVal) // check for errors
 
-		_, warErr := GetWarrior(warriorID)
+	warriorID = keyVal["id"]
+	warriorName = keyVal["name"]
 
-		if warErr != nil {
-			Warriors[warriorID] = &Warrior{
-				WarriorID:   warriorID,
-				WarriorName: warriorName}
-		}
+	_, warErr := GetWarrior(warriorID)
+
+	if warErr != nil {
+		Warriors[warriorID] = &Warrior{
+			WarriorID:   warriorID,
+			WarriorName: warriorName}
 	}
 
 	ws, err := upgrader.Upgrade(w, r, nil)
