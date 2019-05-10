@@ -4,7 +4,10 @@
 FROM node:10.14.1-alpine as builderNode
 
 RUN mkdir /webapp
-COPY ./ui /webapp
+COPY ./src/ /webapp/src/
+COPY ./public/ /webapp/public/
+COPY ./*.json /webapp/
+COPY ./*.js /webapp/
 WORKDIR /webapp
 # install node packages
 RUN npm set progress=false
@@ -26,19 +29,17 @@ RUN mkdir /data
 # Copy the go source
 COPY ./*.go $GOPATH/src/mypackage/myapp/
 # Copy our static assets
-COPY --from=builderNode /webapp/dist $GOPATH/src/mypackage/myapp/public
+COPY --from=builderNode /webapp/dist $GOPATH/src/mypackage/myapp/dist
 # Set working dir
 WORKDIR $GOPATH/src/mypackage/myapp/
-# Get static asset bundler tool
-RUN go get github.com/rakyll/statik
-# Bundle static assets
-RUN mkdir -p $GOPATH/src/mypackage/myapp/vendor/thunderdome
-RUN statik -src=$GOPATH/src/mypackage/myapp/public -dest=$GOPATH/src/mypackage/myapp/vendor/thunderdome
 # Fetch dependencies.
 # Using go mod with go 1.11
 #RUN GO111MODULE=on go mod download
 # Using go get.
 RUN go get -d -v
+RUN go get -u github.com/gobuffalo/packr/packr
+# Bundle the static assets
+RUN packr
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/thunderdome
 ############################

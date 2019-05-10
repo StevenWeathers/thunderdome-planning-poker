@@ -50,23 +50,19 @@ docker run --name thunder -p 8080:8080 thunderdome
 
 ### Install dependencies
 ```
-go get github.com/rakyll/statik
 go get -d -v
-cd src
+go get -u github.com/gobuffalo/packr/packr
 npm install
-cd ..
 ```
 
 ### Build static assets
 ```
-cd src
 npm run build
-cd ..
 ```
 
 ### bundle up static assets
 ```
-statik -src=ui/dist -dest=vendor/thunderdome
+packr
 ```
 
 ### Build for current OS

@@ -6,21 +6,17 @@ import (
 	"net/http"
 	"time"
 
-	_ "thunderdome/statik"
-
+	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
 )
 
 func main() {
 	var listenPort = fmt.Sprintf(":%s", GetEnv("PORT", "8080"))
 	go h.run()
 
-	statikFS, err := fs.New()
-	if err != nil {
-		log.Fatal(err)
-	}
-	staticHandler := http.FileServer(statikFS)
+	// box := packr.New("webui", "./dist")
+	box := packr.NewBox("./dist")
+	staticHandler := http.FileServer(box)
 
 	router := mux.NewRouter()
 	router.PathPrefix("/css/").Handler(staticHandler)
