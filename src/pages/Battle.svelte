@@ -4,10 +4,12 @@
     import PointCard from '../components/PointCard.svelte'
     import WarriorCard from '../components/WarriorCard.svelte'
     import BattlePlans from '../components/BattlePlans.svelte'
+    import VotingControls from '../components/VotingControls.svelte'
 
     import { warrior } from '../stores.js'
 
     export let battleId = 0
+    const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
     let points = ['1', '2', '3', '5', '8', '13', '?']
     let vote = ''
@@ -61,6 +63,10 @@
                         battle.plans = JSON.parse(parsedEvent.value)
                         battle.votingLocked = true
                         break;
+                    case "plan_finalized":
+                        battle.plans = JSON.parse(parsedEvent.value)
+                        battle.activePlanId = ''
+                        break;
                     case "plan_burned":
                         const postBurnPlans = JSON.parse(parsedEvent.value)
 
@@ -104,10 +110,6 @@
         sendSocketEvent('vote', JSON.stringify(voteValue))
     }
 
-    const endPlanVoting = () => {
-        sendSocketEvent('end_voting', battle.activePlanId)
-    }
-
     // Determine if the warrior has voted on active Plan yet
     function didVote(warriorId) {
         if (battle.activePlanId === "") {
@@ -117,6 +119,17 @@
         const voted = currentPlan.votes.find(w => w.warriorId === warriorId)
 
         return voted !== undefined
+    }
+
+    // Determine if we are showing warriors vote
+    function showVote(warriorId) {
+        if (battle.activePlanId === "" || battle.votingLocked === false) {
+            return ''
+        }
+        const currentPlan = battle.plans.find(p => p.id === battle.activePlanId)
+        const voted = currentPlan.votes.find(w => w.warriorId === warriorId)
+
+        return voted !== undefined ? voted.vote : '' 
     }
 </script>
 
@@ -149,14 +162,17 @@
             <h3 class="is-size-3">Users</h3>
 
             {#each battle.warriors as war (war.id)}
-                <WarriorCard warrior={war} isLeader={war.id === battle.leaderId} voted={didVote(war.id)} />
+                <WarriorCard warrior={war} isLeader={war.id === battle.leaderId} voted={didVote(war.id)} points={showVote(war.id)} />
             {/each}
 
             {#if battle.leaderId === $warrior.id}
-                <div>
-                    <button class="button is-link is-outlined is-fullwidth" on:click={endPlanVoting} disabled={battle.votingLocked}>End Voting</button>
-                </div>
+                <VotingControls points={points} planId={battle.activePlanId} sendSocketEvent={sendSocketEvent} votingLocked={battle.votingLocked} />
             {/if}
+
+            <div>
+                <h4 class="is-size-4">Invite a warrior</h4>
+                <input class="input is-fullwidth" type="text" readonly value="{hostname}/battle/{battle.id}" />
+            </div>
         </div>
     </div>
 {:else}

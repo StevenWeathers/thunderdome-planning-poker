@@ -117,6 +117,15 @@ func (s subscription) readPump() {
 			plans := EndPlanVoting(battleID, keyVal["value"])
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("voting_ended", warriorID, string(updatedPlans))
+		case "finalize_plan":
+			planObj := make(map[string]string)
+			json.Unmarshal([]byte(keyVal["value"]), &planObj)
+			PlanID := planObj["planId"]
+			PlanPoints := planObj["planPoints"]
+
+			plans := FinalizePlan(battleID, PlanID, PlanPoints)
+			updatedPlans, _ := json.Marshal(plans)
+			msg = CreateSocketEvent("plan_finalized", warriorID, string(updatedPlans))
 		case "revise_plan":
 			planObj := make(map[string]string)
 			json.Unmarshal([]byte(keyVal["value"]), &planObj)

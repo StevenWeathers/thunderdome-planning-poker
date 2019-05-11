@@ -237,3 +237,20 @@ func BurnPlan(BattleID string, PlanID string) []*Plan {
 
 	return Battles[BattleID].Plans
 }
+
+// FinalizePlan sets plan to active: false
+func FinalizePlan(BattleID string, PlanID string, PlanPoints string) []*Plan {
+	var planIndex int
+
+	for i := range Battles[BattleID].Plans {
+		if Battles[BattleID].Plans[i].PlanID == PlanID {
+			planIndex = i
+			break
+		}
+	}
+
+	Battles[BattleID].Plans[planIndex].Active = false
+	Battles[BattleID].Plans[planIndex].Points = PlanPoints
+
+	return Battles[BattleID].Plans
+}
