@@ -66,7 +66,6 @@ func GetBattle(BattleID string) (*Battle, error) {
 	if battle, ok := Battles[BattleID]; ok {
 		return battle, nil
 	}
-
 	return nil, errors.New("Not found")
 }
 
@@ -192,16 +191,17 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 
 // EndPlanVoting sets plan to active: false
 func EndPlanVoting(BattleID string, PlanID string) []*Plan {
-	var planIndex int
+	// var planIndex int
 
-	for i := range Battles[BattleID].Plans {
-		if Battles[BattleID].Plans[i].PlanID == PlanID {
-			planIndex = i
-			break
-		}
-	}
+	// for i := range Battles[BattleID].Plans {
+	// 	if Battles[BattleID].Plans[i].PlanID == PlanID {
+	// 		planIndex = i
+	// 		break
+	// 	}
+	// }
 
-	Battles[BattleID].Plans[planIndex].Active = false
+	// @todo figure out why this is an issue...
+	// Battles[BattleID].Plans[planIndex].Active = false
 	Battles[BattleID].VotingLocked = true
 
 	return Battles[BattleID].Plans
@@ -249,7 +249,8 @@ func FinalizePlan(BattleID string, PlanID string, PlanPoints string) []*Plan {
 		}
 	}
 
-	Battles[BattleID].Plans[planIndex].Active = false
+	// @todo figure out why this is an issue...
+	// Battles[BattleID].Plans[planIndex].Active = false
 	Battles[BattleID].Plans[planIndex].Points = PlanPoints
 
 	return Battles[BattleID].Plans

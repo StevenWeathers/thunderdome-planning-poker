@@ -138,14 +138,16 @@
 </svelte:head>
 
 {#if battle.name}
-    <h1 class="title">{currentPlanName}</h1>
-    <h2 class="subtitle">{battle.name}</h2>
+    <div class="mb-6">
+        <h1>{currentPlanName}</h1>
+        <h2>{battle.name}</h2>
+    </div>
 
-    <div class="columns">
-        <div class="column is-three-quarters">
-            <div class="columns">
+    <div class="flex mb-4 -mx-4">
+        <div class="w-3/4 px-4">
+            <div class="flex mb-4 -mx-2 mb-6">
                 {#each points as point}
-                    <div class="column">
+                    <div class="w-1/4 px-4">
                         <PointCard point={point} active={vote === point} on:voted={handleVote} isLocked={battle.votingLocked} />
                     </div>
                 {/each}
@@ -158,28 +160,36 @@
             />
         </div>
         
-        <div class="column">
-            <h3 class="is-size-3">Users</h3>
+        <div class="w-1/4 px-4">
+            <div class="bg-white shadow-md mb-4 rounded">
+                <div class="bg-blue p-4 rounded-t">
+                    <h3 class="text-2xl text-white">Users</h3>
+                </div>
 
-            {#each battle.warriors as war (war.id)}
-                <WarriorCard warrior={war} isLeader={war.id === battle.leaderId} voted={didVote(war.id)} points={showVote(war.id)} />
-            {/each}
+                {#each battle.warriors as war (war.id)}
+                    <WarriorCard warrior={war} isLeader={war.id === battle.leaderId} voted={didVote(war.id)} points={showVote(war.id)} />
+                {/each}
 
-            {#if battle.leaderId === $warrior.id}
-                <VotingControls points={points} planId={battle.activePlanId} sendSocketEvent={sendSocketEvent} votingLocked={battle.votingLocked} />
-            {/if}
+                {#if battle.leaderId === $warrior.id}
+                    <VotingControls points={points} planId={battle.activePlanId} sendSocketEvent={sendSocketEvent} votingLocked={battle.votingLocked} />
+                {/if}
+            </div>
 
-            <div>
-                <h4 class="is-size-4">Invite a warrior</h4>
-                <input class="input is-fullwidth" type="text" readonly value="{hostname}/battle/{battle.id}" />
+            <div class="bg-white shadow-md p-5 mb-4 rounded">
+                <h4 class="text-xl">Invite a warrior</h4>
+                <input
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker w-full"
+                    type="text"
+                    value="{hostname}/battle/{battle.id}"
+                    readonly
+                />
             </div>
         </div>
     </div>
 {:else}
-    <div class="columns">
-        <div class="column is-half is-offset-one-quarter has-text-centered">
-            <h1 class="is-size-1 has-text-primary">Loading Battle Plans...</h1>
-            <progress class="progress is-large is-info" max="100">60%</progress>
+    <div class="flex items-center">
+        <div class="flex-1 text-center">
+            <h1 class="text-5xl text-teal">Loading Battle Plans...</h1>
         </div>
     </div>
 {/if}

@@ -7,6 +7,9 @@
     export let active = false
     export let isLocked = true
 
+    $: activeColor = active ? 'border-green bg-green-lightest text-green-dark' : 'border-grey-light bg-white'
+    $: lockedClass = isLocked ? 'opacity-50 cursor-not-allowed' : ''
+
     function vote() {
         dispatch('voted', {
             point
@@ -17,6 +20,10 @@
 <style>
 </style>
 
-<button class="button is-outlined is-large is-size-2 has-text-weight-bold {active ? 'is-success' : ''}" on:click={vote} disabled={isLocked}>
+<button
+    class="w-full py-12 rounded overflow-hidden shadow-lg border {activeColor} {lockedClass} text-5xl"
+    on:click={vote}
+    disabled={isLocked}
+>
     {point}
 </button>

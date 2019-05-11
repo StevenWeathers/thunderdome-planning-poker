@@ -36,16 +36,16 @@
     }
 </style>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="/">
+<nav class="flex items-center justify-between flex-wrap bg-white p-6" role="navigation" aria-label="main navigation">
+    <div class="flex items-center flex-no-shrink mr-6">
+        <a href="/">
             <img src="/img/logo.svg" alt="Thunderdome"/>
         </a>
     </div>
 </nav>
 
-<section class="section">
-    <div class="container">
+<section>
+    <div class="container mx-auto px-4 py-10">
     {#if !$warrior.id}
         <RegisterPage />
     {:else}
@@ -54,12 +54,8 @@
     </div>
 </section>
 
-<footer class="footer">
-  <div class="content has-text-centered">
-    <p>
-      <a href="https://github.com/StevenWeathers/thunderdome-planning-poker">Thunderdome</a> by <a href="http://stevenweathers.com">Steven Weathers</a>. The source code is licensed
-      <a href="http://www.apache.org/licenses/">Apache 2.0</a>.<br />
-        Powered by <a href="https://svelte.dev/">Svelte</a> and <a href="https://golang.org/">Go</a>
-    </p>
-  </div>
+<footer class="p-6 text-center">
+    <a href="https://github.com/StevenWeathers/thunderdome-planning-poker">Thunderdome</a> by <a href="http://stevenweathers.com">Steven Weathers</a>. The source code is licensed
+    <a href="http://www.apache.org/licenses/">Apache 2.0</a>.<br />
+    Powered by <a href="https://svelte.dev/">Svelte</a> and <a href="https://golang.org/">Go</a>
 </footer>

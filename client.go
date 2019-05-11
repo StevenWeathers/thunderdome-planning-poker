@@ -218,8 +218,6 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	s := subscription{c, vars["id"], warriorID}
 	h.register <- s
 
-	
-
 	Warriors := AddWarriorToBattle(s.arena, warriorID)
 	updatedWarriors, _ := json.Marshal(Warriors)
 

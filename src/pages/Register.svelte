@@ -27,21 +27,21 @@
     }
 </script>
 
-<div class="columns">
-    <div class="column">
-        <form on:submit={createWarrior}>
-            <div class="field">
-                <label class="label">Name</label>
-                <div class="control">
-                    <input bind:value={warriorName} placeholder="Enter your name" class="input" required />
-                </div>
-            </div>
-            
-            <div class="field">
-                <div class="control">
-                    <button class="button is-success" type="submit">Register</button>
-                </div>
-            </div>
-        </form>
+<form on:submit={createWarrior} class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <div class="mb-4">
+        <label class="block text-grey-darker text-sm font-bold mb-2" for="yourName">Name</label>
+        <input
+            bind:value={warriorName}
+            placeholder="Enter your name"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+            id="yourName"
+            required
+        />
     </div>
-</div>
+    
+    <div class="mb-6">
+        <div class="flex items-center justify-between">
+            <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded" type="submit">Register</button>
+        </div>
+    </div>
+</form>
