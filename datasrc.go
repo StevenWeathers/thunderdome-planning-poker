@@ -128,15 +128,24 @@ func CreatePlan(BattleID string, PlanName string) []*Plan {
 }
 
 // ActivatePlanVoting sets the plan by ID to active and disables votingLock
-// needs to disable other active plans...
 func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
 	var planIndex int
+	var lastActivePlanIndex int
+	var hasLastActivePlan = false
 
 	for i := range Battles[BattleID].Plans {
+		if Battles[BattleID].Plans[i].Active {
+			hasLastActivePlan = true
+			lastActivePlanIndex = i
+		}
 		if Battles[BattleID].Plans[i].PlanID == PlanID {
 			planIndex = i
-			break
 		}
+	}
+
+	// disable last active plan if one existed
+	if hasLastActivePlan {
+		Battles[BattleID].Plans[lastActivePlanIndex].Active = false
 	}
 
 	Battles[BattleID].Plans[planIndex].Active = true
