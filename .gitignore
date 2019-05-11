@@ -12,11 +12,11 @@
 *.out
 
 .DS_Store
-node_modules
-/dist
+node_modules/
+dist/
 # how static assets get bundled
 *-packr.go
-packrd
+packrd/
 # *nix compiled binary
 thunderdome-planning-poker
 

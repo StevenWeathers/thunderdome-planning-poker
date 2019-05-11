@@ -66,9 +66,10 @@ func (s subscription) readPump() {
 		WarriorID := s.warriorID
 		log.Println(s.warriorID + " has left the arena")
 
-		RetreatWarrior(BattleID, WarriorID)
+		Warriors := RetreatWarrior(BattleID, WarriorID)
+		updatedWarriors, _ := json.Marshal(Warriors)
 
-		retreatEvent := CreateSocketEvent("retreat", WarriorID, "")
+		retreatEvent := CreateSocketEvent("retreat", WarriorID, string(updatedWarriors))
 		m := message{retreatEvent, BattleID}
 		h.broadcast <- m
 
@@ -101,21 +102,21 @@ func (s subscription) readPump() {
 			log.Println(VoteValue)
 			log.Println(PlanID)
 
-			battle := SetVote(battleID, warriorID, PlanID, VoteValue)
-			updatedBattle, _ := json.Marshal(battle)
-			msg = CreateSocketEvent("vote", warriorID, string(updatedBattle))
+			plans := SetVote(battleID, warriorID, PlanID, VoteValue)
+			updatedPlans, _ := json.Marshal(plans)
+			msg = CreateSocketEvent("vote", warriorID, string(updatedPlans))
 		case "addPlan":
-			battle := CreatePlan(battleID, keyVal["value"])
-			updatedBattle, _ := json.Marshal(battle)
-			msg = CreateSocketEvent("planAdded", warriorID, string(updatedBattle))
+			plans := CreatePlan(battleID, keyVal["value"])
+			updatedPlans, _ := json.Marshal(plans)
+			msg = CreateSocketEvent("planAdded", warriorID, string(updatedPlans))
 		case "activatePlan":
-			battle := ActivatePlanVoting(battleID, keyVal["value"])
-			updatedBattle, _ := json.Marshal(battle)
-			msg = CreateSocketEvent("planActivated", warriorID, string(updatedBattle))
+			plans := ActivatePlanVoting(battleID, keyVal["value"])
+			updatedPlans, _ := json.Marshal(plans)
+			msg = CreateSocketEvent("planActivated", warriorID, string(updatedPlans))
 		case "endPlanVoting":
-			battle := EndPlanVoting(battleID, keyVal["value"])
-			updatedBattle, _ := json.Marshal(battle)
-			msg = CreateSocketEvent("votingEnded", warriorID, string(updatedBattle))
+			plans := EndPlanVoting(battleID, keyVal["value"])
+			updatedPlans, _ := json.Marshal(plans)
+			msg = CreateSocketEvent("votingEnded", warriorID, string(updatedPlans))
 		default:
 		}
 
@@ -195,9 +196,12 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	s := subscription{c, vars["id"], warriorID}
 	h.register <- s
 
-	AddWarriorToBattle(s.arena, warriorID)
+	
 
-	joinedEvent := CreateSocketEvent("joined", warriorID, warriorName)
+	Warriors := AddWarriorToBattle(s.arena, warriorID)
+	updatedWarriors, _ := json.Marshal(Warriors)
+
+	joinedEvent := CreateSocketEvent("joined", warriorID, string(updatedWarriors))
 	m := message{joinedEvent, s.arena}
 	h.broadcast <- m
 

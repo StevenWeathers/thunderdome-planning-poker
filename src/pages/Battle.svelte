@@ -34,30 +34,28 @@
 
             ws.onmessage = function (evt) {
                 const parsedEvent = JSON.parse(evt.data)
-                const warriorId = parsedEvent.id
-                let eventWarrior = battle.warriors.find(w => w.id === warriorId)
-                let response = ''
 
                 switch(parsedEvent.type) {
                     case "joined":
-                        const joinedWarrior = {
-                            name: parsedEvent.value,
-                            id: warriorId
-                        }
-
-                        if (!eventWarrior) {
-                            battle.warriors[battle.warriors.length] = joinedWarrior
-                        }
-
+                        battle.warriors = JSON.parse(parsedEvent.value)
                         break;
                     case "retreat":
-                        battle.warriors = battle.warriors.filter(w => w.id !== warriorId)
+                        battle.warriors = JSON.parse(parsedEvent.value)
                         break;
                     case "planAdded":
+                        battle.plans = JSON.parse(parsedEvent.value)
+                        break;
                     case "planActivated":
+                        battle.plans = JSON.parse(parsedEvent.value)
+                        battle.activePlanId = battle.plans.find(p => p.active).id
+                        battle.votingLocked = false
+                        break;
                     case "vote":
+                        battle.plans = JSON.parse(parsedEvent.value)
+                        break;
                     case "votingEnded":
-                        battle = JSON.parse(parsedEvent.value)
+                        battle.plans = JSON.parse(parsedEvent.value)
+                        battle.votingLocked = true
                         break;
                     default:
                         break;

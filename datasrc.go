@@ -90,12 +90,14 @@ func GetWarrior(WarriorID string) (*Warrior, error) {
 }
 
 // AddWarriorToBattle adds a warrior by ID to the battle by ID
-func AddWarriorToBattle(BattleID string, WarriorID string) {
+func AddWarriorToBattle(BattleID string, WarriorID string) []*Warrior {
 	Battles[BattleID].Warriors = append(Battles[BattleID].Warriors, Warriors[WarriorID])
+
+	return Battles[BattleID].Warriors
 }
 
 // RetreatWarrior removes a warrior from the current battle by ID
-func RetreatWarrior(BattleID string, WarriorID string) {
+func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 	var warriorIndex int
 	for i := range Battles[BattleID].Warriors {
 		if Battles[BattleID].Warriors[i].WarriorID == WarriorID {
@@ -105,10 +107,12 @@ func RetreatWarrior(BattleID string, WarriorID string) {
 	}
 
 	Battles[BattleID].Warriors = append(Battles[BattleID].Warriors[:warriorIndex], Battles[BattleID].Warriors[warriorIndex+1:]...)
+
+	return Battles[BattleID].Warriors
 }
 
 // CreatePlan adds a new plan to a battle
-func CreatePlan(BattleID string, PlanName string) *Battle {
+func CreatePlan(BattleID string, PlanName string) []*Plan {
 	newID, _ := uuid.NewUUID()
 	id := newID.String()
 
@@ -120,12 +124,12 @@ func CreatePlan(BattleID string, PlanName string) *Battle {
 
 	Battles[BattleID].Plans = append(Battles[BattleID].Plans, newPlan)
 
-	return Battles[BattleID]
+	return Battles[BattleID].Plans
 }
 
 // ActivatePlanVoting sets the plan by ID to active and disables votingLock
 // needs to disable other active plans...
-func ActivatePlanVoting(BattleID string, PlanID string) *Battle {
+func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
 	var planIndex int
 
 	for i := range Battles[BattleID].Plans {
@@ -139,11 +143,11 @@ func ActivatePlanVoting(BattleID string, PlanID string) *Battle {
 	Battles[BattleID].VotingLocked = false
 	Battles[BattleID].ActivePlanID = PlanID
 
-	return Battles[BattleID]
+	return Battles[BattleID].Plans
 }
 
 // SetVote sets a warriors vote for the plan
-func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string) *Battle {
+func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string) []*Plan {
 	var planIndex int
 	var voteIndex int
 	var voteFound bool
@@ -174,11 +178,11 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 		Battles[BattleID].Plans[planIndex].Votes = append(Battles[BattleID].Plans[planIndex].Votes, newVote)
 	}
 
-	return Battles[BattleID]
+	return Battles[BattleID].Plans
 }
 
 // EndPlanVoting sets plan to active: false
-func EndPlanVoting(BattleID string, PlanID string) *Battle {
+func EndPlanVoting(BattleID string, PlanID string) []*Plan {
 	var planIndex int
 
 	for i := range Battles[BattleID].Plans {
@@ -191,5 +195,5 @@ func EndPlanVoting(BattleID string, PlanID string) *Battle {
 	Battles[BattleID].Plans[planIndex].Active = false
 	Battles[BattleID].VotingLocked = true
 
-	return Battles[BattleID]
+	return Battles[BattleID].Plans
 }
