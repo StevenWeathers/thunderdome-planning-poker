@@ -206,3 +206,34 @@ func EndPlanVoting(BattleID string, PlanID string) []*Plan {
 
 	return Battles[BattleID].Plans
 }
+
+// RevisePlanName updates the plan name by ID
+func RevisePlanName(BattleID string, PlanID string, PlanName string) []*Plan {
+	var planIndex int
+
+	for i := range Battles[BattleID].Plans {
+		if Battles[BattleID].Plans[i].PlanID == PlanID {
+			planIndex = i
+			break
+		}
+	}
+
+	Battles[BattleID].Plans[planIndex].PlanName = PlanName
+
+	return Battles[BattleID].Plans
+}
+
+// BurnPlan removes a plan from the current battle by ID
+func BurnPlan(BattleID string, PlanID string) []*Plan {
+	var planIndex int
+	for i := range Battles[BattleID].Plans {
+		if Battles[BattleID].Plans[i].PlanID == PlanID {
+			planIndex = i
+			break
+		}
+	}
+
+	Battles[BattleID].Plans = append(Battles[BattleID].Plans[:planIndex], Battles[BattleID].Plans[planIndex+1:]...)
+
+	return Battles[BattleID].Plans
+}

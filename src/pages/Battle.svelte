@@ -12,6 +12,7 @@
     let points = ['1', '2', '3', '5', '8', '13', '?']
     let vote = ''
     let battle = {}
+    let currentPlanName = '[Voting not started]'
     
     let ws = {
         send: () => {}
@@ -29,6 +30,9 @@
         })
         .then(function(b) {
             battle = b
+            if (battle.activePlanId !== '') {
+                currentPlanName = battle.plans.find(p => p.active).name
+            }
 
             ws = new WebSocket(`${socketExtension}://${window.location.host}/api/arena/${battleId}`)
 
@@ -36,26 +40,36 @@
                 const parsedEvent = JSON.parse(evt.data)
 
                 switch(parsedEvent.type) {
-                    case "joined":
+                    case "user_activity":
                         battle.warriors = JSON.parse(parsedEvent.value)
                         break;
-                    case "retreat":
-                        battle.warriors = JSON.parse(parsedEvent.value)
-                        break;
-                    case "planAdded":
+                    case "plan_added":
                         battle.plans = JSON.parse(parsedEvent.value)
                         break;
-                    case "planActivated":
-                        battle.plans = JSON.parse(parsedEvent.value)
-                        battle.activePlanId = battle.plans.find(p => p.active).id
+                    case "plan_activated":
+                        const updatedPlans = JSON.parse(parsedEvent.value)
+                        const activePlan = updatedPlans.find(p => p.active)
+                        currentPlanName = activePlan.name
+                        battle.plans = updatedPlans                        
+                        battle.activePlanId = activePlan.id
                         battle.votingLocked = false
                         break;
-                    case "vote":
+                    case "vote_activity":
                         battle.plans = JSON.parse(parsedEvent.value)
                         break;
-                    case "votingEnded":
+                    case "voting_ended":
                         battle.plans = JSON.parse(parsedEvent.value)
                         battle.votingLocked = true
+                        break;
+                    case "plan_burned":
+                        const postBurnPlans = JSON.parse(parsedEvent.value)
+
+                        if (battle.activePlanId !== '' && postBurnPlans.filter(p => p.id === battle.activePlanId).length === 0) {
+                            battle.activePlanId = ''
+                        }
+
+                        battle.plans = postBurnPlans
+
                         break;
                     default:
                         break;
@@ -90,16 +104,8 @@
         sendSocketEvent('vote', JSON.stringify(voteValue))
     }
 
-    const handlePlanAdd = (planName) => {
-        sendSocketEvent('addPlan', planName)
-    }
-
-    const handlePlanActivation = (id) => {
-        sendSocketEvent('activatePlan', id)
-    }
-
     const endPlanVoting = () => {
-        sendSocketEvent('endPlanVoting', battle.activePlanId)
+        sendSocketEvent('end_voting', battle.activePlanId)
     }
 
     // Determine if the warrior has voted on active Plan yet
@@ -119,7 +125,8 @@
 </svelte:head>
 
 {#if battle.name}
-    <h1 class="title">{battle.name}</h1>
+    <h1 class="title">{currentPlanName}</h1>
+    <h2 class="subtitle">{battle.name}</h2>
 
     <div class="columns">
         <div class="column is-three-quarters">
@@ -131,7 +138,11 @@
                 {/each}
             </div>
 
-            <BattlePlans plans={battle.plans} handlePlanAdd={handlePlanAdd} isLeader={battle.leaderId === $warrior.id} handlePlanActivation={handlePlanActivation} />
+            <BattlePlans
+                plans={battle.plans}
+                isLeader={battle.leaderId === $warrior.id}
+                sendSocketEvent={sendSocketEvent}
+            />
         </div>
         
         <div class="column">
@@ -140,6 +151,7 @@
             {#each battle.warriors as war (war.id)}
                 <WarriorCard warrior={war} isLeader={war.id === battle.leaderId} voted={didVote(war.id)} />
             {/each}
+
             {#if battle.leaderId === $warrior.id}
                 <div>
                     <button class="button is-link is-outlined is-fullwidth" on:click={endPlanVoting} disabled={battle.votingLocked}>End Voting</button>
