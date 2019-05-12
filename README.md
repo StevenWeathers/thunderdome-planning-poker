@@ -44,7 +44,13 @@ docker build -t thunderdome
 docker run --name thunder -p 8080:8080 thunderdome
 ```
 
-## Building with Go
+## Building and running with Go
+
+```
+make build
+make run
+```
+### OR manual steps
 
 ### Install dependencies
 ```
