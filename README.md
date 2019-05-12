@@ -13,15 +13,13 @@ Goal is to build a Planning Poker application utilizing Websockets and supportin
     "warriors": [
         {
             "id": "uuid",
-            "name": "Sweeney Todd",
-            "active": true
+            "name": "Sweeney Todd"
         }
     ],
     "stories": [
         {
             "id": "uuid",
             "name": "Build the Planning Poker Data Model",
-            "refId": "[Story Tracking ID here]",
             "votes": [
                 {
                     "warriorId": "uuid",
@@ -32,8 +30,8 @@ Goal is to build a Planning Poker application utilizing Websockets and supportin
             "active": true
         }
     ],
-    "active": false,
     "votingLocked": false,
+    "activePlanId": "uuid"
 }
 ```
 
