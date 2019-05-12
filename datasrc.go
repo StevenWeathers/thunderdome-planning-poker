@@ -6,7 +6,7 @@ import (
 	// "fmt"
     "log"
 
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
@@ -48,9 +48,6 @@ type Plan struct {
 	PlanActive   bool    `json:"active"`
 }
 
-// Warriors stores all warriors in memory
-var Warriors = make(map[string]*Warrior)
-
 // Battles stores all battles in memory
 var Battles = make(map[string]*Battle)
 
@@ -62,12 +59,17 @@ func SetupDB() {
     }
 
     if _, err := db.Exec(
-        "CREATE TABLE IF NOT EXISTS battles (id UUID DEFAULT uuid_v4()::UUID PRIMARY KEY, leaderId UUID, name STRING(256), votingLocked BOOL DEFAULT false, activePlanID UUID)"); err != nil {
+        "CREATE TABLE IF NOT EXISTS battles (id UUID DEFAULT uuid_v4()::UUID PRIMARY KEY, leader_id UUID, name STRING(256), voting_locked BOOL DEFAULT true, active_plan_id UUID)"); err != nil {
         log.Fatal(err)
 	}
 	
 	if _, err := db.Exec(
         "CREATE TABLE IF NOT EXISTS warriors (id UUID DEFAULT uuid_v4()::UUID PRIMARY KEY, name STRING(64))"); err != nil {
+        log.Fatal(err)
+	}
+	
+	if _, err := db.Exec(
+        "CREATE TABLE IF NOT EXISTS plans (id UUID DEFAULT uuid_v4()::UUID PRIMARY KEY, name STRING(256), points STRING(3), active BOOL DEFAULT false)"); err != nil {
         log.Fatal(err)
     }
 
@@ -79,11 +81,19 @@ func SetupDB() {
 
 //CreateBattle adds a new battle to the map
 func CreateBattle(LeaderID string, BattleName string) *Battle {
-	newID, _ := uuid.NewUUID()
-	id := newID.String()
+	db, err := sql.Open("postgres", sqlConnectionPath)
+    if err != nil {
+        log.Println("error connecting to the database: ", err)
+	}
 
-	Battles[id] = &Battle{
-		BattleID:     id,
+	var BattleID string
+	e := db.QueryRow(`INSERT INTO battles (leader_id, name) VALUES ($1, $2) RETURNING id`, LeaderID, BattleName).Scan(&BattleID)
+	if e != nil {
+        log.Fatal(e)
+	}
+
+	Battles[BattleID] = &Battle{
+		BattleID:     BattleID,
 		LeaderID:     LeaderID,
 		BattleName:   BattleName,
 		Warriors:     make([]*Warrior, 0),
@@ -91,7 +101,7 @@ func CreateBattle(LeaderID string, BattleName string) *Battle {
 		VotingLocked: true,
 		ActivePlanID: ""}
 
-	return Battles[id]
+	return Battles[BattleID]
 }
 
 // GetBattle gets a battle from the map by ID
@@ -165,10 +175,18 @@ func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 
 // CreatePlan adds a new plan to a battle
 func CreatePlan(BattleID string, PlanName string) []*Plan {
-	newID, _ := uuid.NewUUID()
-	id := newID.String()
+	db, err := sql.Open("postgres", sqlConnectionPath)
+    if err != nil {
+        log.Println("error connecting to the database: ", err)
+	}
 
-	newPlan := &Plan{PlanID: id,
+	var PlanID string
+	e := db.QueryRow(`INSERT INTO plans (name) VALUES ($1) RETURNING id`, PlanName).Scan(&PlanID)
+	if e != nil {
+        log.Fatal(e)
+	}
+
+	newPlan := &Plan{PlanID: PlanID,
 		PlanName: PlanName,
 		Votes:    make([]*Vote, 0),
 		Points:   "",

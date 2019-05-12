@@ -13,6 +13,7 @@ require (
 	github.com/gorilla/websocket v1.4.0
 	github.com/karrick/godirwalk v1.10.3 // indirect
 	github.com/kr/pty v1.1.4 // indirect
+	github.com/lib/pq v1.1.1
 	github.com/stretchr/objx v0.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20190510104115-cbcb75029529 // indirect
 	golang.org/x/net v0.0.0-20190509222800-a4d6f7feada5 // indirect
