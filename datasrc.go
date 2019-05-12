@@ -225,11 +225,21 @@ func RevisePlanName(BattleID string, PlanID string, PlanName string) []*Plan {
 // BurnPlan removes a plan from the current battle by ID
 func BurnPlan(BattleID string, PlanID string) []*Plan {
 	var planIndex int
+	var isActivePlan bool
+
 	for i := range Battles[BattleID].Plans {
 		if Battles[BattleID].Plans[i].PlanID == PlanID {
 			planIndex = i
+			if Battles[BattleID].ActivePlanID == PlanID {
+				isActivePlan = true
+			}
 			break
 		}
+	}
+
+	if (isActivePlan) {
+		Battles[BattleID].ActivePlanID = ""
+		Battles[BattleID].VotingLocked = true
 	}
 
 	Battles[BattleID].Plans = append(Battles[BattleID].Plans[:planIndex], Battles[BattleID].Plans[planIndex+1:]...)

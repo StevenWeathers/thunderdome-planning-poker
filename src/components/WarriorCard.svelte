@@ -12,8 +12,8 @@
     <div class="w-3/4">
         <div class="flex">
             <div class="w-3/4">
-                <p class="text-xl">{warrior.name}</p>
-                {#if isLeader}<p class="text-l">Leader</p>{/if}
+                <p class="text-xl font-bold">{warrior.name}</p>
+                {#if isLeader}<p class="text-l text-grey-darker">Leader</p>{/if}
             </div>
             <div class="w-1/4 text-right">
                 {#if voted && points === ''}

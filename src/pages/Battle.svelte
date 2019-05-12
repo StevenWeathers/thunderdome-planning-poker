@@ -140,7 +140,7 @@
 {#if battle.name}
     <div class="mb-6">
         <h1>{currentPlanName}</h1>
-        <h2>{battle.name}</h2>
+        <h2 class="text-grey-darker">{battle.name}</h2>
     </div>
 
     <div class="flex mb-4 -mx-4">

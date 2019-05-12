@@ -7,6 +7,8 @@
     import RegisterPage from './pages/Register.svelte'
     import { warrior } from './stores.js'
 
+    const footerLinkClasses = 'no-underline text-teal hover:text-teal-darker'
+
     let currentPage = {
         route: Landing,
         params: {}
@@ -55,7 +57,7 @@
 </section>
 
 <footer class="p-6 text-center">
-    <a href="https://github.com/StevenWeathers/thunderdome-planning-poker">Thunderdome</a> by <a href="http://stevenweathers.com">Steven Weathers</a>. The source code is licensed
-    <a href="http://www.apache.org/licenses/">Apache 2.0</a>.<br />
-    Powered by <a href="https://svelte.dev/">Svelte</a> and <a href="https://golang.org/">Go</a>
+    <a href="https://github.com/StevenWeathers/thunderdome-planning-poker" class="{footerLinkClasses}">Thunderdome</a> by <a href="http://stevenweathers.com" class="{footerLinkClasses}">Steven Weathers</a>. The source code is licensed
+    <a href="http://www.apache.org/licenses/" class="{footerLinkClasses}">Apache 2.0</a>.<br />
+    Powered by <a href="https://svelte.dev/" class="{footerLinkClasses}">Svelte</a> and <a href="https://golang.org/" class="{footerLinkClasses}">Go</a>
 </footer>
