@@ -19,6 +19,8 @@ dist/
 packrd/
 # *nix compiled binary
 thunderdome-planning-poker
+# docker volumes
+data/
 
 # local env files
 .env.local
