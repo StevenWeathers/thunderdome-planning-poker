@@ -35,7 +35,7 @@ type Plan struct {
 	PlanName string  `json:"name"`
 	Votes    []*Vote `json:"votes"`
 	Points   string  `json:"points"`
-	Active   bool    `json:"active"`
+	PlanActive   bool    `json:"active"`
 }
 
 // Warriors stores all warriors in memory
@@ -62,7 +62,7 @@ func CreateBattle(LeaderID string, BattleName string) *Battle {
 }
 
 // GetBattle gets a battle from the map by ID
-func GetBattle(BattleID string) (*Battle, error) {
+func GetBattle(BattleID string) (*Battle, error) {	
 	if battle, ok := Battles[BattleID]; ok {
 		return battle, nil
 	}
@@ -119,7 +119,7 @@ func CreatePlan(BattleID string, PlanName string) []*Plan {
 		PlanName: PlanName,
 		Votes:    make([]*Vote, 0),
 		Points:   "",
-		Active:   false}
+		PlanActive:   false}
 
 	Battles[BattleID].Plans = append(Battles[BattleID].Plans, newPlan)
 
@@ -133,7 +133,7 @@ func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
 	var hasLastActivePlan = false
 
 	for i := range Battles[BattleID].Plans {
-		if Battles[BattleID].Plans[i].Active {
+		if Battles[BattleID].Plans[i].PlanActive {
 			hasLastActivePlan = true
 			lastActivePlanIndex = i
 		}
@@ -144,10 +144,10 @@ func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
 
 	// disable last active plan if one existed
 	if hasLastActivePlan {
-		Battles[BattleID].Plans[lastActivePlanIndex].Active = false
+		Battles[BattleID].Plans[lastActivePlanIndex].PlanActive = false
 	}
 
-	Battles[BattleID].Plans[planIndex].Active = true
+	Battles[BattleID].Plans[planIndex].PlanActive = true
 	Battles[BattleID].VotingLocked = false
 	Battles[BattleID].ActivePlanID = PlanID
 
@@ -191,17 +191,16 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 
 // EndPlanVoting sets plan to active: false
 func EndPlanVoting(BattleID string, PlanID string) []*Plan {
-	// var planIndex int
+	var planIndex int
 
-	// for i := range Battles[BattleID].Plans {
-	// 	if Battles[BattleID].Plans[i].PlanID == PlanID {
-	// 		planIndex = i
-	// 		break
-	// 	}
-	// }
+	for i := range Battles[BattleID].Plans {
+		if Battles[BattleID].Plans[i].PlanID == PlanID {
+			planIndex = i
+			break
+		}
+	}
 
-	// @todo figure out why this is an issue...
-	// Battles[BattleID].Plans[planIndex].Active = false
+	Battles[BattleID].Plans[planIndex].PlanActive = false
 	Battles[BattleID].VotingLocked = true
 
 	return Battles[BattleID].Plans
@@ -249,9 +248,9 @@ func FinalizePlan(BattleID string, PlanID string, PlanPoints string) []*Plan {
 		}
 	}
 
-	// @todo figure out why this is an issue...
-	// Battles[BattleID].Plans[planIndex].Active = false
+	Battles[BattleID].Plans[planIndex].PlanActive = false
 	Battles[BattleID].Plans[planIndex].Points = PlanPoints
+	Battles[BattleID].ActivePlanID = ""
 
 	return Battles[BattleID].Plans
 }

@@ -33,7 +33,7 @@
         .then(function(b) {
             battle = b
             if (battle.activePlanId !== '') {
-                currentPlanName = battle.plans.find(p => p.active).name
+                currentPlanName = battle.plans.find(p => p.id === battle.activePlanId).name
             }
 
             ws = new WebSocket(`${socketExtension}://${window.location.host}/api/arena/${battleId}`)
@@ -87,7 +87,7 @@
                 console.log(`ERROR: ${e}`)
             }
         })
-        .catch(function(e) {
+        .catch(function() {
             // battle not found or server issue, redirect to landing
             window.location.href = '/'
         })
@@ -176,7 +176,7 @@
             </div>
 
             <div class="bg-white shadow-md p-5 mb-4 rounded">
-                <h4 class="text-xl">Invite a warrior</h4>
+                <h4 class="text-xl mb-2">Invite a warrior</h4>
                 <input
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker w-full"
                     type="text"
