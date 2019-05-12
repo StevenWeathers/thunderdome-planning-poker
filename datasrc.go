@@ -1,10 +1,20 @@
 package main
 
 import (
+	"database/sql"
 	"errors"
+	// "fmt"
+    "log"
 
 	"github.com/google/uuid"
+	_ "github.com/lib/pq"
 )
+
+var sqlConnectionHost string = "db-1"
+var sqlConnectionPort string = "26257"
+var sqlConnectionUser string = "thor"
+var sqlConnectionDB string = "thunderdome"
+var sqlConnectionPath string = "postgresql://thor@db-1:26257/thunderdome?sslmode=disable"
 
 // Battle aka arena
 type Battle struct {
@@ -44,6 +54,29 @@ var Warriors = make(map[string]*Warrior)
 // Battles stores all battles in memory
 var Battles = make(map[string]*Battle)
 
+func SetupDB() {
+	// Connect to the "bank" database.
+    db, err := sql.Open("postgres", "postgresql://thor@db-1:26257/thunderdome?sslmode=disable")
+    if err != nil {
+        log.Fatal("error connecting to the database: ", err)
+    }
+
+    if _, err := db.Exec(
+        "CREATE TABLE IF NOT EXISTS battles (id UUID DEFAULT uuid_v4()::UUID PRIMARY KEY, leaderId UUID, name STRING(256), votingLocked BOOL DEFAULT false, activePlanID UUID)"); err != nil {
+        log.Fatal(err)
+	}
+	
+	if _, err := db.Exec(
+        "CREATE TABLE IF NOT EXISTS warriors (id UUID DEFAULT uuid_v4()::UUID PRIMARY KEY, name STRING(64))"); err != nil {
+        log.Fatal(err)
+    }
+
+	// if _, err := db.Exec(
+    //     "INSERT INTO battles (leaderId, name) VALUES ('abf03a57-71e7-11e9-82e5-0242ac110009', 'Asgard')"); err != nil {
+    //     log.Fatal(err)
+	// }
+}
+
 //CreateBattle adds a new battle to the map
 func CreateBattle(LeaderID string, BattleName string) *Battle {
 	newID, _ := uuid.NewUUID()
@@ -62,7 +95,7 @@ func CreateBattle(LeaderID string, BattleName string) *Battle {
 }
 
 // GetBattle gets a battle from the map by ID
-func GetBattle(BattleID string) (*Battle, error) {	
+func GetBattle(BattleID string) (*Battle, error) {    
 	if battle, ok := Battles[BattleID]; ok {
 		return battle, nil
 	}
@@ -71,28 +104,48 @@ func GetBattle(BattleID string) (*Battle, error) {
 
 // CreateWarrior adds a new warrior to the map
 func CreateWarrior(WarriorName string) *Warrior {
-	newID, _ := uuid.NewUUID()
-	id := newID.String()
+	db, err := sql.Open("postgres", sqlConnectionPath)
+    if err != nil {
+        log.Println("error connecting to the database: ", err)
+	}
 
-	Warriors[id] = &Warrior{WarriorID: id, WarriorName: WarriorName}
+	var WarriorID string
+	e := db.QueryRow(`INSERT INTO warriors (name) VALUES ($1) RETURNING id`, WarriorName).Scan(&WarriorID)
+	if e != nil {
+        log.Fatal(e)
+	}
 
-	return Warriors[id]
+	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName}
 }
 
 // GetWarrior gets a warrior from the map by ID
 func GetWarrior(WarriorID string) (*Warrior, error) {
-	if warrior, ok := Warriors[WarriorID]; ok {
-		return warrior, nil
+	var w Warrior
+	
+    db, err := sql.Open("postgres", sqlConnectionPath)
+    if err != nil {
+        log.Println("error connecting to the database: ", err)
+    }
+
+	e := db.QueryRow("SELECT id, name FROM warriors WHERE id = '"+WarriorID+"'::UUID").Scan(&w.WarriorID, &w.WarriorName)
+    if e != nil {
+		log.Println(e)
+		return nil, errors.New("Not found")
 	}
 
-	return nil, errors.New("Not found")
+	return &w, nil
 }
 
 // AddWarriorToBattle adds a warrior by ID to the battle by ID
-func AddWarriorToBattle(BattleID string, WarriorID string) []*Warrior {
-	Battles[BattleID].Warriors = append(Battles[BattleID].Warriors, Warriors[WarriorID])
+func AddWarriorToBattle(BattleID string, WarriorID string) ([]*Warrior, error) {
+	w, err := GetWarrior(WarriorID)
+	if (err != nil) {
+		log.Println(err)
+		return nil, errors.New("Not found")
+	}
+	Battles[BattleID].Warriors = append(Battles[BattleID].Warriors, w)
 
-	return Battles[BattleID].Warriors
+	return Battles[BattleID].Warriors, nil
 }
 
 // RetreatWarrior removes a warrior from the current battle by ID

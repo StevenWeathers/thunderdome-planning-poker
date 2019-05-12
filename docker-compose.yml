@@ -1,4 +1,41 @@
-thunderdome:
-  build: .
-  ports:
-    - "8080:8080"
+version: '3'
+
+services:
+  thunderdome:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - roach-ui
+      - db-1
+    networks:
+      - roachnet
+  roach-ui: 
+    image: "cockroachdb/cockroach"
+    command: start --insecure
+    expose:
+      - "8080"
+      - "26257"
+    ports:
+      - "26257:26257"
+      - "8081:8080"
+    networks:
+      - roachnet
+  db-1: 
+    image: "cockroachdb/cockroach"
+    command: start --insecure --join=roach-ui
+    depends_on:
+      - roach-ui
+    networks:
+      - roachnet
+    volumes:
+      - db1:/cockroach/cockroach-data
+
+networks:
+ roachnet:
+
+volumes:
+  db1:
+
+# SQL Client to setup DB manually, use until some form of automation is setup
+# docker run -it --rm --network thunderdome-planning-poker_roachnet cockroachdb/cockroach:v19.1.0 sql --host=db-1 --insecure

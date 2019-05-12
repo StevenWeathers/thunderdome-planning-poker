@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	SetupDB()
 	var listenPort = fmt.Sprintf(":%s", GetEnv("PORT", "8080"))
 	go h.run()
 
