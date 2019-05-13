@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-	SetupDB()
+	SetupDB() // Sets up DB Connection, and if necessary Tables
+
 	var listenPort = fmt.Sprintf(":%s", GetEnv("PORT", "8080"))
 	go h.run()
 

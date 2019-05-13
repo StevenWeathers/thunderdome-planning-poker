@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 
 services:
   thunderdome:
@@ -6,36 +6,27 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - roach-ui
-      - db-1
+      - db
+    links:
+      - db
     networks:
-      - roachnet
-  roach-ui: 
-    image: "cockroachdb/cockroach"
-    command: start --insecure
-    expose:
-      - "8080"
-      - "26257"
+      - asgard
+  db: 
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: thunderdome
+      POSTGRES_USER: thor
+      POSTGRES_PASSWORD: odinson
     ports:
-      - "26257:26257"
-      - "8081:8080"
-    networks:
-      - roachnet
-  db-1: 
-    image: "cockroachdb/cockroach"
-    command: start --insecure --join=roach-ui
-    depends_on:
-      - roach-ui
-    networks:
-      - roachnet
+      - 5432:5432
     volumes:
-      - db1:/cockroach/cockroach-data
+      - database_data:/var/lib/postgresql/data
+    networks:
+      - asgard
 
 networks:
- roachnet:
+ asgard:
 
 volumes:
-  db1:
-
-# SQL Client to setup DB manually, use until some form of automation is setup
-# docker run -it --rm --network thunderdome-planning-poker_roachnet cockroachdb/cockroach:v19.1.0 sql --host=db-1 --insecure
+  database_data:

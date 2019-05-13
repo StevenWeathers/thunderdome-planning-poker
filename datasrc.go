@@ -4,18 +4,24 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 
 
 	_ "github.com/lib/pq"
+	"github.com/google/uuid"
 )
 
 // @TODO - make this configurable from ENV variables
-var sqlConnectionHost string = "db-1"
-var sqlConnectionPort string = "26257"
-var sqlConnectionUser string = "thor"
-var sqlConnectionDB string = "thunderdome"
-var sqlConnectionPath string = "postgresql://thor@db-1:26257/thunderdome?sslmode=disable"
+var (
+	host     = "db"
+	port     = 5432
+	user     = "thor"
+	password = "odinson"
+	dbname   = "thunderdome"
+  )
+
+var db *sql.DB
 
 // Battle aka arena
 type Battle struct {
@@ -50,41 +56,44 @@ type Plan struct {
 }
 
 func SetupDB() {
-	db, err := sql.Open("postgres", "postgresql://thor@db-1:26257/thunderdome?sslmode=disable")
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    "password=%s dbname=%s sslmode=disable",
+    host, port, user, password, dbname)
+
+	var err error
+	db, err = sql.Open("postgres", psqlInfo)
     if err != nil {
         log.Fatal("error connecting to the database: ", err)
     }
 
     if _, err := db.Exec(
-        "CREATE TABLE IF NOT EXISTS battles (id UUID DEFAULT uuid_v4()::UUID PRIMARY KEY, leader_id UUID, name STRING(256), voting_locked BOOL DEFAULT true, active_plan_id UUID)"); err != nil {
+        "CREATE TABLE IF NOT EXISTS battles (id UUID NOT NULL PRIMARY KEY, leader_id UUID, name VARCHAR(256), voting_locked BOOL DEFAULT true, active_plan_id UUID)"); err != nil {
         log.Fatal(err)
 	}
 	
 	if _, err := db.Exec(
-        "CREATE TABLE IF NOT EXISTS warriors (id UUID DEFAULT uuid_v4()::UUID PRIMARY KEY, name STRING(64))"); err != nil {
+        "CREATE TABLE IF NOT EXISTS warriors (id UUID NOT NULL PRIMARY KEY, name VARCHAR(64))"); err != nil {
         log.Fatal(err)
 	}
 	
 	if _, err := db.Exec(
-        "CREATE TABLE IF NOT EXISTS plans (id UUID DEFAULT uuid_v4()::UUID PRIMARY KEY, name STRING(256), points STRING(3) DEFAULT '', active BOOL DEFAULT false, battle_id UUID, votes JSONB DEFAULT '[]'::JSONB)"); err != nil {
+        "CREATE TABLE IF NOT EXISTS plans (id UUID NOT NULL PRIMARY KEY, name VARCHAR(256), points VARCHAR(3) DEFAULT '', active BOOL DEFAULT false, battle_id UUID references battles(id) NOT NULL, votes JSONB DEFAULT '[]'::JSONB)"); err != nil {
         log.Fatal(err)
 	}
 	
 	if _, err := db.Exec(
-        "CREATE TABLE IF NOT EXISTS battles_warriors (battle_id UUID references battles, warrior_id UUID REFERENCES warriors, active BOOL DEFAULT false, PRIMARY KEY (battle_id, warrior_id))"); err != nil {
+        "CREATE TABLE IF NOT EXISTS battles_warriors (battle_id UUID references battles NOT NULL, warrior_id UUID REFERENCES warriors NOT NULL, active BOOL DEFAULT false, PRIMARY KEY (battle_id, warrior_id))"); err != nil {
         log.Fatal(err)
 	}
 }
 
 //CreateBattle adds a new battle to the map
 func CreateBattle(LeaderID string, BattleName string) (*Battle, error) {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
+	newID, _ := uuid.NewUUID()
+	id := newID.String()
 
 	var b = &Battle{
-		BattleID:     "",
+		BattleID:     id,
 		LeaderID:     LeaderID,
 		BattleName:   BattleName,
 		Warriors:     make([]*Warrior, 0),
@@ -92,7 +101,7 @@ func CreateBattle(LeaderID string, BattleName string) (*Battle, error) {
 		VotingLocked: true,
 		ActivePlanID: ""}
 
-	e := db.QueryRow(`INSERT INTO battles (leader_id, name) VALUES ($1, $2) RETURNING id`, LeaderID, BattleName).Scan(&b.BattleID)
+	e := db.QueryRow(`INSERT INTO battles (id, leader_id, name) VALUES ($1, $2, $3) RETURNING id`, id, LeaderID, BattleName).Scan(&b.BattleID)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Error Creating Battle")
@@ -111,11 +120,6 @@ func GetBattle(BattleID string) (*Battle, error) {
 		Plans:        make([]*Plan, 0),
 		VotingLocked: true,
 		ActivePlanID: ""}
-	
-    db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-    }
 
 	// get battle
 	var activePlanId sql.NullString
@@ -134,13 +138,11 @@ func GetBattle(BattleID string) (*Battle, error) {
 
 // CreateWarrior adds a new warrior to the db
 func CreateWarrior(WarriorName string) *Warrior {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
+	newID, _ := uuid.NewUUID()
+	id := newID.String()
 
 	var WarriorID string
-	e := db.QueryRow(`INSERT INTO warriors (name) VALUES ($1) RETURNING id`, WarriorName).Scan(&WarriorID)
+	e := db.QueryRow(`INSERT INTO warriors (id, name) VALUES ($1, $2) RETURNING id`, id, WarriorName).Scan(&WarriorID)
 	if e != nil {
         log.Println(e)
 	}
@@ -151,11 +153,6 @@ func CreateWarrior(WarriorName string) *Warrior {
 // GetWarrior gets a warrior from db by ID
 func GetWarrior(WarriorID string) (*Warrior, error) {
 	var w Warrior
-	
-    db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-    }
 
 	e := db.QueryRow("SELECT id, name FROM warriors WHERE id = '"+WarriorID+"'::UUID").Scan(&w.WarriorID, &w.WarriorName)
     if e != nil {
@@ -167,12 +164,7 @@ func GetWarrior(WarriorID string) (*Warrior, error) {
 }
 
 // GetActiveWarriors retrieves the active warriors for a given battle from db
-func GetActiveWarriors(BattleID string) []*Warrior {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
-	
+func GetActiveWarriors(BattleID string) []*Warrior {	
 	var warriors = make([]*Warrior, 0)
 	rows, err := db.Query("SELECT warriors.id, warriors.name FROM battles_warriors LEFT JOIN warriors ON battles_warriors.warrior_id = warriors.id where battles_warriors.battle_id = $1 AND battles_warriors.active = true", BattleID)
 	if err == nil {
@@ -192,13 +184,8 @@ func GetActiveWarriors(BattleID string) []*Warrior {
 
 // AddWarriorToBattle adds a warrior by ID to the battle by ID
 func AddWarriorToBattle(BattleID string, WarriorID string) ([]*Warrior, error) {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
-
 	if _, err := db.Exec(
-        `UPSERT INTO battles_warriors (battle_id, warrior_id, active) VALUES ($1, $2, true)`, BattleID, WarriorID); err != nil {
+        `INSERT INTO battles_warriors (battle_id, warrior_id, active) VALUES ($1, $2, true) ON CONFLICT (battle_id, warrior_id) DO UPDATE SET active = true`, BattleID, WarriorID); err != nil {
         log.Println(err)
 	}
 
@@ -209,13 +196,8 @@ func AddWarriorToBattle(BattleID string, WarriorID string) ([]*Warrior, error) {
 
 // RetreatWarrior removes a warrior from the current battle by ID
 func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
-
 	if _, err := db.Exec(
-        `UPSERT INTO battles_warriors (battle_id, warrior_id, active) VALUES ($1, $2, false)`, BattleID, WarriorID); err != nil {
+        `UPDATE battles_warriors SET active = false WHERE battle_id = $1 AND warrior_id = $2`, BattleID, WarriorID); err != nil {
         log.Println(err)
 	}
 
@@ -225,12 +207,7 @@ func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 }
 
 // GetPlans retrieves plans for given battle from db
-func GetPlans(BattleID string) []*Plan {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
-	
+func GetPlans(BattleID string) []*Plan {	
 	var plans = make([]*Plan, 0)
 	planRows, plansErr := db.Query("SELECT id, name, points, active, votes FROM plans WHERE battle_id = $1", BattleID)
 	if plansErr == nil {
@@ -259,13 +236,11 @@ func GetPlans(BattleID string) []*Plan {
 
 // CreatePlan adds a new plan to a battle
 func CreatePlan(BattleID string, PlanName string) []*Plan {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
+	newID, _ := uuid.NewUUID()
+	id := newID.String()
 
 	var PlanID string
-	e := db.QueryRow(`INSERT INTO plans (battle_id, name) VALUES ($1, $2) RETURNING id`, BattleID, PlanName).Scan(&PlanID)
+	e := db.QueryRow(`INSERT INTO plans (id, battle_id, name) VALUES ($1, $2, $3) RETURNING id`, id, BattleID, PlanName).Scan(&PlanID)
 	if e != nil {
         log.Println(e)
 	}
@@ -277,11 +252,6 @@ func CreatePlan(BattleID string, PlanName string) []*Plan {
 
 // ActivatePlanVoting sets the plan by ID to active and disables votingLock
 func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
-
 	// set current to false
 	if _, err := db.Exec(`UPDATE plans SET active = false WHERE battle_id = $1`, BattleID); err != nil {
         log.Println(err)
@@ -306,11 +276,6 @@ func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
 
 // SetVote sets a warriors vote for the plan
 func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string) []*Plan {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-    }
-
 	// get plan
 	var v string
 	e := db.QueryRow("SELECT votes FROM plans WHERE id = '"+PlanID+"'::UUID").Scan(&v)
@@ -319,7 +284,7 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 		// return nil, errors.New("Plan Not found")
 	}
 	var votes []*Vote
-	err = json.Unmarshal([]byte(v), &votes)
+	err := json.Unmarshal([]byte(v), &votes)
 	if err != nil {
 		log.Println(err)
 	}
@@ -359,11 +324,6 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 
 // EndPlanVoting sets plan to active: false
 func EndPlanVoting(BattleID string, PlanID string) []*Plan {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
-
 	// set current to false
 	if _, err := db.Exec(`UPDATE plans SET active = false WHERE battle_id = $1`, BattleID); err != nil {
         log.Println(err)
@@ -382,11 +342,6 @@ func EndPlanVoting(BattleID string, PlanID string) []*Plan {
 
 // RevisePlanName updates the plan name by ID
 func RevisePlanName(BattleID string, PlanID string, PlanName string) []*Plan {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
-
 	// set PlanID to true
 	if _, err := db.Exec(
         `UPDATE plans SET name = $1 WHERE id = $2`, PlanName, PlanID); err != nil {
@@ -401,11 +356,6 @@ func RevisePlanName(BattleID string, PlanID string, PlanName string) []*Plan {
 // BurnPlan removes a plan from the current battle by ID
 func BurnPlan(BattleID string, PlanID string) []*Plan {
 	var isActivePlan bool
-
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-    }
 
 	// get plan
 	e := db.QueryRow("DELETE FROM plans WHERE id = '"+PlanID+"'::UUID RETURNING active").Scan(&isActivePlan)
@@ -428,11 +378,6 @@ func BurnPlan(BattleID string, PlanID string) []*Plan {
 
 // FinalizePlan sets plan to active: false
 func FinalizePlan(BattleID string, PlanID string, PlanPoints string) []*Plan {
-	db, err := sql.Open("postgres", sqlConnectionPath)
-    if err != nil {
-        log.Println("error connecting to the database: ", err)
-	}
-
 	// set PlanID to true
 	if _, err := db.Exec(
         `UPDATE plans SET active = false, points = $1 WHERE id = $2`, PlanPoints, PlanID); err != nil {
