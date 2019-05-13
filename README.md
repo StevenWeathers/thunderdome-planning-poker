@@ -1,7 +1,5 @@
 # Thunderdome Planning Poker
-A Planning Poker application written in Golang
-
-Goal is to build a Planning Poker application utilizing Websockets and supporting either an Embedded DB or MongoDB.
+A Planning Poker application written in Golang, stores data in Postgres db
 
 ## JSON Data Model
 

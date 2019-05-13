@@ -56,7 +56,5 @@ COPY --from=builderGo /data /data
 # Use an unprivileged user.
 USER appuser
 
-VOLUME ["/data"]
-
 # Run the thunderdome binary.
 ENTRYPOINT ["/go/bin/thunderdome"]
