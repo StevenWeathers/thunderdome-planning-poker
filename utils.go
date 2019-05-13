@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 // GetEnv gets environment variable matching key string
@@ -17,6 +18,18 @@ func GetEnv(key string, fallback string) string {
 	}
 
 	return result
+}
+
+func GetIntEnv(key string, fallback int) int {
+	var intResult = fallback
+	var stringResult = os.Getenv(key)
+
+	if stringResult != "" {
+		v, _ := strconv.Atoi(stringResult)
+		intResult = v
+	}
+
+	return intResult
 }
 
 // RespondWithJSON takes a payload and writes the response

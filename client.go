@@ -184,7 +184,6 @@ func (s *subscription) writePump() {
 func serveWs(w http.ResponseWriter, r *http.Request) {
 	warrior, err := r.Cookie("warrior")
 	var warriorID string
-	var warriorName string
 
 	if err != nil {
 		log.Println("error in reading warrior cookie : " + err.Error() + "\n")
@@ -197,14 +196,13 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal([]byte(value), &keyVal) // check for errors
 
 	warriorID = keyVal["id"]
-	warriorName = keyVal["name"]
 
 	_, warErr := GetWarrior(warriorID)
 
 	if warErr != nil {
-		Warriors[warriorID] = &Warrior{
-			WarriorID:   warriorID,
-			WarriorName: warriorName}
+		log.Println("error finding warrior : " + warErr.Error() + "\n")
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	ws, err := upgrader.Upgrade(w, r, nil)
@@ -218,7 +216,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	s := subscription{c, vars["id"], warriorID}
 	h.register <- s
 
-	Warriors := AddWarriorToBattle(s.arena, warriorID)
+	Warriors, _ := AddWarriorToBattle(s.arena, warriorID)
 	updatedWarriors, _ := json.Marshal(Warriors)
 
 	joinedEvent := CreateSocketEvent("user_activity", warriorID, string(updatedWarriors))

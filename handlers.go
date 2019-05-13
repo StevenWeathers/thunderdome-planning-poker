@@ -17,7 +17,11 @@ func CreateBattleHandler(w http.ResponseWriter, r *http.Request) {
 	LeaderID := keyVal["leaderId"]
 	BattleName := keyVal["battleName"]
 
-	newBattle := CreateBattle(LeaderID, BattleName)
+	newBattle, err := CreateBattle(LeaderID, BattleName)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	RespondWithJSON(w, http.StatusOK, newBattle)
 }

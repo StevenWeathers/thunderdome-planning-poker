@@ -17,7 +17,8 @@
     let currentPlanName = '[Voting not started]'
     
     let ws = {
-        send: () => {}
+        send: () => {},
+        close: () => {}
     }
 
     fetch(`/api/battle/${battleId}`)
@@ -91,6 +92,10 @@
             // battle not found or server issue, redirect to landing
             window.location.href = '/'
         })
+
+    onDestroy(() => {
+        ws.close();
+    })
 
     const sendSocketEvent = (type, value) => {
         ws.send(JSON.stringify({
