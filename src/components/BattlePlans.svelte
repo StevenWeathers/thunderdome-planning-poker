@@ -6,8 +6,17 @@
     export let sendSocketEvent = () => {}
 
     let showAddPlan = false
+    let revisePlanId = ''
+    let revisePlanName = ''
 
-    const toggleAddPlan = () => {
+    const toggleAddPlan = (planId, planName) => () => {
+        if (planId) {
+            revisePlanId = planId
+            revisePlanName = planName
+        } else {
+            revisePlanId = ''
+            revisePlanName = ''
+        }
         showAddPlan = !showAddPlan
     }
 
@@ -19,9 +28,9 @@
         sendSocketEvent('activate_plan', id)
     }
 
-    // const handlePlanRevision = (updatedPlan) => {
-    //     sendSocketEvent('revise_plan', JSON.stringify(updatedPlan))
-    // }
+    const handlePlanRevision = (updatedPlan) => {
+        sendSocketEvent('revise_plan', JSON.stringify(updatedPlan))
+    }
 
     const handlePlanDeletion = (planId) => () => {
         sendSocketEvent('burn_plan', planId)
@@ -37,7 +46,7 @@
             {#if isLeader}
                 <button
                     class="bg-transparent hover:bg-blue text-blue-dark font-semibold hover:text-white py-2 px-4 border border-blue hover:border-transparent rounded"
-                    on:click={toggleAddPlan}
+                    on:click={toggleAddPlan()}
                 >
                     Add Plan
                 </button>
@@ -53,21 +62,29 @@
                 {#if plan.points !== ''}<span class="font-bold text-green-dark border-green border px-2 py-1 rounded ml-2">{plan.points}</span>{/if}
             </div>
             <div class="w-1/4 text-right">
-            {#if isLeader && !plan.active}
+            {#if isLeader}
                 <button
-                    class="bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-4 border border-red hover:border-transparent rounded"
-                    on:click={handlePlanDeletion(plan.id)}
+                    class="bg-transparent hover:bg-purple text-purple-dark font-semibold hover:text-white py-2 px-4 border border-purple hover:border-transparent rounded"
+                    on:click={toggleAddPlan(plan.id, plan.name)}
                 >
-                    Delete
+                    Edit
                 </button>
- 
-                {#if plan.points === ''}
+                {#if !plan.active}
                     <button
-                        class="bg-transparent hover:bg-teal text-teal-dark font-semibold hover:text-white py-2 px-4 border border-teal hover:border-transparent rounded"
-                        on:click={activatePlan(plan.id)}
+                        class="bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-4 border border-red hover:border-transparent rounded"
+                        on:click={handlePlanDeletion(plan.id)}
                     >
-                        Activate
+                        Delete
                     </button>
+    
+                    {#if plan.points === ''}
+                        <button
+                            class="bg-transparent hover:bg-green text-green-dark font-semibold hover:text-white py-2 px-4 border border-green hover:border-transparent rounded"
+                            on:click={activatePlan(plan.id)}
+                        >
+                            Activate
+                        </button>
+                    {/if}
                 {/if}
             {/if}
             </div>
@@ -76,5 +93,5 @@
 </div>
 
 {#if showAddPlan}
-    <AddPlan handlePlanAdd={handlePlanAdd} toggleAddPlan={toggleAddPlan} />
+    <AddPlan handlePlanAdd={handlePlanAdd} toggleAddPlan={toggleAddPlan()} handlePlanRevision={handlePlanRevision} planId={revisePlanId} planName={revisePlanName} />
 {/if}

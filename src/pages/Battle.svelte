@@ -68,6 +68,9 @@
                         battle.plans = JSON.parse(parsedEvent.value)
                         battle.activePlanId = ''
                         break;
+                    case "plan_revised":
+                        battle.plans = JSON.parse(parsedEvent.value)
+                        break;
                     case "plan_burned":
                         const postBurnPlans = JSON.parse(parsedEvent.value)
 

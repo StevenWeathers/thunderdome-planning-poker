@@ -1,13 +1,22 @@
 <script>
     export let handlePlanAdd = () => {}
     export let toggleAddPlan = () => {}
+    export let handlePlanRevision = () => {}
     
-    let planName = ''
+    export let planId = ''
+    export let planName = ''
 
     function handleSubmit(event) {
         event.preventDefault()
 
-        handlePlanAdd(planName)
+        if (planId === '') {
+            handlePlanAdd(planName)
+        } else {
+            handlePlanRevision({
+                planId,
+                planName
+            })
+        }
         toggleAddPlan()
     }
 </script>

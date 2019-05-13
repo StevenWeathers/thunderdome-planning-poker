@@ -134,7 +134,7 @@ func (s subscription) readPump() {
 
 			plans := RevisePlanName(battleID, PlanID, PlanName)
 			updatedPlans, _ := json.Marshal(plans)
-			msg = CreateSocketEvent("plan_burned", warriorID, string(updatedPlans))
+			msg = CreateSocketEvent("plan_revised", warriorID, string(updatedPlans))
 		case "burn_plan":
 			plans := BurnPlan(battleID, keyVal["value"])
 			updatedPlans, _ := json.Marshal(plans)
