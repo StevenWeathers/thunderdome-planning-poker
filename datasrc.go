@@ -12,15 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// @TODO - make this configurable from ENV variables
-var (
-	host     = "db"
-	port     = 5432
-	user     = "thor"
-	password = "odinson"
-	dbname   = "thunderdome"
-  )
-
 var db *sql.DB
 
 // Battle aka arena
@@ -56,6 +47,14 @@ type Plan struct {
 }
 
 func SetupDB() {
+	var (
+		host     = GetEnv("DB_HOST", "db")
+		port     = GetIntEnv("DB_PORT", 5432)
+		user     = GetEnv("DB_USER", "thor")
+		password = GetEnv("DB_PASS", "odinson")
+		dbname   = GetEnv("DB_NAME", "thunderdome")
+	)
+
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
     "password=%s dbname=%s sslmode=disable",
     host, port, user, password, dbname)
