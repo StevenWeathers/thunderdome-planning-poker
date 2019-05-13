@@ -3,10 +3,8 @@ package main
 import (
 	"database/sql"
 	"errors"
-	// "fmt"
     "log"
 
-	// "github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
@@ -237,11 +235,15 @@ func GetPlans(BattleID string) []*Plan {
 	if plansErr == nil {
         defer planRows.Close()
 		for planRows.Next() {
-			var p Plan
+			var p = &Plan{PlanID: "",
+				PlanName: "",
+				Votes: make([]*Vote,0),
+				Points: "",
+				PlanActive: false}
 			if err := planRows.Scan(&p.PlanID, &p.PlanName, &p.Points, &p.PlanActive); err != nil {
 				log.Println(err)
 			} else {
-				plans = append(plans, &p)
+				plans = append(plans, p)
 			}
 		}
 	}
@@ -269,30 +271,31 @@ func CreatePlan(BattleID string, PlanName string) []*Plan {
 
 // ActivatePlanVoting sets the plan by ID to active and disables votingLock
 func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
-	var planIndex int
-	var lastActivePlanIndex int
-	var hasLastActivePlan = false
-
-	for i := range Battles[BattleID].Plans {
-		if Battles[BattleID].Plans[i].PlanActive {
-			hasLastActivePlan = true
-			lastActivePlanIndex = i
-		}
-		if Battles[BattleID].Plans[i].PlanID == PlanID {
-			planIndex = i
-		}
+	db, err := sql.Open("postgres", sqlConnectionPath)
+    if err != nil {
+        log.Println("error connecting to the database: ", err)
 	}
 
-	// disable last active plan if one existed
-	if hasLastActivePlan {
-		Battles[BattleID].Plans[lastActivePlanIndex].PlanActive = false
+	// set current to false
+	if _, err := db.Exec(`UPDATE plans SET active = false WHERE battle_id = $1`, BattleID); err != nil {
+        log.Println(err)
 	}
 
-	Battles[BattleID].Plans[planIndex].PlanActive = true
-	Battles[BattleID].VotingLocked = false
-	Battles[BattleID].ActivePlanID = PlanID
+	// set PlanID to true
+	if _, err := db.Exec(
+        `UPDATE plans SET active = true WHERE id = $1`, PlanID); err != nil {
+        log.Println(err)
+	}
 
-	return Battles[BattleID].Plans
+	// set battle VotingLocked and ActivePlanID
+	if _, err := db.Exec(
+        `UPDATE battles SET voting_locked = false, active_plan_id = $1 WHERE id = $2`, PlanID, BattleID); err != nil {
+        log.Println(err)
+	}
+
+	plans := GetPlans(BattleID)
+
+	return plans
 }
 
 // SetVote sets a warriors vote for the plan
