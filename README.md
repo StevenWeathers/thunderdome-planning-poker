@@ -1,54 +1,27 @@
 # Thunderdome Planning Poker
 A Planning Poker application written in Golang, stores data in Postgres db
 
-## JSON Data Model
 
-```json
-{
-    "battleId": "uuid",
-    "name": "Build a Planning Poker app",
-    "leaderId": "uuid",
-    "warriors": [
-        {
-            "id": "uuid",
-            "name": "Sweeney Todd"
-        }
-    ],
-    "stories": [
-        {
-            "id": "uuid",
-            "name": "Build the Planning Poker Data Model",
-            "votes": [
-                {
-                    "warriorId": "uuid",
-                    "vote": "3"
-                }
-            ],
-            "points": "3",
-            "active": true
-        }
-    ],
-    "votingLocked": false,
-    "activePlanId": "uuid"
-}
-```
+## Building and running with docker-compose (easiest solution)
 
-## Building and running with Docker
-
-Prefered way of building and running the application
+Prefered way of building and running the application with DB
 
 ```
-docker build -t thunderdome
-docker run --name thunder -p 8080:8080 thunderdome
+docker-compose up --build
 ```
 
-## Building and running with Go
+## Building
+
+To run without docker you will need to first build, then setup the postgres DB,
+and pass the user, pass, name, host, and port to the application as environment variables
 
 ```
-make build
-make run
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASS=
+DB_NAME=
 ```
-### OR manual steps
 
 ### Install dependencies
 ```
@@ -56,6 +29,12 @@ go get -d -v
 go get -u github.com/gobuffalo/packr/packr
 npm install
 ```
+
+## Build with Make
+```
+make build
+```
+### OR manual steps
 
 ### Build static assets
 ```

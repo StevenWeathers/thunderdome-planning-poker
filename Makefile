@@ -35,9 +35,6 @@ build-linux:
 build-windows:
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -o $(BINARY_WINDOWS) -v
 
-run:
-	./$(BINARY_NAME)
-
 release:
 	$(GORELEASER)
 
