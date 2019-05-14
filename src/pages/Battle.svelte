@@ -5,6 +5,7 @@
     import WarriorCard from '../components/WarriorCard.svelte'
     import BattlePlans from '../components/BattlePlans.svelte'
     import VotingControls from '../components/VotingControls.svelte'
+    import InviteWarrior from '../components/InviteWarrior.svelte'
 
     import { warrior } from '../stores.js'
 
@@ -56,6 +57,7 @@
                         battle.plans = updatedPlans                        
                         battle.activePlanId = activePlan.id
                         battle.votingLocked = false
+                        vote = ''
                         break;
                     case "vote_activity":
                         battle.plans = JSON.parse(parsedEvent.value)
@@ -67,6 +69,7 @@
                     case "plan_finalized":
                         battle.plans = JSON.parse(parsedEvent.value)
                         battle.activePlanId = ''
+                        vote = ''
                         break;
                     case "plan_revised":
                         battle.plans = JSON.parse(parsedEvent.value)
@@ -183,15 +186,7 @@
                 {/if}
             </div>
 
-            <div class="bg-white shadow-md p-5 mb-4 rounded">
-                <h4 class="text-xl mb-2">Invite a warrior</h4>
-                <input
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker w-full"
-                    type="text"
-                    value="{hostname}/battle/{battle.id}"
-                    readonly
-                />
-            </div>
+            <InviteWarrior hostname={hostname} battleId={battle.id} />
         </div>
     </div>
 {:else}

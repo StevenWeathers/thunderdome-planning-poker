@@ -77,7 +77,7 @@
                 >
                     Edit
                 </button>
-                {#if !plan.active && plan.points === ''}
+                {#if !plan.active}
                     <button
                         class="bg-transparent hover:bg-green text-green-dark font-semibold hover:text-white py-2 px-2 border border-green hover:border-transparent rounded"
                         on:click={activatePlan(plan.id)}
