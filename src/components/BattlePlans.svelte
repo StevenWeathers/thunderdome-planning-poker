@@ -63,28 +63,27 @@
             </div>
             <div class="w-1/4 text-right">
             {#if isLeader}
-                <button
-                    class="bg-transparent hover:bg-purple text-purple-dark font-semibold hover:text-white py-2 px-4 border border-purple hover:border-transparent rounded"
-                    on:click={toggleAddPlan(plan.id, plan.name)}
-                >
-                    Edit
-                </button>
                 {#if !plan.active}
                     <button
-                        class="bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-4 border border-red hover:border-transparent rounded"
+                        class="bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-2 border border-red hover:border-transparent rounded"
                         on:click={handlePlanDeletion(plan.id)}
                     >
                         Delete
                     </button>
-    
-                    {#if plan.points === ''}
-                        <button
-                            class="bg-transparent hover:bg-green text-green-dark font-semibold hover:text-white py-2 px-4 border border-green hover:border-transparent rounded"
-                            on:click={activatePlan(plan.id)}
-                        >
-                            Activate
-                        </button>
-                    {/if}
+                {/if}
+                <button
+                    class="bg-transparent hover:bg-purple text-purple-dark font-semibold hover:text-white py-2 px-2 border border-purple hover:border-transparent rounded"
+                    on:click={toggleAddPlan(plan.id, plan.name)}
+                >
+                    Edit
+                </button>
+                {#if !plan.active && plan.points === ''}
+                    <button
+                        class="bg-transparent hover:bg-green text-green-dark font-semibold hover:text-white py-2 px-2 border border-green hover:border-transparent rounded"
+                        on:click={activatePlan(plan.id)}
+                    >
+                        Activate
+                    </button>
                 {/if}
             {/if}
             </div>
