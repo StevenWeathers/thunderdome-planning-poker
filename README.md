@@ -1,10 +1,18 @@
 # Thunderdome Planning Poker
-A Planning Poker application written in Golang, stores data in Postgres db
+An Agile Planning Poker application written in Go in the theme of Battling for points
 
+- Planning Sessions are **Battles**
+- Users are **Warriors**
+- Stories are **Plans**
+- Points are in fibonacci sequence of **1, 2, 3, 5, 8, 13** and **?** because how often do you point higher than 13 really?
+
+### **Uses WebSockets and Svelte frontend framework for a truly Reactive UI experience**
+
+![image](https://user-images.githubusercontent.com/846933/57669397-d0eba280-75d8-11e9-9466-c927bc44b2f2.png)
 
 ## Building and running with docker-compose (easiest solution)
 
-Prefered way of building and running the application with DB
+Prefered way of building and running the application with Postgres DB
 
 ```
 docker-compose up --build
