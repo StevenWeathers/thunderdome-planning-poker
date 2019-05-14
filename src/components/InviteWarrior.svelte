@@ -12,9 +12,9 @@
 <div class="bg-white shadow-md p-5 mb-4 rounded">
     <h4 class="text-xl mb-2">Invite a warrior</h4>
     
-    <div class="flex flex-wrap items-stretch w-full relative">
+    <div class="flex flex-wrap items-stretch w-full">
         <input
-            class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-r-none px-3 relative"
+            class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-r-none px-3"
             type="text"
             value="{hostname}/battle/{battleId}"
             id="BattleLink"
