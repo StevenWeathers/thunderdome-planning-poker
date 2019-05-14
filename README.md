@@ -1,5 +1,6 @@
 # Thunderdome Planning Poker
-An Agile Planning Poker application written in Go in the theme of Battling for points
+
+Thunderdome is an open source agile planning poker tool in the theme of Battling for points that helps teams estimate stories.
 
 - Planning Sessions are **Battles**
 - Users are **Warriors**
