@@ -294,7 +294,7 @@ func CreatePlan(BattleID string, PlanName string) []*Plan {
 // ActivatePlanVoting sets the plan by ID to active, wipes any previous votes/points, and disables votingLock
 func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
 	// set current to false
-	if _, err := db.Exec(`UPDATE plans updated_date = NOW(), SET active = false WHERE battle_id = $1`, BattleID); err != nil {
+	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false WHERE battle_id = $1`, BattleID); err != nil {
 		log.Println(err)
 	}
 

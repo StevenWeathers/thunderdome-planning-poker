@@ -9,6 +9,7 @@ BINARY_NAME=thunderdome-planning-poker
 BINARY_UNIX=$(BINARY_NAME)_unix
 BINARY_WINDOWS=thunderdome-planning-poker.exe
 GORELEASER=goreleaser release --rm-dist
+DOCKER_TAG=stevenweathers/thunderdome-planning-poker:latest
 
 all: build
 build-deps: 
@@ -52,3 +53,9 @@ release:
 
 release-dry:
 	$(GORELEASER) --skip-publish
+
+build-image:
+	docker build ./ -t $(DOCKER_TAG)
+
+push-image:
+	docker push $(DOCKER_TAG)
