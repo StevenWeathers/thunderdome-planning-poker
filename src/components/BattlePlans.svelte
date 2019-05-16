@@ -39,10 +39,10 @@
 
 <div class="bg-white shadow-md mb-4 rounded">
     <div class="flex bg-grey-lighter p-4 rounded-t">
-        <div class="w-3/4">
+        <div class="w-1/2 lg:w-3/4">
             <h3 class="text-2xl">Plans</h3>
         </div>
-        <div class="w-1/4 text-right">
+        <div class="w-1/2 lg:w-1/4 text-right">
             {#if isLeader}
                 <button
                     class="bg-transparent hover:bg-blue text-blue-dark font-semibold hover:text-white py-2 px-4 border border-blue hover:border-transparent rounded"
@@ -55,13 +55,13 @@
     </div>
 
     {#each plans as plan (plan.id)}
-        <div class="flex border-b border-grey-light p-4">
-            <div class="w-3/4">
-                <span class="font-bold">{plan.name}</span>
+        <div class="flex flex-wrap border-b border-grey-light p-4">
+            <div class="w-full lg:w-3/4 mb-4 lg:mb-0">
+                <div class="inline-block font-bold">{plan.name}</div>
                 &nbsp;
-                {#if plan.points !== ''}<span class="font-bold text-green-dark border-green border px-2 py-1 rounded ml-2">{plan.points}</span>{/if}
+                {#if plan.points !== ''}<div class="inline-block font-bold text-green-dark border-green border px-2 py-1 rounded ml-2">{plan.points}</div>{/if}
             </div>
-            <div class="w-1/4 text-right">
+            <div class="w-full lg:w-1/4 text-right">
             {#if isLeader}
                 {#if !plan.active}
                     <button

@@ -12,7 +12,7 @@
     export let battleId = 0
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
-    let points = ['1', '2', '3', '5', '8', '13', '?']
+    let points = ['0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?']
     let vote = ''
     let battle = {}
     let currentPlanName = '[Voting not started]'
@@ -154,11 +154,11 @@
         <h2 class="text-grey-darker">{battle.name}</h2>
     </div>
 
-    <div class="flex mb-4 -mx-4">
-        <div class="w-3/4 px-4">
-            <div class="flex mb-4 -mx-2 mb-6">
+    <div class="flex flex-wrap mb-4 -mx-4">
+        <div class="w-full lg:w-3/4 px-4">
+            <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
                 {#each points as point}
-                    <div class="w-1/4 px-4">
+                    <div class="w-1/4 md:w-1/6 px-2 mb-4">
                         <PointCard point={point} active={vote === point} on:voted={handleVote} isLocked={battle.votingLocked} />
                     </div>
                 {/each}
@@ -171,7 +171,7 @@
             />
         </div>
         
-        <div class="w-1/4 px-4">
+        <div class="w-full lg:w-1/4 px-4">
             <div class="bg-white shadow-md mb-4 rounded">
                 <div class="bg-blue p-4 rounded-t">
                     <h3 class="text-2xl text-white">Users</h3>

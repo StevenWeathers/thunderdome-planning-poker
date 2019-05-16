@@ -21,7 +21,7 @@
 </style>
 
 <button
-    class="w-full py-12 rounded overflow-hidden shadow-md border {activeColor} {lockedClass} text-5xl"
+    class="w-full py-12 md:py-16 rounded overflow-hidden shadow-md border {activeColor} {lockedClass} text-3xl lg:text-5xl"
     on:click={vote}
     disabled={isLocked}
 >
