@@ -37,7 +37,7 @@
                         </path>
                     </svg>
                 {:else if voted && points !== ''}
-                    <span class="font-bold text-green-dark border-green border px-3 py-2 rounded ml-2">{points}</span>
+                    <span class="font-bold text-green-dark border-green border p-2 rounded ml-2">{points}</span>
                 {/if}
             </div>
         </div>
