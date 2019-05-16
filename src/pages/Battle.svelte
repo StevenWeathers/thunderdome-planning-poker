@@ -10,8 +10,11 @@
     import { warrior } from '../stores.js'
 
     export let battleId = 0
+
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
+    
+    let socketError = false
     let points = ['0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?']
     let vote = ''
     let battle = {}
@@ -95,6 +98,7 @@
             ws.onerror = function (e) {
                 // @TODO - add toast or some visual error notifications...
                 console.log(`ERROR: ${e}`)
+                socketError = true
             }
         })
         .catch(function() {
@@ -109,7 +113,6 @@
     const sendSocketEvent = (type, value) => {
         ws.send(JSON.stringify({
             type,
-            id: $warrior.id,
             value
         }))
     }
@@ -151,7 +154,7 @@
     <title>Battle {battle.name} | Thunderdome</title>
 </svelte:head>
 
-{#if battle.name}
+{#if battle.name && !socketError}
     <div class="mb-6">
         <h1>{currentPlanName}</h1>
         <h2 class="text-grey-darker">{battle.name}</h2>
@@ -190,6 +193,12 @@
             </div>
 
             <InviteWarrior hostname={hostname} battleId={battle.id} />
+        </div>
+    </div>
+{:else if socketError}
+    <div class="flex items-center">
+        <div class="flex-1 text-center">
+            <h1 class="text-5xl text-red">Error joining battle, refresh and try again.</h1>
         </div>
     </div>
 {:else}

@@ -42,15 +42,13 @@ type connection struct {
 // SocketEvent is the event structure used for socket messages
 type SocketEvent struct {
 	EventType  string `json:"type"`
-	WarriorID  string `json:"id"`
 	EventValue string `json:"value"`
 }
 
 // CreateSocketEvent makes a SocketEvent struct and turns it into json []byte
-func CreateSocketEvent(EventType string, WarriorID string, EventValue string) []byte {
+func CreateSocketEvent(EventType string, EventValue string) []byte {
 	newEvent := &SocketEvent{
 		EventType:  EventType,
-		WarriorID:  WarriorID,
 		EventValue: EventValue}
 
 	event, _ := json.Marshal(newEvent)
@@ -69,7 +67,7 @@ func (s subscription) readPump() {
 		Warriors := RetreatWarrior(BattleID, WarriorID)
 		updatedWarriors, _ := json.Marshal(Warriors)
 
-		retreatEvent := CreateSocketEvent("user_activity", WarriorID, string(updatedWarriors))
+		retreatEvent := CreateSocketEvent("user_activity", string(updatedWarriors))
 		m := message{retreatEvent, BattleID}
 		h.broadcast <- m
 
@@ -88,9 +86,10 @@ func (s subscription) readPump() {
 			break
 		}
 
+		var badEvent bool
 		keyVal := make(map[string]string)
 		json.Unmarshal(msg, &keyVal) // check for errors
-		warriorID := keyVal["id"]
+		warriorID := s.warriorID
 		battleID := s.arena
 
 		switch keyVal["type"] {
@@ -102,54 +101,81 @@ func (s subscription) readPump() {
 
 			plans := SetVote(battleID, warriorID, PlanID, VoteValue)
 			updatedPlans, _ := json.Marshal(plans)
-			msg = CreateSocketEvent("vote_activity", warriorID, string(updatedPlans))
+			msg = CreateSocketEvent("vote_activity", string(updatedPlans))
 		case "add_plan":
-			plans := CreatePlan(battleID, keyVal["value"])
+			plans, err := CreatePlan(battleID, warriorID, keyVal["value"])
+			if err != nil {
+				badEvent = true
+				break
+			}
 			updatedPlans, _ := json.Marshal(plans)
-			msg = CreateSocketEvent("plan_added", warriorID, string(updatedPlans))
+			msg = CreateSocketEvent("plan_added", string(updatedPlans))
 		case "activate_plan":
-			plans := ActivatePlanVoting(battleID, keyVal["value"])
+			plans, err := ActivatePlanVoting(battleID, warriorID, keyVal["value"])
+			if err != nil {
+				badEvent = true
+				break
+			}
 			updatedPlans, _ := json.Marshal(plans)
-			msg = CreateSocketEvent("plan_activated", warriorID, string(updatedPlans))
+			msg = CreateSocketEvent("plan_activated", string(updatedPlans))
 		case "end_voting":
-			plans := EndPlanVoting(battleID, keyVal["value"])
+			plans, err := EndPlanVoting(battleID, warriorID, keyVal["value"])
+			if err != nil {
+				badEvent = true
+				break
+			}
 			updatedPlans, _ := json.Marshal(plans)
-			msg = CreateSocketEvent("voting_ended", warriorID, string(updatedPlans))
+			msg = CreateSocketEvent("voting_ended", string(updatedPlans))
 		case "finalize_plan":
 			planObj := make(map[string]string)
 			json.Unmarshal([]byte(keyVal["value"]), &planObj)
 			PlanID := planObj["planId"]
 			PlanPoints := planObj["planPoints"]
 
-			plans := FinalizePlan(battleID, PlanID, PlanPoints)
+			plans, err := FinalizePlan(battleID, warriorID, PlanID, PlanPoints)
+			if err != nil {
+				badEvent = true
+				break
+			}
 			updatedPlans, _ := json.Marshal(plans)
-			msg = CreateSocketEvent("plan_finalized", warriorID, string(updatedPlans))
+			msg = CreateSocketEvent("plan_finalized", string(updatedPlans))
 		case "revise_plan":
 			planObj := make(map[string]string)
 			json.Unmarshal([]byte(keyVal["value"]), &planObj)
 			PlanID := planObj["planId"]
 			PlanName := planObj["planName"]
 
-			plans := RevisePlanName(battleID, PlanID, PlanName)
-			updatedPlans, _ := json.Marshal(plans)
-			msg = CreateSocketEvent("plan_revised", warriorID, string(updatedPlans))
-		case "burn_plan":
-			plans := BurnPlan(battleID, keyVal["value"])
-			updatedPlans, _ := json.Marshal(plans)
-			msg = CreateSocketEvent("plan_burned", warriorID, string(updatedPlans))
-		case "promote_leader":
-			battle, err := SetBattleLeader(battleID, keyVal["value"])
+			plans, err := RevisePlanName(battleID, warriorID, PlanID, PlanName)
 			if err != nil {
+				badEvent = true
+				break
+			}
+			updatedPlans, _ := json.Marshal(plans)
+			msg = CreateSocketEvent("plan_revised", string(updatedPlans))
+		case "burn_plan":
+			plans, err := BurnPlan(battleID, warriorID, keyVal["value"])
+			if err != nil {
+				badEvent = true
+				break
+			}
+			updatedPlans, _ := json.Marshal(plans)
+			msg = CreateSocketEvent("plan_burned", string(updatedPlans))
+		case "promote_leader":
+			battle, err := SetBattleLeader(battleID, warriorID, keyVal["value"])
+			if err != nil {
+				badEvent = true
 				break
 			}
 
 			updatedBattle, _ := json.Marshal(battle)
-			msg = CreateSocketEvent("battle_updated", warriorID, string(updatedBattle))
+			msg = CreateSocketEvent("battle_updated", string(updatedBattle))
 		default:
 		}
 
-		m := message{msg, s.arena}
-		h.broadcast <- m
+		if badEvent != true {
+			m := message{msg, s.arena}
+			h.broadcast <- m
+		}
 	}
 }
 
@@ -227,7 +253,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	Warriors, _ := AddWarriorToBattle(s.arena, warriorID)
 	updatedWarriors, _ := json.Marshal(Warriors)
 
-	joinedEvent := CreateSocketEvent("user_activity", warriorID, string(updatedWarriors))
+	joinedEvent := CreateSocketEvent("user_activity", string(updatedWarriors))
 	m := message{joinedEvent, s.arena}
 	h.broadcast <- m
 

@@ -164,6 +164,21 @@ func GetBattle(BattleID string) (*Battle, error) {
 	return b, nil
 }
 
+func ConfirmLeader(BattleID string, warriorID string) error {
+	var leaderID string
+	e := db.QueryRow("SELECT leader_id FROM battles WHERE id = $1", BattleID).Scan(&leaderID)
+	if e != nil {
+		log.Println(e)
+		return errors.New("Battle Not found")
+	}
+
+	if leaderID == warriorID {
+		return nil
+	} else {
+		return errors.New("Not Leader")
+	}
+}
+
 // CreateWarrior adds a new warrior to the db
 func CreateWarrior(WarriorName string) *Warrior {
 	newID, _ := uuid.NewUUID()
@@ -276,7 +291,12 @@ func GetPlans(BattleID string) []*Plan {
 }
 
 // CreatePlan adds a new plan to a battle
-func CreatePlan(BattleID string, PlanName string) []*Plan {
+func CreatePlan(BattleID string, warriorID string, PlanName string) ([]*Plan, error) {
+	err := ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return nil, errors.New("Incorrect permissions")
+	}
+
 	newID, _ := uuid.NewUUID()
 	id := newID.String()
 
@@ -288,11 +308,16 @@ func CreatePlan(BattleID string, PlanName string) []*Plan {
 
 	plans := GetPlans(BattleID)
 
-	return plans
+	return plans, nil
 }
 
 // ActivatePlanVoting sets the plan by ID to active, wipes any previous votes/points, and disables votingLock
-func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
+func ActivatePlanVoting(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
+	err := ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return nil, errors.New("Incorrect permissions")
+	}
+
 	// set current to false
 	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false WHERE battle_id = $1`, BattleID); err != nil {
 		log.Println(err)
@@ -312,7 +337,7 @@ func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
 
 	plans := GetPlans(BattleID)
 
-	return plans
+	return plans, nil
 }
 
 // SetVote sets a warriors vote for the plan
@@ -364,7 +389,12 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 }
 
 // EndPlanVoting sets plan to active: false
-func EndPlanVoting(BattleID string, PlanID string) []*Plan {
+func EndPlanVoting(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
+	err := ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return nil, errors.New("Incorrect permissions")
+	}
+
 	// set current to false
 	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false WHERE battle_id = $1`, BattleID); err != nil {
 		log.Println(err)
@@ -378,11 +408,16 @@ func EndPlanVoting(BattleID string, PlanID string) []*Plan {
 
 	plans := GetPlans(BattleID)
 
-	return plans
+	return plans, nil
 }
 
 // RevisePlanName updates the plan name by ID
-func RevisePlanName(BattleID string, PlanID string, PlanName string) []*Plan {
+func RevisePlanName(BattleID string, warriorID string, PlanID string, PlanName string) ([]*Plan, error) {
+	err := ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return nil, errors.New("Incorrect permissions")
+	}
+
 	// set PlanID to true
 	if _, err := db.Exec(
 		`UPDATE plans SET updated_date = NOW(), name = $1 WHERE id = $2`, PlanName, PlanID); err != nil {
@@ -391,18 +426,23 @@ func RevisePlanName(BattleID string, PlanID string, PlanName string) []*Plan {
 
 	plans := GetPlans(BattleID)
 
-	return plans
+	return plans, nil
 }
 
 // BurnPlan removes a plan from the current battle by ID
-func BurnPlan(BattleID string, PlanID string) []*Plan {
+func BurnPlan(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
+	err := ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return nil, errors.New("Incorrect permissions")
+	}
+
 	var isActivePlan bool
 
-	// get plan
+	// delete plan
 	e := db.QueryRow("DELETE FROM plans WHERE id = $1 RETURNING active", PlanID).Scan(&isActivePlan)
 	if e != nil {
 		log.Println(e)
-		// return nil, errors.New("Plan Not found")
+		return nil, errors.New("Plan Not found")
 	}
 
 	if isActivePlan {
@@ -414,11 +454,16 @@ func BurnPlan(BattleID string, PlanID string) []*Plan {
 
 	plans := GetPlans(BattleID)
 
-	return plans
+	return plans, nil
 }
 
 // FinalizePlan sets plan to active: false
-func FinalizePlan(BattleID string, PlanID string, PlanPoints string) []*Plan {
+func FinalizePlan(BattleID string, warriorID string, PlanID string, PlanPoints string) ([]*Plan, error) {
+	err := ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return nil, errors.New("Incorrect permissions")
+	}
+
 	// set PlanID to true
 	if _, err := db.Exec(
 		`UPDATE plans SET updated_date = NOW(), active = false, points = $1 WHERE id = $2`, PlanPoints, PlanID); err != nil {
@@ -433,11 +478,16 @@ func FinalizePlan(BattleID string, PlanID string, PlanPoints string) []*Plan {
 
 	plans := GetPlans(BattleID)
 
-	return plans
+	return plans, nil
 }
 
 // SetBattleLeader sets the leaderId for the battle
-func SetBattleLeader(BattleID string, LeaderID string) (*Battle, error) {
+func SetBattleLeader(BattleID string, warriorID string, LeaderID string) (*Battle, error) {
+	err := ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return nil, errors.New("Incorrect permissions")
+	}
+
 	// set battle VotingLocked
 	if _, err := db.Exec(
 		`UPDATE battles SET updated_date = NOW(), leader_id = $1 WHERE id = $2`, LeaderID, BattleID); err != nil {
