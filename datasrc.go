@@ -103,6 +103,16 @@ func SetupDB() {
 		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS last_active TIMESTAMP DEFAULT NOW()"); err != nil {
 		log.Fatal(err)
 	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE plans ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW()"); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE battles ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW()"); err != nil {
+		log.Fatal(err)
+	}
 }
 
 //CreateBattle adds a new battle to the map
@@ -284,19 +294,19 @@ func CreatePlan(BattleID string, PlanName string) []*Plan {
 // ActivatePlanVoting sets the plan by ID to active, wipes any previous votes/points, and disables votingLock
 func ActivatePlanVoting(BattleID string, PlanID string) []*Plan {
 	// set current to false
-	if _, err := db.Exec(`UPDATE plans SET active = false WHERE battle_id = $1`, BattleID); err != nil {
+	if _, err := db.Exec(`UPDATE plans updated_date = NOW(), SET active = false WHERE battle_id = $1`, BattleID); err != nil {
 		log.Println(err)
 	}
 
 	// set PlanID to true
 	if _, err := db.Exec(
-		`UPDATE plans SET active = true, points = '', votes = '[]'::jsonb WHERE id = $1`, PlanID); err != nil {
+		`UPDATE plans SET updated_date = NOW(), active = true, points = '', votes = '[]'::jsonb WHERE id = $1`, PlanID); err != nil {
 		log.Println(err)
 	}
 
 	// set battle VotingLocked and ActivePlanID
 	if _, err := db.Exec(
-		`UPDATE battles SET voting_locked = false, active_plan_id = $1 WHERE id = $2`, PlanID, BattleID); err != nil {
+		`UPDATE battles SET updated_date = NOW(), voting_locked = false, active_plan_id = $1 WHERE id = $2`, PlanID, BattleID); err != nil {
 		log.Println(err)
 	}
 
@@ -344,7 +354,7 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 	// update votes on Plan
 	var votesJSON, _ = json.Marshal(votes)
 	if _, err := db.Exec(
-		`UPDATE plans SET votes = $1 WHERE id = $2`, string(votesJSON), PlanID); err != nil {
+		`UPDATE plans SET updated_date = NOW(), votes = $1 WHERE id = $2`, string(votesJSON), PlanID); err != nil {
 		log.Println(err)
 	}
 
@@ -356,13 +366,13 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 // EndPlanVoting sets plan to active: false
 func EndPlanVoting(BattleID string, PlanID string) []*Plan {
 	// set current to false
-	if _, err := db.Exec(`UPDATE plans SET active = false WHERE battle_id = $1`, BattleID); err != nil {
+	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false WHERE battle_id = $1`, BattleID); err != nil {
 		log.Println(err)
 	}
 
 	// set battle VotingLocked
 	if _, err := db.Exec(
-		`UPDATE battles SET voting_locked = true WHERE id = $1`, BattleID); err != nil {
+		`UPDATE battles SET updated_date = NOW(), voting_locked = true WHERE id = $1`, BattleID); err != nil {
 		log.Println(err)
 	}
 
@@ -375,7 +385,7 @@ func EndPlanVoting(BattleID string, PlanID string) []*Plan {
 func RevisePlanName(BattleID string, PlanID string, PlanName string) []*Plan {
 	// set PlanID to true
 	if _, err := db.Exec(
-		`UPDATE plans SET name = $1 WHERE id = $2`, PlanName, PlanID); err != nil {
+		`UPDATE plans SET updated_date = NOW(), name = $1 WHERE id = $2`, PlanName, PlanID); err != nil {
 		log.Println(err)
 	}
 
@@ -397,7 +407,7 @@ func BurnPlan(BattleID string, PlanID string) []*Plan {
 
 	if isActivePlan {
 		if _, err := db.Exec(
-			`UPDATE battles SET voting_locked = true, active_plan_id = null WHERE id = $1`, BattleID); err != nil {
+			`UPDATE battles SET updated_date = NOW(), voting_locked = true, active_plan_id = null WHERE id = $1`, BattleID); err != nil {
 			log.Println(err)
 		}
 	}
@@ -411,17 +421,33 @@ func BurnPlan(BattleID string, PlanID string) []*Plan {
 func FinalizePlan(BattleID string, PlanID string, PlanPoints string) []*Plan {
 	// set PlanID to true
 	if _, err := db.Exec(
-		`UPDATE plans SET active = false, points = $1 WHERE id = $2`, PlanPoints, PlanID); err != nil {
+		`UPDATE plans SET updated_date = NOW(), active = false, points = $1 WHERE id = $2`, PlanPoints, PlanID); err != nil {
 		log.Println(err)
 	}
 
 	// set battle ActivePlanID
 	if _, err := db.Exec(
-		`UPDATE battles SET active_plan_id = null WHERE id = $1`, BattleID); err != nil {
+		`UPDATE battles SET updated_date = NOW(), active_plan_id = null WHERE id = $1`, BattleID); err != nil {
 		log.Println(err)
 	}
 
 	plans := GetPlans(BattleID)
 
 	return plans
+}
+
+// SetBattleLeader sets the leaderId for the battle
+func SetBattleLeader(BattleID string, LeaderID string) (*Battle, error) {
+	// set battle VotingLocked
+	if _, err := db.Exec(
+		`UPDATE battles SET updated_date = NOW(), leader_id = $1 WHERE id = $2`, LeaderID, BattleID); err != nil {
+		log.Println(err)
+	}
+
+	battle, err := GetBattle(BattleID)
+	if err != nil {
+		return nil, errors.New("Unable to promote leader")
+	}
+
+	return battle, nil
 }

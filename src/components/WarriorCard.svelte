@@ -2,7 +2,13 @@
     export let voted = false
     export let warrior = {}
     export let isLeader = false
+    export let leaderId = ''
     export let points = ''
+    export let sendSocketEvent = () => {}
+
+    function promoteLeader() {
+        sendSocketEvent('promote_leader', warrior.id)
+    }
 </script>
 
 <div class="border-b border-grey p-4 flex">
@@ -13,7 +19,16 @@
         <div class="flex">
             <div class="w-3/4">
                 <p class="text-xl font-bold">{warrior.name}</p>
-                {#if isLeader}<p class="text-l text-grey-darker">Leader</p>{/if}
+                {#if leaderId === warrior.id}
+                    <p class="text-l text-grey-darker">Leader</p>
+                {:else if isLeader}
+                    <button
+                        on:click={promoteLeader}
+                        class="inline-block align-baseline text-sm text-blue hover:text-blue-darker bg-transparent border-transparent"
+                    >
+                        Promote
+                    </button>
+                {/if}
             </div>
             <div class="w-1/4 text-right">
                 {#if voted && points === ''}

@@ -84,6 +84,9 @@
                         battle.plans = postBurnPlans
 
                         break;
+                    case "battle_updated":
+                        battle = JSON.parse(parsedEvent.value)
+                        break;
                     default:
                         break;
                 }
@@ -178,7 +181,7 @@
                 </div>
 
                 {#each battle.warriors as war (war.id)}
-                    <WarriorCard warrior={war} isLeader={war.id === battle.leaderId} voted={didVote(war.id)} points={showVote(war.id)} />
+                    <WarriorCard warrior={war} leaderId={battle.leaderId} isLeader={battle.leaderId === $warrior.id} voted={didVote(war.id)} points={showVote(war.id)} sendSocketEvent={sendSocketEvent} />
                 {/each}
 
                 {#if battle.leaderId === $warrior.id}

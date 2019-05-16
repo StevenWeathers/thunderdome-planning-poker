@@ -99,8 +99,6 @@ func (s subscription) readPump() {
 			json.Unmarshal([]byte(keyVal["value"]), &voteObj)
 			VoteValue := voteObj["voteValue"]
 			PlanID := voteObj["planId"]
-			log.Println(VoteValue)
-			log.Println(PlanID)
 
 			plans := SetVote(battleID, warriorID, PlanID, VoteValue)
 			updatedPlans, _ := json.Marshal(plans)
@@ -139,6 +137,14 @@ func (s subscription) readPump() {
 			plans := BurnPlan(battleID, keyVal["value"])
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_burned", warriorID, string(updatedPlans))
+		case "promote_leader":
+			battle, err := SetBattleLeader(battleID, keyVal["value"])
+			if err != nil {
+				break
+			}
+
+			updatedBattle, _ := json.Marshal(battle)
+			msg = CreateSocketEvent("battle_updated", warriorID, string(updatedBattle))
 		default:
 		}
 
@@ -212,8 +218,10 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
+	battleID := vars["id"]
+
 	c := &connection{send: make(chan []byte, 256), ws: ws}
-	s := subscription{c, vars["id"], warriorID}
+	s := subscription{c, battleID, warriorID}
 	h.register <- s
 
 	Warriors, _ := AddWarriorToBattle(s.arena, warriorID)
