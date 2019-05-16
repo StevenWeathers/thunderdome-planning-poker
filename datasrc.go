@@ -245,7 +245,7 @@ func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 	}
 
 	if _, err := db.Exec(
-		`UPDATE warriors SET last_active = NOW() WHERE warrior_id = $1`, WarriorID); err != nil {
+		`UPDATE warriors SET last_active = NOW() WHERE id = $1`, WarriorID); err != nil {
 		log.Println(err)
 	}
 
