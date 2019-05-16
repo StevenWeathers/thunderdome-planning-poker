@@ -4,6 +4,7 @@ STATICPACKCMD=packr
 NPMCMD=npm
 NPMBUILD=$(NPMCMD) run build
 GOBUILD=$(GOCMD) build
+GOFMT=gofmt
 BINARY_NAME=thunderdome-planning-poker
 BINARY_UNIX=$(BINARY_NAME)_unix
 BINARY_WINDOWS=thunderdome-planning-poker.exe
@@ -27,6 +28,14 @@ clean:
 	rm -f *-packr.go
 	rm -rf dist
 	rm -rf packrd
+
+format:
+	$(GOFMT) -s -w datasrc.go
+	$(GOFMT) -s -w handlers.go
+	$(GOFMT) -s -w client.go
+	$(GOFMT) -s -w hub.go
+	$(GOFMT) -s -w main.go
+	$(GOFMT) -s -w utils.go
 
 # Cross compilation
 build-linux:

@@ -83,6 +83,26 @@ func SetupDB() {
 		"CREATE TABLE IF NOT EXISTS battles_warriors (battle_id UUID references battles NOT NULL, warrior_id UUID REFERENCES warriors NOT NULL, active BOOL DEFAULT false, PRIMARY KEY (battle_id, warrior_id))"); err != nil {
 		log.Fatal(err)
 	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE battles ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW()"); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW()"); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE plans ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW()"); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS last_active TIMESTAMP DEFAULT NOW()"); err != nil {
+		log.Fatal(err)
+	}
 }
 
 //CreateBattle adds a new battle to the map
@@ -164,7 +184,7 @@ func GetWarrior(WarriorID string) (*Warrior, error) {
 // GetActiveWarriors retrieves the active warriors for a given battle from db
 func GetActiveWarriors(BattleID string) []*Warrior {
 	var warriors = make([]*Warrior, 0)
-	rows, err := db.Query("SELECT warriors.id, warriors.name FROM battles_warriors LEFT JOIN warriors ON battles_warriors.warrior_id = warriors.id where battles_warriors.battle_id = $1 AND battles_warriors.active = true", BattleID)
+	rows, err := db.Query("SELECT warriors.id, warriors.name FROM battles_warriors LEFT JOIN warriors ON battles_warriors.warrior_id = warriors.id where battles_warriors.battle_id = $1 AND battles_warriors.active = true ORDER BY warriors.name", BattleID)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
@@ -199,6 +219,11 @@ func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 		log.Println(err)
 	}
 
+	if _, err := db.Exec(
+		`UPDATE warriors SET last_active = NOW() WHERE warrior_id = $1`, WarriorID); err != nil {
+		log.Println(err)
+	}
+
 	warriors := GetActiveWarriors(BattleID)
 
 	return warriors
@@ -207,7 +232,7 @@ func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 // GetPlans retrieves plans for given battle from db
 func GetPlans(BattleID string) []*Plan {
 	var plans = make([]*Plan, 0)
-	planRows, plansErr := db.Query("SELECT id, name, points, active, votes FROM plans WHERE battle_id = $1", BattleID)
+	planRows, plansErr := db.Query("SELECT id, name, points, active, votes FROM plans WHERE battle_id = $1 ORDER BY created_date", BattleID)
 	if plansErr == nil {
 		defer planRows.Close()
 		for planRows.Next() {
