@@ -10,6 +10,7 @@
     import { warrior } from '../stores.js'
 
     export let battleId = 0
+    export let notifications
 
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'

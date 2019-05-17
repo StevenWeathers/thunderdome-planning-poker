@@ -1,6 +1,7 @@
 <script>
     import { warrior } from '../stores.js'
 
+    export let notifications
     let warriorName = ''
 
     function createWarrior(e) {
@@ -23,7 +24,9 @@
                     id: newWarrior.id,
                     name: newWarrior.name
                 })
-            });
+            }).catch(function(error) {
+                notifications.danger("Error encountered registering warrior")
+            })
     }
 </script>
 

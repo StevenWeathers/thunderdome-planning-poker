@@ -1,6 +1,8 @@
 <script>
     import Navaid from 'navaid'
     import { onDestroy } from 'svelte'
+    import Notifications from '@beyonk/svelte-notifications'
+    
 
     import Landing from './pages/Landing.svelte'
     import Battle from './pages/Battle.svelte'
@@ -9,9 +11,20 @@
 
     const footerLinkClasses = 'no-underline text-teal hover:text-teal-darker'
 
+    let notifications
+
     let currentPage = {
         route: Landing,
         params: {}
+    }
+
+    let timeout = 10000
+    let themes = { // These are the defaults
+        danger: '#bb2124',
+        success: '#22bb33',
+        warning: '#f0ad4e',
+        info: '#5bc0de',
+        default: '#aaaaaa' // relates to simply '.show()'
     }
 
     const router = Navaid('/')
@@ -38,6 +51,8 @@
     }
 </style>
 
+<Notifications bind:this={notifications} {timeout} {themes} />
+
 <nav class="flex items-center justify-between flex-wrap bg-white p-6" role="navigation" aria-label="main navigation">
     <div class="flex items-center flex-no-shrink mr-6">
         <a href="/">
@@ -49,9 +64,9 @@
 <section>
     <div class="container mx-auto px-4 py-6 md:py-10">
     {#if !$warrior.id}
-        <RegisterPage />
+        <RegisterPage notifications={notifications} />
     {:else}
-        <svelte:component this={currentPage.route} {...currentPage.params} />
+        <svelte:component this={currentPage.route} {...currentPage.params} notifications={notifications} />
     {/if}
     </div>
 </section>

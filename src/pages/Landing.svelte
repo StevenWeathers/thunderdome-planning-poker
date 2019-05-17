@@ -1,6 +1,7 @@
 <script>
     import { warrior } from '../stores.js'
 
+    export let notifications
     let battleName = ''
 
     function createBattle(e) {
@@ -22,7 +23,10 @@
             })
             .then(function(battle) {
                 window.location.href = `/battle/${battle.id}`
-            });
+            })
+            .catch(function(error) {
+                notifications.danger("Error encountered creating battle")
+            })
     }
 </script>
 
