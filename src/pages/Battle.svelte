@@ -180,7 +180,7 @@
         <div class="w-full lg:w-1/4 px-4">
             <div class="bg-white shadow-md mb-4 rounded">
                 <div class="bg-blue p-4 rounded-t">
-                    <h3 class="text-2xl text-white">Users</h3>
+                    <h3 class="text-2xl text-white">Warriors</h3>
                 </div>
 
                 {#each battle.warriors as war (war.id)}
