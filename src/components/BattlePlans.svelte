@@ -8,6 +8,7 @@
     let showAddPlan = false
     let revisePlanId = ''
     let revisePlanName = ''
+    let showCompleted = false
 
     const toggleAddPlan = (planId, planName) => () => {
         if (planId) {
@@ -35,6 +36,15 @@
     const handlePlanDeletion = (planId) => () => {
         sendSocketEvent('burn_plan', planId)
     }
+
+    const toggleShowCompleted = (show) => () => {
+        showCompleted = show
+    }
+
+    $: pointedPlans = plans.filter(p => p.points !== '')
+    $: unpointedPlans = plans.filter(p => p.points === '')
+
+    $: plansToShow = showCompleted ? pointedPlans : unpointedPlans
 </script>
 
 <div class="bg-white shadow-md mb-4 rounded">
@@ -54,10 +64,29 @@
         </div>
     </div>
 
-    {#each plans as plan (plan.id)}
+    <ul class="list-reset flex border-b border-grey-light">
+        <li class="-mb-px {showCompleted ? '' : 'mr-1'}">
+            <button
+                class="{showCompleted ? 'hover:text-blue-darker text-blue' : 'border-b border-teal text-blue-dark'} bg-white inline-block py-4 px-4 font-semibold"
+                on:click={toggleShowCompleted(false)}
+            >
+                Unpointed ({unpointedPlans.length})
+            </button>
+        </li>
+        <li class="mr-1 {showCompleted ? 'mr-1' : ''}">
+            <button
+                class="{showCompleted ? 'border-b border-teal text-blue-dark' : 'hover:text-blue-darker text-blue'} bg-white inline-block py-4 px-4 font-semibold"
+                on:click={toggleShowCompleted(true)}
+            >
+                Pointed ({pointedPlans.length})
+            </button>
+        </li>
+    </ul>
+
+    {#each plansToShow as plan (plan.id)}
         <div class="flex flex-wrap border-b border-grey-light p-4">
             <div class="w-full lg:w-3/4 mb-4 lg:mb-0">
-                <div class="inline-block font-bold">{plan.name}</div>
+                <div class="inline-block font-bold align-middle">{plan.name}</div>
                 &nbsp;
                 {#if plan.points !== ''}<div class="inline-block font-bold text-green-dark border-green border px-2 py-1 rounded ml-2">{plan.points}</div>{/if}
             </div>
