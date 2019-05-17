@@ -113,6 +113,12 @@ func SetupDB() {
 		"ALTER TABLE battles ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW()"); err != nil {
 		log.Fatal(err)
 	}
+
+	// on server start reset all warriors to active false for battles
+	if _, err := db.Exec(
+		`UPDATE battles_warriors SET active = false WHERE active = true`); err != nil {
+		log.Println(err)
+	}
 }
 
 //CreateBattle adds a new battle to the map
