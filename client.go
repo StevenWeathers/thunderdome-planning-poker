@@ -214,6 +214,8 @@ func (s *subscription) writePump() {
 
 // serveWs handles websocket requests from the peer.
 func serveWs(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	battleID := vars["id"]
 	warrior, err := r.Cookie("warrior")
 	var warriorID string
 
@@ -229,7 +231,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 
 	warriorID = keyVal["id"]
 
-	_, warErr := GetWarrior(warriorID)
+	_, warErr := GetWarrior(battleID, warriorID)
 
 	if warErr != nil {
 		log.Println("error finding warrior : " + warErr.Error() + "\n")
@@ -242,9 +244,6 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
-	vars := mux.Vars(r)
-	battleID := vars["id"]
 
 	c := &connection{send: make(chan []byte, 256), ws: ws}
 	s := subscription{c, battleID, warriorID}

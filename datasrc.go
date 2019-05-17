@@ -200,13 +200,23 @@ func CreateWarrior(WarriorName string) *Warrior {
 }
 
 // GetWarrior gets a warrior from db by ID
-func GetWarrior(WarriorID string) (*Warrior, error) {
+func GetWarrior(BattleID string, WarriorID string) (*Warrior, error) {
+	var active bool
 	var w Warrior
 
 	e := db.QueryRow("SELECT id, name FROM warriors WHERE id = $1", WarriorID).Scan(&w.WarriorID, &w.WarriorName)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("Not found")
+		return nil, errors.New("Warrior Not found")
+	}
+
+	err := db.QueryRow("SELECT active FROM battles_warriors WHERE battle_id = $1 AND warrior_id = $2", BattleID, WarriorID).Scan(&active)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if active {
+		return nil, errors.New("Warrior Already Active in Battle")
 	}
 
 	return &w, nil
