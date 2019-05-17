@@ -534,3 +534,32 @@ func SetBattleLeader(BattleID string, warriorID string, LeaderID string) (*Battl
 
 	return battle, nil
 }
+
+// DeleteBattle removes all battle associations and the battle itself from DB by BattleID
+func DeleteBattle(BattleID string, warriorID string) error {
+	err := ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return errors.New("Incorrect permissions")
+	}
+
+	// delete plans associated with battle
+	if _, err := db.Exec(
+		`DELETE FROM plans WHERE battle_id = $1`, BattleID); err != nil {
+		log.Println(err)
+	}
+
+	// delete battle_warriors associations
+	if _, err := db.Exec(
+		`DELETE FROM battles_warriors WHERE battle_id = $1`, BattleID); err != nil {
+		log.Println(err)
+	}
+
+	// delete battle itself
+	if _, err := db.Exec(
+		`DELETE FROM battles WHERE id = $1`, BattleID); err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}

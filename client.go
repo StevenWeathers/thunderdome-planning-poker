@@ -169,6 +169,13 @@ func (s subscription) readPump() {
 
 			updatedBattle, _ := json.Marshal(battle)
 			msg = CreateSocketEvent("battle_updated", string(updatedBattle))
+		case "concede_battle":
+			err := DeleteBattle(battleID, warriorID)
+			if err != nil {
+				badEvent = true
+				break
+			}
+			msg = CreateSocketEvent("battle_conceded", "")
 		default:
 		}
 

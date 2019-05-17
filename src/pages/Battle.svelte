@@ -91,6 +91,10 @@
                     case "battle_updated":
                         battle = JSON.parse(parsedEvent.value)
                         break;
+                    case "battle_conceded":
+                        // battle over, goodbye.
+                        window.location.href = '/'
+                        break;
                     default:
                         break;
                 }
@@ -102,7 +106,7 @@
                 socketError = true
             }
         })
-        .catch(function() {
+        .catch(function(err) {
             // battle not found or server issue, redirect to landing
             window.location.href = '/'
         })
@@ -149,6 +153,10 @@
 
         return voted !== undefined ? voted.vote : '' 
     }
+
+    function concedeBattle() {
+        sendSocketEvent("concede_battle", "")
+    }
 </script>
 
 <svelte:head>
@@ -193,7 +201,19 @@
                 {/if}
             </div>
 
-            <InviteWarrior hostname={hostname} battleId={battle.id} />
+            <div class="bg-white shadow-md p-5 mb-4 rounded">
+                <InviteWarrior hostname={hostname} battleId={battle.id} />
+                {#if battle.leaderId === $warrior.id}
+                    <div class="mt-4 text-right">
+                        <button
+                            class="bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-2 border border-red hover:border-transparent rounded"
+                            on:click={concedeBattle}
+                        >
+                            Delete Battle
+                        </button>
+                    </div>
+                {/if}
+            </div>
         </div>
     </div>
 {:else if socketError}
