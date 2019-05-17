@@ -63,6 +63,14 @@
                         battle.votingLocked = false
                         vote = ''
                         break;
+                    case "plan_skipped":
+                        const updatedPlans2 = JSON.parse(parsedEvent.value)
+                        currentPlanName = '[Voting not started]'
+                        battle.plans = updatedPlans2                        
+                        battle.activePlanId = ''
+                        battle.votingLocked = true
+                        vote = ''
+                        break;
                     case "vote_activity":
                         battle.plans = JSON.parse(parsedEvent.value)
                         break;
@@ -73,6 +81,7 @@
                     case "plan_finalized":
                         battle.plans = JSON.parse(parsedEvent.value)
                         battle.activePlanId = ''
+                        currentPlanName = '[Voting not started]'
                         vote = ''
                         break;
                     case "plan_revised":
@@ -83,6 +92,7 @@
 
                         if (battle.activePlanId !== '' && postBurnPlans.filter(p => p.id === battle.activePlanId).length === 0) {
                             battle.activePlanId = ''
+                            currentPlanName = '[Voting not started]'
                         }
 
                         battle.plans = postBurnPlans

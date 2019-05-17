@@ -118,6 +118,14 @@ func (s subscription) readPump() {
 			}
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_activated", string(updatedPlans))
+		case "skip_plan":
+			plans, err := SkipPlan(battleID, warriorID, keyVal["value"])
+			if err != nil {
+				badEvent = true
+				break
+			}
+			updatedPlans, _ := json.Marshal(plans)
+			msg = CreateSocketEvent("plan_skipped", string(updatedPlans))
 		case "end_voting":
 			plans, err := EndPlanVoting(battleID, warriorID, keyVal["value"])
 			if err != nil {

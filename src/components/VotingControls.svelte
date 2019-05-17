@@ -10,6 +10,10 @@
         sendSocketEvent('end_voting', planId)
     }
 
+    const skipPlan = () => {
+        sendSocketEvent('skip_plan', planId)
+    }
+
     function handleSubmit(event) {
         event.preventDefault()
 
@@ -24,8 +28,9 @@
 
 {#if planId != ''}
     <div class="p-4">
+        <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mb-2 rounded w-full" on:click={skipPlan}>Skip Plan</button>
         {#if !votingLocked}
-            <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded w-full" on:click={endPlanVoting} disabled={votingLocked}>Finish Voting</button>
+            <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded w-full" on:click={endPlanVoting}>Finish Voting</button>
         {:else}
             <form on:submit={handleSubmit}>
                 <legend class="text-xl mb-2">Final Points</legend>

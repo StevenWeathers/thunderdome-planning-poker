@@ -444,6 +444,29 @@ func EndPlanVoting(BattleID string, warriorID string, PlanID string) ([]*Plan, e
 	return plans, nil
 }
 
+// SkipPlan sets plan to active: false and unsets battle's activePlanId
+func SkipPlan(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
+	err := ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return nil, errors.New("Incorrect permissions")
+	}
+
+	// set current to false
+	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false WHERE battle_id = $1`, BattleID); err != nil {
+		log.Println(err)
+	}
+
+	// set battle VotingLocked and activePlanId to null
+	if _, err := db.Exec(
+		`UPDATE battles SET updated_date = NOW(), voting_locked = true, active_plan_id = null WHERE id = $1`, BattleID); err != nil {
+		log.Println(err)
+	}
+
+	plans := GetPlans(BattleID)
+
+	return plans, nil
+}
+
 // RevisePlanName updates the plan name by ID
 func RevisePlanName(BattleID string, warriorID string, PlanID string, PlanName string) ([]*Plan, error) {
 	err := ConfirmLeader(BattleID, warriorID)
