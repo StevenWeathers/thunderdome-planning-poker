@@ -1,7 +1,7 @@
 <script>
     import Navaid from 'navaid'
     import { onDestroy } from 'svelte'
-    import Notifications from '@beyonk/svelte-notifications'
+    import Notifications from './components/Notifications.svelte'
     
 
     import Landing from './pages/Landing.svelte'
