@@ -18,15 +18,6 @@
         params: {}
     }
 
-    let timeout = 10000
-    let themes = { // These are the defaults
-        danger: '#bb2124',
-        success: '#22bb33',
-        warning: '#f0ad4e',
-        info: '#5bc0de',
-        default: '#aaaaaa' // relates to simply '.show()'
-    }
-
     const router = Navaid('/')
         .on('/', () => {
             currentPage = {
@@ -51,7 +42,7 @@
     }
 </style>
 
-<Notifications bind:this={notifications} {timeout} {themes} />
+<Notifications bind:this={notifications} />
 
 <nav class="flex items-center justify-between flex-wrap bg-white p-6" role="navigation" aria-label="main navigation">
     <div class="flex items-center flex-no-shrink mr-6">

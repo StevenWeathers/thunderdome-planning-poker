@@ -48,8 +48,15 @@
                 const parsedEvent = JSON.parse(evt.data)
 
                 switch(parsedEvent.type) {
-                    case "user_activity":
+                    case "warrior_joined":
                         battle.warriors = JSON.parse(parsedEvent.value)
+                        const joinedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
+                        notifications.success(`${joinedWarrior.name} joined.`)
+                        break;
+                    case "warrior_retreated":
+                        const leftWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
+                        battle.warriors = JSON.parse(parsedEvent.value)
+                        notifications.danger(`${leftWarrior.name} retreated.`)
                         break;
                     case "plan_added":
                         battle.plans = JSON.parse(parsedEvent.value)
@@ -70,8 +77,12 @@
                         battle.activePlanId = ''
                         battle.votingLocked = true
                         vote = ''
+                        notifications.warning(`Plan skipped.`)
                         break;
                     case "vote_activity":
+                        const votedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
+                        notifications.success(`${votedWarrior.name} voted.`)
+
                         battle.plans = JSON.parse(parsedEvent.value)
                         break;
                     case "voting_ended":

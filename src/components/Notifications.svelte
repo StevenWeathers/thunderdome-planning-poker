@@ -135,7 +135,7 @@
 		toasts = toasts.filter(t => t.id != id)
 	}
 	
-	export function show (msg, timeout = 3000, theme = 'default') {
+	export function show (msg, timeout = 1000, theme = 'default') {
 		createToast(msg, theme, timeout)
 	}
 	
