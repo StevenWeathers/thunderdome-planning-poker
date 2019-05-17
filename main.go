@@ -8,12 +8,22 @@ import (
 
 	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/securecookie"
 )
+
+var AppDomain string
+var SecureCookieHashkey []byte
+var SecureCookieName string = "warriorId"
+var Sc = securecookie.New([]byte("some-secret"), nil)
 
 func main() {
 	SetupDB() // Sets up DB Connection, and if necessary Tables
 
 	var listenPort = fmt.Sprintf(":%s", GetEnv("PORT", "8080"))
+	AppDomain = GetEnv("APP_DOMAIN", "thunderdome.dev")
+	SecureCookieHashkey = []byte(GetEnv("COOKIE_HASHKEY", "strongest-avenger"))
+	Sc = securecookie.New(SecureCookieHashkey, nil)
+
 	go h.run()
 
 	// box := packr.New("webui", "./dist")

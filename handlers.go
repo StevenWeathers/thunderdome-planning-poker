@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -34,7 +35,27 @@ func RecruitWarriorHandler(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(body, &keyVal) // check for errors
 	WarriorName := keyVal["warriorName"]
 
-	newWarrior := CreateWarrior(WarriorName)
+	newWarrior, err := CreateWarrior(WarriorName)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	encoded, err := Sc.Encode(SecureCookieName, newWarrior.WarriorID)
+	if err == nil {
+		cookie := &http.Cookie{
+			Name:     SecureCookieName,
+			Value:    encoded,
+			Path:     "/",
+			HttpOnly: true,
+			Domain:   AppDomain,
+		}
+		http.SetCookie(w, cookie)
+	} else {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	RespondWithJSON(w, http.StatusOK, newWarrior)
 }

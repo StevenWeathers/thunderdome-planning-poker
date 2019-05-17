@@ -11,6 +11,8 @@ services:
       - db
     networks:
       - asgard
+    environment:
+      - APP_DOMAIN: localhost
   db: 
     image: postgres:latest
     restart: always

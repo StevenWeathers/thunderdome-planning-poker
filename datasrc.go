@@ -186,7 +186,7 @@ func ConfirmLeader(BattleID string, warriorID string) error {
 }
 
 // CreateWarrior adds a new warrior to the db
-func CreateWarrior(WarriorName string) *Warrior {
+func CreateWarrior(WarriorName string) (*Warrior, error) {
 	newID, _ := uuid.NewUUID()
 	id := newID.String()
 
@@ -194,9 +194,10 @@ func CreateWarrior(WarriorName string) *Warrior {
 	e := db.QueryRow(`INSERT INTO warriors (id, name) VALUES ($1, $2) RETURNING id`, id, WarriorName).Scan(&WarriorID)
 	if e != nil {
 		log.Println(e)
+		return nil, errors.New("Unable to create new warrior")
 	}
 
-	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName}
+	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName}, nil
 }
 
 // GetWarrior gets a warrior from db by ID

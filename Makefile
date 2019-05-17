@@ -46,7 +46,7 @@ build-windows:
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -o $(BINARY_WINDOWS) -v
 
 run:
-	DB_HOST="localhost" ./$(BINARY_NAME)
+	DB_HOST="localhost" APP_DOMAIN="localhost" ./$(BINARY_NAME)
 
 release:
 	$(GORELEASER)

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -216,20 +215,22 @@ func (s *subscription) writePump() {
 func serveWs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	battleID := vars["id"]
-	warrior, err := r.Cookie("warrior")
 	var warriorID string
 
-	if err != nil {
+	if cookie, err := r.Cookie(SecureCookieName); err == nil {
+		var value string
+		if err = Sc.Decode(SecureCookieName, cookie.Value, &value); err == nil {
+			warriorID = value
+		} else {
+			log.Println("error in reading warrior cookie : " + err.Error() + "\n")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	} else {
 		log.Println("error in reading warrior cookie : " + err.Error() + "\n")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	value, _ := url.PathUnescape(warrior.Value)
-	keyVal := make(map[string]string)
-	json.Unmarshal([]byte(value), &keyVal) // check for errors
-
-	warriorID = keyVal["id"]
 
 	_, warErr := GetWarrior(battleID, warriorID)
 
