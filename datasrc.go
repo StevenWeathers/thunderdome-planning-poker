@@ -38,11 +38,12 @@ type Vote struct {
 
 // Plan aka Story structure
 type Plan struct {
-	PlanID     string  `json:"id"`
-	PlanName   string  `json:"name"`
-	Votes      []*Vote `json:"votes"`
-	Points     string  `json:"points"`
-	PlanActive bool    `json:"active"`
+	PlanID      string  `json:"id"`
+	PlanName    string  `json:"name"`
+	Votes       []*Vote `json:"votes"`
+	Points      string  `json:"points"`
+	PlanActive  bool    `json:"active"`
+	PlanSkipped bool    `json:"skipped"`
 }
 
 // SetupDB runs db migrations, sets up a db connection pool
@@ -113,6 +114,11 @@ func SetupDB() {
 
 	if _, err := db.Exec(
 		"ALTER TABLE battles ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW()"); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE plans ADD COLUMN IF NOT EXISTS skipped BOOL DEFAULT false"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -290,17 +296,19 @@ func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 // GetPlans retrieves plans for given battle from db
 func GetPlans(BattleID string) []*Plan {
 	var plans = make([]*Plan, 0)
-	planRows, plansErr := db.Query("SELECT id, name, points, active, votes FROM plans WHERE battle_id = $1 ORDER BY created_date", BattleID)
+	planRows, plansErr := db.Query("SELECT id, name, points, active, skipped, votes FROM plans WHERE battle_id = $1 ORDER BY created_date", BattleID)
 	if plansErr == nil {
 		defer planRows.Close()
 		for planRows.Next() {
 			var v string
 			var p = &Plan{PlanID: "",
-				PlanName:   "",
-				Votes:      make([]*Vote, 0),
-				Points:     "",
-				PlanActive: false}
-			if err := planRows.Scan(&p.PlanID, &p.PlanName, &p.Points, &p.PlanActive, &v); err != nil {
+				PlanName:    "",
+				Votes:       make([]*Vote, 0),
+				Points:      "",
+				PlanActive:  false,
+				PlanSkipped: false,
+			}
+			if err := planRows.Scan(&p.PlanID, &p.PlanName, &p.Points, &p.PlanActive, &p.PlanSkipped, &v); err != nil {
 				log.Println(err)
 			} else {
 				err = json.Unmarshal([]byte(v), &p.Votes)
@@ -358,7 +366,7 @@ func ActivatePlanVoting(BattleID string, warriorID string, PlanID string) ([]*Pl
 
 	// set PlanID to true
 	if _, err := db.Exec(
-		`UPDATE plans SET updated_date = NOW(), active = true, points = '', votes = '[]'::jsonb WHERE id = $1`, PlanID); err != nil {
+		`UPDATE plans SET updated_date = NOW(), active = true, skipped = false, points = '', votes = '[]'::jsonb WHERE id = $1`, PlanID); err != nil {
 		log.Println(err)
 	}
 
@@ -421,6 +429,49 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 	return plans
 }
 
+// RetractVote removes a warriors vote for the plan
+func RetractVote(BattleID string, WarriorID string, PlanID string) []*Plan {
+	// get plan
+	var v string
+	e := db.QueryRow("SELECT votes FROM plans WHERE id = $1", PlanID).Scan(&v)
+	if e != nil {
+		log.Println(e)
+		// return nil, errors.New("Plan Not found")
+	}
+	var votes []*Vote
+	err := json.Unmarshal([]byte(v), &votes)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var voteIndex int
+	var voteFound bool
+
+	// find vote index
+	for vi := range votes {
+		if votes[vi].WarriorID == WarriorID {
+			voteFound = true
+			voteIndex = vi
+			break
+		}
+	}
+
+	if voteFound {
+		votes = append(votes[:voteIndex], votes[voteIndex+1:]...) 
+	}
+
+	// update votes on Plan
+	var votesJSON, _ = json.Marshal(votes)
+	if _, err := db.Exec(
+		`UPDATE plans SET updated_date = NOW(), votes = $1 WHERE id = $2`, string(votesJSON), PlanID); err != nil {
+		log.Println(err)
+	}
+
+	plans := GetPlans(BattleID)
+
+	return plans
+}
+
 // EndPlanVoting sets plan to active: false
 func EndPlanVoting(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
 	err := ConfirmLeader(BattleID, warriorID)
@@ -452,7 +503,7 @@ func SkipPlan(BattleID string, warriorID string, PlanID string) ([]*Plan, error)
 	}
 
 	// set current to false
-	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false WHERE battle_id = $1`, BattleID); err != nil {
+	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false, skipped = true WHERE battle_id = $1`, BattleID); err != nil {
 		log.Println(err)
 	}
 

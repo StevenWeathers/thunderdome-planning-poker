@@ -85,6 +85,12 @@
 
                         battle.plans = JSON.parse(parsedEvent.value)
                         break;
+                    case "vote_retracted":
+                        const devotedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
+                        notifications.warning(`${devotedWarrior.name} retracted vote.`)
+
+                        battle.plans = JSON.parse(parsedEvent.value)
+                        break;
                     case "voting_ended":
                         battle.plans = JSON.parse(parsedEvent.value)
                         battle.votingLocked = true
@@ -153,6 +159,12 @@
         sendSocketEvent('vote', JSON.stringify(voteValue))
     }
 
+    const handleUnvote = () => {
+        vote = ''
+
+        sendSocketEvent('retract_vote', battle.activePlanId)
+    }
+
     // Determine if the warrior has voted on active Plan yet
     function didVote(warriorId) {
         if (battle.activePlanId === "") {
@@ -195,7 +207,7 @@
             <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
                 {#each points as point}
                     <div class="w-1/4 md:w-1/6 px-2 mb-4">
-                        <PointCard point={point} active={vote === point} on:voted={handleVote} isLocked={battle.votingLocked} />
+                        <PointCard point={point} active={vote === point} on:voted={handleVote} on:voteRetraction={handleUnvote} isLocked={battle.votingLocked} />
                     </div>
                 {/each}
             </div>

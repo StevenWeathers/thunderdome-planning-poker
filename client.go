@@ -106,6 +106,13 @@ func (s subscription) readPump() {
 
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("vote_activity", string(updatedPlans), warriorID)
+		case "retract_vote":
+			PlanID := keyVal["value"]
+
+			plans := RetractVote(battleID, warriorID, PlanID)
+
+			updatedPlans, _ := json.Marshal(plans)
+			msg = CreateSocketEvent("vote_retracted", string(updatedPlans), warriorID)
 		case "add_plan":
 			plans, err := CreatePlan(battleID, warriorID, keyVal["value"])
 			if err != nil {
