@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -211,9 +212,9 @@ func (s *subscription) writePump() {
 	}
 }
 
-// clearWarriorCookies wipes the frontend and backend cookies
+// ClearWarriorCookies wipes the frontend and backend cookies
 // used in the event of bad cookie reads
-func clearWarriorCookies(w http.ResponseWriter) {
+func ClearWarriorCookies(w http.ResponseWriter) {
 	feCookie := &http.Cookie{
 		Name:    "warrior",
 		Value:   "",
@@ -232,10 +233,8 @@ func clearWarriorCookies(w http.ResponseWriter) {
 	http.SetCookie(w, beCookie)
 }
 
-// serveWs handles websocket requests from the peer.
-func serveWs(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	battleID := vars["id"]
+// ValidateWarriorCookie returns the warriorID from secure cookies or errors if failures getting it
+func ValidateWarriorCookie(w http.ResponseWriter, r *http.Request) (string, error) {
 	var warriorID string
 
 	if cookie, err := r.Cookie(SecureCookieName); err == nil {
@@ -244,22 +243,33 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 			warriorID = value
 		} else {
 			log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-			clearWarriorCookies(w)
-			w.WriteHeader(http.StatusUnauthorized)
-			return
+			ClearWarriorCookies(w)
+			return "", errors.New("invalid warrior cookies")
 		}
 	} else {
 		log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-		clearWarriorCookies(w)
+		ClearWarriorCookies(w)
+		return "", errors.New("invalid warrior cookies")
+	}
+
+	return warriorID, nil
+}
+
+// serveWs handles websocket requests from the peer.
+func serveWs(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	battleID := vars["id"]
+	warriorID, cookieErr := ValidateWarriorCookie(w, r)
+	if cookieErr != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	_, warErr := GetWarrior(battleID, warriorID)
+	_, warErr := GetBattleWarrior(battleID, warriorID)
 
 	if warErr != nil {
 		log.Println("error finding warrior : " + warErr.Error() + "\n")
-		clearWarriorCookies(w)
+		ClearWarriorCookies(w)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}

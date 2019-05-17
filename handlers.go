@@ -11,14 +11,33 @@ import (
 
 // CreateBattleHandler handles creating a battle (arena)
 func CreateBattleHandler(w http.ResponseWriter, r *http.Request) {
-	body, _ := ioutil.ReadAll(r.Body) // check for errors
+	warriorID, cookieErr := ValidateWarriorCookie(w, r)
+	if cookieErr != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	_, warErr := GetWarrior(warriorID)
+
+	if warErr != nil {
+		log.Println("error finding warrior : " + warErr.Error() + "\n")
+		ClearWarriorCookies(w)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
+	if bodyErr != nil {
+		log.Println("error in reading warrior cookie : " + bodyErr.Error() + "\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	keyVal := make(map[string]string)
-	json.Unmarshal(body, &keyVal)  // check for errors
-	LeaderID := keyVal["leaderId"] // @TODO get this from https cookie when implemented
+	json.Unmarshal(body, &keyVal) // check for errors
 	BattleName := keyVal["battleName"]
 
-	newBattle, err := CreateBattle(LeaderID, BattleName)
+	newBattle, err := CreateBattle(warriorID, BattleName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
