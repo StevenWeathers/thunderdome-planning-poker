@@ -95,9 +95,9 @@
                 }
             }
 
-            ws.onerror = function (e) {
+            ws.onerror = function (err) {
                 // @TODO - add toast or some visual error notifications...
-                console.log(`ERROR: ${e}`)
+                console.log(`ERROR: ${JSON.stringify(err, ["message", "arguments", "type", "name"])}`)
                 socketError = true
             }
         })

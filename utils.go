@@ -20,6 +20,7 @@ func GetEnv(key string, fallback string) string {
 	return result
 }
 
+// GetIntEnv gets an environment variable and converts it to an Int
 func GetIntEnv(key string, fallback int) int {
 	var intResult = fallback
 	var stringResult = os.Getenv(key)

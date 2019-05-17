@@ -11,9 +11,16 @@ import (
 	"github.com/gorilla/securecookie"
 )
 
+// AppDomain is the domain of the application for cookie securing
 var AppDomain string
+
+// SecureCookieHashkey is used to hash the secure cookie
 var SecureCookieHashkey []byte
-var SecureCookieName string = "warriorId"
+
+// SecureCookieName is obviously the name of the secure cookie
+var SecureCookieName = "warriorId"
+
+// Sc is the secure cookie instance with secret hash
 var Sc = securecookie.New([]byte("some-secret"), nil)
 
 func main() {

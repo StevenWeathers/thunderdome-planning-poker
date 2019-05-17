@@ -45,6 +45,8 @@ type Plan struct {
 	PlanActive bool    `json:"active"`
 }
 
+// SetupDB runs db migrations, sets up a db connection pool
+// and sets previously active warriors to false during startup
 func SetupDB() {
 	var (
 		host     = GetEnv("DB_HOST", "db")
@@ -156,20 +158,21 @@ func GetBattle(BattleID string) (*Battle, error) {
 		ActivePlanID: ""}
 
 	// get battle
-	var activePlanId sql.NullString
-	e := db.QueryRow("SELECT id, name, leader_id, voting_locked, active_plan_id FROM battles WHERE id = $1", BattleID).Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &activePlanId)
+	var ActivePlanID sql.NullString
+	e := db.QueryRow("SELECT id, name, leader_id, voting_locked, active_plan_id FROM battles WHERE id = $1", BattleID).Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &ActivePlanID)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Not found")
 	}
 
-	b.ActivePlanID = activePlanId.String
+	b.ActivePlanID = ActivePlanID.String
 	b.Warriors = GetActiveWarriors(BattleID)
 	b.Plans = GetPlans(BattleID)
 
 	return b, nil
 }
 
+// ConfirmLeader confirms the warrior is infact leader of the battle
 func ConfirmLeader(BattleID string, warriorID string) error {
 	var leaderID string
 	e := db.QueryRow("SELECT leader_id FROM battles WHERE id = $1", BattleID).Scan(&leaderID)
@@ -178,11 +181,11 @@ func ConfirmLeader(BattleID string, warriorID string) error {
 		return errors.New("Battle Not found")
 	}
 
-	if leaderID == warriorID {
-		return nil
-	} else {
+	if leaderID != warriorID {
 		return errors.New("Not Leader")
 	}
+
+	return nil
 }
 
 // CreateWarrior adds a new warrior to the db

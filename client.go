@@ -211,6 +211,27 @@ func (s *subscription) writePump() {
 	}
 }
 
+// clearWarriorCookies wipes the frontend and backend cookies
+// used in the event of bad cookie reads
+func clearWarriorCookies(w http.ResponseWriter) {
+	feCookie := &http.Cookie{
+		Name:    "warrior",
+		Value:   "",
+		Path:    "/",
+		Expires: time.Unix(0, 0),
+	}
+	beCookie := &http.Cookie{
+		Name:     SecureCookieName,
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, feCookie)
+	http.SetCookie(w, beCookie)
+}
+
 // serveWs handles websocket requests from the peer.
 func serveWs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -223,12 +244,14 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 			warriorID = value
 		} else {
 			log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-			w.WriteHeader(http.StatusBadRequest)
+			clearWarriorCookies(w)
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 	} else {
 		log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-		w.WriteHeader(http.StatusBadRequest)
+		clearWarriorCookies(w)
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
@@ -236,7 +259,8 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 
 	if warErr != nil {
 		log.Println("error finding warrior : " + warErr.Error() + "\n")
-		w.WriteHeader(http.StatusBadRequest)
+		clearWarriorCookies(w)
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
