@@ -131,6 +131,10 @@
                         // battle over, goodbye.
                         window.location.href = '/'
                         break;
+                    case "jab_warrior":
+                        const warriorToJab = battle.warriors.find(w => w.id === parsedEvent.value)
+                        notifications.info(`pst... ${warriorToJab.name}, waiting on you to vote.`)
+                        break;
                     default:
                         break;
                 }

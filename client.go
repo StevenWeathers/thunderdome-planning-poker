@@ -65,7 +65,6 @@ func (s subscription) readPump() {
 	defer func() {
 		BattleID := s.arena
 		WarriorID := s.warriorID
-		log.Println(s.warriorID + " has left the arena")
 
 		Warriors := RetreatWarrior(BattleID, WarriorID)
 		updatedWarriors, _ := json.Marshal(Warriors)
@@ -195,6 +194,12 @@ func (s subscription) readPump() {
 				break
 			}
 			msg = CreateSocketEvent("battle_conceded", "", "")
+		case "jab_warrior":
+			err := ConfirmLeader(battleID, warriorID)
+			if err != nil {
+				badEvent = true
+				break
+			}
 		default:
 		}
 
@@ -226,7 +231,6 @@ func (s *subscription) writePump() {
 				c.write(websocket.CloseMessage, []byte{})
 				return
 			}
-			log.Println(string(message))
 			if err := c.write(websocket.TextMessage, message); err != nil {
 				return
 			}

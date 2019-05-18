@@ -9,6 +9,10 @@
     function promoteLeader() {
         sendSocketEvent('promote_leader', warrior.id)
     }
+
+    function jabWarrior() {
+        sendSocketEvent('jab_warrior', warrior.id)
+    }
 </script>
 
 <div class="border-b border-grey p-4 flex">
@@ -27,6 +31,12 @@
                         class="inline-block align-baseline text-sm text-blue hover:text-blue-darker bg-transparent border-transparent"
                     >
                         Promote
+                    </button>&nbsp;|&nbsp;
+                    <button
+                        on:click={jabWarrior}
+                        class="inline-block align-baseline text-sm text-blue hover:text-blue-darker bg-transparent border-transparent"
+                    >
+                        Nudge
                     </button>
                 {/if}
             </div>
