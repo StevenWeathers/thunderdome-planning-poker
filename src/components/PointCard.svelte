@@ -29,9 +29,9 @@
 </style>
 
 <div
-    class="w-full rounded overflow-hidden shadow-md border {activeColor} {lockedClass} relative"
+    class="w-full rounded overflow-hidden shadow-md border {activeColor} {lockedClass} relative text-3xl lg:text-5xl"
     on:click={voteAction}
 >
-    {#if count}<span class="text-green font-semibold text-5xl inline-block absolute pin-r pin-t p-2">{count}</span>{/if}
-    <div class="py-12 md:py-16 text-3xl text-center lg:text-5xl">{point}</div>
+    {#if count}<span class="text-green font-semibold inline-block absolute pin-r pin-t p-2">{count}</span>{/if}
+    <div class="py-12 md:py-16 text-center">{point}</div>
 </div>
