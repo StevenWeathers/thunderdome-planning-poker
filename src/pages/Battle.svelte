@@ -6,6 +6,7 @@
     import BattlePlans from '../components/BattlePlans.svelte'
     import VotingControls from '../components/VotingControls.svelte'
     import InviteWarrior from '../components/InviteWarrior.svelte'
+    import VoteResults from '../components/VoteResults.svelte'
 
     import { warrior } from '../stores.js'
 
@@ -248,13 +249,17 @@
 
     <div class="flex flex-wrap mb-4 -mx-4">
         <div class="w-full lg:w-3/4 px-4">
-            <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
-                {#each points as point}
-                    <div class="w-1/4 md:w-1/6 px-2 mb-4">
-                        <PointCard point={point} active={vote === point} on:voted={handleVote} on:voteRetraction={handleUnvote} isLocked={battle.votingLocked} />
-                    </div>
-                {/each}
-            </div>
+            {#if battle.activePlanId !== '' && battle.votingLocked === true}
+                <VoteResults plans={battle.plans} activePlanId={battle.activePlanId} points={points} />
+            {:else}
+                <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
+                    {#each points as point}
+                        <div class="w-1/4 md:w-1/6 px-2 mb-4">
+                            <PointCard point={point} active={vote === point} on:voted={handleVote} on:voteRetraction={handleUnvote} isLocked={battle.votingLocked} />
+                        </div>
+                    {/each}
+                </div>
+            {/if}
 
             <BattlePlans
                 plans={battle.plans}
