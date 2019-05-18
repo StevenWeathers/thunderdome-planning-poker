@@ -58,7 +58,7 @@
         </a>
     </div>
     {#if $warrior.name}
-        <div class="text-right">
+        <div class="text-right mt-4 md:mt-0">
             <a
                 href="/battles"
                 class="inline-block mr-4 no-underline bg-transparent hover:bg-teal text-teal-dark font-semibold hover:text-white py-2 px-2 border border-teal hover:border-transparent rounded"
