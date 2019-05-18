@@ -93,3 +93,30 @@ func GetBattleHandler(w http.ResponseWriter, r *http.Request) {
 
 	RespondWithJSON(w, http.StatusOK, battle)
 }
+
+// GetBattlesHandler looks up battles associated with warriorID
+func GetBattlesHandler(w http.ResponseWriter, r *http.Request) {
+	warriorID, cookieErr := ValidateWarriorCookie(w, r)
+	if cookieErr != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	_, warErr := GetWarrior(warriorID)
+
+	if warErr != nil {
+		log.Println("error finding warrior : " + warErr.Error() + "\n")
+		ClearWarriorCookies(w)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	battles, err := GetBattlesByLeader(warriorID)
+
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	RespondWithJSON(w, http.StatusOK, battles)
+}

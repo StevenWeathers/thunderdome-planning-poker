@@ -5,6 +5,7 @@
     
 
     import Landing from './pages/Landing.svelte'
+    import Battles from './pages/Battles.svelte'
     import Battle from './pages/Battle.svelte'
     import RegisterPage from './pages/Register.svelte'
     import { warrior } from './stores.js'
@@ -22,6 +23,12 @@
         .on('/', () => {
             currentPage = {
                 route: Landing,
+                params: {}
+            }
+        })
+        .on('/battles', () => {
+            currentPage = {
+                route: Battles,
                 params: {}
             }
         })
@@ -50,6 +57,16 @@
             <img src="/img/logo.svg" alt="Thunderdome"/>
         </a>
     </div>
+    {#if $warrior.name}
+        <div class="text-right">
+            <a
+                href="/battles"
+                class="inline-block mr-4 no-underline bg-transparent hover:bg-teal text-teal-dark font-semibold hover:text-white py-2 px-2 border border-teal hover:border-transparent rounded"
+            >
+                My Battles
+            </a>
+        </div>
+    {/if}
 </nav>
 
 <section>

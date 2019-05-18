@@ -18,8 +18,14 @@
     let socketError = false
     let points = ['0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?']
     let vote = ''
+    let voteStartTime = new Date().getTime()
     let battle = {}
     let currentPlanName = '[Voting not started]'
+
+    let currentTime = new Date().getTime()
+    let voteCounter
+
+    $: countdown = voteCounter !== null ? timeUnitsBetween(voteStartTime, currentTime) : {}
     
     let ws = {
         send: () => {},
@@ -39,7 +45,13 @@
         .then(function(b) {
             battle = b
             if (battle.activePlanId !== '') {
-                currentPlanName = battle.plans.find(p => p.id === battle.activePlanId).name
+                const activePlan = battle.plans.find(p => p.id === battle.activePlanId)
+                currentPlanName = activePlan.name
+                voteStartTime = new Date(activePlan.voteStartTime).getTime()
+                
+                voteCounter = setInterval(() => {
+                    currentTime = new Date()
+                }, 1000)
             }
 
             ws = new WebSocket(`${socketExtension}://${window.location.host}/api/arena/${battleId}`)
@@ -65,9 +77,16 @@
                         const updatedPlans = JSON.parse(parsedEvent.value)
                         const activePlan = updatedPlans.find(p => p.active)
                         currentPlanName = activePlan.name
+                        voteStartTime = new Date(activePlan.voteStartTime).getTime()
+
                         battle.plans = updatedPlans                        
                         battle.activePlanId = activePlan.id
                         battle.votingLocked = false
+
+                        clearInterval(voteCounter)
+                        voteCounter = setInterval(() => {
+                            currentTime = new Date()
+                        }, 1000)
                         vote = ''
                         break;
                     case "plan_skipped":
@@ -78,6 +97,8 @@
                         battle.votingLocked = true
                         vote = ''
                         notifications.warning(`Plan skipped.`)
+                        clearInterval(voteCounter)
+                        voteCounter = null
                         break;
                     case "vote_activity":
                         const votedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
@@ -94,6 +115,8 @@
                     case "voting_ended":
                         battle.plans = JSON.parse(parsedEvent.value)
                         battle.votingLocked = true
+                        clearInterval(voteCounter)
+                        voteCounter = null
                         break;
                     case "plan_finalized":
                         battle.plans = JSON.parse(parsedEvent.value)
@@ -110,6 +133,8 @@
                         if (battle.activePlanId !== '' && postBurnPlans.filter(p => p.id === battle.activePlanId).length === 0) {
                             battle.activePlanId = ''
                             currentPlanName = '[Voting not started]'
+                            clearInterval(voteCounter)
+                            voteCounter = null
                         }
 
                         battle.plans = postBurnPlans
@@ -190,6 +215,20 @@
     function concedeBattle() {
         sendSocketEvent("concede_battle", "")
     }
+
+    function timeUnitsBetween(startDate, endDate) {
+        let delta = Math.abs(endDate - startDate) / 1000
+        return [
+            ['days', 24 * 60 * 60],
+            ['hours', 60 * 60],
+            ['minutes', 60],
+            ['seconds', 1]
+        ].reduce((acc, [key, value]) => (acc[key] = Math.floor(delta / value), delta -= acc[key] * value, acc), {})
+    }
+
+    function addTimeLeadZero(time) {
+        return ('0' + time).slice(-2)
+    }
 </script>
 
 <svelte:head>
@@ -197,9 +236,16 @@
 </svelte:head>
 
 {#if battle.name && !socketError}
-    <div class="mb-6">
-        <h1>{currentPlanName}</h1>
-        <h2 class="text-grey-darker">{battle.name}</h2>
+    <div class="mb-6 flex flex-wrap">
+        <div class="w-2/3">
+            <h1>{currentPlanName}</h1>
+            <h2 class="text-grey-darker">{battle.name}</h2>
+        </div>
+        <div class="w-1/3 text-right font-semibold text-4xl text-grey-darker">
+            {#if countdown.seconds !== undefined}
+                {#if countdown.hours !== 0}{addTimeLeadZero(countdown.hours)}:{/if}{addTimeLeadZero(countdown.minutes)}:{addTimeLeadZero(countdown.seconds)}
+            {/if}
+        </div>
     </div>
 
     <div class="flex flex-wrap mb-4 -mx-4">
