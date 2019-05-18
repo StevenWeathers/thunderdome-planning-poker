@@ -1,32 +1,26 @@
 <script>
     import VoteIcon from './VoteIcon.svelte'
+    import PointCard from '../components/PointCard.svelte'
 
     export let activePlanId = ''
     export let plans = []
+    export let points = []
     
     function compileVoteCounts() {
         const currentPlan = plans.find(p => p.id === activePlanId)
-        const voteCounts = currentPlan.votes.reduce((obj, v) => {
+        return currentPlan.votes.reduce((obj, v) => {
             obj[v.vote] = (obj[v.vote] || 0) + 1;
             return obj;
         }, {})
-        const voteCountsArray = Object.keys(voteCounts).map(k => ({
-                vote: k,
-                count: voteCounts[k]
-        }))
-
-        return voteCountsArray
     }
 
     let counts = compileVoteCounts()
 </script>
 
-<div class="mb-6">
-    <h2 class="text-center">Vote Results</h2>
- 
-    <div class="w-full">
-        {#each counts as {vote, count}}
-            <div><VoteIcon />{vote} : ({count})</div>
-        {/each}
-    </div>
+<div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
+    {#each points as point}
+        <div class="w-1/4 md:w-1/6 px-2 mb-4">
+            <PointCard point={point} isLocked={true} count={counts[point]} />
+        </div>
+    {/each}
 </div>

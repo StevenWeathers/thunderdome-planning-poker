@@ -6,11 +6,15 @@
     export let point = '1'
     export let active = false
     export let isLocked = true
+    export let count = 0
 
     $: activeColor = active ? 'border-green bg-green-lightest text-green-dark' : 'border-grey-light bg-white'
-    $: lockedClass = isLocked ? 'opacity-50 cursor-not-allowed' : ''
+    $: lockedClass = isLocked ? 'opacity-75 cursor-not-allowed' : 'cursor-pointer'
 
     function voteAction() {
+        if (isLocked) {
+            return false
+        }
         if (!active) {
             dispatch('voted', {
                 point
@@ -24,10 +28,10 @@
 <style>
 </style>
 
-<button
-    class="w-full py-12 md:py-16 rounded overflow-hidden shadow-md border {activeColor} {lockedClass} text-3xl lg:text-5xl"
+<div
+    class="w-full rounded overflow-hidden shadow-md border {activeColor} {lockedClass} relative"
     on:click={voteAction}
-    disabled={isLocked}
 >
-    {point}
-</button>
+    {#if count}<span class="text-green font-semibold text-5xl inline-block absolute pin-r pin-t p-2">{count}</span>{/if}
+    <div class="py-12 md:py-16 text-3xl text-center lg:text-5xl">{point}</div>
+</div>
