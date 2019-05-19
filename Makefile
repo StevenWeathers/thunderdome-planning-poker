@@ -48,6 +48,12 @@ build-windows:
 run:
 	DB_HOST="localhost" APP_DOMAIN="localhost" ./$(BINARY_NAME)
 
+dev: 
+	$(NPMBUILD)
+	$(STATICPACKCMD)
+	$(GOBUILD) -o $(BINARY_NAME) -v
+	DB_HOST="localhost" APP_DOMAIN="localhost" ./$(BINARY_NAME)
+
 release:
 	$(GORELEASER)
 
