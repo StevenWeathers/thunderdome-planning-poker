@@ -1,10 +1,12 @@
 import svelte from 'rollup-plugin-svelte'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
+import livereload from 'rollup-plugin-livereload'
 import { terser } from 'rollup-plugin-terser'
 import copy from 'rollup-plugin-copy'
 import del from 'rollup-plugin-delete'
-import html from 'rollup-plugin-bundle-html'
+
+const production = !process.env.ROLLUP_WATCH
 
 export default {
   input: 'src/main.js',
@@ -12,17 +14,17 @@ export default {
     sourcemap: false,
     format: 'iife',
     name: 'app',
-    file: 'dist/js/bundle.[hash].js'
+    file: 'dist/js/bundle.js'
   },
   plugins: [
     del({ targets: 'dist/*' }),
     svelte({
       // enable run-time checks when not in production
-      dev: false,
+      dev: !production,
       // we'll extract any component CSS out into
       // a separate file — better for performance
       css: css => {
-        css.write('dist/css/bundle.[hash].css', false)
+        css.write('dist/css/bundle.css', false)
       }
     }),
 
@@ -34,20 +36,18 @@ export default {
     resolve(),
     commonjs(),
 
-    terser(),
-
-    html({
-      template: 'public/index.html',
-      dest: 'dist',
-      filename: 'index.html',
-      absolute: true
-    }),
-
     copy({
       targets: {
-        'public/img': 'dist/img',
-        'public/css': 'dist/css'
+        'public': 'dist'
       }
-    })
+    }),
+
+    // Watch the `dist` directory and refresh the
+    // browser on changes when not in production
+    !production && livereload('dist'),
+
+    // If we're building for production (npm run build
+    // instead of npm run dev), minify
+    production && terser()
   ]
 }
