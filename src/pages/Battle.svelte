@@ -1,6 +1,7 @@
 <script>
     import { onMount, onDestroy } from 'svelte'
 
+    import PageLayout from '../components/PageLayout.svelte'
     import PointCard from '../components/PointCard.svelte'
     import WarriorCard from '../components/WarriorCard.svelte'
     import BattlePlans from '../components/BattlePlans.svelte'
@@ -220,6 +221,9 @@
     }
 
     onMount(() => {
+        if (!$warrior.id) {
+            window.location.href = '/enlist'
+        }
 		const voteCounter = setInterval(() => {
 			currentTime = new Date()
 		}, 1000)
@@ -234,80 +238,82 @@
     <title>Battle {battle.name} | Thunderdome</title>
 </svelte:head>
 
-{#if battle.name && !socketError}
-    <div class="mb-6 flex flex-wrap">
-        <div class="w-full text-center md:w-2/3 md:text-left">
-            <h1>{currentPlanName}</h1>
-            <h2 class="text-grey-darker">{battle.name}</h2>
-        </div>
-        <div class="w-full md:w-1/3 text-center md:text-right font-semibold text-3xl md:text-4xl text-grey-darker">
-            {#if countdown.seconds !== undefined}
-                {#if countdown.hours !== 0}{addTimeLeadZero(countdown.hours)}:{/if}{addTimeLeadZero(countdown.minutes)}:{addTimeLeadZero(countdown.seconds)}
-            {/if}
-        </div>
-    </div>
-
-    <div class="flex flex-wrap mb-4 -mx-4">
-        <div class="w-full lg:w-3/4 px-4">
-            {#if battle.activePlanId !== '' && battle.votingLocked === true}
-                <VoteResults plans={battle.plans} activePlanId={battle.activePlanId} points={points} />
-            {:else}
-                <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
-                    {#each points as point}
-                        <div class="w-1/4 md:w-1/6 px-2 mb-4">
-                            <PointCard point={point} active={vote === point} on:voted={handleVote} on:voteRetraction={handleUnvote} isLocked={battle.votingLocked} />
-                        </div>
-                    {/each}
-                </div>
-            {/if}
-
-            <BattlePlans
-                plans={battle.plans}
-                isLeader={battle.leaderId === $warrior.id}
-                sendSocketEvent={sendSocketEvent}
-            />
-        </div>
-        
-        <div class="w-full lg:w-1/4 px-4">
-            <div class="bg-white shadow-md mb-4 rounded">
-                <div class="bg-blue p-4 rounded-t">
-                    <h3 class="text-2xl text-white">Warriors</h3>
-                </div>
-
-                {#each battle.warriors as war (war.id)}
-                    <WarriorCard warrior={war} leaderId={battle.leaderId} isLeader={battle.leaderId === $warrior.id} voted={didVote(war.id)} points={showVote(war.id)} sendSocketEvent={sendSocketEvent} />
-                {/each}
-
-                {#if battle.leaderId === $warrior.id}
-                    <VotingControls points={points} planId={battle.activePlanId} sendSocketEvent={sendSocketEvent} votingLocked={battle.votingLocked} />
+<PageLayout>
+    {#if battle.name && !socketError}
+        <div class="mb-6 flex flex-wrap">
+            <div class="w-full text-center md:w-2/3 md:text-left">
+                <h1>{currentPlanName}</h1>
+                <h2 class="text-grey-darker">{battle.name}</h2>
+            </div>
+            <div class="w-full md:w-1/3 text-center md:text-right font-semibold text-3xl md:text-4xl text-grey-darker">
+                {#if countdown.seconds !== undefined}
+                    {#if countdown.hours !== 0}{addTimeLeadZero(countdown.hours)}:{/if}{addTimeLeadZero(countdown.minutes)}:{addTimeLeadZero(countdown.seconds)}
                 {/if}
             </div>
+        </div>
 
-            <div class="bg-white shadow-md p-5 mb-4 rounded">
-                <InviteWarrior hostname={hostname} battleId={battle.id} />
-                {#if battle.leaderId === $warrior.id}
-                    <div class="mt-4 text-right">
-                        <button
-                            class="bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-2 border border-red hover:border-transparent rounded"
-                            on:click={concedeBattle}
-                        >
-                            Delete Battle
-                        </button>
+        <div class="flex flex-wrap mb-4 -mx-4">
+            <div class="w-full lg:w-3/4 px-4">
+                {#if battle.activePlanId !== '' && battle.votingLocked === true}
+                    <VoteResults plans={battle.plans} activePlanId={battle.activePlanId} points={points} />
+                {:else}
+                    <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
+                        {#each points as point}
+                            <div class="w-1/4 md:w-1/6 px-2 mb-4">
+                                <PointCard point={point} active={vote === point} on:voted={handleVote} on:voteRetraction={handleUnvote} isLocked={battle.votingLocked} />
+                            </div>
+                        {/each}
                     </div>
                 {/if}
+
+                <BattlePlans
+                    plans={battle.plans}
+                    isLeader={battle.leaderId === $warrior.id}
+                    sendSocketEvent={sendSocketEvent}
+                />
+            </div>
+            
+            <div class="w-full lg:w-1/4 px-4">
+                <div class="bg-white shadow-md mb-4 rounded">
+                    <div class="bg-blue p-4 rounded-t">
+                        <h3 class="text-2xl text-white">Warriors</h3>
+                    </div>
+
+                    {#each battle.warriors as war (war.id)}
+                        <WarriorCard warrior={war} leaderId={battle.leaderId} isLeader={battle.leaderId === $warrior.id} voted={didVote(war.id)} points={showVote(war.id)} sendSocketEvent={sendSocketEvent} />
+                    {/each}
+
+                    {#if battle.leaderId === $warrior.id}
+                        <VotingControls points={points} planId={battle.activePlanId} sendSocketEvent={sendSocketEvent} votingLocked={battle.votingLocked} />
+                    {/if}
+                </div>
+
+                <div class="bg-white shadow-md p-5 mb-4 rounded">
+                    <InviteWarrior hostname={hostname} battleId={battle.id} />
+                    {#if battle.leaderId === $warrior.id}
+                        <div class="mt-4 text-right">
+                            <button
+                                class="bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-2 border border-red hover:border-transparent rounded"
+                                on:click={concedeBattle}
+                            >
+                                Delete Battle
+                            </button>
+                        </div>
+                    {/if}
+                </div>
             </div>
         </div>
-    </div>
-{:else if socketError}
-    <div class="flex items-center">
-        <div class="flex-1 text-center">
-            <h1 class="text-5xl text-red">Error joining battle, refresh and try again.</h1>
+    {:else if socketError}
+        <div class="flex items-center">
+            <div class="flex-1 text-center">
+                <h1 class="text-5xl text-red">Error joining battle, refresh and try again.</h1>
+            </div>
         </div>
-    </div>
-{:else}
-    <div class="flex items-center">
-        <div class="flex-1 text-center">
-            <h1 class="text-5xl text-teal">Loading Battle Plans...</h1>
+    {:else}
+        <div class="flex items-center">
+            <div class="flex-1 text-center">
+                <h1 class="text-5xl text-teal">Loading Battle Plans...</h1>
+            </div>
         </div>
-    </div>
-{/if}
+    {/if}
+</PageLayout>

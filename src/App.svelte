@@ -7,7 +7,7 @@
     import Landing from './pages/Landing.svelte'
     import Battles from './pages/Battles.svelte'
     import Battle from './pages/Battle.svelte'
-    import RegisterPage from './pages/Register.svelte'
+    import Register from './pages/Register.svelte'
     import { warrior } from './stores.js'
 
     const footerLinkClasses = 'no-underline text-teal hover:text-teal-darker'
@@ -23,6 +23,12 @@
         .on('/', () => {
             currentPage = {
                 route: Landing,
+                params: {}
+            }
+        })
+        .on('/enlist', () => {
+            currentPage = {
+                route: Register,
                 params: {}
             }
         })
@@ -44,8 +50,11 @@
 </script>
 
 <style>
-    img {
+    :global(.nav-logo) {
         max-height: 3.75rem;
+    }
+    :global(.bg-yellow-thunder) {
+        background-color: #ffdd57;
     }
 </style>
 
@@ -54,7 +63,7 @@
 <nav class="flex items-center justify-between flex-wrap bg-white p-6" role="navigation" aria-label="main navigation">
     <div class="flex items-center flex-no-shrink mr-6">
         <a href="/">
-            <img src="/img/logo.svg" alt="Thunderdome"/>
+            <img src="/img/logo.svg" alt="Thunderdome" class="nav-logo"/>
         </a>
     </div>
     {#if $warrior.name}
@@ -69,15 +78,7 @@
     {/if}
 </nav>
 
-<section>
-    <div class="container mx-auto px-4 py-6 md:py-10">
-    {#if !$warrior.id}
-        <RegisterPage notifications={notifications} />
-    {:else}
-        <svelte:component this={currentPage.route} {...currentPage.params} notifications={notifications} />
-    {/if}
-    </div>
-</section>
+<svelte:component this={currentPage.route} {...currentPage.params} notifications={notifications} />
 
 <footer class="p-6 text-center">
     <a href="https://github.com/StevenWeathers/thunderdome-planning-poker" class="{footerLinkClasses}">Thunderdome</a> by <a href="http://stevenweathers.com" class="{footerLinkClasses}">Steven Weathers</a>. The source code is licensed

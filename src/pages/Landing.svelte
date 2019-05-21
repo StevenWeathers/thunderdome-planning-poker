@@ -1,52 +1,34 @@
 <script>
-    import { warrior } from '../stores.js'
-
-    export let notifications
-    let battleName = ''
-
-    function createBattle(e) {
-        e.preventDefault()
-        const data = {
-            battleName,
-            leaderId: $warrior.id
-        }
-        
-        fetch('/api/battle', {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-            .then(function(response) {
-                return response.json()
-            })
-            .then(function(battle) {
-                window.location.href = `/battle/${battle.id}`
-            })
-            .catch(function(error) {
-                notifications.danger("Error encountered creating battle")
-            })
-    }
+    import CheckIcon from '../components/CheckIcon.svelte'
 </script>
 
-<form on:submit={createBattle} class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <div class="mb-4">
-        <label class="block text-grey-darker text-sm font-bold mb-2" for="battleName">Battle Name</label>
-        <div class="control">
-            <input
-                bind:value={battleName}
-                placeholder="Enter a battle name"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
-                id="battleName"
-                required
-            />
+<section class="bg-yellow-thunder text-grey-darkest">
+    <div class="container mx-auto px-4 py-6 lg:py-10">
+        <div class="flex flex-wrap -mx-4">
+            <div class="w-full md:w-1/2 mb-4 lg:mb-0 px-4">
+                <h1 class="mb-2 lg:mb-4">Agile Planning Poker, with a fun theme</h1>
+                <h2 class="mb-8 lg:mb-16">oh and its Open Source...</h2>
+
+                <ul class="text-lg lg:text-2xl list-reset mb-4">
+                    <li class="py-2 lg:py-4"><CheckIcon /> Built on cool tech like Svelte, Go, and WebSockets</li>
+                    <li class="py-2 lg:py-4"><CheckIcon /> Simple <span class="line-through">User</span> Warrior Experience</li>
+                    <li class="py-2 lg:py-4">
+                        <CheckIcon /> Works on all <span class="font-semibold">modern browsers*</span>, including mobile<br />
+                        <span class="text-sm">*sorry, not sorry IE</span>
+                    </li>
+                </ul>
+
+                <div class="text-center mb-4 md:mb-0">
+                    <a
+                        class="w-full md:w-auto inline-block no-underline bg-transparent hover:bg-grey-darkest text-grey-darkest font-semibold hover:text-white py-4 px-4 border border-grey-darkest hover:border-transparent rounded"
+                        href="/battles"
+                    >
+                    Create a Battle</a>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 px-4">
+                <img class="w-full" src="https://user-images.githubusercontent.com/846933/58061038-58d62d00-7b42-11e9-9679-ebd297a51c05.png" alt="Preview of Thunderdome, Agile Planning Poker UI Experience"/>
+            </div>
         </div>
     </div>
-    
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded" type="submit">Create a Story Battle</button>
-        </div>
-    </div>
-</form>
+</section>

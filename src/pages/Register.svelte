@@ -1,4 +1,5 @@
 <script>
+    import PageLayout from '../components/PageLayout.svelte'
     import { warrior } from '../stores.js'
 
     export let notifications
@@ -24,27 +25,31 @@
                     id: newWarrior.id,
                     name: newWarrior.name
                 })
+
+                window.history.back()
             }).catch(function(error) {
                 notifications.danger("Error encountered registering warrior")
             })
     }
 </script>
 
-<form on:submit={createWarrior} class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <div class="mb-4">
-        <label class="block text-grey-darker text-sm font-bold mb-2" for="yourName">Name</label>
-        <input
-            bind:value={warriorName}
-            placeholder="Enter your name"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
-            id="yourName"
-            required
-        />
-    </div>
-    
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded" type="submit">Register</button>
+<PageLayout>
+    <form on:submit={createWarrior} class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+            <label class="block text-grey-darker text-sm font-bold mb-2" for="yourName">Name</label>
+            <input
+                bind:value={warriorName}
+                placeholder="Enter your name"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+                id="yourName"
+                required
+            />
         </div>
-    </div>
-</form>
+        
+        <div class="mb-6">
+            <div class="flex items-center justify-between">
+                <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded" type="submit">Register</button>
+            </div>
+        </div>
+    </form>
+</PageLayout>
