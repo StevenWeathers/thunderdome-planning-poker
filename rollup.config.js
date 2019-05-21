@@ -14,7 +14,7 @@ export default {
     sourcemap: false,
     format: 'iife',
     name: 'app',
-    file: 'dist/js/bundle.051919.js'
+    file: 'dist/js/bundle.052019.js'
   },
   plugins: [
     del({ targets: 'dist/*' }),
@@ -24,7 +24,7 @@ export default {
       // we'll extract any component CSS out into
       // a separate file — better for performance
       css: css => {
-        css.write('dist/css/bundle.051919.css', false)
+        css.write('dist/css/bundle.052019.css', false)
       }
     }),
 

@@ -45,8 +45,14 @@ build-linux:
 build-windows:
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -o $(BINARY_WINDOWS) -v
 
+dev: 
+	$(NPMBUILD)
+	$(STATICPACKCMD)
+	$(GOBUILD) -o $(BINARY_NAME) -v
+
+	DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./$(BINARY_NAME)
 run:
-	DB_HOST="localhost" APP_DOMAIN="localhost" ./$(BINARY_NAME)
+	DB_HOST="localhost" APP_DOMAIN="localhost" COOKIE_SECURE="false" ./$(BINARY_NAME)
 
 release:
 	$(GORELEASER)

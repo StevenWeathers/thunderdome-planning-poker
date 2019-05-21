@@ -7,7 +7,7 @@ function initWarrior () {
   return {
     subscribe,
     create: (warrior) => {
-      Cookies.set('warrior', warrior)
+      Cookies.set('warrior', warrior, { expires: 365, SameSite: 'strict' })
       set(warrior)
     }
   }

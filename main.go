@@ -20,6 +20,9 @@ var SecureCookieHashkey []byte
 // SecureCookieName is obviously the name of the secure cookie
 var SecureCookieName = "warriorId"
 
+// SecureCookieFlag controls whether or not the cookie is set to secure, only works over HTTPS
+var SecureCookieFlag bool
+
 // Sc is the secure cookie instance with secret hash
 var Sc = securecookie.New([]byte("some-secret"), nil)
 
@@ -29,6 +32,7 @@ func main() {
 	var listenPort = fmt.Sprintf(":%s", GetEnv("PORT", "8080"))
 	AppDomain = GetEnv("APP_DOMAIN", "thunderdome.dev")
 	SecureCookieHashkey = []byte(GetEnv("COOKIE_HASHKEY", "strongest-avenger"))
+	SecureCookieFlag = GetBoolEnv("COOKIE_SECURE", true)
 	Sc = securecookie.New(SecureCookieHashkey, nil)
 
 	go h.run()

@@ -20,7 +20,8 @@ func GetEnv(key string, fallback string) string {
 	return result
 }
 
-// GetIntEnv gets an environment variable and converts it to an Int
+// GetIntEnv gets an environment variable and converts it to an int
+// and if it finds none uses fallback
 func GetIntEnv(key string, fallback int) int {
 	var intResult = fallback
 	var stringResult = os.Getenv(key)
@@ -31,6 +32,20 @@ func GetIntEnv(key string, fallback int) int {
 	}
 
 	return intResult
+}
+
+// GetBoolEnv gets an environment variable and converts it to a bool
+// and if it finds none uses fallback
+func GetBoolEnv(key string, fallback bool) bool {
+	var boolResult = fallback
+	var stringResult = os.Getenv(key)
+
+	if stringResult != "" {
+		b, _ := strconv.ParseBool(stringResult)
+		boolResult = b
+	}
+
+	return boolResult
 }
 
 // RespondWithJSON takes a payload and writes the response
