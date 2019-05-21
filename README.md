@@ -5,7 +5,6 @@ Thunderdome is an open source agile planning poker tool in the theme of Battling
 - Planning Sessions are **Battles**
 - Users are **Warriors**
 - Stories are **Plans**
-- Points are in fibonacci sequence of **1, 2, 3, 5, 8, 13** and **?** because how often do you point higher than 13 really?
 
 ### **Uses WebSockets and [Svelte](https://svelte.dev/) frontend framework for a truly Reactive UI experience**
 
