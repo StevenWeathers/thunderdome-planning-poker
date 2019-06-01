@@ -11,7 +11,7 @@
 
     import { warrior } from '../stores.js'
 
-    export let battleId = 0
+    export let battleId
     export let notifications
 
     const hostname = window.location.origin
@@ -222,7 +222,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            window.location.href = '/enlist'
+            window.location.href = `/enlist/${battleId}`
         }
 		const voteCounter = setInterval(() => {
 			currentTime = new Date()

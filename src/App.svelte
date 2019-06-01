@@ -26,10 +26,10 @@
                 params: {}
             }
         })
-        .on('/enlist', () => {
+        .on('/enlist/:battleId?', params => {
             currentPage = {
                 route: Register,
-                params: {}
+                params
             }
         })
         .on('/battles', () => {

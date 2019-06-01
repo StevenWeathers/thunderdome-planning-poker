@@ -3,6 +3,7 @@
     import { warrior } from '../stores.js'
 
     export let notifications
+    export let battleId
     let warriorName = ''
 
     function createWarrior(e) {
@@ -25,8 +26,12 @@
                     id: newWarrior.id,
                     name: newWarrior.name
                 })
-
-                window.history.back()
+                
+                if (!battleId){
+                    window.location.href = '/battles'
+                } else {
+                    window.location.href = `/battle/${battleId}`
+                }
             }).catch(function(error) {
                 notifications.danger("Error encountered registering warrior")
             })
