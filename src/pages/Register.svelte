@@ -39,7 +39,7 @@
 </script>
 
 <PageLayout>
-    <form on:submit={createWarrior} class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <form on:submit={createWarrior} class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" name="enlist">
         <div class="mb-4">
             <label class="block text-grey-darker text-sm font-bold mb-2" for="yourName">Name</label>
             <input
@@ -47,6 +47,7 @@
                 placeholder="Enter your name"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
                 id="yourName"
+                name="yourName"
                 required
             />
         </div>

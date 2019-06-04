@@ -1,5 +1,7 @@
 <script>
     import CheckIcon from '../components/CheckIcon.svelte'
+
+    import { warrior } from '../stores.js'
 </script>
 
 <section class="bg-yellow-thunder text-grey-darkest">
@@ -21,7 +23,7 @@
                 <div class="text-center mb-4 md:mb-0">
                     <a
                         class="w-full md:w-auto inline-block no-underline bg-transparent hover:bg-grey-darkest text-grey-darkest font-semibold hover:text-white py-4 px-4 border border-grey-darkest hover:border-transparent rounded"
-                        href="/battles"
+                        href={$warrior.id ? "/battles" : "/enlist"}
                     >
                     Create a Battle</a>
                 </div>

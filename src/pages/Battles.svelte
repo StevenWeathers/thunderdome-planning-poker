@@ -77,11 +77,12 @@
 
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <h2 class="mb-4">Create a Battle</h2>
-        <form on:submit={createBattle}>
+        <form on:submit={createBattle} name="createBattle">
             <div class="mb-4">
                 <label class="block text-grey-darker text-sm font-bold mb-2" for="battleName">Battle Name</label>
                 <div class="control">
                     <input
+                        name="battleName"
                         bind:value={battleName}
                         placeholder="Enter a battle name"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
