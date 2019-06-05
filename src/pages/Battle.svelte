@@ -245,7 +245,7 @@
                 <h1>{currentPlanName}</h1>
                 <h2 class="text-grey-darker">{battle.name}</h2>
             </div>
-            <div class="w-full md:w-1/3 text-center md:text-right font-semibold text-3xl md:text-4xl text-grey-darker">
+            <div class="w-full md:w-1/3 text-center md:text-right font-semibold text-3xl md:text-4xl text-grey-darker" data-testId="votingTimer">
                 {#if countdown.seconds !== undefined}
                     {#if countdown.hours !== 0}{addTimeLeadZero(countdown.hours)}:{/if}{addTimeLeadZero(countdown.minutes)}:{addTimeLeadZero(countdown.seconds)}
                 {/if}

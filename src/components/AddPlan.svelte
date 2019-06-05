@@ -36,7 +36,7 @@
                 </button>
             </div>
 
-            <form class="pb-2 my-2" on:submit={handleSubmit}>
+            <form class="pb-2 my-2" on:submit={handleSubmit} name="addPlan">
                 <div class="mb-4">
                     <label class="block text-sm font-bold mb-2" for="planName">
                         Plan Name
@@ -47,6 +47,7 @@
                         type="text"
                         bind:value={planName}
                         placeholder="Enter a plan name"
+                        name="planName"
                     >
                 </div>
                 <div class="text-right">

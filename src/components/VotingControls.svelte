@@ -27,17 +27,18 @@
 </script>
 
 {#if planId != ''}
-    <div class="p-4">
+    <div class="p-4" data-testId="votingControls">
         <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mb-2 rounded w-full" on:click={skipPlan}>Skip Plan</button>
         {#if !votingLocked}
             <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded w-full" on:click={endPlanVoting}>Finish Voting</button>
         {:else}
-            <form on:submit={handleSubmit}>
+            <form on:submit={handleSubmit} name="savePlanPoints">
                 <legend class="text-xl mb-2">Final Points</legend>
                 <div class="flex -mx-2">
                     <div class="w-1/2 px-2">
                         <div class="relative">
                             <select
+                                name="planPoints"
                                 bind:value={planPoints}
                                 required
                                 class="block appearance-none w-full border border-grey-light text-grey-darker py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-grey"

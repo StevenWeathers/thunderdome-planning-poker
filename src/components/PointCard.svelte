@@ -31,7 +31,11 @@
 <div
     class="w-full rounded overflow-hidden shadow-md border {activeColor} {lockedClass} relative text-3xl lg:text-5xl"
     on:click={voteAction}
+    data-testId="pointCard"
+    data-active={active}
+    data-locked={isLocked}
+    data-point={point}
 >
-    {#if count}<span class="text-green font-semibold inline-block absolute pin-r pin-t p-2">{count}</span>{/if}
+    {#if count}<span class="text-green font-semibold inline-block absolute pin-r pin-t p-2" data-testId="pointCardCount">{count}</span>{/if}
     <div class="py-12 md:py-16 text-center">{point}</div>
 </div>
