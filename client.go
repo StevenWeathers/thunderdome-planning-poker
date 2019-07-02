@@ -289,12 +289,23 @@ func ValidateWarriorCookie(w http.ResponseWriter, r *http.Request) (string, erro
 func serveWs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	battleID := vars["id"]
+
+	// make sure battle is legit
+	b, battleErr := GetBattle(battleID)
+	if battleErr != nil {
+		http.NotFound(w, r)
+		return
+	}
+	battle, _ := json.Marshal(b)
+
+	// make sure warrior cookies are valid
 	warriorID, cookieErr := ValidateWarriorCookie(w, r)
 	if cookieErr != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
+	// make sure warrior exists
 	_, warErr := GetBattleWarrior(battleID, warriorID)
 
 	if warErr != nil {
@@ -304,6 +315,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// upgrade to WebSocket connection
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -316,6 +328,9 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 
 	Warriors, _ := AddWarriorToBattle(s.arena, warriorID)
 	updatedWarriors, _ := json.Marshal(Warriors)
+
+	initEvent := CreateSocketEvent("init", string(battle), warriorID)
+	_ = c.write(websocket.TextMessage, initEvent)
 
 	joinedEvent := CreateSocketEvent("warrior_joined", string(updatedWarriors), warriorID)
 	m := message{joinedEvent, s.arena}

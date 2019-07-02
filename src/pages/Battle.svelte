@@ -27,131 +27,108 @@
     let currentTime = new Date()
 
     $: countdown = battle.currentPlanId !== '' && battle.votingLocked === false ? timeUnitsBetween(voteStartTime, currentTime) : {}
-    
-    let ws = {
-        send: () => {},
-        close: () => {}
-    }
 
-    fetch(`/api/battle/${battleId}`)
-        .then(function(response) {
-            if (response.status >= 200 && response.status < 300) {
-                return response.json()
-            } else {
-                const error = new Error(response.statusText || `${response.status}`)
+    const ws = new WebSocket(`${socketExtension}://${window.location.host}/api/arena/${battleId}`)
 
-                return Promise.reject(error)
-            }
-        })
-        .then(function(b) {
-            battle = b
-            if (battle.activePlanId !== '') {
-                const activePlan = battle.plans.find(p => p.id === battle.activePlanId)
+    ws.onmessage = function (evt) {
+        const parsedEvent = JSON.parse(evt.data)
+
+        switch(parsedEvent.type) {
+            case "init":
+                battle = JSON.parse(parsedEvent.value)
+                if (battle.activePlanId !== '') {
+                    const activePlan = battle.plans.find(p => p.id === battle.activePlanId)
+                    currentPlanName = activePlan.name
+                    voteStartTime = new Date(activePlan.voteStartTime)
+                }
+            case "warrior_joined":
+                battle.warriors = JSON.parse(parsedEvent.value)
+                const joinedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
+                notifications.success(`${joinedWarrior.name} joined.`)
+                break;
+            case "warrior_retreated":
+                const leftWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
+                battle.warriors = JSON.parse(parsedEvent.value)
+                notifications.danger(`${leftWarrior.name} retreated.`)
+                break;
+            case "plan_added":
+                battle.plans = JSON.parse(parsedEvent.value)
+                break;
+            case "plan_activated":
+                const updatedPlans = JSON.parse(parsedEvent.value)
+                const activePlan = updatedPlans.find(p => p.active)
                 currentPlanName = activePlan.name
                 voteStartTime = new Date(activePlan.voteStartTime)
-            }
 
-            ws = new WebSocket(`${socketExtension}://${window.location.host}/api/arena/${battleId}`)
+                battle.plans = updatedPlans                        
+                battle.activePlanId = activePlan.id
+                battle.votingLocked = false
+                vote = ''
+                break;
+            case "plan_skipped":
+                const updatedPlans2 = JSON.parse(parsedEvent.value)
+                currentPlanName = '[Voting not started]'
+                battle.plans = updatedPlans2                        
+                battle.activePlanId = ''
+                battle.votingLocked = true
+                vote = ''
+                notifications.warning(`Plan skipped.`)
+                break;
+            case "vote_activity":
+                const votedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
+                notifications.success(`${votedWarrior.name} voted.`)
 
-            ws.onmessage = function (evt) {
-                const parsedEvent = JSON.parse(evt.data)
+                battle.plans = JSON.parse(parsedEvent.value)
+                break;
+            case "vote_retracted":
+                const devotedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
+                notifications.warning(`${devotedWarrior.name} retracted vote.`)
 
-                switch(parsedEvent.type) {
-                    case "warrior_joined":
-                        battle.warriors = JSON.parse(parsedEvent.value)
-                        const joinedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
-                        notifications.success(`${joinedWarrior.name} joined.`)
-                        break;
-                    case "warrior_retreated":
-                        const leftWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
-                        battle.warriors = JSON.parse(parsedEvent.value)
-                        notifications.danger(`${leftWarrior.name} retreated.`)
-                        break;
-                    case "plan_added":
-                        battle.plans = JSON.parse(parsedEvent.value)
-                        break;
-                    case "plan_activated":
-                        const updatedPlans = JSON.parse(parsedEvent.value)
-                        const activePlan = updatedPlans.find(p => p.active)
-                        currentPlanName = activePlan.name
-                        voteStartTime = new Date(activePlan.voteStartTime)
+                battle.plans = JSON.parse(parsedEvent.value)
+                break;
+            case "voting_ended":
+                battle.plans = JSON.parse(parsedEvent.value)
+                battle.votingLocked = true
+                break;
+            case "plan_finalized":
+                battle.plans = JSON.parse(parsedEvent.value)
+                battle.activePlanId = ''
+                currentPlanName = '[Voting not started]'
+                vote = ''
+                break;
+            case "plan_revised":
+                battle.plans = JSON.parse(parsedEvent.value)
+                break;
+            case "plan_burned":
+                const postBurnPlans = JSON.parse(parsedEvent.value)
 
-                        battle.plans = updatedPlans                        
-                        battle.activePlanId = activePlan.id
-                        battle.votingLocked = false
-                        vote = ''
-                        break;
-                    case "plan_skipped":
-                        const updatedPlans2 = JSON.parse(parsedEvent.value)
-                        currentPlanName = '[Voting not started]'
-                        battle.plans = updatedPlans2                        
-                        battle.activePlanId = ''
-                        battle.votingLocked = true
-                        vote = ''
-                        notifications.warning(`Plan skipped.`)
-                        break;
-                    case "vote_activity":
-                        const votedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
-                        notifications.success(`${votedWarrior.name} voted.`)
-
-                        battle.plans = JSON.parse(parsedEvent.value)
-                        break;
-                    case "vote_retracted":
-                        const devotedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
-                        notifications.warning(`${devotedWarrior.name} retracted vote.`)
-
-                        battle.plans = JSON.parse(parsedEvent.value)
-                        break;
-                    case "voting_ended":
-                        battle.plans = JSON.parse(parsedEvent.value)
-                        battle.votingLocked = true
-                        break;
-                    case "plan_finalized":
-                        battle.plans = JSON.parse(parsedEvent.value)
-                        battle.activePlanId = ''
-                        currentPlanName = '[Voting not started]'
-                        vote = ''
-                        break;
-                    case "plan_revised":
-                        battle.plans = JSON.parse(parsedEvent.value)
-                        break;
-                    case "plan_burned":
-                        const postBurnPlans = JSON.parse(parsedEvent.value)
-
-                        if (battle.activePlanId !== '' && postBurnPlans.filter(p => p.id === battle.activePlanId).length === 0) {
-                            battle.activePlanId = ''
-                            currentPlanName = '[Voting not started]'
-                        }
-
-                        battle.plans = postBurnPlans
-
-                        break;
-                    case "battle_updated":
-                        battle = JSON.parse(parsedEvent.value)
-                        break;
-                    case "battle_conceded":
-                        // battle over, goodbye.
-                        window.location.href = '/'
-                        break;
-                    case "jab_warrior":
-                        const warriorToJab = battle.warriors.find(w => w.id === parsedEvent.value)
-                        notifications.info(`pst... ${warriorToJab.name}, waiting on you to vote.`)
-                        break;
-                    default:
-                        break;
+                if (battle.activePlanId !== '' && postBurnPlans.filter(p => p.id === battle.activePlanId).length === 0) {
+                    battle.activePlanId = ''
+                    currentPlanName = '[Voting not started]'
                 }
-            }
 
-            ws.onerror = function (err) {
-                // @TODO - add toast or some visual error notifications...
-                console.log(`ERROR: ${JSON.stringify(err, ["message", "arguments", "type", "name"])}`)
-                socketError = true
-            }
-        })
-        .catch(function(err) {
-            // battle not found or server issue, redirect to landing
-            window.location.href = '/'
-        })
+                battle.plans = postBurnPlans
+
+                break;
+            case "battle_updated":
+                battle = JSON.parse(parsedEvent.value)
+                break;
+            case "battle_conceded":
+                // battle over, goodbye.
+                window.location.href = '/'
+                break;
+            case "jab_warrior":
+                const warriorToJab = battle.warriors.find(w => w.id === parsedEvent.value)
+                notifications.info(`pst... ${warriorToJab.name}, waiting on you to vote.`)
+                break;
+            default:
+                break;
+        }
+    }
+
+    ws.onerror = function (err) {
+        socketError = true
+    }
 
     onDestroy(() => {
         ws.close();
