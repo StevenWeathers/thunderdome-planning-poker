@@ -41,6 +41,7 @@
                     currentPlanName = activePlan.name
                     voteStartTime = new Date(activePlan.voteStartTime)
                 }
+                break;
             case "warrior_joined":
                 battle.warriors = JSON.parse(parsedEvent.value)
                 const joinedWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
