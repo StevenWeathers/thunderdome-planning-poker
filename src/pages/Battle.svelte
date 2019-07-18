@@ -180,6 +180,40 @@
         return voted !== undefined ? voted.vote : '' 
     }
 
+    // get hightest vote from active plan
+    function getHighestVote() {
+        const voteCounts = {}
+        points.forEach(p => {
+            voteCounts[p] = 0
+        })
+        const highestVote = {
+            vote: '',
+            count: 0
+        }
+        const activePlan = battle.plans.find(p => p.id === battle.activePlanId)
+
+        if (activePlan.votes.length > 0) {
+            const reversedPoints = [...points].filter(v => v !== '?').reverse()
+            reversedPoints.push('?')
+
+            // build a count of each vote
+            activePlan.votes.forEach(v => {
+                ++voteCounts[v.vote]
+            })
+            
+            // find the highest vote giving priority to higher numbers
+            reversedPoints.forEach(p => {
+                if (voteCounts[p] > highestVote.count) {
+                    highestVote.vote = p
+                    highestVote.count = voteCounts[p]
+                }
+            })
+        }
+
+        return highestVote.vote
+    }
+    $: highestVoteCount = battle.activePlanId !== '' && battle.votingLocked === true ? getHighestVote() : ''
+
     function concedeBattle() {
         sendSocketEvent("concede_battle", "")
     }
@@ -238,7 +272,13 @@
                     <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
                         {#each points as point}
                             <div class="w-1/4 md:w-1/6 px-2 mb-4">
-                                <PointCard point={point} active={vote === point} on:voted={handleVote} on:voteRetraction={handleUnvote} isLocked={battle.votingLocked} />
+                                <PointCard
+                                    point={point}
+                                    active={vote === point}
+                                    on:voted={handleVote}
+                                    on:voteRetraction={handleUnvote}
+                                    isLocked={battle.votingLocked}
+                                />
                             </div>
                         {/each}
                     </div>
@@ -258,11 +298,24 @@
                     </div>
 
                     {#each battle.warriors as war (war.id)}
-                        <WarriorCard warrior={war} leaderId={battle.leaderId} isLeader={battle.leaderId === $warrior.id} voted={didVote(war.id)} points={showVote(war.id)} sendSocketEvent={sendSocketEvent} />
+                        <WarriorCard
+                            warrior={war}
+                            leaderId={battle.leaderId}
+                            isLeader={battle.leaderId === $warrior.id}
+                            voted={didVote(war.id)}
+                            points={showVote(war.id)}
+                            sendSocketEvent={sendSocketEvent}
+                        />
                     {/each}
 
                     {#if battle.leaderId === $warrior.id}
-                        <VotingControls points={points} planId={battle.activePlanId} sendSocketEvent={sendSocketEvent} votingLocked={battle.votingLocked} />
+                        <VotingControls
+                            points={points}
+                            planId={battle.activePlanId}
+                            sendSocketEvent={sendSocketEvent}
+                            votingLocked={battle.votingLocked}
+                            highestVote={highestVoteCount}
+                        />
                     {/if}
                 </div>
 

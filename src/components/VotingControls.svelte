@@ -3,8 +3,9 @@
     export let planId = ''
     export let points = []
     export let votingLocked = true
+    export let highestVote = ''
 
-    let planPoints = ''
+    $: planPoints = highestVote
 
     const endPlanVoting = () => {
         sendSocketEvent('end_voting', planId)
