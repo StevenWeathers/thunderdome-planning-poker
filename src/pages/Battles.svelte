@@ -10,6 +10,7 @@
 
     fetch('/api/battles', {
         method: 'GET',
+        credentials: 'same-origin'
     })
         .then(function(response) {
             return response.json()
@@ -31,6 +32,7 @@
         
         fetch('/api/battle', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {
                 "Content-Type": "application/json"
             },

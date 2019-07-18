@@ -11,6 +11,7 @@
         
         fetch('/api/warrior', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {
                 "Content-Type": "application/json"
             },
