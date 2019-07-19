@@ -25,7 +25,8 @@
     },
     "dependencies": {
         "js-cookie": "^2.2.0",
-        "navaid": "^1.0.3"
+        "navaid": "^1.0.3",
+        "sockette": "^2.0.6"
     },
     "devDependencies": {
         "cross-env": "^5.2.0",
@@ -37,7 +38,7 @@
         "rollup-plugin-commonjs": "^9.3.4",
         "rollup-plugin-copy": "^2.0.1",
         "rollup-plugin-delete": "^1.0.0",
-        "rollup-plugin-livereload": "^1.0.0",
+        "rollup-plugin-livereload": "^1.0.1",
         "rollup-plugin-node-resolve": "^4.2.3",
         "rollup-plugin-svelte": "^5.0.3",
         "rollup-plugin-terser": "^4.0.4",

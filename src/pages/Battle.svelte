@@ -1,4 +1,5 @@
 <script>
+    import Sockette from 'sockette'
     import { onMount, onDestroy } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
@@ -18,6 +19,7 @@
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
     
     let socketError = false
+    let socketReconnecting = false
     let points = ['0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?']
     let vote = ''
     let voteStartTime = new Date()
@@ -28,9 +30,7 @@
 
     $: countdown = battle.currentPlanId !== '' && battle.votingLocked === false ? timeUnitsBetween(voteStartTime, currentTime) : {}
 
-    const ws = new WebSocket(`${socketExtension}://${window.location.host}/api/arena/${battleId}`)
-
-    ws.onmessage = function (evt) {
+    const onSocketMessage = function (evt) {
         const parsedEvent = JSON.parse(evt.data)
 
         switch(parsedEvent.type) {
@@ -127,9 +127,24 @@
         }
     }
 
-    ws.onerror = function (err) {
-        socketError = true
-    }
+    const ws = new Sockette(`${socketExtension}://${window.location.host}/api/arena/${battleId}`, {
+        timeout: 2e3,
+        maxAttempts: 15,
+        onmessage: onSocketMessage,
+        onerror:  () => {
+            socketError = true
+        },
+        onclose: () => {
+            socketReconnecting = true
+        },
+        onopen: () => {
+            socketError = false
+            socketReconnecting = false
+        },
+        onmaximum: () => {
+            socketReconnecting = false
+        }
+    })
 
     onDestroy(() => {
         ws.close();
@@ -251,7 +266,7 @@
 </svelte:head>
 
 <PageLayout>
-    {#if battle.name && !socketError}
+    {#if battle.name && !socketReconnecting && !socketError}
         <div class="mb-6 flex flex-wrap">
             <div class="w-full text-center md:w-2/3 md:text-left">
                 <h1>{currentPlanName}</h1>
@@ -332,6 +347,12 @@
                         </div>
                     {/if}
                 </div>
+            </div>
+        </div>
+    {:else if socketReconnecting}
+        <div class="flex items-center">
+            <div class="flex-1 text-center">
+                <h1 class="text-5xl text-teal">Ooops, reloading Battle Plans...</h1>
             </div>
         </div>
     {:else if socketError}
