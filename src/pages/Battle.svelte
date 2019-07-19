@@ -14,6 +14,7 @@
 
     export let battleId
     export let notifications
+    export let router
 
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
@@ -116,7 +117,7 @@
                 break;
             case "battle_conceded":
                 // battle over, goodbye.
-                window.location.href = '/'
+                router.route('/')
                 break;
             case "jab_warrior":
                 const warriorToJab = battle.warriors.find(w => w.id === parsedEvent.value)
@@ -249,7 +250,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            window.location.href = `/enlist/${battleId}`
+            router.route(`/enlist/${battleId}`)
         }
 		const voteCounter = setInterval(() => {
 			currentTime = new Date()

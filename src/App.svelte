@@ -78,7 +78,7 @@
     {/if}
 </nav>
 
-<svelte:component this={currentPage.route} {...currentPage.params} notifications={notifications} />
+<svelte:component this={currentPage.route} {...currentPage.params} notifications={notifications} router={router} />
 
 <footer class="p-6 text-center">
     <a href="https://github.com/StevenWeathers/thunderdome-planning-poker" class="{footerLinkClasses}">Thunderdome</a> by <a href="http://stevenweathers.com" class="{footerLinkClasses}">Steven Weathers</a>. The source code is licensed

@@ -5,6 +5,7 @@
     import { warrior } from '../stores.js'
 
     export let notifications
+    export let router
     let battles = []
     let battleName = ''
 
@@ -42,7 +43,7 @@
                 return response.json()
             })
             .then(function(battle) {
-                window.location.href = `/battle/${battle.id}`
+                router.route(`/battle/${battle.id}`)
             })
             .catch(function(error) {
                 notifications.danger("Error encountered creating battle")
@@ -51,7 +52,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            window.location.href = '/enlist'
+            router.route('/enlist')
         }
     })
 </script>

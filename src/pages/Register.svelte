@@ -2,6 +2,7 @@
     import PageLayout from '../components/PageLayout.svelte'
     import { warrior } from '../stores.js'
 
+    export let router
     export let notifications
     export let battleId
     let warriorName = ''
@@ -27,12 +28,10 @@
                     id: newWarrior.id,
                     name: newWarrior.name
                 })
+
+                const targetPage = battleId ? `/battle/${battleId}` : '/battles'
                 
-                if (!battleId){
-                    window.location.href = '/battles'
-                } else {
-                    window.location.href = `/battle/${battleId}`
-                }
+                router.route(targetPage, true)
             }).catch(function(error) {
                 notifications.danger("Error encountered registering warrior")
             })
