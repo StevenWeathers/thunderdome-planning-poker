@@ -70,6 +70,7 @@ func RecruitWarriorHandler(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true,
 			Domain:   AppDomain,
 			Expires:  time.Now().Add(365 * (24 * time.Hour)),
+			MaxAge:   86400 * 365,
 			Secure:   SecureCookieFlag,
 			SameSite: http.SameSiteStrictMode,
 		}
