@@ -12,7 +12,8 @@ services:
     networks:
       - asgard
     environment:
-      APP_DOMAIN: localhost
+      APP_DOMAIN: ".127.0.0.1"
+      COOKIE_SECURE: "false"
   db: 
     image: postgres:latest
     restart: always

@@ -10,8 +10,9 @@
     let revisePlanName = ''
     let showCompleted = false
 
-    const toggleAddPlan = (planId, planName) => () => {
+    const toggleAddPlan = (planId) => () => {
         if (planId) {
+            const planName = plans.find(p => p.id === planId).name
             revisePlanId = planId
             revisePlanName = planName
         } else {
@@ -102,7 +103,7 @@
                 {/if}
                 <button
                     class="bg-transparent hover:bg-purple text-purple-dark font-semibold hover:text-white py-2 px-2 border border-purple hover:border-transparent rounded"
-                    on:click={toggleAddPlan(plan.id, plan.name)}
+                    on:click={toggleAddPlan(plan.id)}
                 >
                     Edit
                 </button>
