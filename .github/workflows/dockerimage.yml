@@ -6,16 +6,54 @@ on:
     - master
 
 jobs:
-  docker-build:
+  go-test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag stevenweathers/thunderdome-planning-poker:$(date +%s)
-    - name: Publish to Github Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+    - name: Set up Go
+      uses: actions/setup-go@v1
       with:
-        name: docker.pkg.github.com/stevenweathers/thunderdome-planning-poker/thunderdome-planning-poker
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        registry: docker.pkg.github.com
+        go-version: 1.12
+
+    - name: Check out code
+      uses: actions/checkout@v1
+
+    - name: Run Unit tests.
+      run: go test
+
+  go-build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Build UI
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - run: npm install
+      - run: npm run build
+
+      - name: Bundle Go Application
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.12
+      - run: go get -d -v
+      - run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
+          go get -u github.com/gobuffalo/packr/packr
+          make build
+  
+    # docker-build:
+    #   runs-on: ubuntu-latest
+    #   steps:
+    #   - uses: actions/checkout@v1
+    #   - name: Build the Docker image
+    #     run: docker build . --file Dockerfile --tag stevenweathers/thunderdome-planning-poker:$(date +%s)
+    #   - name: Publish to Github Registry
+    #     uses: elgohr/Publish-Docker-Github-Action@master
+    #     with:
+    #       name: docker.pkg.github.com/stevenweathers/thunderdome-planning-poker/thunderdome-planning-poker
+    #       username: ${{ secrets.DOCKER_USERNAME }}
+    #       password: ${{ secrets.DOCKER_PASSWORD }}
+    #       registry: docker.pkg.github.com
