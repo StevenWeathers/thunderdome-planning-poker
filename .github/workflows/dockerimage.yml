@@ -6,12 +6,16 @@ on:
     - master
 
 jobs:
-
   build:
- 
     runs-on: ubuntu-latest
- 
     steps:
     - uses: actions/checkout@v1
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag stevenweathers/thunderdome-planning-poker:$(date +%s)
+    - name: Publish to Github Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: stevenweathers/thunderdome-planning-poker
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: docker.pkg.github.com
