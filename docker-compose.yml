@@ -24,7 +24,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - database_data:/var/lib/postgresql/data
+      - thunderdome_data:/var/lib/postgresql/data
     networks:
       - asgard
 
@@ -32,4 +32,4 @@ networks:
  asgard:
 
 volumes:
-  database_data:
+  thunderdome_data:

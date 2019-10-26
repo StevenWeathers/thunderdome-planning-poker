@@ -16,13 +16,14 @@ var db *sql.DB
 
 // Battle aka arena
 type Battle struct {
-	BattleID     string     `json:"id"`
-	LeaderID     string     `json:"leaderId"`
-	BattleName   string     `json:"name"`
-	Warriors     []*Warrior `json:"warriors"`
-	Plans        []*Plan    `json:"plans"`
-	VotingLocked bool       `json:"votingLocked"`
-	ActivePlanID string     `json:"activePlanId"`
+	BattleID           string     `json:"id"`
+	LeaderID           string     `json:"leaderId"`
+	BattleName         string     `json:"name"`
+	Warriors           []*Warrior `json:"warriors"`
+	Plans              []*Plan    `json:"plans"`
+	VotingLocked       bool       `json:"votingLocked"`
+	ActivePlanID       string     `json:"activePlanId"`
+	PointValuesAllowed []string   `json:"pointValuesAllowed"`
 }
 
 // Warrior aka user
@@ -135,6 +136,13 @@ func SetupDB() {
 		log.Fatal(err)
 	}
 
+	if _, err := db.Exec(
+		`ALTER TABLE battles ADD COLUMN IF NOT EXISTS point_values_allowed JSONB 
+		DEFAULT '["1/2", "1", "2", "3", "5", "8", "13", "?"]'::JSONB`,
+	); err != nil {
+		log.Fatal(err)
+	}
+
 	// on server start reset all warriors to active false for battles
 	if _, err := db.Exec(
 		`UPDATE battles_warriors SET active = false WHERE active = true`); err != nil {
@@ -143,21 +151,23 @@ func SetupDB() {
 }
 
 //CreateBattle adds a new battle to the db
-func CreateBattle(LeaderID string, BattleName string) (*Battle, error) {
+func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string) (*Battle, error) {
 	newID, _ := uuid.NewUUID()
 	id := newID.String()
+	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 
 	var b = &Battle{
-		BattleID:     id,
-		LeaderID:     LeaderID,
-		BattleName:   BattleName,
-		Warriors:     make([]*Warrior, 0),
-		Plans:        make([]*Plan, 0),
-		VotingLocked: true,
-		ActivePlanID: "",
+		BattleID:           id,
+		LeaderID:           LeaderID,
+		BattleName:         BattleName,
+		Warriors:           make([]*Warrior, 0),
+		Plans:              make([]*Plan, 0),
+		VotingLocked:       true,
+		ActivePlanID:       "",
+		PointValuesAllowed: PointValuesAllowed,
 	}
 
-	e := db.QueryRow(`INSERT INTO battles (id, leader_id, name) VALUES ($1, $2, $3) RETURNING id`, id, LeaderID, BattleName).Scan(&b.BattleID)
+	e := db.QueryRow(`INSERT INTO battles (id, leader_id, name, point_values_allowed) VALUES ($1, $2, $3, $4) RETURNING id`, id, LeaderID, BattleName, string(pointValuesJSON)).Scan(&b.BattleID)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Error Creating Battle")
@@ -169,23 +179,26 @@ func CreateBattle(LeaderID string, BattleName string) (*Battle, error) {
 // GetBattle gets a battle by ID
 func GetBattle(BattleID string) (*Battle, error) {
 	var b = &Battle{
-		BattleID:     BattleID,
-		LeaderID:     "",
-		BattleName:   "",
-		Warriors:     make([]*Warrior, 0),
-		Plans:        make([]*Plan, 0),
-		VotingLocked: true,
-		ActivePlanID: "",
+		BattleID:           BattleID,
+		LeaderID:           "",
+		BattleName:         "",
+		Warriors:           make([]*Warrior, 0),
+		Plans:              make([]*Plan, 0),
+		VotingLocked:       true,
+		ActivePlanID:       "",
+		PointValuesAllowed: make([]string, 0),
 	}
 
 	// get battle
 	var ActivePlanID sql.NullString
-	e := db.QueryRow("SELECT id, name, leader_id, voting_locked, active_plan_id FROM battles WHERE id = $1", BattleID).Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &ActivePlanID)
+	var pv string
+	e := db.QueryRow("SELECT id, name, leader_id, voting_locked, active_plan_id, point_values_allowed FROM battles WHERE id = $1", BattleID).Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &ActivePlanID, &pv)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Not found")
 	}
 
+	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 	b.ActivePlanID = ActivePlanID.String
 	b.Warriors = GetActiveWarriors(BattleID)
 	b.Plans = GetPlans(BattleID)
@@ -196,26 +209,29 @@ func GetBattle(BattleID string) (*Battle, error) {
 // GetBattlesByLeader gets a list of battles by leaderID
 func GetBattlesByLeader(LeaderID string) ([]*Battle, error) {
 	var battles = make([]*Battle, 0)
-	battleRows, battlesErr := db.Query("SELECT id, name, leader_id, voting_locked, active_plan_id FROM battles WHERE leader_id = $1 ORDER BY created_date DESC", LeaderID)
+	battleRows, battlesErr := db.Query("SELECT id, name, leader_id, voting_locked, active_plan_id, point_values_allowed FROM battles WHERE leader_id = $1 ORDER BY created_date DESC", LeaderID)
 	if battlesErr != nil {
 		return nil, errors.New("Not found")
 	}
 
 	defer battleRows.Close()
 	for battleRows.Next() {
+		var pv string
 		var ActivePlanID sql.NullString
 		var b = &Battle{
-			BattleID:     "",
-			LeaderID:     "",
-			BattleName:   "",
-			Warriors:     make([]*Warrior, 0),
-			Plans:        make([]*Plan, 0),
-			VotingLocked: true,
-			ActivePlanID: "",
+			BattleID:           "",
+			LeaderID:           "",
+			BattleName:         "",
+			Warriors:           make([]*Warrior, 0),
+			Plans:              make([]*Plan, 0),
+			VotingLocked:       true,
+			ActivePlanID:       "",
+			PointValuesAllowed: make([]string, 0),
 		}
-		if err := battleRows.Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &ActivePlanID); err != nil {
+		if err := battleRows.Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &ActivePlanID, &pv); err != nil {
 			log.Println(err)
 		} else {
+			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			b.ActivePlanID = ActivePlanID.String
 			battles = append(battles, b)
 		}

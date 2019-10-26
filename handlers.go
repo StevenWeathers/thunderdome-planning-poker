@@ -33,11 +33,13 @@ func CreateBattleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keyVal := make(map[string]string)
+	var keyVal struct {
+		BattleName         string   `json:"battleName"`
+		PointValuesAllowed []string `json:"pointValuesAllowed"`
+	}
 	json.Unmarshal(body, &keyVal) // check for errors
-	BattleName := keyVal["battleName"]
 
-	newBattle, err := CreateBattle(warriorID, BattleName)
+	newBattle, err := CreateBattle(warriorID, keyVal.BattleName, keyVal.PointValuesAllowed)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

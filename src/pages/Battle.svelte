@@ -21,7 +21,7 @@
     
     let socketError = false
     let socketReconnecting = false
-    let points = ['0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?']
+    let points = []
     let vote = ''
     let voteStartTime = new Date()
     let battle = {}
@@ -37,6 +37,7 @@
         switch(parsedEvent.type) {
             case "init":
                 battle = JSON.parse(parsedEvent.value)
+                points = battle.pointValuesAllowed
                 if (battle.activePlanId !== '') {
                     const activePlan = battle.plans.find(p => p.id === battle.activePlanId)
                     currentPlanName = activePlan.name
