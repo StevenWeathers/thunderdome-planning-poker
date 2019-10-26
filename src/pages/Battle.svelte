@@ -229,6 +229,7 @@
 
         return highestVote.vote
     }
+
     $: highestVoteCount = battle.activePlanId !== '' && battle.votingLocked === true ? getHighestVote() : ''
 
     function concedeBattle() {
@@ -284,7 +285,7 @@
         <div class="flex flex-wrap mb-4 -mx-4">
             <div class="w-full lg:w-3/4 px-4">
                 {#if battle.activePlanId !== '' && battle.votingLocked === true}
-                    <VoteResults plans={battle.plans} activePlanId={battle.activePlanId} points={points} />
+                    <VoteResults plans={battle.plans} activePlanId={battle.activePlanId} points={points} highestVote={highestVoteCount} />
                 {:else}
                     <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
                         {#each points as point}

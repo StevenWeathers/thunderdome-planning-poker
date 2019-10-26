@@ -6,10 +6,9 @@
     export let point = '1'
     export let active = false
     export let isLocked = true
-    export let count = 0
 
     $: activeColor = active ? 'border-green bg-green-lightest text-green-dark' : 'border-grey-light bg-white'
-    $: lockedClass = isLocked ? 'opacity-75 cursor-not-allowed' : 'cursor-pointer'
+    $: lockedClass = isLocked ? 'opacity-25 cursor-not-allowed' : 'cursor-pointer'
 
     function voteAction() {
         if (isLocked) {
@@ -36,6 +35,5 @@
     data-locked={isLocked}
     data-point={point}
 >
-    {#if count}<span class="text-green font-semibold inline-block absolute pin-r pin-t p-2" data-testId="pointCardCount">{count}</span>{/if}
     <div class="py-12 md:py-16 text-center">{point}</div>
 </div>
