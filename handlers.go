@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -69,7 +68,6 @@ func RecruitWarriorHandler(w http.ResponseWriter, r *http.Request) {
 			Path:     "/",
 			HttpOnly: true,
 			Domain:   AppDomain,
-			Expires:  time.Now().Add(365 * (24 * time.Hour)),
 			MaxAge:   86400 * 365,
 			Secure:   SecureCookieFlag,
 			SameSite: http.SameSiteStrictMode,

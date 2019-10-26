@@ -246,16 +246,16 @@ func (s *subscription) writePump() {
 // used in the event of bad cookie reads
 func ClearWarriorCookies(w http.ResponseWriter) {
 	feCookie := &http.Cookie{
-		Name:    "warrior",
-		Value:   "",
-		Path:    "/",
-		Expires: time.Unix(0, 0),
+		Name:   "warrior",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
 	}
 	beCookie := &http.Cookie{
 		Name:     SecureCookieName,
 		Value:    "",
 		Path:     "/",
-		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
 		HttpOnly: true,
 	}
 
