@@ -196,7 +196,7 @@ func GetBattle(BattleID string) (*Battle, error) {
 // GetBattlesByLeader gets a list of battles by leaderID
 func GetBattlesByLeader(LeaderID string) ([]*Battle, error) {
 	var battles = make([]*Battle, 0)
-	battleRows, battlesErr := db.Query("SELECT id, name, leader_id, voting_locked, active_plan_id FROM battles WHERE leader_id = $1", LeaderID)
+	battleRows, battlesErr := db.Query("SELECT id, name, leader_id, voting_locked, active_plan_id FROM battles WHERE leader_id = $1 ORDER BY created_date DESC", LeaderID)
 	if battlesErr != nil {
 		return nil, errors.New("Not found")
 	}
