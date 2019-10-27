@@ -17,12 +17,12 @@
     }
 </script>
 
-<div class="border-b border-grey p-4 flex" data-testId="warriorCard" data-warriorName={warrior.name}>
+<div class="border-b border-grey p-4 flex items-center" data-testId="warriorCard" data-warriorName={warrior.name}>
     <div class="w-1/4">
         <img src="https://api.adorable.io/avatars/48/{warrior.id}.png" alt="Placeholder Avatar">
     </div>
     <div class="w-3/4">
-        <div class="flex">
+        <div class="flex items-center">
             <div class="w-3/4">
                 <p class="text-xl font-bold" data-testId="warriorName">{warrior.name}</p>
                 {#if leaderId === warrior.id}
