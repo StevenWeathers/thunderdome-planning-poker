@@ -209,13 +209,19 @@ func GetBattle(BattleID string) (*Battle, error) {
 // GetBattlesByLeader gets a list of battles by leaderID
 func GetBattlesByLeader(LeaderID string) ([]*Battle, error) {
 	var battles = make([]*Battle, 0)
-	battleRows, battlesErr := db.Query("SELECT id, name, leader_id, voting_locked, active_plan_id, point_values_allowed FROM battles WHERE leader_id = $1 ORDER BY created_date DESC", LeaderID)
+	battleRows, battlesErr := db.Query(`
+		SELECT b.id, b.name, b.leader_id, b.voting_locked, b.active_plan_id, b.point_values_allowed,
+		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans
+		FROM battles b LEFT JOIN plans p ON b.id = p.battle_id
+		WHERE b.leader_id = $1 GROUP BY b.id ORDER BY b.created_date DESC
+	`, LeaderID)
 	if battlesErr != nil {
 		return nil, errors.New("Not found")
 	}
 
 	defer battleRows.Close()
 	for battleRows.Next() {
+		var points string
 		var pv string
 		var ActivePlanID sql.NullString
 		var b = &Battle{
@@ -228,9 +234,10 @@ func GetBattlesByLeader(LeaderID string) ([]*Battle, error) {
 			ActivePlanID:       "",
 			PointValuesAllowed: make([]string, 0),
 		}
-		if err := battleRows.Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &ActivePlanID, &pv); err != nil {
+		if err := battleRows.Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &ActivePlanID, &pv, &points); err != nil {
 			log.Println(err)
 		} else {
+			_ = json.Unmarshal([]byte(points), &b.Plans)
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			b.ActivePlanID = ActivePlanID.String
 			battles = append(battles, b)
