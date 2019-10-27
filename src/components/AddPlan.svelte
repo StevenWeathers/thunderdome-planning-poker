@@ -21,8 +21,8 @@
     }
 </script>
 
-<div class="fixed pin flex items-center">
-    <div class="fixed pin bg-black opacity-75 z-10"></div>
+<div class="fixed pin flex items-center z-10">
+    <div class="fixed pin bg-black opacity-75"></div>
 
     <div class="relative mx-6 md:mx-auto w-full md:w-1/2 lg:w-1/4 z-20 m-8">
         <div class="shadow-lg bg-white rounded-lg p-6">
