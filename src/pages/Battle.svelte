@@ -101,6 +101,10 @@
                 break;
             case "plan_revised":
                 battle.plans = JSON.parse(parsedEvent.value)
+                if (battle.activePlanId !== '') {
+                    const activePlan = battle.plans.find(p => p.id === battle.activePlanId)
+                    currentPlanName = activePlan.name
+                }
                 break;
             case "plan_burned":
                 const postBurnPlans = JSON.parse(parsedEvent.value)

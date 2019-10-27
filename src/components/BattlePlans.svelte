@@ -85,7 +85,7 @@
     </ul>
 
     {#each plansToShow as plan (plan.id)}
-        <div class="flex flex-wrap border-b border-grey-light p-4" data-testId="battlePlan" data-planName={plan.name}>
+        <div class="flex flex-wrap items-center border-b border-grey-light p-4" data-testId="battlePlan" data-planName={plan.name}>
             <div class="w-full lg:w-3/4 mb-4 lg:mb-0">
                 <div class="inline-block font-bold align-middle" data-testId="battlePlanName">{plan.name}</div>
                 &nbsp;

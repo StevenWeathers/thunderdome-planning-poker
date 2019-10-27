@@ -74,7 +74,7 @@
                     <div class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold md:text-xl">
                         {battle.name}
                         <div class="font-semibold md:text-sm text-grey-dark">
-                            {battle.plans.length ? battle.plans.filter(p => p.points !== "").length : 0} of {battle.plans.length} plans pointed
+                            {battle.plans.filter(p => p.points !== "").length} of {battle.plans.length} plans pointed
                         </div>
                     </div>
                     <div class="w-full md:w-1/2 mb-4 md:mb-0 md:text-right">
