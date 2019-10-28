@@ -49,7 +49,7 @@
 </script>
 
 <div class="bg-white shadow-md mb-4 rounded">
-    <div class="flex bg-grey-lighter p-4 rounded-t">
+    <div class="flex items-center bg-grey-lighter p-4 rounded-t">
         <div class="w-1/2 lg:w-3/4">
             <h3 class="text-2xl">Plans</h3>
         </div>
@@ -68,7 +68,7 @@
     <ul class="list-reset flex border-b border-grey-light">
         <li class="-mb-px {showCompleted ? '' : 'mr-1'}">
             <button
-                class="{showCompleted ? 'hover:text-blue-darker text-blue' : 'border-b border-teal text-blue-dark'} bg-white inline-block py-4 px-4 font-semibold"
+                class="{showCompleted ? 'hover:text-blue-dark text-blue-light' : 'border-b border-blue text-blue-dark hover:text-blue-darker'} bg-white inline-block py-4 px-4 font-semibold"
                 on:click={toggleShowCompleted(false)}
             >
                 Unpointed ({unpointedPlans.length})
@@ -76,7 +76,7 @@
         </li>
         <li class="mr-1 {showCompleted ? 'mr-1' : ''}">
             <button
-                class="{showCompleted ? 'border-b border-teal text-blue-dark' : 'hover:text-blue-darker text-blue'} bg-white inline-block py-4 px-4 font-semibold"
+                class="{showCompleted ? 'border-b border-blue text-blue-dark hover:text-blue-darker' : 'hover:text-blue-dark text-blue-light'} bg-white inline-block py-4 px-4 font-semibold"
                 on:click={toggleShowCompleted(true)}
             >
                 Pointed ({pointedPlans.length})

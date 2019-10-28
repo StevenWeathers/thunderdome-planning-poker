@@ -14,7 +14,7 @@ export default {
     sourcemap: false,
     format: 'iife',
     name: 'app',
-    file: 'dist/js/bundle.1027192.js'
+    file: 'dist/js/bundle.1027193.js'
   },
   plugins: [
     del({ targets: 'dist/*' }),

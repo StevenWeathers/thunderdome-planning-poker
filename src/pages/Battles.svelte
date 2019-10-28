@@ -90,7 +90,7 @@
         {/each}
     </div>
 
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <div class="bg-white shadow-md rounded p-6">
         <h2 class="mb-4">Create a Battle</h2>
         <form on:submit={createBattle} name="createBattle">
             <div class="mb-4">
@@ -127,10 +127,8 @@
                 </div>
             </div>
             
-            <div class="mb-6">
-                <div class="flex items-center justify-between">
-                    <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded" type="submit">Create a Story Battle</button>
-                </div>
+            <div>
+                <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded" type="submit">Create a Story Battle</button>
             </div>
         </form>
     </div>
