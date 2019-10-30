@@ -38,6 +38,7 @@
             case "init":
                 battle = JSON.parse(parsedEvent.value)
                 points = battle.pointValuesAllowed
+
                 if (battle.activePlanId !== '') {
                     const activePlan = battle.plans.find(p => p.id === battle.activePlanId)
                     currentPlanName = activePlan.name
@@ -52,6 +53,7 @@
             case "warrior_retreated":
                 const leftWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
                 battle.warriors = JSON.parse(parsedEvent.value)
+                
                 notifications.danger(`${leftWarrior.name} retreated.`)
                 break;
             case "plan_added":
@@ -235,6 +237,7 @@
     }
 
     $: highestVoteCount = battle.activePlanId !== '' && battle.votingLocked === true ? getHighestVote() : ''
+    $: showVotingResults = battle.activePlanId !== '' && battle.votingLocked === true
 
     function concedeBattle() {
         sendSocketEvent("concede_battle", "")
@@ -288,8 +291,14 @@
 
         <div class="flex flex-wrap mb-4 -mx-4">
             <div class="w-full lg:w-3/4 px-4">
-                {#if battle.activePlanId !== '' && battle.votingLocked === true}
-                    <VoteResults plans={battle.plans} activePlanId={battle.activePlanId} points={points} highestVote={highestVoteCount} />
+                {#if showVotingResults}
+                    <VoteResults
+                        warriors={battle.warriors}
+                        plans={battle.plans}
+                        activePlanId={battle.activePlanId}
+                        points={points}
+                        highestVote={highestVoteCount}
+                    />
                 {:else}
                     <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
                         {#each points as point}

@@ -44,7 +44,7 @@
             </div>
             <div class="w-1/4 text-right">
                 {#if voted && points === ''}
-                    <VoteIcon />
+                    <span class="text-green"><VoteIcon /></span>
                 {:else if voted && points !== ''}
                     <span class="font-bold text-green-dark border-green border p-2 rounded ml-2" data-testId="warriorPoints">{points}</span>
                 {/if}

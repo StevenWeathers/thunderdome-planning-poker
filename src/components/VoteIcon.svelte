@@ -1,7 +1,12 @@
+<script>
+  export let width = 32
+  export let height = 32
+</script>
+
 <svg
-  class="fill-current text-green"
-  width="32"
-  height="32"
+  class="fill-current"
+  {width}
+  {height}
   aria-hidden="true"
   focusable="false"
   data-prefix="fas"
