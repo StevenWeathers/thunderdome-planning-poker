@@ -37,10 +37,15 @@
                 count: 0,
                 voters: [],
             }
+            let warriorName = 'Left battle'
+
+            if (warriors.length) {
+                const warrior = warriors.find(w => w.id === v.warriorId)
+                warriorName = warrior ? warrior.name : warriorName
+            }
+            currentVote.voters.push(warriorName)
             
             currentVote.count = currentVote.count + 1
-            // need to get warriors array to update properly from parent
-            // currentVote.voters.push(warriors.find(w => w.id === v.warriorId).name)
 
             obj[v.vote] = currentVote
             
@@ -51,14 +56,16 @@
     function calculateVotePercentage(count) {
         return Math.floor(100 * (count / totalVotes))
     }
-    
-    let counts = compileVoteCounts()
+
     let average = getVoteAverage()
+    $: counts = compileVoteCounts(warriors)
+    let showHighestVoters = false
 </script>
 
 <div class="flex flex-wrap items-center text-center mb-2 md:mb-4 pt-2 pb-2 md:pt-4 md:pb-4 bg-white shadow-md rounded text-xl">
     <div class="w-1/3 ">
-            {totalVotes} <WarriorIcon />{totalVotes > 1 ? 's': ''} voted
+        <div class="mb-2">Total Votes</div>
+        {totalVotes}<WarriorIcon />
     </div>
     <div class="w-1/3">
         <div class="mb-2">Average</div>
@@ -66,14 +73,29 @@
     </div>
     <div class="w-1/3">
         <div class="mb-2">Highest</div>
-        <span class="font-bold text-green-dark border-green border p-2 rounded ml-2 inline-block">{highestVote}</span> - {counts[highestVote].count}<WarriorIcon />
+        <div>
+            <span class="font-bold text-green-dark border-green border p-2 rounded ml-2 inline-block">{highestVote}</span> - {counts[highestVote].count}<span class="relative">
+                <button
+                    on:mouseenter={() => (showHighestVoters = true)}
+                    on:mouseleave={() => (showHighestVoters = false)}
+                    class="relative"
+                    title="Show Voters"
+                >
+                <WarriorIcon /><span class="text-sm text-right text-black font-normal w-48 absolute pin-l pin-t -mt-2 ml-4 bg-white p-2 rounded shadow-md {showHighestVoters ? '' : 'hidden'}">
+                    {#each counts[highestVote].voters as voter}
+                        {voter}<br />
+                    {/each}
+                </span>
+                </button>
+            </span>
+        </div>
     </div>
 </div>
 
 <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
     {#each points as point}
         <div class="w-1/4 md:w-1/6 px-2 mb-4">
-            <PointCard results={counts[point]} isLocked={true} point={point} />
+            <PointCard results={counts[point] || { count: 0 }} isLocked={true} point={point} />
         </div>
     {/each}
 </div>

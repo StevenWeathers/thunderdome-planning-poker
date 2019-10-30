@@ -53,7 +53,7 @@
             case "warrior_retreated":
                 const leftWarrior = battle.warriors.find(w => w.id === parsedEvent.warriorId)
                 battle.warriors = JSON.parse(parsedEvent.value)
-                
+
                 notifications.danger(`${leftWarrior.name} retreated.`)
                 break;
             case "plan_added":

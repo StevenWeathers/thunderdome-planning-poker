@@ -23,7 +23,6 @@
             return response.json()
         })
         .then(function(bs) {
-            console.log(bs)
             battles = bs
         })
         .catch(function(error) {
