@@ -10,7 +10,7 @@
     export let highestVote = ''
 
     let totalVotes = plans.find(p => p.id === activePlanId).votes.length
-console.log('warriors >> ', warriors)
+
     // get vote average from active plan
     function getVoteAverage() {
         const activePlan = plans.find(p => p.id === activePlanId)
