@@ -21,9 +21,10 @@
                 const vote = v.vote === '1/2' ? .5 : parseInt(v.vote)
                 return vote
             })
-            const sum = votesToAverage.reduce((previous, current) => current += previous)
+
+            const sum = votesToAverage.length ? votesToAverage.reduce((previous, current) => current += previous) : 0
             
-            average = Math.ceil(sum / votesToAverage.length)
+            average = Math.ceil(sum / votesToAverage.length) || 0
         }
 
         return average
