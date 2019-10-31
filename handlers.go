@@ -138,6 +138,7 @@ func EnlistWarriorHandler(w http.ResponseWriter, r *http.Request) {
 	keyVal := make(map[string]string)
 	jsonErr := json.Unmarshal(body, &keyVal) // check for errors
 	if jsonErr != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
