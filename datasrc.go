@@ -28,8 +28,10 @@ type Battle struct {
 
 // Warrior aka user
 type Warrior struct {
-	WarriorID   string `json:"id"`
-	WarriorName string `json:"name"`
+	WarriorID    string `json:"id"`
+	WarriorName  string `json:"name"`
+	WarriorEmail string `json:"email"`
+	WarriorRank  string `json:"rank"`
 }
 
 // Vote structure
@@ -140,6 +142,21 @@ func SetupDB() {
 		`ALTER TABLE battles ADD COLUMN IF NOT EXISTS point_values_allowed JSONB 
 		DEFAULT '["1/2", "1", "2", "3", "5", "8", "13", "?"]'::JSONB`,
 	); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS email VARCHAR(320) UNIQUE"); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS password TEXT"); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := db.Exec(
+		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS rank VARCHAR(128) DEFAULT 'PRIVATE'"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -263,8 +280,8 @@ func ConfirmLeader(BattleID string, warriorID string) error {
 	return nil
 }
 
-// CreateWarrior adds a new warrior to the db
-func CreateWarrior(WarriorName string) (*Warrior, error) {
+// CreateWarriorPrivate adds a new warrior private (guest) to the db
+func CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
 	newID, _ := uuid.NewUUID()
 	id := newID.String()
 
@@ -278,14 +295,54 @@ func CreateWarrior(WarriorName string) (*Warrior, error) {
 	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName}, nil
 }
 
+// CreateWarriorCorporal adds a new warrior corporal (registered) to the db
+func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassword string) (*Warrior, error) {
+	newID, _ := uuid.NewUUID()
+	id := newID.String()
+	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
+	if hashErr != nil {
+		return nil, hashErr
+	}
+
+	var WarriorID string
+	e := db.QueryRow(`INSERT INTO warriors (id, name, email, password, rank) VALUES ($1, $2, $3, $4, 'CORPORAL') RETURNING id`, id, WarriorName, WarriorEmail, hashedPassword).Scan(&WarriorID)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("a Warrior with that email already exists")
+	}
+
+	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: "CORPORAL"}, nil
+}
+
 // GetWarrior gets a warrior from db by ID
 func GetWarrior(WarriorID string) (*Warrior, error) {
 	var w Warrior
+	var warriorEmail sql.NullString
 
-	e := db.QueryRow("SELECT id, name FROM warriors WHERE id = $1", WarriorID).Scan(&w.WarriorID, &w.WarriorName)
+	e := db.QueryRow("SELECT id, name, email, rank FROM warriors WHERE id = $1", WarriorID).Scan(&w.WarriorID, &w.WarriorName, &warriorEmail, &w.WarriorRank)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Warrior Not found")
+	}
+
+	w.WarriorEmail = warriorEmail.String
+
+	return &w, nil
+}
+
+// AuthWarrior attempts to authenticate the warrior
+func AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) {
+	var w Warrior
+	var passHash string
+
+	e := db.QueryRow("SELECT id, name, email, rank, password FROM warriors WHERE email = $1", WarriorEmail).Scan(&w.WarriorID, &w.WarriorName, &w.WarriorEmail, &w.WarriorRank, &passHash)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("Warrior Not found")
+	}
+
+	if ComparePasswords(passHash, []byte(WarriorPassword)) == false {
+		return nil, errors.New("Password invalid")
 	}
 
 	return &w, nil
@@ -295,12 +352,14 @@ func GetWarrior(WarriorID string) (*Warrior, error) {
 func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 	var active bool
 	var w Warrior
+	var warriorEmail sql.NullString
 
-	e := db.QueryRow("SELECT id, name FROM warriors WHERE id = $1", WarriorID).Scan(&w.WarriorID, &w.WarriorName)
+	e := db.QueryRow("SELECT id, name, email, rank FROM warriors WHERE id = $1", WarriorID).Scan(&w.WarriorID, &w.WarriorName, &warriorEmail, &w.WarriorRank)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Warrior Not found")
 	}
+	w.WarriorEmail = warriorEmail.String
 
 	err := db.QueryRow("SELECT active FROM battles_warriors WHERE battle_id = $1 AND warrior_id = $2", BattleID, WarriorID).Scan(&active)
 	if err != nil {
@@ -317,14 +376,16 @@ func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 // GetActiveWarriors retrieves the active warriors for a given battle from db
 func GetActiveWarriors(BattleID string) []*Warrior {
 	var warriors = make([]*Warrior, 0)
-	rows, err := db.Query("SELECT warriors.id, warriors.name FROM battles_warriors LEFT JOIN warriors ON battles_warriors.warrior_id = warriors.id where battles_warriors.battle_id = $1 AND battles_warriors.active = true ORDER BY warriors.name", BattleID)
+	rows, err := db.Query("SELECT warriors.id, warriors.name, warriors.email, warriors.rank FROM battles_warriors LEFT JOIN warriors ON battles_warriors.warrior_id = warriors.id where battles_warriors.battle_id = $1 AND battles_warriors.active = true ORDER BY warriors.name", BattleID)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
 			var w Warrior
-			if err := rows.Scan(&w.WarriorID, &w.WarriorName); err != nil {
+			var warriorEmail sql.NullString
+			if err := rows.Scan(&w.WarriorID, &w.WarriorName, &warriorEmail, &w.WarriorRank); err != nil {
 				log.Println(err)
 			} else {
+				w.WarriorEmail = warriorEmail.String
 				warriors = append(warriors, &w)
 			}
 		}
