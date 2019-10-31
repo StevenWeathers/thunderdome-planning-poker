@@ -1,17 +1,77 @@
-<ul class="toasts">
-	{#each toasts as toast (toast.id)}
-		<li class="toast" style="background: {toast.background};" out:animateOut>
-			<div class="content">
-				{toast.msg}
-			</div>
-			<div 
-					 class="progress" 
-					 style="animation-duration: {toast.timeout}ms;"
-					 on:animationend={() => removeToast(toast.id) }>
-			</div>
-		</li>	
-	{/each}
-</ul>
+<script>
+	let count = 0
+	let toasts = [ ]
+	let themes = {
+		danger: '#bb2124',
+		success: '#22bb33',
+		warning: '#f0ad4e',
+		info: '#5bc0de',
+		default: '#aaaaaa'
+	}
+
+	function animateOut(node, { delay = 0, duration = 300 }) {
+		function vhTOpx (value) {
+			var w = window,
+				d = document,
+				e = d.documentElement,
+				g = d.getElementsByTagName('body')[0],
+				x = w.innerWidth || e.clientWidth || g.clientWidth,
+				y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+			return (y*value)/100;
+		}
+		
+		return {
+			delay,
+			duration,
+			css: t => `opacity: ${(t-.5) * 1}; transform-origin: top right; transform: scaleX(${(t-.5)*1});`
+		}
+	}
+
+	function createToast (msg, theme, timeout) {
+		const background = themes[theme] || themes['default']
+
+		toasts.unshift({
+			id: count,
+			msg, 
+			background, 
+			timeout, 
+			width: '100%'
+		})
+		toasts = toasts
+		count = count + 1
+	}
+	
+	export function removeToast (id) { 
+		toasts = toasts.filter(t => t.id != id)
+	}
+	
+	export function show (msg, timeout = 1000, theme = 'default') {
+		createToast(msg, theme, timeout)
+	}
+	
+	export function danger (msg, timeout) {
+		// console.log(msg)
+		show(msg, timeout, 'danger')
+	}
+	
+	export function warning (msg, timeout) {
+		show(msg, timeout, 'warning')
+	}
+	
+	export function info (msg, timeout) {
+		// console.log(msg)
+		show(msg, timeout, 'info')
+	}
+	
+	export function success (msg, timeout) {
+		// console.log(msg)
+		show(msg, timeout, 'success')
+	}
+	
+	export function hide () {
+		shown = false
+	}
+</script>
 
 <style>
 	:global(.toasts) {
@@ -92,70 +152,17 @@
 	
 </style>
 
-<script>
-	let count = 0
-	let toasts = [ ]
-	let themes = {
-		danger: '#bb2124',
-		success: '#22bb33',
-		warning: '#f0ad4e',
-		info: '#5bc0de',
-		default: '#aaaaaa'
-	}
-	function animateOut(node, { delay = 0, duration = 300 }) {
-		function vhTOpx (value) {
-			var w = window,
-				d = document,
-				e = d.documentElement,
-				g = d.getElementsByTagName('body')[0],
-				x = w.innerWidth || e.clientWidth || g.clientWidth,
-				y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-			return (y*value)/100;
-		}
-		
-		return {
-			delay,
-			duration,
-			css: t => `opacity: ${(t-.5) * 1}; transform-origin: top right; transform: scaleX(${(t-.5)*1});`
-		}
-	}
-	function createToast (msg, theme, timeout) {
-		const background = themes[theme] || themes['default']
-		toasts.unshift({
-			id: count,
-			msg, 
-			background, 
-			timeout, 
-			width: '100%'
-		})
-		count = count + 1
-	}
-	
-	export function removeToast (id) { 
-		toasts = toasts.filter(t => t.id != id)
-	}
-	
-	export function show (msg, timeout = 1000, theme = 'default') {
-		createToast(msg, theme, timeout)
-	}
-	
-	export function danger (msg, timeout) {
-		show(msg, timeout, 'danger')
-	}
-	
-	export function warning (msg, timeout) {
-		show(msg, timeout, 'warning')
-	}
-	
-	export function info (msg, timeout) {
-		show(msg, timeout, 'info')
-	}
-	
-	export function success (msg, timeout) {
-		show(msg, timeout, 'success')
-	}
-	
-	export function hide () {
-		shown = false
-	}
-</script>
+<ul class="toasts">
+	{#each toasts as toast (toast.id)}
+		<li class="toast" style="background: {toast.background};" out:animateOut>
+			<div class="content">
+				{toast.msg}
+			</div>
+			<div 
+				class="progress" 
+				style="animation-duration: {toast.timeout}ms;"
+				on:animationend={() => removeToast(toast.id) }>
+			</div>
+		</li>	
+	{/each}
+</ul>

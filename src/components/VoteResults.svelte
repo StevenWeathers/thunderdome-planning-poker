@@ -74,7 +74,7 @@
     <div class="w-1/3">
         <div class="mb-2">Highest</div>
         <div>
-            <span class="font-bold text-green-dark border-green border p-2 rounded ml-2 inline-block">{highestVote}</span> - {counts[highestVote].count}<span class="relative">
+            <span class="font-bold text-green-dark border-green border p-2 rounded ml-2 inline-block">{highestVote || 0}</span> - {counts[highestVote] ? counts[highestVote].count : 0}<span class="relative">
                 <button
                     on:mouseenter={() => (showHighestVoters = true)}
                     on:mouseleave={() => (showHighestVoters = false)}
@@ -82,9 +82,11 @@
                     title="Show Voters"
                 >
                 <WarriorIcon /><span class="text-sm text-right text-black font-normal w-48 absolute pin-l pin-t -mt-2 ml-4 bg-white p-2 rounded shadow-md {showHighestVoters ? '' : 'hidden'}">
-                    {#each counts[highestVote].voters as voter}
-                        {voter}<br />
-                    {/each}
+                    {#if counts[highestVote]}
+                        {#each counts[highestVote].voters as voter}
+                            {voter}<br />
+                        {/each}
+                    {/if}
                 </span>
                 </button>
             </span>
