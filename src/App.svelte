@@ -2,9 +2,9 @@
     import Navaid from 'navaid'
     import { onDestroy } from 'svelte'
     import Notifications from './components/Notifications.svelte'
-    import WarriorIcon from './components/WarriorIcon.svelte'
+    import WarriorIcon from './components/icons/WarriorIcon.svelte'
+    import HollowButton from './components/HollowButton.svelte'
     
-
     import Landing from './pages/Landing.svelte'
     import Battles from './pages/Battles.svelte'
     import Battle from './pages/Battle.svelte'
@@ -93,48 +93,24 @@
     {#if $warrior.name}
         <div class="text-right mt-4 md:mt-0">
             <span class="font-bold mr-2 text-xl"><WarriorIcon />{$warrior.name}</span>
-            <a
-                href="/battles"
-                class="inline-block mr-2 no-underline bg-transparent hover:bg-teal text-teal-dark font-semibold hover:text-white py-2 px-2 border border-teal hover:border-transparent rounded"
-            >
+            <HollowButton color="teal" href="/battles">
                 My Battles
-            </a>
+            </HollowButton>
             {#if !$warrior.rank || $warrior.rank === 'PRIVATE'}
-                <a
-                    href="/enlist"
-                    class="inline-block mr-2 no-underline bg-transparent hover:bg-teal text-teal-dark font-semibold hover:text-white py-2 px-2 border border-teal hover:border-transparent rounded"
-                >
+                <HollowButton color="teal" href="/enlist">
                     Create Account
-                </a>
-                <a
-                    href="/login"
-                    class="inline-block mr-2 no-underline bg-transparent hover:bg-green text-green-dark font-semibold hover:text-white py-2 px-2 border border-green hover:border-transparent rounded"
-                >
-                    Login
-                </a>
+                </HollowButton>
+                <HollowButton href="/login">Login</HollowButton>
             {:else}
-                <button
-                    on:click={logoutWarrior}
-                    class="inline-block mr-2 no-underline bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-2 border border-red hover:border-transparent rounded"
-                >
+                <HollowButton color="red" onClick={logoutWarrior} additionalClasses="mr-2">
                     Logout
-                </button>
+                </HollowButton>
             {/if}
         </div>
     {:else}
         <div class="text-right mt-4 md:mt-0">
-            <a
-                href="/enlist"
-                class="inline-block mr-2 no-underline bg-transparent hover:bg-teal text-teal-dark font-semibold hover:text-white py-2 px-2 border border-teal hover:border-transparent rounded"
-            >
-                Create Account
-            </a>
-            <a
-                href="/login"
-                class="inline-block mr-2 no-underline bg-transparent hover:bg-green text-green-dark font-semibold hover:text-white py-2 px-2 border border-green hover:border-transparent rounded"
-            >
-                Login
-            </a>
+            <HollowButton color="teal" href="/enlist">Create Account</HollowButton>
+            <HollowButton href="/login">Login</HollowButton>
         </div>
     {/if}
 </nav>

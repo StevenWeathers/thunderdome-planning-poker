@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import WarriorIcon from "./WarriorIcon.svelte";
+  import WarriorIcon from "./icons/WarriorIcon.svelte";
 
   const dispatch = createEventDispatcher();
 

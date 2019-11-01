@@ -2,6 +2,9 @@
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
+    import DownCarrotIcon from '../components/icons/DownCarrotIcon.svelte'
+    import SolidButton from '../components/SolidButton.svelte'
+    import HollowButton from '../components/HollowButton.svelte'
     import { warrior } from '../stores.js'
 
     export let notifications
@@ -69,7 +72,7 @@
     <div class="mb-8">
         {#each battles as battle}
             <div class="bg-white shadow-md rounded mb-2">
-                <div class="flex flex-wrap p-4 border-grey-light border-b">
+                <div class="flex flex-wrap items-center p-4 border-grey-light border-b">
                     <div class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold md:text-xl">
                         {battle.name}
                         <div class="font-semibold md:text-sm text-grey-dark">
@@ -77,12 +80,9 @@
                         </div>
                     </div>
                     <div class="w-full md:w-1/2 mb-4 md:mb-0 md:text-right">
-                        <a
-                            href="/battle/{battle.id}"
-                            class="inline-block bg-transparent hover:bg-green text-green-dark font-semibold hover:text-white no-underline py-2 px-2 border border-green hover:border-transparent rounded"
-                        >
+                        <HollowButton href="/battle/{battle.id}">
                             Go To Battle
-                        </a>
+                        </HollowButton>
                     </div>
                 </div>
             </div>
@@ -121,13 +121,13 @@
                         {/each}
                     </select>
                     <div class="pointer-events-none absolute pin-y pin-r flex items-center px-2 text-grey-darker">
-                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        <DownCarrotIcon />
                     </div>
                 </div>
             </div>
             
             <div>
-                <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded" type="submit">Create a Story Battle</button>
+                <SolidButton type="submit">Create a Story Battle</SolidButton>
             </div>
         </form>
     </div>

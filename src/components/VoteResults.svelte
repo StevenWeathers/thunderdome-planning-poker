@@ -1,7 +1,7 @@
 <script>
-    import VoteIcon from './VoteIcon.svelte'
+    import VoteIcon from './icons/VoteIcon.svelte'
     import PointCard from '../components/PointCard.svelte'
-    import WarriorIcon from '../components/WarriorIcon.svelte'
+    import WarriorIcon from '../components/icons/WarriorIcon.svelte'
 
     export let activePlanId = ''
     export let plans = []

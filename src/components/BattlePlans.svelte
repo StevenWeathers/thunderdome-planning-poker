@@ -1,5 +1,6 @@
 <script>
     import AddPlan from '../components/AddPlan.svelte'
+    import HollowButton from '../components/HollowButton.svelte'
     
     export let plans = []
     export let isLeader = false
@@ -55,12 +56,9 @@
         </div>
         <div class="w-1/2 lg:w-1/4 text-right">
             {#if isLeader}
-                <button
-                    class="bg-transparent hover:bg-blue text-blue-dark font-semibold hover:text-white py-2 px-4 border border-blue hover:border-transparent rounded"
-                    on:click={toggleAddPlan()}
-                >
+                <HollowButton color="blue" onClick={toggleAddPlan()}>
                     Add Plan
-                </button>
+                </HollowButton>
             {/if}
         </div>
     </div>
@@ -94,26 +92,11 @@
             <div class="w-full lg:w-1/4 text-right">
             {#if isLeader}
                 {#if !plan.active}
-                    <button
-                        class="bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-2 border border-red hover:border-transparent rounded"
-                        on:click={handlePlanDeletion(plan.id)}
-                    >
-                        Delete
-                    </button>
+                    <HollowButton color="red" onClick={handlePlanDeletion(plan.id)}>Delete</HollowButton>
                 {/if}
-                <button
-                    class="bg-transparent hover:bg-purple text-purple-dark font-semibold hover:text-white py-2 px-2 border border-purple hover:border-transparent rounded"
-                    on:click={toggleAddPlan(plan.id)}
-                >
-                    Edit
-                </button>
+                <HollowButton color="purple" onClick={toggleAddPlan(plan.id)}>Edit</HollowButton>
                 {#if !plan.active}
-                    <button
-                        class="bg-transparent hover:bg-green text-green-dark font-semibold hover:text-white py-2 px-2 border border-green hover:border-transparent rounded"
-                        on:click={activatePlan(plan.id)}
-                    >
-                        Activate
-                    </button>
+                    <HollowButton onClick={activatePlan(plan.id)}>Activate</HollowButton>
                 {/if}
             {/if}
             </div>

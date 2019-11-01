@@ -1,5 +1,5 @@
 <script>
-    import CheckIcon from '../components/CheckIcon.svelte'
+    import CheckIcon from '../components/icons/CheckIcon.svelte'
 
     import { warrior } from '../stores.js'
 </script>

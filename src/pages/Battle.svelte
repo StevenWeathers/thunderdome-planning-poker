@@ -9,6 +9,7 @@
     import VotingControls from '../components/VotingControls.svelte'
     import InviteWarrior from '../components/InviteWarrior.svelte'
     import VoteResults from '../components/VoteResults.svelte'
+    import HollowButton from '../components/HollowButton.svelte'
 
     import { warrior } from '../stores.js'
 
@@ -354,12 +355,12 @@
                     <InviteWarrior hostname={hostname} battleId={battle.id} />
                     {#if battle.leaderId === $warrior.id}
                         <div class="mt-4 text-right">
-                            <button
-                                class="bg-transparent hover:bg-red text-red-dark font-semibold hover:text-white py-2 px-2 border border-red hover:border-transparent rounded"
-                                on:click={concedeBattle}
+                            <HollowButton
+                                color="red"
+                                onClick={concedeBattle}
                             >
                                 Delete Battle
-                            </button>
+                            </HollowButton>
                         </div>
                     {/if}
                 </div>
@@ -380,7 +381,7 @@
     {:else}
         <div class="flex items-center">
             <div class="flex-1 text-center">
-                <h1 class="text-5xl text-teal">Loading Battle Plans...</h1>
+                <h1 class="text-5xl text-green">Loading Battle Plans...</h1>
             </div>
         </div>
     {/if}

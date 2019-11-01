@@ -1,5 +1,5 @@
 <script>
-    import VoteIcon from './VoteIcon.svelte'
+    import VoteIcon from './icons/VoteIcon.svelte'
 
     export let voted = false
     export let warrior = {}

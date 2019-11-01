@@ -1,4 +1,7 @@
 <script>
+    import SolidButton from './SolidButton.svelte'
+    import DownCarrotIcon from './icons/DownCarrotIcon.svelte'
+
     export let sendSocketEvent = () => {}
     export let planId = ''
     export let points = []
@@ -29,9 +32,9 @@
 
 {#if planId != ''}
     <div class="p-4" data-testId="votingControls">
-        <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mb-2 rounded w-full" on:click={skipPlan}>Skip Plan</button>
+        <SolidButton color="blue" additionalClasses="mb-2 w-full" onClick={skipPlan}>Skip Plan</SolidButton>
         {#if !votingLocked}
-            <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded w-full" on:click={endPlanVoting}>Finish Voting</button>
+            <SolidButton additionalClasses="w-full" onClick={endPlanVoting}>Finish Voting</SolidButton>
         {:else}
             <form on:submit={handleSubmit} name="savePlanPoints">
                 <legend class="text-xl mb-2">Final Points</legend>
@@ -50,12 +53,12 @@
                                 {/each}
                             </select>
                             <div class="pointer-events-none absolute pin-y pin-r flex items-center px-2 text-grey-darker">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                <DownCarrotIcon />
                             </div>
                         </div>
                     </div>
                     <div class="w-1/2 text-right px-2">
-                        <button class="bg-green hover:bg-green-dark text-white font-bold py-2 px-4 rounded w-full h-full" type="submit">Save</button>
+                        <SolidButton additionalClasses="w-full h-full" type="submit">Save</SolidButton>
                     </div>
                 </div>
             </form>

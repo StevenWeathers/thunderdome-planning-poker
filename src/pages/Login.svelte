@@ -1,5 +1,6 @@
 <script>
     import PageLayout from '../components/PageLayout.svelte'
+    import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
 
     export let router
@@ -44,8 +45,6 @@
             })
     }
 
-    const disabledButtonClass = 'opacity-50 cursor-not-allowed'
-
     $: loginDisabled = warriorEmail === '' || warriorPassword === ''
 </script>
 
@@ -85,7 +84,7 @@
 
                 <div>
                     <div class="text-right">
-                        <button class="bg-green text-white font-bold py-2 px-4 rounded {loginDisabled ? disabledButtonClass : 'hover:bg-green-dark'}" type="submit" disabled={loginDisabled}>Login</button>
+                        <SolidButton type="submit" disabled={loginDisabled}>Login</SolidButton>
                     </div>
                 </div>
             </form>
