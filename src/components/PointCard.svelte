@@ -43,8 +43,7 @@
   class="relative">
   {#if results.count}
     <div
-      class="text-green font-semibold inline-block absolute pin-r pin-t p-2
-      text-4xl text-right z-10"
+      class="text-green font-semibold inline-block absolute pin-r pin-t p-2 text-4xl text-right {showVoters ? 'z-20' : 'z-10'}"
       data-testId="pointCardCount">
       {results.count}<button
         on:mouseenter={() => (showVoters = true)}
@@ -52,7 +51,7 @@
         title="Show Voters"
         class="text-green relative">
         <WarriorIcon height="24" width="24" /><span
-        class="text-right text-sm text-black font-normal w-48 absolute pin-l pin-t mt-0 ml-6 bg-white p-2 rounded shadow-md z-20 {showVoters ? '' : 'hidden'}">
+        class="text-right text-sm text-black font-normal w-48 absolute pin-l pin-t mt-0 ml-6 bg-white p-2 rounded shadow-md {showVoters ? '' : 'hidden'}">
         {#each results.voters as voter}
           {voter}
           <br />
