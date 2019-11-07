@@ -52,7 +52,7 @@
         title="Show Voters"
         class="text-green relative">
         <WarriorIcon height="24" width="24" /><span
-        class="text-right text-sm text-black font-normal w-48 absolute pin-l pin-t mt-0 ml-6 bg-white p-2 rounded shadow-md {showVoters ? '' : 'hidden'}">
+        class="text-right text-sm text-black font-normal w-48 absolute pin-l pin-t mt-0 ml-6 bg-white p-2 rounded shadow-md z-20 {showVoters ? '' : 'hidden'}">
         {#each results.voters as voter}
           {voter}
           <br />

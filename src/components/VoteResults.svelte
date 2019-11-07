@@ -81,7 +81,7 @@
                     class="relative"
                     title="Show Voters"
                 >
-                <WarriorIcon /><span class="text-sm text-right text-black font-normal w-48 absolute pin-l pin-t -mt-2 ml-4 bg-white p-2 rounded shadow-md {showHighestVoters ? '' : 'hidden'}">
+                <WarriorIcon /><span class="text-sm text-right text-black font-normal w-48 absolute pin-l pin-t -mt-2 ml-4 bg-white p-2 rounded shadow-md z-20 {showHighestVoters ? '' : 'hidden'}">
                     {#if counts[highestVote]}
                         {#each counts[highestVote].voters as voter}
                             {voter}<br />
