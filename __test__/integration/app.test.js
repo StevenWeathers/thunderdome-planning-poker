@@ -14,15 +14,15 @@ describe('Thunderdome App', () => {
   describe('when clicking the Create a Battle button as a new visitor', () => {
     it('should redirect to Enlist page', async () => {
       await expect(page).toClick('a', { text: 'Create a Battle' })
-      await expect(page).toMatchElement('input[name="yourName"]')
+      await expect(page).toMatchElement('input[name="yourName1"]')
     })
 
     it('should match an input with a "yourName" name then fill it with text', async () => {
-      await expect(page).toFill('input[name="yourName"]', 'Thor')
+      await expect(page).toFill('input[name="yourName1"]', 'Thor')
     })
 
     it('should then submit the form and be redirected to Battles page', async () => {
-      await expect(page).toClick('form[name="enlist"] button[type="submit"]')
+      await expect(page).toClick('form[name="registerGuest"] button[type="submit"]')
       await page.waitFor(1000) // give the page a little time to redirect and render
       await expect(page).toMatchElement('h1', { text: 'My Battles' })
     })
