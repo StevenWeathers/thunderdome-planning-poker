@@ -93,23 +93,23 @@
     {#if $warrior.name}
         <div class="text-right mt-4 md:mt-0">
             <span class="font-bold mr-2 text-xl"><WarriorIcon />{$warrior.name}</span>
-            <HollowButton color="teal" href="/battles">
+            <HollowButton color="teal" href="/battles" additionalClasses="mr-2">
                 My Battles
             </HollowButton>
             {#if !$warrior.rank || $warrior.rank === 'PRIVATE'}
-                <HollowButton color="teal" href="/enlist">
+                <HollowButton color="teal" href="/enlist" additionalClasses="mr-2">
                     Create Account
                 </HollowButton>
                 <HollowButton href="/login">Login</HollowButton>
             {:else}
-                <HollowButton color="red" onClick={logoutWarrior} additionalClasses="mr-2">
+                <HollowButton color="red" onClick={logoutWarrior}>
                     Logout
                 </HollowButton>
             {/if}
         </div>
     {:else}
         <div class="text-right mt-4 md:mt-0">
-            <HollowButton color="teal" href="/enlist">Create Account</HollowButton>
+            <HollowButton color="teal" href="/enlist" additionalClasses="mr-2">Create Account</HollowButton>
             <HollowButton href="/login">Login</HollowButton>
         </div>
     {/if}

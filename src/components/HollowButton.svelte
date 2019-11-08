@@ -22,7 +22,7 @@
 {:else}
     <a
         {href}
-        class="inline-block mr-2 no-underline bg-transparent hover:bg-{color} text-{color}-dark font-semibold hover:text-{textcolor} py-2 px-2 border border-{color} hover:border-transparent rounded"
+        class="inline-block no-underline bg-transparent hover:bg-{color} text-{color}-dark font-semibold hover:text-{textcolor} py-2 px-2 border border-{color} hover:border-transparent rounded {additionalClasses}"
     >
         <slot></slot>
     </a>
