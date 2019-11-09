@@ -1,5 +1,5 @@
 <svg
-  class="fill-current"
+  class="fill-current inline"
   width="16"
   height="16"
   viewBox="0 0 1792 1792"

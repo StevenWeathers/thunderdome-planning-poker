@@ -12,7 +12,7 @@
     import Login from './pages/Login.svelte'
     import { warrior } from './stores.js'
 
-    const footerLinkClasses = 'no-underline text-teal hover:text-teal-darker'
+    const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
 
     let notifications
 
@@ -77,6 +77,9 @@
     :global(.nav-logo) {
         max-height: 3.75rem;
     }
+    :global(.text-yellow-thunder) {
+        color: #ffdd57;
+    }
     :global(.bg-yellow-thunder) {
         background-color: #ffdd57;
     }
@@ -85,7 +88,7 @@
 <Notifications bind:this={notifications} />
 
 <nav class="flex items-center justify-between flex-wrap bg-white p-6" role="navigation" aria-label="main navigation">
-    <div class="flex items-center flex-no-shrink mr-6">
+    <div class="flex items-center flex-shrink-0 mr-6">
         <a href="/">
             <img src="/img/logo.svg" alt="Thunderdome" class="nav-logo"/>
         </a>

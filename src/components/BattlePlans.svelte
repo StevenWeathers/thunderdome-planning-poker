@@ -49,10 +49,10 @@
     $: plansToShow = showCompleted ? pointedPlans : unpointedPlans
 </script>
 
-<div class="bg-white shadow-md mb-4 rounded">
-    <div class="flex items-center bg-grey-lighter p-4 rounded-t">
+<div class="bg-white shadow-lg mb-4 rounded">
+    <div class="flex items-center bg-gray-200 p-4 rounded-t">
         <div class="w-1/2 lg:w-3/4">
-            <h3 class="text-2xl">Plans</h3>
+            <h3 class="text-2xl leading-tight font-bold">Plans</h3>
         </div>
         <div class="w-1/2 lg:w-1/4 text-right">
             {#if isLeader}
@@ -63,10 +63,10 @@
         </div>
     </div>
 
-    <ul class="list-reset flex border-b border-grey-light">
+    <ul class="flex border-b border-gray-400">
         <li class="-mb-px {showCompleted ? '' : 'mr-1'}">
             <button
-                class="{showCompleted ? 'hover:text-blue-dark text-blue-light' : 'border-b border-blue text-blue-dark hover:text-blue-darker'} bg-white inline-block py-4 px-4 font-semibold"
+                class="{showCompleted ? 'hover:text-blue-600 text-blue-400' : 'border-b border-blue-500 text-blue-600 hover:text-blue-800'} bg-white inline-block py-4 px-4 font-semibold"
                 on:click={toggleShowCompleted(false)}
             >
                 Unpointed ({unpointedPlans.length})
@@ -74,7 +74,7 @@
         </li>
         <li class="mr-1 {showCompleted ? 'mr-1' : ''}">
             <button
-                class="{showCompleted ? 'border-b border-blue text-blue-dark hover:text-blue-darker' : 'hover:text-blue-dark text-blue-light'} bg-white inline-block py-4 px-4 font-semibold"
+                class="{showCompleted ? 'border-b border-blue-500 text-blue-600 hover:text-blue-800' : 'hover:text-blue-600 text-blue-400'} bg-white inline-block py-4 px-4 font-semibold"
                 on:click={toggleShowCompleted(true)}
             >
                 Pointed ({pointedPlans.length})
@@ -83,13 +83,13 @@
     </ul>
 
     {#each plansToShow as plan (plan.id)}
-        <div class="flex flex-wrap items-center border-b border-grey-light p-4" data-testId="battlePlan" data-planName={plan.name}>
-            <div class="w-full lg:w-3/4 mb-4 lg:mb-0">
+        <div class="flex flex-wrap items-center border-b border-gray-400 p-4" data-testId="battlePlan" data-planName={plan.name}>
+            <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
                 <div class="inline-block font-bold align-middle" data-testId="battlePlanName">{plan.name}</div>
                 &nbsp;
-                {#if plan.points !== ''}<div class="inline-block font-bold text-green-dark border-green border px-2 py-1 rounded ml-2" data-testId="battlePlanPoints">{plan.points}</div>{/if}
+                {#if plan.points !== ''}<div class="inline-block font-bold text-green-600 border-green-500 border px-2 py-1 rounded ml-2" data-testId="battlePlanPoints">{plan.points}</div>{/if}
             </div>
-            <div class="w-full lg:w-1/4 text-right">
+            <div class="w-full lg:w-1/3 text-right">
             {#if isLeader}
                 {#if !plan.active}
                     <HollowButton color="red" onClick={handlePlanDeletion(plan.id)}>Delete</HollowButton>

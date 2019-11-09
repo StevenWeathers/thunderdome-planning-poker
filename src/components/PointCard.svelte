@@ -15,8 +15,8 @@
   let showVoters = false;
 
   $: activeColor = active
-    ? "border-green bg-green-lightest text-green-dark"
-    : "border-grey-light bg-white";
+    ? "border-green-500 bg-green-100 text-green-600"
+    : "border-gray-300 bg-white";
   $: lockedClass = isLocked
     ? "opacity-25 cursor-not-allowed"
     : "cursor-pointer";
@@ -43,15 +43,15 @@
   class="relative">
   {#if results.count}
     <div
-      class="text-green font-semibold inline-block absolute pin-r pin-t p-2 text-4xl text-right {showVoters ? 'z-20' : 'z-10'}"
+      class="text-green-500 font-semibold inline-block absolute right-0 top-0 p-2 text-4xl text-right {showVoters ? 'z-20' : 'z-10'}"
       data-testId="pointCardCount">
       {results.count}<button
         on:mouseenter={() => (showVoters = true)}
         on:mouseleave={() => (showVoters = false)}
         title="Show Voters"
-        class="text-green relative">
+        class="text-green-500 relative leading-none">
         <WarriorIcon height="24" width="24" /><span
-        class="text-right text-sm text-black font-normal w-48 absolute pin-l pin-t mt-0 ml-6 bg-white p-2 rounded shadow-md {showVoters ? '' : 'hidden'}">
+        class="text-right text-sm text-gray-900 font-normal w-48 absolute left-0 top-0 mt-0 ml-6 bg-white p-2 rounded shadow-lg {showVoters ? '' : 'hidden'}">
         {#each results.voters as voter}
           {voter}
           <br />
@@ -61,8 +61,7 @@
     </div>
   {/if}
   <div
-    class="w-full rounded overflow-hidden shadow-md border {activeColor}
-    {lockedClass} relative text-3xl lg:text-5xl relative z-0"
+    class="w-full rounded overflow-hidden shadow-lg border {activeColor} {lockedClass} relative text-3xl lg:text-5xl relative z-0"
     on:click={voteAction}>
     <div class="py-12 md:py-16 text-center">{point}</div>
   </div>

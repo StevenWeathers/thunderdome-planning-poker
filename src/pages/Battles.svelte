@@ -67,15 +67,15 @@
 </script>
 
 <PageLayout>
-    <h1 class="mb-4">My Battles</h1>
+    <h1 class="mb-4 text-3xl font-bold">My Battles</h1>
 
     <div class="mb-8">
         {#each battles as battle}
-            <div class="bg-white shadow-md rounded mb-2">
-                <div class="flex flex-wrap items-center p-4 border-grey-light border-b">
+            <div class="bg-white shadow-lg rounded mb-2">
+                <div class="flex flex-wrap items-center p-4 border-gray-400 border-b">
                     <div class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold md:text-xl">
                         {battle.name}
-                        <div class="font-semibold md:text-sm text-grey-dark">
+                        <div class="font-semibold md:text-sm text-gray-600">
                             {battle.plans.filter(p => p.points !== "").length} of {battle.plans.length} plans pointed
                         </div>
                     </div>
@@ -89,17 +89,17 @@
         {/each}
     </div>
 
-    <div class="bg-white shadow-md rounded p-6">
-        <h2 class="mb-4">Create a Battle</h2>
+    <div class="bg-white shadow-lg rounded p-6">
+        <h2 class="mb-4 text-2xl font-bold leading-tight">Create a Battle</h2>
         <form on:submit={createBattle} name="createBattle">
             <div class="mb-4">
-                <label class="block text-grey-darker text-sm font-bold mb-2" for="battleName">Battle Name</label>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="battleName">Battle Name</label>
                 <div class="control">
                     <input
                         name="battleName"
                         bind:value={battleName}
                         placeholder="Enter a battle name"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="battleName"
                         required
                     />
@@ -107,12 +107,12 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-grey-darker text-sm font-bold mb-2" for="pointValuesAllowed">Allowed Point Values</label>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="pointValuesAllowed">Allowed Point Values</label>
                 <div class="control relative">
                     <select
                         name="pointValuesAllowed"
                         bind:value={pointValuesAllowed}
-                        class="block appearance-none w-full bg-grey-lighter border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-grey"
+                        class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-darker py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                         id="pointValuesAllowed"
                         required
                     >
@@ -120,7 +120,7 @@
                             <option value={pi} selected={pi === pointValuesAllowed}>{points.join(', ')}</option>
                         {/each}
                     </select>
-                    <div class="pointer-events-none absolute pin-y pin-r flex items-center px-2 text-grey-darker">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                         <DownCarrotIcon />
                     </div>
                 </div>

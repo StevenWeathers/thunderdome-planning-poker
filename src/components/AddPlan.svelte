@@ -24,13 +24,13 @@
     }
 </script>
 
-<div class="fixed pin flex items-center z-40">
-    <div class="fixed pin bg-black opacity-75"></div>
+<div class="fixed inset-0 flex items-center z-40">
+    <div class="fixed inset-0 bg-gray-900 opacity-75"></div>
 
     <div class="relative mx-6 md:mx-auto w-full md:w-1/2 lg:w-1/4 z-50 m-8">
-        <div class="shadow-lg bg-white rounded-lg p-6">
+        <div class="shadow-xl bg-white rounded-lg p-6">
             <div class="flex justify-end mb-2">
-                <button aria-label="close" on:click={toggleAddPlan}>
+                <button aria-label="close" on:click={toggleAddPlan} class="text-gray-800">
                     <CloseIcon />
                 </button>
             </div>
@@ -41,7 +41,7 @@
                         Plan Name
                     </label>
                     <input
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
                         id="planName"
                         type="text"
                         bind:value={planName}

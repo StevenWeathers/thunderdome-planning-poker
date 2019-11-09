@@ -4,7 +4,7 @@
 </script>
 
 <svg
-  class="fill-current"
+  class="fill-current inline"
   {width}
   {height}
   aria-hidden="true"

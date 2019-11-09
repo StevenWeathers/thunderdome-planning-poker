@@ -118,19 +118,19 @@
 
 <PageLayout>
     <div class="text-center px-2 mb-4">
-        <h1>Enlist to Battle</h1>
+        <h1 class="text-4xl font-bold">Enlist to Battle</h1>
     </div>
     <div class="flex">
         <div class="w-1/2 px-4">
-            <form on:submit={createWarriorPrivate} class="bg-white shadow-md rounded p-6 mb-4" name="registerGuest">
-                <h2 class="font-bold text-xl mb-6">Register as Guest</h2>
+            <form on:submit={createWarriorPrivate} class="bg-white shadow-lg rounded p-6 mb-4" name="registerGuest">
+                <h2 class="font-bold text-2xl mb-6 leading-tight">Register as Guest</h2>
 
                 <div class="mb-6">
-                    <label class="block text-grey-darker text-sm font-bold mb-2" for="yourName1">Name</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourName1">Name</label>
                     <input
                         bind:value={warriorName}
                         placeholder="Enter your name"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="yourName1"
                         name="yourName1"
                         required
@@ -144,15 +144,15 @@
             </form>
         </div>
         <div class="w-1/2 px-4">
-            <form on:submit={createWarriorCorporal} class="bg-white shadow-md rounded p-6 mb-4" name="createAccount">
-                <h2 class="font-bold text-xl mb-6">Create an Account (optional)</h2>
+            <form on:submit={createWarriorCorporal} class="bg-white shadow-lg rounded p-6 mb-4" name="createAccount">
+                <h2 class="font-bold text-2xl mb-6  leading-tight">Create an Account (optional)</h2>
 
                 <div class="mb-4">
-                    <label class="block text-grey-darker text-sm font-bold mb-2" for="yourName2">Name</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourName2">Name</label>
                     <input
                         bind:value={warriorName}
                         placeholder="Enter your name"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="yourName2"
                         name="yourName2"
                         required
@@ -160,11 +160,11 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-grey-darker text-sm font-bold mb-2" for="yourEmail">Email</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourEmail">Email</label>
                     <input
                         bind:value={warriorEmail}
                         placeholder="Enter your email"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="yourEmail"
                         name="yourEmail"
                         type="email"
@@ -173,11 +173,11 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-grey-darker text-sm font-bold mb-2" for="yourPassword1">Password</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourPassword1">Password</label>
                     <input
                         bind:value={warriorPassword1}
                         placeholder="Enter a password"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="yourPassword1"
                         name="yourPassword1"
                         type="password"
@@ -186,11 +186,11 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-grey-darker text-sm font-bold mb-2" for="yourPassword2">Confirm Password</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourPassword2">Confirm Password</label>
                     <input
                         bind:value={warriorPassword2}
                         placeholder="Confirm your password"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="yourPassword2"
                         name="yourPassword2"
                         type="password"

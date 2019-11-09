@@ -50,18 +50,18 @@
 
 <PageLayout>
     <div class="text-center px-4 mb-4">
-        <h1>Login</h1>
+        <h1 class="text-4xl font-bold">Login</h1>
     </div>
 
     <div class="flex justify-center">
         <div class="w-1/3">
-            <form on:submit={authWarrior} class="bg-white shadow-md rounded p-6 mb-4" name="authWarrior">
+            <form on:submit={authWarrior} class="bg-white shadow-lg rounded p-6 mb-4" name="authWarrior">
                 <div class="mb-4">
-                    <label class="block text-grey-darker text-sm font-bold mb-2" for="yourEmail">Email</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourEmail">Email</label>
                     <input
                         bind:value={warriorEmail}
                         placeholder="Enter your email"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="yourEmail"
                         name="yourEmail"
                         type="email"
@@ -70,11 +70,11 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-grey-darker text-sm font-bold mb-2" for="yourPassword">Password</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourPassword">Password</label>
                     <input
                         bind:value={warriorPassword}
                         placeholder="Enter your password"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="yourPassword"
                         name="yourPassword"
                         type="password"

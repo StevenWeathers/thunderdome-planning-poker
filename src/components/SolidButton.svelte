@@ -7,10 +7,14 @@
     export let onClick = () => {}
 
     const disabledButtonClass = 'opacity-50 cursor-not-allowed'
+
+    $: colorScaled = color !== 'white' ? `${color}-500` : color
+    $: colorScaledDark = color !== 'white' ? `${color}-600` : color
+    $: textColorScaled = textcolor !== 'white' ? `${textcolor}-500` : textcolor
 </script>
 
 <button
-    class="bg-{color} text-{textcolor} font-bold py-2 px-4 rounded {disabled ? disabledButtonClass : `hover:bg-${color}-dark`} {additionalClasses}"
+    class="leading-tight bg-{colorScaled} text-{textColorScaled} font-bold py-2 px-3 rounded {disabled ? disabledButtonClass : `hover:bg-${colorScaledDark}`} {additionalClasses}"
     on:click={onClick}
     {type}
     {disabled}

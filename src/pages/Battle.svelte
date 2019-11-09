@@ -280,10 +280,10 @@
     {#if battle.name && !socketReconnecting && !socketError}
         <div class="mb-6 flex flex-wrap">
             <div class="w-full text-center md:w-2/3 md:text-left">
-                <h1>{currentPlanName}</h1>
-                <h2 class="text-grey-darker">{battle.name}</h2>
+                <h1 class="text-3xl font-bold leading-tight">{currentPlanName}</h1>
+                <h2 class="text-gray-700 text-2xl font-bold leading-tight">{battle.name}</h2>
             </div>
-            <div class="w-full md:w-1/3 text-center md:text-right font-semibold text-3xl md:text-4xl text-grey-darker" data-testId="votingTimer">
+            <div class="w-full md:w-1/3 text-center md:text-right font-semibold text-3xl md:text-4xl text-gray-700" data-testId="votingTimer">
                 {#if countdown.seconds !== undefined}
                     {#if countdown.hours !== 0}{addTimeLeadZero(countdown.hours)}:{/if}{addTimeLeadZero(countdown.minutes)}:{addTimeLeadZero(countdown.seconds)}
                 {/if}
@@ -324,9 +324,9 @@
             </div>
             
             <div class="w-full lg:w-1/4 px-4">
-                <div class="bg-white shadow-md mb-4 rounded">
-                    <div class="bg-blue p-4 rounded-t">
-                        <h3 class="text-2xl text-white">Warriors</h3>
+                <div class="bg-white shadow-lg mb-4 rounded">
+                    <div class="bg-blue-500 p-4 rounded-t">
+                        <h3 class="text-2xl text-white leading-tight font-bold">Warriors</h3>
                     </div>
 
                     {#each battle.warriors as war (war.id)}
@@ -351,7 +351,7 @@
                     {/if}
                 </div>
 
-                <div class="bg-white shadow-md p-5 mb-4 rounded">
+                <div class="bg-white shadow-lg p-4 mb-4 rounded">
                     <InviteWarrior hostname={hostname} battleId={battle.id} />
                     {#if battle.leaderId === $warrior.id}
                         <div class="mt-4 text-right">
@@ -369,19 +369,19 @@
     {:else if socketReconnecting}
         <div class="flex items-center">
             <div class="flex-1 text-center">
-                <h1 class="text-5xl text-teal">Ooops, reloading Battle Plans...</h1>
+                <h1 class="text-5xl text-teal-500 leading-tight font-bold">Ooops, reloading Battle Plans...</h1>
             </div>
         </div>
     {:else if socketError}
         <div class="flex items-center">
             <div class="flex-1 text-center">
-                <h1 class="text-5xl text-red">Error joining battle, refresh and try again.</h1>
+                <h1 class="text-5xl text-red-500 leading-tight font-bold">Error joining battle, refresh and try again.</h1>
             </div>
         </div>
     {:else}
         <div class="flex items-center">
             <div class="flex-1 text-center">
-                <h1 class="text-5xl text-green">Loading Battle Plans...</h1>
+                <h1 class="text-5xl text-green-500 leading-tight font-bold">Loading Battle Plans...</h1>
             </div>
         </div>
     {/if}

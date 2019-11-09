@@ -8,11 +8,16 @@
     export let href = ''
 
     const disabledButtonClass = 'opacity-50 cursor-not-allowed'
+    const commonClasses = 'leading-tight font-semibold bg-transparent py-2 px-3 border hover:border-transparent rounded'
+
+    $: colorScaled = color !== 'white' ? `${color}-500` : color
+    $: colorScaledDark = color !== 'white' ? `${color}-600` : color
+    $: textColorScaled = textcolor !== 'white' ? `${textcolor}-500` : textcolor
 </script>
 
 {#if href === ''}
     <button
-        class="bg-transparent hover:bg-{color} text-{color}-dark font-semibold hover:text-{textcolor} py-2 px-2 border border-{color} hover:border-transparent rounded {disabled ? disabledButtonClass : `hover:bg-${color}-dark`} {additionalClasses}"
+        class="{commonClasses} hover:bg-{colorScaled} text-{colorScaledDark} hover:text-{textColorScaled} border-{colorScaled} {disabled ? disabledButtonClass : `hover:bg-${colorScaledDark}`} {additionalClasses}"
         on:click={onClick}
         {type}
         {disabled}
@@ -22,7 +27,7 @@
 {:else}
     <a
         {href}
-        class="inline-block no-underline bg-transparent hover:bg-{color} text-{color}-dark font-semibold hover:text-{textcolor} py-2 px-2 border border-{color} hover:border-transparent rounded {additionalClasses}"
+        class="{commonClasses} inline-block no-underline hover:bg-{colorScaled} text-{colorScaledDark} hover:text-{textColorScaled} border-{colorScaled} {additionalClasses}"
     >
         <slot></slot>
     </a>
