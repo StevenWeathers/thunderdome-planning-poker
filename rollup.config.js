@@ -7,10 +7,9 @@ import copy from 'rollup-plugin-copy'
 import del from 'rollup-plugin-delete'
 import postcss from 'rollup-plugin-postcss';
 import autoPreprocess from 'svelte-preprocess';
+import html from 'rollup-plugin-bundle-html';
 
 const production = !process.env.ROLLUP_WATCH
-
-const dateHash = '110919'
 
 export default {
   input: 'src/main.js',
@@ -18,7 +17,7 @@ export default {
     sourcemap: false,
     format: 'iife',
     name: 'app',
-    file: `dist/js/bundle.${dateHash}.js`
+    file: `dist/js/bundle.[hash].js`
   },
   plugins: [
     del({ targets: 'dist/*' }),
@@ -31,11 +30,11 @@ export default {
       // we'll extract any component CSS out into
       // a separate file — better for performance
       css: css => {
-        css.write(`dist/css/bundle.${dateHash}.css`, false)
+        css.write(`dist/css/bundle.[hash].css`, false)
       }
     }),
     postcss({
-        extract: `dist/css/tailwind.${dateHash}.css`,
+        extract: `dist/css/tailwind.[hash].css`,
     }),
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
@@ -45,9 +44,16 @@ export default {
     resolve(),
     commonjs(),
 
+    html({
+      template: 'public/index.html',
+      dest: "dist",
+      filename: 'index.html',
+      absolute: true,
+    }),
+
     copy({
       targets: {
-        'public': 'dist'
+        'public/img': 'dist/img'
       }
     }),
 
