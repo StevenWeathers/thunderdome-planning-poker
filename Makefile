@@ -1,6 +1,6 @@
 # Go parameters
 GOCMD=go
-STATICPACKCMD=packr
+STATICPACKCMD=pkger
 NPMCMD=npm
 NPMBUILD=$(NPMCMD) run build
 GOBUILD=$(GOCMD) build

@@ -34,8 +34,8 @@ DB_NAME=
 
 ### Install dependencies
 ```
-go get -d -v
-go get -u github.com/gobuffalo/packr/packr
+go get
+go go install github.com/markbates/pkger/cmd/pkger
 npm install
 ```
 
@@ -52,7 +52,7 @@ npm run build
 
 ### bundle up static assets
 ```
-packr
+pkger
 ```
 
 ### Build for current OS

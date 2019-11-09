@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
+	"github.com/markbates/pkger"
 )
 
 // AppDomain is the domain of the application for cookie securing
@@ -37,9 +37,7 @@ func main() {
 
 	go h.run()
 
-	// box := packr.New("webui", "./dist")
-	box := packr.NewBox("./dist")
-	staticHandler := http.FileServer(box)
+	staticHandler := http.FileServer(pkger.Dir("/dist"))
 
 	router := mux.NewRouter()
 	router.PathPrefix("/css/").Handler(staticHandler)

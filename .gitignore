@@ -17,6 +17,7 @@ dist/
 # how static assets get bundled
 *-packr.go
 packrd/
+pkged.go
 # *nix compiled binary
 thunderdome-planning-poker
 # docker volumes

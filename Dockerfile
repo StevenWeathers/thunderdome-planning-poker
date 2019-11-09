@@ -17,31 +17,28 @@ RUN npm run build
 ############################
 # STEP 2 build executable binary
 ############################
-FROM golang:alpine as builderGo
+FROM golang:1.12-alpine as builderGo
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
 # Ca-certificates is required to call HTTPS endpoints.
 RUN apk update && apk add --no-cache git ca-certificates
 # Create appuser
 RUN adduser -D -g '' appuser
-# Create the data dir
-RUN mkdir /data
 # Copy the go source
-COPY ./*.go $GOPATH/src/mypackage/myapp/
+COPY ./*.go $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
+COPY ./go.mod $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
+COPY ./go.sum $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 # Copy our static assets
-COPY --from=builderNode /webapp/dist $GOPATH/src/mypackage/myapp/dist
+COPY --from=builderNode /webapp/dist $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/dist
 # Set working dir
-WORKDIR $GOPATH/src/mypackage/myapp/
+WORKDIR $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 # Fetch dependencies.
-# Using go mod with go 1.11
-#RUN GO111MODULE=on go mod download
-# Using go get.
-RUN go get -d -v
-RUN go get -u github.com/gobuffalo/packr/packr
+RUN GO111MODULE=on go get -d -v
+RUN GO111MODULE=on go install -v github.com/markbates/pkger/cmd/pkger
 # Bundle the static assets
-RUN packr
+RUN GO111MODULE=on pkger
 # Build the binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/thunderdome
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/thunderdome
 ############################
 # STEP 3 build a small image
 ############################
@@ -51,8 +48,6 @@ COPY --from=builderGo /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builderGo /etc/passwd /etc/passwd
 # Copy our static executable
 COPY --from=builderGo /go/bin/thunderdome /go/bin/thunderdome
-# Copy our data dir
-COPY --from=builderGo /data /data
 # Use an unprivileged user.
 USER appuser
 
