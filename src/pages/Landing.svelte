@@ -34,7 +34,7 @@
     </div>
 </section>
 
-<section>
+<section class="bg-white">
     <div class="container mx-auto px-4 py-6 lg:py-10">
         <div class="text-center mb-6">
             <h2 class="text-2xl font-bold">Features</h2>

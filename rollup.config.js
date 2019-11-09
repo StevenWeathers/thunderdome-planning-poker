@@ -5,6 +5,8 @@ import livereload from 'rollup-plugin-livereload'
 import { terser } from 'rollup-plugin-terser'
 import copy from 'rollup-plugin-copy'
 import del from 'rollup-plugin-delete'
+import postcss from 'rollup-plugin-postcss';
+import autoPreprocess from 'svelte-preprocess';
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -14,20 +16,25 @@ export default {
     sourcemap: false,
     format: 'iife',
     name: 'app',
-    file: 'dist/js/bundle.110819.js'
+    file: 'dist/js/bundle.1108190.js'
   },
   plugins: [
     del({ targets: 'dist/*' }),
     svelte({
+      preprocess: autoPreprocess({
+        postcss: true,
+      }),
       // enable run-time checks when not in production
       dev: !production,
       // we'll extract any component CSS out into
       // a separate file — better for performance
       css: css => {
-        css.write('dist/css/bundle.070119.css', false)
+        css.write('dist/css/bundle.110819.css', false)
       }
     }),
-
+    postcss({
+        extract: 'dist/css/tailwind.110819.css',
+    }),
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
     // some cases you'll need additional configuration —
