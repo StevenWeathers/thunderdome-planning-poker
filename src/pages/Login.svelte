@@ -54,7 +54,7 @@
     </div>
 
     <div class="flex justify-center">
-        <div class="w-1/3">
+        <div class="w-full md:w-1/2 lg:w-1/3">
             <form on:submit={authWarrior} class="bg-white shadow-lg rounded p-6 mb-4" name="authWarrior">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="yourEmail">Email</label>

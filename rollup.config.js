@@ -10,13 +10,15 @@ import autoPreprocess from 'svelte-preprocess';
 
 const production = !process.env.ROLLUP_WATCH
 
+const dateHash = '110919'
+
 export default {
   input: 'src/main.js',
   output: {
     sourcemap: false,
     format: 'iife',
     name: 'app',
-    file: 'dist/js/bundle.1108190.js'
+    file: `dist/js/bundle.${dateHash}.js`
   },
   plugins: [
     del({ targets: 'dist/*' }),
@@ -29,11 +31,11 @@ export default {
       // we'll extract any component CSS out into
       // a separate file — better for performance
       css: css => {
-        css.write('dist/css/bundle.110819.css', false)
+        css.write(`dist/css/bundle.${dateHash}.css`, false)
       }
     }),
     postcss({
-        extract: 'dist/css/tailwind.110819.css',
+        extract: `dist/css/tailwind.${dateHash}.css`,
     }),
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In

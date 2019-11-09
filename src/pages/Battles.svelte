@@ -69,17 +69,17 @@
 <PageLayout>
     <h1 class="mb-4 text-3xl font-bold">My Battles</h1>
 
-    <div class="mb-8">
+    <div class="mb-4 md:mb-6">
         {#each battles as battle}
             <div class="bg-white shadow-lg rounded mb-2">
                 <div class="flex flex-wrap items-center p-4 border-gray-400 border-b">
-                    <div class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold md:text-xl">
+                    <div class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold md:text-xl leading-tight">
                         {battle.name}
                         <div class="font-semibold md:text-sm text-gray-600">
                             {battle.plans.filter(p => p.points !== "").length} of {battle.plans.length} plans pointed
                         </div>
                     </div>
-                    <div class="w-full md:w-1/2 mb-4 md:mb-0 md:text-right">
+                    <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                         <HollowButton href="/battle/{battle.id}">
                             Go To Battle
                         </HollowButton>

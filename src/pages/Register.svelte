@@ -118,12 +118,12 @@
 
 <PageLayout>
     <div class="text-center px-2 mb-4">
-        <h1 class="text-4xl font-bold">Enlist to Battle</h1>
+        <h1 class="text-3xl md:text-4xl font-bold">Enlist to Battle</h1>
     </div>
-    <div class="flex">
-        <div class="w-1/2 px-4">
-            <form on:submit={createWarriorPrivate} class="bg-white shadow-lg rounded p-6 mb-4" name="registerGuest">
-                <h2 class="font-bold text-2xl mb-6 leading-tight">Register as Guest</h2>
+    <div class="flex flex-wrap">
+        <div class="w-full md:w-1/2 px-4">
+            <form on:submit={createWarriorPrivate} class="bg-white shadow-lg rounded p-4 md:p-6 mb-4" name="registerGuest">
+                <h2 class="font-bold text-xl md:text-2xl b-4 mb-2 md:mb-6 md:leading-tight">Register as Guest</h2>
 
                 <div class="mb-6">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="yourName1">Name</label>
@@ -143,9 +143,10 @@
                 </div>
             </form>
         </div>
-        <div class="w-1/2 px-4">
-            <form on:submit={createWarriorCorporal} class="bg-white shadow-lg rounded p-6 mb-4" name="createAccount">
-                <h2 class="font-bold text-2xl mb-6  leading-tight">Create an Account (optional)</h2>
+
+        <div class="w-full md:w-1/2 px-4">
+            <form on:submit={createWarriorCorporal} class="bg-white shadow-lg rounded p-4 md:p-6 mb-4" name="createAccount">
+                <h2 class="font-bold text-xl md:text-2xl mb-2 md:mb-6 md:leading-tight">Create an Account (optional)</h2>
 
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="yourName2">Name</label>

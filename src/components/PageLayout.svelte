@@ -1,5 +1,5 @@
 <section>
-    <div class="container mx-auto px-4 py-6 md:py-10">
+    <div class="container mx-auto px-4 py-4 md:py-6 lg:py-8">
         <slot></slot>
     </div>
 </section>
