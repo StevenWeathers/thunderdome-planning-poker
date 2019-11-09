@@ -42,5 +42,5 @@ jobs:
       - run: go get -d -v
       - run: |
           export PATH=$PATH:$(go env GOPATH)/bin
-          go get github.com/gobuffalo/packr/packr
+          go install -v github.com/markbates/pkger/cmd/pkger
           make build
