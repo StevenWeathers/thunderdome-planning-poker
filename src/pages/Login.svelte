@@ -16,17 +16,16 @@
         e.preventDefault()
         const body = {
             warriorEmail,
-            warriorPassword
+            warriorPassword,
         }
-        
-        
+
         fetch('/api/auth', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
         })
             .then(function(response) {
                 return response.json()
@@ -36,12 +35,15 @@
                     id: newWarrior.id,
                     name: newWarrior.name,
                     email: newWarrior.email,
-                    rank: newWarrior.rank
+                    rank: newWarrior.rank,
                 })
-                
+
                 router.route(targetPage, true)
-            }).catch(function(error) {
-                notifications.danger("Error encountered attempting to authenticate warrior")
+            })
+            .catch(function(error) {
+                notifications.danger(
+                    'Error encountered attempting to authenticate warrior',
+                )
             })
     }
 
@@ -55,36 +57,51 @@
 
     <div class="flex justify-center">
         <div class="w-full md:w-1/2 lg:w-1/3">
-            <form on:submit={authWarrior} class="bg-white shadow-lg rounded p-6 mb-4" name="authWarrior">
+            <form
+                on:submit="{authWarrior}"
+                class="bg-white shadow-lg rounded p-6 mb-4"
+                name="authWarrior">
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourEmail">Email</label>
+                    <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="yourEmail">
+                        Email
+                    </label>
                     <input
-                        bind:value={warriorEmail}
+                        bind:value="{warriorEmail}"
                         placeholder="Enter your email"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none
+                        focus:shadow-outline"
                         id="yourEmail"
                         name="yourEmail"
                         type="email"
-                        required
-                    />
+                        required />
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourPassword">Password</label>
+                    <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="yourPassword">
+                        Password
+                    </label>
                     <input
-                        bind:value={warriorPassword}
+                        bind:value="{warriorPassword}"
                         placeholder="Enter your password"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none
+                        focus:shadow-outline"
                         id="yourPassword"
                         name="yourPassword"
                         type="password"
-                        required
-                    />
+                        required />
                 </div>
 
                 <div>
                     <div class="text-right">
-                        <SolidButton type="submit" disabled={loginDisabled}>Login</SolidButton>
+                        <SolidButton type="submit" disabled="{loginDisabled}">
+                            Login
+                        </SolidButton>
                     </div>
                 </div>
             </form>

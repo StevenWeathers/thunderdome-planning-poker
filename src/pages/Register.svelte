@@ -25,22 +25,24 @@
         const body = {
             warriorName,
         }
-        
+
         let noFormErrors = true
 
         if (warriorName.length < nameMin || warriorName.length > nameMax) {
             noFormErrors = false
-            notifications.danger(`Name must be between ${nameMin} and ${nameMax} characters.`)
+            notifications.danger(
+                `Name must be between ${nameMin} and ${nameMax} characters.`,
+            )
         }
-        
+
         if (noFormErrors) {
             fetch('/api/warrior', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
             })
                 .then(function(response) {
                     return response.json()
@@ -49,12 +51,15 @@
                     warrior.create({
                         id: newWarrior.id,
                         name: newWarrior.name,
-                        rank: newWarrior.rank
+                        rank: newWarrior.rank,
                     })
 
                     router.route(targetPage, true)
-                }).catch(function(error) {
-                    notifications.danger("Error encountered registering warrior as guest")
+                })
+                .catch(function(error) {
+                    notifications.danger(
+                        'Error encountered registering warrior as guest',
+                    )
                 })
         }
     }
@@ -65,34 +70,41 @@
             warriorName,
             warriorEmail,
             warriorPassword1,
-            warriorPassword2
+            warriorPassword2,
         }
-        
+
         let noFormErrors = true
 
         if (warriorName.length < nameMin || warriorName.length > nameMax) {
             noFormErrors = false
-            notifications.danger(`Name must be between ${nameMin} and ${nameMax} characters.`)
+            notifications.danger(
+                `Name must be between ${nameMin} and ${nameMax} characters.`,
+            )
         }
 
-        if (warriorPassword1.length < passMin || warriorPassword1.length > passMax) {
+        if (
+            warriorPassword1.length < passMin ||
+            warriorPassword1.length > passMax
+        ) {
             noFormErrors = false
-            notifications.danger(`Password must be between ${passMin} and ${passMax} characters.`)
+            notifications.danger(
+                `Password must be between ${passMin} and ${passMax} characters.`,
+            )
         }
-        
+
         if (warriorPassword1 !== warriorPassword2) {
             noFormErrors = false
             notifications.danger(`Password and Confirm Password do not match.`)
         }
-        
+
         if (noFormErrors) {
             fetch('/api/warrior/enlist', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
             })
                 .then(function(response) {
                     return response.json()
@@ -102,18 +114,23 @@
                         id: newWarrior.id,
                         name: newWarrior.name,
                         email: newWarrior.email,
-                        rank: newWarrior.rank
+                        rank: newWarrior.rank,
                     })
-                    
+
                     router.route(targetPage, true)
-                }).catch(function(error) {
-                    notifications.danger("Error encountered creating warrior")
+                })
+                .catch(function(error) {
+                    notifications.danger('Error encountered creating warrior')
                 })
         }
     }
 
     $: registerDisabled = warriorName === ''
-    $: createDisabled = warriorName === '' || warriorEmail === '' || warriorPassword1 === '' || warriorPassword2 === ''
+    $: createDisabled =
+        warriorName === '' ||
+        warriorEmail === '' ||
+        warriorPassword1 === '' ||
+        warriorPassword2 === ''
 </script>
 
 <PageLayout>
@@ -122,86 +139,131 @@
     </div>
     <div class="flex flex-wrap">
         <div class="w-full md:w-1/2 px-4">
-            <form on:submit={createWarriorPrivate} class="bg-white shadow-lg rounded p-4 md:p-6 mb-4" name="registerGuest">
-                <h2 class="font-bold text-xl md:text-2xl b-4 mb-2 md:mb-6 md:leading-tight">Register as Guest</h2>
+            <form
+                on:submit="{createWarriorPrivate}"
+                class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
+                name="registerGuest">
+                <h2
+                    class="font-bold text-xl md:text-2xl b-4 mb-2 md:mb-6
+                    md:leading-tight">
+                    Register as Guest
+                </h2>
 
                 <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourName1">Name</label>
+                    <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="yourName1">
+                        Name
+                    </label>
                     <input
-                        bind:value={warriorName}
+                        bind:value="{warriorName}"
                         placeholder="Enter your name"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none
+                        focus:shadow-outline"
                         id="yourName1"
                         name="yourName1"
-                        required
-                    />
+                        required />
                 </div>
                 <div>
                     <div class="text-right">
-                        <SolidButton type="submit" disabled={registerDisabled}>Register</SolidButton>
+                        <SolidButton
+                            type="submit"
+                            disabled="{registerDisabled}">
+                            Register
+                        </SolidButton>
                     </div>
                 </div>
             </form>
         </div>
 
         <div class="w-full md:w-1/2 px-4">
-            <form on:submit={createWarriorCorporal} class="bg-white shadow-lg rounded p-4 md:p-6 mb-4" name="createAccount">
-                <h2 class="font-bold text-xl md:text-2xl mb-2 md:mb-6 md:leading-tight">Create an Account (optional)</h2>
+            <form
+                on:submit="{createWarriorCorporal}"
+                class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
+                name="createAccount">
+                <h2
+                    class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                    md:leading-tight">
+                    Create an Account (optional)
+                </h2>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourName2">Name</label>
+                    <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="yourName2">
+                        Name
+                    </label>
                     <input
-                        bind:value={warriorName}
+                        bind:value="{warriorName}"
                         placeholder="Enter your name"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none
+                        focus:shadow-outline"
                         id="yourName2"
                         name="yourName2"
-                        required
-                    />
+                        required />
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourEmail">Email</label>
+                    <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="yourEmail">
+                        Email
+                    </label>
                     <input
-                        bind:value={warriorEmail}
+                        bind:value="{warriorEmail}"
                         placeholder="Enter your email"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none
+                        focus:shadow-outline"
                         id="yourEmail"
                         name="yourEmail"
                         type="email"
-                        required
-                    />
+                        required />
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourPassword1">Password</label>
+                    <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="yourPassword1">
+                        Password
+                    </label>
                     <input
-                        bind:value={warriorPassword1}
+                        bind:value="{warriorPassword1}"
                         placeholder="Enter a password"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none
+                        focus:shadow-outline"
                         id="yourPassword1"
                         name="yourPassword1"
                         type="password"
-                        required
-                    />
+                        required />
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yourPassword2">Confirm Password</label>
+                    <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="yourPassword2">
+                        Confirm Password
+                    </label>
                     <input
-                        bind:value={warriorPassword2}
+                        bind:value="{warriorPassword2}"
                         placeholder="Confirm your password"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none
+                        focus:shadow-outline"
                         id="yourPassword2"
                         name="yourPassword2"
                         type="password"
-                        required
-                    />
+                        required />
                 </div>
 
                 <div>
                     <div class="text-right">
-                        <SolidButton type="submit" disabled={createDisabled}>Create</SolidButton>
+                        <SolidButton type="submit" disabled="{createDisabled}">
+                            Create
+                        </SolidButton>
                     </div>
                 </div>
             </form>

@@ -13,14 +13,14 @@
     let battleName = ''
     let pointValuesAllowed = 2
     const possiblePointValues = [
-        ["1", "2", "3", "5", "8", "13", "?"],
-        ["1/2", "1", "2", "3", "5", "8", "13", "?"],
-        ["0", "1/2", "1", "2", "3", "5", "8", "13", "20", "40", "100", "?"]
+        ['1', '2', '3', '5', '8', '13', '?'],
+        ['1/2', '1', '2', '3', '5', '8', '13', '?'],
+        ['0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?'],
     ]
 
     fetch('/api/battles', {
         method: 'GET',
-        credentials: 'same-origin'
+        credentials: 'same-origin',
     })
         .then(function(response) {
             return response.json()
@@ -29,7 +29,7 @@
             battles = bs
         })
         .catch(function(error) {
-            notifications.danger("Error finding your battles")
+            notifications.danger('Error finding your battles')
         })
 
     function createBattle(e) {
@@ -39,14 +39,14 @@
             leaderId: $warrior.id,
             pointValuesAllowed: possiblePointValues[pointValuesAllowed],
         }
-        
+
         fetch('/api/battle', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         })
             .then(function(response) {
                 return response.json()
@@ -55,7 +55,7 @@
                 router.route(`/battle/${battle.id}`)
             })
             .catch(function(error) {
-                notifications.danger("Error encountered creating battle")
+                notifications.danger('Error encountered creating battle')
             })
     }
 
@@ -72,11 +72,16 @@
     <div class="mb-4 md:mb-6">
         {#each battles as battle}
             <div class="bg-white shadow-lg rounded mb-2">
-                <div class="flex flex-wrap items-center p-4 border-gray-400 border-b">
-                    <div class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold md:text-xl leading-tight">
+                <div
+                    class="flex flex-wrap items-center p-4 border-gray-400
+                    border-b">
+                    <div
+                        class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
+                        md:text-xl leading-tight">
                         {battle.name}
                         <div class="font-semibold md:text-sm text-gray-600">
-                            {battle.plans.filter(p => p.points !== "").length} of {battle.plans.length} plans pointed
+                            {battle.plans.filter(p => p.points !== '').length}
+                            of {battle.plans.length} plans pointed
                         </div>
                     </div>
                     <div class="w-full md:w-1/2 md:mb-0 md:text-right">
@@ -91,41 +96,58 @@
 
     <div class="bg-white shadow-lg rounded p-6">
         <h2 class="mb-4 text-2xl font-bold leading-tight">Create a Battle</h2>
-        <form on:submit={createBattle} name="createBattle">
+        <form on:submit="{createBattle}" name="createBattle">
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="battleName">Battle Name</label>
+                <label
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                    for="battleName">
+                    Battle Name
+                </label>
                 <div class="control">
                     <input
                         name="battleName"
-                        bind:value={battleName}
+                        bind:value="{battleName}"
                         placeholder="Enter a battle name"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none
+                        focus:shadow-outline"
                         id="battleName"
-                        required
-                    />
+                        required />
                 </div>
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="pointValuesAllowed">Allowed Point Values</label>
+                <label
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                    for="pointValuesAllowed">
+                    Allowed Point Values
+                </label>
                 <div class="control relative">
                     <select
                         name="pointValuesAllowed"
-                        bind:value={pointValuesAllowed}
-                        class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-darker py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                        bind:value="{pointValuesAllowed}"
+                        class="block appearance-none w-full bg-gray-200 border
+                        border-gray-200 text-gray-darker py-3 px-4 pr-8 rounded
+                        leading-tight focus:outline-none focus:bg-white
+                        focus:border-gray-500"
                         id="pointValuesAllowed"
-                        required
-                    >
+                        required>
                         {#each possiblePointValues as points, pi}
-                            <option value={pi} selected={pi === pointValuesAllowed}>{points.join(', ')}</option>
+                            <option
+                                value="{pi}"
+                                selected="{pi === pointValuesAllowed}">
+                                {points.join(', ')}
+                            </option>
                         {/each}
                     </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0
+                        flex items-center px-2 text-gray-700">
                         <DownCarrotIcon />
                     </div>
                 </div>
             </div>
-            
+
             <div>
                 <SolidButton type="submit">Create a Story Battle</SolidButton>
             </div>

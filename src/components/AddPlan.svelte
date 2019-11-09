@@ -5,7 +5,7 @@
     export let handlePlanAdd = () => {}
     export let toggleAddPlan = () => {}
     export let handlePlanRevision = () => {}
-    
+
     export let planId = ''
     export let planName = ''
 
@@ -17,7 +17,7 @@
         } else {
             handlePlanRevision({
                 planId,
-                planName
+                planName,
             })
         }
         toggleAddPlan()
@@ -30,24 +30,27 @@
     <div class="relative mx-6 md:mx-auto w-full md:w-1/2 lg:w-1/4 z-50 m-8">
         <div class="shadow-xl bg-white rounded-lg p-6">
             <div class="flex justify-end mb-2">
-                <button aria-label="close" on:click={toggleAddPlan} class="text-gray-800">
+                <button
+                    aria-label="close"
+                    on:click="{toggleAddPlan}"
+                    class="text-gray-800">
                     <CloseIcon />
                 </button>
             </div>
 
-            <form on:submit={handleSubmit} name="addPlan">
+            <form on:submit="{handleSubmit}" name="addPlan">
                 <div class="mb-4">
                     <label class="block text-sm font-bold mb-2" for="planName">
                         Plan Name
                     </label>
                     <input
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700"
                         id="planName"
                         type="text"
-                        bind:value={planName}
+                        bind:value="{planName}"
                         placeholder="Enter a plan name"
-                        name="planName"
-                    >
+                        name="planName" />
                 </div>
                 <div class="text-right">
                     <div>
