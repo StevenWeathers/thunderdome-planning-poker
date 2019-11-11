@@ -17,7 +17,7 @@ RUN npm run build
 ############################
 # STEP 2 build executable binary
 ############################
-FROM golang:1.12-alpine as builderGo
+FROM golang:1.13-alpine as builderGo
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
 # Ca-certificates is required to call HTTPS endpoints.
@@ -33,12 +33,13 @@ COPY --from=builderNode /webapp/dist $GOPATH/src/github.com/stevenweathers/thund
 # Set working dir
 WORKDIR $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 # Fetch dependencies.
-RUN GO111MODULE=on go get -d -v
-RUN GO111MODULE=on go install -v github.com/markbates/pkger/cmd/pkger
+RUN go get -d -v
+RUN go install -v github.com/markbates/pkger/cmd/pkger
+RUN go mod download
 # Bundle the static assets
-RUN GO111MODULE=on pkger
+RUN pkger
 # Build the binary
-RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/thunderdome
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/thunderdome
 ############################
 # STEP 3 build a small image
 ############################
