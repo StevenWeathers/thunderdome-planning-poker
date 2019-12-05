@@ -22,6 +22,8 @@
         "stories": "start-storybook",
         "build-stories": "build-storybook",
         "static-stories": "build-storybook -c .storybook -o .out",
+        "test": "jest __test__/unit",
+        "test:watch": "npm run test -- --watch",
         "test:integration": "jest -c __test__/integration/jest.config.js",
         "test:integrationWithWatch": "jest -c __test__/integration/jest.config.js --watch",
         "test:integrationProd": "cross-env APP_URL='https://thunderdome.dev' jest -c __test__/integration/jest.config.js",
@@ -33,7 +35,8 @@
         "sockette": "^2.0.6"
     },
     "devDependencies": {
-        "@babel/core": "^7.6.0",
+        "@babel/core": "^7.7.4",
+        "@babel/preset-env": "^7.7.4",
         "@fullhuman/postcss-purgecss": "^1.3.0",
         "@storybook/addon-a11y": "^5.2.1",
         "@storybook/addon-actions": "^5.2.1",
@@ -42,12 +45,16 @@
         "@storybook/addon-storysource": "^5.2.1",
         "@storybook/addon-viewport": "^5.2.1",
         "@storybook/svelte": "^5.2.1",
+        "@testing-library/jest-dom": "^4.2.4",
+        "@testing-library/svelte": "^1.9.1",
         "autoprefixer": "^9.7.1",
+        "babel-jest": "^24.9.0",
         "babel-loader": "^8.0.6",
         "cross-env": "^5.2.0",
         "husky": "^3.0.9",
-        "jest": "^24.8.0",
+        "jest": "^24.9.0",
         "jest-puppeteer": "^4.2.0",
+        "jest-transform-svelte": "^2.1.0",
         "lint-staged": "^9.4.2",
         "npm-run-all": "^4.1.5",
         "postcss": "^7.0.21",
@@ -84,6 +91,27 @@
         "arrowParens": "avoid",
         "svelteSortOrder": "scripts-styles-markup",
         "svelteStrictMode": true
+    },
+    "jest": {
+        "transform": {
+            "^.+\\.svelte$": "jest-transform-svelte",
+            "^.+\\.js$": "babel-jest"
+        },
+        "moduleFileExtensions": [
+            "js",
+            "svelte"
+        ],
+        "testPathIgnorePatterns": [
+            "node_modules"
+        ],
+        "bail": false,
+        "verbose": true,
+        "transformIgnorePatterns": [
+            "node_modules"
+        ],
+        "setupFilesAfterEnv": [
+            "@testing-library/jest-dom/extend-expect"
+        ]
     },
     "husky": {
         "hooks": {
