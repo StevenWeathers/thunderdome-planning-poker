@@ -2,6 +2,7 @@
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
+    import CreateBattle from '../components/CreateBattle.svelte'
     import DownCarrotIcon from '../components/icons/DownCarrotIcon.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import HollowButton from '../components/HollowButton.svelte'
@@ -96,61 +97,6 @@
 
     <div class="bg-white shadow-lg rounded p-6">
         <h2 class="mb-4 text-2xl font-bold leading-tight">Create a Battle</h2>
-        <form on:submit="{createBattle}" name="createBattle">
-            <div class="mb-4">
-                <label
-                    class="block text-gray-700 text-sm font-bold mb-2"
-                    for="battleName">
-                    Battle Name
-                </label>
-                <div class="control">
-                    <input
-                        name="battleName"
-                        bind:value="{battleName}"
-                        placeholder="Enter a battle name"
-                        class="shadow appearance-none border rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none
-                        focus:shadow-outline"
-                        id="battleName"
-                        required />
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label
-                    class="block text-gray-700 text-sm font-bold mb-2"
-                    for="pointValuesAllowed">
-                    Allowed Point Values
-                </label>
-                <div class="control relative">
-                    <select
-                        name="pointValuesAllowed"
-                        bind:value="{pointValuesAllowed}"
-                        class="block appearance-none w-full bg-gray-200 border
-                        border-gray-200 text-gray-darker py-3 px-4 pr-8 rounded
-                        leading-tight focus:outline-none focus:bg-white
-                        focus:border-gray-500"
-                        id="pointValuesAllowed"
-                        required>
-                        {#each possiblePointValues as points, pi}
-                            <option
-                                value="{pi}"
-                                selected="{pi === pointValuesAllowed}">
-                                {points.join(', ')}
-                            </option>
-                        {/each}
-                    </select>
-                    <div
-                        class="pointer-events-none absolute inset-y-0 right-0
-                        flex items-center px-2 text-gray-700">
-                        <DownCarrotIcon />
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <SolidButton type="submit">Create a Story Battle</SolidButton>
-            </div>
-        </form>
+        <CreateBattle {notifications} {router} />
     </div>
 </PageLayout>

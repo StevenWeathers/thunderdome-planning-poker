@@ -168,7 +168,7 @@ func SetupDB() {
 }
 
 //CreateBattle adds a new battle to the db
-func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string) (*Battle, error) {
+func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*Plan) (*Battle, error) {
 	newID, _ := uuid.NewUUID()
 	id := newID.String()
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
@@ -189,6 +189,19 @@ func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []strin
 		log.Println(e)
 		return nil, errors.New("Error Creating Battle")
 	}
+
+	for _, plan := range Plans {
+		newID, _ := uuid.NewUUID()
+		newPlanID := newID.String()
+		plan.Votes = make([]*Vote, 0)
+
+		e := db.QueryRow(`INSERT INTO plans (id, battle_id, name) VALUES ($1, $2, $3) RETURNING id`, newPlanID, b.BattleID, plan.PlanName).Scan(&plan.PlanID)
+		if e != nil {
+			log.Println(e)
+		}
+	}
+
+	b.Plans = Plans
 
 	return b, nil
 }

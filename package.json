@@ -27,7 +27,7 @@
         "test:integration": "jest -c __test__/integration/jest.config.js",
         "test:integrationWithWatch": "jest -c __test__/integration/jest.config.js --watch",
         "test:integrationProd": "cross-env APP_URL='https://thunderdome.dev' jest -c __test__/integration/jest.config.js",
-        "format": "prettier --write 'storybook/**/*' 'src/**/*'"
+        "format": "prettier --write '{src, storybook, public}/**/*'"
     },
     "dependencies": {
         "js-cookie": "^2.2.0",
@@ -119,7 +119,7 @@
         }
     },
     "lint-staged": {
-        "*": [
+        "*.{js, svelte, css, html}": [
             "npm run format",
             "git add"
         ]
