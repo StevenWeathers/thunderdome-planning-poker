@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"time"
 
@@ -55,6 +56,13 @@ type Plan struct {
 // SetupDB runs db migrations, sets up a db connection pool
 // and sets previously active warriors to false during startup
 func SetupDB() {
+	sqlContent, ioErr := ioutil.ReadFile("schema.sql")
+	if ioErr != nil {
+		log.Println("Error reading schema.sql file required to migrate db")
+		log.Fatal(ioErr)
+	}
+	migrationSQL := string(sqlContent)
+
 	var (
 		host     = GetEnv("DB_HOST", "db")
 		port     = GetIntEnv("DB_PORT", 5432)
@@ -73,96 +81,13 @@ func SetupDB() {
 		log.Fatal("error connecting to the database: ", err)
 	}
 
-	if _, err := db.Exec(
-		"CREATE TABLE IF NOT EXISTS battles (id UUID NOT NULL PRIMARY KEY, leader_id UUID, name VARCHAR(256), voting_locked BOOL DEFAULT true, active_plan_id UUID)"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"CREATE TABLE IF NOT EXISTS warriors (id UUID NOT NULL PRIMARY KEY, name VARCHAR(64))"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"CREATE TABLE IF NOT EXISTS plans (id UUID NOT NULL PRIMARY KEY, name VARCHAR(256), points VARCHAR(3) DEFAULT '', active BOOL DEFAULT false, battle_id UUID references battles(id) NOT NULL, votes JSONB DEFAULT '[]'::JSONB)"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"CREATE TABLE IF NOT EXISTS battles_warriors (battle_id UUID references battles NOT NULL, warrior_id UUID REFERENCES warriors NOT NULL, active BOOL DEFAULT false, PRIMARY KEY (battle_id, warrior_id))"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE battles ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW()"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW()"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE plans ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW()"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS last_active TIMESTAMP DEFAULT NOW()"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE plans ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW()"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE battles ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW()"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE plans ADD COLUMN IF NOT EXISTS skipped BOOL DEFAULT false"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE plans ADD COLUMN IF NOT EXISTS votestart_time TIMESTAMP DEFAULT NOW()"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE plans ADD COLUMN IF NOT EXISTS voteend_time TIMESTAMP DEFAULT NOW()"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		`ALTER TABLE battles ADD COLUMN IF NOT EXISTS point_values_allowed JSONB 
-		DEFAULT '["1/2", "1", "2", "3", "5", "8", "13", "?"]'::JSONB`,
-	); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS email VARCHAR(320) UNIQUE"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS password TEXT"); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := db.Exec(
-		"ALTER TABLE warriors ADD COLUMN IF NOT EXISTS rank VARCHAR(128) DEFAULT 'PRIVATE'"); err != nil {
+	if _, err := db.Exec(migrationSQL); err != nil {
 		log.Fatal(err)
 	}
 
 	// on server start reset all warriors to active false for battles
 	if _, err := db.Exec(
-		`UPDATE battles_warriors SET active = false WHERE active = true`); err != nil {
+		`call deactivate_all_warriors();`); err != nil {
 		log.Println(err)
 	}
 }
@@ -422,12 +347,7 @@ func AddWarriorToBattle(BattleID string, WarriorID string) ([]*Warrior, error) {
 // RetreatWarrior removes a warrior from the current battle by ID
 func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 	if _, err := db.Exec(
-		`UPDATE battles_warriors SET active = false WHERE battle_id = $1 AND warrior_id = $2`, BattleID, WarriorID); err != nil {
-		log.Println(err)
-	}
-
-	if _, err := db.Exec(
-		`UPDATE warriors SET last_active = NOW() WHERE id = $1`, WarriorID); err != nil {
+		`call retreat_warrior($1, $2);`, BattleID, WarriorID); err != nil {
 		log.Println(err)
 	}
 
@@ -504,20 +424,9 @@ func ActivatePlanVoting(BattleID string, warriorID string, PlanID string) ([]*Pl
 		return nil, errors.New("Incorrect permissions")
 	}
 
-	// set current to false
-	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false WHERE battle_id = $1`, BattleID); err != nil {
-		log.Println(err)
-	}
-
-	// set PlanID to true
 	if _, err := db.Exec(
-		`UPDATE plans SET updated_date = NOW(), active = true, skipped = false, points = '', votestart_time = NOW(), votes = '[]'::jsonb WHERE id = $1`, PlanID); err != nil {
-		log.Println(err)
-	}
-
-	// set battle VotingLocked and ActivePlanID
-	if _, err := db.Exec(
-		`UPDATE battles SET updated_date = NOW(), voting_locked = false, active_plan_id = $1 WHERE id = $2`, PlanID, BattleID); err != nil {
+		`call activate_plan_voting($1, $2);`, BattleID, PlanID,
+	); err != nil {
 		log.Println(err)
 	}
 
@@ -624,14 +533,8 @@ func EndPlanVoting(BattleID string, warriorID string, PlanID string) ([]*Plan, e
 		return nil, errors.New("Incorrect permissions")
 	}
 
-	// set current to false
-	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false, voteend_time = NOW() WHERE battle_id = $1`, BattleID); err != nil {
-		log.Println(err)
-	}
-
-	// set battle VotingLocked
 	if _, err := db.Exec(
-		`UPDATE battles SET updated_date = NOW(), voting_locked = true WHERE id = $1`, BattleID); err != nil {
+		`call end_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
 		log.Println(err)
 	}
 
@@ -647,14 +550,8 @@ func SkipPlan(BattleID string, warriorID string, PlanID string) ([]*Plan, error)
 		return nil, errors.New("Incorrect permissions")
 	}
 
-	// set current to false
-	if _, err := db.Exec(`UPDATE plans SET updated_date = NOW(), active = false, skipped = true, voteend_time = NOW() WHERE battle_id = $1`, BattleID); err != nil {
-		log.Println(err)
-	}
-
-	// set battle VotingLocked and activePlanId to null
 	if _, err := db.Exec(
-		`UPDATE battles SET updated_date = NOW(), voting_locked = true, active_plan_id = null WHERE id = $1`, BattleID); err != nil {
+		`call skip_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
 		log.Println(err)
 	}
 
@@ -716,15 +613,8 @@ func FinalizePlan(BattleID string, warriorID string, PlanID string, PlanPoints s
 		return nil, errors.New("Incorrect permissions")
 	}
 
-	// set PlanID to true
 	if _, err := db.Exec(
-		`UPDATE plans SET updated_date = NOW(), active = false, points = $1 WHERE id = $2`, PlanPoints, PlanID); err != nil {
-		log.Println(err)
-	}
-
-	// set battle ActivePlanID
-	if _, err := db.Exec(
-		`UPDATE battles SET updated_date = NOW(), active_plan_id = null WHERE id = $1`, BattleID); err != nil {
+		`call finalize_plan($1, $2, $3);`, BattleID, PlanID, PlanPoints); err != nil {
 		log.Println(err)
 	}
 
@@ -761,21 +651,8 @@ func DeleteBattle(BattleID string, warriorID string) error {
 		return errors.New("Incorrect permissions")
 	}
 
-	// delete plans associated with battle
 	if _, err := db.Exec(
-		`DELETE FROM plans WHERE battle_id = $1`, BattleID); err != nil {
-		log.Println(err)
-	}
-
-	// delete battle_warriors associations
-	if _, err := db.Exec(
-		`DELETE FROM battles_warriors WHERE battle_id = $1`, BattleID); err != nil {
-		log.Println(err)
-	}
-
-	// delete battle itself
-	if _, err := db.Exec(
-		`DELETE FROM battles WHERE id = $1`, BattleID); err != nil {
+		`call delete_battle($1);`, BattleID); err != nil {
 		log.Println(err)
 		return err
 	}
