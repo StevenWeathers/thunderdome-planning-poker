@@ -30,8 +30,10 @@
         <div class="flex items-center">
             <div class="w-3/4">
                 <p
-                    class="text-xl font-bold leading-tight"
-                    data-testId="warriorName">
+                    class="text-xl font-bold leading-tight truncate"
+                    data-testId="warriorName"
+                    title="{warrior.name}"
+                >
                     {warrior.name}
                 </p>
                 {#if leaderId === warrior.id}
