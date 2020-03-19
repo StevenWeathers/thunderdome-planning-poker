@@ -109,7 +109,13 @@ func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []strin
 		PointValuesAllowed: PointValuesAllowed,
 	}
 
-	e := db.QueryRow(`INSERT INTO battles (id, leader_id, name, point_values_allowed) VALUES ($1, $2, $3, $4) RETURNING id`, id, LeaderID, BattleName, string(pointValuesJSON)).Scan(&b.BattleID)
+	e := db.QueryRow(
+		`INSERT INTO battles (id, leader_id, name, point_values_allowed) VALUES ($1, $2, $3, $4) RETURNING id`,
+		id,
+		LeaderID,
+		BattleName,
+		string(pointValuesJSON),
+	).Scan(&b.BattleID)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Error Creating Battle")
@@ -147,7 +153,17 @@ func GetBattle(BattleID string) (*Battle, error) {
 	// get battle
 	var ActivePlanID sql.NullString
 	var pv string
-	e := db.QueryRow("SELECT id, name, leader_id, voting_locked, active_plan_id, point_values_allowed FROM battles WHERE id = $1", BattleID).Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &ActivePlanID, &pv)
+	e := db.QueryRow(
+		"SELECT id, name, leader_id, voting_locked, active_plan_id, point_values_allowed FROM battles WHERE id = $1",
+		BattleID,
+	).Scan(
+		&b.BattleID,
+		&b.BattleName,
+		&b.LeaderID,
+		&b.VotingLocked,
+		&ActivePlanID,
+		&pv,
+	)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Not found")
@@ -243,7 +259,13 @@ func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassw
 	}
 
 	var WarriorID string
-	e := db.QueryRow(`INSERT INTO warriors (id, name, email, password, rank) VALUES ($1, $2, $3, $4, 'CORPORAL') RETURNING id`, id, WarriorName, WarriorEmail, hashedPassword).Scan(&WarriorID)
+	e := db.QueryRow(
+		`INSERT INTO warriors (id, name, email, password, rank) VALUES ($1, $2, $3, $4, 'CORPORAL') RETURNING id`,
+		id,
+		WarriorName,
+		WarriorEmail,
+		hashedPassword,
+	).Scan(&WarriorID)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("a Warrior with that email already exists")
@@ -257,7 +279,15 @@ func GetWarrior(WarriorID string) (*Warrior, error) {
 	var w Warrior
 	var warriorEmail sql.NullString
 
-	e := db.QueryRow("SELECT id, name, email, rank FROM warriors WHERE id = $1", WarriorID).Scan(&w.WarriorID, &w.WarriorName, &warriorEmail, &w.WarriorRank)
+	e := db.QueryRow(
+		"SELECT id, name, email, rank FROM warriors WHERE id = $1",
+		WarriorID,
+	).Scan(
+		&w.WarriorID,
+		&w.WarriorName,
+		&warriorEmail,
+		&w.WarriorRank,
+	)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Warrior Not found")
@@ -292,7 +322,15 @@ func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 	var w Warrior
 	var warriorEmail sql.NullString
 
-	e := db.QueryRow("SELECT id, name, email, rank FROM warriors WHERE id = $1", WarriorID).Scan(&w.WarriorID, &w.WarriorName, &warriorEmail, &w.WarriorRank)
+	e := db.QueryRow(
+		"SELECT id, name, email, rank FROM warriors WHERE id = $1",
+		WarriorID,
+	).Scan(
+		&w.WarriorID,
+		&w.WarriorName,
+		&warriorEmail,
+		&w.WarriorRank,
+	)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Warrior Not found")
@@ -314,7 +352,10 @@ func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 // GetActiveWarriors retrieves the active warriors for a given battle from db
 func GetActiveWarriors(BattleID string) []*Warrior {
 	var warriors = make([]*Warrior, 0)
-	rows, err := db.Query("SELECT warriors.id, warriors.name, warriors.email, warriors.rank FROM battles_warriors LEFT JOIN warriors ON battles_warriors.warrior_id = warriors.id where battles_warriors.battle_id = $1 AND battles_warriors.active = true ORDER BY warriors.name", BattleID)
+	rows, err := db.Query(
+		"SELECT warriors.id, warriors.name, warriors.email, warriors.rank FROM battles_warriors LEFT JOIN warriors ON battles_warriors.warrior_id = warriors.id where battles_warriors.battle_id = $1 AND battles_warriors.active = true ORDER BY warriors.name",
+		BattleID,
+	)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
@@ -347,7 +388,12 @@ func AddWarriorToBattle(BattleID string, WarriorID string) ([]*Warrior, error) {
 // RetreatWarrior removes a warrior from the current battle by ID
 func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 	if _, err := db.Exec(
-		`call retreat_warrior($1, $2);`, BattleID, WarriorID); err != nil {
+		`UPDATE battles_warriors SET active = false WHERE battle_id = $1 AND warrior_id = $2`, BattleID, WarriorID); err != nil {
+		log.Println(err)
+	}
+
+	if _, err := db.Exec(
+		`UPDATE warriors SET last_active = NOW() WHERE id = $1`, WarriorID); err != nil {
 		log.Println(err)
 	}
 
@@ -359,7 +405,10 @@ func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 // GetPlans retrieves plans for given battle from db
 func GetPlans(BattleID string) []*Plan {
 	var plans = make([]*Plan, 0)
-	planRows, plansErr := db.Query("SELECT id, name, points, active, skipped, votestart_time, voteend_time, votes FROM plans WHERE battle_id = $1 ORDER BY created_date", BattleID)
+	planRows, plansErr := db.Query(
+		"SELECT id, name, points, active, skipped, votestart_time, voteend_time, votes FROM plans WHERE battle_id = $1 ORDER BY created_date",
+		BattleID,
+	)
 	if plansErr == nil {
 		defer planRows.Close()
 		for planRows.Next() {
@@ -404,12 +453,12 @@ func CreatePlan(BattleID string, warriorID string, PlanName string) ([]*Plan, er
 	}
 
 	newID, _ := uuid.NewUUID()
-	id := newID.String()
+	PlanID := newID.String()
 
-	var PlanID string
-	e := db.QueryRow(`INSERT INTO plans (id, battle_id, name) VALUES ($1, $2, $3) RETURNING id`, id, BattleID, PlanName).Scan(&PlanID)
-	if e != nil {
-		log.Println(e)
+	if _, err := db.Exec(
+		`call create_plan($1, $2, $3);`, BattleID, PlanID, PlanName,
+	); err != nil {
+		log.Println(err)
 	}
 
 	plans := GetPlans(BattleID)
@@ -569,7 +618,7 @@ func RevisePlanName(BattleID string, warriorID string, PlanID string, PlanName s
 
 	// set PlanID to true
 	if _, err := db.Exec(
-		`UPDATE plans SET updated_date = NOW(), name = $1 WHERE id = $2`, PlanName, PlanID); err != nil {
+		`call revise_plan_name($2, $1);`, PlanName, PlanID); err != nil {
 		log.Println(err)
 	}
 
@@ -585,20 +634,9 @@ func BurnPlan(BattleID string, warriorID string, PlanID string) ([]*Plan, error)
 		return nil, errors.New("Incorrect permissions")
 	}
 
-	var isActivePlan bool
-
-	// delete plan
-	e := db.QueryRow("DELETE FROM plans WHERE id = $1 RETURNING active", PlanID).Scan(&isActivePlan)
-	if e != nil {
-		log.Println(e)
-		return nil, errors.New("Plan Not found")
-	}
-
-	if isActivePlan {
-		if _, err := db.Exec(
-			`UPDATE battles SET updated_date = NOW(), voting_locked = true, active_plan_id = null WHERE id = $1`, BattleID); err != nil {
-			log.Println(err)
-		}
+	if _, err := db.Exec(
+		`call delete_plan($1, $2);`, BattleID, PlanID); err != nil {
+		log.Println(err)
 	}
 
 	plans := GetPlans(BattleID)
@@ -632,7 +670,7 @@ func SetBattleLeader(BattleID string, warriorID string, LeaderID string) (*Battl
 
 	// set battle VotingLocked
 	if _, err := db.Exec(
-		`UPDATE battles SET updated_date = NOW(), leader_id = $1 WHERE id = $2`, LeaderID, BattleID); err != nil {
+		`call set_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
 		log.Println(err)
 	}
 
