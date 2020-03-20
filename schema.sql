@@ -48,6 +48,16 @@ ALTER TABLE warriors ADD COLUMN IF NOT EXISTS password TEXT;
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS rank VARCHAR(128) DEFAULT 'PRIVATE';
 
 --
+-- Types (used in Stored Procedures)
+--
+DROP TYPE IF EXISTS WarriorsVote;
+CREATE TYPE WarriorsVote AS
+(
+    "warriorId"     uuid,
+    "vote"   VARCHAR(3)
+);
+
+--
 -- Stored Procedures
 --
 
@@ -159,4 +169,45 @@ BEGIN
 
     COMMIT;
 END;
+$$;
+
+-- Set Warrior Vote --
+CREATE OR REPLACE PROCEDURE set_warrior_vote(planId UUID, warriorsId UUID, warriorVote VARCHAR(3))
+LANGUAGE plpgsql AS $$
+BEGIN
+	UPDATE plans p1
+		SET votes = (
+			SELECT json_agg(data)
+			FROM (
+			    SELECT coalesce(newVote."warriorId", oldVote."warriorId") AS "warriorId", coalesce(newVote.vote, oldVote.vote) AS vote
+			    FROM jsonb_populate_recordset(null::WarriorsVote,p1.votes) AS oldVote
+			    FULL JOIN jsonb_populate_recordset(null::WarriorsVote,
+			    	('[{"warriorId":"'|| warriorsId::text ||'", "vote":'|| warriorVote ||'}]')::JSONB
+			    ) AS newVote
+			    ON newVote."warriorId" = oldVote."warriorId"
+			) data
+		)
+		WHERE p1.id = planId;
+		
+    	COMMIT;
+	END;
+$$;
+
+-- Retract Warrior Vote --
+CREATE OR REPLACE PROCEDURE retract_warrior_vote(planId UUID, warriorsId UUID)
+LANGUAGE plpgsql AS $$
+BEGIN
+	UPDATE plans p1
+		SET votes = (
+			SELECT coalesce(json_agg(data), '[]'::JSON)
+			FROM (
+			    SELECT coalesce(oldVote."warriorId") AS "warriorId", coalesce(oldVote.vote) AS vote
+			    FROM jsonb_populate_recordset(null::WarriorsVote,p1.votes) AS oldVote
+			    WHERE oldVote."warriorId" != warriorsId
+			) data
+		)
+		WHERE p1.id = planId;
+		
+    	COMMIT;
+	END;
 $$;

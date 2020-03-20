@@ -486,44 +486,8 @@ func ActivatePlanVoting(BattleID string, warriorID string, PlanID string) ([]*Pl
 
 // SetVote sets a warriors vote for the plan
 func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string) []*Plan {
-	// get plan
-	var v string
-	e := db.QueryRow("SELECT votes FROM plans WHERE id = $1", PlanID).Scan(&v)
-	if e != nil {
-		log.Println(e)
-		// return nil, errors.New("Plan Not found")
-	}
-	var votes []*Vote
-	err := json.Unmarshal([]byte(v), &votes)
-	if err != nil {
-		log.Println(err)
-	}
-
-	var voteIndex int
-	var voteFound bool
-
-	// find vote index
-	for vi := range votes {
-		if votes[vi].WarriorID == WarriorID {
-			voteFound = true
-			voteIndex = vi
-			break
-		}
-	}
-
-	if voteFound {
-		votes[voteIndex].VoteValue = VoteValue
-	} else {
-		newVote := &Vote{WarriorID: WarriorID,
-			VoteValue: VoteValue}
-
-		votes = append(votes, newVote)
-	}
-
-	// update votes on Plan
-	var votesJSON, _ = json.Marshal(votes)
 	if _, err := db.Exec(
-		`UPDATE plans SET updated_date = NOW(), votes = $1 WHERE id = $2`, string(votesJSON), PlanID); err != nil {
+		`call set_warrior_vote($1, $2, $3);`, PlanID, WarriorID, VoteValue); err != nil {
 		log.Println(err)
 	}
 
@@ -534,39 +498,8 @@ func SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string)
 
 // RetractVote removes a warriors vote for the plan
 func RetractVote(BattleID string, WarriorID string, PlanID string) []*Plan {
-	// get plan
-	var v string
-	e := db.QueryRow("SELECT votes FROM plans WHERE id = $1", PlanID).Scan(&v)
-	if e != nil {
-		log.Println(e)
-		// return nil, errors.New("Plan Not found")
-	}
-	var votes []*Vote
-	err := json.Unmarshal([]byte(v), &votes)
-	if err != nil {
-		log.Println(err)
-	}
-
-	var voteIndex int
-	var voteFound bool
-
-	// find vote index
-	for vi := range votes {
-		if votes[vi].WarriorID == WarriorID {
-			voteFound = true
-			voteIndex = vi
-			break
-		}
-	}
-
-	if voteFound {
-		votes = append(votes[:voteIndex], votes[voteIndex+1:]...)
-	}
-
-	// update votes on Plan
-	var votesJSON, _ = json.Marshal(votes)
 	if _, err := db.Exec(
-		`UPDATE plans SET updated_date = NOW(), votes = $1 WHERE id = $2`, string(votesJSON), PlanID); err != nil {
+		`call retract_warrior_vote($1, $2);`, PlanID, WarriorID); err != nil {
 		log.Println(err)
 	}
 
