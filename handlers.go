@@ -215,7 +215,7 @@ func GetBattlesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	battles, err := GetBattlesByLeader(warriorID)
+	battles, err := GetBattlesByWarrior(warriorID)
 
 	if err != nil {
 		http.NotFound(w, r)

@@ -43,7 +43,7 @@
                 count: 0,
                 voters: [],
             }
-            let warriorName = 'Left battle'
+            let warriorName = 'Unknown Warrior'
 
             if (warriors.length) {
                 const warrior = warriors.find(w => w.id === v.warriorId)

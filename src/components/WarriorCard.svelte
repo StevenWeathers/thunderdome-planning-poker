@@ -1,5 +1,6 @@
 <script>
     import VoteIcon from './icons/VoteIcon.svelte'
+    import LeaderIcon from './icons/LeaderIcon.svelte'
 
     export let voted = false
     export let warrior = {}
@@ -37,7 +38,7 @@
                     {warrior.name}
                 </p>
                 {#if leaderId === warrior.id}
-                    <p class="text-l text-gray-700 leading-tight">Leader</p>
+                    <p class="text-l text-gray-700 leading-tight"><LeaderIcon />&nbsp;Leader</p>
                 {:else if isLeader}
                     <button
                         on:click="{promoteLeader}"

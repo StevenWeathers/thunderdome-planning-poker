@@ -34,6 +34,7 @@ type Warrior struct {
 	WarriorName  string `json:"name"`
 	WarriorEmail string `json:"email"`
 	WarriorRank  string `json:"rank"`
+	Active       bool   `json:"active"`
 }
 
 // Vote structure
@@ -72,7 +73,9 @@ func SetupDB() {
 	}
 	sqlContent, ioErr := ioutil.ReadAll(sqlFile)
 	if ioErr != nil {
-		panic(ioErr) // this will hopefully only possibly panic during development as the file is already in memory otherwise
+		// this will hopefully only possibly panic during development as the file is already in memory otherwise
+		log.Println("Error reading schema.sql file required to migrate db")
+		log.Fatal(ioErr)
 	}
 	migrationSQL := string(sqlContent)
 
@@ -131,7 +134,12 @@ func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []strin
 		newPlanID := newID.String()
 		plan.Votes = make([]*Vote, 0)
 
-		e := db.QueryRow(`INSERT INTO plans (id, battle_id, name) VALUES ($1, $2, $3) RETURNING id`, newPlanID, b.BattleID, plan.PlanName).Scan(&plan.PlanID)
+		e := db.QueryRow(
+			`INSERT INTO plans (id, battle_id, name) VALUES ($1, $2, $3) RETURNING id`,
+			newPlanID,
+			b.BattleID,
+			plan.PlanName,
+		).Scan(&plan.PlanID)
 		if e != nil {
 			log.Println(e)
 		}
@@ -176,21 +184,23 @@ func GetBattle(BattleID string) (*Battle, error) {
 
 	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 	b.ActivePlanID = ActivePlanID.String
-	b.Warriors = GetActiveWarriors(BattleID)
+	b.Warriors = GetBattleWarriors(BattleID)
 	b.Plans = GetPlans(BattleID)
 
 	return b, nil
 }
 
-// GetBattlesByLeader gets a list of battles by leaderID
-func GetBattlesByLeader(LeaderID string) ([]*Battle, error) {
+// GetBattlesByWarrior gets a list of battles by WarriorID
+func GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 	var battles = make([]*Battle, 0)
 	battleRows, battlesErr := db.Query(`
 		SELECT b.id, b.name, b.leader_id, b.voting_locked, b.active_plan_id, b.point_values_allowed,
 		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans
-		FROM battles b LEFT JOIN plans p ON b.id = p.battle_id
-		WHERE b.leader_id = $1 GROUP BY b.id ORDER BY b.created_date DESC
-	`, LeaderID)
+		FROM battles b
+		LEFT JOIN plans p ON b.id = p.battle_id
+		LEFT JOIN battles_warriors bw ON b.id = bw.battle_id WHERE bw.warrior_id = $1
+		GROUP BY b.id ORDER BY b.created_date DESC
+	`, WarriorID)
 	if battlesErr != nil {
 		return nil, errors.New("Not found")
 	}
@@ -210,7 +220,15 @@ func GetBattlesByLeader(LeaderID string) ([]*Battle, error) {
 			ActivePlanID:       "",
 			PointValuesAllowed: make([]string, 0),
 		}
-		if err := battleRows.Scan(&b.BattleID, &b.BattleName, &b.LeaderID, &b.VotingLocked, &ActivePlanID, &pv, &points); err != nil {
+		if err := battleRows.Scan(
+			&b.BattleID,
+			&b.BattleName,
+			&b.LeaderID,
+			&b.VotingLocked,
+			&ActivePlanID,
+			&pv,
+			&points,
+		); err != nil {
 			log.Println(err)
 		} else {
 			_ = json.Unmarshal([]byte(points), &b.Plans)
@@ -308,7 +326,16 @@ func AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) 
 	var w Warrior
 	var passHash string
 
-	e := db.QueryRow("SELECT id, name, email, rank, password FROM warriors WHERE email = $1", WarriorEmail).Scan(&w.WarriorID, &w.WarriorName, &w.WarriorEmail, &w.WarriorRank, &passHash)
+	e := db.QueryRow(
+		`SELECT id, name, email, rank, password FROM warriors WHERE email = $1`,
+		WarriorEmail,
+	).Scan(
+		&w.WarriorID,
+		&w.WarriorName,
+		&w.WarriorEmail,
+		&w.WarriorRank,
+		&passHash,
+	)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Warrior Not found")
@@ -342,7 +369,11 @@ func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 	}
 	w.WarriorEmail = warriorEmail.String
 
-	err := db.QueryRow("SELECT active FROM battles_warriors WHERE battle_id = $1 AND warrior_id = $2", BattleID, WarriorID).Scan(&active)
+	err := db.QueryRow(
+		`SELECT active FROM battles_warriors WHERE battle_id = $1 AND warrior_id = $2`,
+		BattleID,
+		WarriorID,
+	).Scan(&active)
 	if err != nil {
 		log.Println(err)
 	}
@@ -354,11 +385,16 @@ func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 	return &w, nil
 }
 
-// GetActiveWarriors retrieves the active warriors for a given battle from db
-func GetActiveWarriors(BattleID string) []*Warrior {
+// GetBattleWarriors retrieves the warriors for a given battle from db
+func GetBattleWarriors(BattleID string) []*Warrior {
 	var warriors = make([]*Warrior, 0)
 	rows, err := db.Query(
-		"SELECT warriors.id, warriors.name, warriors.email, warriors.rank FROM battles_warriors LEFT JOIN warriors ON battles_warriors.warrior_id = warriors.id where battles_warriors.battle_id = $1 AND battles_warriors.active = true ORDER BY warriors.name",
+		`SELECT
+			w.id, w.name, w.email, w.rank, bw.active
+		FROM battles_warriors bw
+		LEFT JOIN warriors w ON bw.warrior_id = w.id
+		WHERE bw.battle_id = $1
+		ORDER BY w.name`,
 		BattleID,
 	)
 	if err == nil {
@@ -366,7 +402,7 @@ func GetActiveWarriors(BattleID string) []*Warrior {
 		for rows.Next() {
 			var w Warrior
 			var warriorEmail sql.NullString
-			if err := rows.Scan(&w.WarriorID, &w.WarriorName, &warriorEmail, &w.WarriorRank); err != nil {
+			if err := rows.Scan(&w.WarriorID, &w.WarriorName, &warriorEmail, &w.WarriorRank, &w.Active); err != nil {
 				log.Println(err)
 			} else {
 				w.WarriorEmail = warriorEmail.String
@@ -381,11 +417,16 @@ func GetActiveWarriors(BattleID string) []*Warrior {
 // AddWarriorToBattle adds a warrior by ID to the battle by ID
 func AddWarriorToBattle(BattleID string, WarriorID string) ([]*Warrior, error) {
 	if _, err := db.Exec(
-		`INSERT INTO battles_warriors (battle_id, warrior_id, active) VALUES ($1, $2, true) ON CONFLICT (battle_id, warrior_id) DO UPDATE SET active = true`, BattleID, WarriorID); err != nil {
+		`INSERT INTO battles_warriors (battle_id, warrior_id, active)
+		VALUES ($1, $2, true)
+		ON CONFLICT (battle_id, warrior_id) DO UPDATE SET active = true`,
+		BattleID,
+		WarriorID,
+	); err != nil {
 		log.Println(err)
 	}
 
-	warriors := GetActiveWarriors(BattleID)
+	warriors := GetBattleWarriors(BattleID)
 
 	return warriors, nil
 }
@@ -402,7 +443,7 @@ func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
 		log.Println(err)
 	}
 
-	warriors := GetActiveWarriors(BattleID)
+	warriors := GetBattleWarriors(BattleID)
 
 	return warriors
 }

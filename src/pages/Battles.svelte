@@ -4,6 +4,7 @@
     import PageLayout from '../components/PageLayout.svelte'
     import CreateBattle from '../components/CreateBattle.svelte'
     import DownCarrotIcon from '../components/icons/DownCarrotIcon.svelte'
+    import LeaderIcon from '../components/icons/LeaderIcon.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import { warrior } from '../stores.js'
@@ -80,7 +81,9 @@
                         <div
                             class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight">
-                            {battle.name}
+                            {#if $warrior.id === battle.leaderId}
+                                <LeaderIcon />&nbsp;
+                            {/if}{battle.name}
                             <div class="font-semibold md:text-sm text-gray-600">
                                 {battle.plans.filter(p => p.points !== '').length}
                                 of {battle.plans.length} plans pointed

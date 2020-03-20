@@ -378,13 +378,15 @@
                     </div>
 
                     {#each battle.warriors as war (war.id)}
-                        <WarriorCard
-                            warrior="{war}"
-                            leaderId="{battle.leaderId}"
-                            isLeader="{battle.leaderId === $warrior.id}"
-                            voted="{didVote(war.id)}"
-                            points="{showVote(war.id)}"
-                            {sendSocketEvent} />
+                        {#if war.active}
+                            <WarriorCard
+                                warrior="{war}"
+                                leaderId="{battle.leaderId}"
+                                isLeader="{battle.leaderId === $warrior.id}"
+                                voted="{didVote(war.id)}"
+                                points="{showVote(war.id)}"
+                                {sendSocketEvent} />
+                        {/if}
                     {/each}
 
                     {#if battle.leaderId === $warrior.id}
