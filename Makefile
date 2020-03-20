@@ -9,7 +9,8 @@ BINARY_NAME=thunderdome-planning-poker
 BINARY_UNIX=$(BINARY_NAME)_unix
 BINARY_WINDOWS=thunderdome-planning-poker.exe
 GORELEASER=goreleaser release --rm-dist
-DOCKER_TAG=stevenweathers/thunderdome-planning-poker:latest
+NEXT_DOCKER_TAG=stevenweathers/thunderdome-planning-poker:next
+LATEST_DOCKER_TAG=stevenweathers/thunderdome-planning-poker:latest
 
 all: build
 build-deps: 
@@ -51,17 +52,28 @@ dev:
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 	DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
+dev-go: 
+	$(STATICPACKCMD)
+	$(GOBUILD) -o $(BINARY_NAME) -v
+
+	DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
 run:
 	DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
 
-release:
-	$(GORELEASER)
+# release:
+# 	$(GORELEASER)
 
-release-dry:
-	$(GORELEASER) --skip-publish
+# release-dry:
+# 	$(GORELEASER) --skip-publish
 
-build-image:
-	docker build ./ -t $(DOCKER_TAG)
+build-next-image:
+	docker build ./ -t $(NEXT_DOCKER_TAG)
 
-push-image:
-	docker push $(DOCKER_TAG)
+push-next-image:
+	docker push $(NEXT_DOCKER_TAG)
+
+build-latest-image:
+	docker build ./ -t $(LATEST_DOCKER_TAG)
+
+push-latest-image:
+	docker push $(LATEST_DOCKER_TAG)

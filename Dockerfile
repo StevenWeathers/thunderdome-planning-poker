@@ -24,13 +24,12 @@ FROM golang:1.13-alpine as builderGo
 RUN apk update && apk add --no-cache git ca-certificates
 # Create appuser
 RUN adduser -D -g '' appuser
-# Copy SQL file
-RUN mkdir /app
-COPY ./schema.sql /app/schema.sql
 # Copy the go source
 COPY ./*.go $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 COPY ./go.mod $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 COPY ./go.sum $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
+# Copy SQL file
+COPY ./schema.sql $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 # Copy our static assetsa
 COPY --from=builderNode /webapp/dist $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/dist
 # Set working dir
@@ -47,8 +46,6 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflag
 # STEP 3 build a small image
 ############################
 FROM scratch
-# Import SQL file from builder
-COPY --from=builderGo /app/schema.sql /app/schema.sql
 # Import from builder.
 COPY --from=builderGo /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builderGo /etc/passwd /etc/passwd

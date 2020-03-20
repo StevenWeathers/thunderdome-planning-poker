@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
+	"github.com/markbates/pkger"
 )
 
 var db *sql.DB
@@ -57,18 +58,21 @@ type Plan struct {
 // and sets previously active warriors to false during startup
 func SetupDB() {
 	var (
-		host        = GetEnv("DB_HOST", "db")
-		port        = GetIntEnv("DB_PORT", 5432)
-		user        = GetEnv("DB_USER", "thor")
-		password    = GetEnv("DB_PASS", "odinson")
-		dbname      = GetEnv("DB_NAME", "thunderdome")
-		sqlFilePath = GetEnv("SQL_FILE", "schema.sql")
+		host     = GetEnv("DB_HOST", "db")
+		port     = GetIntEnv("DB_PORT", 5432)
+		user     = GetEnv("DB_USER", "thor")
+		password = GetEnv("DB_PASS", "odinson")
+		dbname   = GetEnv("DB_NAME", "thunderdome")
 	)
 
-	sqlContent, ioErr := ioutil.ReadFile(sqlFilePath)
+	sqlFile, ioErr := pkger.Open("/schema.sql")
 	if ioErr != nil {
 		log.Println("Error reading schema.sql file required to migrate db")
 		log.Fatal(ioErr)
+	}
+	sqlContent, ioErr := ioutil.ReadAll(sqlFile)
+	if ioErr != nil {
+		panic(ioErr) // this will hopefully only possibly panic during development as the file is already in memory otherwise
 	}
 	migrationSQL := string(sqlContent)
 
