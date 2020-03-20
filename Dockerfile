@@ -39,6 +39,7 @@ RUN go mod download
 # Bundle the static assets
 RUN pkger
 # Build the binary
+COPY ./schema.sql /go/bin/
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/thunderdome
 ############################
 # STEP 3 build a small image
@@ -49,6 +50,7 @@ COPY --from=builderGo /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builderGo /etc/passwd /etc/passwd
 # Copy our static executable
 COPY --from=builderGo /go/bin/thunderdome /go/bin/thunderdome
+COPY --from=builderGo /go/bin/schema.sql /go/bin/
 # Use an unprivileged user.
 USER appuser
 
