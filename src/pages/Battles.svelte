@@ -70,33 +70,35 @@
 <PageLayout>
     <h1 class="mb-4 text-3xl font-bold">My Battles</h1>
 
-    <div class="mb-4 md:mb-6">
-        {#each battles as battle}
-            <div class="bg-white shadow-lg rounded mb-2">
-                <div
-                    class="flex flex-wrap items-center p-4 border-gray-400
-                    border-b">
+    <div class="flex flex-wrap">
+        <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pr-4">
+            {#each battles as battle}
+                <div class="bg-white shadow-lg rounded mb-2">
                     <div
-                        class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
-                        md:text-xl leading-tight">
-                        {battle.name}
-                        <div class="font-semibold md:text-sm text-gray-600">
-                            {battle.plans.filter(p => p.points !== '').length}
-                            of {battle.plans.length} plans pointed
+                        class="flex flex-wrap items-center p-4 border-gray-400
+                        border-b">
+                        <div
+                            class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
+                            md:text-xl leading-tight">
+                            {battle.name}
+                            <div class="font-semibold md:text-sm text-gray-600">
+                                {battle.plans.filter(p => p.points !== '').length}
+                                of {battle.plans.length} plans pointed
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2 md:mb-0 md:text-right">
+                            <HollowButton href="/battle/{battle.id}">
+                                Join Battle
+                            </HollowButton>
                         </div>
                     </div>
-                    <div class="w-full md:w-1/2 md:mb-0 md:text-right">
-                        <HollowButton href="/battle/{battle.id}">
-                            Go To Battle
-                        </HollowButton>
-                    </div>
                 </div>
-            </div>
-        {/each}
-    </div>
+            {/each}
+        </div>
 
-    <div class="bg-white shadow-lg rounded p-6">
-        <h2 class="mb-4 text-2xl font-bold leading-tight">Create a Battle</h2>
-        <CreateBattle {notifications} {router} />
+        <div class="bg-white shadow-lg rounded p-6 w-full md:w-1/2 lg:w-2/5 pl-4">
+            <h2 class="mb-4 text-2xl font-bold leading-tight">Create a Battle</h2>
+            <CreateBattle {notifications} {router} />
+        </div>
     </div>
 </PageLayout>

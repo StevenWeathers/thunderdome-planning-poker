@@ -26,6 +26,13 @@
         plans = plans
     }
 
+    function removePlan(i) {
+        return function remove() {
+            plans.splice(i, 1);
+            plans = plans;
+        }
+    }
+
     function createBattle(e) {
         e.preventDefault()
         const data = {
@@ -115,21 +122,28 @@
         <div class="control mb-4">
             <HollowButton onClick="{addPlan}">Add Plan</HollowButton>
         </div>
-        {#each plans as plan}
-            <div class="mb-2">
-                <input
-                    type="text"
-                    bind:value="{plan.name}"
-                    placeholder="plan name"
-                    class="shadow appearance-none border rounded w-full py-2
-                    px-3 text-gray-700 leading-tight focus:outline-none
-                    focus:shadow-outline"
-                    required />
+        {#each plans as plan, i}
+            <div class="flex flex-wrap mb-2">
+                <div class="w-3/4">
+                    <input
+                        type="text"
+                        bind:value="{plan.name}"
+                        placeholder="plan name"
+                        class="shadow appearance-none border rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none
+                        focus:shadow-outline"
+                        required />
+                </div>
+                <div class="w-1/4">
+                    <div class="pl-2">
+                        <HollowButton onClick="{removePlan(i)}" color="red">Remove</HollowButton>
+                    </div>
+                </div>
             </div>
         {/each}
     </div>
 
     <div class="text-right">
-        <SolidButton type="submit">Create a Story Battle</SolidButton>
+        <SolidButton type="submit">Create Battle</SolidButton>
     </div>
 </form>
