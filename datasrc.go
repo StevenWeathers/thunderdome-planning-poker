@@ -56,7 +56,7 @@ type Plan struct {
 // SetupDB runs db migrations, sets up a db connection pool
 // and sets previously active warriors to false during startup
 func SetupDB() {
-	sqlContent, ioErr := ioutil.ReadFile("schema.sql")
+	sqlContent, ioErr := ioutil.ReadFile(GetEnv("SQL_FILE", "schema.sql"))
 	if ioErr != nil {
 		log.Println("Error reading schema.sql file required to migrate db")
 		log.Fatal(ioErr)

@@ -14,6 +14,7 @@ services:
     environment:
       APP_DOMAIN: ".127.0.0.1"
       COOKIE_SECURE: "false"
+      SQL_FILE: "/app/schema.sql"
   db: 
     image: postgres:latest
     restart: always
