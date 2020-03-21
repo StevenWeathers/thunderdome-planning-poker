@@ -670,34 +670,66 @@ func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassw
 }
 
 // WarriorResetRequest inserts a new warrior reset request
-func WarriorResetRequest(WarriorEmail string) (resetID string, resetErr error) {
+func WarriorResetRequest(WarriorEmail string) (resetID string, warriorName string, resetErr error) {
 	var ResetID sql.NullString
-	e := db.QueryRow(`
-		INSERT INTO warrior_reset (warrior_id)
-		SELECT w.id FROM warriors w WHERE w.email = $1
-		RETURNING reset_id;
+	var WarriorID sql.NullString
+	var WarriorName sql.NullString
+
+	warErr := db.QueryRow(`
+		SELECT w.id, w.name FROM warriors w WHERE w.email = $1;
 		`,
 		WarriorEmail,
-	).Scan(&ResetID)
-	if e != nil {
-		log.Println(e)
-		return "", errors.New("Unable to reset warrior")
+	).Scan(&WarriorID, &WarriorName)
+	if warErr != nil {
+		log.Println("Unable to get warrior for reset email: ", warErr)
+		// we don't want to alert the user that the email isn't valid
+		return "", "", nil
 	}
 
-	return ResetID.String, nil
+	e := db.QueryRow(`
+		INSERT INTO warrior_reset (warrior_id)
+		VALUES ($1)
+		RETURNING reset_id;
+		`,
+		WarriorID.String,
+	).Scan(&ResetID)
+	if e != nil {
+		log.Println("Unable to reset warrior: ", e)
+		// we don't want to alert the user that the email isn't valid
+		return "", "", nil
+	}
+
+	return ResetID.String, WarriorName.String, nil
 }
 
 // WarriorResetPassword attempts to reset a warriors password
-func WarriorResetPassword(ResetID string, WarriorPassword string) error {
+func WarriorResetPassword(ResetID string, WarriorPassword string) (warriorName string, warriorEmail string, resetErr error) {
+	var WarriorName sql.NullString
+	var WarriorEmail sql.NullString
+
 	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
 	if hashErr != nil {
-		return hashErr
+		return "", "", hashErr
+	}
+
+	warErr := db.QueryRow(`
+		SELECT
+			w.name, w.email
+		FROM warrior_reset wr
+		LEFT JOIN warriors w ON w.id = wr.warrior_id
+		WHERE wr.reset_id = $1;
+		`,
+		ResetID,
+	).Scan(&WarriorName, &WarriorEmail)
+	if warErr != nil {
+		log.Println("Unable to get warrior for password reset confirmation email: ", warErr)
+		return "", "", warErr
 	}
 
 	if _, err := db.Exec(
 		`call reset_warrior_password($1, $2)`, ResetID, hashedPassword); err != nil {
-		return err
+		return "", "", err
 	}
 
-	return nil
+	return WarriorName.String, WarriorEmail.String, nil
 }

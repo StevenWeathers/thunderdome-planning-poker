@@ -35,6 +35,8 @@ func main() {
 	SecureCookieFlag = GetBoolEnv("COOKIE_SECURE", true)
 	Sc = securecookie.New(SecureCookieHashkey, nil)
 
+	GetMailserverConfig()
+
 	go h.run()
 
 	staticHandler := http.FileServer(pkger.Dir("/dist"))
