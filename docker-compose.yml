@@ -14,6 +14,8 @@ services:
     environment:
       APP_DOMAIN: ".127.0.0.1"
       COOKIE_SECURE: "false"
+      SMTP_SECURE: "false"
+      SMTP_HOST: mail
   db: 
     image: postgres:latest
     restart: always
@@ -25,6 +27,14 @@ services:
       - 5432:5432
     volumes:
       - thunderdome_data:/var/lib/postgresql/data
+    networks:
+      - asgard
+  mail:
+    image: djfarrelly/maildev:latest
+    restart: always
+    ports:
+      - 1080:80
+      - 1025:25
     networks:
       - asgard
 

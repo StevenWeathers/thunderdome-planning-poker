@@ -102,12 +102,10 @@ func SetupDB() {
 
 //CreateBattle adds a new battle to the db
 func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*Plan) (*Battle, error) {
-	newID, _ := uuid.NewUUID()
-	id := newID.String()
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 
 	var b = &Battle{
-		BattleID:           id,
+		BattleID:           "",
 		LeaderID:           LeaderID,
 		BattleName:         BattleName,
 		Warriors:           make([]*Warrior, 0),
@@ -118,8 +116,7 @@ func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []strin
 	}
 
 	e := db.QueryRow(
-		`INSERT INTO battles (id, leader_id, name, point_values_allowed) VALUES ($1, $2, $3, $4) RETURNING id`,
-		id,
+		`INSERT INTO battles (leader_id, name, point_values_allowed) VALUES ($1, $2, $3) RETURNING id`,
 		LeaderID,
 		BattleName,
 		string(pointValuesJSON),
@@ -130,13 +127,10 @@ func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []strin
 	}
 
 	for _, plan := range Plans {
-		newID, _ := uuid.NewUUID()
-		newPlanID := newID.String()
 		plan.Votes = make([]*Vote, 0)
 
 		e := db.QueryRow(
-			`INSERT INTO plans (id, battle_id, name) VALUES ($1, $2, $3) RETURNING id`,
-			newPlanID,
+			`INSERT INTO plans (battle_id, name) VALUES ($1, $2) RETURNING id`,
 			b.BattleID,
 			plan.PlanName,
 		).Scan(&plan.PlanID)
@@ -257,46 +251,6 @@ func ConfirmLeader(BattleID string, warriorID string) error {
 	return nil
 }
 
-// CreateWarriorPrivate adds a new warrior private (guest) to the db
-func CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
-	newID, _ := uuid.NewUUID()
-	id := newID.String()
-
-	var WarriorID string
-	e := db.QueryRow(`INSERT INTO warriors (id, name) VALUES ($1, $2) RETURNING id`, id, WarriorName).Scan(&WarriorID)
-	if e != nil {
-		log.Println(e)
-		return nil, errors.New("Unable to create new warrior")
-	}
-
-	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName}, nil
-}
-
-// CreateWarriorCorporal adds a new warrior corporal (registered) to the db
-func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassword string) (*Warrior, error) {
-	newID, _ := uuid.NewUUID()
-	id := newID.String()
-	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
-	if hashErr != nil {
-		return nil, hashErr
-	}
-
-	var WarriorID string
-	e := db.QueryRow(
-		`INSERT INTO warriors (id, name, email, password, rank) VALUES ($1, $2, $3, $4, 'CORPORAL') RETURNING id`,
-		id,
-		WarriorName,
-		WarriorEmail,
-		hashedPassword,
-	).Scan(&WarriorID)
-	if e != nil {
-		log.Println(e)
-		return nil, errors.New("a Warrior with that email already exists")
-	}
-
-	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: "CORPORAL"}, nil
-}
-
 // GetWarrior gets a warrior from db by ID
 func GetWarrior(WarriorID string) (*Warrior, error) {
 	var w Warrior
@@ -352,30 +306,25 @@ func AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) 
 func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 	var active bool
 	var w Warrior
-	var warriorEmail sql.NullString
 
 	e := db.QueryRow(
-		"SELECT id, name, email, rank FROM warriors WHERE id = $1",
+		`SELECT
+			w.id, w.name, coalesce(w.email, ''), w.rank, coalesce(bw.active, FALSE)
+		FROM warriors w
+		LEFT JOIN battles_warriors bw ON bw.warrior_id = w.id AND bw.battle_id = $1
+		WHERE id = $2`,
+		BattleID,
 		WarriorID,
 	).Scan(
 		&w.WarriorID,
 		&w.WarriorName,
-		&warriorEmail,
+		&w.WarriorEmail,
 		&w.WarriorRank,
+		&active,
 	)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("Warrior Not found")
-	}
-	w.WarriorEmail = warriorEmail.String
-
-	err := db.QueryRow(
-		`SELECT active FROM battles_warriors WHERE battle_id = $1 AND warrior_id = $2`,
-		BattleID,
-		WarriorID,
-	).Scan(&active)
-	if err != nil {
-		log.Println(err)
 	}
 
 	if active {
@@ -476,6 +425,7 @@ func GetPlans(BattleID string) []*Plan {
 					log.Println(err)
 				}
 
+				// don't send vote values to client, prevent sneaky devs from peaking at votes
 				for i := range p.Votes {
 					vote := p.Votes[i]
 					if p.PlanActive {
@@ -498,6 +448,7 @@ func CreatePlan(BattleID string, warriorID string, PlanName string) ([]*Plan, er
 		return nil, errors.New("Incorrect permissions")
 	}
 
+	// @TODO - refactor stored procedure to replace need for app generated uuid
 	newID, _ := uuid.NewUUID()
 	PlanID := newID.String()
 
@@ -675,4 +626,110 @@ func DeleteBattle(BattleID string, warriorID string) error {
 	}
 
 	return nil
+}
+
+/*
+	Warrior
+*/
+
+// CreateWarriorPrivate adds a new warrior private (guest) to the db
+func CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
+	var WarriorID string
+	e := db.QueryRow(`INSERT INTO warriors (name) VALUES ($1) RETURNING id`, WarriorName).Scan(&WarriorID)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("Unable to create new warrior")
+	}
+
+	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName}, nil
+}
+
+// CreateWarriorCorporal adds a new warrior corporal (registered) to the db
+func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassword string) (*Warrior, error) {
+	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
+	if hashErr != nil {
+		return nil, hashErr
+	}
+
+	var WarriorID string
+	WarriorRank := "CORPORAL"
+
+	e := db.QueryRow(
+		`INSERT INTO warriors (name, email, password, rank) VALUES ($1, $2, $3, $4) RETURNING id`,
+		WarriorName,
+		WarriorEmail,
+		hashedPassword,
+		WarriorRank,
+	).Scan(&WarriorID)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("a Warrior with that email already exists")
+	}
+
+	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank}, nil
+}
+
+// WarriorResetRequest inserts a new warrior reset request
+func WarriorResetRequest(WarriorEmail string) (resetID string, warriorName string, resetErr error) {
+	var ResetID sql.NullString
+	var WarriorID sql.NullString
+	var WarriorName sql.NullString
+
+	warErr := db.QueryRow(`
+		SELECT w.id, w.name FROM warriors w WHERE w.email = $1;
+		`,
+		WarriorEmail,
+	).Scan(&WarriorID, &WarriorName)
+	if warErr != nil {
+		log.Println("Unable to get warrior for reset email: ", warErr)
+		// we don't want to alert the user that the email isn't valid
+		return "", "", nil
+	}
+
+	e := db.QueryRow(`
+		INSERT INTO warrior_reset (warrior_id)
+		VALUES ($1)
+		RETURNING reset_id;
+		`,
+		WarriorID.String,
+	).Scan(&ResetID)
+	if e != nil {
+		log.Println("Unable to reset warrior: ", e)
+		// we don't want to alert the user that the email isn't valid
+		return "", "", nil
+	}
+
+	return ResetID.String, WarriorName.String, nil
+}
+
+// WarriorResetPassword attempts to reset a warriors password
+func WarriorResetPassword(ResetID string, WarriorPassword string) (warriorName string, warriorEmail string, resetErr error) {
+	var WarriorName sql.NullString
+	var WarriorEmail sql.NullString
+
+	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
+	if hashErr != nil {
+		return "", "", hashErr
+	}
+
+	warErr := db.QueryRow(`
+		SELECT
+			w.name, w.email
+		FROM warrior_reset wr
+		LEFT JOIN warriors w ON w.id = wr.warrior_id
+		WHERE wr.reset_id = $1;
+		`,
+		ResetID,
+	).Scan(&WarriorName, &WarriorEmail)
+	if warErr != nil {
+		log.Println("Unable to get warrior for password reset confirmation email: ", warErr)
+		return "", "", warErr
+	}
+
+	if _, err := db.Exec(
+		`call reset_warrior_password($1, $2)`, ResetID, hashedPassword); err != nil {
+		return "", "", err
+	}
+
+	return WarriorName.String, WarriorEmail.String, nil
 }

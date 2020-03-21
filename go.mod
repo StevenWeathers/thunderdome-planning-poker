@@ -12,6 +12,7 @@ require (
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.2.0
 	github.com/markbates/pkger v0.10.1
+	github.com/matcornic/hermes/v2 v2.1.0
 	golang.org/x/crypto v0.0.0-20191108234033-bd318be0434a
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect

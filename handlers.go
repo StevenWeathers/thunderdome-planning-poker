@@ -180,6 +180,8 @@ func EnlistWarriorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	SendWelcomeEmail(WarriorName, WarriorEmail)
+
 	RespondWithJSON(w, http.StatusOK, newWarrior)
 }
 
@@ -223,4 +225,55 @@ func GetBattlesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	RespondWithJSON(w, http.StatusOK, battles)
+}
+
+// ForgotPasswordHandler attempts to send a password reset email
+func ForgotPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	body, _ := ioutil.ReadAll(r.Body) // check for errors
+
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal) // check for errors
+	WarriorEmail := keyVal["warriorEmail"]
+
+	ResetId, WarriorName, resetErr := WarriorResetRequest(WarriorEmail)
+	if resetErr != nil {
+		log.Println("error attempting to send warrior reset : " + resetErr.Error() + "\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	SendForgotPasswordEmail(WarriorName, WarriorEmail, ResetId)
+
+	w.WriteHeader(http.StatusOK)
+	return
+}
+
+// ResetPasswordHandler attempts to reset a warriors password
+func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	body, _ := ioutil.ReadAll(r.Body) // check for errors
+
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal) // check for errors
+	ResetID := keyVal["resetId"]
+
+	WarriorPassword, passwordErr := ValidateWarriorPassword(
+		keyVal["warriorPassword1"],
+		keyVal["warriorPassword2"],
+	)
+
+	if passwordErr != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	WarriorName, WarriorEmail, resetErr := WarriorResetPassword(ResetID, WarriorPassword)
+	if resetErr != nil {
+		log.Println("error attempting to reset warrior password : " + resetErr.Error() + "\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	SendPasswordResetEmail(WarriorName, WarriorEmail)
+
+	return
 }

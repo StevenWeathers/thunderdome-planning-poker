@@ -45,6 +45,12 @@
                 body: JSON.stringify(body),
             })
                 .then(function(response) {
+                    if (!response.ok) {
+                        throw Error(response.statusText);
+                    }
+                    return response;
+                })
+                .then(function(response) {
                     return response.json()
                 })
                 .then(function(newWarrior) {
@@ -106,6 +112,12 @@
                 },
                 body: JSON.stringify(body),
             })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw Error(response.statusText);
+                    }
+                    return response;
+                })
                 .then(function(response) {
                     return response.json()
                 })

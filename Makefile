@@ -51,14 +51,14 @@ dev:
 	$(STATICPACKCMD)
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
-	DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
+	SMTP_SECURE="false" DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
 dev-go: 
 	$(STATICPACKCMD)
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
-	DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
+	SMTP_SECURE="false" DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
 run:
-	DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
+	SMTP_SECURE="false" DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
 
 # release:
 # 	$(GORELEASER)
