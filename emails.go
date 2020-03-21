@@ -102,7 +102,7 @@ func sendEmail(WarriorName string, WarriorEmail string, Subject string, Body str
 	headers["To"] = to.String()
 	headers["Subject"] = Subject
 	headers["MIME-version"] = "1.0"
-	headers["Content-Type"] = "text/html charset=\"UTF-8\";"
+	headers["Content-Type"] = "text/html"
 
 	// Setup message
 	message := ""
