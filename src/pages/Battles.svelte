@@ -111,9 +111,11 @@
             {/each}
         </div>
 
-        <div class="bg-white shadow-lg rounded p-6 w-full md:w-1/2 lg:w-2/5 pl-4">
-            <h2 class="mb-4 text-2xl font-bold leading-tight">Create a Battle</h2>
-            <CreateBattle {notifications} {router} />
+        <div class="w-full md:w-1/2 lg:w-2/5 pl-4">
+            <div class="p-6 bg-white shadow-lg rounded">
+                <h2 class="mb-4 text-2xl font-bold leading-tight">Create a Battle</h2>
+                <CreateBattle {notifications} {router} />
+            </div>
         </div>
     </div>
 </PageLayout>
