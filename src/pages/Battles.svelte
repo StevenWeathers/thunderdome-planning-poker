@@ -25,6 +25,12 @@
         credentials: 'same-origin',
     })
         .then(function(response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+            return response;
+        })
+        .then(function(response) {
             return response.json()
         })
         .then(function(bs) {
@@ -50,6 +56,12 @@
             },
             body: JSON.stringify(data),
         })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response;
+            })
             .then(function(response) {
                 return response.json()
             })

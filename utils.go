@@ -18,6 +18,11 @@ type warriorAccount struct {
 	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
 
+type warriorPassword struct {
+	Password1 string `json:"password1" validate:"required,min=6,max=72"`
+	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
+}
+
 // ValidateWarriorAccount makes sure warrior name, email, and password are valid before creating the account
 func ValidateWarriorAccount(name string, email string, pwd1 string, pwd2 string) (WarriorName string, WarriorEmail string, WarriorPassword string, validateErr error) {
 	v := validator.New()
@@ -30,6 +35,18 @@ func ValidateWarriorAccount(name string, email string, pwd1 string, pwd2 string)
 	err := v.Struct(a)
 
 	return name, email, pwd1, err
+}
+
+// ValidateWarriorPassword makes sure warrior password is valid before updating the password
+func ValidateWarriorPassword(pwd1 string, pwd2 string) (WarriorPassword string, validateErr error) {
+	v := validator.New()
+	a := warriorPassword{
+		Password1: pwd1,
+		Password2: pwd2,
+	}
+	err := v.Struct(a)
+
+	return pwd1, err
 }
 
 // HashAndSalt takes a password byte and salt + hashes it

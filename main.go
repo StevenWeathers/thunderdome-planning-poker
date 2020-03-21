@@ -45,6 +45,8 @@ func main() {
 	router.PathPrefix("/img/").Handler(staticHandler)
 	router.HandleFunc("/api/auth", LoginHandler).Methods("POST")
 	router.HandleFunc("/api/auth/logout", LogoutHandler).Methods("POST")
+	router.HandleFunc("/api/auth/forgot-password", ForgotPasswordHandler).Methods("POST")
+	router.HandleFunc("/api/auth/reset-password", ResetPasswordHandler).Methods("POST")
 	router.HandleFunc("/api/warrior", RecruitWarriorHandler).Methods("POST")
 	router.HandleFunc("/api/warrior/enlist", EnlistWarriorHandler).Methods("POST")
 	router.HandleFunc("/api/battle", CreateBattleHandler).Methods("POST")

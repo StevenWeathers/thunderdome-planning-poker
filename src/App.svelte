@@ -10,6 +10,7 @@
     import Battle from './pages/Battle.svelte'
     import Register from './pages/Register.svelte'
     import Login from './pages/Login.svelte'
+    import ResetPassword from './pages/ResetPassword.svelte'
     import { warrior } from './stores.js'
 
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
@@ -37,6 +38,12 @@
         .on('/login/:battleId?', params => {
             currentPage = {
                 route: Login,
+                params,
+            }
+        })
+        .on('/reset-password/:resetId', params => {
+            currentPage = {
+                route: ResetPassword,
                 params,
             }
         })

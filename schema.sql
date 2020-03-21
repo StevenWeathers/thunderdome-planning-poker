@@ -1,4 +1,9 @@
 --
+-- Extensions
+--
+CREATE extension IF NOT EXISTS "uuid-ossp";
+
+--
 -- Tables
 --
 CREATE TABLE IF NOT EXISTS battles (
@@ -19,15 +24,22 @@ CREATE TABLE IF NOT EXISTS plans (
     name VARCHAR(256),
     points VARCHAR(3) DEFAULT '',
     active BOOL DEFAULT false,
-    battle_id UUID references battles(id) NOT NULL,
+    battle_id UUID REFERENCES battles(id) NOT NULL,
     votes JSONB DEFAULT '[]'::JSONB
 );
 
 CREATE TABLE IF NOT EXISTS battles_warriors (
-    battle_id UUID references battles NOT NULL,
+    battle_id UUID REFERENCES battles NOT NULL,
     warrior_id UUID REFERENCES warriors NOT NULL,
     active BOOL DEFAULT false,
     PRIMARY KEY (battle_id, warrior_id)
+);
+
+CREATE TABLE IF NOT EXISTS warrior_reset (
+    reset_id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    warrior_id UUID REFERENCES warriors NOT NULL,
+    created_date TIMESTAMP DEFAULT NOW(),
+    expire_date TIMESTAMP DEFAULT NOW() + INTERVAL '1 hour'
 );
 
 --
@@ -46,6 +58,9 @@ ALTER TABLE battles ADD COLUMN IF NOT EXISTS point_values_allowed JSONB DEFAULT 
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS email VARCHAR(320) UNIQUE;
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS password TEXT;
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS rank VARCHAR(128) DEFAULT 'PRIVATE';
+ALTER TABLE battles ALTER COLUMN id SET DEFAULT uuid_generate_v4();
+ALTER TABLE plans ALTER COLUMN id SET DEFAULT uuid_generate_v4();
+ALTER TABLE warriors ALTER COLUMN id SET DEFAULT uuid_generate_v4();
 
 --
 -- Types (used in Stored Procedures)
@@ -176,21 +191,21 @@ CREATE OR REPLACE PROCEDURE set_warrior_vote(planId UUID, warriorsId UUID, warri
 LANGUAGE plpgsql AS $$
 BEGIN
 	UPDATE plans p1
-		SET votes = (
-			SELECT json_agg(data)
-			FROM (
-			    SELECT coalesce(newVote."warriorId", oldVote."warriorId") AS "warriorId", coalesce(newVote.vote, oldVote.vote) AS vote
-			    FROM jsonb_populate_recordset(null::WarriorsVote,p1.votes) AS oldVote
-			    FULL JOIN jsonb_populate_recordset(null::WarriorsVote,
-			    	('[{"warriorId":"'|| warriorsId::text ||'", "vote":'|| warriorVote ||'}]')::JSONB
-			    ) AS newVote
-			    ON newVote."warriorId" = oldVote."warriorId"
-			) data
-		)
-		WHERE p1.id = planId;
-		
-    	COMMIT;
-	END;
+    SET votes = (
+        SELECT json_agg(data)
+        FROM (
+            SELECT coalesce(newVote."warriorId", oldVote."warriorId") AS "warriorId", coalesce(newVote.vote, oldVote.vote) AS vote
+            FROM jsonb_populate_recordset(null::WarriorsVote,p1.votes) AS oldVote
+            FULL JOIN jsonb_populate_recordset(null::WarriorsVote,
+                ('[{"warriorId":"'|| warriorsId::text ||'", "vote":'|| warriorVote ||'}]')::JSONB
+            ) AS newVote
+            ON newVote."warriorId" = oldVote."warriorId"
+        ) data
+    )
+    WHERE p1.id = planId;
+    
+    COMMIT;
+END;
 $$;
 
 -- Retract Warrior Vote --
@@ -198,16 +213,41 @@ CREATE OR REPLACE PROCEDURE retract_warrior_vote(planId UUID, warriorsId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
 	UPDATE plans p1
-		SET votes = (
-			SELECT coalesce(json_agg(data), '[]'::JSON)
-			FROM (
-			    SELECT coalesce(oldVote."warriorId") AS "warriorId", coalesce(oldVote.vote) AS vote
-			    FROM jsonb_populate_recordset(null::WarriorsVote,p1.votes) AS oldVote
-			    WHERE oldVote."warriorId" != warriorsId
-			) data
-		)
-		WHERE p1.id = planId;
-		
-    	COMMIT;
-	END;
+    SET votes = (
+        SELECT coalesce(json_agg(data), '[]'::JSON)
+        FROM (
+            SELECT coalesce(oldVote."warriorId") AS "warriorId", coalesce(oldVote.vote) AS vote
+            FROM jsonb_populate_recordset(null::WarriorsVote,p1.votes) AS oldVote
+            WHERE oldVote."warriorId" != warriorsId
+        ) data
+    )
+    WHERE p1.id = planId;
+    
+    COMMIT;
+END;
+$$;
+
+-- Reset Warrior Password --
+CREATE OR REPLACE PROCEDURE reset_warrior_password(resetId UUID, warriorPassword TEXT)
+LANGUAGE plpgsql AS $$
+DECLARE matchedWarriorId UUID;
+BEGIN
+	matchedWarriorId := (
+        SELECT w.id
+        FROM warrior_reset wr
+        LEFT JOIN warriors w ON w.id = wr.warrior_id
+        WHERE wr.reset_id = resetId AND NOW() < wr.expire_date
+    );
+
+    IF matchedWarriorId IS NULL THEN
+        -- attempt delete incase reset record expired
+        DELETE FROM warrior_reset WHERE reset_id = resetId;
+        RAISE 'Valid Reset ID not found';
+    END IF;
+
+    UPDATE warriors SET password = warriorPassword WHERE id = matchedWarriorId;
+    DELETE FROM warrior_reset WHERE reset_id = resetId;
+
+    COMMIT;
+END;
 $$;
