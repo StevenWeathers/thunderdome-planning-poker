@@ -28,8 +28,8 @@
 
     function removePlan(i) {
         return function remove() {
-            plans.splice(i, 1);
-            plans = plans;
+            plans.splice(i, 1)
+            plans = plans
         }
     }
 
@@ -79,8 +79,9 @@
                 name="battleName"
                 bind:value="{battleName}"
                 placeholder="Enter a battle name"
-                class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 leading-tight
+                focus:outline-none focus:bg-white focus:border-purple-500"
                 id="battleName"
                 required />
         </div>
@@ -98,7 +99,8 @@
                 bind:value="{pointValuesAllowed}"
                 class="block appearance-none w-full bg-gray-200 border-2
                 border-gray-200 text-gray-darker py-3 px-4 pr-8 rounded
-                leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                leading-tight focus:outline-none focus:bg-white
+                focus:border-purple-500"
                 id="pointValuesAllowed"
                 required>
                 {#each possiblePointValues as points, pi}
@@ -127,13 +129,17 @@
                         type="text"
                         bind:value="{plan.name}"
                         placeholder="plan name"
-                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                        class="bg-gray-200 border-gray-200 border-2
+                        appearance-none rounded w-full py-2 px-3 text-gray-700
+                        leading-tight focus:outline-none focus:bg-white
+                        focus:border-purple-500"
                         required />
                 </div>
                 <div class="w-1/4">
                     <div class="pl-2">
-                        <HollowButton onClick="{removePlan(i)}" color="red">Remove</HollowButton>
+                        <HollowButton onClick="{removePlan(i)}" color="red">
+                            Remove
+                        </HollowButton>
                     </div>
                 </div>
             </div>

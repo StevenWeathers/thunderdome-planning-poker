@@ -32,9 +32,9 @@
         })
             .then(function(response) {
                 if (!response.ok) {
-                    throw Error(response.statusText);
+                    throw Error(response.statusText)
                 }
-                return response;
+                return response
             })
             .then(function(response) {
                 return response.json()
@@ -63,7 +63,7 @@
     function sendPasswordReset(e) {
         e.preventDefault()
         const body = {
-            warriorEmail: warriorResetEmail
+            warriorEmail: warriorResetEmail,
         }
 
         fetch('/api/auth/forgot-password', {
@@ -76,14 +76,17 @@
         })
             .then(function(response) {
                 if (!response.ok) {
-                    throw Error(response.statusText);
+                    throw Error(response.statusText)
                 }
-                return response;
+                return response
             })
             .then(function() {
-                notifications.success(`
+                notifications.success(
+                    `
                     Password reset instructions sent to ${warriorResetEmail}.
-                `, 2000)
+                `,
+                    2000,
+                )
                 forgotPassword = !forgotPassword
             })
             .catch(function(error) {
@@ -106,8 +109,8 @@
                     class="bg-white shadow-lg rounded p-6 mb-4"
                     name="authWarrior">
                     <div
-                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6 md:leading-tight text-center"
-                    >
+                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                        md:leading-tight text-center">
                         Login
                     </div>
                     <div class="mb-4">
@@ -119,8 +122,10 @@
                         <input
                             bind:value="{warriorEmail}"
                             placeholder="Enter your email"
-                            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                            px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                            class="bg-gray-200 border-gray-200 border-2
+                            appearance-none rounded w-full py-2 px-3
+                            text-gray-700 leading-tight focus:outline-none
+                            focus:bg-white focus:border-purple-500"
                             id="yourEmail"
                             name="yourEmail"
                             type="email"
@@ -136,8 +141,10 @@
                         <input
                             bind:value="{warriorPassword}"
                             placeholder="Enter your password"
-                            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                            px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                            class="bg-gray-200 border-gray-200 border-2
+                            appearance-none rounded w-full py-2 px-3
+                            text-gray-700 leading-tight focus:outline-none
+                            focus:bg-white focus:border-purple-500"
                             id="yourPassword"
                             name="yourPassword"
                             type="password"
@@ -147,9 +154,9 @@
                     <div class="text-right">
                         <button
                             type="button"
-                            class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 mr-4"
-                            on:click="{toggleForgotPassword}"
-                        >
+                            class="inline-block align-baseline font-bold text-sm
+                            text-blue-500 hover:text-blue-800 mr-4"
+                            on:click="{toggleForgotPassword}">
                             Forgot Password?
                         </button>
                         <SolidButton type="submit" disabled="{loginDisabled}">
@@ -165,8 +172,8 @@
                     class="bg-white shadow-lg rounded p-6 mb-4"
                     name="resetPassword">
                     <div
-                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6 md:leading-tight text-center"
-                    >
+                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                        md:leading-tight text-center">
                         Forgot Password
                     </div>
                     <div class="mb-4">
@@ -178,8 +185,10 @@
                         <input
                             bind:value="{warriorResetEmail}"
                             placeholder="Enter your email"
-                            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                            px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                            class="bg-gray-200 border-gray-200 border-2
+                            appearance-none rounded w-full py-2 px-3
+                            text-gray-700 leading-tight focus:outline-none
+                            focus:bg-white focus:border-purple-500"
                             id="yourResetEmail"
                             name="yourResetEmail"
                             type="email"
@@ -189,9 +198,9 @@
                     <div class="text-right">
                         <button
                             type="button"
-                            class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 mr-4"
-                            on:click="{toggleForgotPassword}"
-                        >
+                            class="inline-block align-baseline font-bold text-sm
+                            text-blue-500 hover:text-blue-800 mr-4"
+                            on:click="{toggleForgotPassword}">
                             Cancel
                         </button>
                         <SolidButton type="submit" disabled="{resetDisabled}">

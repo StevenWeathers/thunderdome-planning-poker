@@ -44,8 +44,10 @@
                         Plan Name
                     </label>
                     <input
-                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                        class="bg-gray-200 border-gray-200 border-2
+                        appearance-none rounded w-full py-2 px-3 text-gray-700
+                        leading-tight focus:outline-none focus:bg-white
+                        focus:border-purple-500"
                         id="planName"
                         type="text"
                         bind:value="{planName}"

@@ -26,9 +26,9 @@
     })
         .then(function(response) {
             if (!response.ok) {
-                throw Error(response.statusText);
+                throw Error(response.statusText)
             }
-            return response;
+            return response
         })
         .then(function(response) {
             return response.json()
@@ -58,9 +58,9 @@
         })
             .then(function(response) {
                 if (!response.ok) {
-                    throw Error(response.statusText);
+                    throw Error(response.statusText)
                 }
-                return response;
+                return response
             })
             .then(function(response) {
                 return response.json()
@@ -94,8 +94,10 @@
                             class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight">
                             {#if $warrior.id === battle.leaderId}
-                                <LeaderIcon />&nbsp;
-                            {/if}{battle.name}
+                                <LeaderIcon />
+                                &nbsp;
+                            {/if}
+                            {battle.name}
                             <div class="font-semibold md:text-sm text-gray-600">
                                 {battle.plans.filter(p => p.points !== '').length}
                                 of {battle.plans.length} plans pointed
@@ -113,7 +115,9 @@
 
         <div class="w-full md:w-1/2 lg:w-2/5 pl-4">
             <div class="p-6 bg-white shadow-lg rounded">
-                <h2 class="mb-4 text-2xl font-bold leading-tight">Create a Battle</h2>
+                <h2 class="mb-4 text-2xl font-bold leading-tight">
+                    Create a Battle
+                </h2>
                 <CreateBattle {notifications} {router} />
             </div>
         </div>

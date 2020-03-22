@@ -33,12 +33,14 @@
                 <p
                     class="text-xl font-bold leading-tight truncate"
                     data-testId="warriorName"
-                    title="{warrior.name}"
-                >
+                    title="{warrior.name}">
                     {warrior.name}
                 </p>
                 {#if leaderId === warrior.id}
-                    <p class="text-l text-gray-700 leading-tight"><LeaderIcon />&nbsp;Leader</p>
+                    <p class="text-l text-gray-700 leading-tight">
+                        <LeaderIcon />
+                        &nbsp;Leader
+                    </p>
                 {:else if isLeader}
                     <button
                         on:click="{promoteLeader}"

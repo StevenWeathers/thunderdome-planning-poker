@@ -16,7 +16,6 @@
     let warriorPassword1 = ''
     let warriorPassword2 = ''
 
-
     function resetWarriorPassword(e) {
         e.preventDefault()
         const body = {
@@ -53,9 +52,9 @@
             })
                 .then(function(response) {
                     if (!response.ok) {
-                        throw Error(response.statusText);
+                        throw Error(response.statusText)
                     }
-                    return response;
+                    return response
                 })
                 .then(function() {
                     router.route('/login', true)
@@ -68,9 +67,7 @@
         }
     }
 
-    $: resetDisabled =
-        warriorPassword1 === '' ||
-        warriorPassword2 === ''
+    $: resetDisabled = warriorPassword1 === '' || warriorPassword2 === ''
 </script>
 
 <PageLayout>
@@ -81,8 +78,8 @@
                 class="bg-white shadow-lg rounded p-6 mb-4"
                 name="resetWarriorPassword">
                 <div
-                    class="font-bold text-xl md:text-2xl mb-2 md:mb-6 md:leading-tight text-center"
-                >
+                    class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                    md:leading-tight text-center">
                     Reset Password
                 </div>
 
@@ -95,8 +92,10 @@
                     <input
                         bind:value="{warriorPassword1}"
                         placeholder="Enter a password"
-                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                        class="bg-gray-200 border-gray-200 border-2
+                        appearance-none rounded w-full py-2 px-3 text-gray-700
+                        leading-tight focus:outline-none focus:bg-white
+                        focus:border-purple-500"
                         id="yourPassword1"
                         name="yourPassword1"
                         type="password"
@@ -112,8 +111,10 @@
                     <input
                         bind:value="{warriorPassword2}"
                         placeholder="Confirm your password"
-                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                        class="bg-gray-200 border-gray-200 border-2
+                        appearance-none rounded w-full py-2 px-3 text-gray-700
+                        leading-tight focus:outline-none focus:bg-white
+                        focus:border-purple-500"
                         id="yourPassword2"
                         name="yourPassword2"
                         type="password"

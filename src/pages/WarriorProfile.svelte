@@ -19,9 +19,9 @@
     })
         .then(function(response) {
             if (!response.ok) {
-                throw Error(response.statusText);
+                throw Error(response.statusText)
             }
-            return response;
+            return response
         })
         .then(function(response) {
             return response.json()
@@ -41,7 +41,10 @@
 
         let noFormErrors = true
 
-        if (body.warriorName.length < nameMin || body.warriorName.length > nameMax) {
+        if (
+            body.warriorName.length < nameMin ||
+            body.warriorName.length > nameMax
+        ) {
             noFormErrors = false
             notifications.danger(
                 `Name must be between ${nameMin} and ${nameMax} characters.`,
@@ -59,9 +62,9 @@
             })
                 .then(function(response) {
                     if (!response.ok) {
-                        throw Error(response.statusText);
+                        throw Error(response.statusText)
                     }
-                    return response;
+                    return response
                 })
                 .then(function(updatedWarrior) {
                     warrior.update({
@@ -74,7 +77,9 @@
                     notifications.success('Profile updated.', 1500)
                 })
                 .catch(function(error) {
-                    notifications.danger('Error encountered updating your profile')
+                    notifications.danger(
+                        'Error encountered updating your profile',
+                    )
                 })
         }
     }
@@ -110,8 +115,10 @@
                     <input
                         bind:value="{warriorProfile.name}"
                         placeholder="Enter your name"
-                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                        class="bg-gray-200 border-gray-200 border-2
+                        appearance-none rounded w-full py-2 px-3 text-gray-700
+                        leading-tight focus:outline-none focus:bg-white
+                        focus:border-purple-500"
                         id="yourName"
                         name="yourName"
                         type="text"
@@ -126,8 +133,9 @@
                     </label>
                     <input
                         bind:value="{warriorProfile.email}"
-                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none cursor-not-allowed"
+                        class="bg-gray-200 border-gray-200 border-2
+                        appearance-none rounded w-full py-2 px-3 text-gray-700
+                        leading-tight focus:outline-none cursor-not-allowed"
                         id="yourEmail"
                         name="yourEmail"
                         type="email"

@@ -18,11 +18,11 @@
 
     let notifications
 
-    let activeWarrior;
+    let activeWarrior
 
-	const unsubscribe = warrior.subscribe(w => {
-		activeWarrior = w;
-	});
+    const unsubscribe = warrior.subscribe(w => {
+        activeWarrior = w
+    })
 
     let currentPage = {
         route: Landing,
