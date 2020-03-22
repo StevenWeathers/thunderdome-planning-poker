@@ -119,9 +119,8 @@
                         <input
                             bind:value="{warriorEmail}"
                             placeholder="Enter your email"
-                            class="shadow appearance-none border rounded w-full py-2
-                            px-3 text-gray-700 leading-tight focus:outline-none
-                            focus:shadow-outline"
+                            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                            px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                             id="yourEmail"
                             name="yourEmail"
                             type="email"
@@ -137,9 +136,8 @@
                         <input
                             bind:value="{warriorPassword}"
                             placeholder="Enter your password"
-                            class="shadow appearance-none border rounded w-full py-2
-                            px-3 text-gray-700 leading-tight focus:outline-none
-                            focus:shadow-outline"
+                            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                            px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                             id="yourPassword"
                             name="yourPassword"
                             type="password"
@@ -180,9 +178,8 @@
                         <input
                             bind:value="{warriorResetEmail}"
                             placeholder="Enter your email"
-                            class="shadow appearance-none border rounded w-full py-2
-                            px-3 text-gray-700 leading-tight focus:outline-none
-                            focus:shadow-outline"
+                            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                            px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                             id="yourResetEmail"
                             name="yourResetEmail"
                             type="email"

@@ -277,3 +277,49 @@ func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	return
 }
+
+// WarriorProfileHandler returns the warriors profile if it matches their session
+func WarriorProfileHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	WarriorID := vars["id"]
+
+	warriorCookieID, cookieErr := ValidateWarriorCookie(w, r)
+	if cookieErr != nil || WarriorID != warriorCookieID {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	warrior, warErr := GetWarrior(WarriorID)
+	if warErr != nil {
+		log.Println("error finding warrior : " + warErr.Error() + "\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	RespondWithJSON(w, http.StatusOK, warrior)
+}
+
+// WarriorUpdateProfileHandler attempts to update warriors profile (currently limited to name)
+func WarriorUpdateProfileHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	body, _ := ioutil.ReadAll(r.Body) // check for errors
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal) // check for errors
+	WarriorName := keyVal["warriorName"]
+
+	WarriorID := vars["id"]
+	warriorCookieID, cookieErr := ValidateWarriorCookie(w, r)
+	if cookieErr != nil || WarriorID != warriorCookieID {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	updateErr := UpdateWarriorProfile(WarriorID, WarriorName)
+	if updateErr != nil {
+		log.Println("error attempting to update warrior profile : " + updateErr.Error() + "\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	return
+}

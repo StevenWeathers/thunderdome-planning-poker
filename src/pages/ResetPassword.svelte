@@ -25,6 +25,8 @@
             warriorPassword2,
         }
 
+        let noFormErrors = true
+
         if (
             warriorPassword1.length < passMin ||
             warriorPassword1.length > passMax
@@ -40,28 +42,30 @@
             notifications.danger(`Password and Confirm Password do not match.`)
         }
 
-        fetch('/api/auth/reset-password', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-        })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw Error(response.statusText);
-                }
-                return response;
+        if (noFormErrors) {
+            fetch('/api/auth/reset-password', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
             })
-            .then(function() {
-                router.route('/login', true)
-            })
-            .catch(function(error) {
-                notifications.danger(
-                    'Error encountered attempting to reset password',
-                )
-            })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw Error(response.statusText);
+                    }
+                    return response;
+                })
+                .then(function() {
+                    router.route('/login', true)
+                })
+                .catch(function(error) {
+                    notifications.danger(
+                        'Error encountered attempting to reset password',
+                    )
+                })
+        }
     }
 
     $: resetDisabled =
@@ -91,9 +95,8 @@
                     <input
                         bind:value="{warriorPassword1}"
                         placeholder="Enter a password"
-                        class="shadow appearance-none border rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none
-                        focus:shadow-outline"
+                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                         id="yourPassword1"
                         name="yourPassword1"
                         type="password"
@@ -109,9 +112,8 @@
                     <input
                         bind:value="{warriorPassword2}"
                         placeholder="Confirm your password"
-                        class="shadow appearance-none border rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none
-                        focus:shadow-outline"
+                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                         id="yourPassword2"
                         name="yourPassword2"
                         type="password"

@@ -57,10 +57,10 @@
                                 name="planPoints"
                                 bind:value="{planPoints}"
                                 required
-                                class="block appearance-none w-full border
+                                class="block appearance-none w-full border-2
                                 border-gray-400 text-gray-700 py-3 px-4 pr-8
                                 rounded leading-tight focus:outline-none
-                                focus:border-gray">
+                                focus:border-purple-500">
                                 <option value="" disabled>Points</option>
                                 {#each points as point}
                                     <option value="{point}">{point}</option>

@@ -104,7 +104,7 @@
         }
 
         if (noFormErrors) {
-            fetch('/api/warrior/enlist', {
+            fetch('/api/enlist', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
@@ -170,9 +170,8 @@
                     <input
                         bind:value="{warriorName}"
                         placeholder="Enter your name"
-                        class="shadow appearance-none border rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none
-                        focus:shadow-outline"
+                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                         id="yourName1"
                         name="yourName1"
                         required />
@@ -209,9 +208,8 @@
                     <input
                         bind:value="{warriorName}"
                         placeholder="Enter your name"
-                        class="shadow appearance-none border rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none
-                        focus:shadow-outline"
+                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                         id="yourName2"
                         name="yourName2"
                         required />
@@ -226,9 +224,8 @@
                     <input
                         bind:value="{warriorEmail}"
                         placeholder="Enter your email"
-                        class="shadow appearance-none border rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none
-                        focus:shadow-outline"
+                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                         id="yourEmail"
                         name="yourEmail"
                         type="email"
@@ -244,9 +241,8 @@
                     <input
                         bind:value="{warriorPassword1}"
                         placeholder="Enter a password"
-                        class="shadow appearance-none border rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none
-                        focus:shadow-outline"
+                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                         id="yourPassword1"
                         name="yourPassword1"
                         type="password"
@@ -262,9 +258,8 @@
                     <input
                         bind:value="{warriorPassword2}"
                         placeholder="Confirm your password"
-                        class="shadow appearance-none border rounded w-full py-2
-                        px-3 text-gray-700 leading-tight focus:outline-none
-                        focus:shadow-outline"
+                        class="bg-gray-200 border-gray-200 border-2 appearance-none rounded w-full py-2
+                        px-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                         id="yourPassword2"
                         name="yourPassword2"
                         type="password"

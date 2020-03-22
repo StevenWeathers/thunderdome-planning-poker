@@ -251,57 +251,6 @@ func ConfirmLeader(BattleID string, warriorID string) error {
 	return nil
 }
 
-// GetWarrior gets a warrior from db by ID
-func GetWarrior(WarriorID string) (*Warrior, error) {
-	var w Warrior
-	var warriorEmail sql.NullString
-
-	e := db.QueryRow(
-		"SELECT id, name, email, rank FROM warriors WHERE id = $1",
-		WarriorID,
-	).Scan(
-		&w.WarriorID,
-		&w.WarriorName,
-		&warriorEmail,
-		&w.WarriorRank,
-	)
-	if e != nil {
-		log.Println(e)
-		return nil, errors.New("Warrior Not found")
-	}
-
-	w.WarriorEmail = warriorEmail.String
-
-	return &w, nil
-}
-
-// AuthWarrior attempts to authenticate the warrior
-func AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) {
-	var w Warrior
-	var passHash string
-
-	e := db.QueryRow(
-		`SELECT id, name, email, rank, password FROM warriors WHERE email = $1`,
-		WarriorEmail,
-	).Scan(
-		&w.WarriorID,
-		&w.WarriorName,
-		&w.WarriorEmail,
-		&w.WarriorRank,
-		&passHash,
-	)
-	if e != nil {
-		log.Println(e)
-		return nil, errors.New("Warrior Not found")
-	}
-
-	if ComparePasswords(passHash, []byte(WarriorPassword)) == false {
-		return nil, errors.New("Password invalid")
-	}
-
-	return &w, nil
-}
-
 // GetBattleWarrior gets a warrior from db by ID and checks battle active status
 func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 	var active bool
@@ -632,6 +581,57 @@ func DeleteBattle(BattleID string, warriorID string) error {
 	Warrior
 */
 
+// GetWarrior gets a warrior from db by ID
+func GetWarrior(WarriorID string) (*Warrior, error) {
+	var w Warrior
+	var warriorEmail sql.NullString
+
+	e := db.QueryRow(
+		"SELECT id, name, email, rank FROM warriors WHERE id = $1",
+		WarriorID,
+	).Scan(
+		&w.WarriorID,
+		&w.WarriorName,
+		&warriorEmail,
+		&w.WarriorRank,
+	)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("Warrior Not found")
+	}
+
+	w.WarriorEmail = warriorEmail.String
+
+	return &w, nil
+}
+
+// AuthWarrior attempts to authenticate the warrior
+func AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) {
+	var w Warrior
+	var passHash string
+
+	e := db.QueryRow(
+		`SELECT id, name, email, rank, password FROM warriors WHERE email = $1`,
+		WarriorEmail,
+	).Scan(
+		&w.WarriorID,
+		&w.WarriorName,
+		&w.WarriorEmail,
+		&w.WarriorRank,
+		&passHash,
+	)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("Warrior Not found")
+	}
+
+	if ComparePasswords(passHash, []byte(WarriorPassword)) == false {
+		return nil, errors.New("Password invalid")
+	}
+
+	return &w, nil
+}
+
 // CreateWarriorPrivate adds a new warrior private (guest) to the db
 func CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
 	var WarriorID string
@@ -667,6 +667,20 @@ func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassw
 	}
 
 	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank}, nil
+}
+
+// UpdateWarriorProfile attempts to update the warriors profile
+func UpdateWarriorProfile(WarriorID string, WarriorName string) error {
+	if _, err := db.Exec(
+		`UPDATE warriors SET name = $2 WHERE id = $1;`,
+		WarriorID,
+		WarriorName,
+	); err != nil {
+		log.Println(err)
+		return errors.New("Error attempting to update warriors profile")
+	}
+
+	return nil
 }
 
 // WarriorResetRequest inserts a new warrior reset request

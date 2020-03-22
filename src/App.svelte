@@ -11,11 +11,18 @@
     import Register from './pages/Register.svelte'
     import Login from './pages/Login.svelte'
     import ResetPassword from './pages/ResetPassword.svelte'
+    import WarriorProfile from './pages/WarriorProfile.svelte'
     import { warrior } from './stores.js'
 
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
 
     let notifications
+
+    let activeWarrior;
+
+	const unsubscribe = warrior.subscribe(w => {
+		activeWarrior = w;
+	});
 
     let currentPage = {
         route: Landing,
@@ -44,6 +51,12 @@
         .on('/reset-password/:resetId', params => {
             currentPage = {
                 route: ResetPassword,
+                params,
+            }
+        })
+        .on('/warrior-profile', params => {
+            currentPage = {
+                route: WarriorProfile,
                 params,
             }
         })
@@ -106,16 +119,16 @@
             <img src="/img/logo.svg" alt="Thunderdome" class="nav-logo" />
         </a>
     </div>
-    {#if $warrior.name}
+    {#if activeWarrior.name}
         <div class="text-right mt-4 md:mt-0">
             <span class="font-bold mr-2 text-xl">
                 <WarriorIcon />
-                {$warrior.name}
+                <a href="/warrior-profile">{activeWarrior.name}</a>
             </span>
             <HollowButton color="teal" href="/battles" additionalClasses="mr-2">
                 My Battles
             </HollowButton>
-            {#if !$warrior.rank || $warrior.rank === 'PRIVATE'}
+            {#if !activeWarrior.rank || activeWarrior.rank === 'PRIVATE'}
                 <HollowButton
                     color="teal"
                     href="/enlist"
