@@ -197,7 +197,7 @@ BEGIN
             SELECT coalesce(newVote."warriorId", oldVote."warriorId") AS "warriorId", coalesce(newVote.vote, oldVote.vote) AS vote
             FROM jsonb_populate_recordset(null::WarriorsVote,p1.votes) AS oldVote
             FULL JOIN jsonb_populate_recordset(null::WarriorsVote,
-                ('[{"warriorId":"'|| warriorsId::text ||'", "vote":'|| warriorVote ||'}]')::JSONB
+                ('[{"warriorId":"'|| warriorsId::TEXT ||'", "vote":"'|| warriorVote ||'"}]')::JSONB
             ) AS newVote
             ON newVote."warriorId" = oldVote."warriorId"
         ) data
