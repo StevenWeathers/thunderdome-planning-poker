@@ -11,6 +11,7 @@
     import Register from './pages/Register.svelte'
     import Login from './pages/Login.svelte'
     import ResetPassword from './pages/ResetPassword.svelte'
+    import VerifyAccount from './pages/VerifyAccount.svelte'
     import WarriorProfile from './pages/WarriorProfile.svelte'
     import Admin from './pages/Admin.svelte'
     import { warrior } from './stores.js'
@@ -52,6 +53,12 @@
         .on('/reset-password/:resetId', params => {
             currentPage = {
                 route: ResetPassword,
+                params,
+            }
+        })
+        .on('/verify-account/:verifyId', params => {
+            currentPage = {
+                route: VerifyAccount,
                 params,
             }
         })

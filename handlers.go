@@ -155,7 +155,7 @@ func EnlistWarriorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newWarrior, err := CreateWarriorCorporal(WarriorName, WarriorEmail, WarriorPassword)
+	newWarrior, VerifyID, err := CreateWarriorCorporal(WarriorName, WarriorEmail, WarriorPassword)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -180,7 +180,7 @@ func EnlistWarriorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SendWelcomeEmail(WarriorName, WarriorEmail)
+	SendWelcomeEmail(WarriorName, WarriorEmail, VerifyID)
 
 	RespondWithJSON(w, http.StatusOK, newWarrior)
 }
@@ -340,4 +340,22 @@ func GetAppStatsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	RespondWithJSON(w, http.StatusOK, AppStats)
+}
+
+// VerifyAccountHandler attempts to verify a warriors account
+func VerifyAccountHandler(w http.ResponseWriter, r *http.Request) {
+	body, _ := ioutil.ReadAll(r.Body) // check for errors
+
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal) // check for errors
+	VerifyID := keyVal["verifyId"]
+
+	verifyErr := VerifyWarriorAccount(VerifyID)
+	if verifyErr != nil {
+		log.Println("error attempting to verify warrior account : " + verifyErr.Error() + "\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	return
 }

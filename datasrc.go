@@ -655,28 +655,29 @@ func CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
 }
 
 // CreateWarriorCorporal adds a new warrior corporal (registered) to the db
-func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassword string) (*Warrior, error) {
+func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassword string) (NewWarrior *Warrior, VerifyID string, RegisterErr error) {
 	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
 	if hashErr != nil {
-		return nil, hashErr
+		return nil, "", hashErr
 	}
 
 	var WarriorID string
+	var verifyID string
 	WarriorRank := "CORPORAL"
 
 	e := db.QueryRow(
-		`INSERT INTO warriors (name, email, password, rank) VALUES ($1, $2, $3, $4) RETURNING id`,
+		`SELECT warriorId, verifyId FROM register_warrior($1, $2, $3, $4);`,
 		WarriorName,
 		WarriorEmail,
 		hashedPassword,
 		WarriorRank,
-	).Scan(&WarriorID)
+	).Scan(&WarriorID, &verifyID)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("a warrior with that email already exists")
+		return nil, "", errors.New("a warrior with that email already exists")
 	}
 
-	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank}, nil
+	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank}, verifyID, nil
 }
 
 // UpdateWarriorProfile attempts to update the warriors profile
@@ -699,24 +700,11 @@ func WarriorResetRequest(WarriorEmail string) (resetID string, warriorName strin
 	var WarriorID sql.NullString
 	var WarriorName sql.NullString
 
-	warErr := db.QueryRow(`
-		SELECT w.id, w.name FROM warriors w WHERE w.email = $1;
+	e := db.QueryRow(`
+		SELECT resetId, warriorId, warriorName FROM insert_warrior_reset($1);
 		`,
 		WarriorEmail,
-	).Scan(&WarriorID, &WarriorName)
-	if warErr != nil {
-		log.Println("Unable to get warrior for reset email: ", warErr)
-		// we don't want to alert the user that the email isn't valid
-		return "", "", nil
-	}
-
-	e := db.QueryRow(`
-		INSERT INTO warrior_reset (warrior_id)
-		VALUES ($1)
-		RETURNING reset_id;
-		`,
-		WarriorID.String,
-	).Scan(&ResetID)
+	).Scan(&ResetID, &WarriorID, &WarriorName)
 	if e != nil {
 		log.Println("Unable to reset warrior: ", e)
 		// we don't want to alert the user that the email isn't valid
@@ -756,6 +744,16 @@ func WarriorResetPassword(ResetID string, WarriorPassword string) (warriorName s
 	}
 
 	return WarriorName.String, WarriorEmail.String, nil
+}
+
+// VerifyWarriorAccount attempts to verify a warriors account email
+func VerifyWarriorAccount(VerifyID string) error {
+	if _, err := db.Exec(
+		`call verify_warrior_account($1)`, VerifyID); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 /*

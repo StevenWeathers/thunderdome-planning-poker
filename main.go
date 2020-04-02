@@ -55,6 +55,7 @@ func main() {
 	router.HandleFunc("/api/auth/logout", LogoutHandler).Methods("POST")
 	router.HandleFunc("/api/auth/forgot-password", ForgotPasswordHandler).Methods("POST")
 	router.HandleFunc("/api/auth/reset-password", ResetPasswordHandler).Methods("POST")
+	router.HandleFunc("/api/auth/verify", VerifyAccountHandler).Methods("POST")
 	router.HandleFunc("/api/warrior", RecruitWarriorHandler).Methods("POST")
 	router.HandleFunc("/api/enlist", EnlistWarriorHandler).Methods("POST")
 	router.HandleFunc("/api/warrior/{id}", WarriorProfileHandler).Methods("GET")

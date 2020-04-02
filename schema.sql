@@ -42,6 +42,13 @@ CREATE TABLE IF NOT EXISTS warrior_reset (
     expire_date TIMESTAMP DEFAULT NOW() + INTERVAL '1 hour'
 );
 
+CREATE TABLE IF NOT EXISTS warrior_verify (
+    verify_id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    warrior_id UUID REFERENCES warriors NOT NULL,
+    created_date TIMESTAMP DEFAULT NOW(),
+    expire_date TIMESTAMP DEFAULT NOW() + INTERVAL '24 hour'
+);
+
 --
 -- Table Alterations
 --
@@ -61,6 +68,7 @@ ALTER TABLE warriors ADD COLUMN IF NOT EXISTS rank VARCHAR(128) DEFAULT 'PRIVATE
 ALTER TABLE battles ALTER COLUMN id SET DEFAULT uuid_generate_v4();
 ALTER TABLE plans ALTER COLUMN id SET DEFAULT uuid_generate_v4();
 ALTER TABLE warriors ALTER COLUMN id SET DEFAULT uuid_generate_v4();
+ALTER TABLE warriors ADD COLUMN IF NOT EXISTS verified BOOL DEFAULT false;
 
 --
 -- Types (used in Stored Procedures)
@@ -252,6 +260,31 @@ BEGIN
 END;
 $$;
 
+-- Verify a warrior account email
+CREATE OR REPLACE PROCEDURE verify_warrior_account(verifyId UUID)
+LANGUAGE plpgsql AS $$
+DECLARE matchedWarriorId UUID;
+BEGIN
+	matchedWarriorId := (
+        SELECT w.id
+        FROM warrior_verify wv
+        LEFT JOIN warriors w ON w.id = wv.warrior_id
+        WHERE wv.verify_id = verifyId AND NOW() < wv.expire_date
+    );
+
+    IF matchedWarriorId IS NULL THEN
+        -- attempt delete incase verify record expired
+        DELETE FROM warrior_verify WHERE verify_id = verifyId;
+        RAISE 'Valid Verify ID not found';
+    END IF;
+
+    UPDATE warriors SET verified = 'TRUE' WHERE id = matchedWarriorId;
+    DELETE FROM warrior_verify WHERE verify_id = verifyId;
+
+    COMMIT;
+END;
+$$;
+
 -- Promote Warrior to GENERAL Rank (ADMIN) by ID --
 CREATE OR REPLACE PROCEDURE promote_warrior(warriorId UUID)
 LANGUAGE plpgsql AS $$
@@ -289,5 +322,40 @@ BEGIN
     SELECT COUNT(*) INTO registered_warrior_count FROM warriors WHERE email IS NOT NULL;
     SELECT COUNT(*) INTO battle_count FROM battles;
     SELECT COUNT(*) INTO plan_count FROM plans;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Insert a new warrior password reset
+DROP FUNCTION IF EXISTS insert_warrior_reset(VARCHAR);
+CREATE FUNCTION insert_warrior_reset(
+    IN warriorEmail VARCHAR(320),
+    OUT resetId UUID,
+    OUT warriorId UUID,
+    OUT warriorName VARCHAR(64)
+)
+AS $$ 
+BEGIN
+    SELECT id, name INTO warriorId, warriorName FROM warriors WHERE email = warriorEmail;
+    INSERT INTO warrior_reset (warrior_id) VALUES (warriorId) RETURNING reset_id INTO resetId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Register a new warrior
+DROP FUNCTION IF EXISTS register_warrior(VARCHAR, VARCHAR, TEXT, VARCHAR);
+CREATE FUNCTION register_warrior(
+    IN warriorName VARCHAR(64),
+    IN warriorEmail VARCHAR(320),
+    IN hashedPassword TEXT,
+    IN warriorRank VARCHAR(128),
+    OUT warriorId UUID,
+    OUT verifyId UUID
+)
+AS $$
+BEGIN
+    INSERT INTO warriors (name, email, password, rank)
+    VALUES (warriorName, warriorEmail, hashedPassword, warriorRank)
+    RETURNING id INTO warriorId;
+
+    INSERT INTO warrior_verify (warrior_id) VALUES (warriorId) RETURNING verify_id INTO verifyId;
 END;
 $$ LANGUAGE plpgsql;

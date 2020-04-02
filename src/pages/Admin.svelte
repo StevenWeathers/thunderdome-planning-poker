@@ -54,19 +54,19 @@
                 class="flex flex-wrap items-center text-center pt-2 pb-2
                 md:pt-4 md:pb-4 bg-white shadow-lg rounded text-xl">
                 <div class="w-1/4">
-                    <div class="mb-2">Total Unregistered Users:</div>
+                    <div class="mb-2 font-bold">Unregistered Warriors</div>
                     {appStats.unregisteredWarriorCount}
                 </div>
                 <div class="w-1/4">
-                    <div class="mb-2">Total Registered Users:</div>
+                    <div class="mb-2 font-bold">Registered Warriors</div>
                     {appStats.registeredWarriorCount}
                 </div>
                 <div class="w-1/4">
-                    <div class="mb-2">Total Battles:</div>
+                    <div class="mb-2 font-bold">Battles</div>
                     {appStats.battleCount}
                 </div>
                 <div class="w-1/4">
-                    <div class="mb-2">Total Plans:</div>
+                    <div class="mb-2 font-bold">Plans</div>
                     {appStats.planCount}
                 </div>
             </div>

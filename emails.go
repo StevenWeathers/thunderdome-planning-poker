@@ -70,8 +70,8 @@ func generateEmailBody(Body hermes.Body) (emailBody string, generateErr error) {
 	hms := hermes.Hermes{
 		Product: hermes.Product{
 			Name:      "Thunderdome",
-			Link:      "https://thunderdome.dev/",
-			Logo:      "https://thunderdome.dev/img/thunderdome-email-logo.png",
+			Link:      "https://" + AppDomain + "/",
+			Logo:      "https://" + AppDomain + "/img/thunderdome-email-logo.png",
 			Copyright: "Copyright © " + year + " Thunderdome. All rights reserved.",
 		},
 	}
@@ -163,7 +163,7 @@ func sendEmail(WarriorName string, WarriorEmail string, Subject string, Body str
 }
 
 // SendWelcomeEmail sends the welcome email to new registered user
-func SendWelcomeEmail(WarriorName string, WarriorEmail string) error {
+func SendWelcomeEmail(WarriorName string, WarriorEmail string, VerifyID string) error {
 	emailBody, err := generateEmailBody(
 		hermes.Body{
 			Name: WarriorName,
@@ -171,6 +171,14 @@ func SendWelcomeEmail(WarriorName string, WarriorEmail string) error {
 				"Welcome to the Thunderdome! Bring your own mouthguard.",
 			},
 			Actions: []hermes.Action{
+				{
+					Instructions: "Please validate your email, the following link will expire in 24 hours.",
+					Button: hermes.Button{
+						Color: "#22BC66",
+						Text:  "Verify Account",
+						Link:  "https://" + AppDomain + "/verify-account/" + VerifyID,
+					},
+				},
 				{
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
@@ -213,7 +221,7 @@ func SendForgotPasswordEmail(WarriorName string, WarriorEmail string, ResetID st
 					Instructions: "Reset your password now, the following link will expire within an hour of the original request.",
 					Button: hermes.Button{
 						Text: "Reset Password",
-						Link: "https://thunderdome.dev/reset-password/" + ResetID,
+						Link: "https://" + AppDomain + "/reset-password/" + ResetID,
 					},
 				},
 				{
