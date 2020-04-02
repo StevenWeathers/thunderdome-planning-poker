@@ -251,3 +251,43 @@ BEGIN
     COMMIT;
 END;
 $$;
+
+-- Promote Warrior to GENERAL Rank (ADMIN) by ID --
+CREATE OR REPLACE PROCEDURE promote_warrior(warriorId UUID)
+LANGUAGE plpgsql AS $$
+BEGIN
+    UPDATE warriors SET rank = 'GENERAL' WHERE id = warriorId;
+
+    COMMIT;
+END;
+$$;
+
+-- Promote Warrior to GENERAL Rank (ADMIN) by Email --
+CREATE OR REPLACE PROCEDURE promote_warrior_by_email(warriorEmail VARCHAR(320))
+LANGUAGE plpgsql AS $$
+BEGIN
+    UPDATE warriors SET rank = 'GENERAL' WHERE email = warriorEmail;
+
+    COMMIT;
+END;
+$$;
+
+--
+-- Stored Functions
+--
+
+-- Get Application Stats e.g. total user and battle counts
+DROP FUNCTION IF EXISTS get_app_stats();
+CREATE FUNCTION get_app_stats(
+    OUT unregistered_warrior_count INTEGER,
+    OUT registered_warrior_count INTEGER,
+    OUT battle_count INTEGER,
+    OUT plan_count INTEGER
+) AS $$
+BEGIN
+    SELECT COUNT(*) INTO unregistered_warrior_count FROM warriors WHERE email IS NULL;
+    SELECT COUNT(*) INTO registered_warrior_count FROM warriors WHERE email IS NOT NULL;
+    SELECT COUNT(*) INTO battle_count FROM battles;
+    SELECT COUNT(*) INTO plan_count FROM plans;
+END;
+$$ LANGUAGE plpgsql;

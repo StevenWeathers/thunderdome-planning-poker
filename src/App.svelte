@@ -12,6 +12,7 @@
     import Login from './pages/Login.svelte'
     import ResetPassword from './pages/ResetPassword.svelte'
     import WarriorProfile from './pages/WarriorProfile.svelte'
+    import Admin from './pages/Admin.svelte'
     import { warrior } from './stores.js'
 
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
@@ -70,6 +71,12 @@
             currentPage = {
                 route: Battle,
                 params,
+            }
+        })
+        .on('/admin', () => {
+            currentPage = {
+                route: Admin,
+                params: {},
             }
         })
         .listen()
@@ -137,6 +144,11 @@
                 </HollowButton>
                 <HollowButton href="/login">Login</HollowButton>
             {:else}
+                {#if activeWarrior.rank === "GENERAL"}
+                    <HollowButton color="purple" href="/admin" additionalClasses="mr-2">
+                        Admin
+                    </HollowButton>
+                {/if}
                 <HollowButton color="red" onClick="{logoutWarrior}">
                     Logout
                 </HollowButton>

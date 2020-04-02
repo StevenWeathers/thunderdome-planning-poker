@@ -98,6 +98,16 @@ func SetupDB() {
 		`call deactivate_all_warriors();`); err != nil {
 		log.Println(err)
 	}
+
+	// on server start if admin email is specified set that warrior to GENERAL rank
+	if AdminEmail != "" {
+		if _, err := db.Exec(
+			`call promote_warrior_by_email($1);`,
+			AdminEmail,
+		); err != nil {
+			log.Println(err)
+		}
+	}
 }
 
 //CreateBattle adds a new battle to the db
@@ -123,7 +133,7 @@ func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []strin
 	).Scan(&b.BattleID)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("Error Creating Battle")
+		return nil, errors.New("error creating battle")
 	}
 
 	for _, plan := range Plans {
@@ -173,7 +183,7 @@ func GetBattle(BattleID string) (*Battle, error) {
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("Not found")
+		return nil, errors.New("not found")
 	}
 
 	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
@@ -196,7 +206,7 @@ func GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 		GROUP BY b.id ORDER BY b.created_date DESC
 	`, WarriorID)
 	if battlesErr != nil {
-		return nil, errors.New("Not found")
+		return nil, errors.New("not found")
 	}
 
 	defer battleRows.Close()
@@ -241,11 +251,11 @@ func ConfirmLeader(BattleID string, warriorID string) error {
 	e := db.QueryRow("SELECT leader_id FROM battles WHERE id = $1", BattleID).Scan(&leaderID)
 	if e != nil {
 		log.Println(e)
-		return errors.New("Battle Not found")
+		return errors.New("battle not found")
 	}
 
 	if leaderID != warriorID {
-		return errors.New("Not Leader")
+		return errors.New("not leader")
 	}
 
 	return nil
@@ -273,11 +283,11 @@ func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("Warrior Not found")
+		return nil, errors.New("warrior not found")
 	}
 
 	if active {
-		return nil, errors.New("Warrior Already Active in Battle")
+		return nil, errors.New("warrior already active in battle")
 	}
 
 	return &w, nil
@@ -394,7 +404,7 @@ func GetPlans(BattleID string) []*Plan {
 func CreatePlan(BattleID string, warriorID string, PlanName string) ([]*Plan, error) {
 	err := ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return nil, errors.New("Incorrect permissions")
+		return nil, errors.New("incorrect permissions")
 	}
 
 	// @TODO - refactor stored procedure to replace need for app generated uuid
@@ -416,7 +426,7 @@ func CreatePlan(BattleID string, warriorID string, PlanName string) ([]*Plan, er
 func ActivatePlanVoting(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
 	err := ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return nil, errors.New("Incorrect permissions")
+		return nil, errors.New("incorrect permissions")
 	}
 
 	if _, err := db.Exec(
@@ -458,7 +468,7 @@ func RetractVote(BattleID string, WarriorID string, PlanID string) []*Plan {
 func EndPlanVoting(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
 	err := ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return nil, errors.New("Incorrect permissions")
+		return nil, errors.New("incorrect permissions")
 	}
 
 	if _, err := db.Exec(
@@ -475,7 +485,7 @@ func EndPlanVoting(BattleID string, warriorID string, PlanID string) ([]*Plan, e
 func SkipPlan(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
 	err := ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return nil, errors.New("Incorrect permissions")
+		return nil, errors.New("incorrect permissions")
 	}
 
 	if _, err := db.Exec(
@@ -492,7 +502,7 @@ func SkipPlan(BattleID string, warriorID string, PlanID string) ([]*Plan, error)
 func RevisePlanName(BattleID string, warriorID string, PlanID string, PlanName string) ([]*Plan, error) {
 	err := ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return nil, errors.New("Incorrect permissions")
+		return nil, errors.New("incorrect permissions")
 	}
 
 	// set PlanID to true
@@ -510,7 +520,7 @@ func RevisePlanName(BattleID string, warriorID string, PlanID string, PlanName s
 func BurnPlan(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
 	err := ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return nil, errors.New("Incorrect permissions")
+		return nil, errors.New("incorrect permissions")
 	}
 
 	if _, err := db.Exec(
@@ -527,7 +537,7 @@ func BurnPlan(BattleID string, warriorID string, PlanID string) ([]*Plan, error)
 func FinalizePlan(BattleID string, warriorID string, PlanID string, PlanPoints string) ([]*Plan, error) {
 	err := ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return nil, errors.New("Incorrect permissions")
+		return nil, errors.New("incorrect permissions")
 	}
 
 	if _, err := db.Exec(
@@ -544,7 +554,7 @@ func FinalizePlan(BattleID string, warriorID string, PlanID string, PlanPoints s
 func SetBattleLeader(BattleID string, warriorID string, LeaderID string) (*Battle, error) {
 	err := ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return nil, errors.New("Incorrect permissions")
+		return nil, errors.New("incorrect permissions")
 	}
 
 	// set battle VotingLocked
@@ -555,7 +565,7 @@ func SetBattleLeader(BattleID string, warriorID string, LeaderID string) (*Battl
 
 	battle, err := GetBattle(BattleID)
 	if err != nil {
-		return nil, errors.New("Unable to promote leader")
+		return nil, errors.New("unable to promote leader")
 	}
 
 	return battle, nil
@@ -565,7 +575,7 @@ func SetBattleLeader(BattleID string, warriorID string, LeaderID string) (*Battl
 func DeleteBattle(BattleID string, warriorID string) error {
 	err := ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return errors.New("Incorrect permissions")
+		return errors.New("incorrect permissions")
 	}
 
 	if _, err := db.Exec(
@@ -597,7 +607,7 @@ func GetWarrior(WarriorID string) (*Warrior, error) {
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("Warrior Not found")
+		return nil, errors.New("warrior not found")
 	}
 
 	w.WarriorEmail = warriorEmail.String
@@ -622,11 +632,11 @@ func AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) 
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("Warrior Not found")
+		return nil, errors.New("warrior not found")
 	}
 
 	if ComparePasswords(passHash, []byte(WarriorPassword)) == false {
-		return nil, errors.New("Password invalid")
+		return nil, errors.New("password invalid")
 	}
 
 	return &w, nil
@@ -638,7 +648,7 @@ func CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
 	e := db.QueryRow(`INSERT INTO warriors (name) VALUES ($1) RETURNING id`, WarriorName).Scan(&WarriorID)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("Unable to create new warrior")
+		return nil, errors.New("unable to create new warrior")
 	}
 
 	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName}, nil
@@ -663,7 +673,7 @@ func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassw
 	).Scan(&WarriorID)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("a Warrior with that email already exists")
+		return nil, errors.New("a warrior with that email already exists")
 	}
 
 	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank}, nil
@@ -677,7 +687,7 @@ func UpdateWarriorProfile(WarriorID string, WarriorName string) error {
 		WarriorName,
 	); err != nil {
 		log.Println(err)
-		return errors.New("Error attempting to update warriors profile")
+		return errors.New("error attempting to update warriors profile")
 	}
 
 	return nil
@@ -746,4 +756,81 @@ func WarriorResetPassword(ResetID string, WarriorPassword string) (warriorName s
 	}
 
 	return WarriorName.String, WarriorEmail.String, nil
+}
+
+/*
+ Admin
+*/
+
+// ConfirmAdmin confirms whether the warrior is infact a GENERAL (ADMIN)
+func ConfirmAdmin(AdminID string) error {
+	var warriorRank string
+	e := db.QueryRow("SELECT coalesce(rank, '') FROM warriors WHERE id = $1;", AdminID).Scan(&warriorRank)
+	if e != nil {
+		log.Println(e)
+		return errors.New("could not find warriors rank")
+	}
+
+	if warriorRank != "GENERAL" {
+		return errors.New(("not admin"))
+	}
+
+	return nil
+}
+
+// ApplicationStats includes warrior, battle, and plan counts
+type ApplicationStats struct {
+	RegisteredCount   int `json:"registeredWarriorCount"`
+	UnregisteredCount int `json:"unregisteredWarriorCount"`
+	BattleCount       int `json:"battleCount"`
+	PlanCount         int `json:"planCount"`
+}
+
+// GetAppStats gets counts of warriors (registered and unregistered), battles, and plans
+func GetAppStats(AdminID string) (*ApplicationStats, error) {
+	var Appstats ApplicationStats
+	err := ConfirmAdmin(AdminID)
+	if err != nil {
+		log.Println("Warrior isn't admin")
+		return nil, errors.New("incorrect permissions")
+	}
+
+	statsErr := db.QueryRow(`
+		SELECT
+			unregistered_warrior_count,
+			registered_warrior_count,
+			battle_count,
+			plan_count
+		FROM get_app_stats();
+		`,
+	).Scan(
+		&Appstats.UnregisteredCount,
+		&Appstats.RegisteredCount,
+		&Appstats.BattleCount,
+		&Appstats.PlanCount,
+	)
+	if statsErr != nil {
+		log.Println("Unable to get application stats: ", statsErr)
+		return nil, statsErr
+	}
+
+	return &Appstats, nil
+}
+
+// PromoteWarrior promotes a warrior to GENERAL (ADMIN) rank
+func PromoteWarrior(AdminID string, WarriorID string) error {
+	err := ConfirmAdmin(AdminID)
+	if err != nil {
+		return errors.New("incorrect permissions")
+	}
+
+	if _, err := db.Exec(
+		`call promote_warrior($1);`,
+		WarriorID,
+	); err != nil {
+		log.Println(err)
+		return errors.New("error attempting to promote warrior to GENERAL")
+	}
+
+	return nil
 }

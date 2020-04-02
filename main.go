@@ -26,14 +26,20 @@ var SecureCookieFlag bool
 // Sc is the secure cookie instance with secret hash
 var Sc = securecookie.New([]byte("some-secret"), nil)
 
-func main() {
-	SetupDB() // Sets up DB Connection, and if necessary Tables
+// AdminEmail is used to promote a warrior to GENERAL on app startup
+// the warrior should already be registered for this to work
+var AdminEmail string
 
+func main() {
 	var listenPort = fmt.Sprintf(":%s", GetEnv("PORT", "8080"))
+
 	AppDomain = GetEnv("APP_DOMAIN", "thunderdome.dev")
+	AdminEmail = GetEnv("ADMIN_EMAIL", "")
 	SecureCookieHashkey = []byte(GetEnv("COOKIE_HASHKEY", "strongest-avenger"))
 	SecureCookieFlag = GetBoolEnv("COOKIE_SECURE", true)
 	Sc = securecookie.New(SecureCookieHashkey, nil)
+
+	SetupDB() // Sets up DB Connection, and if necessary Tables
 
 	GetMailserverConfig()
 
@@ -56,6 +62,7 @@ func main() {
 	router.HandleFunc("/api/battle", CreateBattleHandler).Methods("POST")
 	router.HandleFunc("/api/battle/{id}", GetBattleHandler)
 	router.HandleFunc("/api/battles", GetBattlesHandler)
+	router.HandleFunc("/api/admin/stats", GetAppStatsHandler)
 	router.HandleFunc("/api/arena/{id}", serveWs)
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.URL.Path = "/"

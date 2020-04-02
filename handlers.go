@@ -235,14 +235,14 @@ func ForgotPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(body, &keyVal) // check for errors
 	WarriorEmail := keyVal["warriorEmail"]
 
-	ResetId, WarriorName, resetErr := WarriorResetRequest(WarriorEmail)
+	ResetID, WarriorName, resetErr := WarriorResetRequest(WarriorEmail)
 	if resetErr != nil {
 		log.Println("error attempting to send warrior reset : " + resetErr.Error() + "\n")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	SendForgotPasswordEmail(WarriorName, WarriorEmail, ResetId)
+	SendForgotPasswordEmail(WarriorName, WarriorEmail, ResetID)
 
 	w.WriteHeader(http.StatusOK)
 	return
@@ -322,4 +322,22 @@ func WarriorUpdateProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	return
+}
+
+// GetAppStatsHandler gets the applications stats
+func GetAppStatsHandler(w http.ResponseWriter, r *http.Request) {
+	warriorID, cookieErr := ValidateWarriorCookie(w, r)
+	if cookieErr != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	AppStats, err := GetAppStats(warriorID)
+
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	RespondWithJSON(w, http.StatusOK, AppStats)
 }
