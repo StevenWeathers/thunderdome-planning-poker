@@ -29,6 +29,7 @@ clean:
 	rm -f $(BINARY_WINDOWS)
 	rm -f *-packr.go
 	rm -rf dist
+	rm -rf release
 	rm -rf packrd
 
 format:
