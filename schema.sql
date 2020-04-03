@@ -260,6 +260,16 @@ BEGIN
 END;
 $$;
 
+-- Update Warrior Password --
+CREATE OR REPLACE PROCEDURE update_warrior_password(warriorId UUID, warriorPassword TEXT)
+LANGUAGE plpgsql AS $$
+BEGIN
+    UPDATE warriors SET password = warriorPassword WHERE id = warriorId;
+
+    COMMIT;
+END;
+$$;
+
 -- Verify a warrior account email
 CREATE OR REPLACE PROCEDURE verify_warrior_account(verifyId UUID)
 LANGUAGE plpgsql AS $$

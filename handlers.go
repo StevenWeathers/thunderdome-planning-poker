@@ -278,6 +278,40 @@ func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// UpdatePasswordHandler attempts to update a warriors password
+func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
+	body, _ := ioutil.ReadAll(r.Body) // check for errors
+	keyVal := make(map[string]string)
+	json.Unmarshal(body, &keyVal) // check for errors
+
+	warriorID, cookieErr := ValidateWarriorCookie(w, r)
+	if cookieErr != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	WarriorPassword, passwordErr := ValidateWarriorPassword(
+		keyVal["warriorPassword1"],
+		keyVal["warriorPassword2"],
+	)
+
+	if passwordErr != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	WarriorName, WarriorEmail, updateErr := WarriorUpdatePassword(warriorID, WarriorPassword)
+	if updateErr != nil {
+		log.Println("error attempting to update warrior password : " + updateErr.Error() + "\n")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	SendPasswordUpdateEmail(WarriorName, WarriorEmail)
+
+	return
+}
+
 // WarriorProfileHandler returns the warriors profile if it matches their session
 func WarriorProfileHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

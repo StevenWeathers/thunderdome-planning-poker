@@ -273,7 +273,7 @@ func SendPasswordResetEmail(WarriorName string, WarriorEmail string) error {
 		},
 	)
 	if err != nil {
-		log.Println("Error Generating Forgot Password Email HTML: ", err)
+		log.Println("Error Generating Reset Password Email HTML: ", err)
 		return err
 	}
 
@@ -284,7 +284,45 @@ func SendPasswordResetEmail(WarriorName string, WarriorEmail string) error {
 		emailBody,
 	)
 	if sendErr != nil {
-		log.Println("Error sending Forgot Password Email: ", sendErr)
+		log.Println("Error sending Reset Password Email: ", sendErr)
+		return sendErr
+	}
+
+	return nil
+}
+
+// SendPasswordUpdateEmail Sends an Update Password confirmation email to warrior
+func SendPasswordUpdateEmail(WarriorName string, WarriorEmail string) error {
+	emailBody, err := generateEmailBody(
+		hermes.Body{
+			Name: WarriorName,
+			Intros: []string{
+				"Your Thunderdome password was succesfully been updated.",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		log.Println("Error Generating Update Password Email HTML: ", err)
+		return err
+	}
+
+	sendErr := sendEmail(
+		WarriorName,
+		WarriorEmail,
+		"Your Thunderdome password was succesfully updated.",
+		emailBody,
+	)
+	if sendErr != nil {
+		log.Println("Error sending Update Password Email: ", sendErr)
 		return sendErr
 	}
 

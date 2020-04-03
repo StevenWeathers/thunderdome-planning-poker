@@ -2,16 +2,11 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
+    import { validateName, validatePasswords } from '../validationUtils.js'
 
     export let router
     export let notifications
     export let battleId
-
-    const nameMin = 1
-    const nameMax = 64
-    const passMin = 6
-    const passMax = 72
-    const emailMax = 320
 
     let warriorName = ''
     let warriorEmail = ''
@@ -25,14 +20,13 @@
         const body = {
             warriorName,
         }
+        const validName = validateName(warriorName)
 
         let noFormErrors = true
 
-        if (warriorName.length < nameMin || warriorName.length > nameMax) {
+        if (!validName.valid) {
             noFormErrors = false
-            notifications.danger(
-                `Name must be between ${nameMin} and ${nameMax} characters.`,
-            )
+            notifications.danger(validName.error, 1500)
         }
 
         if (noFormErrors) {
@@ -79,28 +73,22 @@
             warriorPassword2,
         }
 
+        const validName = validateName(warriorName)
+        const validPasswords = validatePasswords(
+            warriorPassword1,
+            warriorPassword2,
+        )
+
         let noFormErrors = true
 
-        if (warriorName.length < nameMin || warriorName.length > nameMax) {
+        if (!validName.valid) {
             noFormErrors = false
-            notifications.danger(
-                `Name must be between ${nameMin} and ${nameMax} characters.`,
-            )
+            notifications.danger(validName.error, 1500)
         }
 
-        if (
-            warriorPassword1.length < passMin ||
-            warriorPassword1.length > passMax
-        ) {
+        if (!validPasswords.valid) {
             noFormErrors = false
-            notifications.danger(
-                `Password must be between ${passMin} and ${passMax} characters.`,
-            )
-        }
-
-        if (warriorPassword1 !== warriorPassword2) {
-            noFormErrors = false
-            notifications.danger(`Password and Confirm Password do not match.`)
+            notifications.danger(validPasswords.error, 1500)
         }
 
         if (noFormErrors) {

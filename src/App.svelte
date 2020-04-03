@@ -151,8 +151,11 @@
                 </HollowButton>
                 <HollowButton href="/login">Login</HollowButton>
             {:else}
-                {#if activeWarrior.rank === "GENERAL"}
-                    <HollowButton color="purple" href="/admin" additionalClasses="mr-2">
+                {#if activeWarrior.rank === 'GENERAL'}
+                    <HollowButton
+                        color="purple"
+                        href="/admin"
+                        additionalClasses="mr-2">
                         Admin
                     </HollowButton>
                 {/if}

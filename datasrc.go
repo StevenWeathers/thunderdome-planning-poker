@@ -746,6 +746,37 @@ func WarriorResetPassword(ResetID string, WarriorPassword string) (warriorName s
 	return WarriorName.String, WarriorEmail.String, nil
 }
 
+// WarriorUpdatePassword attempts to update a warriors password
+func WarriorUpdatePassword(WarriorID string, WarriorPassword string) (warriorName string, warriorEmail string, resetErr error) {
+	var WarriorName sql.NullString
+	var WarriorEmail sql.NullString
+
+	warErr := db.QueryRow(`
+		SELECT
+			w.name, w.email
+		FROM warriors w
+		WHERE w.id = $1;
+		`,
+		WarriorID,
+	).Scan(&WarriorName, &WarriorEmail)
+	if warErr != nil {
+		log.Println("Unable to get warrior for password update: ", warErr)
+		return "", "", warErr
+	}
+
+	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
+	if hashErr != nil {
+		return "", "", hashErr
+	}
+
+	if _, err := db.Exec(
+		`call update_warrior_password($1, $2)`, WarriorID, hashedPassword); err != nil {
+		return "", "", err
+	}
+
+	return WarriorName.String, WarriorEmail.String, nil
+}
+
 // VerifyWarriorAccount attempts to verify a warriors account email
 func VerifyWarriorAccount(VerifyID string) error {
 	if _, err := db.Exec(

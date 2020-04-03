@@ -11,7 +11,7 @@
         unregisteredWarriorCount: 0,
         registeredWarriorCount: 0,
         battleCount: 0,
-        planCount: 0
+        planCount: 0,
     }
 
     fetch('/api/admin/stats', {
@@ -51,8 +51,8 @@
     <div class="flex justify-center">
         <div class="w-full">
             <div
-                class="flex flex-wrap items-center text-center pt-2 pb-2
-                md:pt-4 md:pb-4 bg-white shadow-lg rounded text-xl">
+                class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
+                md:pb-4 bg-white shadow-lg rounded text-xl">
                 <div class="w-1/4">
                     <div class="mb-2 font-bold">Unregistered Warriors</div>
                     {appStats.unregisteredWarriorCount}

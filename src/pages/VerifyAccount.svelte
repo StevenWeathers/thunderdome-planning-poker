@@ -15,7 +15,7 @@
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            verifyId
+            verifyId,
         }),
     })
         .then(function(response) {
@@ -36,14 +36,23 @@
     <div class="flex justify-center">
         <div class="w-full md:w-1/2 xl:w-1/3 py-4">
             {#if accountVerified}
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <div
+                    class="bg-green-100 border border-green-400 text-green-700
+                    px-4 py-3 rounded relative"
+                    role="alert">
                     <strong class="font-bold">Account Verified</strong>
                     <p>Thanks for verifying your email.</p>
                 </div>
             {:else if verficationError}
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <div
+                    class="bg-red-100 border border-red-400 text-red-700 px-4
+                    py-3 rounded relative"
+                    role="alert">
                     <strong class="font-bold">Verification Failed</strong>
-                    <p>Something when wrong verifying your account, perhaps this link expired or was already used.</p>
+                    <p>
+                        Something when wrong verifying your account, perhaps
+                        this link expired or was already used.
+                    </p>
                 </div>
             {:else}
                 <div class="text-center">
