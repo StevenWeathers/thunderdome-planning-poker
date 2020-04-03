@@ -1,7 +1,0 @@
-/* Import Tailwind as Global Utils */
-
-@import 'tailwindcss/base';
-
-@import 'tailwindcss/components';
-
-@import 'tailwindcss/utilities';
