@@ -143,6 +143,8 @@ func EnlistWarriorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ActiveWarriorID, _ := ValidateWarriorCookie(w, r)
+
 	WarriorName, WarriorEmail, WarriorPassword, accountErr := ValidateWarriorAccount(
 		keyVal["warriorName"],
 		keyVal["warriorEmail"],
@@ -155,7 +157,7 @@ func EnlistWarriorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newWarrior, VerifyID, err := CreateWarriorCorporal(WarriorName, WarriorEmail, WarriorPassword)
+	newWarrior, VerifyID, err := CreateWarriorCorporal(WarriorName, WarriorEmail, WarriorPassword, ActiveWarriorID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

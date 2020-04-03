@@ -88,7 +88,7 @@ CREATE TYPE WarriorsVote AS
 CREATE OR REPLACE PROCEDURE deactivate_all_warriors()
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE battles_warriors SET active = false WHERE active = true;
+    UPDATE battles_warriors SET active = false, last_active = NOW() WHERE active = true;
 END;
 $$;
 
@@ -253,7 +253,7 @@ BEGIN
         RAISE 'Valid Reset ID not found';
     END IF;
 
-    UPDATE warriors SET password = warriorPassword WHERE id = matchedWarriorId;
+    UPDATE warriors SET password = warriorPassword, last_active = NOW() WHERE id = matchedWarriorId;
     DELETE FROM warrior_reset WHERE reset_id = resetId;
 
     COMMIT;
@@ -264,7 +264,7 @@ $$;
 CREATE OR REPLACE PROCEDURE update_warrior_password(warriorId UUID, warriorPassword TEXT)
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE warriors SET password = warriorPassword WHERE id = warriorId;
+    UPDATE warriors SET password = warriorPassword, last_active = NOW() WHERE id = warriorId;
 
     COMMIT;
 END;
@@ -288,7 +288,7 @@ BEGIN
         RAISE 'Valid Verify ID not found';
     END IF;
 
-    UPDATE warriors SET verified = 'TRUE' WHERE id = matchedWarriorId;
+    UPDATE warriors SET verified = 'TRUE', last_active = NOW() WHERE id = matchedWarriorId;
     DELETE FROM warrior_verify WHERE verify_id = verifyId;
 
     COMMIT;
@@ -364,6 +364,33 @@ AS $$
 BEGIN
     INSERT INTO warriors (name, email, password, rank)
     VALUES (warriorName, warriorEmail, hashedPassword, warriorRank)
+    RETURNING id INTO warriorId;
+
+    INSERT INTO warrior_verify (warrior_id) VALUES (warriorId) RETURNING verify_id INTO verifyId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Register a new warrior from existing private
+DROP FUNCTION IF EXISTS register_existing_warrior(UUID, VARCHAR, VARCHAR, TEXT, VARCHAR);
+CREATE FUNCTION register_existing_warrior(
+    IN activeWarriorId UUID,
+    IN warriorName VARCHAR(64),
+    IN warriorEmail VARCHAR(320),
+    IN hashedPassword TEXT,
+    IN warriorRank VARCHAR(128),
+    OUT warriorId UUID,
+    OUT verifyId UUID
+)
+AS $$
+BEGIN
+    UPDATE warriors
+    SET
+         name = warriorName,
+         email = warriorEmail,
+         password = hashedPassword,
+         rank = warriorRank,
+         last_active = NOW()
+    WHERE id = activeWarriorId
     RETURNING id INTO warriorId;
 
     INSERT INTO warrior_verify (warrior_id) VALUES (warriorId) RETURNING verify_id INTO verifyId;

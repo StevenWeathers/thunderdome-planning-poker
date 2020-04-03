@@ -655,7 +655,7 @@ func CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
 }
 
 // CreateWarriorCorporal adds a new warrior corporal (registered) to the db
-func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassword string) (NewWarrior *Warrior, VerifyID string, RegisterErr error) {
+func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassword string, ActiveWarriorID string) (NewWarrior *Warrior, VerifyID string, RegisterErr error) {
 	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
 	if hashErr != nil {
 		return nil, "", hashErr
@@ -665,16 +665,31 @@ func CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassw
 	var verifyID string
 	WarriorRank := "CORPORAL"
 
-	e := db.QueryRow(
-		`SELECT warriorId, verifyId FROM register_warrior($1, $2, $3, $4);`,
-		WarriorName,
-		WarriorEmail,
-		hashedPassword,
-		WarriorRank,
-	).Scan(&WarriorID, &verifyID)
-	if e != nil {
-		log.Println(e)
-		return nil, "", errors.New("a warrior with that email already exists")
+	if ActiveWarriorID != "" {
+		e := db.QueryRow(
+			`SELECT warriorId, verifyId FROM register_existing_warrior($1, $2, $3, $4, $5);`,
+			ActiveWarriorID,
+			WarriorName,
+			WarriorEmail,
+			hashedPassword,
+			WarriorRank,
+		).Scan(&WarriorID, &verifyID)
+		if e != nil {
+			log.Println(e)
+			return nil, "", errors.New("a warrior with that email already exists")
+		}
+	} else {
+		e := db.QueryRow(
+			`SELECT warriorId, verifyId FROM register_warrior($1, $2, $3, $4);`,
+			WarriorName,
+			WarriorEmail,
+			hashedPassword,
+			WarriorRank,
+		).Scan(&WarriorID, &verifyID)
+		if e != nil {
+			log.Println(e)
+			return nil, "", errors.New("a warrior with that email already exists")
+		}
 	}
 
 	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank}, verifyID, nil

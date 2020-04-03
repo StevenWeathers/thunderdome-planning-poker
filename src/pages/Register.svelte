@@ -8,7 +8,7 @@
     export let notifications
     export let battleId
 
-    let warriorName = ''
+    let warriorName = $warrior.name || ''
     let warriorEmail = ''
     let warriorPassword1 = ''
     let warriorPassword2 = ''
@@ -137,7 +137,8 @@
     <div class="text-center px-2 mb-4">
         <h1 class="text-3xl md:text-4xl font-bold">Enlist to Battle</h1>
     </div>
-    <div class="flex flex-wrap">
+    <div class="flex flex-wrap justify-center">
+        {#if !$warrior.id}
         <div class="w-full md:w-1/2 px-4">
             <form
                 on:submit="{createWarriorPrivate}"
@@ -145,7 +146,7 @@
                 name="registerGuest">
                 <h2
                     class="font-bold text-xl md:text-2xl b-4 mb-2 md:mb-6
-                    md:leading-tight">
+                    md:leading-tight text-center">
                     Register as Guest
                 </h2>
 
@@ -177,6 +178,7 @@
                 </div>
             </form>
         </div>
+        {/if}
 
         <div class="w-full md:w-1/2 px-4">
             <form
@@ -185,8 +187,8 @@
                 name="createAccount">
                 <h2
                     class="font-bold text-xl md:text-2xl mb-2 md:mb-6
-                    md:leading-tight">
-                    Create an Account (optional)
+                    md:leading-tight text-center">
+                    Create an Account <span class="text-gray-500">(optional)</span>
                 </h2>
 
                 <div class="mb-4">
