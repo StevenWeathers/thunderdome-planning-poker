@@ -88,7 +88,7 @@ CREATE TYPE WarriorsVote AS
 CREATE OR REPLACE PROCEDURE deactivate_all_warriors()
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE battles_warriors SET active = false, last_active = NOW() WHERE active = true;
+    UPDATE battles_warriors SET active = false WHERE active = true;
 END;
 $$;
 
