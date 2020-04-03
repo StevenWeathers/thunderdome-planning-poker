@@ -63,8 +63,8 @@ run:
 # release:
 # 	$(GORELEASER)
 
-# release-dry:
-# 	$(GORELEASER) --skip-publish
+release-dry:
+	$(GORELEASER) --skip-publish
 
 build-next-image:
 	docker build ./ -t $(NEXT_DOCKER_TAG)
