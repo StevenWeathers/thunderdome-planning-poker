@@ -57,7 +57,7 @@ type Plan struct {
 
 // SetupDB runs db migrations, sets up a db connection pool
 // and sets previously active warriors to false during startup
-func SetupDB() {
+func SetupDB(AdminEmail string) {
 	var (
 		host     = GetEnv("DB_HOST", "db")
 		port     = GetIntEnv("DB_PORT", 5432)
@@ -816,7 +816,7 @@ func ConfirmAdmin(AdminID string) error {
 	}
 
 	if warriorRank != "GENERAL" {
-		return errors.New(("not admin"))
+		return errors.New(("warrior is not an admin"))
 	}
 
 	return nil
@@ -831,13 +831,8 @@ type ApplicationStats struct {
 }
 
 // GetAppStats gets counts of warriors (registered and unregistered), battles, and plans
-func GetAppStats(AdminID string) (*ApplicationStats, error) {
+func GetAppStats() (*ApplicationStats, error) {
 	var Appstats ApplicationStats
-	err := ConfirmAdmin(AdminID)
-	if err != nil {
-		log.Println("Warrior isn't admin")
-		return nil, errors.New("incorrect permissions")
-	}
 
 	statsErr := db.QueryRow(`
 		SELECT
@@ -862,12 +857,7 @@ func GetAppStats(AdminID string) (*ApplicationStats, error) {
 }
 
 // PromoteWarrior promotes a warrior to GENERAL (ADMIN) rank
-func PromoteWarrior(AdminID string, WarriorID string) error {
-	err := ConfirmAdmin(AdminID)
-	if err != nil {
-		return errors.New("incorrect permissions")
-	}
-
+func PromoteWarrior(WarriorID string) error {
 	if _, err := db.Exec(
 		`call promote_warrior($1);`,
 		WarriorID,
