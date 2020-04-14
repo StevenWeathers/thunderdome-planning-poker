@@ -351,20 +351,20 @@ func (s *server) serveWs() http.HandlerFunc {
 		}
 
 		c := &connection{send: make(chan []byte, 256), ws: ws}
-		s := subscription{c, battleID, warriorID}
-		h.register <- s
+		ss := subscription{c, battleID, warriorID}
+		h.register <- ss
 
-		Warriors, _ := AddWarriorToBattle(s.arena, warriorID)
+		Warriors, _ := AddWarriorToBattle(ss.arena, warriorID)
 		updatedWarriors, _ := json.Marshal(Warriors)
 
 		initEvent := CreateSocketEvent("init", string(battle), warriorID)
 		_ = c.write(websocket.TextMessage, initEvent)
 
 		joinedEvent := CreateSocketEvent("warrior_joined", string(updatedWarriors), warriorID)
-		m := message{joinedEvent, s.arena}
+		m := message{joinedEvent, ss.arena}
 		h.broadcast <- m
 
-		go s.writePump()
-		s.readPump()
+		go ss.writePump()
+		ss.readPump()
 	}
 }
