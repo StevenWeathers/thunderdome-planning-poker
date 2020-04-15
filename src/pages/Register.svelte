@@ -121,8 +121,9 @@
                         rank: newWarrior.rank,
                     })
 
-                    eventTag('register_account', 'engagement', 'success')
-                    router.route(targetPage, true)
+                    eventTag('register_account', 'engagement', 'success', () => {
+                        router.route(targetPage, true)
+                    })
                 })
                 .catch(function(error) {
                     notifications.danger('Error encountered creating warrior')

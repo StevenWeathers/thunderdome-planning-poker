@@ -174,12 +174,12 @@
             },
             onclose: () => {
                 socketReconnecting = true
-                eventTag('battle_error', 'battle', 'Socket Reconnecting')
+                eventTag('battle_error', 'battle', 'Socket Close')
             },
             onopen: () => {
                 socketError = false
                 socketReconnecting = false
-                eventTag('battle_error', 'battle', 'Socket Reconnect Success')
+                eventTag('battle_error', 'battle', 'Socket Open')
             },
             onmaximum: () => {
                 socketReconnecting = false

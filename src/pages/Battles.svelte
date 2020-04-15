@@ -33,6 +33,7 @@
         })
         .catch(function(error) {
             notifications.danger('Error finding your battles')
+            eventTag('fetch_battles', 'engagement', 'failure')
         })
 
     onMount(() => {

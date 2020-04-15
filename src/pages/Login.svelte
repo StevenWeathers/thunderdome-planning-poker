@@ -97,11 +97,13 @@
                     2000,
                 )
                 forgotPassword = !forgotPassword
+                eventTag('forgot_password', 'engagement', 'success')
             })
             .catch(function(error) {
                 notifications.danger(
                     'Error encountered attempting to send password reset',
                 )
+                eventTag('forgot_password', 'engagement', 'failure')
             })
     }
 
