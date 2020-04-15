@@ -8,13 +8,16 @@
     export let leaderId = ''
     export let points = ''
     export let sendSocketEvent = () => {}
+    export let eventTag
 
     function promoteLeader() {
         sendSocketEvent('promote_leader', warrior.id)
+        eventTag('promote_leader', 'battle', '')
     }
 
     function jabWarrior() {
         sendSocketEvent('jab_warrior', warrior.id)
+        eventTag('jab_warrior', 'battle', '')
     }
 </script>
 

@@ -5,6 +5,7 @@
 
     export let router
     export let notifications
+    export let eventTag
     export let battleId
 
     let warriorEmail = ''
@@ -47,17 +48,25 @@
                     rank: newWarrior.rank,
                 })
 
-                router.route(targetPage, true)
+                eventTag('login', 'engagement', 'success', () => {
+                    router.route(targetPage, true)
+                })
             })
             .catch(function(error) {
                 notifications.danger(
                     'Error encountered attempting to authenticate warrior',
                 )
+                eventTag('login', 'engagement', 'failure')
             })
     }
 
     function toggleForgotPassword() {
         forgotPassword = !forgotPassword
+        eventTag(
+            'forgot_password_toggle',
+            'engagement',
+            `forgot: ${forgotPassword}`,
+        )
     }
 
     function sendPasswordReset(e) {

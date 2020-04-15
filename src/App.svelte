@@ -15,6 +15,7 @@
     import WarriorProfile from './pages/WarriorProfile.svelte'
     import Admin from './pages/Admin.svelte'
     import { warrior } from './stores.js'
+    import eventTag from './eventTag.js'
 
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
 
@@ -97,13 +98,16 @@
             },
         })
             .then(function() {
-                warrior.delete()
-                router.route('/', true)
+                eventTag('logout', 'engagement', 'success', () => {
+                    warrior.delete()
+                    router.route('/', true)
+                })
             })
             .catch(function(error) {
                 notifications.danger(
                     'Error encountered attempting to logout warrior',
                 )
+                eventTag('logout', 'engagement', 'failure')
             })
     }
 
@@ -178,7 +182,8 @@
     this="{currentPage.route}"
     {...currentPage.params}
     {notifications}
-    {router} />
+    {router}
+    {eventTag} />
 
 <footer class="p-6 text-center">
     <a

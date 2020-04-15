@@ -6,6 +6,7 @@
 
     export let router
     export let notifications
+    export let eventTag
     export let battleId
 
     let warriorName = $warrior.name || ''
@@ -54,12 +55,15 @@
                         rank: newWarrior.rank,
                     })
 
-                    router.route(targetPage, true)
+                    eventTag('register_guest', 'engagement', 'success', () => {
+                        router.route(targetPage, true)
+                    })
                 })
                 .catch(function(error) {
                     notifications.danger(
                         'Error encountered registering warrior as guest',
                     )
+                    eventTag('register_guest', 'engagement', 'failure')
                 })
         }
     }
@@ -117,10 +121,12 @@
                         rank: newWarrior.rank,
                     })
 
+                    eventTag('register_account', 'engagement', 'success')
                     router.route(targetPage, true)
                 })
                 .catch(function(error) {
                     notifications.danger('Error encountered creating warrior')
+                    eventTag('register_account', 'engagement', 'failure')
                 })
         }
     }
@@ -139,45 +145,45 @@
     </div>
     <div class="flex flex-wrap justify-center">
         {#if !$warrior.id}
-        <div class="w-full md:w-1/2 px-4">
-            <form
-                on:submit="{createWarriorPrivate}"
-                class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
-                name="registerGuest">
-                <h2
-                    class="font-bold text-xl md:text-2xl b-4 mb-2 md:mb-6
-                    md:leading-tight text-center">
-                    Register as Guest
-                </h2>
+            <div class="w-full md:w-1/2 px-4">
+                <form
+                    on:submit="{createWarriorPrivate}"
+                    class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
+                    name="registerGuest">
+                    <h2
+                        class="font-bold text-xl md:text-2xl b-4 mb-2 md:mb-6
+                        md:leading-tight text-center">
+                        Register as Guest
+                    </h2>
 
-                <div class="mb-6">
-                    <label
-                        class="block text-gray-700 text-sm font-bold mb-2"
-                        for="yourName1">
-                        Name
-                    </label>
-                    <input
-                        bind:value="{warriorName}"
-                        placeholder="Enter your name"
-                        class="bg-gray-200 border-gray-200 border-2
-                        appearance-none rounded w-full py-2 px-3 text-gray-700
-                        leading-tight focus:outline-none focus:bg-white
-                        focus:border-purple-500"
-                        id="yourName1"
-                        name="yourName1"
-                        required />
-                </div>
-                <div>
-                    <div class="text-right">
-                        <SolidButton
-                            type="submit"
-                            disabled="{registerDisabled}">
-                            Register
-                        </SolidButton>
+                    <div class="mb-6">
+                        <label
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                            for="yourName1">
+                            Name
+                        </label>
+                        <input
+                            bind:value="{warriorName}"
+                            placeholder="Enter your name"
+                            class="bg-gray-200 border-gray-200 border-2
+                            appearance-none rounded w-full py-2 px-3
+                            text-gray-700 leading-tight focus:outline-none
+                            focus:bg-white focus:border-purple-500"
+                            id="yourName1"
+                            name="yourName1"
+                            required />
                     </div>
-                </div>
-            </form>
-        </div>
+                    <div>
+                        <div class="text-right">
+                            <SolidButton
+                                type="submit"
+                                disabled="{registerDisabled}">
+                                Register
+                            </SolidButton>
+                        </div>
+                    </div>
+                </form>
+            </div>
         {/if}
 
         <div class="w-full md:w-1/2 px-4">
@@ -188,7 +194,8 @@
                 <h2
                     class="font-bold text-xl md:text-2xl mb-2 md:mb-6
                     md:leading-tight text-center">
-                    Create an Account <span class="text-gray-500">(optional)</span>
+                    Create an Account
+                    <span class="text-gray-500">(optional)</span>
                 </h2>
 
                 <div class="mb-4">

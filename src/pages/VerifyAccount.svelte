@@ -3,6 +3,7 @@
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
 
+    export let eventTag
     export let verifyId
 
     let accountVerified = false
@@ -26,9 +27,11 @@
         })
         .then(function() {
             accountVerified = true
+            eventTag('account_verify', 'engagement', 'success')
         })
         .catch(function(error) {
             verficationError = true
+            eventTag('account_verify', 'engagement', 'failure')
         })
 </script>
 

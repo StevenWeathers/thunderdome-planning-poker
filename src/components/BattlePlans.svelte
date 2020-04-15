@@ -5,6 +5,7 @@
     export let plans = []
     export let isLeader = false
     export let sendSocketEvent = () => {}
+    export let eventTag
 
     let showAddPlan = false
     let revisePlanId = ''
@@ -16,31 +17,38 @@
             const planName = plans.find(p => p.id === planId).name
             revisePlanId = planId
             revisePlanName = planName
+            eventTag('plan_show_edit', 'battle', ``)
         } else {
             revisePlanId = ''
             revisePlanName = ''
+            eventTag('plan_show_add', 'battle', ``)
         }
         showAddPlan = !showAddPlan
     }
 
     const handlePlanAdd = planName => {
         sendSocketEvent('add_plan', planName)
+        eventTag('plan_add', 'battle', '')
     }
 
     const activatePlan = id => () => {
         sendSocketEvent('activate_plan', id)
+        eventTag('plan_activate', 'battle', '')
     }
 
     const handlePlanRevision = updatedPlan => {
         sendSocketEvent('revise_plan', JSON.stringify(updatedPlan))
+        eventTag('plan_revise', 'battle', '')
     }
 
     const handlePlanDeletion = planId => () => {
         sendSocketEvent('burn_plan', planId)
+        eventTag('plan_burn', 'battle', '')
     }
 
     const toggleShowCompleted = show => () => {
         showCompleted = show
+        eventTag('plans_show', 'battle', `completed: ${show}`)
     }
 
     $: pointedPlans = plans.filter(p => p.points !== '')

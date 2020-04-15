@@ -7,6 +7,7 @@
     import { warrior } from '../stores.js'
 
     export let notifications
+    export let eventTag
     export let router
 
     const possiblePointValues = [
@@ -53,10 +54,13 @@
                 return response.json()
             })
             .then(function(battle) {
-                router.route(`/battle/${battle.id}`)
+                eventTag('create_battle', 'engagement', 'success', () => {
+                    router.route(`/battle/${battle.id}`)
+                })
             })
             .catch(function(error) {
                 notifications.danger('Error encountered creating battle')
+                eventTag('create_battle', 'engagement', 'failure')
             })
     }
 

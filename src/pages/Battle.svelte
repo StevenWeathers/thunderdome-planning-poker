@@ -15,6 +15,7 @@
 
     export let battleId
     export let notifications
+    export let eventTag
     export let router
 
     const hostname = window.location.origin
@@ -50,6 +51,8 @@
                     currentPlanName = activePlan.name
                     voteStartTime = new Date(activePlan.voteStartTime)
                 }
+
+                eventTag('join', 'battle', '')
                 break
             case 'warrior_joined':
                 battle.warriors = JSON.parse(parsedEvent.value)
@@ -167,22 +170,32 @@
             onmessage: onSocketMessage,
             onerror: () => {
                 socketError = true
+                eventTag('battle_error', 'battle', 'Socket Error')
             },
             onclose: () => {
                 socketReconnecting = true
+                eventTag('battle_error', 'battle', 'Socket Reconnecting')
             },
             onopen: () => {
                 socketError = false
                 socketReconnecting = false
+                eventTag('battle_error', 'battle', 'Socket Reconnect Success')
             },
             onmaximum: () => {
                 socketReconnecting = false
+                eventTag(
+                    'battle_error',
+                    'battle',
+                    'Socket Reconnect Max Reached',
+                )
             },
         },
     )
 
     onDestroy(() => {
-        ws.close()
+        eventTag('leave', 'battle', '', () => {
+            ws.close()
+        })
     })
 
     const sendSocketEvent = (type, value) => {
@@ -202,12 +215,14 @@
         }
 
         sendSocketEvent('vote', JSON.stringify(voteValue))
+        eventTag('vote', 'battle', vote)
     }
 
     const handleUnvote = () => {
         vote = ''
 
         sendSocketEvent('retract_vote', battle.activePlanId)
+        eventTag('retract_vote', 'battle', vote)
     }
 
     // Determine if the warrior has voted on active Plan yet
@@ -273,7 +288,9 @@
         battle.activePlanId !== '' && battle.votingLocked === true
 
     function concedeBattle() {
-        sendSocketEvent('concede_battle', '')
+        eventTag('concede_battle', 'battle', '', () => {
+            sendSocketEvent('concede_battle', '')
+        })
     }
 
     function timeUnitsBetween(startDate, endDate) {
@@ -366,7 +383,8 @@
                 <BattlePlans
                     plans="{battle.plans}"
                     isLeader="{battle.leaderId === $warrior.id}"
-                    {sendSocketEvent} />
+                    {sendSocketEvent}
+                    {eventTag} />
             </div>
 
             <div class="w-full lg:w-1/4 px-4">
@@ -385,7 +403,8 @@
                                 isLeader="{battle.leaderId === $warrior.id}"
                                 voted="{didVote(war.id)}"
                                 points="{showVote(war.id)}"
-                                {sendSocketEvent} />
+                                {sendSocketEvent}
+                                {eventTag} />
                         {/if}
                     {/each}
 
@@ -395,7 +414,8 @@
                             planId="{battle.activePlanId}"
                             {sendSocketEvent}
                             votingLocked="{battle.votingLocked}"
-                            highestVote="{highestVoteCount}" />
+                            highestVote="{highestVoteCount}"
+                            {eventTag} />
                     {/if}
                 </div>
 

@@ -10,15 +10,10 @@
     import { warrior } from '../stores.js'
 
     export let notifications
+    export let eventTag
     export let router
+
     let battles = []
-    let battleName = ''
-    let pointValuesAllowed = 2
-    const possiblePointValues = [
-        ['1', '2', '3', '5', '8', '13', '?'],
-        ['1/2', '1', '2', '3', '5', '8', '13', '?'],
-        ['0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?'],
-    ]
 
     fetch('/api/battles', {
         method: 'GET',
@@ -39,39 +34,6 @@
         .catch(function(error) {
             notifications.danger('Error finding your battles')
         })
-
-    function createBattle(e) {
-        e.preventDefault()
-        const data = {
-            battleName,
-            leaderId: $warrior.id,
-            pointValuesAllowed: possiblePointValues[pointValuesAllowed],
-        }
-
-        fetch('/api/battle', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw Error(response.statusText)
-                }
-                return response
-            })
-            .then(function(response) {
-                return response.json()
-            })
-            .then(function(battle) {
-                router.route(`/battle/${battle.id}`)
-            })
-            .catch(function(error) {
-                notifications.danger('Error encountered creating battle')
-            })
-    }
 
     onMount(() => {
         if (!$warrior.id) {
@@ -118,7 +80,7 @@
                 <h2 class="mb-4 text-2xl font-bold leading-tight">
                     Create a Battle
                 </h2>
-                <CreateBattle {notifications} {router} />
+                <CreateBattle {notifications} {router} {eventTag} />
             </div>
         </div>
     </div>

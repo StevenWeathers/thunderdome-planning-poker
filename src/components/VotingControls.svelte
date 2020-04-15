@@ -3,6 +3,7 @@
     import DownCarrotIcon from './icons/DownCarrotIcon.svelte'
 
     export let sendSocketEvent = () => {}
+    export let eventTag
     export let planId = ''
     export let points = []
     export let votingLocked = true
@@ -12,10 +13,12 @@
 
     const endPlanVoting = () => {
         sendSocketEvent('end_voting', planId)
+        eventTag('vote_end', 'battle', '')
     }
 
     const skipPlan = () => {
         sendSocketEvent('skip_plan', planId)
+        eventTag('plan_skip', 'battle', '')
     }
 
     function handleSubmit(event) {
@@ -28,6 +31,7 @@
                 planPoints,
             }),
         )
+        eventTag('plan_finalize', 'battle', planPoints)
 
         planPoints = ''
     }

@@ -6,6 +6,7 @@
 
     export let router
     export let notifications
+    export let eventTag
     export let resetId
 
     let warriorPassword1 = ''
@@ -46,12 +47,15 @@
                     return response
                 })
                 .then(function() {
-                    router.route('/login', true)
+                    eventTag('reset_password', 'engagement', 'success', () => {
+                        router.route('/login', true)
+                    })
                 })
                 .catch(function(error) {
                     notifications.danger(
                         'Error encountered attempting to reset password',
                     )
+                    eventTag('reset_password', 'engagement', 'failure')
                 })
         }
     }
