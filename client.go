@@ -242,17 +242,44 @@ func (s *subscription) writePump() {
 	}
 }
 
-// ClearWarriorCookies wipes the frontend and backend cookies
+// createWarriorCookie creates the warriors cookie
+func (s *server) createWarriorCookie(w http.ResponseWriter, isRegistered bool, WarriorID string) {
+	var cookiedays = 365 // 356 days
+	if isRegistered == true {
+		cookiedays = 30 // 30 days
+	}
+
+	encoded, err := s.cookie.Encode(s.config.SecureCookieName, WarriorID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
+
+	cookie := &http.Cookie{
+		Name:     s.config.SecureCookieName,
+		Value:    encoded,
+		Path:     "/",
+		HttpOnly: true,
+		Domain:   s.config.AppDomain,
+		MaxAge:   86400 * cookiedays,
+		Secure:   s.config.SecureCookieFlag,
+		SameSite: http.SameSiteStrictMode,
+	}
+	http.SetCookie(w, cookie)
+}
+
+// clearWarriorCookies wipes the frontend and backend cookies
 // used in the event of bad cookie reads
-func ClearWarriorCookies(w http.ResponseWriter) {
+func (s *server) clearWarriorCookies(w http.ResponseWriter) {
 	feCookie := &http.Cookie{
-		Name:   "warrior",
+		Name:   s.config.FrontendCookieName,
 		Value:  "",
 		Path:   "/",
 		MaxAge: -1,
 	}
 	beCookie := &http.Cookie{
-		Name:     SecureCookieName,
+		Name:     s.config.SecureCookieName,
 		Value:    "",
 		Path:     "/",
 		MaxAge:   -1,
@@ -263,22 +290,22 @@ func ClearWarriorCookies(w http.ResponseWriter) {
 	http.SetCookie(w, beCookie)
 }
 
-// ValidateWarriorCookie returns the warriorID from secure cookies or errors if failures getting it
-func ValidateWarriorCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+// validateWarriorCookie returns the warriorID from secure cookies or errors if failures getting it
+func (s *server) validateWarriorCookie(w http.ResponseWriter, r *http.Request) (string, error) {
 	var warriorID string
 
-	if cookie, err := r.Cookie(SecureCookieName); err == nil {
+	if cookie, err := r.Cookie(s.config.SecureCookieName); err == nil {
 		var value string
-		if err = Sc.Decode(SecureCookieName, cookie.Value, &value); err == nil {
+		if err = s.cookie.Decode(s.config.SecureCookieName, cookie.Value, &value); err == nil {
 			warriorID = value
 		} else {
 			log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-			ClearWarriorCookies(w)
+			s.clearWarriorCookies(w)
 			return "", errors.New("invalid warrior cookies")
 		}
 	} else {
 		log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-		ClearWarriorCookies(w)
+		s.clearWarriorCookies(w)
 		return "", errors.New("invalid warrior cookies")
 	}
 
@@ -286,56 +313,58 @@ func ValidateWarriorCookie(w http.ResponseWriter, r *http.Request) (string, erro
 }
 
 // serveWs handles websocket requests from the peer.
-func serveWs(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	battleID := vars["id"]
+func (s *server) serveWs() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		battleID := vars["id"]
 
-	// make sure battle is legit
-	b, battleErr := GetBattle(battleID)
-	if battleErr != nil {
-		http.NotFound(w, r)
-		return
+		// make sure battle is legit
+		b, battleErr := GetBattle(battleID)
+		if battleErr != nil {
+			http.NotFound(w, r)
+			return
+		}
+		battle, _ := json.Marshal(b)
+
+		// make sure warrior cookies are valid
+		warriorID, cookieErr := s.validateWarriorCookie(w, r)
+		if cookieErr != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		// make sure warrior exists
+		_, warErr := GetBattleWarrior(battleID, warriorID)
+
+		if warErr != nil {
+			log.Println("error finding warrior : " + warErr.Error() + "\n")
+			s.clearWarriorCookies(w)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		// upgrade to WebSocket connection
+		ws, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		c := &connection{send: make(chan []byte, 256), ws: ws}
+		ss := subscription{c, battleID, warriorID}
+		h.register <- ss
+
+		Warriors, _ := AddWarriorToBattle(ss.arena, warriorID)
+		updatedWarriors, _ := json.Marshal(Warriors)
+
+		initEvent := CreateSocketEvent("init", string(battle), warriorID)
+		_ = c.write(websocket.TextMessage, initEvent)
+
+		joinedEvent := CreateSocketEvent("warrior_joined", string(updatedWarriors), warriorID)
+		m := message{joinedEvent, ss.arena}
+		h.broadcast <- m
+
+		go ss.writePump()
+		ss.readPump()
 	}
-	battle, _ := json.Marshal(b)
-
-	// make sure warrior cookies are valid
-	warriorID, cookieErr := ValidateWarriorCookie(w, r)
-	if cookieErr != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	// make sure warrior exists
-	_, warErr := GetBattleWarrior(battleID, warriorID)
-
-	if warErr != nil {
-		log.Println("error finding warrior : " + warErr.Error() + "\n")
-		ClearWarriorCookies(w)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	// upgrade to WebSocket connection
-	ws, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	c := &connection{send: make(chan []byte, 256), ws: ws}
-	s := subscription{c, battleID, warriorID}
-	h.register <- s
-
-	Warriors, _ := AddWarriorToBattle(s.arena, warriorID)
-	updatedWarriors, _ := json.Marshal(Warriors)
-
-	initEvent := CreateSocketEvent("init", string(battle), warriorID)
-	_ = c.write(websocket.TextMessage, initEvent)
-
-	joinedEvent := CreateSocketEvent("warrior_joined", string(updatedWarriors), warriorID)
-	m := message{joinedEvent, s.arena}
-	h.broadcast <- m
-
-	go s.writePump()
-	s.readPump()
 }
