@@ -170,21 +170,21 @@
             onmessage: onSocketMessage,
             onerror: () => {
                 socketError = true
-                eventTag('battle_error', 'battle', 'Socket Error')
+                eventTag('socket_error', 'battle', 'Socket Error')
             },
             onclose: () => {
                 socketReconnecting = true
-                eventTag('battle_error', 'battle', 'Socket Close')
+                eventTag('socket_close', 'battle', '')
             },
             onopen: () => {
                 socketError = false
                 socketReconnecting = false
-                eventTag('battle_error', 'battle', 'Socket Open')
+                eventTag('socket_open', 'battle', '')
             },
             onmaximum: () => {
                 socketReconnecting = false
                 eventTag(
-                    'battle_error',
+                    'socket_error',
                     'battle',
                     'Socket Reconnect Max Reached',
                 )
