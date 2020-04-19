@@ -315,6 +315,7 @@ func (s *server) validateWarriorCookie(w http.ResponseWriter, r *http.Request) (
 // serveWs handles websocket requests from the peer.
 func (s *server) serveWs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var unauthorized = false
 		vars := mux.Vars(r)
 		battleID := vars["id"]
 
@@ -329,24 +330,29 @@ func (s *server) serveWs() http.HandlerFunc {
 		// make sure warrior cookies are valid
 		warriorID, cookieErr := s.validateWarriorCookie(w, r)
 		if cookieErr != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
+			unauthorized = true
+		} else {
+			// make sure warrior exists
+			_, warErr := GetBattleWarrior(battleID, warriorID)
 
-		// make sure warrior exists
-		_, warErr := GetBattleWarrior(battleID, warriorID)
-
-		if warErr != nil {
-			log.Println("error finding warrior : " + warErr.Error() + "\n")
-			s.clearWarriorCookies(w)
-			w.WriteHeader(http.StatusUnauthorized)
-			return
+			if warErr != nil {
+				log.Println("error finding warrior : " + warErr.Error() + "\n")
+				s.clearWarriorCookies(w)
+				unauthorized = true
+			}
 		}
 
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Println(err)
+			return
+		}
+
+		if unauthorized {
+			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4001, "unauthorized"))
+			time.Sleep(1 * time.Second)
+			ws.Close()
 			return
 		}
 

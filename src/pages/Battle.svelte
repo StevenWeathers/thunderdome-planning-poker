@@ -168,13 +168,20 @@
             timeout: 2e3,
             maxAttempts: 15,
             onmessage: onSocketMessage,
-            onerror: () => {
+            onerror: (err) => {
                 socketError = true
-                eventTag('socket_error', 'battle', 'Socket Error')
+                eventTag('socket_error', 'battle', '')
             },
-            onclose: () => {
-                socketReconnecting = true
-                eventTag('socket_close', 'battle', '')
+            onclose: (e) => {
+                if (e.code !== 4001) {
+                    socketReconnecting = true
+                    eventTag('socket_close', 'battle', '')
+                } else {
+                    eventTag('socket_unauthorized', 'battle', '', () => {
+                        warrior.delete()
+                        router.route(`/enlist/${battleId}`)
+                    })
+                }
             },
             onopen: () => {
                 socketError = false
