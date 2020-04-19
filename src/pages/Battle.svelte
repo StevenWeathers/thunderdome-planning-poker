@@ -173,14 +173,18 @@
                 eventTag('socket_error', 'battle', '')
             },
             onclose: (e) => {
-                if (e.code !== 4001) {
-                    socketReconnecting = true
-                    eventTag('socket_close', 'battle', '')
-                } else {
+                if (e.code === 4004) {
+                    eventTag('not_found', 'battle', '', () => {
+                        router.route('/battles')
+                    })
+                } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'battle', '', () => {
                         warrior.delete()
                         router.route(`/enlist/${battleId}`)
                     })
+                } else {
+                    socketReconnecting = true
+                    eventTag('socket_close', 'battle', '')
                 }
             },
             onopen: () => {

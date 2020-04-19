@@ -319,10 +319,19 @@ func (s *server) serveWs() http.HandlerFunc {
 		vars := mux.Vars(r)
 		battleID := vars["id"]
 
+		// upgrade to WebSocket connection
+		ws, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 		// make sure battle is legit
 		b, battleErr := GetBattle(battleID)
 		if battleErr != nil {
-			http.NotFound(w, r)
+			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4004, "battle not found"))
+			time.Sleep(1 * time.Second)
+			ws.Close()
 			return
 		}
 		battle, _ := json.Marshal(b)
@@ -340,13 +349,6 @@ func (s *server) serveWs() http.HandlerFunc {
 				s.clearWarriorCookies(w)
 				unauthorized = true
 			}
-		}
-
-		// upgrade to WebSocket connection
-		ws, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Println(err)
-			return
 		}
 
 		if unauthorized {
