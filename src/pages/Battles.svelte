@@ -76,7 +76,7 @@
             {/each}
         </div>
 
-        <div class="w-full md:w-1/2 lg:w-2/5 pl-4">
+        <div class="w-full md:w-1/2 lg:w-2/5 md:pl-2 xl:pl-4">
             <div class="p-6 bg-white shadow-lg rounded">
                 <h2 class="mb-4 text-2xl font-bold leading-tight">
                     Create a Battle

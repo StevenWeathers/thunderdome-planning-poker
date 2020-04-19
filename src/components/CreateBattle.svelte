@@ -10,15 +10,14 @@
     export let eventTag
     export let router
 
-    const possiblePointValues = [
-        ['1', '2', '3', '5', '8', '13', '?'],
-        ['1/2', '1', '2', '3', '5', '8', '13', '?'],
-        ['0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?'],
-    ]
+    const possiblePointValues = [ '0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?' ]
 
     let battleName = ''
-    let pointValuesAllowed = 2
+    let points = [ '1', '2', '3', '5', '8', '13', '?' ]
     let plans = []
+
+    let checkedPointColor = 'border-green-500 bg-green-100 text-green-600'
+    let uncheckedPointColor = 'border-gray-300 bg-white'
 
     function addPlan() {
         plans.unshift({
@@ -36,9 +35,14 @@
 
     function createBattle(e) {
         e.preventDefault()
+
+        const pointValuesAllowed = possiblePointValues.filter(pv => {
+            return points.includes(pv)
+        })
+
         const data = {
             battleName,
-            pointValuesAllowed: possiblePointValues[pointValuesAllowed],
+            pointValuesAllowed,
             plans,
         }
 
@@ -92,32 +96,19 @@
     </div>
 
     <div class="mb-4">
-        <label
-            class="block text-gray-700 text-sm font-bold mb-2"
-            for="pointValuesAllowed">
+        <h3
+            class="block text-gray-700 text-sm font-bold mb-2">
             Allowed Point Values
-        </label>
-        <div class="control relative">
-            <select
-                name="pointValuesAllowed"
-                bind:value="{pointValuesAllowed}"
-                class="block appearance-none w-full bg-gray-200 border-2
-                border-gray-200 text-gray-darker py-3 px-4 pr-8 rounded
-                leading-tight focus:outline-none focus:bg-white
-                focus:border-purple-500"
-                id="pointValuesAllowed"
-                required>
-                {#each possiblePointValues as points, pi}
-                    <option value="{pi}" selected="{pi === pointValuesAllowed}">
-                        {points.join(', ')}
-                    </option>
-                {/each}
-            </select>
-            <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex
-                items-center px-2 text-gray-700">
-                <DownCarrotIcon />
-            </div>
+        </h3>
+        <div class="control relative -mr-2 md:-mr-1">
+            {#each possiblePointValues as point, pi}
+                <label class="{points.includes(point) ? checkedPointColor : uncheckedPointColor} 
+                cursor-pointer font-bold border p-2 mr-2 xl:mr-1 mb-2 xl:mb-0 rounded inline-block"
+                >
+                    <input type="checkbox" bind:group={points} value={point} class="hidden" />
+                    {point}
+                </label>
+            {/each}
         </div>
     </div>
 
