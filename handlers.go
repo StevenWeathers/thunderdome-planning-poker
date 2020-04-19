@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/markbates/pkger"
 )
 
 /*
@@ -34,6 +36,43 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 /*
 	Handlers
 */
+
+// handleIndex parses the index html file, injecting any relavent data
+func (s *server) handleIndex() http.HandlerFunc {
+	type UIConfig struct {
+		AnalyticsEnabled bool
+		AnalyticsID      string
+	}
+
+	// get the html template from dist, have it ready for requests
+	indexFile, ioErr := pkger.Open("/dist/index.html")
+	if ioErr != nil {
+		log.Println("Error opening index template")
+		log.Fatal(ioErr)
+	}
+	tmplContent, ioReadErr := ioutil.ReadAll(indexFile)
+	if ioReadErr != nil {
+		// this will hopefully only possibly panic during development as the file is already in memory otherwise
+		log.Println("Error reading index template")
+		log.Fatal(ioReadErr)
+	}
+
+	tmplString := string(tmplContent)
+	tmpl, tmplErr := template.New("index").Parse(tmplString)
+	if tmplErr != nil {
+		log.Println("Error parsing index template")
+		log.Fatal(tmplErr)
+	}
+
+	data := UIConfig{
+		AnalyticsEnabled: s.config.AnalyticsEnabled,
+		AnalyticsID:      s.config.AnalyticsID,
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		tmpl.Execute(w, data)
+	}
+}
 
 // handleLogin attempts to login the warrior by comparing email/password to whats in DB
 func (s *server) handleLogin() http.HandlerFunc {

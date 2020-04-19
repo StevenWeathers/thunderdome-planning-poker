@@ -25,6 +25,10 @@ type ServerConfig struct {
 	// email to promote a warrior to GENERAL on app startup
 	// the warrior should already be registered for this to work
 	AdminEmail string
+	// Whether or not to enable google analytics tracking
+	AnalyticsEnabled bool
+	// ID used for google analytics
+	AnalyticsID string
 }
 
 type server struct {
@@ -45,6 +49,8 @@ func main() {
 			FrontendCookieName: "warrior",
 			SecureCookieName:   "warriorId",
 			SecureCookieFlag:   GetBoolEnv("COOKIE_SECURE", true),
+			AnalyticsEnabled:   GetBoolEnv("ANALYTICS_ENABLED", true),
+			AnalyticsID:        GetEnv("ANALYTICS_ID", "UA-140245309-1"),
 		},
 		router: mux.NewRouter(),
 		cookie: securecookie.New([]byte(cookieHashkey), nil),

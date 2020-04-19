@@ -33,8 +33,5 @@ func (s *server) routes() {
 	// websocket for battle
 	s.router.HandleFunc("/api/arena/{id}", s.serveWs())
 	// handle index.html
-	s.router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r.URL.Path = "/"
-		staticHandler.ServeHTTP(w, r)
-	})
+	s.router.PathPrefix("/").HandlerFunc(s.handleIndex())
 }

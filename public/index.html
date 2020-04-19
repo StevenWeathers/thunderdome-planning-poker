@@ -18,14 +18,16 @@
 		<noscript>
 			<strong class="text-4xl font-bold text-red-500">We're sorry but ui doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
 		</noscript>
+		{{if .AnalyticsEnabled}}
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-140245309-1"></script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id={{.AnalyticsID}}"></script>
 		<script>
 		window.dataLayer = window.dataLayer || [];
 		function gtag(){dataLayer.push(arguments);}
 		gtag('js', new Date());
 
-		gtag('config', 'UA-140245309-1');
+		gtag('config', '{{.AnalyticsID}}');
 		</script>
+		{{end}}
 	</body>
 </html>
