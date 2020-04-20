@@ -330,7 +330,6 @@ func (s *server) serveWs() http.HandlerFunc {
 		b, battleErr := GetBattle(battleID)
 		if battleErr != nil {
 			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4004, "battle not found"))
-			time.Sleep(1 * time.Second)
 			ws.Close()
 			return
 		}
@@ -353,7 +352,6 @@ func (s *server) serveWs() http.HandlerFunc {
 
 		if unauthorized {
 			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4001, "unauthorized"))
-			time.Sleep(1 * time.Second)
 			ws.Close()
 			return
 		}
