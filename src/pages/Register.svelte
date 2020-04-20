@@ -5,6 +5,7 @@
     import { validateName, validatePasswords } from '../validationUtils.js'
 
     export let router
+    export let xfetch
     export let notifications
     export let eventTag
     export let battleId
@@ -31,23 +32,8 @@
         }
 
         if (noFormErrors) {
-            fetch('/api/warrior', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
-            })
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw Error(response.statusText)
-                    }
-                    return response
-                })
-                .then(function(response) {
-                    return response.json()
-                })
+            xfetch('/api/warrior', { body })
+                .then(res => res.json())
                 .then(function(newWarrior) {
                     warrior.create({
                         id: newWarrior.id,
@@ -96,23 +82,8 @@
         }
 
         if (noFormErrors) {
-            fetch('/api/enlist', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
-            })
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw Error(response.statusText)
-                    }
-                    return response
-                })
-                .then(function(response) {
-                    return response.json()
-                })
+            xfetch('/api/enlist', { body })
+                .then(res => res.json())
                 .then(function(newWarrior) {
                     warrior.create({
                         id: newWarrior.id,
@@ -121,9 +92,14 @@
                         rank: newWarrior.rank,
                     })
 
-                    eventTag('register_account', 'engagement', 'success', () => {
-                        router.route(targetPage, true)
-                    })
+                    eventTag(
+                        'register_account',
+                        'engagement',
+                        'success',
+                        () => {
+                            router.route(targetPage, true)
+                        },
+                    )
                 })
                 .catch(function(error) {
                     notifications.danger('Error encountered creating warrior')

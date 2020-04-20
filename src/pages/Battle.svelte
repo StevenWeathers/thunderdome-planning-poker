@@ -147,7 +147,7 @@
                 break
             case 'battle_conceded':
                 // battle over, goodbye.
-                router.route('/')
+                router.route('/battles')
                 break
             case 'jab_warrior':
                 const warriorToJab = battle.warriors.find(
@@ -168,11 +168,11 @@
             timeout: 2e3,
             maxAttempts: 15,
             onmessage: onSocketMessage,
-            onerror: (err) => {
+            onerror: err => {
                 socketError = true
                 eventTag('socket_error', 'battle', '')
             },
-            onclose: (e) => {
+            onclose: e => {
                 if (e.code === 4004) {
                     eventTag('not_found', 'battle', '', () => {
                         router.route('/battles')

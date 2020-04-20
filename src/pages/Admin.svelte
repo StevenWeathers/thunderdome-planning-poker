@@ -4,6 +4,7 @@
     import PageLayout from '../components/PageLayout.svelte'
     import { warrior } from '../stores.js'
 
+    export let xfetch
     export let router
     export let notifications
 
@@ -14,19 +15,8 @@
         planCount: 0,
     }
 
-    fetch('/api/admin/stats', {
-        method: 'GET',
-        credentials: 'same-origin',
-    })
-        .then(function(response) {
-            if (!response.ok) {
-                throw Error(response.statusText)
-            }
-            return response
-        })
-        .then(function(response) {
-            return response.json()
-        })
+    xfetch('/api/admin/stats')
+        .then(res => res.json())
         .then(function(result) {
             appStats = result
         })

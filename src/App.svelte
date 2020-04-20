@@ -16,6 +16,7 @@
     import Admin from './pages/Admin.svelte'
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
+    import apiclient from './apiclient.js'
 
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
 
@@ -89,14 +90,17 @@
         })
         .listen()
 
-    function logoutWarrior() {
-        fetch('/api/auth/logout', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+    const xfetch = apiclient(handle401)
+
+    function handle401() {
+        eventTag('session_expired', 'engagement', 'unauthorized', () => {
+            warrior.delete()
+            router.route('/login')
         })
+    }
+
+    function logoutWarrior() {
+        xfetch('/api/auth/logout', { method: 'POST' })
             .then(function() {
                 eventTag('logout', 'engagement', 'success', () => {
                     warrior.delete()
@@ -183,7 +187,8 @@
     {...currentPage.params}
     {notifications}
     {router}
-    {eventTag} />
+    {eventTag}
+    {xfetch} />
 
 <footer class="p-6 text-center">
     <a

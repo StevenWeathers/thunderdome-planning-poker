@@ -9,11 +9,25 @@
     export let notifications
     export let eventTag
     export let router
+    export let xfetch
 
-    const possiblePointValues = [ '0', '1/2', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?' ]
+    const possiblePointValues = [
+        '0',
+        '1/2',
+        '1',
+        '2',
+        '3',
+        '5',
+        '8',
+        '13',
+        '20',
+        '40',
+        '100',
+        '?',
+    ]
 
     let battleName = ''
-    let points = [ '1', '2', '3', '5', '8', '13', '?' ]
+    let points = ['1', '2', '3', '5', '8', '13', '?']
     let plans = []
 
     let checkedPointColor = 'border-green-500 bg-green-100 text-green-600'
@@ -40,23 +54,14 @@
             return points.includes(pv)
         })
 
-        const data = {
+        const body = {
             battleName,
             pointValuesAllowed,
             plans,
         }
 
-        fetch('/api/battle', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then(function(response) {
-                return response.json()
-            })
+        xfetch('/api/battle', { body })
+            .then(res => res.json())
             .then(function(battle) {
                 eventTag('create_battle', 'engagement', 'success', () => {
                     router.route(`/battle/${battle.id}`)
@@ -96,16 +101,20 @@
     </div>
 
     <div class="mb-4">
-        <h3
-            class="block text-gray-700 text-sm font-bold mb-2">
+        <h3 class="block text-gray-700 text-sm font-bold mb-2">
             Allowed Point Values
         </h3>
         <div class="control relative -mr-2 md:-mr-1">
             {#each possiblePointValues as point, pi}
-                <label class="{points.includes(point) ? checkedPointColor : uncheckedPointColor} 
-                cursor-pointer font-bold border p-2 mr-2 xl:mr-1 mb-2 xl:mb-0 rounded inline-block"
-                >
-                    <input type="checkbox" bind:group={points} value={point} class="hidden" />
+                <label
+                    class="{points.includes(point) ? checkedPointColor : uncheckedPointColor}
+                    cursor-pointer font-bold border p-2 mr-2 xl:mr-1 mb-2
+                    xl:mb-0 rounded inline-block">
+                    <input
+                        type="checkbox"
+                        bind:group="{points}"
+                        value="{point}"
+                        class="hidden" />
                     {point}
                 </label>
             {/each}

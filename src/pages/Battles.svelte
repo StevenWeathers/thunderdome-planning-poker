@@ -9,25 +9,15 @@
     import HollowButton from '../components/HollowButton.svelte'
     import { warrior } from '../stores.js'
 
+    export let xfetch
     export let notifications
     export let eventTag
     export let router
 
     let battles = []
 
-    fetch('/api/battles', {
-        method: 'GET',
-        credentials: 'same-origin',
-    })
-        .then(function(response) {
-            if (!response.ok) {
-                throw Error(response.statusText)
-            }
-            return response
-        })
-        .then(function(response) {
-            return response.json()
-        })
+    xfetch('/api/battles')
+        .then(res => res.json())
         .then(function(bs) {
             battles = bs
         })
@@ -81,7 +71,7 @@
                 <h2 class="mb-4 text-2xl font-bold leading-tight">
                     Create a Battle
                 </h2>
-                <CreateBattle {notifications} {router} {eventTag} />
+                <CreateBattle {notifications} {router} {eventTag} {xfetch} />
             </div>
         </div>
     </div>

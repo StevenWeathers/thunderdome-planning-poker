@@ -4,6 +4,7 @@
     import { warrior } from '../stores.js'
 
     export let router
+    export let xfetch
     export let notifications
     export let eventTag
     export let battleId
@@ -23,23 +24,8 @@
             warriorPassword,
         }
 
-        fetch('/api/auth', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-        })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw Error(response.statusText)
-                }
-                return response
-            })
-            .then(function(response) {
-                return response.json()
-            })
+        xfetch('/api/auth', { body })
+            .then(res => res.json())
             .then(function(newWarrior) {
                 warrior.create({
                     id: newWarrior.id,
@@ -75,20 +61,7 @@
             warriorEmail: warriorResetEmail,
         }
 
-        fetch('/api/auth/forgot-password', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-        })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw Error(response.statusText)
-                }
-                return response
-            })
+        xfetch('/api/auth/forgot-password', { body })
             .then(function() {
                 notifications.success(
                     `

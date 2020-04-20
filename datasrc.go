@@ -16,16 +16,23 @@ import (
 
 var db *sql.DB
 
+// BattleWarrior aka user
+type BattleWarrior struct {
+	WarriorID   string `json:"id"`
+	WarriorName string `json:"name"`
+	Active      bool   `json:"active"`
+}
+
 // Battle aka arena
 type Battle struct {
-	BattleID           string     `json:"id"`
-	LeaderID           string     `json:"leaderId"`
-	BattleName         string     `json:"name"`
-	Warriors           []*Warrior `json:"warriors"`
-	Plans              []*Plan    `json:"plans"`
-	VotingLocked       bool       `json:"votingLocked"`
-	ActivePlanID       string     `json:"activePlanId"`
-	PointValuesAllowed []string   `json:"pointValuesAllowed"`
+	BattleID           string           `json:"id"`
+	LeaderID           string           `json:"leaderId"`
+	BattleName         string           `json:"name"`
+	Warriors           []*BattleWarrior `json:"warriors"`
+	Plans              []*Plan          `json:"plans"`
+	VotingLocked       bool             `json:"votingLocked"`
+	ActivePlanID       string           `json:"activePlanId"`
+	PointValuesAllowed []string         `json:"pointValuesAllowed"`
 }
 
 // Warrior aka user
@@ -34,7 +41,7 @@ type Warrior struct {
 	WarriorName  string `json:"name"`
 	WarriorEmail string `json:"email"`
 	WarriorRank  string `json:"rank"`
-	Active       bool   `json:"active"`
+	Verified     bool   `json:"verified"`
 }
 
 // Vote structure
@@ -118,7 +125,7 @@ func CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []strin
 		BattleID:           "",
 		LeaderID:           LeaderID,
 		BattleName:         BattleName,
-		Warriors:           make([]*Warrior, 0),
+		Warriors:           make([]*BattleWarrior, 0),
 		Plans:              make([]*Plan, 0),
 		VotingLocked:       true,
 		ActivePlanID:       "",
@@ -160,7 +167,7 @@ func GetBattle(BattleID string) (*Battle, error) {
 		BattleID:           BattleID,
 		LeaderID:           "",
 		BattleName:         "",
-		Warriors:           make([]*Warrior, 0),
+		Warriors:           make([]*BattleWarrior, 0),
 		Plans:              make([]*Plan, 0),
 		VotingLocked:       true,
 		ActivePlanID:       "",
@@ -218,7 +225,7 @@ func GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 			BattleID:           "",
 			LeaderID:           "",
 			BattleName:         "",
-			Warriors:           make([]*Warrior, 0),
+			Warriors:           make([]*BattleWarrior, 0),
 			Plans:              make([]*Plan, 0),
 			VotingLocked:       true,
 			ActivePlanID:       "",
@@ -262,13 +269,13 @@ func ConfirmLeader(BattleID string, warriorID string) error {
 }
 
 // GetBattleWarrior gets a warrior from db by ID and checks battle active status
-func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
+func GetBattleWarrior(BattleID string, WarriorID string) (*BattleWarrior, error) {
 	var active bool
-	var w Warrior
+	var w BattleWarrior
 
 	e := db.QueryRow(
 		`SELECT
-			w.id, w.name, coalesce(w.email, ''), w.rank, coalesce(bw.active, FALSE)
+			w.id, w.name, coalesce(bw.active, FALSE)
 		FROM warriors w
 		LEFT JOIN battles_warriors bw ON bw.warrior_id = w.id AND bw.battle_id = $1
 		WHERE id = $2`,
@@ -277,8 +284,6 @@ func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 	).Scan(
 		&w.WarriorID,
 		&w.WarriorName,
-		&w.WarriorEmail,
-		&w.WarriorRank,
 		&active,
 	)
 	if e != nil {
@@ -294,11 +299,11 @@ func GetBattleWarrior(BattleID string, WarriorID string) (*Warrior, error) {
 }
 
 // GetBattleWarriors retrieves the warriors for a given battle from db
-func GetBattleWarriors(BattleID string) []*Warrior {
-	var warriors = make([]*Warrior, 0)
+func GetBattleWarriors(BattleID string) []*BattleWarrior {
+	var warriors = make([]*BattleWarrior, 0)
 	rows, err := db.Query(
 		`SELECT
-			w.id, w.name, w.email, w.rank, bw.active
+			w.id, w.name, bw.active
 		FROM battles_warriors bw
 		LEFT JOIN warriors w ON bw.warrior_id = w.id
 		WHERE bw.battle_id = $1
@@ -308,12 +313,10 @@ func GetBattleWarriors(BattleID string) []*Warrior {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w Warrior
-			var warriorEmail sql.NullString
-			if err := rows.Scan(&w.WarriorID, &w.WarriorName, &warriorEmail, &w.WarriorRank, &w.Active); err != nil {
+			var w BattleWarrior
+			if err := rows.Scan(&w.WarriorID, &w.WarriorName, &w.Active); err != nil {
 				log.Println(err)
 			} else {
-				w.WarriorEmail = warriorEmail.String
 				warriors = append(warriors, &w)
 			}
 		}
@@ -323,7 +326,7 @@ func GetBattleWarriors(BattleID string) []*Warrior {
 }
 
 // AddWarriorToBattle adds a warrior by ID to the battle by ID
-func AddWarriorToBattle(BattleID string, WarriorID string) ([]*Warrior, error) {
+func AddWarriorToBattle(BattleID string, WarriorID string) ([]*BattleWarrior, error) {
 	if _, err := db.Exec(
 		`INSERT INTO battles_warriors (battle_id, warrior_id, active)
 		VALUES ($1, $2, true)
@@ -340,7 +343,7 @@ func AddWarriorToBattle(BattleID string, WarriorID string) ([]*Warrior, error) {
 }
 
 // RetreatWarrior removes a warrior from the current battle by ID
-func RetreatWarrior(BattleID string, WarriorID string) []*Warrior {
+func RetreatWarrior(BattleID string, WarriorID string) []*BattleWarrior {
 	if _, err := db.Exec(
 		`UPDATE battles_warriors SET active = false WHERE battle_id = $1 AND warrior_id = $2`, BattleID, WarriorID); err != nil {
 		log.Println(err)
@@ -597,13 +600,14 @@ func GetWarrior(WarriorID string) (*Warrior, error) {
 	var warriorEmail sql.NullString
 
 	e := db.QueryRow(
-		"SELECT id, name, email, rank FROM warriors WHERE id = $1",
+		"SELECT id, name, email, rank, verified FROM warriors WHERE id = $1",
 		WarriorID,
 	).Scan(
 		&w.WarriorID,
 		&w.WarriorName,
 		&warriorEmail,
 		&w.WarriorRank,
+		&w.Verified,
 	)
 	if e != nil {
 		log.Println(e)
@@ -621,7 +625,7 @@ func AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) 
 	var passHash string
 
 	e := db.QueryRow(
-		`SELECT id, name, email, rank, password FROM warriors WHERE email = $1`,
+		`SELECT id, name, email, rank, password, verified FROM warriors WHERE email = $1`,
 		WarriorEmail,
 	).Scan(
 		&w.WarriorID,
@@ -629,6 +633,7 @@ func AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) 
 		&w.WarriorEmail,
 		&w.WarriorRank,
 		&passHash,
+		&w.Verified,
 	)
 	if e != nil {
 		log.Println(e)

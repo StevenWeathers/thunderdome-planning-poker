@@ -3,28 +3,14 @@
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
 
+    export let xfetch
     export let eventTag
     export let verifyId
 
     let accountVerified = false
     let verficationError = false
 
-    fetch('/api/auth/verify', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            verifyId,
-        }),
-    })
-        .then(function(response) {
-            if (!response.ok) {
-                throw Error(response.statusText)
-            }
-            return response
-        })
+    xfetch('/api/auth/verify', { body: { verifyId } })
         .then(function() {
             accountVerified = true
             eventTag('account_verify', 'engagement', 'success')
