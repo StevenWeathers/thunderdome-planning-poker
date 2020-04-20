@@ -1,3 +1,6 @@
+![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Go%20App%20CI/badge.svg)
+![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Docker%20Image%20CI/badge.svg)
+
 # Thunderdome Planning Poker
 
 Thunderdome is an open source agile planning poker tool in the theme of Battling for points that helps teams estimate stories.
