@@ -1,4 +1,5 @@
 ![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Go/badge.svg)
+![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Node.js%20CI/badge.svg)
 ![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Docker/badge.svg)
 
 # Thunderdome Planning Poker
