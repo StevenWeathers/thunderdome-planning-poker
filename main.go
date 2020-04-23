@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/email"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 )
@@ -32,10 +34,11 @@ type ServerConfig struct {
 }
 
 type server struct {
-	config *ServerConfig
-	router *mux.Router
-	email  *Email
-	cookie *securecookie.SecureCookie
+	config   *ServerConfig
+	router   *mux.Router
+	email    *email.Email
+	cookie   *securecookie.SecureCookie
+	database *database.Database
 }
 
 func main() {
@@ -55,9 +58,8 @@ func main() {
 		router: mux.NewRouter(),
 		cookie: securecookie.New([]byte(cookieHashkey), nil),
 	}
-	s.email = NewEmail(s.config.AppDomain)
-
-	SetupDB(s.config.AdminEmail)
+	s.email = email.New(s.config.AppDomain)
+	s.database = database.New(s.config.AdminEmail)
 
 	go h.run()
 

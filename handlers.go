@@ -2,14 +2,134 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
 	"github.com/gorilla/mux"
 	"github.com/markbates/pkger"
+	"gopkg.in/go-playground/validator.v9"
 )
+
+type warriorAccount struct {
+	Name      string `json:"name" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password1 string `json:"password1" validate:"required,min=6,max=72"`
+	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
+}
+
+type warriorPassword struct {
+	Password1 string `json:"password1" validate:"required,min=6,max=72"`
+	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
+}
+
+// ValidateWarriorAccount makes sure warrior name, email, and password are valid before creating the account
+func ValidateWarriorAccount(name string, email string, pwd1 string, pwd2 string) (WarriorName string, WarriorEmail string, WarriorPassword string, validateErr error) {
+	v := validator.New()
+	a := warriorAccount{
+		Name:      name,
+		Email:     email,
+		Password1: pwd1,
+		Password2: pwd2,
+	}
+	err := v.Struct(a)
+
+	return name, email, pwd1, err
+}
+
+// ValidateWarriorPassword makes sure warrior password is valid before updating the password
+func ValidateWarriorPassword(pwd1 string, pwd2 string) (WarriorPassword string, validateErr error) {
+	v := validator.New()
+	a := warriorPassword{
+		Password1: pwd1,
+		Password2: pwd2,
+	}
+	err := v.Struct(a)
+
+	return pwd1, err
+}
+
+// RespondWithJSON takes a payload and writes the response
+func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
+}
+
+// createWarriorCookie creates the warriors cookie
+func (s *server) createWarriorCookie(w http.ResponseWriter, isRegistered bool, WarriorID string) {
+	var cookiedays = 365 // 356 days
+	if isRegistered == true {
+		cookiedays = 30 // 30 days
+	}
+
+	encoded, err := s.cookie.Encode(s.config.SecureCookieName, WarriorID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
+
+	cookie := &http.Cookie{
+		Name:     s.config.SecureCookieName,
+		Value:    encoded,
+		Path:     "/",
+		HttpOnly: true,
+		Domain:   s.config.AppDomain,
+		MaxAge:   86400 * cookiedays,
+		Secure:   s.config.SecureCookieFlag,
+		SameSite: http.SameSiteStrictMode,
+	}
+	http.SetCookie(w, cookie)
+}
+
+// clearWarriorCookies wipes the frontend and backend cookies
+// used in the event of bad cookie reads
+func (s *server) clearWarriorCookies(w http.ResponseWriter) {
+	feCookie := &http.Cookie{
+		Name:   s.config.FrontendCookieName,
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	}
+	beCookie := &http.Cookie{
+		Name:     s.config.SecureCookieName,
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, feCookie)
+	http.SetCookie(w, beCookie)
+}
+
+// validateWarriorCookie returns the warriorID from secure cookies or errors if failures getting it
+func (s *server) validateWarriorCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+	var warriorID string
+
+	if cookie, err := r.Cookie(s.config.SecureCookieName); err == nil {
+		var value string
+		if err = s.cookie.Decode(s.config.SecureCookieName, cookie.Value, &value); err == nil {
+			warriorID = value
+		} else {
+			log.Println("error in reading warrior cookie : " + err.Error() + "\n")
+			s.clearWarriorCookies(w)
+			return "", errors.New("invalid warrior cookies")
+		}
+	} else {
+		log.Println("error in reading warrior cookie : " + err.Error() + "\n")
+		s.clearWarriorCookies(w)
+		return "", errors.New("invalid warrior cookies")
+	}
+
+	return warriorID, nil
+}
 
 /*
 	Middlewares
@@ -24,7 +144,7 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		adminErr := ConfirmAdmin(warriorID)
+		adminErr := s.database.ConfirmAdmin(warriorID)
 		if adminErr != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -84,7 +204,7 @@ func (s *server) handleLogin() http.HandlerFunc {
 		WarriorEmail := keyVal["warriorEmail"]
 		WarriorPassword := keyVal["warriorPassword"]
 
-		authedWarrior, err := AuthWarrior(WarriorEmail, WarriorPassword)
+		authedWarrior, err := s.database.AuthWarrior(WarriorEmail, WarriorPassword)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -130,7 +250,7 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 			return
 		}
 
-		_, warErr := GetWarrior(warriorID)
+		_, warErr := s.database.GetWarrior(warriorID)
 
 		if warErr != nil {
 			log.Println("error finding warrior : " + warErr.Error() + "\n")
@@ -147,13 +267,13 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 		}
 
 		var keyVal struct {
-			BattleName         string   `json:"battleName"`
-			PointValuesAllowed []string `json:"pointValuesAllowed"`
-			Plans              []*Plan  `json:"plans"`
+			BattleName         string           `json:"battleName"`
+			PointValuesAllowed []string         `json:"pointValuesAllowed"`
+			Plans              []*database.Plan `json:"plans"`
 		}
 		json.Unmarshal(body, &keyVal) // check for errors
 
-		newBattle, err := CreateBattle(warriorID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans)
+		newBattle, err := s.database.CreateBattle(warriorID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -177,7 +297,7 @@ func (s *server) handleWarriorRecruit() http.HandlerFunc {
 
 		WarriorName := keyVal["warriorName"]
 
-		newWarrior, err := CreateWarriorPrivate(WarriorName)
+		newWarrior, err := s.database.CreateWarriorPrivate(WarriorName)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -214,7 +334,7 @@ func (s *server) handleWarriorEnlist() http.HandlerFunc {
 			return
 		}
 
-		newWarrior, VerifyID, err := CreateWarriorCorporal(WarriorName, WarriorEmail, WarriorPassword, ActiveWarriorID)
+		newWarrior, VerifyID, err := s.database.CreateWarriorCorporal(WarriorName, WarriorEmail, WarriorPassword, ActiveWarriorID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -234,7 +354,7 @@ func (s *server) handleBattleGet() http.HandlerFunc {
 		vars := mux.Vars(r)
 		BattleID := vars["id"]
 
-		battle, err := GetBattle(BattleID)
+		battle, err := s.database.GetBattle(BattleID)
 
 		if err != nil {
 			http.NotFound(w, r)
@@ -254,7 +374,7 @@ func (s *server) handleBattlesGet() http.HandlerFunc {
 			return
 		}
 
-		_, warErr := GetWarrior(warriorID)
+		_, warErr := s.database.GetWarrior(warriorID)
 
 		if warErr != nil {
 			log.Println("error finding warrior : " + warErr.Error() + "\n")
@@ -263,7 +383,7 @@ func (s *server) handleBattlesGet() http.HandlerFunc {
 			return
 		}
 
-		battles, err := GetBattlesByWarrior(warriorID)
+		battles, err := s.database.GetBattlesByWarrior(warriorID)
 
 		if err != nil {
 			http.NotFound(w, r)
@@ -283,7 +403,7 @@ func (s *server) handleForgotPassword() http.HandlerFunc {
 		json.Unmarshal(body, &keyVal) // check for errors
 		WarriorEmail := keyVal["warriorEmail"]
 
-		ResetID, WarriorName, resetErr := WarriorResetRequest(WarriorEmail)
+		ResetID, WarriorName, resetErr := s.database.WarriorResetRequest(WarriorEmail)
 		if resetErr != nil {
 			log.Println("error attempting to send warrior reset : " + resetErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -316,7 +436,7 @@ func (s *server) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		WarriorName, WarriorEmail, resetErr := WarriorResetPassword(ResetID, WarriorPassword)
+		WarriorName, WarriorEmail, resetErr := s.database.WarriorResetPassword(ResetID, WarriorPassword)
 		if resetErr != nil {
 			log.Println("error attempting to reset warrior password : " + resetErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -352,7 +472,7 @@ func (s *server) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		WarriorName, WarriorEmail, updateErr := WarriorUpdatePassword(warriorID, WarriorPassword)
+		WarriorName, WarriorEmail, updateErr := s.database.WarriorUpdatePassword(warriorID, WarriorPassword)
 		if updateErr != nil {
 			log.Println("error attempting to update warrior password : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -377,7 +497,7 @@ func (s *server) handleWarriorProfile() http.HandlerFunc {
 			return
 		}
 
-		warrior, warErr := GetWarrior(WarriorID)
+		warrior, warErr := s.database.GetWarrior(WarriorID)
 		if warErr != nil {
 			log.Println("error finding warrior : " + warErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -404,7 +524,7 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		updateErr := UpdateWarriorProfile(WarriorID, WarriorName)
+		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName)
 		if updateErr != nil {
 			log.Println("error attempting to update warrior profile : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -424,7 +544,7 @@ func (s *server) handleAccountVerification() http.HandlerFunc {
 		json.Unmarshal(body, &keyVal) // check for errors
 		VerifyID := keyVal["verifyId"]
 
-		verifyErr := VerifyWarriorAccount(VerifyID)
+		verifyErr := s.database.VerifyWarriorAccount(VerifyID)
 		if verifyErr != nil {
 			log.Println("error attempting to verify warrior account : " + verifyErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -442,7 +562,7 @@ func (s *server) handleAccountVerification() http.HandlerFunc {
 // handleAppStats gets the applications stats
 func (s *server) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		AppStats, err := GetAppStats()
+		AppStats, err := s.database.GetAppStats()
 
 		if err != nil {
 			http.NotFound(w, r)

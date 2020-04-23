@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -60,13 +59,13 @@ func CreateSocketEvent(EventType string, EventValue string, EventWarrior string)
 }
 
 // readPump pumps messages from the websocket connection to the hub.
-func (s subscription) readPump() {
+func (s subscription) readPump(srv *server) {
 	c := s.conn
 	defer func() {
 		BattleID := s.arena
 		WarriorID := s.warriorID
 
-		Warriors := RetreatWarrior(BattleID, WarriorID)
+		Warriors := srv.database.RetreatWarrior(BattleID, WarriorID)
 		updatedWarriors, _ := json.Marshal(Warriors)
 
 		retreatEvent := CreateSocketEvent("warrior_retreated", string(updatedWarriors), WarriorID)
@@ -101,19 +100,19 @@ func (s subscription) readPump() {
 			VoteValue := voteObj["voteValue"]
 			PlanID := voteObj["planId"]
 
-			plans := SetVote(battleID, warriorID, PlanID, VoteValue)
+			plans := srv.database.SetVote(battleID, warriorID, PlanID, VoteValue)
 
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("vote_activity", string(updatedPlans), warriorID)
 		case "retract_vote":
 			PlanID := keyVal["value"]
 
-			plans := RetractVote(battleID, warriorID, PlanID)
+			plans := srv.database.RetractVote(battleID, warriorID, PlanID)
 
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("vote_retracted", string(updatedPlans), warriorID)
 		case "add_plan":
-			plans, err := CreatePlan(battleID, warriorID, keyVal["value"])
+			plans, err := srv.database.CreatePlan(battleID, warriorID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -121,7 +120,7 @@ func (s subscription) readPump() {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_added", string(updatedPlans), "")
 		case "activate_plan":
-			plans, err := ActivatePlanVoting(battleID, warriorID, keyVal["value"])
+			plans, err := srv.database.ActivatePlanVoting(battleID, warriorID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -129,7 +128,7 @@ func (s subscription) readPump() {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_activated", string(updatedPlans), "")
 		case "skip_plan":
-			plans, err := SkipPlan(battleID, warriorID, keyVal["value"])
+			plans, err := srv.database.SkipPlan(battleID, warriorID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -137,7 +136,7 @@ func (s subscription) readPump() {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_skipped", string(updatedPlans), "")
 		case "end_voting":
-			plans, err := EndPlanVoting(battleID, warriorID, keyVal["value"])
+			plans, err := srv.database.EndPlanVoting(battleID, warriorID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -150,7 +149,7 @@ func (s subscription) readPump() {
 			PlanID := planObj["planId"]
 			PlanPoints := planObj["planPoints"]
 
-			plans, err := FinalizePlan(battleID, warriorID, PlanID, PlanPoints)
+			plans, err := srv.database.FinalizePlan(battleID, warriorID, PlanID, PlanPoints)
 			if err != nil {
 				badEvent = true
 				break
@@ -163,7 +162,7 @@ func (s subscription) readPump() {
 			PlanID := planObj["planId"]
 			PlanName := planObj["planName"]
 
-			plans, err := RevisePlanName(battleID, warriorID, PlanID, PlanName)
+			plans, err := srv.database.RevisePlanName(battleID, warriorID, PlanID, PlanName)
 			if err != nil {
 				badEvent = true
 				break
@@ -171,7 +170,7 @@ func (s subscription) readPump() {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_revised", string(updatedPlans), "")
 		case "burn_plan":
-			plans, err := BurnPlan(battleID, warriorID, keyVal["value"])
+			plans, err := srv.database.BurnPlan(battleID, warriorID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -179,7 +178,7 @@ func (s subscription) readPump() {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_burned", string(updatedPlans), "")
 		case "promote_leader":
-			battle, err := SetBattleLeader(battleID, warriorID, keyVal["value"])
+			battle, err := srv.database.SetBattleLeader(battleID, warriorID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -188,14 +187,14 @@ func (s subscription) readPump() {
 			updatedBattle, _ := json.Marshal(battle)
 			msg = CreateSocketEvent("battle_updated", string(updatedBattle), "")
 		case "concede_battle":
-			err := DeleteBattle(battleID, warriorID)
+			err := srv.database.DeleteBattle(battleID, warriorID)
 			if err != nil {
 				badEvent = true
 				break
 			}
 			msg = CreateSocketEvent("battle_conceded", "", "")
 		case "jab_warrior":
-			err := ConfirmLeader(battleID, warriorID)
+			err := srv.database.ConfirmLeader(battleID, warriorID)
 			if err != nil {
 				badEvent = true
 				break
@@ -242,76 +241,6 @@ func (s *subscription) writePump() {
 	}
 }
 
-// createWarriorCookie creates the warriors cookie
-func (s *server) createWarriorCookie(w http.ResponseWriter, isRegistered bool, WarriorID string) {
-	var cookiedays = 365 // 356 days
-	if isRegistered == true {
-		cookiedays = 30 // 30 days
-	}
-
-	encoded, err := s.cookie.Encode(s.config.SecureCookieName, WarriorID)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-
-	}
-
-	cookie := &http.Cookie{
-		Name:     s.config.SecureCookieName,
-		Value:    encoded,
-		Path:     "/",
-		HttpOnly: true,
-		Domain:   s.config.AppDomain,
-		MaxAge:   86400 * cookiedays,
-		Secure:   s.config.SecureCookieFlag,
-		SameSite: http.SameSiteStrictMode,
-	}
-	http.SetCookie(w, cookie)
-}
-
-// clearWarriorCookies wipes the frontend and backend cookies
-// used in the event of bad cookie reads
-func (s *server) clearWarriorCookies(w http.ResponseWriter) {
-	feCookie := &http.Cookie{
-		Name:   s.config.FrontendCookieName,
-		Value:  "",
-		Path:   "/",
-		MaxAge: -1,
-	}
-	beCookie := &http.Cookie{
-		Name:     s.config.SecureCookieName,
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-	}
-
-	http.SetCookie(w, feCookie)
-	http.SetCookie(w, beCookie)
-}
-
-// validateWarriorCookie returns the warriorID from secure cookies or errors if failures getting it
-func (s *server) validateWarriorCookie(w http.ResponseWriter, r *http.Request) (string, error) {
-	var warriorID string
-
-	if cookie, err := r.Cookie(s.config.SecureCookieName); err == nil {
-		var value string
-		if err = s.cookie.Decode(s.config.SecureCookieName, cookie.Value, &value); err == nil {
-			warriorID = value
-		} else {
-			log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-			s.clearWarriorCookies(w)
-			return "", errors.New("invalid warrior cookies")
-		}
-	} else {
-		log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-		s.clearWarriorCookies(w)
-		return "", errors.New("invalid warrior cookies")
-	}
-
-	return warriorID, nil
-}
-
 // serveWs handles websocket requests from the peer.
 func (s *server) serveWs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -327,7 +256,7 @@ func (s *server) serveWs() http.HandlerFunc {
 		}
 
 		// make sure battle is legit
-		b, battleErr := GetBattle(battleID)
+		b, battleErr := s.database.GetBattle(battleID)
 		if battleErr != nil {
 			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4004, "battle not found"))
 			ws.Close()
@@ -341,7 +270,7 @@ func (s *server) serveWs() http.HandlerFunc {
 			unauthorized = true
 		} else {
 			// make sure warrior exists
-			_, warErr := GetBattleWarrior(battleID, warriorID)
+			_, warErr := s.database.GetBattleWarrior(battleID, warriorID)
 
 			if warErr != nil {
 				log.Println("error finding warrior : " + warErr.Error() + "\n")
@@ -360,7 +289,7 @@ func (s *server) serveWs() http.HandlerFunc {
 		ss := subscription{c, battleID, warriorID}
 		h.register <- ss
 
-		Warriors, _ := AddWarriorToBattle(ss.arena, warriorID)
+		Warriors, _ := s.database.AddWarriorToBattle(ss.arena, warriorID)
 		updatedWarriors, _ := json.Marshal(Warriors)
 
 		initEvent := CreateSocketEvent("init", string(battle), warriorID)
@@ -371,6 +300,6 @@ func (s *server) serveWs() http.HandlerFunc {
 		h.broadcast <- m
 
 		go ss.writePump()
-		ss.readPump()
+		ss.readPump(s)
 	}
 }
