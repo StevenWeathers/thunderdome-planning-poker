@@ -2,7 +2,7 @@
 ![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Node.js%20CI/badge.svg)
 ![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Docker/badge.svg)
 ![](https://img.shields.io/docker/cloud/build/stevenweathers/thunderdome-planning-poker.svg)
-![](https://img.shields.io/docker/pulls/stevenweathers/thunderdome-planning-poker.svg)
+[![](https://img.shields.io/docker/pulls/stevenweathers/thunderdome-planning-poker.svg)](https://hub.docker.com/r/stevenweathers/thunderdome-planning-poker)
 [![](https://goreportcard.com/badge/github.com/stevenweathers/thunderdome-planning-poker)](https://goreportcard.com/report/github.com/stevenweathers/thunderdome-planning-poker)
 
 # Thunderdome Planning Poker
