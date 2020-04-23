@@ -279,7 +279,7 @@ func (m *Email) SendPasswordReset(WarriorName string, WarriorEmail string) error
 		hermes.Body{
 			Name: WarriorName,
 			Intros: []string{
-				"Your Thunderdome password was succesfully reset.",
+				"Your Thunderdome password was successfully reset.",
 			},
 			Actions: []hermes.Action{
 				{
@@ -300,7 +300,7 @@ func (m *Email) SendPasswordReset(WarriorName string, WarriorEmail string) error
 	sendErr := m.Send(
 		WarriorName,
 		WarriorEmail,
-		"Your Thunderdome password was succesfully reset.",
+		"Your Thunderdome password was successfully reset.",
 		emailBody,
 	)
 	if sendErr != nil {
@@ -317,7 +317,7 @@ func (m *Email) SendPasswordUpdate(WarriorName string, WarriorEmail string) erro
 		hermes.Body{
 			Name: WarriorName,
 			Intros: []string{
-				"Your Thunderdome password was succesfully been updated.",
+				"Your Thunderdome password was successfully been updated.",
 			},
 			Actions: []hermes.Action{
 				{
@@ -338,7 +338,7 @@ func (m *Email) SendPasswordUpdate(WarriorName string, WarriorEmail string) erro
 	sendErr := m.Send(
 		WarriorName,
 		WarriorEmail,
-		"Your Thunderdome password was succesfully updated.",
+		"Your Thunderdome password was successfully updated.",
 		emailBody,
 	)
 	if sendErr != nil {

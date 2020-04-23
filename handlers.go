@@ -37,7 +37,7 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	Handlers
 */
 
-// handleIndex parses the index html file, injecting any relavent data
+// handleIndex parses the index html file, injecting any relevant data
 func (s *server) handleIndex() http.HandlerFunc {
 	type UIConfig struct {
 		AnalyticsEnabled bool
