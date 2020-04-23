@@ -30,7 +30,7 @@ clean:
 	rm -f *-packr.go
 	rm -rf dist
 	rm -rf release
-	rm -rf packrd
+	rm -rf pkged.go
 
 format:
 	$(GOFMT) -s -w datasrc.go
@@ -61,23 +61,23 @@ dev-go:
 run:
 	SMTP_SECURE="false" DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
 
-release:
+gorelease:
 	$(GORELEASER)
 
-release-dry:
+gorelease-dry:
 	$(GORELEASER) --skip-publish
 
-release-snapshot:
+gorelease-snapshot:
 	$(GORELEASER) --snapshot
 
 build-next-image:
-	docker build ./ -t $(NEXT_DOCKER_TAG)
+	docker build ./ -f ./build/Dockerfile -t $(NEXT_DOCKER_TAG)
 
 push-next-image:
 	docker push $(NEXT_DOCKER_TAG)
 
 build-latest-image:
-	docker build ./ -t $(LATEST_DOCKER_TAG)
+	docker build ./ -f ./build/Dockerfile -t $(LATEST_DOCKER_TAG)
 
 push-latest-image:
 	docker push $(LATEST_DOCKER_TAG)

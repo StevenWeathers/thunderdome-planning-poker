@@ -4,14 +4,14 @@
 FROM node:10.14.1-alpine as builderNode
 
 RUN mkdir /webapp
-COPY ./src/ /webapp/src/
-COPY ./public/ /webapp/public/
+COPY ./frontend/ /webapp/frontend/
+COPY ./build/*.js /webapp/build/
 COPY ./*.json /webapp/
 COPY ./*.js /webapp/
 WORKDIR /webapp
 # install node packages
 RUN npm set progress=false
-RUN npm install
+RUN npm ci
 # Build the web app
 RUN npm run build
 ############################
@@ -35,7 +35,6 @@ COPY --from=builderNode /webapp/dist $GOPATH/src/github.com/stevenweathers/thund
 # Set working dir
 WORKDIR $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 # Fetch dependencies.
-RUN go get -d -v
 RUN go install -v github.com/markbates/pkger/cmd/pkger
 RUN go mod download
 # Bundle the static assets
