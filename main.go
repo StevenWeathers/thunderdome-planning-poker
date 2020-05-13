@@ -10,6 +10,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/email"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
+	"github.com/spf13/viper"
 )
 
 // ServerConfig holds server global config values
@@ -42,18 +43,21 @@ type server struct {
 }
 
 func main() {
-	var cookieHashkey = GetEnv("COOKIE_HASHKEY", "strongest-avenger")
+
+	InitConfig()
+
+	var cookieHashkey = viper.GetString("http.cookie_hashkey")
 
 	s := &server{
 		config: &ServerConfig{
-			ListenPort:         GetEnv("PORT", "8080"),
-			AppDomain:          GetEnv("APP_DOMAIN", "thunderdome.dev"),
-			AdminEmail:         GetEnv("ADMIN_EMAIL", ""),
+			ListenPort:         viper.GetString("http.port"),
+			AppDomain:          viper.GetString("http.domain"),
+			AdminEmail:         viper.GetString("admin.email"),
 			FrontendCookieName: "warrior",
 			SecureCookieName:   "warriorId",
-			SecureCookieFlag:   GetBoolEnv("COOKIE_SECURE", true),
-			AnalyticsEnabled:   GetBoolEnv("ANALYTICS_ENABLED", true),
-			AnalyticsID:        GetEnv("ANALYTICS_ID", "UA-140245309-1"),
+			SecureCookieFlag:   viper.GetBool("http.secure_cookie"),
+			AnalyticsEnabled:   viper.GetBool("analytics.enabled"),
+			AnalyticsID:        viper.GetString("analytics.id"),
 		},
 		router: mux.NewRouter(),
 		cookie: securecookie.New([]byte(cookieHashkey), nil),

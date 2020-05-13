@@ -29,7 +29,8 @@ docker-compose up --build
 ## Building
 
 To run without docker you will need to first build, then setup the postgres DB,
-and pass the user, pass, name, host, and port to the application as environment variables
+and pass the user, pass, name, host, and port to the application as environment variables 
+or in a config file.
 
 ```
 DB_HOST=
@@ -66,6 +67,36 @@ pkger
 ```
 go build
 ```
+
+# Configuration
+Thunderdome may be configured through environment variables or via a yaml file `config.yaml`
+located in one of:
+
+* `/etc/thunderdome/`
+* `$HOME/.config/thunderdome/`
+* Current working directory
+
+The following configuration options exists:
+
+| Option                     | Environment Variable | Description                                |
+| -------------------------- | -------------------- | ------------------------------------------ |
+| `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | 
+| `http.port`                | PORT                 | Which port to listen for HTTP connections. |
+| `http.secure_cookie`       | COOKIE_SECURE        | Use secure cookies or not.                 |
+| `http.domain`              | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome.  Used for creating URLs in emails. |
+| `analytics.enabled`        | ANALYTICS_ENABLED    | Enable/disable google analytics.           |
+| `analytics.id`             | ANALYTICS_ID         | Google analytics identifier.               |
+| `db.host`                  | DB_HOST              | Database host name.                        |
+| `db.port`                  | DB_PORT              | Database port number.                      |
+| `db.user`                  | DB_USER              | Database user id.                          |
+| `db.pass`                  | DB_PASS              | Database user password.                    |
+| `db.name`                  | DB_NAME              | Database instance name.                    |
+| `smtp.host`                | SMTP_HOST            | Smtp server hostname.                      |
+| `smtp.port`                | SMTP_PORT            | Smtp server port number.                   |
+| `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  |
+| `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity.  Usually unset. |
+| `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome.|
+
 
 # Let the Pointing Battles begin!
 
