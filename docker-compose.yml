@@ -18,6 +18,8 @@ services:
       COOKIE_SECURE: "false"
       SMTP_SECURE: "false"
       SMTP_HOST: mail
+    volumes:
+      - ./etc:/etc/thunderdome
   db: 
     image: postgres:latest
     restart: always

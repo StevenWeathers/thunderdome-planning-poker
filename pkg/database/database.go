@@ -11,6 +11,8 @@ import (
 	_ "github.com/lib/pq" // necessary for postgres
 	"github.com/markbates/pkger"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/spf13/viper"
+
 )
 
 // HashAndSalt takes a password byte and salt + hashes it
@@ -93,11 +95,11 @@ func New(AdminEmail string) *Database {
 	var d = &Database{
 		// read environment variables and sets up database configuration values
 		config: &Config{
-			host:     GetEnv("DB_HOST", "db"),
-			port:     GetIntEnv("DB_PORT", 5432),
-			user:     GetEnv("DB_USER", "thor"),
-			password: GetEnv("DB_PASS", "odinson"),
-			dbname:   GetEnv("DB_NAME", "thunderdome"),
+			host:     viper.GetString("db.host"),
+			port:     viper.GetInt("db.port"),
+			user:     viper.GetString("db.user"),
+			password: viper.GetString("db.pass"),
+			dbname:   viper.GetString("db.name"),
 		},
 	}
 

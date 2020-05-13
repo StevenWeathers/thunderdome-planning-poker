@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/matcornic/hermes/v2"
+	"github.com/spf13/viper"
 )
 
 // smtpServer data to smtp server
@@ -95,13 +96,13 @@ func New(AppDomain string) *Email {
 		config: &Config{
 			AppDomain:    AppDomain,
 			SenderName:   "Thunderdome",
-			smtpHost:     GetEnv("SMTP_HOST", "localhost"),
-			smtpPort:     GetEnv("SMTP_PORT", "25"),
-			smtpSecure:   GetBoolEnv("SMTP_SECURE", true),
-			smtpIdentity: GetEnv("SMTP_IDENTITY", ""),
-			smtpUser:     GetEnv("SMTP_USER", ""),
-			smtpPass:     GetEnv("SMTP_PASS", ""),
-			smtpSender:   GetEnv("SMTP_SENDER", "no-reply@thunderdome.dev"),
+			smtpHost:     viper.GetString("smtp.host"),
+			smtpPort:     viper.GetString("smtp.port"),
+			smtpSecure:   viper.GetBool("smtp.secure"),
+			smtpIdentity: viper.GetString("smtp.identity"),
+			smtpUser:     viper.GetString("smtp.user"),
+			smtpPass:     viper.GetString("smtp.pass"),
+			smtpSender:   viper.GetString("smtp.sender"),
 		},
 	}
 
