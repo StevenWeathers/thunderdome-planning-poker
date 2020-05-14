@@ -11,7 +11,7 @@
     export let router
     export let xfetch
 
-    const possiblePointValues = [
+    let possiblePointValues = [
         '0',
         '1/2',
         '1',
@@ -32,6 +32,8 @@
 
     let checkedPointColor = 'border-green-500 bg-green-100 text-green-600'
     let uncheckedPointColor = 'border-gray-300 bg-white'
+
+    getPossiblePointValues()
 
     function addPlan() {
         plans.unshift({
@@ -71,6 +73,17 @@
                 notifications.danger('Error encountered creating battle')
                 eventTag('create_battle', 'engagement', 'failure')
             })
+    }
+
+    function getPossiblePointValues() {
+        xfetch('/api/config/allowedPointValues')
+                .then(res => res.json())
+                .then(function(pa) {
+                        possiblePointValues = pa['Value']
+                })
+                .catch(function(error) {
+                        notifications.danger("Error encountered fetching points allowed")
+                })
     }
 
     onMount(() => {

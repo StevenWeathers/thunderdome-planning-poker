@@ -28,6 +28,8 @@ func InitConfig() {
 	viper.SetDefault("smtp.port", "25")
 	viper.SetDefault("smtp.secure", true)
 	viper.SetDefault("smtp.sender", "no-reply@thunderdome.dev")
+	viper.SetDefault("config.allowedPointValues", 
+		[]string{"0.5", "1", "2", "3", "5", "8", "13", "20", "30", "50", "?"})
 
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")

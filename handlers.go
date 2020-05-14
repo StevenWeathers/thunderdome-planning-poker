@@ -11,6 +11,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
 	"github.com/gorilla/mux"
 	"github.com/markbates/pkger"
+	"github.com/spf13/viper"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -25,6 +26,12 @@ type warriorPassword struct {
 	Password1 string `json:"password1" validate:"required,min=6,max=72"`
 	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
+
+type ConfigItem struct {
+	Key	  string
+	Type	  string
+}
+var validConfigItems = map[string]ConfigItem{ "allowedPointValues": { Key: "config.allowedPointValues", Type: "slice" } }
 
 // ValidateWarriorAccount makes sure warrior name, email, and password are valid before creating the account
 func ValidateWarriorAccount(name string, email string, pwd1 string, pwd2 string) (WarriorName string, WarriorEmail string, WarriorPassword string, validateErr error) {
@@ -193,6 +200,39 @@ func (s *server) handleIndex() http.HandlerFunc {
 		tmpl.Execute(w, data)
 	}
 }
+
+
+// handle read config request
+func (s *server) handleReadConfig() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		configID := vars["item"]
+		type sliceConfigItem struct {
+			Item string
+			Value []string
+		}
+		type stringConfigItem struct {
+			Item string
+			Value string
+		}
+		var item interface{}
+		if it, ok := validConfigItems[configID]; ok {
+			switch it.Type {
+				case "slice":
+					item = sliceConfigItem { configID, viper.GetStringSlice(it.Key) }
+				case "string":
+					item = stringConfigItem { configID, viper.GetString(it.Key) }
+			}
+		} else {
+			log.Println("Cannot access config item ", configID, "only have", validConfigItems)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		RespondWithJSON(w, http.StatusOK, item)
+	}
+	
+}
+
 
 // handleLogin attempts to login the warrior by comparing email/password to whats in DB
 func (s *server) handleLogin() http.HandlerFunc {

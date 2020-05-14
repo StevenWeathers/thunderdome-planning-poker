@@ -96,6 +96,7 @@ The following configuration options exists:
 | `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  |
 | `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity.  Usually unset. |
 | `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome.|
+| `config.allowedPointValues` |                     | List of available point values for creating battles. |
 
 
 # Let the Pointing Battles begin!
