@@ -11,29 +11,14 @@
     export let router
     export let xfetch
 
-    let possiblePointValues = [
-        '0',
-        '1/2',
-        '1',
-        '2',
-        '3',
-        '5',
-        '8',
-        '13',
-        '20',
-        '40',
-        '100',
-        '?',
-    ]
+    const allowedPointValues = appConfig.AllowedPointValues
 
+    let points = appConfig.DefaultPointValues
     let battleName = ''
-    let points = ['1', '2', '3', '5', '8', '13', '?']
     let plans = []
 
     let checkedPointColor = 'border-green-500 bg-green-100 text-green-600'
     let uncheckedPointColor = 'border-gray-300 bg-white'
-
-    getPossiblePointValues()
 
     function addPlan() {
         plans.unshift({
@@ -52,7 +37,7 @@
     function createBattle(e) {
         e.preventDefault()
 
-        const pointValuesAllowed = possiblePointValues.filter(pv => {
+        const pointValuesAllowed = allowedPointValues.filter(pv => {
             return points.includes(pv)
         })
 
@@ -73,17 +58,6 @@
                 notifications.danger('Error encountered creating battle')
                 eventTag('create_battle', 'engagement', 'failure')
             })
-    }
-
-    function getPossiblePointValues() {
-        xfetch('/api/config/allowedPointValues')
-                .then(res => res.json())
-                .then(function(pa) {
-                        possiblePointValues = pa['Value']
-                })
-                .catch(function(error) {
-                        notifications.danger("Error encountered fetching points allowed")
-                })
     }
 
     onMount(() => {
@@ -118,7 +92,7 @@
             Allowed Point Values
         </h3>
         <div class="control relative -mr-2 md:-mr-1">
-            {#each possiblePointValues as point, pi}
+            {#each allowedPointValues as point, pi}
                 <label
                     class="{points.includes(point) ? checkedPointColor : uncheckedPointColor}
                     cursor-pointer font-bold border p-2 mr-2 xl:mr-1 mb-2

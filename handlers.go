@@ -27,12 +27,6 @@ type warriorPassword struct {
 	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
 
-type ConfigItem struct {
-	Key	  string
-	Type	  string
-}
-var validConfigItems = map[string]ConfigItem{ "allowedPointValues": { Key: "config.allowedPointValues", Type: "slice" } }
-
 // ValidateWarriorAccount makes sure warrior name, email, and password are valid before creating the account
 func ValidateWarriorAccount(name string, email string, pwd1 string, pwd2 string) (WarriorName string, WarriorEmail string, WarriorPassword string, validateErr error) {
 	v := validator.New()
@@ -166,9 +160,14 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 // handleIndex parses the index html file, injecting any relevant data
 func (s *server) handleIndex() http.HandlerFunc {
+	type AppConfig struct {
+		AllowedPointValues	[]string
+		DefaultPointValues	[]string
+	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
 		AnalyticsID      string
+		AppConfig	 AppConfig
 	}
 
 	// get the html template from dist, have it ready for requests
@@ -191,46 +190,20 @@ func (s *server) handleIndex() http.HandlerFunc {
 		log.Fatal(tmplErr)
 	}
 
+	appConfig := AppConfig{
+		AllowedPointValues: viper.GetStringSlice("config.allowedPointValues"),
+		DefaultPointValues: viper.GetStringSlice("config.defaultPointValues"),
+	}
+	
 	data := UIConfig{
 		AnalyticsEnabled: s.config.AnalyticsEnabled,
 		AnalyticsID:      s.config.AnalyticsID,
+		AppConfig:	  appConfig,
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(w, data)
 	}
-}
-
-
-// handle read config request
-func (s *server) handleReadConfig() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		configID := vars["item"]
-		type sliceConfigItem struct {
-			Item string
-			Value []string
-		}
-		type stringConfigItem struct {
-			Item string
-			Value string
-		}
-		var item interface{}
-		if it, ok := validConfigItems[configID]; ok {
-			switch it.Type {
-				case "slice":
-					item = sliceConfigItem { configID, viper.GetStringSlice(it.Key) }
-				case "string":
-					item = stringConfigItem { configID, viper.GetString(it.Key) }
-			}
-		} else {
-			log.Println("Cannot access config item ", configID, "only have", validConfigItems)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		RespondWithJSON(w, http.StatusOK, item)
-	}
-	
 }
 
 

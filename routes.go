@@ -13,8 +13,6 @@ func (s *server) routes() {
 	s.router.PathPrefix("/js/").Handler(staticHandler)
 	s.router.PathPrefix("/img/").Handler(staticHandler)
 	// api (currently internal to UI application)
-	// config
-	s.router.HandleFunc("/api/config/{item}", s.handleReadConfig()).Methods("GET")
 	// warrior authentication, profile
 	s.router.HandleFunc("/api/auth", s.handleLogin()).Methods("POST")
 	s.router.HandleFunc("/api/auth/logout", s.handleLogout()).Methods("POST")
