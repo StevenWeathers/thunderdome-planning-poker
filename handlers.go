@@ -171,6 +171,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		AllowJiraImport    bool
 		DefaultLocale      string
 		FriendlyUIVerbs    bool
+		AuthMethod         string
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -209,6 +210,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		AllowJiraImport:    viper.GetBool("config.allow_jira_import"),
 		DefaultLocale:      viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:    viper.GetBool("config.friendly_ui_verbs"),
+		AuthMethod:         viper.GetString("auth.method"),
 	}
 
 	data := UIConfig{
@@ -232,24 +234,14 @@ func (s *server) handleLogin() http.HandlerFunc {
 		WarriorEmail := keyVal["warriorEmail"]
 		WarriorPassword := keyVal["warriorPassword"]
 
-		authedWarrior, err := s.database.AuthWarrior(WarriorEmail, WarriorPassword)
+		authedWarrior, err := s.authWarriorDatabase(WarriorEmail, WarriorPassword)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		encoded, err := s.cookie.Encode(s.config.SecureCookieName, authedWarrior.WarriorID)
-		if err == nil {
-			cookie := &http.Cookie{
-				Name:     s.config.SecureCookieName,
-				Value:    encoded,
-				Path:     "/",
-				HttpOnly: true,
-				Domain:   s.config.AppDomain,
-				MaxAge:   86400 * 30, // 30 days
-				Secure:   s.config.SecureCookieFlag,
-				SameSite: http.SameSiteStrictMode,
-			}
+		cookie := s.createCookie(authedWarrior.WarriorID)
+		if cookie != nil{
 			http.SetCookie(w, cookie)
 		} else {
 			log.Println(err)
@@ -257,6 +249,34 @@ func (s *server) handleLogin() http.HandlerFunc {
 			return
 		}
 
+		RespondWithJSON(w, http.StatusOK, authedWarrior)
+	}
+}
+
+// handleLdapLogin attempts to authenticate the warrior by looking up and authenticating
+// via ldap, and then creates the warrior if not existing and logs them in
+func (s *server) handleLdapLogin() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body)
+		keyVal := make(map[string]string)
+		json.Unmarshal(body, &keyVal)
+		WarriorEmail := keyVal["warriorEmail"]
+		WarriorPassword := keyVal["warriorPassword"]
+
+		authedWarrior, err := s.authAndCreateWarriorLdap(WarriorEmail, WarriorPassword)
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		cookie := s.createCookie(authedWarrior.WarriorID)
+		if cookie != nil {
+			http.SetCookie(w, cookie)
+		} else {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 		RespondWithJSON(w, http.StatusOK, authedWarrior)
 	}
 }

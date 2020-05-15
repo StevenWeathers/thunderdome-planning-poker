@@ -61,6 +61,27 @@ func (d *Database) GetWarrior(WarriorID string) (*Warrior, error) {
 	return &w, nil
 }
 
+func (d *Database) GetWarriorByEmail(WarriorEmail string) (*Warrior, error) {
+	var w Warrior
+	e := d.db.QueryRow(
+		"SELECT id, name, email, rank, verified FROM warriors WHERE email = $1",
+		WarriorEmail,
+	).Scan(
+		&w.WarriorID,
+		&w.WarriorName,
+		&w.WarriorEmail,
+		&w.WarriorRank,
+		&w.Verified,
+	)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("warrior email not found")
+	}
+
+	return &w, nil
+}
+
+
 // AuthWarrior attempts to authenticate the warrior
 func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) {
 	var w Warrior

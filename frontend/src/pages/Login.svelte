@@ -133,6 +133,7 @@
                     </div>
 
                     <div class="text-right">
+                        {#if appConfig.AuthMethod === 'normal'}			
                         <button
                             type="button"
                             class="inline-block align-baseline font-bold text-sm
@@ -140,6 +141,7 @@
                             on:click="{toggleForgotPassword}">
                             {$_('pages.login.fields.password.forgotLabel')}
                         </button>
+                        {/if}
                         <SolidButton type="submit" disabled="{loginDisabled}">
                             {$_('pages.login.button')}
                         </SolidButton>

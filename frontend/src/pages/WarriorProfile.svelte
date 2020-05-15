@@ -151,7 +151,7 @@
 
     $: updateDisabled = warriorProfile.name === ''
     $: updatePasswordDisabled =
-        warriorPassword1 === '' || warriorPassword2 === ''
+        warriorPassword1 === '' || warriorPassword2 === '' || appConfig.authMethod === 'ldap'
 </script>
 
 <PageLayout>

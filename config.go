@@ -46,6 +46,10 @@ func InitConfig() {
 	viper.SetDefault("config.allow_jira_import", true)
 	viper.SetDefault("config.default_locale", "en-US")
 	viper.SetDefault("config.friendly_ui_verbs", false)
+	viper.SetDefault("auth.method", "normal")
+	viper.SetDefault("auth.ldap.filter", "(&(objectClass=posixAccount)(mail=%s))")
+	viper.SetDefault("auth.ldap.mail_attr", "mail")
+	viper.SetDefault("auth.ldap.cn_attr", "cn")
 
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")

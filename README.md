@@ -86,6 +86,7 @@ located in one of:
 
 The following configuration options exists:
 
+<<<<<<< HEAD
 | Option                     | Environment Variable | Description                                | Default Value           |
 | -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
 | `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | strongest-avenger |
@@ -115,6 +116,7 @@ The following configuration options exists:
 | `config.allow_jira_import`     | CONFIG_ALLOW_JIRA_IMPORT | Whether or not to allow import plans from JIRA XML. | true |
 | `config.default_locale`   | CONFIG_DEFAULT_LOCALE | The default locale (language) for the UI | en-US |
 | `config.friendly_ui_verbs`    | CONFIG_FRIENDLY_UI_VERBS | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly | false |
+| `auth.method`              |                      | Choose `normal` or `ldap` as authentication method.  See separate section on LDAP configuration. | normal |
 
 ## Avatar Service configuration
 
@@ -130,6 +132,36 @@ Use the name from table below to configure a service - if not set, `default` is 
 |            | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=mp&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=identicon&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=monsterid&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=wavatar&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=retro&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=robohash&r=g) | | | |
 | `robohash` | set1 | set2 | set3 | set4 |
 |            | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set1&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set2&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set3&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set4&size=48x48) |
+
+## LDAP Configuration
+
+If `auth.method` is set to `ldap`, then the Create Account function is disabled and authentication
+is done using LDAP.  If the LDAP server authenticates a new user successfully, the Thunderdome user 
+profile is automatically generated.
+
+The following configuration options are specific to the LDAP authentication method:
+
+| Option                      | Description                                                        |
+| --------------------------- | ------------------------------------------------------------------ |
+| `auth.ldap.url`             | URL to LDAP server, typically `ldap://host:port`                   |
+| `auth.ldap.use_tls`         | Create a TLS connection after establishing the initial connection. |
+| `auth.ldap.bindname`        | Bind name / bind DN for connecting to LDAP.  Leave empty for no authentication. |
+| `auth.ldap.bindpass`        | Password for the bind.                                             |
+| `auth.ldap.basedn`          | Base DN for the search for the user.                               |
+| `auth.ldap.filter`          | Filter for searching for the user's login id.  See below.          |
+| `auth.ldap.mail_attr`       | The LDAP property containing the user's emil address.              |
+
+The default `filter` is `(&(objectClass=posixAccount)(mail=%s))`.  The filter must include a `%s` that will be replaced by the user's login id.
+The `mail_attr` configuration option must point to the LDAP attribute containing the user's email address.  The default is `mail`. 
+The `cn_attr` configuration option must point to the LDAP attribute containing the user's full name.  The default is `cn`.
+
+On Linux, the parameters may be tested on the command line:
+
+```
+ldapsearch -H auth.ldap.url [-Z] -x [-D auth.ldap.bindname -W] -b auth.ldap.basedn 'auth.ldap.filter' dn auth.ldap.mail auth.ldap.cn
+```
+
+The `-Z` is only used if `auth.ldap.use_tls` is set, the `-D` and `-W` parameter is only used if `auth.ldap.bindname` is set.
 
 # Let the Pointing Battles begin!
 

@@ -50,6 +50,8 @@
         params: {},
     }
 
+    let authMethod = appConfig.AuthMethod
+
     const router = Navaid('/')
         .on('/', () => {
             currentPage = {
@@ -195,7 +197,7 @@
                     </HollowButton>
                 {/if}
             {:else}
-                {#if registrationAllowed}
+                {#if registrationAllowed && authMetod === 'normal'}
                     <HollowButton
                         color="teal"
                         href="/enlist"
