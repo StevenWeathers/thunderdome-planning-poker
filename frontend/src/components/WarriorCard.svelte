@@ -1,6 +1,9 @@
 <script>
     import VoteIcon from './icons/VoteIcon.svelte'
     import LeaderIcon from './icons/LeaderIcon.svelte'
+    import WarriorRankPrivate from './icons/WarriorRankPrivate.svelte'
+    import WarriorRankCorporal from './icons/WarriorRankCorporal.svelte'
+    import WarriorRankGeneral from './icons/WarriorRankGeneral.svelte'
 
     export let voted = false
     export let warrior = {}
@@ -34,9 +37,16 @@
         <div class="flex items-center">
             <div class="w-3/4">
                 <p
-                    class="text-xl font-bold leading-tight truncate"
+                    class="text-lg font-bold leading-tight truncate"
                     data-testId="warriorName"
                     title="{warrior.name}">
+                    {#if warrior.rank == 'GENERAL'}
+                        <WarriorRankGeneral />
+                    {:else if warrior.rank == 'CORPORAL'}
+                        <WarriorRankCorporal />
+                    {:else}
+                        <WarriorRankPrivate />
+                    {/if}
                     {warrior.name}
                 </p>
                 {#if leaderId === warrior.id}
