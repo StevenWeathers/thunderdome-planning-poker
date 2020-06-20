@@ -2,9 +2,3 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
-
-.rank {
-    float: left; 
-    margin-right: 0.2em;
-    padding-top: 0.2em;
-}
