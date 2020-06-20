@@ -161,13 +161,13 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 // handleIndex parses the index html file, injecting any relevant data
 func (s *server) handleIndex() http.HandlerFunc {
 	type AppConfig struct {
-		AllowedPointValues	[]string
-		DefaultPointValues	[]string
+		AllowedPointValues []string
+		DefaultPointValues []string
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
 		AnalyticsID      string
-		AppConfig	 AppConfig
+		AppConfig        AppConfig
 	}
 
 	// get the html template from dist, have it ready for requests
@@ -194,18 +194,17 @@ func (s *server) handleIndex() http.HandlerFunc {
 		AllowedPointValues: viper.GetStringSlice("config.allowedPointValues"),
 		DefaultPointValues: viper.GetStringSlice("config.defaultPointValues"),
 	}
-	
+
 	data := UIConfig{
 		AnalyticsEnabled: s.config.AnalyticsEnabled,
 		AnalyticsID:      s.config.AnalyticsID,
-		AppConfig:	  appConfig,
+		AppConfig:        appConfig,
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(w, data)
 	}
 }
-
 
 // handleLogin attempts to login the warrior by comparing email/password to whats in DB
 func (s *server) handleLogin() http.HandlerFunc {
@@ -544,7 +543,14 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		return
+		warrior, warErr := s.database.GetWarrior(WarriorID)
+		if warErr != nil {
+			log.Println("error reloading warrior after update : " + warErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, warrior)
 	}
 }
 
