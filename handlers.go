@@ -161,13 +161,14 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 // handleIndex parses the index html file, injecting any relevant data
 func (s *server) handleIndex() http.HandlerFunc {
 	type AppConfig struct {
-		AllowedPointValues	[]string
-		DefaultPointValues	[]string
+		AllowedPointValues []string
+		DefaultPointValues []string
+		ShowWarriorRank    bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
 		AnalyticsID      string
-		AppConfig	 AppConfig
+		AppConfig        AppConfig
 	}
 
 	// get the html template from dist, have it ready for requests
@@ -193,19 +194,19 @@ func (s *server) handleIndex() http.HandlerFunc {
 	appConfig := AppConfig{
 		AllowedPointValues: viper.GetStringSlice("config.allowedPointValues"),
 		DefaultPointValues: viper.GetStringSlice("config.defaultPointValues"),
+		ShowWarriorRank:    viper.GetBool("config.show_warrior_rank"),
 	}
-	
+
 	data := UIConfig{
 		AnalyticsEnabled: s.config.AnalyticsEnabled,
 		AnalyticsID:      s.config.AnalyticsID,
-		AppConfig:	  appConfig,
+		AppConfig:        appConfig,
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(w, data)
 	}
 }
-
 
 // handleLogin attempts to login the warrior by comparing email/password to whats in DB
 func (s *server) handleLogin() http.HandlerFunc {

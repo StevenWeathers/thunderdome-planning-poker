@@ -98,6 +98,7 @@ The following configuration options exists:
 | `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome.|
 | `config.allowedPointValues` |                     | List of available point values for creating battles. |
 | `config.defaultPointValues` |                     | List of default selected points for new battles. |
+| `config.show_warrior_rank` |                     | Set to enable an icon showing the rank of a warrior during battle. |
 
 
 # Let the Pointing Battles begin!

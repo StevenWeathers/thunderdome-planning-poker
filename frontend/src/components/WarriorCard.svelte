@@ -13,6 +13,9 @@
     export let sendSocketEvent = () => {}
     export let eventTag
 
+    const showRank = appConfig.ShowWarriorRank
+    let nameStyleClass = showRank ? "text-lg" : "text-xl"
+
     function promoteLeader() {
         sendSocketEvent('promote_leader', warrior.id)
         eventTag('promote_leader', 'battle', '')
@@ -37,15 +40,17 @@
         <div class="flex items-center">
             <div class="w-3/4">
                 <p
-                    class="text-lg font-bold leading-tight truncate"
+                    class="{nameStyleClass} font-bold leading-tight truncate"
                     data-testId="warriorName"
                     title="{warrior.name}">
-                    {#if warrior.rank == 'GENERAL'}
-                        <WarriorRankGeneral />
-                    {:else if warrior.rank == 'CORPORAL'}
-                        <WarriorRankCorporal />
-                    {:else}
-                        <WarriorRankPrivate />
+                    {#if showRank}
+                        {#if warrior.rank == 'GENERAL'}
+                            <WarriorRankGeneral />
+                        {:else if warrior.rank == 'CORPORAL'}
+                            <WarriorRankCorporal />
+                        {:else}
+                            <WarriorRankPrivate />
+                        {/if}
                     {/if}
                     {warrior.name}
                 </p>

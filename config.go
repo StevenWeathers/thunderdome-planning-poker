@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+
 	"github.com/spf13/viper"
 )
 
@@ -28,10 +29,11 @@ func InitConfig() {
 	viper.SetDefault("smtp.port", "25")
 	viper.SetDefault("smtp.secure", true)
 	viper.SetDefault("smtp.sender", "no-reply@thunderdome.dev")
-	viper.SetDefault("config.allowedPointValues", 
+	viper.SetDefault("config.allowedPointValues",
 		[]string{"0", "1/2", "1", "2", "3", "5", "8", "13", "20", "40", "100", "?"})
 	viper.SetDefault("config.defaultPointValues",
-		[]string{"1", "2", "3", "5", "8", "13", "?" })
+		[]string{"1", "2", "3", "5", "8", "13", "?"})
+	viper.SetDefault("config.show_warrior_rank", false)
 
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")
