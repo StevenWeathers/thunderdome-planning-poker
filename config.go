@@ -54,6 +54,9 @@ func InitConfig() {
 	viper.BindEnv("smtp.user", "SMTP_USER")
 	viper.BindEnv("smtp.pass", "SMTP_PASS")
 	viper.BindEnv("smtp.sender", "SMTP_SENDER")
+	viper.BindEnv("config.allowedPointValues", "CONFIG_POINTS_ALLOWED")
+	viper.BindEnv("config.defaultPointValues", "CONFIG_POINTS_DEFAULT")
+	viper.BindEnv("config.show_warrior_rank", "CONFIG_SHOW_RANK")
 
 	err := viper.ReadInConfig()
 	if err != nil {
