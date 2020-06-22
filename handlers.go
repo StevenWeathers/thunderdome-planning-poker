@@ -545,7 +545,14 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		return
+		warrior, warErr := s.database.GetWarrior(WarriorID)
+		if warErr != nil {
+			log.Println("error reloading warrior after update : " + warErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, warrior)
 	}
 }
 
