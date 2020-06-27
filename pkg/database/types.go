@@ -24,6 +24,7 @@ type Database struct {
 type BattleWarrior struct {
 	WarriorID   string `json:"id"`
 	WarriorName string `json:"name"`
+	WarriorRank string `json:"rank"`
 	Active      bool   `json:"active"`
 }
 

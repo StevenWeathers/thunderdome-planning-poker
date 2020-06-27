@@ -163,6 +163,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 	type AppConfig struct {
 		AllowedPointValues []string
 		DefaultPointValues []string
+		ShowWarriorRank    bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -193,6 +194,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 	appConfig := AppConfig{
 		AllowedPointValues: viper.GetStringSlice("config.allowedPointValues"),
 		DefaultPointValues: viper.GetStringSlice("config.defaultPointValues"),
+		ShowWarriorRank:    viper.GetBool("config.show_warrior_rank"),
 	}
 
 	data := UIConfig{

@@ -96,8 +96,9 @@ The following configuration options exists:
 | `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  |
 | `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity.  Usually unset. |
 | `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome.|
-| `config.allowedPointValues` |                     | List of available point values for creating battles. |
-| `config.defaultPointValues` |                     | List of default selected points for new battles. |
+| `config.allowedPointValues` | CONFIG_POINTS_ALLOWED | List of available point values for creating battles. |
+| `config.defaultPointValues` | CONFIG_POINTS_DEFAULT | List of default selected points for new battles. |
+| `config.show_warrior_rank` | CONFIG_SHOW_RANK     | Set to enable an icon showing the rank of a warrior during battle. |
 
 
 # Let the Pointing Battles begin!
