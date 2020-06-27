@@ -22,10 +22,11 @@ type Database struct {
 
 // BattleWarrior aka user
 type BattleWarrior struct {
-	WarriorID   string `json:"id"`
-	WarriorName string `json:"name"`
-	WarriorRank string `json:"rank"`
-	Active      bool   `json:"active"`
+	WarriorID      string `json:"id"`
+	WarriorName    string `json:"name"`
+	WarriorRank    string `json:"rank"`
+	WarriorSprites string `json:"sprites"`
+	Active         bool   `json:"active"`
 }
 
 // Battle aka arena
@@ -42,11 +43,12 @@ type Battle struct {
 
 // Warrior aka user
 type Warrior struct {
-	WarriorID    string `json:"id"`
-	WarriorName  string `json:"name"`
-	WarriorEmail string `json:"email"`
-	WarriorRank  string `json:"rank"`
-	Verified     bool   `json:"verified"`
+	WarriorID      string `json:"id"`
+	WarriorName    string `json:"name"`
+	WarriorEmail   string `json:"email"`
+	WarriorRank    string `json:"rank"`
+	WarriorSprites string `json:"sprites"`
+	Verified       bool   `json:"verified"`
 }
 
 // Vote structure

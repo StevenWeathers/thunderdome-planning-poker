@@ -34,6 +34,7 @@ func InitConfig() {
 	viper.SetDefault("config.defaultPointValues",
 		[]string{"1", "2", "3", "5", "8", "13", "?"})
 	viper.SetDefault("config.show_warrior_rank", false)
+	viper.SetDefault("config.avatar_service", "default")
 
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")
@@ -57,6 +58,7 @@ func InitConfig() {
 	viper.BindEnv("config.allowedPointValues", "CONFIG_POINTS_ALLOWED")
 	viper.BindEnv("config.defaultPointValues", "CONFIG_POINTS_DEFAULT")
 	viper.BindEnv("config.show_warrior_rank", "CONFIG_SHOW_RANK")
+	viper.BindEnv("config.avatar_service", "CONFIG_AVATAR_SERVICE")
 
 	err := viper.ReadInConfig()
 	if err != nil {

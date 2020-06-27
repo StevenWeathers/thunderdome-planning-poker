@@ -99,7 +99,7 @@ The following configuration options exists:
 | `config.allowedPointValues` | CONFIG_POINTS_ALLOWED | List of available point values for creating battles. |
 | `config.defaultPointValues` | CONFIG_POINTS_DEFAULT | List of default selected points for new battles. |
 | `config.show_warrior_rank` | CONFIG_SHOW_RANK     | Set to enable an icon showing the rank of a warrior during battle. |
-
+| `config.avatar_service`    | CONFIG_AVATAR_SERVICE | Avatar service used, possible values are:<br> + '[default](http://api.adorable.io/avatars/avatar.png)'<br> + '[dicebear](https://avatars.dicebear.com/)' (select sprites in profile) |
 
 # Let the Pointing Battles begin!
 

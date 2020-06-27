@@ -12,13 +12,14 @@ func (d *Database) GetWarrior(WarriorID string) (*Warrior, error) {
 	var warriorEmail sql.NullString
 
 	e := d.db.QueryRow(
-		"SELECT id, name, email, rank, verified FROM warriors WHERE id = $1",
+		"SELECT id, name, email, rank, dicebear_sprites, verified FROM warriors WHERE id = $1",
 		WarriorID,
 	).Scan(
 		&w.WarriorID,
 		&w.WarriorName,
 		&warriorEmail,
 		&w.WarriorRank,
+		&w.WarriorSprites,
 		&w.Verified,
 	)
 	if e != nil {
@@ -37,13 +38,14 @@ func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Wa
 	var passHash string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, rank, password, verified FROM warriors WHERE email = $1`,
+		`SELECT id, name, email, rank, password, dicebear_sprites, verified FROM warriors WHERE email = $1`,
 		WarriorEmail,
 	).Scan(
 		&w.WarriorID,
 		&w.WarriorName,
 		&w.WarriorEmail,
 		&w.WarriorRank,
+		&w.WarriorSprites,
 		&passHash,
 		&w.Verified,
 	)
@@ -68,7 +70,7 @@ func (d *Database) CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
 		return nil, errors.New("unable to create new warrior")
 	}
 
-	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName}, nil
+	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorSprites: "identicon"}, nil
 }
 
 // CreateWarriorCorporal adds a new warrior corporal (registered) to the db
@@ -81,6 +83,7 @@ func (d *Database) CreateWarriorCorporal(WarriorName string, WarriorEmail string
 	var WarriorID string
 	var verifyID string
 	WarriorRank := "CORPORAL"
+	WarriorSprites := "identicon"
 
 	if ActiveWarriorID != "" {
 		e := d.db.QueryRow(
@@ -109,15 +112,19 @@ func (d *Database) CreateWarriorCorporal(WarriorName string, WarriorEmail string
 		}
 	}
 
-	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank}, verifyID, nil
+	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank, WarriorSprites: WarriorSprites}, verifyID, nil
 }
 
 // UpdateWarriorProfile attempts to update the warriors profile
-func (d *Database) UpdateWarriorProfile(WarriorID string, WarriorName string) error {
+func (d *Database) UpdateWarriorProfile(WarriorID string, WarriorName string, WarriorSprites string) error {
+	if WarriorSprites == "" {
+		WarriorSprites = "identicon"
+	}
 	if _, err := d.db.Exec(
-		`UPDATE warriors SET name = $2 WHERE id = $1;`,
+		`UPDATE warriors SET name = $2, dicebear_sprites = $3 WHERE id = $1;`,
 		WarriorID,
 		WarriorName,
+		WarriorSprites,
 	); err != nil {
 		log.Println(err)
 		return errors.New("error attempting to update warriors profile")

@@ -17,6 +17,19 @@
     let warriorPassword1 = ''
     let warriorPassword2 = ''
 
+    const avatar_service = appConfig.AvatarService
+    let sprites = [ 
+        "male",
+        "female",
+        "human",
+        "identicon",
+        "bottts",
+        "avataaars",
+        "jdenticon",
+        "gridy",
+        "code"
+    ]
+
     function toggleUpdatePassword() {
         updatePassword = !updatePassword
         eventTag(
@@ -40,6 +53,7 @@
         e.preventDefault()
         const body = {
             warriorName: warriorProfile.name,
+            warriorSprites: warriorProfile.sprites,
         }
         const validName = validateName(body.warriorName)
 
@@ -59,6 +73,7 @@
                         name: warriorProfile.name,
                         email: warriorProfile.email,
                         rank: warriorProfile.rank,
+                        sprites: warriorProfile.sprites,
                     })
 
                     notifications.success('Profile updated.', 1500)
@@ -176,6 +191,34 @@
                             type="email"
                             disabled />
                     </div>
+
+                    {#if avatar_service == 'dicebear'}
+                    <div class="mb-4">
+                        <label
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                            for="yourSprites">
+                            Avatar Sprites
+                        </label>
+                        <select
+                            bind:value="{warriorProfile.sprites}"
+                            class="bg-gray-200 border-gray-200 border-2
+                            appearance-none rounded w-3/4 py-2 px-3
+                            text-gray-700 leading-tight focus:outline-none
+                            cursor-not-allowed"
+                            id="yourSprites"
+                            name="yourSprites">
+                            {#each sprites as sprite}
+                            <option value="{sprite}">{sprite}</option>
+                            {/each}
+                        </select>
+                        <span
+                            class="ml-1"
+                            style="float: right;">
+                            <img src="https://avatars.dicebear.com/api/{warriorProfile.sprites}/{warriorProfile.id}.svg?w=40"
+                                alt="Placeholder Avatar" />
+                        </span>
+                    </div>
+                    {/if}
 
                     <div>
                         <div class="text-right">
