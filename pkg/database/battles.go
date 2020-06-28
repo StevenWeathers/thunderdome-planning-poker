@@ -165,7 +165,7 @@ func (d *Database) GetBattleWarrior(BattleID string, WarriorID string) (*BattleW
 
 	e := d.db.QueryRow(
 		`SELECT
-			w.id, w.name, w.rank, w.dicebear_sprites, coalesce(bw.active, FALSE)
+			w.id, w.name, w.rank, w.avatar, coalesce(bw.active, FALSE)
 		FROM warriors w
 		LEFT JOIN battles_warriors bw ON bw.warrior_id = w.id AND bw.battle_id = $1
 		WHERE id = $2`,
@@ -175,7 +175,7 @@ func (d *Database) GetBattleWarrior(BattleID string, WarriorID string) (*BattleW
 		&w.WarriorID,
 		&w.WarriorName,
 		&w.WarriorRank,
-		&w.WarriorSprites,
+		&w.WarriorAvatar,
 		&active,
 	)
 	if e != nil {
@@ -195,7 +195,7 @@ func (d *Database) GetBattleWarriors(BattleID string) []*BattleWarrior {
 	var warriors = make([]*BattleWarrior, 0)
 	rows, err := d.db.Query(
 		`SELECT
-			w.id, w.name, w.rank, w.dicebear_sprites, bw.active
+			w.id, w.name, w.rank, w.avatar, bw.active
 		FROM battles_warriors bw
 		LEFT JOIN warriors w ON bw.warrior_id = w.id
 		WHERE bw.battle_id = $1
@@ -206,7 +206,7 @@ func (d *Database) GetBattleWarriors(BattleID string) []*BattleWarrior {
 		defer rows.Close()
 		for rows.Next() {
 			var w BattleWarrior
-			if err := rows.Scan(&w.WarriorID, &w.WarriorName, &w.WarriorRank, &w.WarriorSprites, &w.Active); err != nil {
+			if err := rows.Scan(&w.WarriorID, &w.WarriorName, &w.WarriorRank, &w.WarriorAvatar, &w.Active); err != nil {
 				log.Println(err)
 			} else {
 				warriors = append(warriors, &w)

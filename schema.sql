@@ -69,7 +69,7 @@ ALTER TABLE battles ALTER COLUMN id SET DEFAULT uuid_generate_v4();
 ALTER TABLE plans ALTER COLUMN id SET DEFAULT uuid_generate_v4();
 ALTER TABLE warriors ALTER COLUMN id SET DEFAULT uuid_generate_v4();
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS verified BOOL DEFAULT false;
-ALTER TABLE warriors ADD COLUMN IF NOT EXISTS dicebear_sprites VARCHAR(128) DEFAULT 'identicon';
+ALTER TABLE warriors ADD COLUMN IF NOT EXISTS avatar VARCHAR(128) DEFAULT 'identicon';
 
 --
 -- Types (used in Stored Procedures)

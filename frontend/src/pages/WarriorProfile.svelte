@@ -18,17 +18,37 @@
     let warriorPassword2 = ''
 
     const avatar_service = appConfig.AvatarService
-    let sprites = [ 
-        "male",
-        "female",
-        "human",
-        "identicon",
-        "bottts",
-        "avataaars",
-        "jdenticon",
-        "gridy",
-        "code"
-    ]
+    let avatars
+
+    if (avatar_service == 'dicebear') {
+        avatars = [
+            "male",
+            "female",
+            "human",
+            "identicon",
+            "bottts",
+            "avataaars",
+            "jdenticon",
+            "gridy",
+            "code",
+        ]
+    } else if (avatar_service == 'gravatar') {
+        avatars = [
+            "mp",
+            "identicon",
+            "monsterid",
+            "wavatar",
+            "retro",
+            "robohash",
+        ]
+    } else if (avatar_service == 'robohash') {
+        avatars = [
+            "set1",
+            "set2",
+            "set3",
+            "set4",
+        ]
+    }
 
     function toggleUpdatePassword() {
         updatePassword = !updatePassword
@@ -53,7 +73,7 @@
         e.preventDefault()
         const body = {
             warriorName: warriorProfile.name,
-            warriorSprites: warriorProfile.sprites,
+            warriorAvatar: warriorProfile.avatar,
         }
         const validName = validateName(body.warriorName)
 
@@ -73,7 +93,7 @@
                         name: warriorProfile.name,
                         email: warriorProfile.email,
                         rank: warriorProfile.rank,
-                        sprites: warriorProfile.sprites,
+                        avatar: warriorProfile.avatar,
                     })
 
                     notifications.success('Profile updated.', 1500)
@@ -192,30 +212,38 @@
                             disabled />
                     </div>
 
-                    {#if avatar_service == 'dicebear'}
+                    {#if avatar_service == 'dicebear' || avatar_service == 'gravatar' || avatar_service == 'robohash' }
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourSprites">
-                            Avatar Sprites
+                            for="yourAvatar">
+                            Avatar Service Specifc Option
                         </label>
                         <select
-                            bind:value="{warriorProfile.sprites}"
+                            bind:value="{warriorProfile.avatar}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-3/4 py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             cursor-not-allowed"
-                            id="yourSprites"
-                            name="yourSprites">
-                            {#each sprites as sprite}
-                            <option value="{sprite}">{sprite}</option>
+                            id="yourAvatar"
+                            name="yourAvatar">
+                            {#each avatars as item}
+                            <option value="{item}">{item}</option>
                             {/each}
                         </select>
                         <span
                             class="ml-1"
                             style="float: right;">
-                            <img src="https://avatars.dicebear.com/api/{warriorProfile.sprites}/{warriorProfile.id}.svg?w=40"
+                            {#if avatar_service == 'dicebear'}
+                            <img src="https://avatars.dicebear.com/api/{warriorProfile.avatar}/{warriorProfile.id}.svg?w=40"
                                 alt="Placeholder Avatar" />
+                            {:else if avatar_service == 'gravatar'}
+                            <img src="https://gravatar.com/avatar/{warriorProfile.id}?s=40&d={warriorProfile.avatar}&r=g"
+                                alt="Placeholder Avatar" />
+                            {:else if avatar_service == 'robohash'}
+                            <img src="https://robohash.org/{warriorProfile.id}.png?set={warriorProfile.avatar}&size=40x40"
+                                alt="Placeholder Avatar" />
+                            {/if}
                         </span>
                     </div>
                     {/if}

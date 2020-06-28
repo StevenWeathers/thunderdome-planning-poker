@@ -17,10 +17,14 @@
     let nameStyleClass = showRank ? "text-lg" : "text-xl"
 
     const avatar_service = appConfig.AvatarService
-    let avatar_img;
+    let avatar_img
 
     if (avatar_service == 'dicebear') {
-        avatar_img = "https://avatars.dicebear.com/api/" + warrior.sprites + "/" + warrior.id + ".svg?w=48"
+        avatar_img = "https://avatars.dicebear.com/api/" + warrior.avatar + "/" + warrior.id + ".svg?w=48"
+    } else if (avatar_service == 'gravatar') {
+        avatar_img = "https://gravatar.com/avatar/" + warrior.id + "?s=48&d=" + warrior.avatar + "&r=g"
+    } else if (avatar_service == 'robohash') {
+        avatar_img = "https://robohash.org/" + warrior.id + ".png?set=" + warrior.avatar + "&size=48x48"
     } else {
         avatar_img = "https://api.adorable.io/avatars/48/" + warrior.id + ".png"
     }
