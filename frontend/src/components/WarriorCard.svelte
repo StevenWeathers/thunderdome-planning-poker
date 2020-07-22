@@ -16,6 +16,19 @@
     const showRank = appConfig.ShowWarriorRank
     let nameStyleClass = showRank ? "text-lg" : "text-xl"
 
+    const avatar_service = appConfig.AvatarService
+    let avatar_img
+
+    if (avatar_service == 'dicebear') {
+        avatar_img = "https://avatars.dicebear.com/api/" + warrior.avatar + "/" + warrior.id + ".svg?w=48"
+    } else if (avatar_service == 'gravatar') {
+        avatar_img = "https://gravatar.com/avatar/" + warrior.id + "?s=48&d=" + warrior.avatar + "&r=g"
+    } else if (avatar_service == 'robohash') {
+        avatar_img = "https://robohash.org/" + warrior.id + ".png?set=" + warrior.avatar + "&size=48x48"
+    } else {
+        avatar_img = "https://api.adorable.io/avatars/48/" + warrior.id + ".png"
+    }
+
     function promoteLeader() {
         sendSocketEvent('promote_leader', warrior.id)
         eventTag('promote_leader', 'battle', '')
@@ -31,9 +44,9 @@
     class="border-b border-gray-500 p-4 flex items-center"
     data-testId="warriorCard"
     data-warriorName="{warrior.name}">
-    <div class="w-1/4">
+    <div class="w-1/4" style="margin-right: 5px;">
         <img
-            src="https://api.adorable.io/avatars/48/{warrior.id}.png"
+            src="{avatar_img}"
             alt="Placeholder Avatar" />
     </div>
     <div class="w-3/4">

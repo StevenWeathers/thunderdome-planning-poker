@@ -164,6 +164,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		AllowedPointValues []string
 		DefaultPointValues []string
 		ShowWarriorRank    bool
+		AvatarService      string
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -195,6 +196,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		AllowedPointValues: viper.GetStringSlice("config.allowedPointValues"),
 		DefaultPointValues: viper.GetStringSlice("config.defaultPointValues"),
 		ShowWarriorRank:    viper.GetBool("config.show_warrior_rank"),
+		AvatarService:      viper.GetString("config.avatar_service"),
 	}
 
 	data := UIConfig{
@@ -530,6 +532,7 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 		keyVal := make(map[string]string)
 		json.Unmarshal(body, &keyVal) // check for errors
 		WarriorName := keyVal["warriorName"]
+		WarriorAvatar := keyVal["warriorAvatar"]
 
 		WarriorID := vars["id"]
 		warriorCookieID, cookieErr := s.validateWarriorCookie(w, r)
@@ -538,7 +541,7 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName)
+		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName, WarriorAvatar)
 		if updateErr != nil {
 			log.Println("error attempting to update warrior profile : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
