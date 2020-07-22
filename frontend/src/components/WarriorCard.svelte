@@ -44,10 +44,11 @@
     class="border-b border-gray-500 p-4 flex items-center"
     data-testId="warriorCard"
     data-warriorName="{warrior.name}">
-    <div class="w-1/4" style="margin-right: 5px;">
+    <div class="w-1/4 mr-1">
         <img
             src="{avatar_img}"
-            alt="Placeholder Avatar" />
+            alt="Placeholder Avatar"
+        />
     </div>
     <div class="w-3/4">
         <div class="flex items-center">
