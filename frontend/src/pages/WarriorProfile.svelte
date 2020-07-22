@@ -1,8 +1,10 @@
 <script>
     import { onMount } from 'svelte'
 
+    import DownCarrotIcon from '../components/icons/DownCarrotIcon.svelte'
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
+    import WarriorAvatar from '../components/WarriorAvatar.svelte'
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
 
@@ -17,10 +19,10 @@
     let warriorPassword1 = ''
     let warriorPassword2 = ''
 
-    const avatar_service = appConfig.AvatarService
+    const avatarService = appConfig.AvatarService
     let avatars
 
-    if (avatar_service == 'dicebear') {
+    if (avatarService == 'dicebear') {
         avatars = [
             "male",
             "female",
@@ -32,7 +34,7 @@
             "gridy",
             "code",
         ]
-    } else if (avatar_service == 'gravatar') {
+    } else if (avatarService == 'gravatar') {
         avatars = [
             "mp",
             "identicon",
@@ -41,7 +43,7 @@
             "retro",
             "robohash",
         ]
-    } else if (avatar_service == 'robohash') {
+    } else if (avatarService == 'robohash') {
         avatars = [
             "set1",
             "set2",
@@ -212,39 +214,41 @@
                             disabled />
                     </div>
 
-                    {#if avatar_service == 'dicebear' || avatar_service == 'gravatar' || avatar_service == 'robohash' }
+                    {#if avatarService == 'dicebear' || avatarService == 'gravatar' || avatarService == 'robohash' }
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
                             for="yourAvatar">
-                            Avatar Service Specifc Option
+                            Avatar
                         </label>
-                        <select
-                            bind:value="{warriorProfile.avatar}"
-                            class="bg-gray-200 border-gray-200 border-2
-                            appearance-none rounded w-3/4 py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            cursor-not-allowed"
-                            id="yourAvatar"
-                            name="yourAvatar">
-                            {#each avatars as item}
-                            <option value="{item}">{item}</option>
-                            {/each}
-                        </select>
-                        <span
-                            class="ml-1"
-                            style="float: right;">
-                            {#if avatar_service == 'dicebear'}
-                            <img src="https://avatars.dicebear.com/api/{warriorProfile.avatar}/{warriorProfile.id}.svg?w=40"
-                                alt="Placeholder Avatar" />
-                            {:else if avatar_service == 'gravatar'}
-                            <img src="https://gravatar.com/avatar/{warriorProfile.id}?s=40&d={warriorProfile.avatar}&r=g"
-                                alt="Placeholder Avatar" />
-                            {:else if avatar_service == 'robohash'}
-                            <img src="https://robohash.org/{warriorProfile.id}.png?set={warriorProfile.avatar}&size=40x40"
-                                alt="Placeholder Avatar" />
-                            {/if}
-                        </span>
+                        <div class="flex">
+                            <div class="md:w-2/3 lg:w-3/4">
+                                <div class="relative">
+                                    <select
+                                        bind:value="{warriorProfile.avatar}"
+                                        class="block appearance-none w-full border-2
+                                        border-gray-400 text-gray-700 py-3 px-4 pr-8
+                                        rounded leading-tight focus:outline-none
+                                        focus:border-purple-500"
+                                        id="yourAvatar"
+                                        name="yourAvatar">
+                                        {#each avatars as item}
+                                        <option value="{item}">{item}</option>
+                                        {/each}
+                                    </select>
+                                    <div
+                                        class="pointer-events-none absolute inset-y-0
+                                        right-0 flex items-center px-2 text-gray-700">
+                                        <DownCarrotIcon />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-1/3 lg:w-1/4 ml-1">
+                                <span class="float-right">
+                                    <WarriorAvatar warriorId={warriorProfile.id} avatar={warriorProfile.avatar} avatarService={avatarService} width="40" />
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     {/if}
 

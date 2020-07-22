@@ -4,6 +4,7 @@
     import WarriorRankPrivate from './icons/WarriorRankPrivate.svelte'
     import WarriorRankCorporal from './icons/WarriorRankCorporal.svelte'
     import WarriorRankGeneral from './icons/WarriorRankGeneral.svelte'
+    import WarriorAvatar from './WarriorAvatar.svelte'
 
     export let voted = false
     export let warrior = {}
@@ -14,21 +15,9 @@
     export let eventTag
 
     const showRank = appConfig.ShowWarriorRank
+    const avatarService = appConfig.AvatarService
     let nameStyleClass = showRank ? "text-lg" : "text-xl"
-
-    const avatar_service = appConfig.AvatarService
-    let avatar_img
-
-    if (avatar_service == 'dicebear') {
-        avatar_img = "https://avatars.dicebear.com/api/" + warrior.avatar + "/" + warrior.id + ".svg?w=48"
-    } else if (avatar_service == 'gravatar') {
-        avatar_img = "https://gravatar.com/avatar/" + warrior.id + "?s=48&d=" + warrior.avatar + "&r=g"
-    } else if (avatar_service == 'robohash') {
-        avatar_img = "https://robohash.org/" + warrior.id + ".png?set=" + warrior.avatar + "&size=48x48"
-    } else {
-        avatar_img = "https://api.adorable.io/avatars/48/" + warrior.id + ".png"
-    }
-
+    
     function promoteLeader() {
         sendSocketEvent('promote_leader', warrior.id)
         eventTag('promote_leader', 'battle', '')
@@ -45,10 +34,7 @@
     data-testId="warriorCard"
     data-warriorName="{warrior.name}">
     <div class="w-1/4 mr-1">
-        <img
-            src="{avatar_img}"
-            alt="Placeholder Avatar"
-        />
+        <WarriorAvatar warriorId="{warrior.id}" avatar="{warrior.avatar}" avatarService="{avatarService}" />
     </div>
     <div class="w-3/4">
         <div class="flex items-center">
