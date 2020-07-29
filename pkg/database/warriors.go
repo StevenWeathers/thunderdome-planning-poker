@@ -45,8 +45,8 @@ func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Wa
 		&w.WarriorName,
 		&w.WarriorEmail,
 		&w.WarriorRank,
-		&w.WarriorAvatar,
 		&passHash,
+		&w.WarriorAvatar,
 		&w.Verified,
 	)
 	if e != nil {
