@@ -100,6 +100,7 @@ The following configuration options exists:
 | `config.defaultPointValues` | CONFIG_POINTS_DEFAULT | List of default selected points for new battles. |
 | `config.show_warrior_rank` | CONFIG_SHOW_RANK     | Set to enable an icon showing the rank of a warrior during battle. |
 | `config.avatar_service`    | CONFIG_AVATAR_SERVICE | Avatar service used, possible values see next paragraph |
+| `config.toast_timeout`     | CONFIG_TOAST_TIMEOUT | Number of milliseconds before notifications are hidden. |
 
 ## Avatar Service configuration
 

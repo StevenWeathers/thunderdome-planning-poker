@@ -1,5 +1,6 @@
 <script>
     let count = 0
+    let defaultTimeout = appConfig.ToastTimeout
     let toasts = []
     let themes = {
         danger: '#bb2124',
@@ -34,6 +35,8 @@
     function createToast(msg, theme, timeout) {
         const background = themes[theme] || themes['default']
 
+	timeout = timeout || defaultTimeout
+
         toasts.unshift({
             id: count,
             msg,
@@ -49,7 +52,7 @@
         toasts = toasts.filter(t => t.id != id)
     }
 
-    export function show(msg, timeout = 1000, theme = 'default') {
+    export function show(msg, timeout, theme = 'default') {
         createToast(msg, theme, timeout)
     }
 
@@ -75,6 +78,7 @@
     export function hide() {
         shown = false
     }
+
 </script>
 
 <style>
