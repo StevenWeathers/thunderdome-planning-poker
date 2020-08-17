@@ -79,10 +79,6 @@
         shown = false
     }
 
-    export function setToastTimeout(timeout) {
-	defaultTimeout = timeout
-    }
-
 </script>
 
 <style>
