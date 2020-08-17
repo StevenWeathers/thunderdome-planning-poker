@@ -165,6 +165,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		DefaultPointValues []string
 		ShowWarriorRank    bool
 		AvatarService      string
+		ToastTimeout       int
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -197,6 +198,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		DefaultPointValues: viper.GetStringSlice("config.defaultPointValues"),
 		ShowWarriorRank:    viper.GetBool("config.show_warrior_rank"),
 		AvatarService:      viper.GetString("config.avatar_service"),
+		ToastTimeout:       viper.GetInt("config.toast_timeout"),
 	}
 
 	data := UIConfig{
