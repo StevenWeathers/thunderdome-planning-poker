@@ -36,6 +36,8 @@ func InitConfig() {
 	viper.SetDefault("config.show_warrior_rank", false)
 	viper.SetDefault("config.avatar_service", "default")
 	viper.SetDefault("config.toast_timeout", 1000)
+	viper.SetDefault("config.allow_guests", true)
+	viper.SetDefault("config.allow_registration", true)
 
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")
@@ -61,6 +63,8 @@ func InitConfig() {
 	viper.BindEnv("config.show_warrior_rank", "CONFIG_SHOW_RANK")
 	viper.BindEnv("config.avatar_service", "CONFIG_AVATAR_SERVICE")
 	viper.BindEnv("config.toast_timeout", "CONFIG_TOAST_TIMEOUT")
+	viper.BindEnv("config.allow_guests", "CONFIG_ALLOW_GUESTS")
+	viper.BindEnv("config.allow_registration", "CONFIG_ALLOW_REGISTRATION")
 
 	err := viper.ReadInConfig()
 	if err != nil {

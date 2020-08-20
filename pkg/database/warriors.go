@@ -6,6 +6,35 @@ import (
 	"log"
 )
 
+// GetRegisteredWarriors retrieves the registered warriors from db
+func (d *Database) GetRegisteredWarriors() []*Warrior {
+	var warriors = make([]*Warrior, 0)
+	rows, err := d.db.Query(
+		"SELECT id, name, email, rank, avatar, verified FROM warriors WHERE email IS NOT NULL",
+	)
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var w Warrior
+			var warriorEmail sql.NullString
+
+			if err := rows.Scan(&w.WarriorID,
+				&w.WarriorName,
+				&warriorEmail,
+				&w.WarriorRank,
+				&w.WarriorAvatar,
+				&w.Verified); err != nil {
+				log.Println(err)
+			} else {
+				w.WarriorEmail = warriorEmail.String
+				warriors = append(warriors, &w)
+			}
+		}
+	}
+
+	return warriors
+}
+
 // GetWarrior gets a warrior from db by ID
 func (d *Database) GetWarrior(WarriorID string) (*Warrior, error) {
 	var w Warrior

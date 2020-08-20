@@ -18,6 +18,7 @@
     import eventTag from './eventTag.js'
     import apiclient from './apiclient.js'
 
+    const registrationAllowed = appConfig.AllowRegistration
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
 
     let notifications
@@ -151,12 +152,14 @@
                 My Battles
             </HollowButton>
             {#if !activeWarrior.rank || activeWarrior.rank === 'PRIVATE'}
+                {#if registrationAllowed}
                 <HollowButton
                     color="teal"
                     href="/enlist"
                     additionalClasses="mr-2">
                     Create Account
                 </HollowButton>
+                {/if}
                 <HollowButton href="/login">Login</HollowButton>
             {:else}
                 {#if activeWarrior.rank === 'GENERAL'}
@@ -174,9 +177,11 @@
         </div>
     {:else}
         <div class="text-right mt-4 md:mt-0">
+            {#if registrationAllowed}
             <HollowButton color="teal" href="/enlist" additionalClasses="mr-2">
                 Create Account
             </HollowButton>
+            {/if}
             <HollowButton href="/login">Login</HollowButton>
         </div>
     {/if}

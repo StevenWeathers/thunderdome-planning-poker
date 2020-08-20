@@ -166,6 +166,8 @@ func (s *server) handleIndex() http.HandlerFunc {
 		ShowWarriorRank    bool
 		AvatarService      string
 		ToastTimeout       int
+		AllowGuests        bool
+		AllowRegistration  bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -199,6 +201,8 @@ func (s *server) handleIndex() http.HandlerFunc {
 		ShowWarriorRank:    viper.GetBool("config.show_warrior_rank"),
 		AvatarService:      viper.GetString("config.avatar_service"),
 		ToastTimeout:       viper.GetInt("config.toast_timeout"),
+		AllowGuests:        viper.GetBool("config.allow_guests"),
+		AllowRegistration:  viper.GetBool("config.allow_registration"),
 	}
 
 	data := UIConfig{
@@ -304,6 +308,12 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 // handleWarriorRecruit registers a user as a private warrior (guest)
 func (s *server) handleWarriorRecruit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		AllowGuests := viper.GetBool("config.allow_guests")
+		if AllowGuests != true {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
 		body, _ := ioutil.ReadAll(r.Body) // check for errors
 
 		keyVal := make(map[string]string)
@@ -330,6 +340,12 @@ func (s *server) handleWarriorRecruit() http.HandlerFunc {
 // handleWarriorEnlist registers a user as a corporal warrior (authenticated)
 func (s *server) handleWarriorEnlist() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		AllowRegistration := viper.GetBool("config.allow_registration")
+		if AllowRegistration != true {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
 		body, _ := ioutil.ReadAll(r.Body) // check for errors
 		keyVal := make(map[string]string)
 		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
@@ -596,5 +612,49 @@ func (s *server) handleAppStats() http.HandlerFunc {
 		}
 
 		RespondWithJSON(w, http.StatusOK, AppStats)
+	}
+}
+
+// handleGetRegisteredWarriors gets a list of registered warriors
+func (s *server) handleGetRegisteredWarriors() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		Warriors := s.database.GetRegisteredWarriors()
+
+		RespondWithJSON(w, http.StatusOK, Warriors)
+	}
+}
+
+// handleWarriorCreate registers a user as a corporal warrior (authenticated)
+func (s *server) handleWarriorCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		WarriorName, WarriorEmail, WarriorPassword, accountErr := ValidateWarriorAccount(
+			keyVal["warriorName"],
+			keyVal["warriorEmail"],
+			keyVal["warriorPassword1"],
+			keyVal["warriorPassword2"],
+		)
+
+		if accountErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		newWarrior, VerifyID, err := s.database.CreateWarriorCorporal(WarriorName, WarriorEmail, WarriorPassword, "")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		s.email.SendWelcome(WarriorName, WarriorEmail, VerifyID)
+
+		RespondWithJSON(w, http.StatusOK, newWarrior)
 	}
 }

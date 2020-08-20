@@ -30,6 +30,8 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/battles", s.handleBattlesGet())
 	// admin routes
 	s.router.HandleFunc("/api/admin/stats", s.adminOnly(s.handleAppStats()))
+	s.router.HandleFunc("/api/admin/warriors", s.adminOnly(s.handleGetRegisteredWarriors()))
+	s.router.HandleFunc("/api/admion/warrior", s.adminOnly(s.handleWarriorCreate())).Methods("POST")
 	// websocket for battle
 	s.router.HandleFunc("/api/arena/{id}", s.serveWs())
 	// handle index.html
