@@ -1,12 +1,11 @@
 <script>
     import SolidButton from './SolidButton.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
+    import WarriorRegisterForm from './WarriorRegisterForm.svelte';
 
+    export let notifications
     export let toggleCreate = () => {}
-
-    function handleSubmit(event) {
-        event.preventDefault()
-    }
+    export let handleCreate = () => {}
 </script>
 
 <div class="fixed inset-0 flex items-center z-40">
@@ -25,6 +24,7 @@
                 </button>
             </div>
 
+            <WarriorRegisterForm handleSubmit={handleCreate} notifications={notifications} />
         </div>
     </div>
 </div>

@@ -2,11 +2,14 @@
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
+    import HollowButton from '../components/HollowButton.svelte'
+    import CreateWarrior from '../components/CreateWarrior.svelte'
     import { warrior } from '../stores.js'
 
     export let xfetch
     export let router
     export let notifications
+    export let eventTag
 
     let appStats = {
         unregisteredWarriorCount: 0,
@@ -14,8 +17,42 @@
         battleCount: 0,
         planCount: 0,
     }
-
     let warriors = []
+    let showCreateWarrior = false
+
+    function toggleCreateWarrior() {
+        showCreateWarrior = !showCreateWarrior
+    }
+
+    function createWarrior (
+        warriorName,
+        warriorEmail,
+        warriorPassword1,
+        warriorPassword2
+    ) {
+        const body = {
+            warriorName,
+            warriorEmail,
+            warriorPassword1,
+            warriorPassword2,
+        }
+
+        xfetch('/api/admin/warrior', { body })
+            .then(function() {
+                eventTag(
+                    'create_account',
+                    'engagement',
+                    'success'
+                )
+
+                getWarriors()
+                toggleCreateWarrior()
+            })
+            .catch(function(error) {
+                notifications.danger('Error encountered creating warrior')
+                eventTag('create_account', 'engagement', 'failure')
+            })
+    }
 
     xfetch('/api/admin/stats')
         .then(res => res.json())
@@ -26,7 +63,8 @@
             notifications.danger('Error getting application stats')
         })
 
-    xfetch('/api/admin/warriors')
+    function getWarriors() {
+        xfetch('/api/admin/warriors')
         .then(res => res.json())
         .then(function(result) {
             warriors = result
@@ -34,6 +72,7 @@
         .catch(function(error) {
             notifications.danger('Error getting warriors')
         })
+    }
 
     onMount(() => {
         if (!$warrior.id) {
@@ -42,6 +81,8 @@
         if ($warrior.rank !== 'GENERAL') {
             router.route('/')
         }
+
+        getWarriors()
     })
 </script>
 
@@ -76,7 +117,18 @@
 
     <div class="w-full">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-            <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">Registered Warriors</h2>
+            <div class="flex w-full">
+                <div class="w-4/5">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">Registered Warriors</h2>
+                </div>
+                <div class="w-1/5">
+                    <div class="text-right">
+                        <HollowButton onClick={toggleCreateWarrior}>
+                            Create Warrior
+                        </HollowButton>
+                    </div>
+                </div>
+            </div>
 
             <table class="table-fixed w-full">
                 <thead>
@@ -100,4 +152,12 @@
             </table>
         </div>
     </div>
+
+    {#if showCreateWarrior}
+        <CreateWarrior
+            toggleCreate={toggleCreateWarrior}
+            handleCreate={createWarrior}
+            notifications
+        />
+    {/if}
 </PageLayout>
