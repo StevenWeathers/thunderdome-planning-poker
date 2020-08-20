@@ -101,6 +101,8 @@ The following configuration options exists:
 | `config.show_warrior_rank` | CONFIG_SHOW_RANK     | Set to enable an icon showing the rank of a warrior during battle. |
 | `config.avatar_service`    | CONFIG_AVATAR_SERVICE | Avatar service used, possible values see next paragraph |
 | `config.toast_timeout`     | CONFIG_TOAST_TIMEOUT | Number of milliseconds before notifications are hidden. |
+| `config.allow_guests`     | CONFIG_ALLOW_GUESTS | Whether or not to allow guest (anonymous) users. |
+| `config.allow_registration`     | CONFIG_ALLOW_REGISTRAATION | Whether or not to allow user registration (outside Admin). |
 
 ## Avatar Service configuration
 
