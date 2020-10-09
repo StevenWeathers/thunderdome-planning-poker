@@ -3,11 +3,13 @@
     import AddPlan from './AddPlan.svelte'
     import HollowButton from './HollowButton.svelte'
     import ViewPlan from './ViewPlan.svelte'
+    import JiraImport from './JiraImport.svelte'
 
     export let plans = []
     export let isLeader = false
     export let sendSocketEvent = () => {}
     export let eventTag
+    export let notifications
 
     let defaultPlan = {
         id: '',
@@ -23,6 +25,8 @@
     let showViewPlan = false
     let selectedPlan = { ...defaultPlan }
     let showCompleted = false
+
+    const allowJiraImport = appConfig.AllowJiraImport
 
     const toggleAddPlan = planId => () => {
         if (planId) {
@@ -82,14 +86,17 @@
 
 <div class="bg-white shadow-lg mb-4 rounded">
     <div class="flex items-center bg-gray-200 p-4 rounded-t">
-        <div class="w-1/2 lg:w-3/4">
+        <div class="w-1/2 lg:w-{allowJiraImport ? '1/2' : '3/4'}">
             <h3 class="text-2xl leading-tight font-bold">Plans</h3>
         </div>
-        <div class="w-1/2 lg:w-1/4 text-right">
+        <div class="w-1/2 lg:w-1/{allowJiraImport ? '2' : '4'} text-right">
             {#if isLeader}
                 <HollowButton color="blue" onClick="{toggleAddPlan()}">
                     Add Plan
                 </HollowButton>
+                {#if allowJiraImport}
+                    <JiraImport {handlePlanAdd} {notifications} />
+                {/if}
             {/if}
         </div>
     </div>

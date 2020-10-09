@@ -405,7 +405,8 @@
                     plans="{battle.plans}"
                     isLeader="{battle.leaderId === $warrior.id}"
                     {sendSocketEvent}
-                    {eventTag} />
+                    {eventTag}
+                    {notifications} />
             </div>
 
             <div class="w-full lg:w-1/4 px-4">
