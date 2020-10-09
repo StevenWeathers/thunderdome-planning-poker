@@ -103,6 +103,7 @@ The following configuration options exists:
 | `config.toast_timeout`     | CONFIG_TOAST_TIMEOUT | Number of milliseconds before notifications are hidden. |
 | `config.allow_guests`     | CONFIG_ALLOW_GUESTS | Whether or not to allow guest (anonymous) users. |
 | `config.allow_registration`     | CONFIG_ALLOW_REGISTRATION | Whether or not to allow user registration (outside Admin). |
+| `config.allow_text_urls`     | CONFIG_ALLOW_TEXT_URL |  Whether or not to allow convert URLs into "a" HTML tag to make it clickable. |
 
 ## Avatar Service configuration
 

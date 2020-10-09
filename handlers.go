@@ -168,6 +168,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		ToastTimeout       int
 		AllowGuests        bool
 		AllowRegistration  bool
+		AllowTextUrls      bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -203,6 +204,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		ToastTimeout:       viper.GetInt("config.toast_timeout"),
 		AllowGuests:        viper.GetBool("config.allow_guests"),
 		AllowRegistration:  viper.GetBool("config.allow_registration"),
+		AllowTextUrls:  viper.GetBool("config.allow_text_urls"),
 	}
 
 	data := UIConfig{

@@ -1,4 +1,5 @@
 <script>
+	import TextWithUrl from '../components/TextWithUrl.svelte'
     import AddPlan from '../components/AddPlan.svelte'
     import HollowButton from '../components/HollowButton.svelte'
 
@@ -99,7 +100,10 @@
                 <div
                     class="inline-block font-bold align-middle"
                     data-testId="battlePlanName">
-                    {plan.name}
+                    <TextWithUrl
+                        text="{plan.name}"
+                    />
+
                 </div>
                 &nbsp;
                 {#if plan.points !== ''}

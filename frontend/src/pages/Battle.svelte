@@ -10,6 +10,7 @@
     import InviteWarrior from '../components/InviteWarrior.svelte'
     import VoteResults from '../components/VoteResults.svelte'
     import HollowButton from '../components/HollowButton.svelte'
+    import TextWithUrl from '../components/TextWithUrl.svelte'
 
     import { warrior } from '../stores.js'
 
@@ -348,7 +349,9 @@
         <div class="mb-6 flex flex-wrap">
             <div class="w-full text-center md:w-2/3 md:text-left">
                 <h1 class="text-3xl font-bold leading-tight">
-                    {currentPlanName}
+                    <TextWithUrl
+                        text="{currentPlanName}"
+                    />
                 </h1>
                 <h2 class="text-gray-700 text-2xl font-bold leading-tight">
                     {battle.name}

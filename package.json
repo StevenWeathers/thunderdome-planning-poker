@@ -25,6 +25,7 @@
         "format": "prettier --write '{client}/**/*'"
     },
     "dependencies": {
+        "autolinker": "^3.14.1",
         "js-cookie": "^2.2.1",
         "navaid": "^1.1.1",
         "sockette": "^2.0.6"
