@@ -182,6 +182,10 @@
                         warrior.delete()
                         router.route(`/enlist/${battleId}`)
                     })
+                } else if (e.code === 4002) {
+                    eventTag('battle_warrior_abandoned', 'battle', '', () => {
+                        router.route(`/battles`)
+                    })
                 } else {
                     socketReconnecting = true
                     eventTag('socket_close', 'battle', '')
@@ -301,6 +305,12 @@
     function concedeBattle() {
         eventTag('concede_battle', 'battle', '', () => {
             sendSocketEvent('concede_battle', '')
+        })
+    }
+
+    function abandonBattle() {
+        eventTag('abandon_battle', 'battle', '', () => {
+            sendSocketEvent('abandon_battle', '')
         })
     }
 
@@ -436,6 +446,12 @@
                         <div class="mt-4 text-right">
                             <HollowButton color="red" onClick="{concedeBattle}">
                                 Delete Battle
+                            </HollowButton>
+                        </div>
+                    {:else}
+                        <div class="mt-4 text-right">
+                            <HollowButton color="red" onClick="{abandonBattle}">
+                                Abandon Battle
                             </HollowButton>
                         </div>
                     {/if}

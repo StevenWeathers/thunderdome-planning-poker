@@ -103,7 +103,7 @@ func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans
 		FROM battles b
 		LEFT JOIN plans p ON b.id = p.battle_id
-		LEFT JOIN battles_warriors bw ON b.id = bw.battle_id WHERE bw.warrior_id = $1
+		LEFT JOIN battles_warriors bw ON b.id = bw.battle_id WHERE bw.warrior_id = $1 AND bw.abandoned = false
 		GROUP BY b.id ORDER BY b.created_date DESC
 	`, WarriorID)
 	if battlesErr != nil {
@@ -226,7 +226,7 @@ func (d *Database) AddWarriorToBattle(BattleID string, WarriorID string) ([]*Bat
 	if _, err := d.db.Exec(
 		`INSERT INTO battles_warriors (battle_id, warrior_id, active)
 		VALUES ($1, $2, true)
-		ON CONFLICT (battle_id, warrior_id) DO UPDATE SET active = true`,
+		ON CONFLICT (battle_id, warrior_id) DO UPDATE SET active = true, abandoned = false`,
 		BattleID,
 		WarriorID,
 	); err != nil {
@@ -253,6 +253,25 @@ func (d *Database) RetreatWarrior(BattleID string, WarriorID string) []*BattleWa
 	warriors := d.GetBattleWarriors(BattleID)
 
 	return warriors
+}
+
+// AbandonBattle removes a warrior from the current battle by ID and sets abandoned true
+func (d *Database) AbandonBattle(BattleID string, WarriorID string) ([]*BattleWarrior, error) {
+	if _, err := d.db.Exec(
+		`UPDATE battles_warriors SET active = false, abandoned = true WHERE battle_id = $1 AND warrior_id = $2`, BattleID, WarriorID); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	if _, err := d.db.Exec(
+		`UPDATE warriors SET last_active = NOW() WHERE id = $1`, WarriorID); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	warriors := d.GetBattleWarriors(BattleID)
+
+	return warriors, nil
 }
 
 // SetBattleLeader sets the leaderId for the battle

@@ -27,6 +27,7 @@ type BattleWarrior struct {
 	WarriorRank   string `json:"rank"`
 	WarriorAvatar string `json:"avatar"`
 	Active        bool   `json:"active"`
+	Abandoned     bool   `json:"abandoned"`
 }
 
 // Battle aka arena

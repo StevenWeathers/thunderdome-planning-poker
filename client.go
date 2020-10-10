@@ -211,6 +211,16 @@ func (s subscription) readPump(srv *server) {
 				badEvent = true
 				break
 			}
+		case "abandon_battle":
+			_, err := srv.database.AbandonBattle(battleID, warriorID)
+			if err != nil {
+				badEvent = true
+				break
+			}
+
+			h.unregister <- s
+			c.ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4002, "abandoned"))
+			c.ws.Close()
 		default:
 		}
 
