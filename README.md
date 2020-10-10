@@ -91,6 +91,7 @@ The following configuration options exists:
 | `db.user`                  | DB_USER              | Database user id.                          |
 | `db.pass`                  | DB_PASS              | Database user password.                    |
 | `db.name`                  | DB_NAME              | Database instance name.                    |
+| `db.sslmode`               | DB_SSLMODE           | Database SSL Mode (disable, allow, prefer, require, verify-ca, verify-full).                    |
 | `smtp.host`                | SMTP_HOST            | Smtp server hostname.                      |
 | `smtp.port`                | SMTP_PORT            | Smtp server port number.                   |
 | `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  |

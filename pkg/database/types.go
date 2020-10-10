@@ -12,6 +12,7 @@ type Config struct {
 	user     string
 	password string
 	dbname   string
+	sslmode  string
 }
 
 // Database contains all the methods to interact with DB

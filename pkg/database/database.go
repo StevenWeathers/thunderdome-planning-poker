@@ -10,9 +10,8 @@ import (
 
 	_ "github.com/lib/pq" // necessary for postgres
 	"github.com/markbates/pkger"
-	"golang.org/x/crypto/bcrypt"
 	"github.com/spf13/viper"
-
+	"golang.org/x/crypto/bcrypt"
 )
 
 // HashAndSalt takes a password byte and salt + hashes it
@@ -100,6 +99,7 @@ func New(AdminEmail string) *Database {
 			user:     viper.GetString("db.user"),
 			password: viper.GetString("db.pass"),
 			dbname:   viper.GetString("db.name"),
+			sslmode:  viper.GetString("db.sslmode"),
 		},
 	}
 
@@ -117,12 +117,13 @@ func New(AdminEmail string) *Database {
 	migrationSQL := string(sqlContent)
 
 	psqlInfo := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		d.config.host,
 		d.config.port,
 		d.config.user,
 		d.config.password,
 		d.config.dbname,
+		d.config.sslmode,
 	)
 
 	pdb, err := sql.Open("postgres", psqlInfo)
