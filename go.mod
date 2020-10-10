@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/websocket v1.4.1
 	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/lib/pq v1.2.0
+	github.com/lib/pq v1.8.0
 	github.com/markbates/pkger v0.10.1
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/spf13/viper v1.6.3

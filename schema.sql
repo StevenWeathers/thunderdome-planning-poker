@@ -53,23 +53,30 @@ CREATE TABLE IF NOT EXISTS warrior_verify (
 -- Table Alterations
 --
 ALTER TABLE battles ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW();
-ALTER TABLE warriors ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW();
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW();
-ALTER TABLE warriors ADD COLUMN IF NOT EXISTS last_active TIMESTAMP DEFAULT NOW();
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW();
 ALTER TABLE battles ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW();
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS skipped BOOL DEFAULT false;
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS votestart_time TIMESTAMP DEFAULT NOW();
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS voteend_time TIMESTAMP DEFAULT NOW();
 ALTER TABLE battles ADD COLUMN IF NOT EXISTS point_values_allowed JSONB DEFAULT '["1/2", "1", "2", "3", "5", "8", "13", "?"]'::JSONB;
+ALTER TABLE battles ALTER COLUMN id SET DEFAULT uuid_generate_v4();
+
+ALTER TABLE warriors ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW();
+ALTER TABLE warriors ADD COLUMN IF NOT EXISTS last_active TIMESTAMP DEFAULT NOW();
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS email VARCHAR(320) UNIQUE;
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS password TEXT;
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS rank VARCHAR(128) DEFAULT 'PRIVATE';
-ALTER TABLE battles ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE plans ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE warriors ALTER COLUMN id SET DEFAULT uuid_generate_v4();
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS verified BOOL DEFAULT false;
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS avatar VARCHAR(128) DEFAULT 'identicon';
+ALTER TABLE warriors ALTER COLUMN id SET DEFAULT uuid_generate_v4();
+
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW();
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW();
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS skipped BOOL DEFAULT false;
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS votestart_time TIMESTAMP DEFAULT NOW();
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS voteend_time TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE plans ALTER COLUMN id SET DEFAULT uuid_generate_v4();
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS link TEXT;
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS acceptance_criteria TEXT;
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS reference_id VARCHAR(128);
 
 --
 -- Types (used in Stored Procedures)
@@ -94,10 +101,27 @@ END;
 $$;
 
 -- Create a Battle Plan --
-CREATE OR REPLACE PROCEDURE create_plan(battleId UUID, planId UUID, planName VARCHAR(256))
+CREATE OR REPLACE PROCEDURE create_plan(battleId UUID, planId UUID, planName VARCHAR(256), referenceId VARCHAR(128), planLink TEXT, planDescription TEXT, acceptanceCriteria TEXT)
 LANGUAGE plpgsql AS $$
 BEGIN
-    INSERT INTO plans (id, battle_id, name) VALUES (planId, battleId, planName);
+    INSERT INTO plans (id, battle_id, name, reference_id, link, description, acceptance_criteria)
+    VALUES (planId, battleId, planName, referenceId, planLink, planDescription, acceptanceCriteria);
+END;
+$$;
+
+-- Revise Plan --
+CREATE OR REPLACE PROCEDURE revise_plan(planId UUID, planName VARCHAR(256), referenceId VARCHAR(128), planLink TEXT, planDescription TEXT, acceptanceCriteria TEXT)
+LANGUAGE plpgsql AS $$
+BEGIN
+    UPDATE plans
+    SET
+        updated_date = NOW(),
+        name = planName,
+        reference_id = referenceId,
+        link = planLink,
+        description = planDescription,
+        acceptance_criteria = acceptanceCriteria
+    WHERE id = planId;
 END;
 $$;
 
@@ -151,13 +175,8 @@ BEGIN
 END;
 $$;
 
--- Revise Plan Name --
-CREATE OR REPLACE PROCEDURE revise_plan_name(planId UUID, planName VARCHAR(256))
-LANGUAGE plpgsql AS $$
-BEGIN
-    UPDATE plans SET updated_date = NOW(), name = planName WHERE id = planId;
-END;
-$$;
+-- Revise Plan Name (Replaced by revise_plan) --
+DROP PROCEDURE IF EXISTS revise_plan_name(planId UUID, planName VARCHAR(256));
 
 -- Delete a plan --
 CREATE OR REPLACE PROCEDURE delete_plan(battleId UUID, planId UUID)

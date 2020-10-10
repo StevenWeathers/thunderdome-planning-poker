@@ -59,12 +59,16 @@ type Vote struct {
 
 // Plan aka Story structure
 type Plan struct {
-	PlanID        string    `json:"id"`
-	PlanName      string    `json:"name"`
-	Votes         []*Vote   `json:"votes"`
-	Points        string    `json:"points"`
-	PlanActive    bool      `json:"active"`
-	PlanSkipped   bool      `json:"skipped"`
-	VoteStartTime time.Time `json:"voteStartTime"`
-	VoteEndTime   time.Time `json:"voteEndTime"`
+	PlanID             string    `json:"id"`
+	PlanName           string    `json:"name"`
+	ReferenceID        string    `json:"referenceId"`
+	Link               string    `json:"link"`
+	Description        string    `json:"description"`
+	AcceptanceCriteria string    `json:"acceptanceCriteria"`
+	Votes              []*Vote   `json:"votes"`
+	Points             string    `json:"points"`
+	PlanActive         bool      `json:"active"`
+	PlanSkipped        bool      `json:"skipped"`
+	VoteStartTime      time.Time `json:"voteStartTime"`
+	VoteEndTime        time.Time `json:"voteEndTime"`
 }

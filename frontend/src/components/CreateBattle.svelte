@@ -23,6 +23,10 @@
     function addPlan() {
         plans.unshift({
             name: '',
+            referenceId: '',
+            link: '',
+            description: '',
+            acceptanceCriteria: ''
         })
         plans = plans
     }

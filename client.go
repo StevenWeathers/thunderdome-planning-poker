@@ -112,7 +112,15 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("vote_retracted", string(updatedPlans), warriorID)
 		case "add_plan":
-			plans, err := srv.database.CreatePlan(battleID, warriorID, keyVal["value"])
+			planObj := make(map[string]string)
+			json.Unmarshal([]byte(keyVal["value"]), &planObj)
+			PlanName := planObj["planName"]
+			ReferenceID := planObj["referenceId"]
+			Link := planObj["link"]
+			Description := planObj["description"]
+			AcceptanceCriteria := planObj["acceptanceCriteria"]
+
+			plans, err := srv.database.CreatePlan(battleID, warriorID, PlanName, ReferenceID, Link, Description, AcceptanceCriteria)
 			if err != nil {
 				badEvent = true
 				break
@@ -161,8 +169,12 @@ func (s subscription) readPump(srv *server) {
 			json.Unmarshal([]byte(keyVal["value"]), &planObj)
 			PlanID := planObj["planId"]
 			PlanName := planObj["planName"]
+			ReferenceID := planObj["referenceId"]
+			Link := planObj["link"]
+			Description := planObj["description"]
+			AcceptanceCriteria := planObj["acceptanceCriteria"]
 
-			plans, err := srv.database.RevisePlanName(battleID, warriorID, PlanID, PlanName)
+			plans, err := srv.database.RevisePlan(battleID, warriorID, PlanID, PlanName, ReferenceID, Link, Description, AcceptanceCriteria)
 			if err != nil {
 				badEvent = true
 				break

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"log"
@@ -13,25 +14,42 @@ import (
 func (d *Database) GetPlans(BattleID string) []*Plan {
 	var plans = make([]*Plan, 0)
 	planRows, plansErr := d.db.Query(
-		"SELECT id, name, points, active, skipped, votestart_time, voteend_time, votes FROM plans WHERE battle_id = $1 ORDER BY created_date",
+		`SELECT
+			id, name, reference_id, link, description, acceptance_criteria, points, active, skipped, votestart_time, voteend_time, votes
+			FROM plans WHERE battle_id = $1 ORDER BY created_date
+		`,
 		BattleID,
 	)
 	if plansErr == nil {
 		defer planRows.Close()
 		for planRows.Next() {
 			var v string
+			var ReferenceID sql.NullString
+			var Link sql.NullString
+			var Description sql.NullString
+			var AcceptanceCriteria sql.NullString
 			var p = &Plan{PlanID: "",
-				PlanName:      "",
-				Votes:         make([]*Vote, 0),
-				Points:        "",
-				PlanActive:    false,
-				PlanSkipped:   false,
-				VoteStartTime: time.Now(),
-				VoteEndTime:   time.Now(),
+				PlanName:           "",
+				ReferenceID:        "",
+				Link:               "",
+				Description:        "",
+				AcceptanceCriteria: "",
+				Votes:              make([]*Vote, 0),
+				Points:             "",
+				PlanActive:         false,
+				PlanSkipped:        false,
+				VoteStartTime:      time.Now(),
+				VoteEndTime:        time.Now(),
 			}
-			if err := planRows.Scan(&p.PlanID, &p.PlanName, &p.Points, &p.PlanActive, &p.PlanSkipped, &p.VoteStartTime, &p.VoteEndTime, &v); err != nil {
+			if err := planRows.Scan(
+				&p.PlanID, &p.PlanName, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Points, &p.PlanActive, &p.PlanSkipped, &p.VoteStartTime, &p.VoteEndTime, &v,
+			); err != nil {
 				log.Println(err)
 			} else {
+				p.ReferenceID = ReferenceID.String
+				p.Link = Link.String
+				p.Description = Description.String
+				p.AcceptanceCriteria = AcceptanceCriteria.String
 				err = json.Unmarshal([]byte(v), &p.Votes)
 				if err != nil {
 					log.Println(err)
@@ -54,7 +72,7 @@ func (d *Database) GetPlans(BattleID string) []*Plan {
 }
 
 // CreatePlan adds a new plan to a battle
-func (d *Database) CreatePlan(BattleID string, warriorID string, PlanName string) ([]*Plan, error) {
+func (d *Database) CreatePlan(BattleID string, warriorID string, PlanName string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*Plan, error) {
 	err := d.ConfirmLeader(BattleID, warriorID)
 	if err != nil {
 		return nil, errors.New("incorrect permissions")
@@ -65,7 +83,7 @@ func (d *Database) CreatePlan(BattleID string, warriorID string, PlanName string
 	PlanID := newID.String()
 
 	if _, err := d.db.Exec(
-		`call create_plan($1, $2, $3);`, BattleID, PlanID, PlanName,
+		`call create_plan($1, $2, $3, $4, $5, $6, $7);`, BattleID, PlanID, PlanName, ReferenceID, Link, Description, AcceptanceCriteria,
 	); err != nil {
 		log.Println(err)
 	}
@@ -151,8 +169,8 @@ func (d *Database) SkipPlan(BattleID string, warriorID string, PlanID string) ([
 	return plans, nil
 }
 
-// RevisePlanName updates the plan name by ID
-func (d *Database) RevisePlanName(BattleID string, warriorID string, PlanID string, PlanName string) ([]*Plan, error) {
+// RevisePlan updates the plan by ID
+func (d *Database) RevisePlan(BattleID string, warriorID string, PlanID string, PlanName string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*Plan, error) {
 	err := d.ConfirmLeader(BattleID, warriorID)
 	if err != nil {
 		return nil, errors.New("incorrect permissions")
@@ -160,7 +178,7 @@ func (d *Database) RevisePlanName(BattleID string, warriorID string, PlanID stri
 
 	// set PlanID to true
 	if _, err := d.db.Exec(
-		`call revise_plan_name($2, $1);`, PlanName, PlanID); err != nil {
+		`call revise_plan($1, $2, $3, $4, $5, $6);`, PlanID, PlanName, ReferenceID, Link, Description, AcceptanceCriteria); err != nil {
 		log.Println(err)
 	}
 
