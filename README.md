@@ -78,32 +78,32 @@ located in one of:
 
 The following configuration options exists:
 
-| Option                     | Environment Variable | Description                                |
-| -------------------------- | -------------------- | ------------------------------------------ |
-| `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | 
-| `http.port`                | PORT                 | Which port to listen for HTTP connections. |
-| `http.secure_cookie`       | COOKIE_SECURE        | Use secure cookies or not.                 |
-| `http.domain`              | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome.  Used for creating URLs in emails. |
-| `analytics.enabled`        | ANALYTICS_ENABLED    | Enable/disable google analytics.           |
-| `analytics.id`             | ANALYTICS_ID         | Google analytics identifier.               |
-| `db.host`                  | DB_HOST              | Database host name.                        |
-| `db.port`                  | DB_PORT              | Database port number.                      |
-| `db.user`                  | DB_USER              | Database user id.                          |
-| `db.pass`                  | DB_PASS              | Database user password.                    |
-| `db.name`                  | DB_NAME              | Database instance name.                    |
-| `db.sslmode`               | DB_SSLMODE           | Database SSL Mode (disable, allow, prefer, require, verify-ca, verify-full).                    |
-| `smtp.host`                | SMTP_HOST            | Smtp server hostname.                      |
-| `smtp.port`                | SMTP_PORT            | Smtp server port number.                   |
-| `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  |
-| `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity.  Usually unset. |
-| `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome.|
-| `config.allowedPointValues` | CONFIG_POINTS_ALLOWED | List of available point values for creating battles. |
-| `config.defaultPointValues` | CONFIG_POINTS_DEFAULT | List of default selected points for new battles. |
-| `config.show_warrior_rank` | CONFIG_SHOW_RANK     | Set to enable an icon showing the rank of a warrior during battle. |
-| `config.avatar_service`    | CONFIG_AVATAR_SERVICE | Avatar service used, possible values see next paragraph |
-| `config.toast_timeout`     | CONFIG_TOAST_TIMEOUT | Number of milliseconds before notifications are hidden. |
-| `config.allow_guests`     | CONFIG_ALLOW_GUESTS | Whether or not to allow guest (anonymous) users. |
-| `config.allow_registration`     | CONFIG_ALLOW_REGISTRAATION | Whether or not to allow user registration (outside Admin). |
+| Option                     | Environment Variable | Description                                | Default Value           |
+| -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
+| `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | "strongest-avenger" |
+| `http.port`                | PORT                 | Which port to listen for HTTP connections. | 8080 |
+| `http.secure_cookie`       | COOKIE_SECURE        | Use secure cookies or not.                 | true |
+| `http.domain`              | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome.  Used for creating URLs in emails. | thunderdome.dev |
+| `analytics.enabled`        | ANALYTICS_ENABLED    | Enable/disable google analytics.           | true |
+| `analytics.id`             | ANALYTICS_ID         | Google analytics identifier.               | UA-140245309-1 |
+| `db.host`                  | DB_HOST              | Database host name.                        | db |
+| `db.port`                  | DB_PORT              | Database port number.                      | 5432 |
+| `db.user`                  | DB_USER              | Database user id.                          | thor |
+| `db.pass`                  | DB_PASS              | Database user password.                    | odinson |
+| `db.name`                  | DB_NAME              | Database instance name.                    | thunderdome |
+| `db.sslmode`               | DB_SSLMODE           | Database SSL Mode (disable, allow, prefer, require, verify-ca, verify-full). | disable |
+| `smtp.host`                | SMTP_HOST            | Smtp server hostname.                      | localhost |
+| `smtp.port`                | SMTP_PORT            | Smtp server port number.                   | 25 |
+| `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  | true |
+| `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity.  Usually unset. | |
+| `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome. | no-reply@thunderdome.dev |
+| `config.allowedPointValues` | CONFIG_POINTS_ALLOWED | List of available point values for creating battles. | 0, 1/2, 2, 3, 5, 8, 13, 20, 40, 100, ? |
+| `config.defaultPointValues` | CONFIG_POINTS_DEFAULT | List of default selected points for new battles. | 1, 2, 3, 5, 8 , 13, ? |
+| `config.show_warrior_rank` | CONFIG_SHOW_RANK     | Set to enable an icon showing the rank of a warrior during battle. | false |
+| `config.avatar_service`    | CONFIG_AVATAR_SERVICE | Avatar service used, possible values see next paragraph | default |
+| `config.toast_timeout`     | CONFIG_TOAST_TIMEOUT | Number of milliseconds before notifications are hidden. | 1000 |
+| `config.allow_guests`     | CONFIG_ALLOW_GUESTS | Whether or not to allow guest (anonymous) users. | true |
+| `config.allow_registration`     | CONFIG_ALLOW_REGISTRAATION | Whether or not to allow user registration (outside Admin). | true |
 
 ## Avatar Service configuration
 
