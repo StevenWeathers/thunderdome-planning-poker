@@ -21,6 +21,11 @@
         eventTag('plan_skip', 'battle', '')
     }
 
+    const restartVoting = () => {
+        sendSocketEvent('activate_plan', planId)
+        eventTag('plan_restart_vote', 'battle', '')
+    }
+
     function handleSubmit(event) {
         event.preventDefault()
 
@@ -50,6 +55,12 @@
                 Finish Voting
             </SolidButton>
         {:else}
+            <SolidButton
+                color="blue"
+                additionalClasses="mb-2 w-full"
+                onClick="{restartVoting}">
+                Restart Voting
+            </SolidButton>
             <form on:submit="{handleSubmit}" name="savePlanPoints">
                 <legend class="text-xl mb-2 font-semibold leading-tight">
                     Final Points
