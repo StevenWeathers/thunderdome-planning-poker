@@ -12,6 +12,7 @@
     let defaultPlan = {
         id: '',
         name: '',
+        type: '',
         referenceId: '',
         link: '',
         description: '',
@@ -125,6 +126,12 @@
                     <a href="{plan.link}" target="_blank" class="text-blue-800">
                         <ExternalLinkIcon />
                     </a>&nbsp;{/if}
+                    <div
+                        class="inline-block text-sm text-gray-500
+                        border-gray-400 border px-1 rounded"
+                        data-testId="battlePlanType">
+                        {plan.type}
+                    </div>&nbsp;
                     {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}{plan.name}
                 </div>
                 &nbsp;
@@ -174,6 +181,7 @@
         {handlePlanRevision}
         planId="{selectedPlan.id}"
         planName="{selectedPlan.name}"
+        planType="{selectedPlan.type}"
         referenceId="{selectedPlan.referenceId}"
         planLink="{selectedPlan.link}"
         description="{selectedPlan.description}"
@@ -185,6 +193,7 @@
     <ViewPlan
         togglePlanView="{togglePlanView()}"
         planName="{selectedPlan.name}"
+        planType="{selectedPlan.type}"
         referenceId="{selectedPlan.referenceId}"
         planLink="{selectedPlan.link}"
         description="{selectedPlan.description}"

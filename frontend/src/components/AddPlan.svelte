@@ -1,13 +1,18 @@
 <script>
     import SolidButton from './SolidButton.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
+    import DownCarrotIcon from './icons/DownCarrotIcon.svelte'
 
     export let handlePlanAdd = () => {}
     export let toggleAddPlan = () => {}
     export let handlePlanRevision = () => {}
 
+    // going by common Jira issue types for now
+    export const planTypes = ["story", "bug", "spike", "epic", "task", "subtask"]
+
     export let planId = ''
     export let planName = ''
+    export let planType = 'story'
     export let referenceId = ''
     export let planLink = ''
     export let description = ''
@@ -17,6 +22,7 @@
         event.preventDefault()
         const plan = {
             planName,
+            type: planType,
             referenceId,
             link: planLink,
             description,
@@ -50,6 +56,31 @@
             </div>
 
             <form on:submit="{handleSubmit}" name="addPlan">
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2" for="planName">
+                        Plan Type
+                    </label>
+                    <div class="relative">
+                        <select
+                            name="planType"
+                            bind:value="{planType}"
+                            required
+                            class="block appearance-none w-full border-2
+                            border-gray-400 text-gray-700 py-3 px-4 pr-8
+                            rounded leading-tight focus:outline-none
+                            focus:border-purple-500">
+                            <option value="" disabled>Types</option>
+                            {#each planTypes as pType}
+                                <option value="{pType}">{pType}</option>
+                            {/each}
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0
+                            right-0 flex items-center px-2 text-gray-700">
+                            <DownCarrotIcon />
+                        </div>
+                    </div>
+                </div>
                 <div class="mb-4">
                     <label class="block text-sm font-bold mb-2" for="planName">
                         Plan Name

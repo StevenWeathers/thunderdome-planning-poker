@@ -115,12 +115,13 @@ func (s subscription) readPump(srv *server) {
 			planObj := make(map[string]string)
 			json.Unmarshal([]byte(keyVal["value"]), &planObj)
 			PlanName := planObj["planName"]
+			PlanType := planObj["type"]
 			ReferenceID := planObj["referenceId"]
 			Link := planObj["link"]
 			Description := planObj["description"]
 			AcceptanceCriteria := planObj["acceptanceCriteria"]
 
-			plans, err := srv.database.CreatePlan(battleID, warriorID, PlanName, ReferenceID, Link, Description, AcceptanceCriteria)
+			plans, err := srv.database.CreatePlan(battleID, warriorID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria)
 			if err != nil {
 				badEvent = true
 				break
@@ -169,12 +170,13 @@ func (s subscription) readPump(srv *server) {
 			json.Unmarshal([]byte(keyVal["value"]), &planObj)
 			PlanID := planObj["planId"]
 			PlanName := planObj["planName"]
+			PlanType := planObj["type"]
 			ReferenceID := planObj["referenceId"]
 			Link := planObj["link"]
 			Description := planObj["description"]
 			AcceptanceCriteria := planObj["acceptanceCriteria"]
 
-			plans, err := srv.database.RevisePlan(battleID, warriorID, PlanID, PlanName, ReferenceID, Link, Description, AcceptanceCriteria)
+			plans, err := srv.database.RevisePlan(battleID, warriorID, PlanID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria)
 			if err != nil {
 				badEvent = true
 				break

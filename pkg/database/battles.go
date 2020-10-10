@@ -37,9 +37,10 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 		plan.Votes = make([]*Vote, 0)
 
 		e := d.db.QueryRow(
-			`INSERT INTO plans (battle_id, name, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 			b.BattleID,
 			plan.PlanName,
+			plan.Type,
 			plan.ReferenceID,
 			plan.Link,
 			plan.Description,

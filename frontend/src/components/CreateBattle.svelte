@@ -23,6 +23,7 @@
     function addPlan() {
         plans.unshift({
             name: '',
+            type: '',
             referenceId: '',
             link: '',
             description: '',

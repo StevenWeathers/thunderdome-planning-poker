@@ -15,7 +15,7 @@ func (d *Database) GetPlans(BattleID string) []*Plan {
 	var plans = make([]*Plan, 0)
 	planRows, plansErr := d.db.Query(
 		`SELECT
-			id, name, reference_id, link, description, acceptance_criteria, points, active, skipped, votestart_time, voteend_time, votes
+			id, name, type, reference_id, link, description, acceptance_criteria, points, active, skipped, votestart_time, voteend_time, votes
 			FROM plans WHERE battle_id = $1 ORDER BY created_date
 		`,
 		BattleID,
@@ -30,6 +30,7 @@ func (d *Database) GetPlans(BattleID string) []*Plan {
 			var AcceptanceCriteria sql.NullString
 			var p = &Plan{PlanID: "",
 				PlanName:           "",
+				Type:               "",
 				ReferenceID:        "",
 				Link:               "",
 				Description:        "",
@@ -42,7 +43,7 @@ func (d *Database) GetPlans(BattleID string) []*Plan {
 				VoteEndTime:        time.Now(),
 			}
 			if err := planRows.Scan(
-				&p.PlanID, &p.PlanName, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Points, &p.PlanActive, &p.PlanSkipped, &p.VoteStartTime, &p.VoteEndTime, &v,
+				&p.PlanID, &p.PlanName, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Points, &p.PlanActive, &p.PlanSkipped, &p.VoteStartTime, &p.VoteEndTime, &v,
 			); err != nil {
 				log.Println(err)
 			} else {
@@ -72,7 +73,7 @@ func (d *Database) GetPlans(BattleID string) []*Plan {
 }
 
 // CreatePlan adds a new plan to a battle
-func (d *Database) CreatePlan(BattleID string, warriorID string, PlanName string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*Plan, error) {
+func (d *Database) CreatePlan(BattleID string, warriorID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*Plan, error) {
 	err := d.ConfirmLeader(BattleID, warriorID)
 	if err != nil {
 		return nil, errors.New("incorrect permissions")
@@ -83,7 +84,7 @@ func (d *Database) CreatePlan(BattleID string, warriorID string, PlanName string
 	PlanID := newID.String()
 
 	if _, err := d.db.Exec(
-		`call create_plan($1, $2, $3, $4, $5, $6, $7);`, BattleID, PlanID, PlanName, ReferenceID, Link, Description, AcceptanceCriteria,
+		`call create_plan($1, $2, $3, $4, $5, $6, $7, $8);`, BattleID, PlanID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria,
 	); err != nil {
 		log.Println(err)
 	}
@@ -170,7 +171,7 @@ func (d *Database) SkipPlan(BattleID string, warriorID string, PlanID string) ([
 }
 
 // RevisePlan updates the plan by ID
-func (d *Database) RevisePlan(BattleID string, warriorID string, PlanID string, PlanName string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*Plan, error) {
+func (d *Database) RevisePlan(BattleID string, warriorID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*Plan, error) {
 	err := d.ConfirmLeader(BattleID, warriorID)
 	if err != nil {
 		return nil, errors.New("incorrect permissions")
@@ -178,7 +179,7 @@ func (d *Database) RevisePlan(BattleID string, warriorID string, PlanID string, 
 
 	// set PlanID to true
 	if _, err := d.db.Exec(
-		`call revise_plan($1, $2, $3, $4, $5, $6);`, PlanID, PlanName, ReferenceID, Link, Description, AcceptanceCriteria); err != nil {
+		`call revise_plan($1, $2, $3, $4, $5, $6, $7);`, PlanID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria); err != nil {
 		log.Println(err)
 	}
 

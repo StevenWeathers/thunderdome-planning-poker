@@ -76,6 +76,7 @@ ALTER TABLE plans ADD COLUMN IF NOT EXISTS link TEXT;
 ALTER TABLE plans ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE plans ADD COLUMN IF NOT EXISTS acceptance_criteria TEXT;
 ALTER TABLE plans ADD COLUMN IF NOT EXISTS reference_id VARCHAR(128);
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS type VARCHAR(64) DEFAULT 'story';
 
 ALTER TABLE battles_warriors ADD COLUMN IF NOT EXISTS abandoned BOOL DEFAULT false;
 
@@ -102,22 +103,23 @@ END;
 $$;
 
 -- Create a Battle Plan --
-CREATE OR REPLACE PROCEDURE create_plan(battleId UUID, planId UUID, planName VARCHAR(256), referenceId VARCHAR(128), planLink TEXT, planDescription TEXT, acceptanceCriteria TEXT)
+CREATE OR REPLACE PROCEDURE create_plan(battleId UUID, planId UUID, planName VARCHAR(256), planType VARCHAR(64), referenceId VARCHAR(128), planLink TEXT, planDescription TEXT, acceptanceCriteria TEXT)
 LANGUAGE plpgsql AS $$
 BEGIN
-    INSERT INTO plans (id, battle_id, name, reference_id, link, description, acceptance_criteria)
-    VALUES (planId, battleId, planName, referenceId, planLink, planDescription, acceptanceCriteria);
+    INSERT INTO plans (id, battle_id, name, type, reference_id, link, description, acceptance_criteria)
+    VALUES (planId, battleId, planName, planType, referenceId, planLink, planDescription, acceptanceCriteria);
 END;
 $$;
 
 -- Revise Plan --
-CREATE OR REPLACE PROCEDURE revise_plan(planId UUID, planName VARCHAR(256), referenceId VARCHAR(128), planLink TEXT, planDescription TEXT, acceptanceCriteria TEXT)
+CREATE OR REPLACE PROCEDURE revise_plan(planId UUID, planName VARCHAR(256), planType VARCHAR(64), referenceId VARCHAR(128), planLink TEXT, planDescription TEXT, acceptanceCriteria TEXT)
 LANGUAGE plpgsql AS $$
 BEGIN
     UPDATE plans
     SET
         updated_date = NOW(),
         name = planName,
+        type = planType,
         reference_id = referenceId,
         link = planLink,
         description = planDescription,

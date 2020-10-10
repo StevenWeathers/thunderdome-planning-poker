@@ -5,6 +5,7 @@
     export let togglePlanView = () => {}
 
     export let planName = ''
+    export let planType = ''
     export let referenceId = ''
     export let planLink = ''
     export let description = ''
@@ -27,6 +28,12 @@
                 </button>
             </div>
 
+            <div class="mb-4">
+                <div class="text-sm font-bold mb-2">
+                    Plan Type
+                </div>
+                {planType}
+            </div>
             <div class="mb-4">
                 <div class="text-sm font-bold mb-2">
                     Plan Name

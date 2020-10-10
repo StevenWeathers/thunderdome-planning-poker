@@ -62,6 +62,7 @@ type Vote struct {
 type Plan struct {
 	PlanID             string    `json:"id"`
 	PlanName           string    `json:"name"`
+	Type               string    `json:"type"`
 	ReferenceID        string    `json:"referenceId"`
 	Link               string    `json:"link"`
 	Description        string    `json:"description"`
