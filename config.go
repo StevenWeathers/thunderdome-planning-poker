@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// InitConfig initializes the application configuration
 func InitConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

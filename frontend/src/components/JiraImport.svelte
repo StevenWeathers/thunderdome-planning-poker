@@ -72,4 +72,4 @@
 </style>
 
 <input type="file" on:change="{uploadFile}" data-jira-import/>
-<HollowButton onClick="{showDialog}">Import from JIRA</HollowButton>
+<HollowButton onClick="{showDialog}">Import plans from Jira XML</HollowButton>
