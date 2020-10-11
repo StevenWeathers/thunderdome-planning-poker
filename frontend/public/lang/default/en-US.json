@@ -128,7 +128,38 @@
             }
         },
         "login": {
-            "nav": "Login"
+            "nav": "Login",
+            "title": "Login",
+            "button": "Login",
+            "authError": "Error encountered attempting to authenticate warrior",
+            "sendResetSuccess": "Password reset instructions sent to {email}",
+            "sendResetError": "Error encountered attempting to send password reset",
+            "fields": {
+                "email": {
+                    "label": "Email",
+                    "placeholder": "Enter your email"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "Enter your password",
+                    "forgotLabel": "Forgot Password?"
+                }
+            },
+            "passwordReset": {
+                "title": "Reset Password",
+                "resetError": "Error encountered attempting to reset password",
+                "saveButton": "Reset",
+                "fields": {
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Enter your new password"
+                    },
+                    "confirmPassword": {
+                        "label": "Confirm Password",
+                        "placeholder": "Enter your new password"
+                    }
+                }
+            }
         },
         "battle": {
             "title": "Battle",

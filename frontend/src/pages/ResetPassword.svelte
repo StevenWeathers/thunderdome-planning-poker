@@ -3,6 +3,7 @@
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
     import { validatePasswords } from '../validationUtils.js'
+    import { _ } from '../i18n'
 
     export let xfetch
     export let router
@@ -41,7 +42,7 @@
                 })
                 .catch(function(error) {
                     notifications.danger(
-                        'Error encountered attempting to reset password',
+                        $_('pages.login.passwordReset.resetError'),
                     )
                     eventTag('reset_password', 'engagement', 'failure')
                 })
@@ -61,18 +62,18 @@
                 <div
                     class="font-bold text-xl md:text-2xl mb-2 md:mb-6
                     md:leading-tight text-center">
-                    Reset Password
+                    {$_('pages.login.passwordReset.title')}
                 </div>
 
                 <div class="mb-4">
                     <label
                         class="block text-gray-700 text-sm font-bold mb-2"
                         for="yourPassword1">
-                        Password
+                        {$_('pages.login.passwordReset.fields.password.label')}
                     </label>
                     <input
                         bind:value="{warriorPassword1}"
-                        placeholder="Enter a password"
+                        placeholder="{$_('pages.login.passwordReset.fields.password.placeholder')}"
                         class="bg-gray-200 border-gray-200 border-2
                         appearance-none rounded w-full py-2 px-3 text-gray-700
                         leading-tight focus:outline-none focus:bg-white
@@ -87,11 +88,11 @@
                     <label
                         class="block text-gray-700 text-sm font-bold mb-2"
                         for="yourPassword2">
-                        Confirm Password
+                        {$_('pages.login.passwordReset.fields.confirmPassword.label')}
                     </label>
                     <input
                         bind:value="{warriorPassword2}"
-                        placeholder="Confirm your password"
+                        placeholder="{$_('pages.login.passwordReset.fields.confirmPassword.placeholder')}"
                         class="bg-gray-200 border-gray-200 border-2
                         appearance-none rounded w-full py-2 px-3 text-gray-700
                         leading-tight focus:outline-none focus:bg-white
@@ -104,7 +105,7 @@
 
                 <div class="text-right">
                     <SolidButton type="submit" disabled="{resetDisabled}">
-                        Reset
+                        {$_('pages.login.passwordReset.saveButton')}
                     </SolidButton>
                 </div>
             </form>

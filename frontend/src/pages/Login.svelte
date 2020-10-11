@@ -2,6 +2,7 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
+    import { _ } from '../i18n'
 
     export let router
     export let xfetch
@@ -39,9 +40,7 @@
                 })
             })
             .catch(function(error) {
-                notifications.danger(
-                    'Error encountered attempting to authenticate warrior',
-                )
+                notifications.danger($_('pages.login.authError'))
                 eventTag('login', 'engagement', 'failure')
             })
     }
@@ -64,18 +63,16 @@
         xfetch('/api/auth/forgot-password', { body })
             .then(function() {
                 notifications.success(
-                    `
-                    Password reset instructions sent to ${warriorResetEmail}.
-                `,
+                    $_('pages.login.sendResetSuccess', {
+                        values: { email: warriorResetEmail },
+                    }),
                     2000,
                 )
                 forgotPassword = !forgotPassword
                 eventTag('forgot_password', 'engagement', 'success')
             })
             .catch(function(error) {
-                notifications.danger(
-                    'Error encountered attempting to send password reset',
-                )
+                notifications.danger($_('pages.login.sendResetError'))
                 eventTag('forgot_password', 'engagement', 'failure')
             })
     }
@@ -95,17 +92,17 @@
                     <div
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
                         md:leading-tight text-center">
-                        Login
+                        {$_('pages.login.title')}
                     </div>
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
                             for="yourEmail">
-                            Email
+                            {$_('pages.login.fields.email.label')}
                         </label>
                         <input
                             bind:value="{warriorEmail}"
-                            placeholder="Enter your email"
+                            placeholder="{$_('pages.login.fields.email.placeholder')}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -120,11 +117,11 @@
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
                             for="yourPassword">
-                            Password
+                            {$_('pages.login.fields.password.label')}
                         </label>
                         <input
                             bind:value="{warriorPassword}"
-                            placeholder="Enter your password"
+                            placeholder="{$_('pages.login.fields.password.placeholder')}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -141,10 +138,10 @@
                             class="inline-block align-baseline font-bold text-sm
                             text-blue-500 hover:text-blue-800 mr-4"
                             on:click="{toggleForgotPassword}">
-                            Forgot Password?
+                            {$_('pages.login.fields.password.forgotLabel')}
                         </button>
                         <SolidButton type="submit" disabled="{loginDisabled}">
-                            Login
+                            {$_('pages.login.button')}
                         </SolidButton>
                     </div>
                 </form>
