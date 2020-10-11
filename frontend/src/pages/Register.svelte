@@ -4,6 +4,7 @@
     import WarriorRegisterForm from '../components/WarriorRegisterForm.svelte'
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
+    import { _ } from '../i18n'
 
     export let router
     export let xfetch
@@ -51,7 +52,7 @@
                 })
                 .catch(function(error) {
                     notifications.danger(
-                        'Error encountered registering warrior as guest',
+                        $_('pages.createAccount.guestForm.createError'),
                     )
                     eventTag('register_guest', 'engagement', 'failure')
                 })
@@ -86,7 +87,9 @@
                 })
             })
             .catch(function(error) {
-                notifications.danger('Error encountered creating warrior')
+                notifications.danger(
+                    $_('pages.createAccount.createAccountForm.createError'),
+                )
                 eventTag('register_account', 'engagement', 'failure')
             })
     }
@@ -96,7 +99,9 @@
 
 <PageLayout>
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">Enlist to Battle</h1>
+        <h1 class="text-3xl md:text-4xl font-bold">
+            {$_('pages.createAccount.title')}
+        </h1>
     </div>
     <div class="flex flex-wrap justify-center">
         {#if !$warrior.id && guestsAllowed && registrationAllowed}
@@ -108,18 +113,18 @@
                     <h2
                         class="font-bold text-xl md:text-2xl b-4 mb-2 md:mb-6
                         md:leading-tight text-center">
-                        Register as Guest
+                        {$_('pages.createAccount.guestForm.title')}
                     </h2>
 
                     <div class="mb-6">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
                             for="yourName1">
-                            Name
+                            {$_('pages.createAccount.guestForm.fields.name.label')}
                         </label>
                         <input
                             bind:value="{warriorName}"
-                            placeholder="Enter your name"
+                            placeholder="{$_('pages.createAccount.guestForm.fields.name.placeholder')}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -133,7 +138,7 @@
                             <SolidButton
                                 type="submit"
                                 disabled="{registerDisabled}">
-                                Register
+                                {$_('pages.createAccount.guestForm.saveButton')}
                             </SolidButton>
                         </div>
                     </div>
@@ -147,8 +152,15 @@
                     <h2
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
                         md:leading-tight text-center">
-                        Create an Account
-                        <span class="text-gray-500">(optional)</span>
+                        {@html $_(
+                            'pages.createAccount.createAccountForm.title',
+                            {
+                                values: {
+                                    optionalOpen: `<span class="text-gray-500">`,
+                                    optionalClose: `</span>`,
+                                },
+                            },
+                        )}
                     </h2>
 
                     <WarriorRegisterForm
@@ -162,7 +174,7 @@
                 <h2
                     class="font-bold text-2xl md:text-3xl md:leading-tight
                     text-center">
-                    Registration is disabled.
+                    {$_('pages.createAccount.registrationDisabled')}
                 </h2>
             </div>
         {/if}

@@ -15,7 +15,7 @@
     const defaultPlan = {
         id: '',
         name: '',
-        type: 'story',
+        type: $_('actions.plan.types.story'),
         referenceId: '',
         link: '',
         description: '',

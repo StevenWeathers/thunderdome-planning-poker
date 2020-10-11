@@ -2,6 +2,7 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
+    import { _ } from '../i18n'
 
     export let xfetch
     export let eventTag
@@ -29,24 +30,25 @@
                     class="bg-green-100 border border-green-400 text-green-700
                     px-4 py-3 rounded relative"
                     role="alert">
-                    <strong class="font-bold">Account Verified</strong>
-                    <p>Thanks for verifying your email.</p>
+                    <strong class="font-bold">
+                        {$_('pages.verifyAccount.verified.title')}
+                    </strong>
+                    <p>{$_('pages.verifyAccount.verified.thanks')}</p>
                 </div>
             {:else if verficationError}
                 <div
                     class="bg-red-100 border border-red-400 text-red-700 px-4
                     py-3 rounded relative"
                     role="alert">
-                    <strong class="font-bold">Verification Failed</strong>
-                    <p>
-                        Something when wrong verifying your account, perhaps
-                        this link expired or was already used.
-                    </p>
+                    <strong class="font-bold">
+                        {$_('pages.verifyAccount.failed.title')}
+                    </strong>
+                    <p>{$_('pages.verifyAccount.failed.error')}</p>
                 </div>
             {:else}
                 <div class="text-center">
                     <h1 class="text-4xl text-teal-500 leading-tight font-bold">
-                        Verifying Account...
+                        {$_('pages.verifyAccount.loading')}
                     </h1>
                 </div>
             {/if}

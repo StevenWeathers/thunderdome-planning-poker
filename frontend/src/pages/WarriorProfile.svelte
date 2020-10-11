@@ -7,6 +7,7 @@
     import WarriorAvatar from '../components/WarriorAvatar.svelte'
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
+    import { _ } from '../i18n'
 
     export let xfetch
     export let router
@@ -62,7 +63,7 @@
             warriorProfile = wp
         })
         .catch(function(error) {
-            notifications.danger('Error getting your profile')
+            notifications.danger($_('pages.warriorProfile.errorRetreiving'))
             eventTag('fetch_profile', 'engagement', 'failure')
         })
 
@@ -98,7 +99,7 @@
                 })
                 .catch(function(error) {
                     notifications.danger(
-                        'Error encountered updating your profile',
+                        $_('pages.warriorProfile.errorUpdating'),
                     )
                     eventTag('update_profile', 'engagement', 'failure')
                 })
@@ -126,13 +127,16 @@
         if (noFormErrors) {
             xfetch('/api/auth/update-password', { body })
                 .then(function() {
-                    notifications.success('Password updated.', 1500)
+                    notifications.success(
+                        $_('pages.warriorProfile.passwordUpdated'),
+                        1500,
+                    )
                     updatePassword = false
                     eventTag('update_password', 'engagement', 'success')
                 })
                 .catch(function(error) {
                     notifications.danger(
-                        'Error encountered attempting to update password',
+                        $_('pages.warriorProfile.passwordUpdateError'),
                     )
                     eventTag('update_password', 'engagement', 'failure')
                 })
@@ -161,18 +165,18 @@
                     <h2
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
                         md:leading-tight">
-                        Your Profile
+                        {$_('pages.warriorProfile.title')}
                     </h2>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
                             for="yourName">
-                            Name
+                            {$_('pages.warriorProfile.fields.name.label')}
                         </label>
                         <input
                             bind:value="{warriorProfile.name}"
-                            placeholder="Enter your name"
+                            placeholder="{$_('pages.warriorProfile.fields.name.placeholder')}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -187,13 +191,13 @@
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
                             for="yourEmail">
-                            Email
+                            {$_('pages.warriorProfile.fields.email.label')}
                             {#if warriorProfile.verified}
                                 <span
                                     class="font-bold text-green-600
                                     border-green-500 border py-1 px-2 rounded
                                     ml-1">
-                                    Verified
+                                    {$_('pages.warriorProfile.fields.email.verified')}
                                 </span>
                             {/if}
                         </label>
@@ -215,7 +219,7 @@
                                 class="block text-gray-700 text-sm font-bold
                                 mb-2"
                                 for="yourAvatar">
-                                Avatar
+                                {$_('pages.warriorProfile.fields.avatar.label')}
                             </label>
                             <div class="flex">
                                 <div class="md:w-2/3 lg:w-3/4">
@@ -263,12 +267,12 @@
                                 class="inline-block align-baseline font-bold
                                 text-sm text-blue-500 hover:text-blue-800 mr-4"
                                 on:click="{toggleUpdatePassword}">
-                                Update Password
+                                {$_('pages.warriorProfile.updatePasswordButton')}
                             </button>
                             <SolidButton
                                 type="submit"
                                 disabled="{updateDisabled}">
-                                Update Profile
+                                {$_('pages.warriorProfile.saveProfileButton')}
                             </SolidButton>
                         </div>
                     </div>
@@ -283,18 +287,18 @@
                     <div
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
                         md:leading-tight text-center">
-                        Update Password
+                        {$_('pages.warriorProfile.updatePasswordForm.title')}
                     </div>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
                             for="yourPassword1">
-                            Password
+                            {$_('pages.warriorProfile.updatePasswordForm.fields.password.label')}
                         </label>
                         <input
                             bind:value="{warriorPassword1}"
-                            placeholder="Enter a password"
+                            placeholder="{$_('pages.warriorProfile.updatePasswordForm.fields.password.placeholder')}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -309,11 +313,11 @@
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
                             for="yourPassword2">
-                            Confirm Password
+                            {$_('pages.warriorProfile.updatePasswordForm.fields.confirmPassword.label')}
                         </label>
                         <input
                             bind:value="{warriorPassword2}"
-                            placeholder="Confirm your password"
+                            placeholder="{$_('pages.warriorProfile.updatePasswordForm.fields.confirmPassword.placeholder')}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -330,12 +334,12 @@
                             class="inline-block align-baseline font-bold text-sm
                             text-blue-500 hover:text-blue-800 mr-4"
                             on:click="{toggleUpdatePassword}">
-                            Cancel
+                            {$_('pages.warriorProfile.updatePasswordForm.cancelButton')}
                         </button>
                         <SolidButton
                             type="submit"
                             disabled="{updatePasswordDisabled}">
-                            Update
+                            {$_('pages.warriorProfile.updatePasswordForm.saveButton')}
                         </SolidButton>
                     </div>
                 </form>

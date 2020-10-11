@@ -13,12 +13,19 @@
     export let handlePlanRevision = () => {}
 
     // going by common Jira issue types for now
-    const planTypes = ['story', 'bug', 'spike', 'epic', 'task', 'subtask']
+    const planTypes = [
+        $_('actions.plan.types.story'),
+        $_('actions.plan.types.bug'),
+        $_('actions.plan.types.spike'),
+        $_('actions.plan.types.epic'),
+        $_('actions.plan.types.task'),
+        $_('actions.plan.types.subtask'),
+    ]
     const turndownService = new TurndownService()
 
     export let planId = ''
     export let planName = ''
-    export let planType = 'story'
+    export let planType = $_('actions.plan.types.story')
     export let referenceId = ''
     export let planLink = ''
     export let description = ''

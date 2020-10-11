@@ -1,5 +1,6 @@
 {
     "appName": "Thunderdome",
+    "avatarAltText": "Placeholder Avatar",
     "actions": {
         "logout": {
             "button": "Logout",
@@ -58,6 +59,14 @@
                     "label": "Acceptance Criteria",
                     "placeholder": "Enter acceptance criteria"
                 }
+            },
+            "types": {
+                "story": "Story",
+                "bug": "Bug",
+                "spike": "Spike",
+                "epic": "Epic",
+                "task": "Task",
+                "subtask": "Subtask"
             }
         }
     },
@@ -109,7 +118,91 @@
             }
         },
         "createAccount": {
-            "nav": "Create Account"
+            "nav": "Create Account",
+            "title": "Enlist to Battle",
+            "registrationDisabled": "Registration is disabled.",
+            "guestForm": {
+                "title": "Register as Guest",
+                "saveButton": "Register",
+                "createError": "Error encountered registering warrior as guest",
+                "fields": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Enter your name"
+                    }
+                }
+            },
+            "createAccountForm": {
+                "saveButton": "Create",
+                "title": "Create an Account {optionalOpen}(optional){optionalClose}",
+                "createError": "Error encountered creating warrior",
+                "fields": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Enter your name"
+                    },
+                    "email": {
+                        "label": "Email",
+                        "placeholder": "Enter your email"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Enter a password"
+                    },
+                    "confirmPassword": {
+                        "label": "Confirm Password",
+                        "placeholder": "Confirm your password"
+                    }
+                }
+            }
+        },
+        "verifyAccount": {
+            "loading": "Verifying Account...",
+            "verified": {
+                "title": "Account Verified",
+                "thanks": "Thanks for verifying your email."
+            },
+            "failed": {
+                "title": "Verification Failed",
+                "error": "Something when wrong verifying your account, perhaps this link expired or was already used."
+            }
+        },
+        "warriorProfile": {
+            "title": "Your Profile",
+            "errorRetreiving": "Error getting your profile",
+            "errorUpdating": "Error encountered updating your profile",
+            "passwordUpdated": "Password updated.",
+            "passwordUpdateError": "Error encountered attempting to update password",
+            "updatePasswordButton": "Update Password",
+            "saveProfileButton": "Update Profile",
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "placeholder": "Enter your name"
+                },
+                "email": {
+                    "label": "Email",
+                    "verified": "Verified"
+                },
+                "avatar": {
+                    "label": "Avatar"
+                }
+            },
+            "updatePasswordForm": {
+                "title": "Update Password",
+                "cancelButton": "Cancel",
+                "saveButton": "Update",
+                "fields": {
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Enter a password"
+                    },
+                    "confirmPassword": {
+                        "label": "Confirm Password",
+                        "placeholder": "Confirm your password"
+                    }
+                }
+            }
         },
         "admin": {
             "nav": "Admin",
@@ -185,5 +278,10 @@
                 "unknownWarrior": "Unknown Warrior"
             }
         }
+    },
+    "footer": {
+        "authoredBy": "by {authorOpen}Steven Weathers{authorClose}.",
+        "license": "The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.",
+        "poweredBy": "Powered by {svelteOpen}Svelte{svelteClose} and {goOpen}Go{goClose}"
     }
 }

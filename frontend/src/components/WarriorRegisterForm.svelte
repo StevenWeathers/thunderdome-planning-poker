@@ -1,6 +1,7 @@
 <script>
     import SolidButton from '../components/SolidButton.svelte'
     import { validateName, validatePasswords } from '../validationUtils.js'
+    import { _ } from '../i18n'
 
     export let notifications
     export let handleSubmit
@@ -58,11 +59,11 @@
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
             for="yourName2">
-            Name
+            {$_('pages.createAccount.createAccountForm.fields.name.label')}
         </label>
         <input
             bind:value="{warriorName}"
-            placeholder="Enter your name"
+            placeholder="{$_('pages.createAccount.createAccountForm.fields.name.placeholder')}"
             class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
@@ -75,11 +76,11 @@
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
             for="yourEmail">
-            Email
+            {$_('pages.createAccount.createAccountForm.fields.email.label')}
         </label>
         <input
             bind:value="{warriorEmail}"
-            placeholder="Enter your email"
+            placeholder="{$_('pages.createAccount.createAccountForm.fields.email.placeholder')}"
             class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
@@ -93,11 +94,11 @@
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
             for="yourPassword1">
-            Password
+            {$_('pages.createAccount.createAccountForm.fields.password.label')}
         </label>
         <input
             bind:value="{warriorPassword1}"
-            placeholder="Enter a password"
+            placeholder="{$_('pages.createAccount.createAccountForm.fields.password.placeholder')}"
             class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
@@ -111,11 +112,11 @@
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
             for="yourPassword2">
-            Confirm Password
+            {$_('pages.createAccount.createAccountForm.fields.confirmPassword.label')}
         </label>
         <input
             bind:value="{warriorPassword2}"
-            placeholder="Confirm your password"
+            placeholder="{$_('pages.createAccount.createAccountForm.fields.confirmPassword.placeholder')}"
             class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
@@ -128,7 +129,7 @@
     <div>
         <div class="text-right">
             <SolidButton type="submit" disabled="{createDisabled}">
-                Create
+                {$_('pages.createAccount.createAccountForm.saveButton')}
             </SolidButton>
         </div>
     </div>

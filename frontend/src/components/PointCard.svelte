@@ -1,6 +1,7 @@
 <script>
     import { createEventDispatcher } from 'svelte'
     import WarriorIcon from './icons/WarriorIcon.svelte'
+    import { _ } from '../i18n'
 
     const dispatch = createEventDispatcher()
 
@@ -50,7 +51,7 @@
             <button
                 on:mouseenter="{() => (showVoters = true)}"
                 on:mouseleave="{() => (showVoters = false)}"
-                title="Show Voters"
+                title="{$_('pages.battle.voteResults.showVoters')}"
                 class="text-green-500 relative leading-none">
                 <WarriorIcon height="24" width="24" />
                 <span

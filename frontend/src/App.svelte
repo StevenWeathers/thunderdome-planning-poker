@@ -226,20 +226,27 @@
             class="{footerLinkClasses}">
             {$_('appName')}
         </a>
-        by
-        <a href="http://stevenweathers.com" class="{footerLinkClasses}">
-            Steven Weathers
-        </a>
-        . The source code is licensed
-        <a href="http://www.apache.org/licenses/" class="{footerLinkClasses}">
-            Apache 2.0
-        </a>
-        .
+        {@html $_('footer.authoredBy', {
+            values: {
+                authorOpen: `<a href="http://stevenweathers.com" class="${footerLinkClasses}">`,
+                authorClose: `</a>`,
+            },
+        })}
+        {@html $_('footer.license', {
+            values: {
+                licenseOpen: `<a href="http://www.apache.org/licenses/" class="${footerLinkClasses}">`,
+                licenseClose: `</a>`,
+            },
+        })}
         <br />
-        Powered by
-        <a href="https://svelte.dev/" class="{footerLinkClasses}">Svelte</a>
-        and
-        <a href="https://golang.org/" class="{footerLinkClasses}">Go</a>
+        {@html $_('footer.poweredBy', {
+            values: {
+                svelteOpen: `<a href="https://svelte.dev/" class="${footerLinkClasses}">`,
+                svelteClose: `</a>`,
+                goOpen: `<a href="https://golang.org/" class="${footerLinkClasses}">`,
+                goClose: `</a>`,
+            },
+        })}
     </footer>
 {:else}
     <p>Loading...</p>

@@ -25,7 +25,7 @@
     function addPlan() {
         plans.unshift({
             name: '',
-            type: '',
+            type: $_('actions.plan.types.story'),
             referenceId: '',
             link: '',
             description: '',
