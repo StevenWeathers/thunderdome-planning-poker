@@ -40,7 +40,7 @@
     data-active="{active}"
     data-locked="{isLocked}"
     data-point="{point}"
-    class="relative">
+    class="relative select-none">
     {#if results.count}
         <div
             class="text-green-500 font-semibold inline-block absolute right-0
