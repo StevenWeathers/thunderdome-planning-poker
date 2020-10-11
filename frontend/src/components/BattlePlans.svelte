@@ -11,7 +11,7 @@
     export let eventTag
     export let notifications
 
-    let defaultPlan = {
+    const defaultPlan = {
         id: '',
         name: '',
         type: '',

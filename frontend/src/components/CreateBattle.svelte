@@ -1,9 +1,9 @@
 <script>
     import { onMount } from 'svelte'
 
-    import DownCarrotIcon from '../components/icons/DownCarrotIcon.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
-    import HollowButton from '../components/HollowButton.svelte'
+    import SolidButton from './SolidButton.svelte'
+    import HollowButton from './HollowButton.svelte'
+    import JiraImport from './JiraImport.svelte'
     import { warrior } from '../stores.js'
 
     export let notifications
@@ -12,6 +12,7 @@
     export let xfetch
 
     const allowedPointValues = appConfig.AllowedPointValues
+    const allowJiraImport = appConfig.AllowJiraImport
 
     let points = appConfig.DefaultPointValues
     let battleName = ''
@@ -29,6 +30,19 @@
             description: '',
             acceptanceCriteria: ''
         })
+        plans = plans
+    }
+
+    function handlePlanImport(newPlan) {
+        const plan = {
+            name: newPlan.planName,
+            type: newPlan.type,
+            referenceId: newPlan.referenceId,
+            link: newPlan.Link,
+            description: newPlan.description,
+            acceptanceCriteria: newPlan.acceptanceCriteria
+        }
+        plans.unshift(plan)
         plans = plans
     }
 
@@ -117,6 +131,9 @@
         <h3 class="block text-gray-700 text-sm font-bold mb-2">Plans</h3>
         <div class="control mb-4">
             <HollowButton onClick="{addPlan}">Add Plan</HollowButton>
+            {#if allowJiraImport}
+                <JiraImport handlePlanAdd={handlePlanImport} {notifications} />
+            {/if}
         </div>
         {#each plans as plan, i}
             <div class="flex flex-wrap mb-2">

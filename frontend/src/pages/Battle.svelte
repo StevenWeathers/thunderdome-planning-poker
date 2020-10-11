@@ -10,6 +10,7 @@
     import InviteWarrior from '../components/InviteWarrior.svelte'
     import VoteResults from '../components/VoteResults.svelte'
     import HollowButton from '../components/HollowButton.svelte'
+    import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
 
     import { warrior } from '../stores.js'
 
@@ -20,6 +21,15 @@
 
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
+    const defaultPlan = {
+        id: '',
+        name: '[Voting not started]',
+        type: '',
+        referenceId: '',
+        link: '',
+        description: '',
+        acceptanceCriteria: ''
+    }
 
     let socketError = false
     let socketReconnecting = false
@@ -27,7 +37,7 @@
     let vote = ''
     let voteStartTime = new Date()
     let battle = {}
-    let currentPlanName = '[Voting not started]'
+    let currentPlan = { ...defaultPlan }
 
     let currentTime = new Date()
 
@@ -48,7 +58,7 @@
                     const activePlan = battle.plans.find(
                         p => p.id === battle.activePlanId,
                     )
-                    currentPlanName = activePlan.name
+                    currentPlan = activePlan
                     voteStartTime = new Date(activePlan.voteStartTime)
                 }
 
@@ -75,7 +85,7 @@
             case 'plan_activated':
                 const updatedPlans = JSON.parse(parsedEvent.value)
                 const activePlan = updatedPlans.find(p => p.active)
-                currentPlanName = activePlan.name
+                currentPlan = activePlan
                 voteStartTime = new Date(activePlan.voteStartTime)
 
                 battle.plans = updatedPlans
@@ -85,7 +95,7 @@
                 break
             case 'plan_skipped':
                 const updatedPlans2 = JSON.parse(parsedEvent.value)
-                currentPlanName = '[Voting not started]'
+                currentPlan = { ...defaultPlan }
                 battle.plans = updatedPlans2
                 battle.activePlanId = ''
                 battle.votingLocked = true
@@ -115,7 +125,7 @@
             case 'plan_finalized':
                 battle.plans = JSON.parse(parsedEvent.value)
                 battle.activePlanId = ''
-                currentPlanName = '[Voting not started]'
+                currentPlan = { ...defaultPlan }
                 vote = ''
                 break
             case 'plan_revised':
@@ -124,7 +134,7 @@
                     const activePlan = battle.plans.find(
                         p => p.id === battle.activePlanId,
                     )
-                    currentPlanName = activePlan.name
+                    currentPlan = activePlan
                 }
                 break
             case 'plan_burned':
@@ -136,7 +146,7 @@
                         .length === 0
                 ) {
                     battle.activePlanId = ''
-                    currentPlanName = '[Voting not started]'
+                    currentPlan = { ...defaultPlan }
                 }
 
                 battle.plans = postBurnPlans
@@ -245,8 +255,8 @@
         if (battle.activePlanId === '') {
             return false
         }
-        const currentPlan = battle.plans.find(p => p.id === battle.activePlanId)
-        const voted = currentPlan.votes.find(w => w.warriorId === warriorId)
+        const plan = battle.plans.find(p => p.id === battle.activePlanId)
+        const voted = plan.votes.find(w => w.warriorId === warriorId)
 
         return voted !== undefined
     }
@@ -256,8 +266,8 @@
         if (battle.activePlanId === '' || battle.votingLocked === false) {
             return ''
         }
-        const currentPlan = battle.plans.find(p => p.id === battle.activePlanId)
-        const voted = currentPlan.votes.find(w => w.warriorId === warriorId)
+        const plan = battle.plans.find(p => p.id === battle.activePlanId)
+        const voted = plan.votes.find(w => w.warriorId === warriorId)
 
         return voted !== undefined ? voted.vote : ''
     }
@@ -358,7 +368,15 @@
         <div class="mb-6 flex flex-wrap">
             <div class="w-full text-center md:w-2/3 md:text-left">
                 <h1 class="text-3xl font-bold leading-tight">
-                    {currentPlanName}
+                    {#if currentPlan.link !== ''}
+                    <a href="{currentPlan.link}" target="_blank" class="text-blue-800">
+                        <ExternalLinkIcon />
+                    </a>&nbsp;{/if}
+                    <span
+                        class="inline-block text-lg text-gray-500
+                        border-gray-400 border px-1 rounded"
+                        data-testId="battlePlanType">{currentPlan.type}</span>&nbsp;
+                    {#if currentPlan.referenceId}[{currentPlan.referenceId}]&nbsp;{/if}{currentPlan.name}
                 </h1>
                 <h2 class="text-gray-700 text-2xl font-bold leading-tight">
                     {battle.name}
