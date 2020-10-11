@@ -153,12 +153,12 @@
             </HollowButton>
             {#if !activeWarrior.rank || activeWarrior.rank === 'PRIVATE'}
                 {#if registrationAllowed}
-                <HollowButton
-                    color="teal"
-                    href="/enlist"
-                    additionalClasses="mr-2">
-                    Create Account
-                </HollowButton>
+                    <HollowButton
+                        color="teal"
+                        href="/enlist"
+                        additionalClasses="mr-2">
+                        Create Account
+                    </HollowButton>
                 {/if}
                 <HollowButton href="/login">Login</HollowButton>
             {:else}
@@ -178,9 +178,12 @@
     {:else}
         <div class="text-right mt-4 md:mt-0">
             {#if registrationAllowed}
-            <HollowButton color="teal" href="/enlist" additionalClasses="mr-2">
-                Create Account
-            </HollowButton>
+                <HollowButton
+                    color="teal"
+                    href="/enlist"
+                    additionalClasses="mr-2">
+                    Create Account
+                </HollowButton>
             {/if}
             <HollowButton href="/login">Login</HollowButton>
         </div>

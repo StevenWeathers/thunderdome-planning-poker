@@ -14,6 +14,5 @@
     data-prefix="fas"
     data-icon="user-rank-private"
     role="img">
-    <path
-        d="M 5,135 79.999997,95 155,135 v 20 L 79.999997,115 5,155 Z"></path>
+    <path d="M 5,135 79.999997,95 155,135 v 20 L 79.999997,115 5,155 Z"></path>
 </svg>

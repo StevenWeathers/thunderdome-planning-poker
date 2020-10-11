@@ -24,11 +24,11 @@
         showCreateWarrior = !showCreateWarrior
     }
 
-    function createWarrior (
+    function createWarrior(
         warriorName,
         warriorEmail,
         warriorPassword1,
-        warriorPassword2
+        warriorPassword2,
     ) {
         const body = {
             warriorName,
@@ -39,11 +39,7 @@
 
         xfetch('/api/admin/warrior', { body })
             .then(function() {
-                eventTag(
-                    'create_account',
-                    'engagement',
-                    'success'
-                )
+                eventTag('create_account', 'engagement', 'success')
 
                 getWarriors()
                 toggleCreateWarrior()
@@ -65,13 +61,13 @@
 
     function getWarriors() {
         xfetch('/api/admin/warriors')
-        .then(res => res.json())
-        .then(function(result) {
-            warriors = result
-        })
-        .catch(function(error) {
-            notifications.danger('Error getting warriors')
-        })
+            .then(res => res.json())
+            .then(function(result) {
+                warriors = result
+            })
+            .catch(function(error) {
+                notifications.danger('Error getting warriors')
+            })
     }
 
     onMount(() => {
@@ -119,11 +115,13 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">Registered Warriors</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                        Registered Warriors
+                    </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
-                        <HollowButton onClick={toggleCreateWarrior}>
+                        <HollowButton onClick="{toggleCreateWarrior}">
                             Create Warrior
                         </HollowButton>
                     </div>
@@ -132,22 +130,22 @@
 
             <table class="table-fixed w-full">
                 <thead>
-                <tr>
-                    <th class="w-2/6 px-4 py-2">Name</th>
-                    <th class="w-2/6 px-4 py-2">Email</th>
-                    <th class="w-1/6 px-4 py-2">Verified</th>
-                    <th class="w-1/6 px-4 py-2"></th>
-                </tr>
+                    <tr>
+                        <th class="w-2/6 px-4 py-2">Name</th>
+                        <th class="w-2/6 px-4 py-2">Email</th>
+                        <th class="w-1/6 px-4 py-2">Verified</th>
+                        <th class="w-1/6 px-4 py-2"></th>
+                    </tr>
                 </thead>
                 <tbody>
-                {#each warriors as warrior}
-                    <tr>
-                        <td class="border px-4 py-2">{warrior.name}</td>
-                        <td class="border px-4 py-2">{warrior.email}</td>
-                        <td class="border px-4 py-2">{warrior.verified}</td>
-                        <td class="border px-4 py-2"></td>
-                    </tr>
-                {/each}
+                    {#each warriors as warrior}
+                        <tr>
+                            <td class="border px-4 py-2">{warrior.name}</td>
+                            <td class="border px-4 py-2">{warrior.email}</td>
+                            <td class="border px-4 py-2">{warrior.verified}</td>
+                            <td class="border px-4 py-2"></td>
+                        </tr>
+                    {/each}
                 </tbody>
             </table>
         </div>
@@ -155,9 +153,8 @@
 
     {#if showCreateWarrior}
         <CreateWarrior
-            toggleCreate={toggleCreateWarrior}
-            handleCreate={createWarrior}
-            notifications
-        />
+            toggleCreate="{toggleCreateWarrior}"
+            handleCreate="{createWarrior}"
+            notifications />
     {/if}
 </PageLayout>

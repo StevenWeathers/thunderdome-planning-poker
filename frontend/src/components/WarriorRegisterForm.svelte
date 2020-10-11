@@ -14,7 +14,6 @@
     let warriorPassword1 = ''
     let warriorPassword2 = ''
 
-
     function onSubmit(e) {
         e.preventDefault()
 
@@ -37,7 +36,12 @@
         }
 
         if (noFormErrors) {
-            handleSubmit(warriorName, warriorEmail, warriorPassword1, warriorPassword2)
+            handleSubmit(
+                warriorName,
+                warriorEmail,
+                warriorPassword1,
+                warriorPassword2,
+            )
         }
     }
 
@@ -48,9 +52,7 @@
         warriorPassword2 === ''
 </script>
 
-<form
-    on:submit={onSubmit}
-    name="createAccount">
+<form on:submit="{onSubmit}" name="createAccount">
 
     <div class="mb-4">
         <label
@@ -61,10 +63,9 @@
         <input
             bind:value="{warriorName}"
             placeholder="Enter your name"
-            class="bg-gray-200 border-gray-200 border-2
-            appearance-none rounded w-full py-2 px-3 text-gray-700
-            leading-tight focus:outline-none focus:bg-white
-            focus:border-purple-500"
+            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
+            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
+            focus:bg-white focus:border-purple-500"
             id="yourName2"
             name="yourName2"
             required />
@@ -79,10 +80,9 @@
         <input
             bind:value="{warriorEmail}"
             placeholder="Enter your email"
-            class="bg-gray-200 border-gray-200 border-2
-            appearance-none rounded w-full py-2 px-3 text-gray-700
-            leading-tight focus:outline-none focus:bg-white
-            focus:border-purple-500"
+            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
+            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
+            focus:bg-white focus:border-purple-500"
             id="yourEmail"
             name="yourEmail"
             type="email"
@@ -98,10 +98,9 @@
         <input
             bind:value="{warriorPassword1}"
             placeholder="Enter a password"
-            class="bg-gray-200 border-gray-200 border-2
-            appearance-none rounded w-full py-2 px-3 text-gray-700
-            leading-tight focus:outline-none focus:bg-white
-            focus:border-purple-500"
+            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
+            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
+            focus:bg-white focus:border-purple-500"
             id="yourPassword1"
             name="yourPassword1"
             type="password"
@@ -117,10 +116,9 @@
         <input
             bind:value="{warriorPassword2}"
             placeholder="Confirm your password"
-            class="bg-gray-200 border-gray-200 border-2
-            appearance-none rounded w-full py-2 px-3 text-gray-700
-            leading-tight focus:outline-none focus:bg-white
-            focus:border-purple-500"
+            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
+            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
+            focus:bg-white focus:border-purple-500"
             id="yourPassword2"
             name="yourPassword2"
             type="password"

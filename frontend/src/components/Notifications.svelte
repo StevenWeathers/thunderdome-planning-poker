@@ -35,7 +35,7 @@
     function createToast(msg, theme, timeout) {
         const background = themes[theme] || themes['default']
 
-	timeout = timeout || defaultTimeout
+        timeout = timeout || defaultTimeout
 
         toasts.unshift({
             id: count,
@@ -78,7 +78,6 @@
     export function hide() {
         shown = false
     }
-
 </script>
 
 <style>

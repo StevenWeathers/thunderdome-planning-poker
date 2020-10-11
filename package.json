@@ -22,12 +22,15 @@
         "test:integration": "jest -c frontend/__test__/integration/jest.config.js",
         "test:integrationWithWatch": "jest -c frontend/__test__/integration/jest.config.js --watch",
         "test:integrationProd": "cross-env APP_URL='https://thunderdome.dev' jest -c frontend/__test__/integration/jest.config.js",
-        "format": "prettier --write '{client}/**/*'"
+        "format": "prettier --write 'frontend/**/*'"
     },
     "dependencies": {
+        "he": "^1.2.0",
         "js-cookie": "^2.2.1",
+        "marked": "^1.2.0",
         "navaid": "^1.2.0",
-        "sockette": "^2.0.6"
+        "sockette": "^2.0.6",
+        "turndown": "^7.0.0"
     },
     "devDependencies": {
         "@babel/core": "^7.11.6",
@@ -121,7 +124,7 @@
         }
     },
     "lint-staged": {
-        "*.{js, svelte, css, html}": [
+        "frontend/**/*.{js, svelte, css, html}": [
             "npm run format",
             "git add"
         ]

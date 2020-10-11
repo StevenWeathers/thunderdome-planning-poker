@@ -1,4 +1,6 @@
 <script>
+    import TurndownService from 'turndown'
+
     import SolidButton from './SolidButton.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
     import DownCarrotIcon from './icons/DownCarrotIcon.svelte'
@@ -8,7 +10,8 @@
     export let handlePlanRevision = () => {}
 
     // going by common Jira issue types for now
-    export const planTypes = ["story", "bug", "spike", "epic", "task", "subtask"]
+    const planTypes = ['story', 'bug', 'spike', 'epic', 'task', 'subtask']
+    const turndownService = new TurndownService()
 
     export let planId = ''
     export let planName = ''
@@ -25,8 +28,8 @@
             type: planType,
             referenceId,
             link: planLink,
-            description,
-            acceptanceCriteria
+            description: turndownService.turndown(description),
+            acceptanceCriteria: turndownService.turndown(acceptanceCriteria),
         }
         if (planId === '') {
             handlePlanAdd(plan)
@@ -34,7 +37,7 @@
             plan.planId = planId
             handlePlanRevision(plan)
         }
-        
+
         toggleAddPlan()
     }
 </script>
@@ -66,8 +69,8 @@
                             bind:value="{planType}"
                             required
                             class="block appearance-none w-full border-2
-                            border-gray-400 text-gray-700 py-3 px-4 pr-8
-                            rounded leading-tight focus:outline-none
+                            border-gray-400 text-gray-700 py-3 px-4 pr-8 rounded
+                            leading-tight focus:outline-none
                             focus:border-purple-500">
                             <option value="" disabled>Types</option>
                             {#each planTypes as pType}
@@ -94,11 +97,12 @@
                         id="planName"
                         name="planName"
                         bind:value="{planName}"
-                        placeholder="Enter a plan name"
-                        />
+                        placeholder="Enter a plan name" />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-bold mb-2" for="referenceId">
+                    <label
+                        class="block text-sm font-bold mb-2"
+                        for="referenceId">
                         Reference ID
                     </label>
                     <input
@@ -110,8 +114,7 @@
                         id="referenceId"
                         name="referenceId"
                         bind:value="{referenceId}"
-                        placeholder="Enter a reference ID"
-                        />
+                        placeholder="Enter a reference ID" />
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-bold mb-2" for="planLink">
@@ -126,11 +129,12 @@
                         id="planLink"
                         name="planLink"
                         bind:value="{planLink}"
-                        placeholder="Enter a link to story"
-                        />
+                        placeholder="Enter a link to story" />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-bold mb-2" for="description">
+                    <label
+                        class="block text-sm font-bold mb-2"
+                        for="description">
                         Description
                     </label>
                     <textarea
@@ -141,11 +145,12 @@
                         id="description"
                         name="description"
                         bind:value="{description}"
-                        placeholder="Enter a plan description"
-                        />
+                        placeholder="Enter a plan description"></textarea>
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-bold mb-2" for="acceptanceCriteria">
+                    <label
+                        class="block text-sm font-bold mb-2"
+                        for="acceptanceCriteria">
                         Acceptance Criteria
                     </label>
                     <textarea
@@ -156,8 +161,7 @@
                         id="acceptanceCriteria"
                         name="acceptanceCriteria"
                         bind:value="{acceptanceCriteria}"
-                        placeholder="Enter a plan acceptance criteria"
-                        />
+                        placeholder="Enter a plan acceptance criteria"></textarea>
                 </div>
                 <div class="text-right">
                     <div>

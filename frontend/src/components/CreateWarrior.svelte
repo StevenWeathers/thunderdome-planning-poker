@@ -1,7 +1,7 @@
 <script>
     import SolidButton from './SolidButton.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
-    import WarriorRegisterForm from './WarriorRegisterForm.svelte';
+    import WarriorRegisterForm from './WarriorRegisterForm.svelte'
 
     export let notifications
     export let toggleCreate = () => {}
@@ -24,7 +24,9 @@
                 </button>
             </div>
 
-            <WarriorRegisterForm handleSubmit={handleCreate} notifications={notifications} />
+            <WarriorRegisterForm
+                handleSubmit="{handleCreate}"
+                {notifications} />
         </div>
     </div>
 </div>

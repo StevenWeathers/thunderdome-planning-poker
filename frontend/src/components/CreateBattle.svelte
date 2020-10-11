@@ -28,7 +28,7 @@
             referenceId: '',
             link: '',
             description: '',
-            acceptanceCriteria: ''
+            acceptanceCriteria: '',
         })
         plans = plans
     }
@@ -40,7 +40,7 @@
             referenceId: newPlan.referenceId,
             link: newPlan.Link,
             description: newPlan.description,
-            acceptanceCriteria: newPlan.acceptanceCriteria
+            acceptanceCriteria: newPlan.acceptanceCriteria,
         }
         plans.unshift(plan)
         plans = plans
@@ -132,7 +132,9 @@
         <div class="control mb-4">
             <HollowButton onClick="{addPlan}">Add Plan</HollowButton>
             {#if allowJiraImport}
-                <JiraImport handlePlanAdd={handlePlanImport} {notifications} />
+                <JiraImport
+                    handlePlanAdd="{handlePlanImport}"
+                    {notifications} />
             {/if}
         </div>
         {#each plans as plan, i}

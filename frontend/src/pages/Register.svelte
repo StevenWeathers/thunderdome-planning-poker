@@ -1,7 +1,7 @@
 <script>
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
-    import WarriorRegisterForm from '../components/WarriorRegisterForm.svelte';
+    import WarriorRegisterForm from '../components/WarriorRegisterForm.svelte'
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
 
@@ -62,7 +62,7 @@
         warriorName,
         warriorEmail,
         warriorPassword1,
-        warriorPassword2
+        warriorPassword2,
     ) {
         const body = {
             warriorName,
@@ -81,14 +81,9 @@
                     rank: newWarrior.rank,
                 })
 
-                eventTag(
-                    'register_account',
-                    'engagement',
-                    'success',
-                    () => {
-                        router.route(targetPage, true)
-                    },
-                )
+                eventTag('register_account', 'engagement', 'success', () => {
+                    router.route(targetPage, true)
+                })
             })
             .catch(function(error) {
                 notifications.danger('Error encountered creating warrior')
@@ -147,22 +142,26 @@
         {/if}
 
         {#if registrationAllowed}
-        <div class="w-full md:w-1/2 px-4">
-            <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
-                <h2
-                    class="font-bold text-xl md:text-2xl mb-2 md:mb-6
-                    md:leading-tight text-center">
-                    Create an Account
-                    <span class="text-gray-500">(optional)</span>
-                </h2>
+            <div class="w-full md:w-1/2 px-4">
+                <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
+                    <h2
+                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                        md:leading-tight text-center">
+                        Create an Account
+                        <span class="text-gray-500">(optional)</span>
+                    </h2>
 
-                <WarriorRegisterForm guestWarriorsName={warriorName} handleSubmit={createWarriorCorporal} notifications />
+                    <WarriorRegisterForm
+                        guestWarriorsName="{warriorName}"
+                        handleSubmit="{createWarriorCorporal}"
+                        notifications />
+                </div>
             </div>
-        </div>
         {:else}
             <div class="w-full md:w-1/2 px-4">
                 <h2
-                    class="font-bold text-2xl md:text-3xl md:leading-tight text-center">
+                    class="font-bold text-2xl md:text-3xl md:leading-tight
+                    text-center">
                     Registration is disabled.
                 </h2>
             </div>

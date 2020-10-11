@@ -14,11 +14,11 @@
     const defaultPlan = {
         id: '',
         name: '',
-        type: '',
+        type: 'story',
         referenceId: '',
         link: '',
         description: '',
-        acceptanceCriteria: ''
+        acceptanceCriteria: '',
     }
 
     let showAddPlan = false
@@ -43,9 +43,9 @@
 
     const togglePlanView = planId => () => {
         if (planId) {
-                selectedPlan = plans.find(p => p.id === planId)
-                eventTag('plan_show_view', 'battle', ``)
-            } else {
+            selectedPlan = plans.find(p => p.id === planId)
+            eventTag('plan_show_view', 'battle', ``)
+        } else {
             selectedPlan = { ...defaultPlan }
 
             eventTag('plan_unshow_view', 'battle', ``)
@@ -130,16 +130,23 @@
                     class="inline-block font-bold align-middle"
                     data-testId="battlePlanName">
                     {#if plan.link !== ''}
-                    <a href="{plan.link}" target="_blank" class="text-blue-800">
-                        <ExternalLinkIcon />
-                    </a>&nbsp;{/if}
+                        <a
+                            href="{plan.link}"
+                            target="_blank"
+                            class="text-blue-800">
+                            <ExternalLinkIcon />
+                        </a>
+                        &nbsp;
+                    {/if}
                     <div
                         class="inline-block text-sm text-gray-500
                         border-gray-400 border px-1 rounded"
                         data-testId="battlePlanType">
                         {plan.type}
-                    </div>&nbsp;
-                    {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}{plan.name}
+                    </div>
+                    &nbsp;
+                    {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
+                    {plan.name}
                 </div>
                 &nbsp;
                 {#if plan.points !== ''}
@@ -152,9 +159,7 @@
                 {/if}
             </div>
             <div class="w-full lg:w-1/3 text-right">
-                <HollowButton
-                    color="blue"
-                    onClick="{togglePlanView(plan.id)}">
+                <HollowButton color="blue" onClick="{togglePlanView(plan.id)}">
                     View
                 </HollowButton>
                 {#if isLeader}
@@ -192,8 +197,7 @@
         referenceId="{selectedPlan.referenceId}"
         planLink="{selectedPlan.link}"
         description="{selectedPlan.description}"
-        acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
-        />
+        acceptanceCriteria="{selectedPlan.acceptanceCriteria}" />
 {/if}
 
 {#if showViewPlan}
@@ -204,6 +208,5 @@
         referenceId="{selectedPlan.referenceId}"
         planLink="{selectedPlan.link}"
         description="{selectedPlan.description}"
-        acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
-        />
+        acceptanceCriteria="{selectedPlan.acceptanceCriteria}" />
 {/if}

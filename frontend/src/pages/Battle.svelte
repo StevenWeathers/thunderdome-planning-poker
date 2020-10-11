@@ -28,7 +28,7 @@
         referenceId: '',
         link: '',
         description: '',
-        acceptanceCriteria: ''
+        acceptanceCriteria: '',
     }
 
     let socketError = false
@@ -369,14 +369,25 @@
             <div class="w-full text-center md:w-2/3 md:text-left">
                 <h1 class="text-3xl font-bold leading-tight">
                     {#if currentPlan.link !== ''}
-                    <a href="{currentPlan.link}" target="_blank" class="text-blue-800">
-                        <ExternalLinkIcon />
-                    </a>&nbsp;{/if}
+                        <a
+                            href="{currentPlan.link}"
+                            target="_blank"
+                            class="text-blue-800">
+                            <ExternalLinkIcon />
+                        </a>
+                        &nbsp;
+                    {/if}
                     <span
                         class="inline-block text-lg text-gray-500
                         border-gray-400 border px-1 rounded"
-                        data-testId="battlePlanType">{currentPlan.type}</span>&nbsp;
-                    {#if currentPlan.referenceId}[{currentPlan.referenceId}]&nbsp;{/if}{currentPlan.name}
+                        data-testId="battlePlanType">
+                        {currentPlan.type}
+                    </span>
+                    &nbsp;
+                    {#if currentPlan.referenceId}
+                        [{currentPlan.referenceId}]&nbsp;
+                    {/if}
+                    {currentPlan.name}
                 </h1>
                 <h2 class="text-gray-700 text-2xl font-bold leading-tight">
                     {battle.name}

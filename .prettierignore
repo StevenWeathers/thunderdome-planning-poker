@@ -30,3 +30,4 @@ consoles/*/lib/app
 *.ttf
 *.sh
 *.txt
+*.xml

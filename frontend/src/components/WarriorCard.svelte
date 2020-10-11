@@ -16,8 +16,8 @@
 
     const showRank = appConfig.ShowWarriorRank
     const avatarService = appConfig.AvatarService
-    let nameStyleClass = showRank ? "text-lg" : "text-xl"
-    
+    let nameStyleClass = showRank ? 'text-lg' : 'text-xl'
+
     function promoteLeader() {
         sendSocketEvent('promote_leader', warrior.id)
         eventTag('promote_leader', 'battle', '')
@@ -34,7 +34,10 @@
     data-testId="warriorCard"
     data-warriorName="{warrior.name}">
     <div class="w-1/4 mr-1">
-        <WarriorAvatar warriorId="{warrior.id}" avatar="{warrior.avatar}" avatarService="{avatarService}" />
+        <WarriorAvatar
+            warriorId="{warrior.id}"
+            avatar="{warrior.avatar}"
+            {avatarService} />
     </div>
     <div class="w-3/4">
         <div class="flex items-center">
