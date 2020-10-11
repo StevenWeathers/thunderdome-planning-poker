@@ -6,14 +6,14 @@ describe('Thunderdome App', () => {
     })
 
     describe('when on the Landing page', () => {
-        it('should match a link with a "Create a Battle" text inside', async () => {
-            await expect(page).toMatchElement('a', { text: 'Create a Battle' })
+        it('should match a link with a "Create Battle" text inside', async () => {
+            await expect(page).toMatchElement('a', { text: 'Create Battle' })
         })
     })
 
-    describe('when clicking the Create a Battle button as a new visitor', () => {
+    describe('when clicking the Create Battle button as a new visitor', () => {
         it('should redirect to Enlist page', async () => {
-            await expect(page).toClick('a', { text: 'Create a Battle' })
+            await expect(page).toClick('a', { text: 'Create Battle' })
             await expect(page).toMatchElement('input[name="yourName1"]')
         })
 

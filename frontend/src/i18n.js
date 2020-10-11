@@ -1,8 +1,8 @@
 import { get, derived, writable } from 'svelte/store'
 import { addMessages, locale, init, dictionary, _ } from 'svelte-i18n'
 
-const MESSAGE_FILE_URL_TEMPLATE = '/lang/{locale}.json'
 const verbsType = appConfig.FriendlyUIVerbs ? 'friendly' : 'default'
+const MESSAGE_FILE_URL_TEMPLATE = `/lang/${verbsType}/{locale}.json`
 
 let _activeLocale
 
@@ -30,7 +30,7 @@ function setupI18n(options) {
             _activeLocale = locale_
 
             // Configure svelte-i18n to use the locale
-            addMessages(locale_, messages[verbsType])
+            addMessages(locale_, messages)
 
             locale.set(locale_)
 

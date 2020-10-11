@@ -1,6 +1,7 @@
 <script>
     import SolidButton from './SolidButton.svelte'
     import DownCarrotIcon from './icons/DownCarrotIcon.svelte'
+    import { _ } from '../i18n'
 
     export let sendSocketEvent = () => {}
     export let eventTag
@@ -48,22 +49,22 @@
             color="blue"
             additionalClasses="mb-2 w-full"
             onClick="{skipPlan}">
-            Skip Plan
+            {$_('actions.plan.skip')}
         </SolidButton>
         {#if !votingLocked}
             <SolidButton additionalClasses="w-full" onClick="{endPlanVoting}">
-                Finish Voting
+                {$_('actions.plan.finishVoting')}
             </SolidButton>
         {:else}
             <SolidButton
                 color="blue"
                 additionalClasses="mb-2 w-full"
                 onClick="{restartVoting}">
-                Restart Voting
+                {$_('actions.plan.restartVoting')}
             </SolidButton>
             <form on:submit="{handleSubmit}" name="savePlanPoints">
                 <legend class="text-xl mb-2 font-semibold leading-tight">
-                    Final Points
+                    {$_('pages.battle.finalPoints')}
                 </legend>
                 <div class="flex -mx-2">
                     <div class="w-1/2 px-2">
@@ -76,7 +77,9 @@
                                 border-gray-400 text-gray-700 py-3 px-4 pr-8
                                 rounded leading-tight focus:outline-none
                                 focus:border-purple-500">
-                                <option value="" disabled>Points</option>
+                                <option value="" disabled>
+                                    {$_('pages.battle.points')}
+                                </option>
                                 {#each points as point}
                                     <option value="{point}">{point}</option>
                                 {/each}
@@ -92,7 +95,7 @@
                         <SolidButton
                             additionalClasses="w-full h-full"
                             type="submit">
-                            Save
+                            {$_('actions.plan.save')}
                         </SolidButton>
                     </div>
                 </div>

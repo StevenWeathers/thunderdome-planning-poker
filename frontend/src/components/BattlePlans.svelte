@@ -91,12 +91,12 @@
         </div>
         <div class="w-1/2 lg:w-1/{allowJiraImport ? '2' : '4'} text-right">
             {#if isLeader}
-                <HollowButton color="blue" onClick="{toggleAddPlan()}">
-                    Add Plan
-                </HollowButton>
                 {#if allowJiraImport}
                     <JiraImport {handlePlanAdd} {notifications} />
                 {/if}
+                <HollowButton color="blue" onClick="{toggleAddPlan()}">
+                    Add Plan
+                </HollowButton>
             {/if}
         </div>
     </div>

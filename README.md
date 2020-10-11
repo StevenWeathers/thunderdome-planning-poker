@@ -73,7 +73,7 @@ Using svelte-i18n **Thunderdome** now supports Locale selection on the UI (Defau
 
 Adding new locale's involves just a couple of steps.
 
-1. First add the locale dictionary json file in ```frontend/public/lang/``` by copying the en-US.json and just changing the values of all keys
+1. First add the locale dictionary json files in ```frontend/public/lang/default/``` and ```frontend/public/lang/friendly/``` by copying the en-US.json and just changing the values of all keys
 1. Second, the locale will need to be added to the locales list used by switcher component in ```frontend/public/App.svelte``` ```locales``` array
 
 # Configuration

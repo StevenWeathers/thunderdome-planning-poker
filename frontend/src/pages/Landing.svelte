@@ -50,7 +50,7 @@
                         text-yellow-thunder py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded"
                         href="{$warrior.id ? '/battles' : '/enlist'}">
-                        {$_('actions.createBattle')}
+                        {$_('actions.battle.create')}
                     </a>
                 </div>
             </div>

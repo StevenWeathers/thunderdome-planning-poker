@@ -3,6 +3,7 @@
     import TurndownService from 'turndown'
 
     import HollowButton from '../components/HollowButton.svelte'
+    import { _ } from '../i18n'
 
     export let notifications
     export let handlePlanAdd = () => {}
@@ -24,7 +25,7 @@
             return
         }
         if (file.type !== 'text/xml') {
-            notifications.danger('Error bad file type')
+            notifications.danger($_('actions.plan.importJiraXML.badFileType'))
             return
         }
 
@@ -65,21 +66,21 @@
                     }
                 }
             } catch (e) {
-                notifications.danger('Error reading file')
+                notifications.danger(
+                    $_('actions.plan.importJiraXML.errorReadingFile'),
+                )
             }
         }
 
         reader.onerror = () => {
-            notifications.danger('Error reading file')
+            notifications.danger(
+                $_('actions.plan.importJiraXML.errorReadingFile'),
+            )
         }
     }
 </script>
 
-<style>
-    [data-jira-import] {
-        display: none;
-    }
-</style>
-
-<input type="file" on:change="{uploadFile}" data-jira-import />
-<HollowButton onClick="{showDialog}">Import plans from Jira XML</HollowButton>
+<input type="file" on:change="{uploadFile}" class="hidden" />
+<HollowButton onClick="{showDialog}">
+    {$_('actions.plan.importJiraXML.button')}
+</HollowButton>

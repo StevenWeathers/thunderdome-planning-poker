@@ -1,0 +1,91 @@
+{
+    "appName": "Thunderdome",
+    "actions": {
+        "logout": {
+            "button": "Logout",
+            "failure": "Error encountered attempting to logout warrior"
+        },
+        "battle": {
+            "delete": "Delete Battle",
+            "abandon": "Abandon Battle",
+            "create": "Create Battle"
+        },
+        "warrior": {
+            "create": "Create Warrior",
+            "nudge": "Nudge",
+            "promote": "Promote"
+        },
+        "plan": {
+            "skip": "Skip Plan",
+            "finishVoting": "Finish Voting",
+            "restartVoting": "Restart Voting",
+            "save": "Save",
+            "importJiraXML": {
+                "button": "Import plans from Jira XML",
+                "badFileType": "Error bad file type",
+                "errorReadingFile": "Error reading file"
+            }
+        }
+    },
+    "pages": {
+        "landing": {
+            "title": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
+            "bullet1": "Built on cool tech like Svelte, Go, and WebSockets",
+            "bullet2": "Simple {crossoutOpen}User{crossoutClose}Warrior Experience",
+            "bullet3": "Works on all {mbOpen}modern browsers*{mbClose}, including mobile",
+            "bullet3NotSorry": "*sorry, not sorry IE",
+            "features": {
+                "title": "Features",
+                "bullet1": "No limit on number of Warriors in a Battle",
+                "bullet2": "Secure voting, keeps your Warriors from cheating",
+                "bullet3": "Voting Results that are clear and helpful",
+                "bullet4": "Ability to promote any Warrior to Battle Leader",
+                "bullet5": "Customizable pointing scales",
+                "bullet6": "Open Source, feel free to {contribOpen}contribute and suggest features{contribClose}",
+                "bullet7": "No fees and Ad free"
+            }
+        },
+        "myBattles": {
+            "nav": "My Battles"
+        },
+        "createAccount": {
+            "nav": "Create Account"
+        },
+        "admin": {
+            "nav": "Admin",
+            "title": "Admin",
+            "counts": {
+                "registered": "Registered Warriors",
+                "unregistered": "Unregistered Warriors",
+                "battles": "Battles",
+                "plans": "Plans"
+            },
+            "registeredWarriors": {
+                "title": "Registered Warriors",
+                "name": "Name",
+                "email": "Email",
+                "verified": "Verified"
+            }
+        },
+        "login": {
+            "nav": "Login"
+        },
+        "battle": {
+            "title": "Battle",
+            "warriors": "Warriors",
+            "socketReconnecting": "Ooops, reloading Battle Plans...",
+            "socketError": "Error joining battle, refresh and try again.",
+            "loading": "Loading Battle Plans...",
+            "votingNotStarted": "Voting not started",
+            "warriorJoined": "{name} has joined the battle",
+            "warriorRetreated": "{name} has retreated from the battle",
+            "warriorVoted": "{name} has voted",
+            "warriorRetractedVote": "{name} has retracted vote",
+            "warriorNudge": "pst... {name}, waiting on you to vote.",
+            "warriorInvite": "Invite a Warrior",
+            "warriorLeader": "Leader",
+            "finalPoints": "Final Points",
+            "points": "Points"
+        }
+    }
+}

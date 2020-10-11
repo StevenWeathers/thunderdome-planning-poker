@@ -133,7 +133,7 @@
                 <div class="w-1/5">
                     <div class="text-right">
                         <HollowButton onClick="{toggleCreateWarrior}">
-                            {$_('pages.admin.registeredWarriors.create')}
+                            {$_('actions.warrior.create')}
                         </HollowButton>
                     </div>
                 </div>

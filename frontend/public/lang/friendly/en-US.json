@@ -1,0 +1,91 @@
+{
+    "appName": "Thunderdome",
+    "actions": {
+        "logout": {
+            "button": "Logout",
+            "failure": "Error encountered attempting to logout user"
+        },
+        "battle": {
+            "delete": "Delete Session",
+            "abandon": "Abandon Session",
+            "create": "Create Session"
+        },
+        "warrior": {
+            "create": "Create User",
+            "nudge": "Nudge",
+            "promote": "Promote"
+        },
+        "plan": {
+            "skip": "Skip Plan",
+            "finishVoting": "Finish Voting",
+            "restartVoting": "Restart Voting",
+            "save": "Save",
+            "importJiraXML": {
+                "button": "Import stories from Jira XML",
+                "badFileType": "Error bad file type",
+                "errorReadingFile": "Error reading file"
+            }
+        }
+    },
+    "pages": {
+        "landing": {
+            "title": "Thunderdome is an Open Source Agile Planning Poker app",
+            "bullet1": "Built on cool tech like Svelte, Go, and WebSockets",
+            "bullet2": "Simple User Experience",
+            "bullet3": "Works on all {mbOpen}modern browsers*{mbClose}, including mobile",
+            "bullet3NotSorry": "*sorry, not sorry IE",
+            "features": {
+                "title": "Features",
+                "bullet1": "No limit on number of Users in a Session",
+                "bullet2": "Secure voting, keeps your Users from cheating",
+                "bullet3": "Voting Results that are clear and helpful",
+                "bullet4": "Ability to promote any User to Session Leader",
+                "bullet5": "Customizable pointing scales",
+                "bullet6": "Open Source, feel free to {contribOpen}contribute and suggest features{contribClose}",
+                "bullet7": "No fees and Ad free"
+            }
+        },
+        "myBattles": {
+            "nav": "My Sessions"
+        },
+        "createAccount": {
+            "nav": "Create Account"
+        },
+        "admin": {
+            "nav": "Admin",
+            "title": "Admin",
+            "counts": {
+                "registered": "Registered Users",
+                "unregistered": "Unregistered Users",
+                "battles": "Sessions",
+                "plans": "Stories"
+            },
+            "registeredWarriors": {
+                "title": "Registered Users",
+                "name": "Name",
+                "email": "Email",
+                "verified": "Verified"
+            }
+        },
+        "login": {
+            "nav": "Login"
+        },
+        "battle": {
+            "title": "Session",
+            "warriors": "Users",
+            "socketReconnecting": "Ooops, reloading Session...",
+            "socketError": "Error joining session, refresh and try again.",
+            "loading": "Loading Session...",
+            "votingNotStarted": "Voting not started",
+            "warriorJoined": "{name} has joined the session",
+            "warriorRetreated": "{name} has left the session",
+            "warriorVoted": "{name} has voted",
+            "warriorRetractedVote": "{name} has retracted vote",
+            "warriorNudge": "pst... {name}, waiting on you to vote.",
+            "warriorInvite": "Invite a User",
+            "warriorLeader": "Leader",
+            "finalPoints": "Final Points",
+            "points": "Points"
+        }
+    }
+}

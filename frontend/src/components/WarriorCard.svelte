@@ -5,6 +5,7 @@
     import WarriorRankCorporal from './icons/WarriorRankCorporal.svelte'
     import WarriorRankGeneral from './icons/WarriorRankGeneral.svelte'
     import WarriorAvatar from './WarriorAvatar.svelte'
+    import { _ } from '../i18n'
 
     export let voted = false
     export let warrior = {}
@@ -60,21 +61,21 @@
                 {#if leaderId === warrior.id}
                     <p class="text-l text-gray-700 leading-tight">
                         <LeaderIcon />
-                        &nbsp;Leader
+                        &nbsp;{$_('pages.battle.warriorLeader')}
                     </p>
                 {:else if isLeader}
                     <button
                         on:click="{promoteLeader}"
                         class="inline-block align-baseline text-sm text-blue-500
                         hover:text-blue-600 bg-transparent border-transparent">
-                        Promote
+                        {$_('actions.warrior.promote')}
                     </button>
                     &nbsp;|&nbsp;
                     <button
                         on:click="{jabWarrior}"
                         class="inline-block align-baseline text-sm text-blue-500
                         hover:text-blue-600 bg-transparent border-transparent">
-                        Nudge
+                        {$_('actions.warrior.nudge')}
                     </button>
                 {/if}
             </div>

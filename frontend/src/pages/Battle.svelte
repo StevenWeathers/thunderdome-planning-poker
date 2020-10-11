@@ -11,8 +11,8 @@
     import VoteResults from '../components/VoteResults.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
-
     import { warrior } from '../stores.js'
+    import { _ } from '../i18n'
 
     export let battleId
     export let notifications
@@ -23,7 +23,7 @@
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
     const defaultPlan = {
         id: '',
-        name: '[Voting not started]',
+        name: `[${$_('pages.battle.votingNotStarted')}]`,
         type: '',
         referenceId: '',
         link: '',
@@ -69,7 +69,11 @@
                 const joinedWarrior = battle.warriors.find(
                     w => w.id === parsedEvent.warriorId,
                 )
-                notifications.success(`${joinedWarrior.name} joined.`)
+                notifications.success(
+                    `${$_('pages.battle.warriorJoined', {
+                        values: { name: joinedWarrior.name },
+                    })}`,
+                )
                 break
             case 'warrior_retreated':
                 const leftWarrior = battle.warriors.find(
@@ -77,7 +81,11 @@
                 )
                 battle.warriors = JSON.parse(parsedEvent.value)
 
-                notifications.danger(`${leftWarrior.name} retreated.`)
+                notifications.danger(
+                    `${$_('pages.battle.warriorRetreated', {
+                        values: { name: leftWarrior.name },
+                    })}`,
+                )
                 break
             case 'plan_added':
                 battle.plans = JSON.parse(parsedEvent.value)
@@ -106,7 +114,11 @@
                 const votedWarrior = battle.warriors.find(
                     w => w.id === parsedEvent.warriorId,
                 )
-                notifications.success(`${votedWarrior.name} voted.`)
+                notifications.success(
+                    `${$_('pages.battle.warriorVoted', {
+                        values: { name: votedWarrior.name },
+                    })}`,
+                )
 
                 battle.plans = JSON.parse(parsedEvent.value)
                 break
@@ -114,7 +126,11 @@
                 const devotedWarrior = battle.warriors.find(
                     w => w.id === parsedEvent.warriorId,
                 )
-                notifications.warning(`${devotedWarrior.name} retracted vote.`)
+                notifications.warning(
+                    `${$_('pages.battle.warriorRetractedVote', {
+                        values: { name: devotedWarrior.name },
+                    })}`,
+                )
 
                 battle.plans = JSON.parse(parsedEvent.value)
                 break
@@ -164,7 +180,9 @@
                     w => w.id === parsedEvent.value,
                 )
                 notifications.info(
-                    `pst... ${warriorToJab.name}, waiting on you to vote.`,
+                    `${$_('pages.battle.warriorNudge', {
+                        values: { name: warriorToJab.name },
+                    })}`,
                 )
                 break
             default:
@@ -360,7 +378,7 @@
 </script>
 
 <svelte:head>
-    <title>Battle {battle.name} | Thunderdome</title>
+    <title>{$_('pages.battle.title')} {battle.name} | {$_('appName')}</title>
 </svelte:head>
 
 <PageLayout>
@@ -368,7 +386,7 @@
         <div class="mb-6 flex flex-wrap">
             <div class="w-full text-center md:w-2/3 md:text-left">
                 <h1 class="text-3xl font-bold leading-tight">
-                    {#if currentPlan.link !== ''}
+                    {#if currentPlan.link}
                         <a
                             href="{currentPlan.link}"
                             target="_blank"
@@ -377,13 +395,15 @@
                         </a>
                         &nbsp;
                     {/if}
-                    <span
-                        class="inline-block text-lg text-gray-500
-                        border-gray-400 border px-1 rounded"
-                        data-testId="battlePlanType">
-                        {currentPlan.type}
-                    </span>
-                    &nbsp;
+                    {#if currentPlan.type}
+                        <span
+                            class="inline-block text-lg text-gray-500
+                            border-gray-400 border px-1 rounded"
+                            data-testId="battlePlanType">
+                            {currentPlan.type}
+                        </span>
+                        &nbsp;
+                    {/if}
                     {#if currentPlan.referenceId}
                         [{currentPlan.referenceId}]&nbsp;
                     {/if}
@@ -442,7 +462,7 @@
                 <div class="bg-white shadow-lg mb-4 rounded">
                     <div class="bg-blue-500 p-4 rounded-t">
                         <h3 class="text-2xl text-white leading-tight font-bold">
-                            Warriors
+                            {$_('pages.battle.warriors')}
                         </h3>
                     </div>
 
@@ -475,13 +495,13 @@
                     {#if battle.leaderId === $warrior.id}
                         <div class="mt-4 text-right">
                             <HollowButton color="red" onClick="{concedeBattle}">
-                                Delete Battle
+                                {$_('actions.battle.delete')}
                             </HollowButton>
                         </div>
                     {:else}
                         <div class="mt-4 text-right">
                             <HollowButton color="red" onClick="{abandonBattle}">
-                                Abandon Battle
+                                {$_('actions.battle.abandon')}
                             </HollowButton>
                         </div>
                     {/if}
@@ -492,7 +512,7 @@
         <div class="flex items-center">
             <div class="flex-1 text-center">
                 <h1 class="text-5xl text-teal-500 leading-tight font-bold">
-                    Ooops, reloading Battle Plans...
+                    {$_('pages.battle.socketReconnecting')}
                 </h1>
             </div>
         </div>
@@ -500,7 +520,7 @@
         <div class="flex items-center">
             <div class="flex-1 text-center">
                 <h1 class="text-5xl text-red-500 leading-tight font-bold">
-                    Error joining battle, refresh and try again.
+                    {$_('pages.battle.socketError')}
                 </h1>
             </div>
         </div>
@@ -508,7 +528,7 @@
         <div class="flex items-center">
             <div class="flex-1 text-center">
                 <h1 class="text-5xl text-green-500 leading-tight font-bold">
-                    Loading Battle Plans...
+                    {$_('pages.battle.loading')}
                 </h1>
             </div>
         </div>

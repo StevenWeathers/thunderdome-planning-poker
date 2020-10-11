@@ -224,7 +224,7 @@
         <a
             href="https://github.com/StevenWeathers/thunderdome-planning-poker"
             class="{footerLinkClasses}">
-            Thunderdome
+            {$_('appName')}
         </a>
         by
         <a href="http://stevenweathers.com" class="{footerLinkClasses}">

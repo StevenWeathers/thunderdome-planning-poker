@@ -1,5 +1,6 @@
 <script>
     import SolidButton from './SolidButton.svelte'
+    import { _ } from '../i18n'
 
     export let hostname = ''
     export let battleId = ''
@@ -11,7 +12,9 @@
     }
 </script>
 
-<h4 class="text-xl mb-2 leading-tight font-bold">Invite a warrior</h4>
+<h4 class="text-xl mb-2 leading-tight font-bold">
+    {$_('pages.battle.warriorInvite')}
+</h4>
 
 <div class="flex flex-wrap items-stretch w-full">
     <input
