@@ -29,6 +29,7 @@
         "js-cookie": "^2.2.1",
         "marked": "^1.2.0",
         "navaid": "^1.2.0",
+        "quill": "^1.3.7",
         "sockette": "^2.0.6",
         "turndown": "^7.0.0"
     },
