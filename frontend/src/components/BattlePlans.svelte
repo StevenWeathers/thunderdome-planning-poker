@@ -4,6 +4,7 @@
     import HollowButton from './HollowButton.svelte'
     import ViewPlan from './ViewPlan.svelte'
     import JiraImport from './JiraImport.svelte'
+    import { _ } from '../i18n'
 
     export let plans = []
     export let isLeader = false
@@ -95,7 +96,7 @@
                     <JiraImport {handlePlanAdd} {notifications} />
                 {/if}
                 <HollowButton color="blue" onClick="{toggleAddPlan()}">
-                    Add Plan
+                    {$_('actions.plan.add')}
                 </HollowButton>
             {/if}
         </div>
@@ -107,7 +108,9 @@
                 class="{showCompleted ? 'hover:text-blue-600 text-blue-400' : 'border-b border-blue-500 text-blue-600 hover:text-blue-800'}
                 bg-white inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(false)}">
-                Unpointed ({unpointedPlans.length})
+                {$_('actions.plan.unpointed', {
+                    values: { count: unpointedPlans.length },
+                })}
             </button>
         </li>
         <li class="mr-1 {showCompleted ? 'mr-1' : ''}">
@@ -115,7 +118,9 @@
                 class="{showCompleted ? 'border-b border-blue-500 text-blue-600 hover:text-blue-800' : 'hover:text-blue-600 text-blue-400'}
                 bg-white inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(true)}">
-                Pointed ({pointedPlans.length})
+                {$_('actions.plan.pointed', {
+                    values: { count: pointedPlans.length },
+                })}
             </button>
         </li>
     </ul>
@@ -160,24 +165,24 @@
             </div>
             <div class="w-full lg:w-1/3 text-right">
                 <HollowButton color="blue" onClick="{togglePlanView(plan.id)}">
-                    View
+                    {$_('actions.plan.view')}
                 </HollowButton>
                 {#if isLeader}
                     {#if !plan.active}
                         <HollowButton
                             color="red"
                             onClick="{handlePlanDeletion(plan.id)}">
-                            Delete
+                            {$_('actions.plan.delete')}
                         </HollowButton>
                     {/if}
                     <HollowButton
                         color="purple"
                         onClick="{toggleAddPlan(plan.id)}">
-                        Edit
+                        {$_('actions.plan.edit')}
                     </HollowButton>
                     {#if !plan.active}
                         <HollowButton onClick="{activatePlan(plan.id)}">
-                            Activate
+                            {$_('actions.plan.activate')}
                         </HollowButton>
                     {/if}
                 {/if}

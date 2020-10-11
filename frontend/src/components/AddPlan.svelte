@@ -6,6 +6,7 @@
     import SolidButton from './SolidButton.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
     import DownCarrotIcon from './icons/DownCarrotIcon.svelte'
+    import { _ } from '../i18n'
 
     export let handlePlanAdd = () => {}
     export let toggleAddPlan = () => {}
@@ -67,7 +68,7 @@
                         <label
                             class="block text-sm font-bold mb-2"
                             for="planName">
-                            Plan Type
+                            {$_('actions.plan.fields.type.label')}
                         </label>
                         <div class="relative">
                             <select
@@ -78,7 +79,7 @@
                                 border-gray-400 text-gray-700 py-3 px-4 pr-8
                                 rounded leading-tight focus:outline-none
                                 focus:border-purple-500">
-                                <option value="" disabled>Types</option>
+                                <option value="" disabled>{$_('actions.plan.fields.type.placeholder')}</option>
                                 {#each planTypes as pType}
                                     <option value="{pType}">{pType}</option>
                                 {/each}
@@ -94,7 +95,7 @@
                         <label
                             class="block text-sm font-bold mb-2"
                             for="planName">
-                            Plan Name
+                            {$_('actions.plan.fields.name.label')}
                         </label>
                         <input
                             class="bg-gray-200 border-gray-200 border-2
@@ -105,13 +106,13 @@
                             id="planName"
                             name="planName"
                             bind:value="{planName}"
-                            placeholder="Enter a plan name" />
+                            placeholder={$_('actions.plan.fields.name.placeholder')} />
                     </div>
                     <div class="mb-4">
                         <label
                             class="block text-sm font-bold mb-2"
                             for="referenceId">
-                            Reference ID
+                            {$_('actions.plan.fields.referenceId.label')}
                         </label>
                         <input
                             class="bg-gray-200 border-gray-200 border-2
@@ -122,13 +123,13 @@
                             id="referenceId"
                             name="referenceId"
                             bind:value="{referenceId}"
-                            placeholder="Enter a reference ID" />
+                            placeholder={$_('actions.plan.fields.referenceId.placeholder')} />
                     </div>
                     <div class="mb-4">
                         <label
                             class="block text-sm font-bold mb-2"
                             for="planLink">
-                            Link
+                            {$_('actions.plan.fields.link.label')}
                         </label>
                         <input
                             class="bg-gray-200 border-gray-200 border-2
@@ -139,33 +140,33 @@
                             id="planLink"
                             name="planLink"
                             bind:value="{planLink}"
-                            placeholder="Enter a link to story" />
+                            placeholder={$_('actions.plan.fields.link.placeholder')} />
                     </div>
                     <div class="mb-16">
-                        <div class="text-sm font-bold mb-2">Description</div>
+                        <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.description.label')}</div>
                         <div class="h-48">
                             <div
                                 class="w-full"
-                                use:quill="{{ placeholder: 'Enter a plan description', content: marked(description) }}"
+                                use:quill="{{ placeholder: $_('actions.plan.fields.description.placeholder'), content: marked(description) }}"
                                 on:text-change="{e => (description = e.detail.html)}"
                                 id="description"></div>
                         </div>
                     </div>
                     <div class="mb-16">
                         <div class="text-sm font-bold mb-2">
-                            Acceptance Criteria
+                            {$_('actions.plan.fields.acceptanceCriteria.label')}
                         </div>
                         <div class="h-48">
                             <div
                                 class="w-full"
-                                use:quill="{{ placeholder: 'Enter plan acceptance criteria', content: marked(acceptanceCriteria) }}"
+                                use:quill="{{ placeholder: $_('actions.plan.fields.acceptanceCriteria.placeholder'), content: marked(acceptanceCriteria) }}"
                                 on:text-change="{e => (acceptanceCriteria = e.detail.html)}"
                                 id="acceptanceCriteria"></div>
                         </div>
                     </div>
                     <div class="text-right">
                         <div>
-                            <SolidButton type="submit">Save</SolidButton>
+                            <SolidButton type="submit">{$_('actions.plan.save')}</SolidButton>
                         </div>
                     </div>
                 </form>

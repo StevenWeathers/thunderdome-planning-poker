@@ -3,6 +3,7 @@
 
     import ExternalLinkIcon from './icons/ExternalLinkIcon.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
+    import { _ } from '../i18n'
 
     export let togglePlanView = () => {}
 
@@ -32,19 +33,19 @@
                 </div>
 
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">Plan Type</div>
+                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.type.label')}</div>
                     {planType}
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">Plan Name</div>
+                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.name.label')}</div>
                     {planName}
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">Reference ID</div>
+                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.referenceId.label')}</div>
                     {referenceId}
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">Link</div>
+                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.link.label')}</div>
                     {#if planLink !== ''}
                         <a
                             href="{planLink}"
@@ -56,12 +57,12 @@
                     {/if}
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">Description</div>
+                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.description.label')}</div>
                     {@html marked(description)}
                 </div>
                 <div class="mb-4">
                     <div class="text-sm font-bold mb-2">
-                        Acceptance Criteria
+                        {$_('actions.plan.fields.acceptanceCriteria.label')}
                     </div>
                     {@html marked(acceptanceCriteria)}
                 </div>

@@ -16,7 +16,14 @@
             "promote": "Promote"
         },
         "plan": {
+            "add": "Add Plan",
+            "view": "View",
+            "edit": "Edit",
+            "delete": "Delete",
+            "activate": "Activate",
             "skip": "Skip Plan",
+            "pointed": "Pointed ({count})",
+            "unpointed": "Unpointed ({count})",
             "finishVoting": "Finish Voting",
             "restartVoting": "Restart Voting",
             "save": "Save",
@@ -24,6 +31,32 @@
                 "button": "Import plans from Jira XML",
                 "badFileType": "Error bad file type",
                 "errorReadingFile": "Error reading file"
+            },
+            "fields": {
+                "name": {
+                    "label": "Plan Name",
+                    "placeholder": "Enter a plan name"
+                },
+                "type": {
+                    "label": "Plan Type",
+                    "placeholder": "Types"
+                },
+                "link": {
+                    "label": "Link",
+                    "placeholder": "Enter a link to story"
+                },
+                "referenceId": {
+                    "label": "Reference ID",
+                    "placeholder": "Enter a reference ID"
+                },
+                "description": {
+                    "label": "Description",
+                    "placeholder": "Enter a description"
+                },
+                "acceptanceCriteria": {
+                    "label": "Acceptance Criteria",
+                    "placeholder": "Enter acceptance criteria"
+                }
             }
         }
     },
