@@ -12,6 +12,7 @@ func (s *server) routes() {
 	s.router.PathPrefix("/css/").Handler(staticHandler)
 	s.router.PathPrefix("/js/").Handler(staticHandler)
 	s.router.PathPrefix("/img/").Handler(staticHandler)
+	s.router.PathPrefix("/lang/").Handler(staticHandler)
 	// api (currently internal to UI application)
 	// warrior authentication, profile
 	s.router.HandleFunc("/api/auth", s.handleLogin()).Methods("POST")

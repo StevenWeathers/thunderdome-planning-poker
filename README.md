@@ -68,6 +68,14 @@ pkger
 go build
 ```
 
+# Adding new Locale's
+Using svelte-i18n **Thunderdome** now supports Locale selection on the UI (Default en-US)
+
+Adding new locale's involves just a couple of steps.
+
+1. First add the locale dictionary json file in ```frontend/public/lang/``` by copying the en-US.json and just changing the values of all keys
+1. Second, the locale will need to be added to the locales list used by switcher component in ```frontend/public/App.svelte``` ```locales``` array
+
 # Configuration
 Thunderdome may be configured through environment variables or via a yaml file `config.yaml`
 located in one of:
@@ -80,7 +88,7 @@ The following configuration options exists:
 
 | Option                     | Environment Variable | Description                                | Default Value           |
 | -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
-| `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | "strongest-avenger" |
+| `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | strongest-avenger |
 | `http.port`                | PORT                 | Which port to listen for HTTP connections. | 8080 |
 | `http.secure_cookie`       | COOKIE_SECURE        | Use secure cookies or not.                 | true |
 | `http.domain`              | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome.  Used for creating URLs in emails. | thunderdome.dev |
@@ -105,6 +113,8 @@ The following configuration options exists:
 | `config.allow_guests`     | CONFIG_ALLOW_GUESTS | Whether or not to allow guest (anonymous) users. | true |
 | `config.allow_registration`     | CONFIG_ALLOW_REGISTRAATION | Whether or not to allow user registration (outside Admin). | true |
 | `config.allow_jira_import`     | CONFIG_ALLOW_JIRA_IMPORT | Whether or not to allow import plans from JIRA XML. | true |
+| `config.default_locale`   | CONFIG_DEFAULT_LOCALE | The default locale (language) for the UI | en-US |
+| `config.friendly_ui_verbs`    | CONFIG_FRIENDLY_UI_VERBS | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly | false |
 
 ## Avatar Service configuration
 

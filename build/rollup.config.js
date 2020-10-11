@@ -59,6 +59,7 @@ export default {
         copy({
             targets: {
                 'frontend/public/img': 'dist/img',
+                'frontend/public/lang': 'dist/lang',
             },
         }),
 

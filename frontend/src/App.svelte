@@ -1,10 +1,12 @@
 <script>
     import Navaid from 'navaid'
     import { onDestroy } from 'svelte'
+    import { _, locale, setupI18n, isLocaleLoaded } from './i18n'
+
     import Notifications from './components/Notifications.svelte'
     import WarriorIcon from './components/icons/WarriorIcon.svelte'
     import HollowButton from './components/HollowButton.svelte'
-
+    import LocaleSwitcher from './components/LocaleSwitcher.svelte'
     import Landing from './pages/Landing.svelte'
     import Battles from './pages/Battles.svelte'
     import Battle from './pages/Battle.svelte'
@@ -17,6 +19,16 @@
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
     import apiclient from './apiclient.js'
+
+    setupI18n({ withLocale: appConfig.DefaultLocale })
+
+    // Available Locale's for localeSwitching
+    const locales = [
+        {
+            name: 'English',
+            value: 'en-US',
+        },
+    ]
 
     const registrationAllowed = appConfig.AllowRegistration
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
@@ -109,9 +121,7 @@
                 })
             })
             .catch(function(error) {
-                notifications.danger(
-                    'Error encountered attempting to logout warrior',
-                )
+                notifications.danger($_('actions.logout.failure'))
                 eventTag('logout', 'engagement', 'failure')
             })
     }
@@ -133,89 +143,104 @@
 
 <Notifications bind:this="{notifications}" />
 
-<nav
-    class="flex items-center justify-between flex-wrap bg-white p-6"
-    role="navigation"
-    aria-label="main navigation">
-    <div class="flex items-center flex-shrink-0 mr-6">
-        <a href="/">
-            <img src="/img/logo.svg" alt="Thunderdome" class="nav-logo" />
-        </a>
-    </div>
-    {#if activeWarrior.name}
+{#if $isLocaleLoaded}
+    <nav
+        class="flex items-center justify-between flex-wrap bg-white p-6"
+        role="navigation"
+        aria-label="main navigation">
+        <div class="flex items-center flex-shrink-0 mr-6">
+            <a href="/">
+                <img src="/img/logo.svg" alt="Thunderdome" class="nav-logo" />
+            </a>
+        </div>
         <div class="text-right mt-4 md:mt-0">
-            <span class="font-bold mr-2 text-xl">
-                <WarriorIcon />
-                <a href="/warrior-profile">{activeWarrior.name}</a>
-            </span>
-            <HollowButton color="teal" href="/battles" additionalClasses="mr-2">
-                My Battles
-            </HollowButton>
-            {#if !activeWarrior.rank || activeWarrior.rank === 'PRIVATE'}
+            {#if activeWarrior.name}
+                <span class="font-bold mr-2 text-xl">
+                    <WarriorIcon />
+                    <a href="/warrior-profile">{activeWarrior.name}</a>
+                </span>
+                <HollowButton
+                    color="teal"
+                    href="/battles"
+                    additionalClasses="mr-2">
+                    {$_('pages.myBattles.nav')}
+                </HollowButton>
+                {#if !activeWarrior.rank || activeWarrior.rank === 'PRIVATE'}
+                    {#if registrationAllowed}
+                        <HollowButton
+                            color="teal"
+                            href="/enlist"
+                            additionalClasses="mr-2">
+                            {$_('pages.createAccount.nav')}
+                        </HollowButton>
+                    {/if}
+                    <HollowButton href="/login">
+                        {$_('pages.login')}
+                    </HollowButton>
+                {:else}
+                    {#if activeWarrior.rank === 'GENERAL'}
+                        <HollowButton
+                            color="purple"
+                            href="/admin"
+                            additionalClasses="mr-2">
+                            {$_('pages.admin.nav')}
+                        </HollowButton>
+                    {/if}
+                    <HollowButton color="red" onClick="{logoutWarrior}">
+                        {$_('actions.logout.button')}
+                    </HollowButton>
+                {/if}
+            {:else}
                 {#if registrationAllowed}
                     <HollowButton
                         color="teal"
                         href="/enlist"
                         additionalClasses="mr-2">
-                        Create Account
+                        {$_('pages.createAccount.nav')}
                     </HollowButton>
                 {/if}
-                <HollowButton href="/login">Login</HollowButton>
-            {:else}
-                {#if activeWarrior.rank === 'GENERAL'}
-                    <HollowButton
-                        color="purple"
-                        href="/admin"
-                        additionalClasses="mr-2">
-                        Admin
-                    </HollowButton>
-                {/if}
-                <HollowButton color="red" onClick="{logoutWarrior}">
-                    Logout
+                <HollowButton href="/login">
+                    {$_('pages.login.nav')}
                 </HollowButton>
             {/if}
+            <LocaleSwitcher
+                {locales}
+                selectedLocale="{$locale}"
+                on:locale-changed="{e => setupI18n({
+                        withLocale: e.detail,
+                    })}" />
         </div>
-    {:else}
-        <div class="text-right mt-4 md:mt-0">
-            {#if registrationAllowed}
-                <HollowButton
-                    color="teal"
-                    href="/enlist"
-                    additionalClasses="mr-2">
-                    Create Account
-                </HollowButton>
-            {/if}
-            <HollowButton href="/login">Login</HollowButton>
-        </div>
-    {/if}
-</nav>
+    </nav>
 
-<svelte:component
-    this="{currentPage.route}"
-    {...currentPage.params}
-    {notifications}
-    {router}
-    {eventTag}
-    {xfetch} />
+    <svelte:component
+        this="{currentPage.route}"
+        {...currentPage.params}
+        {notifications}
+        {router}
+        {eventTag}
+        {xfetch} />
 
-<footer class="p-6 text-center">
-    <a
-        href="https://github.com/StevenWeathers/thunderdome-planning-poker"
-        class="{footerLinkClasses}">
-        Thunderdome
-    </a>
-    by
-    <a href="http://stevenweathers.com" class="{footerLinkClasses}">
-        Steven Weathers
-    </a>
-    . The source code is licensed
-    <a href="http://www.apache.org/licenses/" class="{footerLinkClasses}">
-        Apache 2.0
-    </a>
-    .
-    <br />
-    Powered by
-    <a href="https://svelte.dev/" class="{footerLinkClasses}">Svelte</a>
-    and
-    <a href="https://golang.org/" class="{footerLinkClasses}">Go</a>
-</footer>
+    <footer class="p-6 text-center">
+        <a
+            href="https://github.com/StevenWeathers/thunderdome-planning-poker"
+            class="{footerLinkClasses}">
+            Thunderdome
+        </a>
+        by
+        <a href="http://stevenweathers.com" class="{footerLinkClasses}">
+            Steven Weathers
+        </a>
+        . The source code is licensed
+        <a href="http://www.apache.org/licenses/" class="{footerLinkClasses}">
+            Apache 2.0
+        </a>
+        .
+        <br />
+        Powered by
+        <a href="https://svelte.dev/" class="{footerLinkClasses}">Svelte</a>
+        and
+        <a href="https://golang.org/" class="{footerLinkClasses}">Go</a>
+    </footer>
+{:else}
+    <p>Loading...</p>
+{/if}

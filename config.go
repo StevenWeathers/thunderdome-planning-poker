@@ -44,6 +44,8 @@ func InitConfig() {
 	viper.SetDefault("config.allow_guests", true)
 	viper.SetDefault("config.allow_registration", true)
 	viper.SetDefault("config.allow_jira_import", true)
+	viper.SetDefault("config.default_locale", "en-US")
+	viper.SetDefault("config.friendly_ui_verbs", false)
 
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")
@@ -76,6 +78,8 @@ func InitConfig() {
 	viper.BindEnv("config.allow_guests", "CONFIG_ALLOW_GUESTS")
 	viper.BindEnv("config.allow_registration", "CONFIG_ALLOW_REGISTRATION")
 	viper.BindEnv("config.allow_jira_import", "CONFIG_ALLOW_JIRA_IMPORT")
+	viper.BindEnv("config.default_locale", "CONFIG_DEFAULT_LOCALE")
+	viper.BindEnv("config.friendly_ui_verbs", "CONFIG_FRIENDLY_UI_VERBS")
 
 	err := viper.ReadInConfig()
 	if err != nil {

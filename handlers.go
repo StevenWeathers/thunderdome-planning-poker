@@ -168,7 +168,9 @@ func (s *server) handleIndex() http.HandlerFunc {
 		ToastTimeout       int
 		AllowGuests        bool
 		AllowRegistration  bool
-		AllowJiraImport  bool
+		AllowJiraImport    bool
+		DefaultLocale      string
+		FriendlyUIVerbs    bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -204,7 +206,9 @@ func (s *server) handleIndex() http.HandlerFunc {
 		ToastTimeout:       viper.GetInt("config.toast_timeout"),
 		AllowGuests:        viper.GetBool("config.allow_guests"),
 		AllowRegistration:  viper.GetBool("config.allow_registration"),
-		AllowJiraImport:  viper.GetBool("config.allow_jira_import"),
+		AllowJiraImport:    viper.GetBool("config.allow_jira_import"),
+		DefaultLocale:      viper.GetString("config.default_locale"),
+		FriendlyUIVerbs:    viper.GetBool("config.friendly_ui_verbs"),
 	}
 
 	data := UIConfig{

@@ -5,6 +5,7 @@
     import HollowButton from '../components/HollowButton.svelte'
     import CreateWarrior from '../components/CreateWarrior.svelte'
     import { warrior } from '../stores.js'
+    import { _ } from '../i18n'
 
     export let xfetch
     export let router
@@ -84,7 +85,9 @@
 
 <PageLayout>
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">Admin</h1>
+        <h1 class="text-3xl md:text-4xl font-bold">
+            {$_('pages.admin.title')}
+        </h1>
     </div>
     <div class="flex justify-center mb-4">
         <div class="w-full">
@@ -92,19 +95,27 @@
                 class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
                 md:pb-4 bg-white shadow-lg rounded text-xl">
                 <div class="w-1/4">
-                    <div class="mb-2 font-bold">Unregistered Warriors</div>
+                    <div class="mb-2 font-bold">
+                        {$_('pages.admin.counts.unregistered')}
+                    </div>
                     {appStats.unregisteredWarriorCount}
                 </div>
                 <div class="w-1/4">
-                    <div class="mb-2 font-bold">Registered Warriors</div>
+                    <div class="mb-2 font-bold">
+                        {$_('pages.admin.counts.registered')}
+                    </div>
                     {appStats.registeredWarriorCount}
                 </div>
                 <div class="w-1/4">
-                    <div class="mb-2 font-bold">Battles</div>
+                    <div class="mb-2 font-bold">
+                        {$_('pages.admin.counts.battles')}
+                    </div>
                     {appStats.battleCount}
                 </div>
                 <div class="w-1/4">
-                    <div class="mb-2 font-bold">Plans</div>
+                    <div class="mb-2 font-bold">
+                        {$_('pages.admin.counts.plans')}
+                    </div>
                     {appStats.planCount}
                 </div>
             </div>
@@ -116,13 +127,13 @@
             <div class="flex w-full">
                 <div class="w-4/5">
                     <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
-                        Registered Warriors
+                        {$_('pages.admin.registeredWarriors.title')}
                     </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
                         <HollowButton onClick="{toggleCreateWarrior}">
-                            Create Warrior
+                            {$_('pages.admin.registeredWarriors.create')}
                         </HollowButton>
                     </div>
                 </div>
@@ -131,9 +142,15 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">Name</th>
-                        <th class="w-2/6 px-4 py-2">Email</th>
-                        <th class="w-1/6 px-4 py-2">Verified</th>
+                        <th class="w-2/6 px-4 py-2">
+                            {$_('pages.admin.registeredWarriors.name')}
+                        </th>
+                        <th class="w-2/6 px-4 py-2">
+                            {$_('pages.admin.registeredWarriors.email')}
+                        </th>
+                        <th class="w-1/6 px-4 py-2">
+                            {$_('pages.admin.registeredWarriors.verified')}
+                        </th>
                         <th class="w-1/6 px-4 py-2"></th>
                     </tr>
                 </thead>

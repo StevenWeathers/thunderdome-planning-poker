@@ -1,7 +1,8 @@
 <script>
     import CheckIcon from '../components/icons/CheckIcon.svelte'
 
-    import { warrior } from '../stores.js'
+    import { _ } from '../i18n'
+    import { warrior } from '../stores'
 </script>
 
 <section class="bg-yellow-thunder text-gray-800">
@@ -9,28 +10,35 @@
         <div class="flex flex-wrap items-center -mx-4">
             <div class="w-full md:w-1/2 mb-4 lg:mb-0 px-4">
                 <h1 class="mb-2 lg:mb-4 text-4xl font-bold leading-tight">
-                    Thunderdome is an Open Source Agile Planning Poker app with
-                    a fun theme
+                    {$_('pages.landing.title')}
                 </h1>
 
                 <ul class="text-lg lg:text-2xl mb-4">
                     <li class="py-2 lg:py-4">
                         <CheckIcon />
-                        Built on cool tech like Svelte, Go, and WebSockets
+                        {$_('pages.landing.bullet1')}
                     </li>
                     <li class="py-2 lg:py-4">
                         <CheckIcon />
-                        Simple
-                        <span class="line-through">User</span>
-                        Warrior Experience
+                        {@html $_('pages.landing.bullet2', {
+                            values: {
+                                crossoutOpen: `<span class="line-through">`,
+                                crossoutClose: '</span>',
+                            },
+                        })}
                     </li>
                     <li class="py-2 lg:py-4">
                         <CheckIcon />
-                        Works on all
-                        <span class="font-semibold">modern browsers*</span>
-                        , including mobile
+                        {@html $_('pages.landing.bullet3', {
+                            values: {
+                                mbOpen: `<span class="font-semibold">`,
+                                mbClose: '</span>',
+                            },
+                        })}
                         <br />
-                        <span class="text-sm">*sorry, not sorry IE</span>
+                        <span class="text-sm">
+                            {$_('pages.landing.bullet3NotSorry')}
+                        </span>
                     </li>
                 </ul>
 
@@ -42,7 +50,7 @@
                         text-yellow-thunder py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded"
                         href="{$warrior.id ? '/battles' : '/enlist'}">
-                        Create a Battle
+                        {$_('actions.createBattle')}
                     </a>
                 </div>
             </div>
@@ -60,45 +68,49 @@
 <section class="bg-white">
     <div class="container mx-auto px-4 py-6 lg:py-10">
         <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold">Features</h2>
+            <h2 class="text-2xl font-bold">
+                {$_('pages.landing.features.title')}
+            </h2>
         </div>
         <div class="flex text-center mb-8">
             <div class="w-1/3">
                 <CheckIcon />
-                No limit on number of Warriors in a Battle
+                {$_('pages.landing.features.bullet1')}
             </div>
             <div class="w-1/3">
                 <CheckIcon />
-                Secure voting, keeps your Warriors from cheating
+                {$_('pages.landing.features.bullet2')}
             </div>
             <div class="w-1/3">
                 <CheckIcon />
-                Voting Results that are clear and helpful
+                {$_('pages.landing.features.bullet3')}
             </div>
         </div>
         <div class="flex text-center mb-8">
             <div class="w-1/3">
                 <CheckIcon />
-                Ability to promote any Warrior to Battle Leader
+                {$_('pages.landing.features.bullet4')}
             </div>
             <div class="w-1/3">
                 <CheckIcon />
-                Customizable pointing scales
+                {$_('pages.landing.features.bullet5')}
             </div>
             <div class="w-1/3">
                 <CheckIcon />
-                Open Source, feel free to
-                <a
+                {@html $_('pages.landing.features.bullet6', {
+                    values: {
+                        contribOpen: `<a
                     href="https://github.com/StevenWeathers/thunderdome-planning-poker"
-                    class="no-underline text-teal-500 hover:text-teal-800">
-                    contribute and suggest features
-                </a>
+                    class="no-underline text-teal-500 hover:text-teal-800\">`,
+                        contribClose: '</a>',
+                    },
+                })}
             </div>
         </div>
         <div class="flex text-center">
             <div class="w-full">
                 <CheckIcon />
-                No fees &amp; Ad free
+                {$_('pages.landing.features.bullet7')}
             </div>
         </div>
     </div>
