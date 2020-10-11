@@ -2,6 +2,7 @@
     import VoteIcon from './icons/VoteIcon.svelte'
     import PointCard from '../components/PointCard.svelte'
     import WarriorIcon from '../components/icons/WarriorIcon.svelte'
+    import { _ } from '../i18n'
 
     export let activePlanId = ''
     export let plans = []
@@ -43,7 +44,7 @@
                 count: 0,
                 voters: [],
             }
-            let warriorName = 'Unknown Warrior'
+            let warriorName = $_('pages.battle.voteResults.unknownWarrior')
 
             if (warriors.length) {
                 const warrior = warriors.find(w => w.id === v.warriorId)
@@ -72,12 +73,12 @@
     class="flex flex-wrap items-center text-center mb-2 md:mb-4 pt-2 pb-2
     md:pt-4 md:pb-4 bg-white shadow-lg rounded text-xl">
     <div class="w-1/3 ">
-        <div class="mb-2">Total Votes</div>
+        <div class="mb-2">{$_('pages.battle.voteResults.totalVotes')}</div>
         {totalVotes}
         <WarriorIcon />
     </div>
     <div class="w-1/3">
-        <div class="mb-2">Average</div>
+        <div class="mb-2">{$_('pages.battle.voteResults.average')}</div>
         <span
             class="font-bold text-green-600 border-green-500 border p-2 rounded
             ml-2 inline-block">
@@ -85,7 +86,7 @@
         </span>
     </div>
     <div class="w-1/3">
-        <div class="mb-2">Highest</div>
+        <div class="mb-2">{$_('pages.battle.voteResults.highest')}</div>
         <div>
             <span
                 class="font-bold text-green-600 border-green-500 border p-2
@@ -98,7 +99,7 @@
                     on:mouseenter="{() => (showHighestVoters = true)}"
                     on:mouseleave="{() => (showHighestVoters = false)}"
                     class="relative leading-none"
-                    title="Show Voters">
+                    title="{$_('pages.battle.voteResults.showVoters')}">
                     <WarriorIcon />
                     <span
                         class="text-sm text-right text-gray-900 font-normal w-48

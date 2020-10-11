@@ -75,7 +75,9 @@
                 })
             })
             .catch(function(error) {
-                notifications.danger('Error encountered creating battle')
+                notifications.danger(
+                    $_('pages.myBattles.createBattle.createError'),
+                )
                 eventTag('create_battle', 'engagement', 'failure')
             })
     }

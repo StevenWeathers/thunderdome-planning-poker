@@ -145,7 +145,14 @@
             "warriorInvite": "Invite a Warrior",
             "warriorLeader": "Leader",
             "finalPoints": "Final Points",
-            "points": "Points"
+            "points": "Points",
+            "voteResults": {
+                "totalVotes": "Total Votes",
+                "average": "Average",
+                "highest": "Highest",
+                "showVoters": "Show Voters",
+                "unknownWarrior": "Unknown Warrior"
+            }
         }
     }
 }
