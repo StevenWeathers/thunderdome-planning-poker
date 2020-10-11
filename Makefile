@@ -30,7 +30,7 @@ clean:
 	rm -f *-packr.go
 	rm -rf dist
 	rm -rf release
-	rm -rf pkged.go
+	rm -rf pkged*.go
 
 format:
 	$(GOFMT) -s -w datasrc.go
