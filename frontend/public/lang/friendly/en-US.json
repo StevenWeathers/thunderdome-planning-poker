@@ -8,7 +8,8 @@
         "battle": {
             "delete": "Delete Session",
             "abandon": "Abandon Session",
-            "create": "Create Session"
+            "create": "Create Session",
+            "join": "Join Session"
         },
         "warrior": {
             "create": "Create User",
@@ -79,7 +80,33 @@
             }
         },
         "myBattles": {
-            "nav": "My Sessions"
+            "nav": "My Sessions",
+            "title": "My Sessions",
+            "battlesError": "Error finding your sessions",
+            "countPlansPointed": "{totalPointed} of {totalPlans} stories pointed",
+            "createBattle": {
+                "title": "Create a Session",
+                "createError": "Error encountered creating session",
+                "fields": {
+                    "name": {
+                        "label": "Session Name",
+                        "placeholder": "Enter a session name"
+                    },
+                    "allowedPointValues": {
+                        "label": "Allowed Point Values"
+                    },
+                    "plans": {
+                        "label": "Stories",
+                        "addButton": "Add Story",
+                        "removeButton": "Remove",
+                        "fields": {
+                            "name": {
+                                "placeholder": "Enter a story name"
+                            }
+                        }
+                    }
+                }
+            }
         },
         "createAccount": {
             "nav": "Create Account"

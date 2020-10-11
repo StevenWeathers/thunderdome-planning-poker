@@ -8,7 +8,8 @@
         "battle": {
             "delete": "Delete Battle",
             "abandon": "Abandon Battle",
-            "create": "Create Battle"
+            "create": "Create Battle",
+            "join": "Join Battle"
         },
         "warrior": {
             "create": "Create Warrior",
@@ -43,7 +44,7 @@
                 },
                 "link": {
                     "label": "Link",
-                    "placeholder": "Enter a link to story"
+                    "placeholder": "Enter a link to plan"
                 },
                 "referenceId": {
                     "label": "Reference ID",
@@ -79,7 +80,33 @@
             }
         },
         "myBattles": {
-            "nav": "My Battles"
+            "nav": "My Battles",
+            "title": "My Battles",
+            "battlesError": "Error finding your battles",
+            "countPlansPointed": "{totalPointed} of {totalPlans} plans pointed",
+            "createBattle": {
+                "title": "Create a Battle",
+                "createError": "Error encountered creating battle",
+                "fields": {
+                    "name": {
+                        "label": "Battle Name",
+                        "placeholder": "Enter a battle name"
+                    },
+                    "allowedPointValues": {
+                        "label": "Allowed Point Values"
+                    },
+                    "plans": {
+                        "label": "Plans",
+                        "addButton": "Add Plan",
+                        "removeButton": "Remove",
+                        "fields": {
+                            "name": {
+                                "placeholder": "Enter a plan name"
+                            }
+                        }
+                    }
+                }
+            }
         },
         "createAccount": {
             "nav": "Create Account"

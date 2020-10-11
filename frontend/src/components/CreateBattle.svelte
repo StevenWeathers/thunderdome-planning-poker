@@ -5,6 +5,7 @@
     import HollowButton from './HollowButton.svelte'
     import JiraImport from './JiraImport.svelte'
     import { warrior } from '../stores.js'
+    import { _ } from '../i18n'
 
     export let notifications
     export let eventTag
@@ -91,13 +92,13 @@
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
             for="battleName">
-            Battle Name
+            {$_('pages.myBattles.createBattle.fields.name.label')}
         </label>
         <div class="control">
             <input
                 name="battleName"
                 bind:value="{battleName}"
-                placeholder="Enter a battle name"
+                placeholder="{$_('pages.myBattles.createBattle.fields.name.placeholder')}"
                 class="bg-gray-200 border-gray-200 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 leading-tight
                 focus:outline-none focus:bg-white focus:border-purple-500"
@@ -108,7 +109,7 @@
 
     <div class="mb-4">
         <h3 class="block text-gray-700 text-sm font-bold mb-2">
-            Allowed Point Values
+            {$_('pages.myBattles.createBattle.fields.allowedPointValues.label')}
         </h3>
         <div class="control relative -mr-2 md:-mr-1">
             {#each allowedPointValues as point, pi}
@@ -128,9 +129,13 @@
     </div>
 
     <div class="mb-4">
-        <h3 class="block text-gray-700 text-sm font-bold mb-2">Plans</h3>
+        <h3 class="block text-gray-700 text-sm font-bold mb-2">
+            {$_('pages.myBattles.createBattle.fields.plans.label')}
+        </h3>
         <div class="control mb-4">
-            <HollowButton onClick="{addPlan}">Add Plan</HollowButton>
+            <HollowButton onClick="{addPlan}">
+                {$_('pages.myBattles.createBattle.fields.plans.addButton')}
+            </HollowButton>
             {#if allowJiraImport}
                 <JiraImport
                     handlePlanAdd="{handlePlanImport}"
@@ -143,7 +148,7 @@
                     <input
                         type="text"
                         bind:value="{plan.name}"
-                        placeholder="plan name"
+                        placeholder="{$_('pages.myBattles.createBattle.fields.plans.fields.name.placeholder')}"
                         class="bg-gray-200 border-gray-200 border-2
                         appearance-none rounded w-full py-2 px-3 text-gray-700
                         leading-tight focus:outline-none focus:bg-white
@@ -153,7 +158,7 @@
                 <div class="w-1/4">
                     <div class="pl-2">
                         <HollowButton onClick="{removePlan(i)}" color="red">
-                            Remove
+                            {$_('pages.myBattles.createBattle.fields.plans.removeButton')}
                         </HollowButton>
                     </div>
                 </div>
@@ -162,6 +167,6 @@
     </div>
 
     <div class="text-right">
-        <SolidButton type="submit">Create Battle</SolidButton>
+        <SolidButton type="submit">{$_('actions.battle.create')}</SolidButton>
     </div>
 </form>

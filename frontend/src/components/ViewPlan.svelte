@@ -33,19 +33,27 @@
                 </div>
 
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.type.label')}</div>
+                    <div class="text-sm font-bold mb-2">
+                        {$_('actions.plan.fields.type.label')}
+                    </div>
                     {planType}
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.name.label')}</div>
+                    <div class="text-sm font-bold mb-2">
+                        {$_('actions.plan.fields.name.label')}
+                    </div>
                     {planName}
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.referenceId.label')}</div>
+                    <div class="text-sm font-bold mb-2">
+                        {$_('actions.plan.fields.referenceId.label')}
+                    </div>
                     {referenceId}
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.link.label')}</div>
+                    <div class="text-sm font-bold mb-2">
+                        {$_('actions.plan.fields.link.label')}
+                    </div>
                     {#if planLink !== ''}
                         <a
                             href="{planLink}"
@@ -57,7 +65,9 @@
                     {/if}
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.description.label')}</div>
+                    <div class="text-sm font-bold mb-2">
+                        {$_('actions.plan.fields.description.label')}
+                    </div>
                     {@html marked(description)}
                 </div>
                 <div class="mb-4">

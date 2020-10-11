@@ -79,7 +79,9 @@
                                 border-gray-400 text-gray-700 py-3 px-4 pr-8
                                 rounded leading-tight focus:outline-none
                                 focus:border-purple-500">
-                                <option value="" disabled>{$_('actions.plan.fields.type.placeholder')}</option>
+                                <option value="" disabled>
+                                    {$_('actions.plan.fields.type.placeholder')}
+                                </option>
                                 {#each planTypes as pType}
                                     <option value="{pType}">{pType}</option>
                                 {/each}
@@ -106,7 +108,7 @@
                             id="planName"
                             name="planName"
                             bind:value="{planName}"
-                            placeholder={$_('actions.plan.fields.name.placeholder')} />
+                            placeholder="{$_('actions.plan.fields.name.placeholder')}" />
                     </div>
                     <div class="mb-4">
                         <label
@@ -123,7 +125,7 @@
                             id="referenceId"
                             name="referenceId"
                             bind:value="{referenceId}"
-                            placeholder={$_('actions.plan.fields.referenceId.placeholder')} />
+                            placeholder="{$_('actions.plan.fields.referenceId.placeholder')}" />
                     </div>
                     <div class="mb-4">
                         <label
@@ -140,10 +142,12 @@
                             id="planLink"
                             name="planLink"
                             bind:value="{planLink}"
-                            placeholder={$_('actions.plan.fields.link.placeholder')} />
+                            placeholder="{$_('actions.plan.fields.link.placeholder')}" />
                     </div>
                     <div class="mb-16">
-                        <div class="text-sm font-bold mb-2">{$_('actions.plan.fields.description.label')}</div>
+                        <div class="text-sm font-bold mb-2">
+                            {$_('actions.plan.fields.description.label')}
+                        </div>
                         <div class="h-48">
                             <div
                                 class="w-full"
@@ -166,7 +170,9 @@
                     </div>
                     <div class="text-right">
                         <div>
-                            <SolidButton type="submit">{$_('actions.plan.save')}</SolidButton>
+                            <SolidButton type="submit">
+                                {$_('actions.plan.save')}
+                            </SolidButton>
                         </div>
                     </div>
                 </form>
