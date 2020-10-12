@@ -28,6 +28,10 @@
             name: 'English',
             value: 'en-US',
         },
+        {
+            name: 'Русский',
+            value: 'ru',
+        },
     ]
 
     const registrationAllowed = appConfig.AllowRegistration

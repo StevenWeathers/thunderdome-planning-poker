@@ -1,0 +1,287 @@
+{
+    "appName": "Thunderdome",
+    "avatarAltText": "Placeholder Avatar",
+    "actions": {
+        "logout": {
+            "button": "Выйти",
+            "failure": "Error encountered attempting to logout warrior"
+        },
+        "battle": {
+            "delete": "Удалить битву",
+            "abandon": "Покинуть битву",
+            "create": "Создать битву",
+            "join": "Присоединиться к битве"
+        },
+        "warrior": {
+            "create": "Создать участника",
+            "nudge": "Пнуть",
+            "promote": "Сделать боссом"
+        },
+        "plan": {
+            "add": "Добавить задачу",
+            "view": "Посмотреть",
+            "edit": "Редактировать",
+            "delete": "Удалить",
+            "activate": "Активировать",
+            "skip": "Пропустить задачу",
+            "pointed": "Оцененные ({count})",
+            "unpointed": "Неоцененные ({count})",
+            "finishVoting": "Закончить голосование",
+            "restartVoting": "Перезапустить голосование",
+            "save": "Сохранить",
+            "importJiraXML": {
+                "button": "Импорт задач из джиры (XML)",
+                "badFileType": "Error bad file type",
+                "errorReadingFile": "Error reading file"
+            },
+            "fields": {
+                "name": {
+                    "label": "Заголовок задачи",
+                    "placeholder": "Введите заголовок задачи"
+                },
+                "type": {
+                    "label": "Тип задач",
+                    "placeholder": "Types"
+                },
+                "link": {
+                    "label": "Ссылка",
+                    "placeholder": "Введите ссылку на задачу"
+                },
+                "referenceId": {
+                    "label": "ID ссылки",
+                    "placeholder": "Введите ID ссылки"
+                },
+                "description": {
+                    "label": "Описание",
+                    "placeholder": "Введите описание"
+                },
+                "acceptanceCriteria": {
+                    "label": "Критерии выполнения",
+                    "placeholder": "Введите критерии выполнения задачи"
+                }
+            },
+            "types": {
+                "story": "история",
+                "bug": "ошибка",
+                "spike": "spike",
+                "epic": "эпик",
+                "task": "задача",
+                "subtask": "подзадача"
+            }
+        }
+    },
+    "pages": {
+        "landing": {
+            "title": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
+            "bullet1": "Built on cool tech like Svelte, Go, and WebSockets",
+            "bullet2": "Simple {crossoutOpen}User{crossoutClose}Warrior Experience",
+            "bullet3": "Works on all {mbOpen}modern browsers*{mbClose}, including mobile",
+            "bullet3NotSorry": "*sorry, not sorry IE",
+            "features": {
+                "title": "Features",
+                "bullet1": "No limit on number of Warriors in a Battle",
+                "bullet2": "Secure voting, keeps your Warriors from cheating",
+                "bullet3": "Voting Results that are clear and helpful",
+                "bullet4": "Ability to promote any Warrior to Battle Leader",
+                "bullet5": "Customizable pointing scales",
+                "bullet6": "Open Source, feel free to {contribOpen}contribute and suggest features{contribClose}",
+                "bullet7": "No fees and Ad free"
+            }
+        },
+        "myBattles": {
+            "nav": "Мои битвы",
+            "title": "Мои битвы",
+            "battlesError": "Error finding your battles",
+            "countPlansPointed": "{totalPointed} из {totalPlans} задач оценено",
+            "createBattle": {
+                "title": "Создать битву",
+                "createError": "Error encountered creating battle",
+                "fields": {
+                    "name": {
+                        "label": "Название битвы",
+                        "placeholder": "Введите название битвы"
+                    },
+                    "allowedPointValues": {
+                        "label": "Разрешенные карточки"
+                    },
+                    "plans": {
+                        "label": "Задачи",
+                        "addButton": "Добавить задачу",
+                        "removeButton": "Удалить",
+                        "fields": {
+                            "name": {
+                                "placeholder": "Введите заголовок задачи"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "createAccount": {
+            "nav": "Create Account",
+            "title": "Войти в битву",
+            "registrationDisabled": "Регистрация отключена.",
+            "guestForm": {
+                "title": "Войти как гость",
+                "saveButton": "Зарегистировать",
+                "createError": "Error encountered registering warrior as guest",
+                "fields": {
+                    "name": {
+                        "label": "Имя",
+                        "placeholder": "Введите имя"
+                    }
+                }
+            },
+            "createAccountForm": {
+                "saveButton": "Создать",
+                "title": "Создать аккаунт {optionalOpen}(Необязательно){optionalClose}",
+                "createError": "Error encountered creating warrior",
+                "fields": {
+                    "name": {
+                        "label": "Имя",
+                        "placeholder": "Введите имя"
+                    },
+                    "email": {
+                        "label": "Электронная почта",
+                        "placeholder": "Введите электронную почту"
+                    },
+                    "password": {
+                        "label": "Пароль",
+                        "placeholder": "Введите пароль"
+                    },
+                    "confirmPassword": {
+                        "label": "Подтвердить пароль",
+                        "placeholder": "Повторите пароль"
+                    }
+                }
+            }
+        },
+        "verifyAccount": {
+            "loading": "Подтверждение профиля...",
+            "verified": {
+                "title": "Профиль подтвержден",
+                "thanks": "Спасибо за подтверждение почты."
+            },
+            "failed": {
+                "title": "Верификация завершилась ошибкой",
+                "error": "Произошла ошибка верификации."
+            }
+        },
+        "warriorProfile": {
+            "title": "Профиль",
+            "errorRetreiving": "Error getting your profile",
+            "errorUpdating": "Error encountered updating your profile",
+            "passwordUpdated": "Password updated.",
+            "passwordUpdateError": "Error encountered attempting to update password",
+            "updatePasswordButton": "обновить пароль",
+            "saveProfileButton": "Обновить профиль",
+            "fields": {
+                "name": {
+                    "label": "Имя",
+                    "placeholder": "Введите имя"
+                },
+                "email": {
+                    "label": "Электронная почта",
+                    "verified": "Подтвержден"
+                },
+                "avatar": {
+                    "label": "Аватар"
+                }
+            },
+            "updatePasswordForm": {
+                "title": "обновить пароль",
+                "cancelButton": "Отмена",
+                "saveButton": "Обновить",
+                "fields": {
+                    "password": {
+                        "label": "Пароль",
+                        "placeholder": "Введите пароль"
+                    },
+                    "confirmPassword": {
+                        "label": "Подтвердить пароль",
+                        "placeholder": "Повторите пароль"
+                    }
+                }
+            }
+        },
+        "admin": {
+            "nav": "Админка",
+            "title": "Админка",
+            "counts": {
+                "registered": "Зарегистрированные участники",
+                "unregistered": "Незарегистрированные",
+                "battles": "Битвы",
+                "plans": "Задачи"
+            },
+            "registeredWarriors": {
+                "title": "Зарегистрированные участники",
+                "name": "Имя",
+                "email": "Электронная почта",
+                "verified": "Подтвержден"
+            }
+        },
+        "login": {
+            "nav": "Войти",
+            "title": "Войти",
+            "button": "Войти",
+            "authError": "Error encountered attempting to authenticate warrior",
+            "sendResetSuccess": "Password reset instructions sent to {email}",
+            "sendResetError": "Error encountered attempting to send password reset",
+            "fields": {
+                "email": {
+                    "label": "Электронная почта",
+                    "placeholder": "Введите электронную почту"
+                },
+                "password": {
+                    "label": "Пароль",
+                    "placeholder": "Введите пароль",
+                    "forgotLabel": "Забыл пароль"
+                }
+            },
+            "passwordReset": {
+                "title": "Сбросить пароль",
+                "resetError": "Error encountered attempting to reset password",
+                "saveButton": "Сбросить",
+                "fields": {
+                    "password": {
+                        "label": "Пароль",
+                        "placeholder": "Введите пароль"
+                    },
+                    "confirmPassword": {
+                        "label": "Подтвердить пароль",
+                        "placeholder": "Подтвердить пароль"
+                    }
+                }
+            }
+        },
+        "battle": {
+            "title": "Битва",
+            "warriors": "Участники",
+            "socketReconnecting": "Упс, перезагрузка списка задач...",
+            "socketError": "Ошибка: обновите страницу или попробуйте позже.",
+            "loading": "Загрузка списка задач...",
+            "votingNotStarted": "Голосование еще не началось",
+            "warriorJoined": "{name} has joined the battle",
+            "warriorRetreated": "{name} has retreated from the battle",
+            "warriorVoted": "{name} has voted",
+            "warriorRetractedVote": "{name} has retracted vote",
+            "warriorNudge": "pst... {name}, waiting on you to vote.",
+            "warriorInvite": "Пригласить участника",
+            "warriorLeader": "Создатель",
+            "finalPoints": "Итого голосов",
+            "points": "Голоса",
+            "voteResults": {
+                "totalVotes": "Всего голосов",
+                "average": "Среднее",
+                "highest": "Лучшее",
+                "showVoters": "Показать проголосовавших",
+                "unknownWarrior": "Неизвестный участник"
+            }
+        }
+    },
+    "footer": {
+        "authoredBy": "by {authorOpen}Steven Weathers{authorClose}.",
+        "license": "The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.",
+        "poweredBy": "Powered by {svelteOpen}Svelte{svelteClose} and {goOpen}Go{goClose}"
+    }
+}
