@@ -9,21 +9,22 @@ export default function(handle401) {
      * @param {string} endpoint the endpoint to fetch
      * @param {object} config the optional fetch config e.g. body for post
      */
-    return function(endpoint, { body, ...customConfig } = {}) {
+    return function(endpoint, customConfig = {}) {
         const headers = { 'content-type': 'application/json' }
+        const customHeaders = customConfig.headers || {}
 
         const config = {
-            method: body ? 'POST' : 'GET',
+            method: customConfig.body ? 'POST' : 'GET',
             credentials: 'same-origin',
             ...customConfig,
             headers: {
                 ...headers,
-                ...customConfig.headers,
+                ...customHeaders,
             },
         }
 
-        if (body) {
-            config.body = JSON.stringify(body)
+        if (config.body) {
+            config.body = JSON.stringify(config.body)
         }
 
         return fetch(endpoint, config).then(response => {
