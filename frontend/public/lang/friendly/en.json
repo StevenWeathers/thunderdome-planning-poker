@@ -116,6 +116,9 @@
                                 "placeholder": "Enter a story name"
                             }
                         }
+                    },
+                    "autoFinishVoting": {
+                        "label": "Auto Finish Voting when all Users have voted"
                     }
                 }
             }

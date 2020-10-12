@@ -10,6 +10,7 @@
     export let points = []
     export let battleName = ''
     export let votingLocked = false
+    export let autoFinishVoting = true
 
     let checkedPointColor = 'border-green-500 bg-green-100 text-green-600'
     let uncheckedPointColor = 'border-gray-300 bg-white'
@@ -24,6 +25,7 @@
         const battle = {
             battleName,
             pointValuesAllowed,
+            autoFinishVoting,
         }
 
         handleBattleEdit(battle)
@@ -94,6 +96,18 @@
                                 </label>
                             {/each}
                         </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-gray-700 text-sm font-bold mb-2">
+                            <input
+                                type="checkbox"
+                                bind:checked="{autoFinishVoting}"
+                                id="autoFinishVoting"
+                                name="autoFinishVoting"
+                                disabled="{!votingLocked}" />
+                            {$_('pages.myBattles.createBattle.fields.autoFinishVoting.label')}
+                        </label>
                     </div>
 
                     <div class="text-right">

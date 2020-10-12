@@ -113,15 +113,37 @@ func (d *Database) ActivatePlanVoting(BattleID string, warriorID string, PlanID 
 }
 
 // SetVote sets a warriors vote for the plan
-func (d *Database) SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string) []*Plan {
+func (d *Database) SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string) (BattlePlans []*Plan, AllWarriorsVoted bool) {
 	if _, err := d.db.Exec(
 		`call set_warrior_vote($1, $2, $3);`, PlanID, WarriorID, VoteValue); err != nil {
 		log.Println(err)
 	}
 
-	plans := d.GetPlans(BattleID)
+	Plans := d.GetPlans(BattleID)
+	ActiveWarriors := d.GetBattleActiveWarriors(BattleID)
 
-	return plans
+	// determine if all active warriors have voted
+	AllVoted := true
+	for _, plan := range Plans {
+		if plan.PlanID == PlanID {
+			activePlanVoters := make(map[string]bool)
+
+			for _, vote := range plan.Votes {
+				var WarriorID string = vote.WarriorID
+				activePlanVoters[WarriorID] = true
+			}
+			for _, war := range ActiveWarriors {
+				_, warriorVoted := activePlanVoters[war.WarriorID]
+				if warriorVoted == false {
+					AllVoted = false
+					break
+				}
+			}
+			break
+		}
+	}
+
+	return Plans, AllVoted
 }
 
 // RetractVote removes a warriors vote for the plan
@@ -137,10 +159,12 @@ func (d *Database) RetractVote(BattleID string, WarriorID string, PlanID string)
 }
 
 // EndPlanVoting sets plan to active: false
-func (d *Database) EndPlanVoting(BattleID string, warriorID string, PlanID string) ([]*Plan, error) {
-	err := d.ConfirmLeader(BattleID, warriorID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
+func (d *Database) EndPlanVoting(BattleID string, warriorID string, PlanID string, AutoFinishVoting bool) ([]*Plan, error) {
+	if AutoFinishVoting == false {
+		err := d.ConfirmLeader(BattleID, warriorID)
+		if err != nil {
+			return nil, errors.New("incorrect permissions")
+		}
 	}
 
 	if _, err := d.db.Exec(

@@ -8,7 +8,7 @@ import (
 )
 
 //CreateBattle adds a new battle to the db
-func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*Plan) (*Battle, error) {
+func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*Plan, AutoFinishVoting bool) (*Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 
 	var b = &Battle{
@@ -20,13 +20,15 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 		VotingLocked:       true,
 		ActivePlanID:       "",
 		PointValuesAllowed: PointValuesAllowed,
+		AutoFinishVoting:   AutoFinishVoting,
 	}
 
 	e := d.db.QueryRow(
-		`INSERT INTO battles (leader_id, name, point_values_allowed) VALUES ($1, $2, $3) RETURNING id`,
+		`INSERT INTO battles (leader_id, name, point_values_allowed, auto_finish_voting) VALUES ($1, $2, $3, $4) RETURNING id`,
 		LeaderID,
 		BattleName,
 		string(pointValuesJSON),
+		AutoFinishVoting,
 	).Scan(&b.BattleID)
 	if e != nil {
 		log.Println(e)
@@ -57,7 +59,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 }
 
 // ReviseBattle updates the battle by ID
-func (d *Database) ReviseBattle(BattleID string, warriorID string, BattleName string, PointValuesAllowed []string) error {
+func (d *Database) ReviseBattle(BattleID string, warriorID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool) error {
 	err := d.ConfirmLeader(BattleID, warriorID)
 	if err != nil {
 		return errors.New("incorrect permissions")
@@ -65,7 +67,7 @@ func (d *Database) ReviseBattle(BattleID string, warriorID string, BattleName st
 
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	if _, err := d.db.Exec(
-		`UPDATE battles SET name = $2, point_values_allowed = $3 WHERE id = $1`, BattleID, BattleName, string(pointValuesJSON)); err != nil {
+		`UPDATE battles SET name = $2, point_values_allowed = $3, auto_finish_voting = $4 WHERE id = $1`, BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting); err != nil {
 		log.Println(err)
 		return errors.New("unable to revise battle")
 	}
@@ -84,13 +86,14 @@ func (d *Database) GetBattle(BattleID string) (*Battle, error) {
 		VotingLocked:       true,
 		ActivePlanID:       "",
 		PointValuesAllowed: make([]string, 0),
+		AutoFinishVoting:   true,
 	}
 
 	// get battle
 	var ActivePlanID sql.NullString
 	var pv string
 	e := d.db.QueryRow(
-		"SELECT id, name, leader_id, voting_locked, active_plan_id, point_values_allowed FROM battles WHERE id = $1",
+		"SELECT id, name, leader_id, voting_locked, active_plan_id, point_values_allowed, auto_finish_voting FROM battles WHERE id = $1",
 		BattleID,
 	).Scan(
 		&b.BattleID,
@@ -99,6 +102,7 @@ func (d *Database) GetBattle(BattleID string) (*Battle, error) {
 		&b.VotingLocked,
 		&ActivePlanID,
 		&pv,
+		&b.AutoFinishVoting,
 	)
 	if e != nil {
 		log.Println(e)
@@ -117,7 +121,7 @@ func (d *Database) GetBattle(BattleID string) (*Battle, error) {
 func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 	var battles = make([]*Battle, 0)
 	battleRows, battlesErr := d.db.Query(`
-		SELECT b.id, b.name, b.leader_id, b.voting_locked, b.active_plan_id, b.point_values_allowed,
+		SELECT b.id, b.name, b.leader_id, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting,
 		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans
 		FROM battles b
 		LEFT JOIN plans p ON b.id = p.battle_id
@@ -130,7 +134,7 @@ func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 
 	defer battleRows.Close()
 	for battleRows.Next() {
-		var points string
+		var plans string
 		var pv string
 		var ActivePlanID sql.NullString
 		var b = &Battle{
@@ -142,6 +146,7 @@ func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 			VotingLocked:       true,
 			ActivePlanID:       "",
 			PointValuesAllowed: make([]string, 0),
+			AutoFinishVoting:   true,
 		}
 		if err := battleRows.Scan(
 			&b.BattleID,
@@ -150,11 +155,12 @@ func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 			&b.VotingLocked,
 			&ActivePlanID,
 			&pv,
-			&points,
+			&b.AutoFinishVoting,
+			&plans,
 		); err != nil {
 			log.Println(err)
 		} else {
-			_ = json.Unmarshal([]byte(points), &b.Plans)
+			_ = json.Unmarshal([]byte(plans), &b.Plans)
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			b.ActivePlanID = ActivePlanID.String
 			battles = append(battles, b)
@@ -221,6 +227,33 @@ func (d *Database) GetBattleWarriors(BattleID string) []*BattleWarrior {
 		FROM battles_warriors bw
 		LEFT JOIN warriors w ON bw.warrior_id = w.id
 		WHERE bw.battle_id = $1
+		ORDER BY w.name`,
+		BattleID,
+	)
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var w BattleWarrior
+			if err := rows.Scan(&w.WarriorID, &w.WarriorName, &w.WarriorRank, &w.WarriorAvatar, &w.Active); err != nil {
+				log.Println(err)
+			} else {
+				warriors = append(warriors, &w)
+			}
+		}
+	}
+
+	return warriors
+}
+
+// GetBattleActiveWarriors retrieves the active warriors for a given battle from db
+func (d *Database) GetBattleActiveWarriors(BattleID string) []*BattleWarrior {
+	var warriors = make([]*BattleWarrior, 0)
+	rows, err := d.db.Query(
+		`SELECT
+			w.id, w.name, w.rank, w.avatar, bw.active
+		FROM battles_warriors bw
+		LEFT JOIN warriors w ON bw.warrior_id = w.id
+		WHERE bw.battle_id = $1 AND bw.active = true
 		ORDER BY w.name`,
 		BattleID,
 	)

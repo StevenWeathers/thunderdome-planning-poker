@@ -176,6 +176,7 @@
                 const revisedBattle = JSON.parse(parsedEvent.value)
                 battle.name = revisedBattle.battleName
                 points = revisedBattle.pointValuesAllowed
+                battle.autoFinishVoting = revisedBattle.autoFinishVoting
                 break
             case 'battle_conceded':
                 // battle over, goodbye.
@@ -261,6 +262,7 @@
         const voteValue = {
             planId: battle.activePlanId,
             voteValue: vote,
+            autoFinishVoting: battle.autoFinishVoting,
         }
 
         sendSocketEvent('vote', JSON.stringify(voteValue))
@@ -536,6 +538,7 @@
                 battleName="{battle.name}"
                 {points}
                 votingLocked="{battle.votingLocked}"
+                autoFinishVoting="{battle.autoFinishVoting}"
                 {handleBattleEdit}
                 {toggleEditBattle} />
         {/if}

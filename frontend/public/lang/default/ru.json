@@ -116,6 +116,9 @@
                                 "placeholder": "Введите заголовок задачи"
                             }
                         }
+                    },
+                    "autoFinishVoting": {
+                        "label": "Auto Finish Voting when all Warriors have voted"
                     }
                 }
             }

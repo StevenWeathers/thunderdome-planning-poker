@@ -18,6 +18,7 @@
     let points = appConfig.DefaultPointValues
     let battleName = ''
     let plans = []
+    let autoFinishVoting = true
 
     let checkedPointColor = 'border-green-500 bg-green-100 text-green-600'
     let uncheckedPointColor = 'border-gray-300 bg-white'
@@ -65,6 +66,7 @@
             battleName,
             pointValuesAllowed,
             plans,
+            autoFinishVoting,
         }
 
         xfetch('/api/battle', { body })
@@ -166,6 +168,17 @@
                 </div>
             </div>
         {/each}
+    </div>
+
+    <div class="mb-4">
+        <label class="text-gray-700 text-sm font-bold mb-2">
+            <input
+                type="checkbox"
+                bind:checked="{autoFinishVoting}"
+                id="autoFinishVoting"
+                name="autoFinishVoting" />
+            {$_('pages.myBattles.createBattle.fields.autoFinishVoting.label')}
+        </label>
     </div>
 
     <div class="text-right">

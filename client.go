@@ -95,15 +95,27 @@ func (s subscription) readPump(srv *server) {
 
 		switch keyVal["type"] {
 		case "vote":
-			voteObj := make(map[string]string)
-			json.Unmarshal([]byte(keyVal["value"]), &voteObj)
-			VoteValue := voteObj["voteValue"]
-			PlanID := voteObj["planId"]
+			var wv struct {
+				VoteValue        string `json:"voteValue"`
+				PlanID           string `json:"planId"`
+				AutoFinishVoting bool   `json:"autoFinishVoting"`
+			}
+			json.Unmarshal([]byte(keyVal["value"]), &wv)
 
-			plans := srv.database.SetVote(battleID, warriorID, PlanID, VoteValue)
+			Plans, AllVoted := srv.database.SetVote(battleID, warriorID, wv.PlanID, wv.VoteValue)
 
-			updatedPlans, _ := json.Marshal(plans)
+			updatedPlans, _ := json.Marshal(Plans)
 			msg = CreateSocketEvent("vote_activity", string(updatedPlans), warriorID)
+
+			if AllVoted == true && wv.AutoFinishVoting == true {
+				plans, err := srv.database.EndPlanVoting(battleID, warriorID, wv.PlanID, true)
+				if err != nil {
+					badEvent = true
+					break
+				}
+				updatedPlans, _ := json.Marshal(plans)
+				msg = CreateSocketEvent("voting_ended", string(updatedPlans), "")
+			}
 		case "retract_vote":
 			PlanID := keyVal["value"]
 
@@ -145,7 +157,7 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_skipped", string(updatedPlans), "")
 		case "end_voting":
-			plans, err := srv.database.EndPlanVoting(battleID, warriorID, keyVal["value"])
+			plans, err := srv.database.EndPlanVoting(battleID, warriorID, keyVal["value"], false)
 			if err != nil {
 				badEvent = true
 				break
@@ -203,10 +215,11 @@ func (s subscription) readPump(srv *server) {
 			var revisedBattle struct {
 				BattleName         string   `json:"battleName"`
 				PointValuesAllowed []string `json:"pointValuesAllowed"`
+				AutoFinishVoting   bool     `json:"autoFinishVoting"`
 			}
 			json.Unmarshal([]byte(keyVal["value"]), &revisedBattle)
 
-			err := srv.database.ReviseBattle(battleID, warriorID, revisedBattle.BattleName, revisedBattle.PointValuesAllowed)
+			err := srv.database.ReviseBattle(battleID, warriorID, revisedBattle.BattleName, revisedBattle.PointValuesAllowed, revisedBattle.AutoFinishVoting)
 			if err != nil {
 				badEvent = true
 				break

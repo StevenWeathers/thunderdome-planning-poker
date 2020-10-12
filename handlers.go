@@ -297,11 +297,12 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 		var keyVal struct {
 			BattleName         string           `json:"battleName"`
 			PointValuesAllowed []string         `json:"pointValuesAllowed"`
+			AutoFinishVoting   bool             `json:"autoFinishVoting"`
 			Plans              []*database.Plan `json:"plans"`
 		}
 		json.Unmarshal(body, &keyVal) // check for errors
 
-		newBattle, err := s.database.CreateBattle(warriorID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans)
+		newBattle, err := s.database.CreateBattle(warriorID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

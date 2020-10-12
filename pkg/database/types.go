@@ -41,6 +41,7 @@ type Battle struct {
 	VotingLocked       bool             `json:"votingLocked"`
 	ActivePlanID       string           `json:"activePlanId"`
 	PointValuesAllowed []string         `json:"pointValuesAllowed"`
+	AutoFinishVoting   bool             `json:"autoFinishVoting"`
 }
 
 // Warrior aka user
