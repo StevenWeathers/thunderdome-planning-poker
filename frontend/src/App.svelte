@@ -38,6 +38,8 @@
         params: {},
     }
 
+    let authMethod = appConfig.AuthMethod
+
     const router = Navaid('/')
         .on('/', () => {
             currentPage = {
