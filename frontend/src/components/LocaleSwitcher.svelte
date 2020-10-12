@@ -2,9 +2,17 @@
     import { createEventDispatcher } from 'svelte'
 
     import DownCarrotIcon from './icons/DownCarrotIcon.svelte'
+    import { locales } from '../i18n'
 
     export let selectedLocale = 'en-US'
-    export let locales = []
+    const supportedLocales = []
+
+    for (const [key, value] of Object.entries(locales)) {
+        supportedLocales.push({
+            name: value,
+            value: key,
+        })
+    }
 
     const dispatch = createEventDispatcher()
 
@@ -24,7 +32,7 @@
             class="block appearance-none w-full border-2 border-gray-400
             text-gray-700 py-2 px-4 pr-8 rounded leading-tight
             focus:outline-none focus:border-purple-500">
-            {#each locales as locale}
+            {#each supportedLocales as locale}
                 <option value="{locale.value}">{locale.name}</option>
             {/each}
         </select>

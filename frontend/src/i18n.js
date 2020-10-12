@@ -1,5 +1,16 @@
 import { get, derived, writable } from 'svelte/store'
-import { addMessages, locale, init, dictionary, _ } from 'svelte-i18n'
+import {
+    _,
+    date,
+    init,
+    locale,
+    number,
+    dictionary,
+    addMessages,
+    getLocaleFromNavigator,
+} from 'svelte-i18n'
+
+import { locales, fallbackLocale } from './config'
 
 const verbsType = appConfig.FriendlyUIVerbs ? 'friendly' : 'default'
 const MESSAGE_FILE_URL_TEMPLATE = `/lang/${verbsType}/{locale}.json`
@@ -10,8 +21,10 @@ let _activeLocale
 // loading state
 const isDownloading = writable(false)
 
-function setupI18n(options) {
-    const { withLocale: locale_ } = options
+function setupI18n(options = {}) {
+    const locale_ = supported(
+        options.withLocale || language(getLocaleFromNavigator()),
+    )
 
     // Initialize svelte-i18n
     init({ initialLocale: locale_ })
@@ -47,6 +60,8 @@ const isLocaleLoaded = derived(
         Object.keys($dictionary[_activeLocale]).length > 0,
 )
 
+const dir = derived(locale, $locale => ($locale === 'ar' ? 'rtl' : 'ltr'))
+
 function loadJson(url) {
     return fetch(url).then(response => response.json())
 }
@@ -57,12 +72,23 @@ function hasLoadedLocale(locale) {
     return get(dictionary)[locale]
 }
 
+function language(locale) {
+    return locale.replace('_', '-').split('-')[0]
+}
+
+function supported(locale) {
+    if (Object.keys(locales).includes(locale)) {
+        return locale
+    } else {
+        return fallbackLocale
+    }
+}
+
 // We expose the svelte-i18n _ store so that our app has
 // a single API for i18n
-export { _, locale, setupI18n, isLocaleLoaded }
+export { _, setupI18n, isLocaleLoaded, locale, locales, dir, date, number }
 
 // Most of this setup came from
 // https://medium.com/i18n-and-l10n-resources-for-developers/a-step-by-step-guide-to-svelte-localization-with-svelte-i18n-v3-2c3ff0d645b8
 // and
 // https://lokalise.com/blog/svelte-i18n/
-// future additions could include plurals usage, rtl, date formatting and so much more

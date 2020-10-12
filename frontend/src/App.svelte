@@ -20,19 +20,7 @@
     import eventTag from './eventTag.js'
     import apiclient from './apiclient.js'
 
-    setupI18n({ withLocale: appConfig.DefaultLocale })
-
-    // Available Locale's for localeSwitching
-    const locales = [
-        {
-            name: 'English',
-            value: 'en-US',
-        },
-        {
-            name: 'Русский',
-            value: 'ru',
-        },
-    ]
+    setupI18n()
 
     const registrationAllowed = appConfig.AllowRegistration
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
@@ -208,7 +196,6 @@
                 </HollowButton>
             {/if}
             <LocaleSwitcher
-                {locales}
                 selectedLocale="{$locale}"
                 on:locale-changed="{e => setupI18n({
                         withLocale: e.detail,

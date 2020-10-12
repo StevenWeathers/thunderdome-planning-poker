@@ -73,8 +73,8 @@ Using svelte-i18n **Thunderdome** now supports Locale selection on the UI (Defau
 
 Adding new locale's involves just a couple of steps.
 
-1. First add the locale dictionary json files in ```frontend/public/lang/default/``` and ```frontend/public/lang/friendly/``` by copying the en-US.json and just changing the values of all keys
-1. Second, the locale will need to be added to the locales list used by switcher component in ```frontend/public/App.svelte``` ```locales``` array
+1. First add the locale dictionary json files in ```frontend/public/lang/default/``` and ```frontend/public/lang/friendly/``` by copying the en.json and just changing the values of all keys
+1. Second, the locale will need to be added to the locales list used by switcher component in ```frontend/config.js``` ```locales``` object
 
 # Configuration
 Thunderdome may be configured through environment variables or via a yaml file `config.yaml`
@@ -113,7 +113,7 @@ The following configuration options exists:
 | `config.allow_guests`     | CONFIG_ALLOW_GUESTS | Whether or not to allow guest (anonymous) users. | true |
 | `config.allow_registration`     | CONFIG_ALLOW_REGISTRAATION | Whether or not to allow user registration (outside Admin). | true |
 | `config.allow_jira_import`     | CONFIG_ALLOW_JIRA_IMPORT | Whether or not to allow import plans from JIRA XML. | true |
-| `config.default_locale`   | CONFIG_DEFAULT_LOCALE | The default locale (language) for the UI | en-US |
+| `config.default_locale`   | CONFIG_DEFAULT_LOCALE | The default locale (language) for the UI | en |
 | `config.friendly_ui_verbs`    | CONFIG_FRIENDLY_UI_VERBS | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly | false |
 
 ## Avatar Service configuration

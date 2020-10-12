@@ -44,7 +44,7 @@ func InitConfig() {
 	viper.SetDefault("config.allow_guests", true)
 	viper.SetDefault("config.allow_registration", true)
 	viper.SetDefault("config.allow_jira_import", true)
-	viper.SetDefault("config.default_locale", "en-US")
+	viper.SetDefault("config.default_locale", "en")
 	viper.SetDefault("config.friendly_ui_verbs", false)
 
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
