@@ -10,6 +10,8 @@
     export let eventTag
     export let battleId
 
+    const authMethod = appConfig.AuthMethod
+
     let warriorEmail = ''
     let warriorPassword = ''
 
@@ -133,7 +135,7 @@
                     </div>
 
                     <div class="text-right">
-                        {#if appConfig.AuthMethod === 'normal'}			
+                        {#if authMethod === 'normal'}			
                         <button
                             type="button"
                             class="inline-block align-baseline font-bold text-sm

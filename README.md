@@ -108,7 +108,6 @@ located in one of:
 
 The following configuration options exists:
 
-<<<<<<< HEAD
 | Option                     | Environment Variable | Description                                | Default Value           |
 | -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
 | `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | strongest-avenger |

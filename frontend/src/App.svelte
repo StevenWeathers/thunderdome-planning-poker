@@ -38,8 +38,6 @@
         params: {},
     }
 
-    let authMethod = appConfig.AuthMethod
-
     const router = Navaid('/')
         .on('/', () => {
             currentPage = {
@@ -169,7 +167,7 @@
                         </HollowButton>
                     {/if}
                     <HollowButton href="/login">
-                        {$_('pages.login')}
+                        {$_('pages.login.nav')}
                     </HollowButton>
                 {:else}
                     {#if activeWarrior.rank === 'GENERAL'}
