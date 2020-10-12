@@ -13,17 +13,39 @@ Thunderdome is an open source agile planning poker tool in the theme of Battling
 - Users are **Warriors**
 - Stories are **Plans**
 
-### **Uses WebSockets and [Svelte](https://svelte.dev/) frontend framework for a truly Reactive UI experience**
+### **Uses WebSockets and [Svelte](https://svelte.dev/) frontend framework for a truly reactive UI experience**
 
 ![image](https://user-images.githubusercontent.com/846933/58061038-58d62d00-7b42-11e9-9679-ebd297a51c05.png)
 
+# Running in production
 
-## Building and running with docker-compose (easiest solution)
+## Use latest docker image
 
-Prefered way of building and running the application with Postgres DB
+```
+docker pull stevenweathers/thunderdome-planning-poker
+```
+
+## Use latest released binary
+
+[Thunderdome Binary Releases](https://github.com/StevenWeathers/thunderdome-planning-poker/releases)
+
+# Running locally
+
+## Building and running with Docker (preferred solution)
+
+### Using Docker Compose
 
 ```
 docker-compose up --build
+```
+
+### Using Docker without Compose
+
+This solution will require you to pass environment variables or setup the config file, as well as setup and manage the DB yourself.
+
+```
+docker build ./ -f ./build/Dockerfile -t thunderdome:latest
+docker run --publish 8080:8080 --name thunderdome thunderdome:latest
 ```
 
 ## Building
@@ -43,7 +65,7 @@ DB_NAME=
 ### Install dependencies
 ```
 go get
-go go install github.com/markbates/pkger/cmd/pkger
+go install github.com/markbates/pkger/cmd/pkger
 npm install
 ```
 
@@ -111,7 +133,7 @@ The following configuration options exists:
 | `config.avatar_service`    | CONFIG_AVATAR_SERVICE | Avatar service used, possible values see next paragraph | default |
 | `config.toast_timeout`     | CONFIG_TOAST_TIMEOUT | Number of milliseconds before notifications are hidden. | 1000 |
 | `config.allow_guests`     | CONFIG_ALLOW_GUESTS | Whether or not to allow guest (anonymous) users. | true |
-| `config.allow_registration`     | CONFIG_ALLOW_REGISTRAATION | Whether or not to allow user registration (outside Admin). | true |
+| `config.allow_registration`     | CONFIG_ALLOW_REGISTRATION | Whether or not to allow user registration (outside Admin). | true |
 | `config.allow_jira_import`     | CONFIG_ALLOW_JIRA_IMPORT | Whether or not to allow import plans from JIRA XML. | true |
 | `config.default_locale`   | CONFIG_DEFAULT_LOCALE | The default locale (language) for the UI | en |
 | `config.friendly_ui_verbs`    | CONFIG_FRIENDLY_UI_VERBS | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly | false |
