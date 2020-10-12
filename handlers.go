@@ -206,7 +206,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		AvatarService:      viper.GetString("config.avatar_service"),
 		ToastTimeout:       viper.GetInt("config.toast_timeout"),
 		AllowGuests:        viper.GetBool("config.allow_guests"),
-		AllowRegistration:  viper.GetBool("config.allow_registration"),
+		AllowRegistration:  viper.GetBool("config.allow_registration") && viper.GetBool("auth.method") == "normal",
 		AllowJiraImport:    viper.GetBool("config.allow_jira_import"),
 		DefaultLocale:      viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:    viper.GetBool("config.friendly_ui_verbs"),

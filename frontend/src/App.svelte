@@ -197,7 +197,7 @@
                     </HollowButton>
                 {/if}
             {:else}
-                {#if registrationAllowed && authMetod === 'normal'}
+                {#if registrationAllowed}
                     <HollowButton
                         color="teal"
                         href="/enlist"
