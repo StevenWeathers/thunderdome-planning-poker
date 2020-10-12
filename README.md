@@ -27,7 +27,7 @@ docker pull stevenweathers/thunderdome-planning-poker
 
 ## Use latest released binary
 
-[Thunderdome Binary Releases](https://github.com/StevenWeathers/thunderdome-planning-poker/releases)
+[![](https://img.shields.io/github/v/release/stevenweathers/thunderdome-planning-poker?include_prereleases)](https://github.com/StevenWeathers/thunderdome-planning-poker/releases/latest)
 
 # Running locally
 
