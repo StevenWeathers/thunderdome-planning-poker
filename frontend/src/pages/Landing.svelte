@@ -57,7 +57,7 @@
             <div class="w-full md:w-1/2 px-4">
                 <img
                     class="w-full"
-                    src="https://user-images.githubusercontent.com/846933/58061038-58d62d00-7b42-11e9-9679-ebd297a51c05.png"
+                    src="https://user-images.githubusercontent.com/846933/95778842-eb76ef00-0c96-11eb-99d8-af5d098c12ee.png"
                     alt="Preview of Thunderdome, Agile Planning Poker UI
                     Experience" />
             </div>

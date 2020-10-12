@@ -15,7 +15,7 @@ Thunderdome is an open source agile planning poker tool in the theme of Battling
 
 ### **Uses WebSockets and [Svelte](https://svelte.dev/) frontend framework for a truly reactive UI experience**
 
-![image](https://user-images.githubusercontent.com/846933/58061038-58d62d00-7b42-11e9-9679-ebd297a51c05.png)
+![image](https://user-images.githubusercontent.com/846933/95778842-eb76ef00-0c96-11eb-99d8-af5d098c12ee.png)
 
 # Running in production
 
