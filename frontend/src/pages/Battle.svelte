@@ -316,7 +316,7 @@
 
             // build a count of each vote
             activePlan.votes.forEach(v => {
-                if (voteCounts[v.vote]) {
+                if (typeof voteCounts[v.vote] !== 'undefined') {
                     ++voteCounts[v.vote]
                 }
             })

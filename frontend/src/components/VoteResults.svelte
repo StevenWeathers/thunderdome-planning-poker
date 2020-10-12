@@ -1,5 +1,4 @@
 <script>
-    import VoteIcon from './icons/VoteIcon.svelte'
     import PointCard from '../components/PointCard.svelte'
     import WarriorIcon from '../components/icons/WarriorIcon.svelte'
     import { _ } from '../i18n'
@@ -58,10 +57,6 @@
 
             return obj
         }, {})
-    }
-
-    function calculateVotePercentage(count) {
-        return Math.floor(100 * (count / totalVotes))
     }
 
     let average = getVoteAverage()
