@@ -192,14 +192,28 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_burned", string(updatedPlans), "")
 		case "promote_leader":
-			battle, err := srv.database.SetBattleLeader(battleID, warriorID, keyVal["value"])
+			err := srv.database.SetBattleLeader(battleID, warriorID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
 			}
 
-			updatedBattle, _ := json.Marshal(battle)
-			msg = CreateSocketEvent("battle_updated", string(updatedBattle), "")
+			msg = CreateSocketEvent("leader_updated", keyVal["value"], "")
+		case "revise_battle":
+			var revisedBattle struct {
+				BattleName         string   `json:"battleName"`
+				PointValuesAllowed []string `json:"pointValuesAllowed"`
+			}
+			json.Unmarshal([]byte(keyVal["value"]), &revisedBattle)
+
+			err := srv.database.ReviseBattle(battleID, warriorID, revisedBattle.BattleName, revisedBattle.PointValuesAllowed)
+			if err != nil {
+				badEvent = true
+				break
+			}
+
+			updatedBattle, _ := json.Marshal(revisedBattle)
+			msg = CreateSocketEvent("battle_revised", string(updatedBattle), "")
 		case "concede_battle":
 			err := srv.database.DeleteBattle(battleID, warriorID)
 			if err != nil {

@@ -56,6 +56,23 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 	return b, nil
 }
 
+// ReviseBattle updates the battle by ID
+func (d *Database) ReviseBattle(BattleID string, warriorID string, BattleName string, PointValuesAllowed []string) error {
+	err := d.ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return errors.New("incorrect permissions")
+	}
+
+	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
+	if _, err := d.db.Exec(
+		`UPDATE battles SET name = $2, point_values_allowed = $3 WHERE id = $1`, BattleID, BattleName, string(pointValuesJSON)); err != nil {
+		log.Println(err)
+		return errors.New("unable to revise battle")
+	}
+
+	return nil
+}
+
 // GetBattle gets a battle by ID
 func (d *Database) GetBattle(BattleID string) (*Battle, error) {
 	var b = &Battle{
@@ -276,24 +293,20 @@ func (d *Database) AbandonBattle(BattleID string, WarriorID string) ([]*BattleWa
 }
 
 // SetBattleLeader sets the leaderId for the battle
-func (d *Database) SetBattleLeader(BattleID string, warriorID string, LeaderID string) (*Battle, error) {
+func (d *Database) SetBattleLeader(BattleID string, warriorID string, LeaderID string) error {
 	err := d.ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return nil, errors.New("incorrect permissions")
+		return errors.New("incorrect permissions")
 	}
 
 	// set battle VotingLocked
 	if _, err := d.db.Exec(
 		`call set_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
 		log.Println(err)
+		return errors.New("unable to promote leader")
 	}
 
-	battle, err := d.GetBattle(BattleID)
-	if err != nil {
-		return nil, errors.New("unable to promote leader")
-	}
-
-	return battle, nil
+	return nil
 }
 
 // DeleteBattle removes all battle associations and the battle itself from DB by BattleID

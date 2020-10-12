@@ -10,7 +10,10 @@
             "delete": "Delete Battle",
             "abandon": "Abandon Battle",
             "create": "Create Battle",
-            "join": "Join Battle"
+            "join": "Join Battle",
+            "save": "Save",
+            "edit": "Edit Battle",
+            "editPointsDisabled": "Voting is active, cannot modify allowed points."
         },
         "warrior": {
             "create": "Create Warrior",

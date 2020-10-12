@@ -10,7 +10,10 @@
             "delete": "Delete Session",
             "abandon": "Abandon Session",
             "create": "Create Session",
-            "join": "Join Session"
+            "join": "Join Session",
+            "save": "Save",
+            "edit": "Edit Session",
+            "editPointsDisabled": "Voting is active, cannot modify allowed points."
         },
         "warrior": {
             "create": "Create User",

@@ -11,6 +11,7 @@
     import VoteResults from '../components/VoteResults.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
+    import EditBattle from '../components/EditBattle.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
 
@@ -38,8 +39,8 @@
     let voteStartTime = new Date()
     let battle = {}
     let currentPlan = { ...defaultPlan }
-
     let currentTime = new Date()
+    let showEditBattle = false
 
     $: countdown =
         battle.currentPlanId !== '' && battle.votingLocked === false
@@ -168,8 +169,13 @@
                 battle.plans = postBurnPlans
 
                 break
-            case 'battle_updated':
-                battle = JSON.parse(parsedEvent.value)
+            case 'leader_updated':
+                battle.leaderId = parsedEvent.value
+                break
+            case 'battle_revised':
+                const revisedBattle = JSON.parse(parsedEvent.value)
+                battle.name = revisedBattle.battleName
+                points = revisedBattle.pointValuesAllowed
                 break
             case 'battle_conceded':
                 // battle over, goodbye.
@@ -308,7 +314,9 @@
 
             // build a count of each vote
             activePlan.votes.forEach(v => {
-                ++voteCounts[v.vote]
+                if (voteCounts[v.vote]) {
+                    ++voteCounts[v.vote]
+                }
             })
 
             // find the highest vote giving priority to higher numbers
@@ -340,6 +348,16 @@
         eventTag('abandon_battle', 'battle', '', () => {
             sendSocketEvent('abandon_battle', '')
         })
+    }
+
+    function toggleEditBattle() {
+        showEditBattle = !showEditBattle
+    }
+
+    function handleBattleEdit(revisedBattle) {
+        sendSocketEvent('revise_battle', JSON.stringify(revisedBattle))
+        eventTag('revise_battle', 'battle', '')
+        toggleEditBattle()
     }
 
     function timeUnitsBetween(startDate, endDate) {
@@ -494,6 +512,11 @@
                     <InviteWarrior {hostname} battleId="{battle.id}" />
                     {#if battle.leaderId === $warrior.id}
                         <div class="mt-4 text-right">
+                            <HollowButton
+                                color="blue"
+                                onClick="{toggleEditBattle}">
+                                {$_('actions.battle.edit')}
+                            </HollowButton>
                             <HollowButton color="red" onClick="{concedeBattle}">
                                 {$_('actions.battle.delete')}
                             </HollowButton>
@@ -508,6 +531,14 @@
                 </div>
             </div>
         </div>
+        {#if showEditBattle}
+            <EditBattle
+                battleName="{battle.name}"
+                {points}
+                votingLocked="{battle.votingLocked}"
+                {handleBattleEdit}
+                {toggleEditBattle} />
+        {/if}
     {:else if socketReconnecting}
         <div class="flex items-center">
             <div class="flex-1 text-center">

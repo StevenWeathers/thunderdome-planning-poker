@@ -10,17 +10,17 @@
 {#if avatarService === 'dicebear'}
     <img
         src="https://avatars.dicebear.com/api/{avatar}/{warriorId}.svg?w={width}"
-        alt="{$_('avtarAltText')}" />
+        alt="{$_('avatarAltText')}" />
 {:else if avatarService === 'gravatar'}
     <img
         src="https://gravatar.com/avatar/{warriorId}?s={width}&d={avatar}&r=g"
-        alt="{$_('avtarAltText')}" />
+        alt="{$_('avatarAltText')}" />
 {:else if avatarService === 'robohash'}
     <img
         src="https://robohash.org/{warriorId}.png?set={avatar}&size={width}x{width}"
-        alt="{$_('avtarAltText')}" />
+        alt="{$_('avatarAltText')}" />
 {:else}
     <img
         src="https://api.adorable.io/avatars/{width}/{warriorId}.png"
-        alt="{$_('avtarAltText')}" />
+        alt="{$_('avatarAltText')}" />
 {/if}

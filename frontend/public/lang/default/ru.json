@@ -10,7 +10,10 @@
             "delete": "Удалить битву",
             "abandon": "Покинуть битву",
             "create": "Создать битву",
-            "join": "Присоединиться к битве"
+            "join": "Присоединиться к битве",
+            "save": "Сохранить",
+            "edit": "Редактировать битву",
+            "editPointsDisabled": "Voting is active, cannot modify allowed points."
         },
         "warrior": {
             "create": "Создать участника",
