@@ -1,0 +1,293 @@
+{
+    "appName": "Thunderdome",
+    "avatarAltText": "Avatar Platzhalter",
+    "actions": {
+        "logout": {
+            "button": "Abmelden",
+            "failure": "Fehler beim Abmelden des Kriegers"
+        },
+        "battle": {
+            "delete": "Schlacht l\u00F6schen",
+            "abandon": "Schlacht verlassen",
+            "create": "Schlacht erstellen",
+            "join": "Schlacht beitreten",
+            "save": "Speichern",
+            "edit": "Schlacht bearbeiten",
+            "editPointsDisabled": "Abstimmung ist aktiv, zul\u00E4ssige Punkte k\u00F6nnen nicht ge\u00E4ndert werden."
+        },
+        "warrior": {
+            "create": "Krieger erstellen",
+            "nudge": "Anstubsen",
+            "promote": "Bef\u00F6rdern"
+        },
+        "plan": {
+            "add": "Plan hinzuf\u00FCgen",
+            "view": "Anzeigen",
+            "edit": "Bearbeiten",
+            "delete": "l\u00F6schen",
+            "activate": "Aktivieren",
+            "skip": "Plan \u00FCberspringen",
+            "pointed": "Abgestimmt ({count})",
+            "unpointed": "Offen ({count})",
+            "finishVoting": "Abstimmung beenden",
+            "restartVoting": "Abstimmung neu starten",
+            "save": "Speichern",
+            "importJiraXML": {
+                "button": "Jira XML Import",
+                "badFileType": "Fehler: falscher Datei-Typ",
+                "errorReadingFile": "Fehler beim Lesen der Datei"
+            },
+            "fields": {
+                "name": {
+                    "label": "Plan Name",
+                    "placeholder": "Plan Name eingeben"
+                },
+                "type": {
+                    "label": "Plan Typ",
+                    "placeholder": "Typen"
+                },
+                "link": {
+                    "label": "Link",
+                    "placeholder": "Link zum Plan eingeben"
+                },
+                "referenceId": {
+                    "label": "Referenz-ID",
+                    "placeholder": "Referenz-ID eingeben"
+                },
+                "description": {
+                    "label": "Beschreibung",
+                    "placeholder": "Beschreibung eingeben"
+                },
+                "acceptanceCriteria": {
+                    "label": "Akzeptanzkriterien",
+                    "placeholder": "Akzeptanzkriterien eingeben"
+                }
+            },
+            "types": {
+                "story": "Story",
+                "bug": "Bug",
+                "spike": "Spike",
+                "epic": "Epic",
+                "task": "Task",
+                "subtask": "Subtask"
+            }
+        }
+    },
+    "pages": {
+        "landing": {
+            "title": "Thunderdome ist eine Open Source Agile Planning Poker App mit einer lustigen Thematik",
+            "bullet1": "Gebaut mit coolen Technologien wie Svelte, Go und WebSockets",
+            "bullet2": "Einfache {crossoutOpen}Benutzer{crossoutClose}Krieger Erfahrung",
+            "bullet3": "Funktioniert mit allen {mbOpen}modernen Browsern*{mbClose}, inklusive Mobile",
+            "bullet3NotSorry": "*entschuldigung, keine Entschuldigung bei IE",
+            "features": {
+                "title": "Features",
+                "bullet1": "Keine Beschr\u00E4nkung der Kriegeranzahl einer Schlacht",
+                "bullet2": "Sichere Abstimmung verhindert, dass ein Krieger schummelt",
+                "bullet3": "Abstimmungsergebnisse, die klar und hilfreich sind",
+                "bullet4": "M\u00F6glichkeit, jeden Krieger zum Boss zu bef\u00F6rdern",
+                "bullet5": "Anpassbare Punkte-Skalierung",
+                "bullet6": "Open Source, gerne {contribOpen}teilnehmen und neue Features vorschlagen{contribClose}",
+                "bullet7": "Keine Geb\u00FChren und ohne Werbung"
+            }
+        },
+        "myBattles": {
+            "nav": "Meine Schlachten",
+            "title": "Meine Schlachten",
+            "battlesError": "Fehler: Keine Schlacht gefunden",
+            "countPlansPointed": "{totalPointed} von {totalPlans} Pl\u00E4nen gesch\u00E4tzt",
+            "createBattle": {
+                "title": "Schlacht erstellen",
+                "createError": "Fehler beim Erstellen einer Schlacht",
+                "fields": {
+                    "name": {
+                        "label": "Name der Schlacht",
+                        "placeholder": "Name der Schlacht eingeben"
+                    },
+                    "allowedPointValues": {
+                        "label": "Zul\u00E4ssige Sch\u00E4tzwerte"
+                    },
+                    "plans": {
+                        "label": "Pl\u00E4ne",
+                        "addButton": "Plan hinzuf\u00FCgen",
+                        "removeButton": "Entfernen",
+                        "fields": {
+                            "name": {
+                                "placeholder": "Plan Namen eingeben"
+                            }
+                        }
+                    },
+                    "autoFinishVoting": {
+                        "label": "Abstimmung automatisch beenden, wenn alle Krieger abgegeben haben"
+                    }
+                }
+            }
+        },
+        "createAccount": {
+            "nav": "Konto erstellen",
+            "title": "Der Schlacht beitreten",
+            "registrationDisabled": "Registrierung ist deaktiviert.",
+            "guestForm": {
+                "title": "Als Gast teilnehmen",
+                "saveButton": "Teilnehmen",
+                "createError": "Beim Registrieren als Gast-Krieger ist ein Fehler aufgetreten",
+                "fields": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Name eingeben"
+                    }
+                }
+            },
+            "createAccountForm": {
+                "saveButton": "Erstellen",
+                "title": "Konto erstellen {optionalOpen}(optional){optionalClose}",
+                "createError": "Beim Erstellen des Kriegers ist ein Fehler aufgetreten",
+                "fields": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Name eingeben"
+                    },
+                    "email": {
+                        "label": "E-Mail",
+                        "placeholder": "E-Mail eingeben"
+                    },
+                    "password": {
+                        "label": "Passwort",
+                        "placeholder": "Passwort eingeben"
+                    },
+                    "confirmPassword": {
+                        "label": "Passwort best\u00E4tigen",
+                        "placeholder": "Passwort best\u00E4tigen"
+                    }
+                }
+            }
+        },
+        "verifyAccount": {
+            "loading": "Konto\u00FCberpr\u00FCfung...",
+            "verified": {
+                "title": "Konto \u00FCberpr\u00FCft",
+                "thanks": "Vielen Dank f\u00FCr die Best\u00E4tigung der E-Mail."
+            },
+            "failed": {
+                "title": "\u00DCberpr\u00FCfung fehlgeschlagen",
+                "error": "Bei der \u00DCberpr\u00FCfung des Kontos ist ein Fehler aufgetreten. M\u00F6glicherweise ist dieser Link abgelaufen oder wurde bereits verwendet."
+            }
+        },
+        "warriorProfile": {
+            "title": "Profil",
+            "errorRetreiving": "Beim Laden des Profils ist ein Fehler aufgetreten",
+            "errorUpdating": "Beim Aktualisieren des Profils ist ein Fehler aufgetreten",
+            "passwordUpdated": "Passwort aktualisiert",
+            "passwordUpdateError": "Beim Versuch, das Kennwort zu aktualisieren, ist ein Fehler aufgetreten",
+            "updatePasswordButton": "Passwort \u00E4ndern",
+            "saveProfileButton": "Profil aktualisieren",
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "placeholder": "Name eingeben"
+                },
+                "email": {
+                    "label": "E-Mail",
+                    "verified": "Best\u00E4tigt"
+                },
+                "avatar": {
+                    "label": "Avatar"
+                }
+            },
+            "updatePasswordForm": {
+                "title": "Passwort \u00E4ndern",
+                "cancelButton": "Abbruch",
+                "saveButton": "Speichern",
+                "fields": {
+                    "password": {
+                        "label": "Passwort",
+                        "placeholder": "Passwort eingeben"
+                    },
+                    "confirmPassword": {
+                        "label": "Passwort best\u00E4tigen",
+                        "placeholder": "Passwort best\u00E4tigen"
+                    }
+                }
+            }
+        },
+        "admin": {
+            "nav": "Administration",
+            "title": "Administration",
+            "counts": {
+                "registered": "Registrierte Krieger",
+                "unregistered": "Nicht registrierte Krieger",
+                "battles": "Schlachten",
+                "plans": "Pl\u00E4ne"
+            },
+            "registeredWarriors": {
+                "title": "Registrierte Krieger",
+                "name": "Name",
+                "email": "E-Mail",
+                "verified": "Best\u00E4tigt"
+            }
+        },
+        "login": {
+            "nav": "Anmeldung",
+            "title": "Anmeldung",
+            "button": "Anmelden",
+            "authError": "Beim Versuch, den Krieger zu authentifizieren, ist ein Fehler aufgetreten",
+            "sendResetSuccess": "Anweisungen zum Zur\u00FCcksetzen des Passworts wurden an {email} gesendet",
+            "sendResetError": "Beim Senden der E-Mail zum Zur\u00FCcksetzen ist ein Fehler aufgetreten",
+            "fields": {
+                "email": {
+                    "label": "E-Mail",
+                    "placeholder": "E-Mail eingeben"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "Passwort eingeben",
+                    "forgotLabel": "Passwort vergessen?"
+                }
+            },
+            "passwordReset": {
+                "title": "Passwort zur\u00FCcksetzen",
+                "resetError": "Fehler beim Versuch, das Passwort zur\u00FCckzusetzen",
+                "saveButton": "Zur\u00FCcksetzen",
+                "fields": {
+                    "password": {
+                        "label": "Passwort",
+                        "placeholder": "Passwort eingeben"
+                    },
+                    "confirmPassword": {
+                        "label": "Passwort best\u00E4tigen",
+                        "placeholder": "Passwort eingeben"
+                    }
+                }
+            }
+        },
+        "battle": {
+            "title": "Schlacht",
+            "warriors": "Krieger",
+            "socketReconnecting": "Ooops, Schlachtpl\u00E4ne werden neu geladen...",
+            "socketError": "Fehler beim Eintritt in die schlacht, bitte aktualisieren und nochmals versuchen.",
+            "loading": "Lade Schlachtpl\u00E4ne...",
+            "votingNotStarted": "Votum noch nicht gestartet",
+            "warriorJoined": "{name} hat das Schlachtfeld betreten",
+            "warriorRetreated": "{name} hat das Schlachtfeld verlassen",
+            "warriorVoted": "{name} hat ein Votum abegeben",
+            "warriorRetractedVote": "{name} hat das Votum zur\u00FCckgezogen",
+            "warriorNudge": "pst... {name}, wir warten auf ein Votum.",
+            "warriorInvite": "Krieger einladen",
+            "warriorLeader": "Chef",
+            "finalPoints": "Finale Punkte",
+            "points": "Punkte",
+            "voteResults": {
+                "totalVotes": "Abstimmer",
+                "average": "Durchschnitt",
+                "highest": "H\u00F6chster",
+                "showVoters": "Zeige Abstimmer",
+                "unknownWarrior": "Unbekannter Krieger"
+            }
+        }
+    },
+    "footer": {
+        "authoredBy": "by {authorOpen}Steven Weathers{authorClose}.",
+        "license": "The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.",
+        "poweredBy": "Powered by {svelteOpen}Svelte{svelteClose} and {goOpen}Go{goClose}"
+    }
+}

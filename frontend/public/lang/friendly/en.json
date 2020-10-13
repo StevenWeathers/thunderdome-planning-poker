@@ -170,7 +170,7 @@
             },
             "failed": {
                 "title": "Verification Failed",
-                "error": "Something when wrong verifying your account, perhaps this link expired or was already used."
+                "error": "Something went wrong verifying your account, perhaps this link expired or was already used."
             }
         },
         "warriorProfile": {
