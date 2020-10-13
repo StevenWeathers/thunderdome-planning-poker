@@ -10,14 +10,7 @@
 
     const turndownService = new TurndownService()
 
-    let files
-
-    function showDialog() {
-        const fileInput = document.querySelector('[data-jira-import]')
-        if (fileInput) {
-            fileInput.click()
-        }
-    }
+    const allowJiraImport = appConfig.AllowJiraImport
 
     function uploadFile() {
         let file = this.files[0]
@@ -80,7 +73,9 @@
     }
 </script>
 
-<input type="file" on:change="{uploadFile}" class="hidden" data-jira-import />
-<HollowButton onClick="{showDialog}">
-    {$_('actions.plan.importJiraXML.button')}
-</HollowButton>
+{#if allowJiraImport}
+    <HollowButton type="label" additionalClasses="mr-2" color="blue">
+        {$_('actions.plan.importJiraXML.button')}
+        <input type="file" on:change="{uploadFile}" class="hidden" />
+    </HollowButton>
+{/if}

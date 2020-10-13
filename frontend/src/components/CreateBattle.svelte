@@ -13,7 +13,6 @@
     export let xfetch
 
     const allowedPointValues = appConfig.AllowedPointValues
-    const allowJiraImport = appConfig.AllowJiraImport
 
     let points = appConfig.DefaultPointValues
     let battleName = ''
@@ -137,14 +136,10 @@
             {$_('pages.myBattles.createBattle.fields.plans.label')}
         </h3>
         <div class="control mb-4">
+            <JiraImport handlePlanAdd="{handlePlanImport}" {notifications} />
             <HollowButton onClick="{addPlan}">
                 {$_('pages.myBattles.createBattle.fields.plans.addButton')}
             </HollowButton>
-            {#if allowJiraImport}
-                <JiraImport
-                    handlePlanAdd="{handlePlanImport}"
-                    {notifications} />
-            {/if}
         </div>
         {#each plans as plan, i}
             <div class="flex flex-wrap mb-2">

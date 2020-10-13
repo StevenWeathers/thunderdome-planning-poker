@@ -27,8 +27,6 @@
     let selectedPlan = { ...defaultPlan }
     let showCompleted = false
 
-    const allowJiraImport = appConfig.AllowJiraImport
-
     const toggleAddPlan = planId => () => {
         if (planId) {
             selectedPlan = plans.find(p => p.id === planId)
@@ -87,15 +85,13 @@
 
 <div class="bg-white shadow-lg mb-4 rounded">
     <div class="flex items-center bg-gray-200 p-4 rounded-t">
-        <div class="w-1/2 lg:w-{allowJiraImport ? '1/2' : '3/4'}">
+        <div class="w-1/2">
             <h3 class="text-2xl leading-tight font-bold">Plans</h3>
         </div>
-        <div class="w-1/2 lg:w-1/{allowJiraImport ? '2' : '4'} text-right">
+        <div class="w-1/2 text-right">
             {#if isLeader}
-                {#if allowJiraImport}
-                    <JiraImport {handlePlanAdd} {notifications} />
-                {/if}
-                <HollowButton color="blue" onClick="{toggleAddPlan()}">
+                <JiraImport {handlePlanAdd} {notifications} />
+                <HollowButton onClick="{toggleAddPlan()}">
                     {$_('actions.plan.add')}
                 </HollowButton>
             {/if}

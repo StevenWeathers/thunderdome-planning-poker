@@ -49,7 +49,12 @@
     }
 </style>
 
-{#if href === ''}
+{#if type === 'label'}
+    <label
+        class="btn-hollow btn-hollow-{color} cursor-pointer {additionalClasses}">
+        <slot />
+    </label>
+{:else if href === ''}
     <button
         class="btn-hollow btn-hollow-{color}
         {disabled ? 'disabled' : ''}
