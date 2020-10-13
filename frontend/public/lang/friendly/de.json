@@ -4,19 +4,19 @@
     "actions": {
         "logout": {
             "button": "Abmelden",
-            "failure": "Fehler beim Abmelden des Kriegers"
+            "failure": "Fehler beim Abmelden des Benutzers"
         },
         "battle": {
-            "delete": "Schlacht l\u00F6schen",
-            "abandon": "Schlacht verlassen",
-            "create": "Schlacht erstellen",
-            "join": "Schlacht beitreten",
+            "delete": "Sitzung l\u00F6schen",
+            "abandon": "Sitzung verlassen",
+            "create": "Sitzung erstellen",
+            "join": "Sitzung beitreten",
             "save": "Speichern",
-            "edit": "Schlacht bearbeiten",
+            "edit": "Sitzung bearbeiten",
             "editPointsDisabled": "Abstimmung ist aktiv, zul\u00E4ssige Punkte k\u00F6nnen nicht ge\u00E4ndert werden."
         },
         "warrior": {
-            "create": "Krieger erstellen",
+            "create": "Benutzer erstellen",
             "nudge": "Anstubsen",
             "promote": "Bef\u00F6rdern"
         },
@@ -77,32 +77,32 @@
         "landing": {
             "title": "Thunderdome ist eine Open Source Agile Planning Poker App mit einer lustigen Thematik",
             "bullet1": "Gebaut mit coolen Technologien wie Svelte, Go und WebSockets",
-            "bullet2": "Einfache {crossoutOpen}Benutzer{crossoutClose}Krieger Erfahrung",
+            "bullet2": "Einfache {crossoutOpen}Benutzer{crossoutClose}Benutzer Erfahrung",
             "bullet3": "Funktioniert mit allen {mbOpen}modernen Browsers*{mbClose}, inklusive Mobile",
             "bullet3NotSorry": "*sorry, nicht sorry IE",
             "features": {
                 "title": "Features",
-                "bullet1": "Keine Beschr\u00E4nkung der Kriegeranzahl einer Schlacht",
-                "bullet2": "Sichere Abstimmung verhindert, dass ein Krieger schummelt",
+                "bullet1": "Keine Beschr\u00E4nkung der Benutzeranzahl einer Sitzung",
+                "bullet2": "Sichere Abstimmung verhindert, dass ein Benutzer schummelt",
                 "bullet3": "Abstimmungsergebnisse, die klar und hilfreich sind",
-                "bullet4": "M\u00F6glichkeit, jeden Krieger zum Boss zu bef\u00F6rdern",
+                "bullet4": "M\u00F6glichkeit, jeden Benutzer zum Boss zu bef\u00F6rdern",
                 "bullet5": "Anpassbare Punkte-Skalierung",
                 "bullet6": "Open Source, gerne {contribOpen}teilnehmen und neue Features vorschlagen{contribClose}",
                 "bullet7": "Keine Geb\u00FChren und ohne Werbung"
             }
         },
         "myBattles": {
-            "nav": "Meine Schlachten",
-            "title": "Meine Schlachten",
-            "battlesError": "Fehler: Keine Schlacht gefunden",
+            "nav": "Meine Sitzungen",
+            "title": "Meine Sitzungen",
+            "battlesError": "Fehler: Keine Sitzung gefunden",
             "countPlansPointed": "{totalPointed} von {totalPlans} Pl\u00E4nen gesch\u00E4tzt",
             "createBattle": {
-                "title": "Schlacht erstellen",
-                "createError": "Fehler beim Erstellen einer Schlacht",
+                "title": "Sitzung erstellen",
+                "createError": "Fehler beim Erstellen einer Sitzung",
                 "fields": {
                     "name": {
-                        "label": "Name der Schlacht",
-                        "placeholder": "Name der Schlacht eingeben"
+                        "label": "Name der Sitzung",
+                        "placeholder": "Name der Sitzung eingeben"
                     },
                     "allowedPointValues": {
                         "label": "Zul\u00E4ssige Sch\u00E4tzwerte"
@@ -118,19 +118,19 @@
                         }
                     },
                     "autoFinishVoting": {
-                        "label": "Abstimmung automatisch beenden, wenn alle Krieger abgegeben haben"
+                        "label": "Abstimmung automatisch beenden, wenn alle Benutzer abgegeben haben"
                     }
                 }
             }
         },
         "createAccount": {
             "nav": "Konto erstellen",
-            "title": "Der Schlacht beitreten",
+            "title": "Der Sitzung beitreten",
             "registrationDisabled": "Registrierung ist deaktiviert.",
             "guestForm": {
                 "title": "Als Gast teilnehmen",
                 "saveButton": "Teilnehmen",
-                "createError": "Beim Registrieren als Gast-Krieger ist ein Fehler aufgetreten",
+                "createError": "Beim Registrieren als Gast-Benutzer ist ein Fehler aufgetreten",
                 "fields": {
                     "name": {
                         "label": "Name",
@@ -141,7 +141,7 @@
             "createAccountForm": {
                 "saveButton": "Erstellen",
                 "title": "Konto erstellen {optionalOpen}(optional){optionalClose}",
-                "createError": "Beim Erstellen des Kriegers ist ein Fehler aufgetreten",
+                "createError": "Beim Erstellen des Benutzers ist ein Fehler aufgetreten",
                 "fields": {
                     "name": {
                         "label": "Name",
@@ -214,13 +214,13 @@
             "nav": "Administration",
             "title": "Administration",
             "counts": {
-                "registered": "Registrierte Krieger",
-                "unregistered": "Nicht registrierte Krieger",
-                "battles": "Schlachten",
+                "registered": "Registrierte Benutzer",
+                "unregistered": "Nicht registrierte Benutzer",
+                "battles": "Sitzungen",
                 "plans": "Pl\u00E4ne"
             },
             "registeredWarriors": {
-                "title": "Registrierte Krieger",
+                "title": "Registrierte Benutzer",
                 "name": "Name",
                 "email": "E-Mail",
                 "verified": "Best\u00E4tigt"
@@ -230,7 +230,7 @@
             "nav": "Anmeldung",
             "title": "Anmeldung",
             "button": "Anmelden",
-            "authError": "Beim Versuch, den Krieger zu authentifizieren, ist ein Fehler aufgetreten",
+            "authError": "Beim Versuch, den Benutzer zu authentifizieren, ist ein Fehler aufgetreten",
             "sendResetSuccess": "Anweisungen zum Zur\u00FCcksetzen des Passworts wurden an {email} gesendet",
             "sendResetError": "Beim Senden der E-Mail zum Zur\u00FCcksetzen ist ein Fehler aufgetreten",
             "fields": {
@@ -261,18 +261,18 @@
             }
         },
         "battle": {
-            "title": "Schlacht",
-            "warriors": "Krieger",
-            "socketReconnecting": "Ooops, Schlachtpl\u00E4ne werden neu geladen...",
-            "socketError": "Fehler beim Eintritt in die schlacht, bitte aktualisieren und nochmals versuchen.",
-            "loading": "Lade Schlachtpl\u00E4ne...",
+            "title": "Sitzung",
+            "warriors": "Benutzer",
+            "socketReconnecting": "Ooops, Sitzungen werden neu geladen...",
+            "socketError": "Fehler beim Eintritt in die Sitzung, bitte aktualisieren und nochmals versuchen.",
+            "loading": "Lade Sitzungen...",
             "votingNotStarted": "Votum noch nicht gestartet",
-            "warriorJoined": "{name} hat das Schlachtfeld betreten",
-            "warriorRetreated": "{name} hat das Schlachtfeld verlassen",
+            "warriorJoined": "{name} hat die Sitzung betreten",
+            "warriorRetreated": "{name} hat die Sitzung verlassen",
             "warriorVoted": "{name} hat ein Votum abegeben",
             "warriorRetractedVote": "{name} hat das Votum zur\u00FCckgezogen",
             "warriorNudge": "pst... {name}, wir warten auf ein Votum.",
-            "warriorInvite": "Krieger einladen",
+            "warriorInvite": "Benutzer einladen",
             "warriorLeader": "Chef",
             "finalPoints": "Finale Punkte",
             "points": "Punkte",
@@ -281,7 +281,7 @@
                 "average": "Durchschnitt",
                 "highest": "H\u00F6chster",
                 "showVoters": "Zeige Abstimmer",
-                "unknownWarrior": "Unbekannter Krieger"
+                "unknownWarrior": "Unbekannter Benutzer"
             }
         }
     },

@@ -1,4 +1,5 @@
 const locales = {
+    de: 'Deutsch',
     en: 'English',
     ru: 'Русский',
 }
