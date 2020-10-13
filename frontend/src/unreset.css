@@ -1,0 +1,224 @@
+/**
+* Unreset CSS
+*
+* restores browsers default element styles which are reset by tailwind
+* scoped only to unreset class, for use with WYSIWYG html output
+*/
+.unreset {
+    box-sizing: content-box;
+    line-height: normal;
+
+    & p {
+        margin: 1em 0;
+    }
+
+    & blockquote,
+    & figure {
+        margin: 1em 40px;
+    }
+
+    & q {
+        quotes: '“' '”' '‘' '’';
+
+        &:before {
+            content: open-quote;
+        }
+
+        &:after {
+            content: close-quote;
+        }
+    }
+
+    & hr {
+        border: 1px inset;
+        box-sizing: border-box;
+        margin: 0.5em auto;
+    }
+
+    & h1 {
+        font-size: 2em;
+        font-weight: bold;
+        margin: 0.67em 0;
+    }
+
+    & h2 {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin: 0.83em 0;
+    }
+
+    & h3 {
+        font-size: 1.17em;
+        font-weight: bold;
+        margin: 1em 0;
+    }
+
+    & h4 {
+        font-size: 1em;
+        font-weight: bold;
+        margin: 1.33em 0;
+    }
+
+    & h5 {
+        font-size: 0.83em;
+        font-weight: bold;
+        margin: 1.67em 0;
+    }
+
+    & h6 {
+        font-size: 0.67em;
+        font-weight: bold;
+        margin: 2.33em 0;
+    }
+
+    & table {
+        border-collapse: separate;
+        border-spacing: 2px;
+        border-color: gray;
+    }
+
+    & thead,
+    & tbody,
+    & tfoot,
+    & tr {
+        border-color: inherit;
+        vertical-align: middle;
+    }
+
+    & td,
+    & th {
+        padding: 1px;
+        vertical-align: inherit;
+    }
+
+    & th {
+        font-weight: bold;
+    }
+
+    & caption {
+        text-align: center;
+    }
+
+    & ul,
+    & menu {
+        list-style-type: disc;
+        margin: 1em 0;
+        padding: 0 0 0 40px;
+    }
+
+    & ol {
+        list-style-type: decimal;
+        margin: 1em 0;
+        padding: 0 0 0 40px;
+    }
+
+    & ul,
+    & ol {
+        & ul {
+            list-style-type: circle;
+        }
+
+        & ul,
+        & ol {
+            & ul {
+                list-style-type: square;
+            }
+        }
+    }
+
+    & ul,
+    & ol,
+    & menu,
+    & dl {
+        & ul,
+        & ol,
+        & menu,
+        & dl {
+            margin: 0;
+        }
+    }
+
+    & ins {
+        background-color: transparent;
+        font-weight: inherit;
+        text-decoration: underline;
+    }
+
+    & b,
+    & strong {
+        font-weight: bold;
+    }
+
+    & i,
+    & cite,
+    & em,
+    & var,
+    & address,
+    & dfn {
+        font-style: italic;
+        font-weight: inherit;
+    }
+
+    & abbr[title],
+    & dfn[title] {
+        border-bottom: 0;
+        cursor: default;
+        font-weight: inherit;
+    }
+
+    & tt,
+    & code,
+    & kbd,
+    & samp {
+        font-family: monospace;
+        font-weight: inherit;
+    }
+
+    & pre {
+        font-family: monospace;
+        margin: 1em 0;
+        white-space: pre;
+    }
+
+    & mark {
+        background-color: yellow;
+        color: black;
+        font-style: normal;
+        font-weight: inherit;
+    }
+
+    & big {
+        font-size: larger;
+        font-weight: inherit;
+    }
+
+    & small {
+        font-size: smaller;
+        font-weight: inherit;
+    }
+
+    & sub,
+    & sup {
+        font-weight: inherit;
+        line-height: inherit;
+        position: static;
+    }
+
+    & sub {
+        font-size: smaller;
+        bottom: 0;
+        vertical-align: sub;
+    }
+
+    & sup {
+        font-size: smaller;
+        top: 0;
+        vertical-align: super;
+    }
+
+    & ruby {
+        & > rt {
+            font-size: 50%;
+        }
+    }
+}

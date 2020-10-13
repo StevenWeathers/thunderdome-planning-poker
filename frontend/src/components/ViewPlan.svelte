@@ -1,6 +1,4 @@
 <script>
-    import marked from 'marked'
-
     import ExternalLinkIcon from './icons/ExternalLinkIcon.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
     import { _ } from '../i18n'
@@ -68,13 +66,17 @@
                     <div class="text-sm font-bold mb-2">
                         {$_('actions.plan.fields.description.label')}
                     </div>
-                    {@html marked(description)}
+                    <div class="unreset">
+                        {@html description}
+                    </div>
                 </div>
                 <div class="mb-4">
                     <div class="text-sm font-bold mb-2">
                         {$_('actions.plan.fields.acceptanceCriteria.label')}
                     </div>
-                    {@html marked(acceptanceCriteria)}
+                    <div class="unreset">
+                        {@html acceptanceCriteria}
+                    </div>
                 </div>
             </div>
         </div>

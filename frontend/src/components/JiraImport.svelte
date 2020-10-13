@@ -1,14 +1,11 @@
 <script>
     import he from 'he'
-    import TurndownService from 'turndown'
 
     import HollowButton from '../components/HollowButton.svelte'
     import { _ } from '../i18n'
 
     export let notifications
     export let handlePlanAdd = () => {}
-
-    const turndownService = new TurndownService()
 
     const allowJiraImport = appConfig.AllowJiraImport
 
@@ -41,9 +38,6 @@
                         const decodedDescription = he.decode(
                             item.querySelector('description').innerHTML,
                         )
-                        const markdownDescription = turndownService.turndown(
-                            decodedDescription,
-                        )
                         const plan = {
                             id: '',
                             planName: item.querySelector('summary').innerHTML,
@@ -52,7 +46,7 @@
                                 .innerHTML.toLowerCase(),
                             referenceId: item.querySelector('key').innerHTML,
                             link: item.querySelector('link').innerHTML,
-                            description: markdownDescription,
+                            description: decodedDescription,
                             acceptanceCriteria: '',
                         }
                         handlePlanAdd(plan)

@@ -3,6 +3,8 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+@import './unreset.css';
+
 /* purgecss start ignore */
 @import '../../node_modules/quill/dist/quill.core.css';
 @import '../../node_modules/quill/dist/quill.snow.css';

@@ -14,13 +14,19 @@ function quill(node, options) {
                 [{ align: [] }],
                 ['clean'], // remove formatting button
             ],
+            clipboard: {
+                matchVisual: false,
+            },
         },
         placeholder: 'Type something...',
         theme: 'snow',
         ...options,
     })
     const container = node.getElementsByClassName('ql-editor')[0]
-    container.innerHTML = options.content
+    if (options.content !== '') {
+        const delta = quill.clipboard.convert(options.content)
+        quill.setContents(delta)
+    }
 
     quill.on('text-change', function(delta, oldDelta, source) {
         node.dispatchEvent(

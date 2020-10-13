@@ -1,7 +1,4 @@
 <script>
-    import TurndownService from 'turndown'
-    import marked from 'marked'
-
     import { quill } from '../quill'
     import SolidButton from './SolidButton.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
@@ -21,7 +18,6 @@
         $_('actions.plan.types.task'),
         $_('actions.plan.types.subtask'),
     ]
-    const turndownService = new TurndownService()
 
     export let planId = ''
     export let planName = ''
@@ -38,8 +34,8 @@
             type: planType,
             referenceId,
             link: planLink,
-            description: turndownService.turndown(description),
-            acceptanceCriteria: turndownService.turndown(acceptanceCriteria),
+            description,
+            acceptanceCriteria,
         }
         if (planId === '') {
             handlePlanAdd(plan)
@@ -158,7 +154,7 @@
                         <div class="h-48">
                             <div
                                 class="w-full"
-                                use:quill="{{ placeholder: $_('actions.plan.fields.description.placeholder'), content: marked(description) }}"
+                                use:quill="{{ placeholder: $_('actions.plan.fields.description.placeholder'), content: description }}"
                                 on:text-change="{e => (description = e.detail.html)}"
                                 id="description"></div>
                         </div>
@@ -170,7 +166,7 @@
                         <div class="h-48">
                             <div
                                 class="w-full"
-                                use:quill="{{ placeholder: $_('actions.plan.fields.acceptanceCriteria.placeholder'), content: marked(acceptanceCriteria) }}"
+                                use:quill="{{ placeholder: $_('actions.plan.fields.acceptanceCriteria.placeholder'), content: acceptanceCriteria }}"
                                 on:text-change="{e => (acceptanceCriteria = e.detail.html)}"
                                 id="acceptanceCriteria"></div>
                         </div>
