@@ -80,7 +80,7 @@
     }
 </script>
 
-<input type="file" on:change="{uploadFile}" class="hidden" />
+<input type="file" on:change="{uploadFile}" class="hidden" data-jira-import />
 <HollowButton onClick="{showDialog}">
     {$_('actions.plan.importJiraXML.button')}
 </HollowButton>

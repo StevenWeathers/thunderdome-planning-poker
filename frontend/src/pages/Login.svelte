@@ -135,14 +135,14 @@
                     </div>
 
                     <div class="text-right">
-                        {#if authMethod === 'normal'}			
-                        <button
-                            type="button"
-                            class="inline-block align-baseline font-bold text-sm
-                            text-blue-500 hover:text-blue-800 mr-4"
-                            on:click="{toggleForgotPassword}">
-                            {$_('pages.login.fields.password.forgotLabel')}
-                        </button>
+                        {#if authMethod === 'normal'}
+                            <button
+                                type="button"
+                                class="inline-block align-baseline font-bold
+                                text-sm text-blue-500 hover:text-blue-800 mr-4"
+                                on:click="{toggleForgotPassword}">
+                                {$_('pages.login.fields.password.forgotLabel')}
+                            </button>
                         {/if}
                         <SolidButton type="submit" disabled="{loginDisabled}">
                             {$_('pages.login.button')}
