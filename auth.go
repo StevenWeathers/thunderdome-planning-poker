@@ -2,34 +2,33 @@ package main
 
 import (
 	"crypto/tls"
-	"net/http"
-	"log"
-	"fmt"
 	"errors"
+	"fmt"
+	"log"
+	"net/http"
 
-	ldap "github.com/go-ldap/ldap/v3"
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	ldap "github.com/go-ldap/ldap/v3"
 	"github.com/spf13/viper"
 )
 
-
-func (s *server) createCookie(warriorID string) (*http.Cookie) {
+func (s *server) createCookie(warriorID string) *http.Cookie {
 	encoded, err := s.cookie.Encode(s.config.SecureCookieName, warriorID)
-	var new_cookie *http.Cookie
+	var NewCookie *http.Cookie
 
 	if err == nil {
-		new_cookie = &http.Cookie{
-			Name:      s.config.SecureCookieName,
-			Value:     encoded,
-			Path:      "/",
-			HttpOnly:  true,
-			Domain:    s.config.AppDomain,
-			MaxAge:	   86400 * 30, // 30 days
-			Secure:    s.config.SecureCookieFlag,
-			SameSite:  http.SameSiteStrictMode,
+		NewCookie = &http.Cookie{
+			Name:     s.config.SecureCookieName,
+			Value:    encoded,
+			Path:     "/",
+			HttpOnly: true,
+			Domain:   s.config.AppDomain,
+			MaxAge:   86400 * 30, // 30 days
+			Secure:   s.config.SecureCookieFlag,
+			SameSite: http.SameSiteStrictMode,
 		}
 	}
-	return new_cookie
+	return NewCookie
 }
 
 func (s *server) authWarriorDatabase(warriorEmail string, warriorPassword string) (*database.Warrior, error) {
@@ -97,14 +96,13 @@ func (s *server) authAndCreateWarriorLdap(warriorUsername string, warriorPasswor
 
 	authedWarrior, err = s.database.GetWarriorByEmail(useremail)
 	if authedWarrior == nil {
-		var verifyId string
 		log.Println("Warrior", useremail, "does not exist in database, auto-recruit")
-		authedWarrior, verifyId, err = s.database.CreateWarriorCorporal(usercn, useremail, "", "")
+		authedWarrior, verifyID, err := s.database.CreateWarriorCorporal(usercn, useremail, "", "")
 		if err != nil {
 			log.Println("Failed auto-creating new warrior", err)
 			return authedWarrior, err
 		}
-		err = s.database.VerifyWarriorAccount(verifyId)
+		err = s.database.VerifyWarriorAccount(verifyID)
 		if err != nil {
 			log.Println("Failed verifying new warrior", err)
 			return authedWarrior, err
