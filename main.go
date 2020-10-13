@@ -19,6 +19,8 @@ type ServerConfig struct {
 	ListenPort string
 	// the domain of the application for cookie securing
 	AppDomain string
+	// list of allowed origin domains
+	AllowedOrigins string
 	// name of the frontend cookie
 	FrontendCookieName string
 	// name of the warrior cookie
@@ -52,6 +54,7 @@ func main() {
 		config: &ServerConfig{
 			ListenPort:         viper.GetString("http.port"),
 			AppDomain:          viper.GetString("http.domain"),
+			AllowedOrigins:     viper.GetString("http.allowed_origins"),
 			AdminEmail:         viper.GetString("admin.email"),
 			FrontendCookieName: "warrior",
 			SecureCookieName:   "warriorId",

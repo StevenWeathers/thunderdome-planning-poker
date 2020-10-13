@@ -114,6 +114,7 @@ The following configuration options exists:
 | `http.port`                | PORT                 | Which port to listen for HTTP connections. | 8080 |
 | `http.secure_cookie`       | COOKIE_SECURE        | Use secure cookies or not.                 | true |
 | `http.domain`              | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome.  Used for creating URLs in emails. | thunderdome.dev |
+| `http.allowed_origins`     | ALLOWED_ORIGINS      | List of comma separated domains. Used to allow origins in websocket communication. | thunderdome.dev |
 | `analytics.enabled`        | ANALYTICS_ENABLED    | Enable/disable google analytics.           | true |
 | `analytics.id`             | ANALYTICS_ID         | Google analytics identifier.               | UA-140245309-1 |
 | `db.host`                  | DB_HOST              | Database host name.                        | db |

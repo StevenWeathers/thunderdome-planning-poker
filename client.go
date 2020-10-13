@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -304,6 +305,21 @@ func (s *server) serveWs() http.HandlerFunc {
 		if err != nil {
 			log.Println(err)
 			return
+		}
+
+		upgrader.CheckOrigin = func(r *http.Request) bool {
+			if len(s.config.AllowedOrigins) == 0 {
+				return true
+			}
+
+			allowedOriginList := strings.Split(s.config.AllowedOrigins, ",")
+			for _, o := range allowedOriginList {
+				if strings.Contains(r.Host, o) {
+					return true
+				}
+			}
+
+			return false
 		}
 
 		// make sure battle is legit

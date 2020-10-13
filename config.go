@@ -17,6 +17,7 @@ func InitConfig() {
 
 	viper.SetDefault("http.cookie_hashkey", "strongest-avenger")
 	viper.SetDefault("http.port", "8080")
+	viper.SetDefault("http.allowed_origins", "thunderdome.dev")
 	viper.SetDefault("http.secure_cookie", true)
 	viper.SetDefault("http.domain", "thunderdome.dev")
 	viper.SetDefault("analytics.enabled", true)
@@ -55,6 +56,7 @@ func InitConfig() {
 	viper.BindEnv("http.port", "PORT")
 	viper.BindEnv("http.secure_cookie", "COOKIE_SECURE")
 	viper.BindEnv("http.domain", "APP_DOMAIN")
+	viper.BindEnv("http.allowed_origins", "ALLOWED_ORIGINS")
 	viper.BindEnv("analytics.enabled", "ANALYTICS_ENABLED")
 	viper.BindEnv("analytics.id", "ANALYTICS_ID")
 	viper.BindEnv("admin.email", "ADMIN_EMAIL")
