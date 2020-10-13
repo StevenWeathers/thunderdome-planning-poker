@@ -78,8 +78,8 @@
             "title": "Thunderdome ist eine Open Source Agile Planning Poker App mit einer lustigen Thematik",
             "bullet1": "Gebaut mit coolen Technologien wie Svelte, Go und WebSockets",
             "bullet2": "Einfache {crossoutOpen}Benutzer{crossoutClose}Krieger Erfahrung",
-            "bullet3": "Funktioniert mit allen {mbOpen}modernen Browsers*{mbClose}, inklusive Mobile",
-            "bullet3NotSorry": "*sorry, nicht sorry IE",
+            "bullet3": "Funktioniert mit allen {mbOpen}modernen Browsern*{mbClose}, inklusive Mobile",
+            "bullet3NotSorry": "*entschuldigung, keine Entschuldigung bei IE",
             "features": {
                 "title": "Features",
                 "bullet1": "Keine Beschr\u00E4nkung der Kriegeranzahl einer Schlacht",
