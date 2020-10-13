@@ -300,13 +300,6 @@ func (s *server) serveWs() http.HandlerFunc {
 		vars := mux.Vars(r)
 		battleID := vars["id"]
 
-		// upgrade to WebSocket connection
-		ws, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		upgrader.CheckOrigin = func(r *http.Request) bool {
 			if len(s.config.AllowedOrigins) == 0 {
 				return true
@@ -320,6 +313,13 @@ func (s *server) serveWs() http.HandlerFunc {
 			}
 
 			return false
+		}
+
+		// upgrade to WebSocket connection
+		ws, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println(err)
+			return
 		}
 
 		// make sure battle is legit
