@@ -1,0 +1,293 @@
+{
+    "appName": "Thunderdome",
+    "avatarAltText": "Avatar Platzhalter",
+    "actions": {
+        "logout": {
+            "button": "Abmelden",
+            "failure": "Fehler beim Abmelden des Kriegers"
+        },
+        "battle": {
+            "delete": "Schlacht l\u00F6schen",
+            "abandon": "Schlacht verlassen",
+            "create": "Schlacht erstellen",
+            "join": "Schlacht beitreten",
+            "save": "Speichern",
+            "edit": "Schlacht bearbeiten",
+            "editPointsDisabled": "Abstimmung ist aktiv, zulässige Punkte k\u00F6nnen nicht geändert werden."
+        },
+        "warrior": {
+            "create": "Krieger erstellen",
+            "nudge": "Anstubsen",
+            "promote": "Bef\u00F6rdern"
+        },
+        "plan": {
+            "add": "Plan hinzufügen",
+            "view": "Anzeigen",
+            "edit": "Bearbeiten",
+            "delete": "l\u00F6schen",
+            "activate": "Aktivieren",
+            "skip": "Plan überspringen",
+            "pointed": "Abgestimmt ({count})",
+            "unpointed": "Offen ({count})",
+            "finishVoting": "Abstimmung beenden",
+            "restartVoting": "Abstimmung neu starten",
+            "save": "Speichern",
+            "importJiraXML": {
+                "button": "Jira XML Import",
+                "badFileType": "Fehler: falscher Datei-Typ",
+                "errorReadingFile": "Fehler beim Lesen der Datei"
+            },
+            "fields": {
+                "name": {
+                    "label": "Plan Name",
+                    "placeholder": "Plan Name eingeben"
+                },
+                "type": {
+                    "label": "Plan Typ",
+                    "placeholder": "Typen"
+                },
+                "link": {
+                    "label": "Link",
+                    "placeholder": "Link zum Plan eingeben"
+                },
+                "referenceId": {
+                    "label": "Referenz-ID",
+                    "placeholder": "Referenz-ID eingeben"
+                },
+                "description": {
+                    "label": "Beschreibung",
+                    "placeholder": "Beschreibung eingeben"
+                },
+                "acceptanceCriteria": {
+                    "label": "Akzeptanzkriterien",
+                    "placeholder": "Akzeptanzkriterien eingeben"
+                }
+            },
+            "types": {
+                "story": "Story",
+                "bug": "Bug",
+                "spike": "Spike",
+                "epic": "Epic",
+                "task": "Task",
+                "subtask": "Subtask"
+            }
+        }
+    },
+    "pages": {
+        "landing": {
+            "title": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
+            "bullet1": "Built on cool tech like Svelte, Go, and WebSockets",
+            "bullet2": "Simple {crossoutOpen}User{crossoutClose}Warrior Experience",
+            "bullet3": "Works on all {mbOpen}modern browsers*{mbClose}, including mobile",
+            "bullet3NotSorry": "*sorry, not sorry IE",
+            "features": {
+                "title": "Features",
+                "bullet1": "No limit on number of Warriors in a Battle",
+                "bullet2": "Secure voting, keeps your Warriors from cheating",
+                "bullet3": "Voting Results that are clear and helpful",
+                "bullet4": "Ability to promote any Warrior to Battle Leader",
+                "bullet5": "Customizable pointing scales",
+                "bullet6": "Open Source, feel free to {contribOpen}contribute and suggest features{contribClose}",
+                "bullet7": "No fees and Ad free"
+            }
+        },
+        "myBattles": {
+            "nav": "My Battles",
+            "title": "My Battles",
+            "battlesError": "Error finding your battles",
+            "countPlansPointed": "{totalPointed} of {totalPlans} plans pointed",
+            "createBattle": {
+                "title": "Create a Battle",
+                "createError": "Error encountered creating battle",
+                "fields": {
+                    "name": {
+                        "label": "Battle Name",
+                        "placeholder": "Enter a battle name"
+                    },
+                    "allowedPointValues": {
+                        "label": "Allowed Point Values"
+                    },
+                    "plans": {
+                        "label": "Plans",
+                        "addButton": "Add Plan",
+                        "removeButton": "Remove",
+                        "fields": {
+                            "name": {
+                                "placeholder": "Enter a plan name"
+                            }
+                        }
+                    },
+                    "autoFinishVoting": {
+                        "label": "Auto Finish Voting when all Warriors have voted"
+                    }
+                }
+            }
+        },
+        "createAccount": {
+            "nav": "Create Account",
+            "title": "Enlist to Battle",
+            "registrationDisabled": "Registration is disabled.",
+            "guestForm": {
+                "title": "Register as Guest",
+                "saveButton": "Register",
+                "createError": "Error encountered registering warrior as guest",
+                "fields": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Enter your name"
+                    }
+                }
+            },
+            "createAccountForm": {
+                "saveButton": "Create",
+                "title": "Create an Account {optionalOpen}(optional){optionalClose}",
+                "createError": "Error encountered creating warrior",
+                "fields": {
+                    "name": {
+                        "label": "Name",
+                        "placeholder": "Enter your name"
+                    },
+                    "email": {
+                        "label": "Email",
+                        "placeholder": "Enter your email"
+                    },
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Enter a password"
+                    },
+                    "confirmPassword": {
+                        "label": "Confirm Password",
+                        "placeholder": "Confirm your password"
+                    }
+                }
+            }
+        },
+        "verifyAccount": {
+            "loading": "Verifying Account...",
+            "verified": {
+                "title": "Account Verified",
+                "thanks": "Thanks for verifying your email."
+            },
+            "failed": {
+                "title": "Verification Failed",
+                "error": "Something when wrong verifying your account, perhaps this link expired or was already used."
+            }
+        },
+        "warriorProfile": {
+            "title": "Your Profile",
+            "errorRetreiving": "Error getting your profile",
+            "errorUpdating": "Error encountered updating your profile",
+            "passwordUpdated": "Password updated.",
+            "passwordUpdateError": "Error encountered attempting to update password",
+            "updatePasswordButton": "Update Password",
+            "saveProfileButton": "Update Profile",
+            "fields": {
+                "name": {
+                    "label": "Name",
+                    "placeholder": "Enter your name"
+                },
+                "email": {
+                    "label": "Email",
+                    "verified": "Verified"
+                },
+                "avatar": {
+                    "label": "Avatar"
+                }
+            },
+            "updatePasswordForm": {
+                "title": "Update Password",
+                "cancelButton": "Cancel",
+                "saveButton": "Update",
+                "fields": {
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Enter a password"
+                    },
+                    "confirmPassword": {
+                        "label": "Confirm Password",
+                        "placeholder": "Confirm your password"
+                    }
+                }
+            }
+        },
+        "admin": {
+            "nav": "Admin",
+            "title": "Admin",
+            "counts": {
+                "registered": "Registered Warriors",
+                "unregistered": "Unregistered Warriors",
+                "battles": "Battles",
+                "plans": "Plans"
+            },
+            "registeredWarriors": {
+                "title": "Registered Warriors",
+                "name": "Name",
+                "email": "Email",
+                "verified": "Verified"
+            }
+        },
+        "login": {
+            "nav": "Login",
+            "title": "Login",
+            "button": "Login",
+            "authError": "Error encountered attempting to authenticate warrior",
+            "sendResetSuccess": "Password reset instructions sent to {email}",
+            "sendResetError": "Error encountered attempting to send password reset",
+            "fields": {
+                "email": {
+                    "label": "Email",
+                    "placeholder": "Enter your email"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "Enter your password",
+                    "forgotLabel": "Forgot Password?"
+                }
+            },
+            "passwordReset": {
+                "title": "Reset Password",
+                "resetError": "Error encountered attempting to reset password",
+                "saveButton": "Reset",
+                "fields": {
+                    "password": {
+                        "label": "Password",
+                        "placeholder": "Enter your new password"
+                    },
+                    "confirmPassword": {
+                        "label": "Confirm Password",
+                        "placeholder": "Enter your new password"
+                    }
+                }
+            }
+        },
+        "battle": {
+            "title": "Battle",
+            "warriors": "Warriors",
+            "socketReconnecting": "Ooops, reloading Battle Plans...",
+            "socketError": "Error joining battle, refresh and try again.",
+            "loading": "Loading Battle Plans...",
+            "votingNotStarted": "Voting not started",
+            "warriorJoined": "{name} has joined the battle",
+            "warriorRetreated": "{name} has retreated from the battle",
+            "warriorVoted": "{name} has voted",
+            "warriorRetractedVote": "{name} has retracted vote",
+            "warriorNudge": "pst... {name}, waiting on you to vote.",
+            "warriorInvite": "Invite a Warrior",
+            "warriorLeader": "Leader",
+            "finalPoints": "Final Points",
+            "points": "Points",
+            "voteResults": {
+                "totalVotes": "Total Votes",
+                "average": "Average",
+                "highest": "Highest",
+                "showVoters": "Show Voters",
+                "unknownWarrior": "Unknown Warrior"
+            }
+        }
+    },
+    "footer": {
+        "authoredBy": "by {authorOpen}Steven Weathers{authorClose}.",
+        "license": "The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.",
+        "poweredBy": "Powered by {svelteOpen}Svelte{svelteClose} and {goOpen}Go{goClose}"
+    }
+}
