@@ -5,6 +5,7 @@
     import { _ } from '../i18n'
 
     export let notifications
+    export let eventTag = () => {}
     export let handlePlanAdd = () => {}
 
     const allowJiraImport = appConfig.AllowJiraImport
@@ -16,6 +17,7 @@
         }
         if (file.type !== 'text/xml') {
             notifications.danger($_('actions.plan.importJiraXML.badFileType'))
+            eventTag('jira_import_failed', 'battle', `file.type not text/xml`)
             return
         }
 
@@ -33,11 +35,35 @@
                 )
                 const items = doc.querySelectorAll('channel>item')
                 if (items) {
-                    for (let i = 0; i < items.length; i++) {
+                    const totalItems = items.length
+                    for (let i = 0; i < totalItems; i++) {
                         const item = items[i]
                         const decodedDescription = he.decode(
                             item.querySelector('description').innerHTML,
                         )
+                        const customFields = item.querySelectorAll(
+                            'customfields>customfield',
+                        )
+                        let acceptanceCriteria = ''
+
+                        if (customFields) {
+                            for (let j = 0; j < customFields.length; j++) {
+                                const cfName = customFields[j].querySelector(
+                                    'customfieldname',
+                                ).innerHTML
+                                const cfValues = customFields[j].querySelector(
+                                    'customfieldvalues',
+                                ).innerHTML
+
+                                if (
+                                    cfName.toLowerCase() ===
+                                    'acceptance criteria'
+                                ) {
+                                    acceptanceCriteria = cfValues
+                                }
+                            }
+                        }
+
                         const plan = {
                             id: '',
                             planName: item.querySelector('summary').innerHTML,
@@ -47,15 +73,21 @@
                             referenceId: item.querySelector('key').innerHTML,
                             link: item.querySelector('link').innerHTML,
                             description: decodedDescription,
-                            acceptanceCriteria: '',
+                            acceptanceCriteria,
                         }
                         handlePlanAdd(plan)
                     }
+                    eventTag(
+                        'jira_import_success',
+                        'battle',
+                        `total stories imported: ${totalItems}`,
+                    )
                 }
             } catch (e) {
                 notifications.danger(
                     $_('actions.plan.importJiraXML.errorReadingFile'),
                 )
+                eventTag('jira_import_failed', 'battle', `ferror reading file`)
             }
         }
 
@@ -63,6 +95,7 @@
             notifications.danger(
                 $_('actions.plan.importJiraXML.errorReadingFile'),
             )
+            eventTag('jira_import_failed', 'battle', `ferror reading file`)
         }
     }
 </script>

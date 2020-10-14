@@ -90,7 +90,7 @@
         </div>
         <div class="w-1/2 text-right">
             {#if isLeader}
-                <JiraImport {handlePlanAdd} {notifications} />
+                <JiraImport {handlePlanAdd} {notifications} {eventTag} />
                 <HollowButton onClick="{toggleAddPlan()}">
                     {$_('actions.plan.add')}
                 </HollowButton>

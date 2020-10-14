@@ -136,7 +136,10 @@
             {$_('pages.myBattles.createBattle.fields.plans.label')}
         </h3>
         <div class="control mb-4">
-            <JiraImport handlePlanAdd="{handlePlanImport}" {notifications} />
+            <JiraImport
+                handlePlanAdd="{handlePlanImport}"
+                {notifications}
+                {eventTag} />
             <HollowButton onClick="{addPlan}">
                 {$_('pages.myBattles.createBattle.fields.plans.addButton')}
             </HollowButton>

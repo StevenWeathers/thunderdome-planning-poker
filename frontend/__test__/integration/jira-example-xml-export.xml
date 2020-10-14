@@ -107,6 +107,13 @@
                     <customfieldvalues>
                     </customfieldvalues>
                 </customfield>
+                <customfield id="customfield_10000" key="com.atlassian.jira.plugins.jira-development-integration-plugin:devsummarycf">
+                    <customfieldname>Acceptance criteria</customfieldname>
+                    <customfieldvalues>
+                        <p>This story is complete when:</p>
+                        <p>Jira import includes acceptance criteria field</p>
+                    </customfieldvalues>
+                </customfield>
             </customfields>
         </item>
     </channel>
