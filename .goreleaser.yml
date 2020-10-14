@@ -11,6 +11,14 @@ before:
 builds:
 - env:
   - CGO_ENABLED=0
+dockers:
+  - 
+    dockerfile: "build/gorDockerfile"
+    binaries:
+    - thunderdome-planning-poker
+    image_templates:
+    - "stevenweathers/thunderdome-planning-poker:{{ .Tag }}"
+    - "stevenweathers/thunderdome-planning-poker:latest"
 archives:
 - replacements:
     darwin: Darwin

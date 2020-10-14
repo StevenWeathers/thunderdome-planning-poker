@@ -67,6 +67,9 @@ run:
 gorelease:
 	$(GORELEASER)
 
+gorelease-dev-dry:
+	$(GORELEASER) --skip-publish --skip-validate
+
 gorelease-dry:
 	$(GORELEASER) --skip-publish
 

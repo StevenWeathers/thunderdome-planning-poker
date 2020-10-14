@@ -1,0 +1,3 @@
+FROM scratch
+COPY thunderdome-planning-poker /
+ENTRYPOINT ["/thunderdome-planning-poker"]
