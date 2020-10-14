@@ -44,6 +44,7 @@
                         id: newWarrior.id,
                         name: newWarrior.name,
                         rank: newWarrior.rank,
+                        notificationsEnabled: newWarrior.notificationsEnabled
                     })
 
                     eventTag('register_guest', 'engagement', 'success', () => {
@@ -80,6 +81,7 @@
                     name: newWarrior.name,
                     email: newWarrior.email,
                     rank: newWarrior.rank,
+                    notificationsEnabled: newWarrior.notificationsEnabled,
                 })
 
                 eventTag('register_account', 'engagement', 'success', () => {

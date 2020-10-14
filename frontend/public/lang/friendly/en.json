@@ -193,6 +193,9 @@
                 },
                 "avatar": {
                     "label": "Avatar"
+                },
+                "enable_notifications": {
+                    "label": "Enable battle notifications"
                 }
             },
             "updatePasswordForm": {
@@ -277,6 +280,7 @@
             "warriorLeader": "Leader",
             "finalPoints": "Final Points",
             "points": "Points",
+            "planSkipped": "Plan skipped.",
             "voteResults": {
                 "totalVotes": "Total Votes",
                 "average": "Average",

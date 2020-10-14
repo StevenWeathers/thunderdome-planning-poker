@@ -46,12 +46,13 @@ type Battle struct {
 
 // Warrior aka user
 type Warrior struct {
-	WarriorID     string `json:"id"`
-	WarriorName   string `json:"name"`
-	WarriorEmail  string `json:"email"`
-	WarriorRank   string `json:"rank"`
-	WarriorAvatar string `json:"avatar"`
-	Verified      bool   `json:"verified"`
+	WarriorID            string `json:"id"`
+	WarriorName          string `json:"name"`
+	WarriorEmail         string `json:"email"`
+	WarriorRank          string `json:"rank"`
+	WarriorAvatar        string `json:"avatar"`
+	Verified             bool   `json:"verified"`
+	NotificationsEnabled bool   `json:"notificationsEnabled"`
 }
 
 // Vote structure
