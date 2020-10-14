@@ -22,7 +22,7 @@
 
     setupI18n()
 
-    const registrationAllowed = appConfig.AllowRegistration
+    const { AllowRegistration, AppVersion } = appConfig
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
 
     let notifications
@@ -158,7 +158,7 @@
                     {$_('pages.myBattles.nav')}
                 </HollowButton>
                 {#if !activeWarrior.rank || activeWarrior.rank === 'PRIVATE'}
-                    {#if registrationAllowed}
+                    {#if AllowRegistration}
                         <HollowButton
                             color="teal"
                             href="/enlist"
@@ -183,7 +183,7 @@
                     </HollowButton>
                 {/if}
             {:else}
-                {#if registrationAllowed}
+                {#if AllowRegistration}
                     <HollowButton
                         color="teal"
                         href="/enlist"
@@ -238,6 +238,9 @@
                 goClose: `</a>`,
             },
         })}
+        <div class="text-sm text-gray-500">
+            {$_('appVersion', { values: { version: AppVersion } })}
+        </div>
     </footer>
 {:else}
     <p>Loading...</p>

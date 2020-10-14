@@ -11,6 +11,9 @@ BINARY_WINDOWS=thunderdome-planning-poker.exe
 GORELEASER=goreleaser release --rm-dist
 NEXT_DOCKER_TAG=stevenweathers/thunderdome-planning-poker:next
 LATEST_DOCKER_TAG=stevenweathers/thunderdome-planning-poker:latest
+VERSION_TAG := $(shell git tag --sort=-version:refname | head -n 1)
+GOBUILDTAG=-ldflags "-X main.version=$(VERSION_TAG)"
+DOCKER_BUILD_VERSION=--build-arg BUILD_VERSION=${VERSION_TAG}
 
 all: build
 build-deps: 
@@ -71,13 +74,13 @@ gorelease-snapshot:
 	$(GORELEASER) --snapshot
 
 build-next-image:
-	docker build ./ -f ./build/Dockerfile -t $(NEXT_DOCKER_TAG)
+	docker build ./ -f ./build/Dockerfile -t $(NEXT_DOCKER_TAG) ${DOCKER_BUILD_VERSION}
 
 push-next-image:
 	docker push $(NEXT_DOCKER_TAG)
 
 build-latest-image:
-	docker build ./ -f ./build/Dockerfile -t $(LATEST_DOCKER_TAG)
+	docker build ./ -f ./build/Dockerfile -t $(LATEST_DOCKER_TAG) ${DOCKER_BUILD_VERSION}
 
 push-latest-image:
 	docker push $(LATEST_DOCKER_TAG)

@@ -172,6 +172,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		DefaultLocale      string
 		FriendlyUIVerbs    bool
 		AuthMethod         string
+		AppVersion         string
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -211,6 +212,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		DefaultLocale:      viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:    viper.GetBool("config.friendly_ui_verbs"),
 		AuthMethod:         viper.GetString("auth.method"),
+		AppVersion:         s.config.Version,
 	}
 
 	data := UIConfig{

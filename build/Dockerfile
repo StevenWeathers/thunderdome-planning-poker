@@ -18,6 +18,7 @@ RUN npm run build
 # STEP 2 build executable binary
 ############################
 FROM golang:1.13-alpine as builderGo
+ARG BUILD_VERSION
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
 # Ca-certificates is required to call HTTPS endpoints.
@@ -41,7 +42,7 @@ RUN go mod download
 # Bundle the static assets
 RUN pkger
 # Build the binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/thunderdome
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -ldflags "-X main.version=$BUILD_VERSION" -o /go/bin/thunderdome
 ############################
 # STEP 3 build a small image
 ############################

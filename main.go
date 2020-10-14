@@ -13,6 +13,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	version = "dev"
+)
+
 // ServerConfig holds server global config values
 type ServerConfig struct {
 	// port the application server will listen on
@@ -32,6 +36,8 @@ type ServerConfig struct {
 	AnalyticsEnabled bool
 	// ID used for google analytics
 	AnalyticsID string
+	// the app version
+	Version string
 }
 
 type server struct {
@@ -43,6 +49,7 @@ type server struct {
 }
 
 func main() {
+	fmt.Printf("Thunderdome version %s", version)
 
 	InitConfig()
 
@@ -58,6 +65,7 @@ func main() {
 			SecureCookieFlag:   viper.GetBool("http.secure_cookie"),
 			AnalyticsEnabled:   viper.GetBool("analytics.enabled"),
 			AnalyticsID:        viper.GetString("analytics.id"),
+			Version:            version,
 		},
 		router: mux.NewRouter(),
 		cookie: securecookie.New([]byte(cookieHashkey), nil),

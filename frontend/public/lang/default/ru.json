@@ -1,5 +1,6 @@
 {
     "appName": "Thunderdome",
+    "appVersion": "Версия {version}",
     "avatarAltText": "Placeholder Avatar",
     "actions": {
         "logout": {
