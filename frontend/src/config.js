@@ -8,7 +8,7 @@ const fallbackLocale = appConfig.DefaultLocale
 
 const defaultAppRoutes = {
     landing: '/',
-    enlist: '/enlist',
+    register: '/enlist',
     battles: '/battles',
     battle: '/battle',
     login: '/login',
@@ -19,7 +19,7 @@ const defaultAppRoutes = {
 }
 const friendlyAppRoutes = {
     ...defaultAppRoutes,
-    enlist: '/register',
+    register: '/register',
     battles: '/sessions',
     battle: '/session',
     profile: '/user-profile',
