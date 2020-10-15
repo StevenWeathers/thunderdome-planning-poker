@@ -5,16 +5,16 @@
     "actions": {
         "logout": {
             "button": "Выйти",
-            "failure": "Error encountered attempting to logout warrior"
+            "failure": "Ошибка при попытке выйти из профиля"
         },
         "battle": {
-            "delete": "Удалить битву",
-            "abandon": "Покинуть битву",
-            "create": "Создать битву",
-            "join": "Присоединиться к битве",
+            "delete": "Удалить игру",
+            "abandon": "Покинуть игру",
+            "create": "Создать игру",
+            "join": "Присоединиться к игру",
             "save": "Сохранить",
-            "edit": "Редактировать битву",
-            "editPointsDisabled": "Voting is active, cannot modify allowed points."
+            "edit": "Редактировать игру",
+            "editPointsDisabled": "Нельзя менять карточки пока активно голосование."
         },
         "warrior": {
             "create": "Создать участника",
@@ -34,9 +34,9 @@
             "restartVoting": "Перезапустить голосование",
             "save": "Сохранить",
             "importJiraXML": {
-                "button": "Импорт задач из джиры (XML)",
-                "badFileType": "Error bad file type",
-                "errorReadingFile": "Error reading file"
+                "button": "Импорт задач из джиры",
+                "badFileType": "Ошибка: плохой тип файла",
+                "errorReadingFile": "Ошибка чтения файла"
             },
             "fields": {
                 "name": {
@@ -45,7 +45,7 @@
                 },
                 "type": {
                     "label": "Тип задач",
-                    "placeholder": "Types"
+                    "placeholder": "Типы задач"
                 },
                 "link": {
                     "label": "Ссылка",
@@ -93,17 +93,17 @@
             }
         },
         "myBattles": {
-            "nav": "Мои битвы",
-            "title": "Мои битвы",
-            "battlesError": "Error finding your battles",
+            "nav": "Мои игры",
+            "title": "Мои игры",
+            "battlesError": "Ошибка поиска ваших игр",
             "countPlansPointed": "{totalPointed} из {totalPlans} задач оценено",
             "createBattle": {
-                "title": "Создать битву",
-                "createError": "Error encountered creating battle",
+                "title": "Создать игру",
+                "createError": "Ошибка создания игры",
                 "fields": {
                     "name": {
-                        "label": "Название битвы",
-                        "placeholder": "Введите название битвы"
+                        "label": "Название игры",
+                        "placeholder": "Введите название игры"
                     },
                     "allowedPointValues": {
                         "label": "Разрешенные карточки"
@@ -119,19 +119,19 @@
                         }
                     },
                     "autoFinishVoting": {
-                        "label": "Auto Finish Voting when all Users have voted"
+                        "label": "Автозавершение голосования когда все проголосовали"
                     }
                 }
             }
         },
         "createAccount": {
-            "nav": "Create Account",
-            "title": "Войти в битву",
+            "nav": "Создать профиль",
+            "title": "Зайти в игру",
             "registrationDisabled": "Регистрация отключена.",
             "guestForm": {
                 "title": "Войти как гость",
                 "saveButton": "Зарегистировать",
-                "createError": "Error encountered registering warrior as guest",
+                "createError": "Ошибка регистрации как гостя",
                 "fields": {
                     "name": {
                         "label": "Имя",
@@ -142,7 +142,7 @@
             "createAccountForm": {
                 "saveButton": "Создать",
                 "title": "Создать аккаунт {optionalOpen}(Необязательно){optionalClose}",
-                "createError": "Error encountered creating warrior",
+                "createError": "Ошибка создания участника",
                 "fields": {
                     "name": {
                         "label": "Имя",
@@ -176,11 +176,11 @@
         },
         "warriorProfile": {
             "title": "Профиль",
-            "errorRetreiving": "Error getting your profile",
-            "errorUpdating": "Error encountered updating your profile",
-            "passwordUpdated": "Password updated.",
-            "passwordUpdateError": "Error encountered attempting to update password",
-            "updatePasswordButton": "обновить пароль",
+            "errorRetreiving": "Ошибка получения профиля",
+            "errorUpdating": "Ошибка обновления профиля",
+            "passwordUpdated": "Пароль обновлен.",
+            "passwordUpdateError": "Ошибка обновления пароля",
+            "updatePasswordButton": "Обновить пароль",
             "saveProfileButton": "Обновить профиль",
             "fields": {
                 "name": {
@@ -199,7 +199,7 @@
                 }
             },
             "updatePasswordForm": {
-                "title": "обновить пароль",
+                "title": "Обновить пароль",
                 "cancelButton": "Отмена",
                 "saveButton": "Обновить",
                 "fields": {
@@ -220,7 +220,7 @@
             "counts": {
                 "registered": "Зарегистрированные участники",
                 "unregistered": "Незарегистрированные",
-                "battles": "Битвы",
+                "battles": "Игры",
                 "plans": "Задачи"
             },
             "registeredWarriors": {
@@ -234,9 +234,9 @@
             "nav": "Войти",
             "title": "Войти",
             "button": "Войти",
-            "authError": "Error encountered attempting to authenticate warrior",
-            "sendResetSuccess": "Password reset instructions sent to {email}",
-            "sendResetError": "Error encountered attempting to send password reset",
+            "authError": "Ошибка при попытке авторизации",
+            "sendResetSuccess": "Инструкция по сбросу отправлена на {email}",
+            "sendResetError": "Ошибка при попытки отправить инструкцию сброса",
             "fields": {
                 "email": {
                     "label": "Электронная почта",
@@ -250,7 +250,7 @@
             },
             "passwordReset": {
                 "title": "Сбросить пароль",
-                "resetError": "Error encountered attempting to reset password",
+                "resetError": "Ошибка при попытке сбросить пароль",
                 "saveButton": "Сбросить",
                 "fields": {
                     "password": {
@@ -265,17 +265,17 @@
             }
         },
         "battle": {
-            "title": "Битва",
+            "title": "Игра",
             "warriors": "Участники",
             "socketReconnecting": "Упс, перезагрузка списка задач...",
             "socketError": "Ошибка: обновите страницу или попробуйте позже.",
             "loading": "Загрузка списка задач...",
             "votingNotStarted": "Голосование еще не началось",
-            "warriorJoined": "{name} has joined the battle",
-            "warriorRetreated": "{name} has retreated from the battle",
-            "warriorVoted": "{name} has voted",
-            "warriorRetractedVote": "{name} has retracted vote",
-            "warriorNudge": "pst... {name}, waiting on you to vote.",
+            "warriorJoined": "{name} присоединился к игре",
+            "warriorRetreated": "{name} покинул игру",
+            "warriorVoted": "{name} проголосовал",
+            "warriorRetractedVote": "{name} убрал оценку",
+            "warriorNudge": "Хей... {name}, ждем твоего голоса.",
             "warriorInvite": "Пригласить участника",
             "warriorLeader": "Создатель",
             "finalPoints": "Итого голосов",
