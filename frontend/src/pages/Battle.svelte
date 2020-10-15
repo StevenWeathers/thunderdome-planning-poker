@@ -72,9 +72,9 @@
                 )
                 if ($warrior.notificationsEnabled) {
                     notifications.success(
-                            `${$_('pages.battle.warriorJoined', {
-                                values: { name: joinedWarrior.name },
-                            })}`,
+                        `${$_('pages.battle.warriorJoined', {
+                            values: { name: joinedWarrior.name },
+                        })}`,
                     )
                 }
                 break
@@ -86,9 +86,9 @@
 
                 if ($warrior.notificationsEnabled) {
                     notifications.danger(
-                            `${$_('pages.battle.warriorRetreated', {
-                                values: { name: leftWarrior.name },
-                            })}`,
+                        `${$_('pages.battle.warriorRetreated', {
+                            values: { name: leftWarrior.name },
+                        })}`,
                     )
                 }
                 break
@@ -137,9 +137,9 @@
                 )
                 if ($warrior.notificationsEnabled) {
                     notifications.warning(
-                            `${$_('pages.battle.warriorRetractedVote', {
-                                values: { name: devotedWarrior.name },
-                            })}`,
+                        `${$_('pages.battle.warriorRetractedVote', {
+                            values: { name: devotedWarrior.name },
+                        })}`,
                     )
                 }
 

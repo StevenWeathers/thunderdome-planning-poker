@@ -44,7 +44,7 @@
                         id: newWarrior.id,
                         name: newWarrior.name,
                         rank: newWarrior.rank,
-                        notificationsEnabled: newWarrior.notificationsEnabled
+                        notificationsEnabled: newWarrior.notificationsEnabled,
                     })
 
                     eventTag('register_guest', 'engagement', 'success', () => {

@@ -22,9 +22,7 @@ let _activeLocale
 const isDownloading = writable(false)
 
 function setupI18n(options = {}) {
-    const locale_ = supported(
-        options.withLocale || language(getLocaleFromNavigator()),
-    )
+    const locale_ = supported(options.withLocale || getLocaleFromNavigator())
 
     // Initialize svelte-i18n
     init({ initialLocale: locale_ })
@@ -77,8 +75,14 @@ function language(locale) {
 }
 
 function supported(locale) {
-    if (Object.keys(locales).includes(locale)) {
+    const localeKeys = Object.keys(locales)
+
+    // check if supported locales include exact variant or primary variant
+    // e.g. checks for en-US then en
+    if (localeKeys.includes(locale)) {
         return locale
+    } else if (localeKeys.includes(language(locale))) {
+        return language(locale)
     } else {
         return fallbackLocale
     }

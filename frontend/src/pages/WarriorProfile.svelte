@@ -93,7 +93,8 @@
                         email: warriorProfile.email,
                         rank: warriorProfile.rank,
                         avatar: warriorProfile.avatar,
-                        notificationsEnabled: warriorProfile.notificationsEnabled,
+                        notificationsEnabled:
+                            warriorProfile.notificationsEnabled,
                     })
 
                     notifications.success('Profile updated.', 1500)
@@ -218,13 +219,15 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                        <label
+                            class="block text-gray-700 text-sm font-bold mb-2">
                             <input
                                 bind:checked="{warriorProfile.notificationsEnabled}"
                                 type="checkbox"
-                                class="form-checkbox"
-                                />
-                            <span class="ml-2">{$_("pages.warriorProfile.fields.enable_notifications.label")}</span>
+                                class="form-checkbox" />
+                            <span class="ml-2">
+                                {$_('pages.warriorProfile.fields.enable_notifications.label')}
+                            </span>
                         </label>
                     </div>
 
