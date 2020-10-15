@@ -41,7 +41,7 @@ func (d *Database) GetWarrior(WarriorID string) (*Warrior, error) {
 	var warriorEmail sql.NullString
 
 	e := d.db.QueryRow(
-		"SELECT id, name, email, rank, avatar, verified FROM warriors WHERE id = $1",
+		"SELECT id, name, email, rank, avatar, verified, notifications_enabled FROM warriors WHERE id = $1",
 		WarriorID,
 	).Scan(
 		&w.WarriorID,
@@ -50,6 +50,7 @@ func (d *Database) GetWarrior(WarriorID string) (*Warrior, error) {
 		&w.WarriorRank,
 		&w.WarriorAvatar,
 		&w.Verified,
+		&w.NotificationsEnabled,
 	)
 	if e != nil {
 		log.Println(e)
@@ -120,7 +121,7 @@ func (d *Database) CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
 		return nil, errors.New("unable to create new warrior")
 	}
 
-	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorAvatar: "identicon"}, nil
+	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorAvatar: "identicon", NotificationsEnabled: true}, nil
 }
 
 // CreateWarriorCorporal adds a new warrior corporal (registered) to the db
@@ -166,15 +167,16 @@ func (d *Database) CreateWarriorCorporal(WarriorName string, WarriorEmail string
 }
 
 // UpdateWarriorProfile attempts to update the warriors profile
-func (d *Database) UpdateWarriorProfile(WarriorID string, WarriorName string, WarriorAvatar string) error {
+func (d *Database) UpdateWarriorProfile(WarriorID string, WarriorName string, WarriorAvatar string, NotificationsEnabled bool) error {
 	if WarriorAvatar == "" {
 		WarriorAvatar = "identicon"
 	}
 	if _, err := d.db.Exec(
-		`UPDATE warriors SET name = $2, avatar = $3 WHERE id = $1;`,
+		`UPDATE warriors SET name = $2, avatar = $3, notifications_enabled=$4 WHERE id = $1;`,
 		WarriorID,
 		WarriorName,
 		WarriorAvatar,
+		NotificationsEnabled,
 	); err != nil {
 		log.Println(err)
 		return errors.New("error attempting to update warriors profile")

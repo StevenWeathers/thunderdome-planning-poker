@@ -72,6 +72,7 @@
         const body = {
             warriorName: warriorProfile.name,
             warriorAvatar: warriorProfile.avatar,
+            notificationsEnabled: warriorProfile.notificationsEnabled,
         }
         const validName = validateName(body.warriorName)
 
@@ -92,6 +93,7 @@
                         email: warriorProfile.email,
                         rank: warriorProfile.rank,
                         avatar: warriorProfile.avatar,
+                        notificationsEnabled: warriorProfile.notificationsEnabled,
                     })
 
                     notifications.success('Profile updated.', 1500)
@@ -213,6 +215,17 @@
                             name="yourEmail"
                             type="email"
                             disabled />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            <input
+                                bind:checked="{warriorProfile.notificationsEnabled}"
+                                type="checkbox"
+                                class="form-checkbox"
+                                />
+                            <span class="ml-2">{$_("pages.warriorProfile.fields.enable_notifications.label")}</span>
+                        </label>
                     </div>
 
                     {#if avatarService == 'dicebear' || avatarService == 'gravatar' || avatarService == 'robohash'}

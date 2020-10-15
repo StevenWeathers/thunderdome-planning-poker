@@ -193,6 +193,9 @@
                 },
                 "avatar": {
                     "label": "Avatar"
+                },
+                "enable_notifications": {
+                    "label": "Enable battle notifications"
                 }
             },
             "updatePasswordForm": {
@@ -277,6 +280,7 @@
             "warriorLeader": "Chef",
             "finalPoints": "Finale Punkte",
             "points": "Punkte",
+            "planSkipped": "Plan übersprungen",
             "voteResults": {
                 "totalVotes": "Abstimmer",
                 "average": "Durchschnitt",

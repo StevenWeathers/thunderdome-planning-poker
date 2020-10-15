@@ -35,6 +35,7 @@
                     name: newWarrior.name,
                     email: newWarrior.email,
                     rank: newWarrior.rank,
+                    notificationsEnabled: newWarrior.notificationsEnabled,
                 })
 
                 eventTag('login', 'engagement', 'success', () => {

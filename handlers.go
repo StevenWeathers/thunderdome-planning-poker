@@ -576,10 +576,11 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
+		keyVal := make(map[string]interface{})
 		json.Unmarshal(body, &keyVal) // check for errors
-		WarriorName := keyVal["warriorName"]
-		WarriorAvatar := keyVal["warriorAvatar"]
+		WarriorName := keyVal["warriorName"].(string)
+		WarriorAvatar := keyVal["warriorAvatar"].(string)
+		NotificationsEnabled, _ := keyVal["notificationsEnabled"].(bool)
 
 		WarriorID := vars["id"]
 		warriorCookieID, cookieErr := s.validateWarriorCookie(w, r)
@@ -588,7 +589,7 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName, WarriorAvatar)
+		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName, WarriorAvatar, NotificationsEnabled)
 		if updateErr != nil {
 			log.Println("error attempting to update warrior profile : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)

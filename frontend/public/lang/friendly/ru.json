@@ -193,6 +193,9 @@
                 },
                 "avatar": {
                     "label": "Аватар"
+                },
+                "enable_notifications": {
+                    "label": "Включить уведомления"
                 }
             },
             "updatePasswordForm": {
@@ -277,6 +280,7 @@
             "warriorLeader": "Создатель",
             "finalPoints": "Итого голосов",
             "points": "Голоса",
+            "planSkipped": "Задача пропущена",
             "voteResults": {
                 "totalVotes": "Всего голосов",
                 "average": "Среднее",

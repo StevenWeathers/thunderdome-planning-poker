@@ -70,11 +70,13 @@
                 const joinedWarrior = battle.warriors.find(
                     w => w.id === parsedEvent.warriorId,
                 )
-                notifications.success(
-                    `${$_('pages.battle.warriorJoined', {
-                        values: { name: joinedWarrior.name },
-                    })}`,
-                )
+                if ($warrior.notificationsEnabled) {
+                    notifications.success(
+                            `${$_('pages.battle.warriorJoined', {
+                                values: { name: joinedWarrior.name },
+                            })}`,
+                    )
+                }
                 break
             case 'warrior_retreated':
                 const leftWarrior = battle.warriors.find(
@@ -82,11 +84,13 @@
                 )
                 battle.warriors = JSON.parse(parsedEvent.value)
 
-                notifications.danger(
-                    `${$_('pages.battle.warriorRetreated', {
-                        values: { name: leftWarrior.name },
-                    })}`,
-                )
+                if ($warrior.notificationsEnabled) {
+                    notifications.danger(
+                            `${$_('pages.battle.warriorRetreated', {
+                                values: { name: leftWarrior.name },
+                            })}`,
+                    )
+                }
                 break
             case 'plan_added':
                 battle.plans = JSON.parse(parsedEvent.value)
@@ -109,17 +113,21 @@
                 battle.activePlanId = ''
                 battle.votingLocked = true
                 vote = ''
-                notifications.warning(`Plan skipped.`)
+                if ($warrior.notificationsEnabled) {
+                    notifications.warning($_('pages.battle.planSkipped'))
+                }
                 break
             case 'vote_activity':
                 const votedWarrior = battle.warriors.find(
                     w => w.id === parsedEvent.warriorId,
                 )
-                notifications.success(
-                    `${$_('pages.battle.warriorVoted', {
-                        values: { name: votedWarrior.name },
-                    })}`,
-                )
+                if ($warrior.notificationsEnabled) {
+                    notifications.success(
+                        `${$_('pages.battle.warriorVoted', {
+                            values: { name: votedWarrior.name },
+                        })}`,
+                    )
+                }
 
                 battle.plans = JSON.parse(parsedEvent.value)
                 break
@@ -127,11 +135,13 @@
                 const devotedWarrior = battle.warriors.find(
                     w => w.id === parsedEvent.warriorId,
                 )
-                notifications.warning(
-                    `${$_('pages.battle.warriorRetractedVote', {
-                        values: { name: devotedWarrior.name },
-                    })}`,
-                )
+                if ($warrior.notificationsEnabled) {
+                    notifications.warning(
+                            `${$_('pages.battle.warriorRetractedVote', {
+                                values: { name: devotedWarrior.name },
+                            })}`,
+                    )
+                }
 
                 battle.plans = JSON.parse(parsedEvent.value)
                 break
