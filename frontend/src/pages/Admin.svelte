@@ -6,6 +6,7 @@
     import CreateWarrior from '../components/CreateWarrior.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
+    import { appRoutes } from '../config'
 
     export let xfetch
     export let router
@@ -73,10 +74,10 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route('/enlist')
+            router.route(appRoutes.register)
         }
         if ($warrior.rank !== 'GENERAL') {
-            router.route('/')
+            router.route(appRoutes.landing)
         }
 
         getWarriors()

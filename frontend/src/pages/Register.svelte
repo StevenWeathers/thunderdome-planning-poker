@@ -5,6 +5,7 @@
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
     import { _ } from '../i18n'
+    import { appRoutes } from '../config'
 
     export let router
     export let xfetch
@@ -20,7 +21,9 @@
     let warriorPassword1 = ''
     let warriorPassword2 = ''
 
-    $: targetPage = battleId ? `/battle/${battleId}` : '/battles'
+    $: targetPage = battleId
+        ? `${appRoutes.battle}/${battleId}`
+        : appRoutes.battles
 
     function createWarriorPrivate(e) {
         e.preventDefault()

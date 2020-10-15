@@ -195,7 +195,7 @@
                     "label": "Avatar"
                 },
                 "enable_notifications": {
-                    "label": "Enable battle notifications"
+                    "label": "Enable session notifications"
                 }
             },
             "updatePasswordForm": {

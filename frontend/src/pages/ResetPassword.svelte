@@ -4,6 +4,7 @@
     import { warrior } from '../stores.js'
     import { validatePasswords } from '../validationUtils.js'
     import { _ } from '../i18n'
+    import { appRoutes } from '../config'
 
     export let xfetch
     export let router
@@ -37,7 +38,7 @@
             xfetch('/api/auth/reset-password', { body })
                 .then(function() {
                     eventTag('reset_password', 'engagement', 'success', () => {
-                        router.route('/login', true)
+                        router.route(appRoutes.login, true)
                     })
                 })
                 .catch(function(error) {

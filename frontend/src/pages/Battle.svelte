@@ -14,6 +14,7 @@
     import EditBattle from '../components/EditBattle.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
+    import { appRoutes } from '../config'
 
     export let battleId
     export let notifications
@@ -190,7 +191,7 @@
                 break
             case 'battle_conceded':
                 // battle over, goodbye.
-                router.route('/battles')
+                router.route(appRoutes.battles)
                 break
             case 'jab_warrior':
                 const warriorToJab = battle.warriors.find(
@@ -220,16 +221,16 @@
             onclose: e => {
                 if (e.code === 4004) {
                     eventTag('not_found', 'battle', '', () => {
-                        router.route('/battles')
+                        router.route(appRoutes.battles)
                     })
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'battle', '', () => {
                         warrior.delete()
-                        router.route(`/enlist/${battleId}`)
+                        router.route(`${appRoutes.register}/${battleId}`)
                     })
                 } else if (e.code === 4002) {
                     eventTag('battle_warrior_abandoned', 'battle', '', () => {
-                        router.route(`/battles`)
+                        router.route(appRoutes.battles)
                     })
                 } else {
                     socketReconnecting = true
@@ -395,7 +396,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route(`/enlist/${battleId}`)
+            router.route(`${appRoutes.register}/${battleId}`)
         }
         const voteCounter = setInterval(() => {
             currentTime = new Date()

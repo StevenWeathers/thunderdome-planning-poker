@@ -3,6 +3,7 @@
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
+    import { appRoutes } from '../config'
 
     export let router
     export let xfetch
@@ -18,7 +19,9 @@
     let warriorResetEmail = ''
     let forgotPassword = false
 
-    $: targetPage = battleId ? `/battle/${battleId}` : '/battles'
+    $: targetPage = battleId
+        ? `${appRoutes.battle}/${battleId}`
+        : appRoutes.battles
 
     function authWarrior(e) {
         e.preventDefault()

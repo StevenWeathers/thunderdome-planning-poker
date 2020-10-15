@@ -2,6 +2,7 @@
     import CheckIcon from '../components/icons/CheckIcon.svelte'
 
     import { _ } from '../i18n'
+    import { appRoutes } from '../config'
     import { warrior } from '../stores'
 </script>
 
@@ -49,7 +50,7 @@
                         hover:bg-transparent hover:text-gray-800 font-semibold
                         text-yellow-thunder py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded"
-                        href="{$warrior.id ? '/battles' : '/enlist'}">
+                        href="{$warrior.id ? appRoutes.battles : appRoutes.register}">
                         {$_('actions.battle.create')}
                     </a>
                 </div>

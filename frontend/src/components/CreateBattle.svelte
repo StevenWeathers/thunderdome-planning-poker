@@ -6,6 +6,7 @@
     import JiraImport from './JiraImport.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
+    import { appRoutes } from '../config'
 
     export let notifications
     export let eventTag
@@ -72,7 +73,7 @@
             .then(res => res.json())
             .then(function(battle) {
                 eventTag('create_battle', 'engagement', 'success', () => {
-                    router.route(`/battle/${battle.id}`)
+                    router.route(`${appRoutes.battle}/${battle.id}`)
                 })
             })
             .catch(function(error) {
@@ -85,7 +86,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route('/enlist')
+            router.route(appRoutes.register)
         }
     })
 </script>

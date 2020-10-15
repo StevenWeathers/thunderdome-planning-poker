@@ -9,6 +9,7 @@
     import HollowButton from '../components/HollowButton.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
+    import { appRoutes } from '../config'
 
     export let xfetch
     export let notifications
@@ -29,7 +30,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route('/enlist')
+            router.route(appRoutes.register)
         }
     })
 </script>
@@ -64,7 +65,7 @@
                             </div>
                         </div>
                         <div class="w-full md:w-1/2 md:mb-0 md:text-right">
-                            <HollowButton href="/battle/{battle.id}">
+                            <HollowButton href="{appRoutes.battle}/{battle.id}">
                                 {$_('actions.battle.join')}
                             </HollowButton>
                         </div>

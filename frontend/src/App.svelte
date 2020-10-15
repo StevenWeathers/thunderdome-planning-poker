@@ -1,8 +1,9 @@
 <script>
     import Navaid from 'navaid'
     import { onDestroy } from 'svelte'
-    import { _, locale, setupI18n, isLocaleLoaded } from './i18n'
 
+    import { _, locale, setupI18n, isLocaleLoaded } from './i18n'
+    import { appRoutes } from './config'
     import Notifications from './components/Notifications.svelte'
     import WarriorIcon from './components/icons/WarriorIcon.svelte'
     import HollowButton from './components/HollowButton.svelte'
@@ -38,56 +39,56 @@
         params: {},
     }
 
-    const router = Navaid('/')
-        .on('/', () => {
+    const router = Navaid(appRoutes.landing)
+        .on(appRoutes.landing, () => {
             currentPage = {
                 route: Landing,
                 params: {},
             }
         })
-        .on('/enlist/:battleId?', params => {
+        .on(`${appRoutes.register}/:battleId?`, params => {
             currentPage = {
                 route: Register,
                 params,
             }
         })
-        .on('/login/:battleId?', params => {
+        .on(`${appRoutes.login}/:battleId?`, params => {
             currentPage = {
                 route: Login,
                 params,
             }
         })
-        .on('/reset-password/:resetId', params => {
+        .on(`${appRoutes.resetPwd}/:resetId`, params => {
             currentPage = {
                 route: ResetPassword,
                 params,
             }
         })
-        .on('/verify-account/:verifyId', params => {
+        .on(`${appRoutes.verifyAct}/:verifyId`, params => {
             currentPage = {
                 route: VerifyAccount,
                 params,
             }
         })
-        .on('/warrior-profile', params => {
+        .on(appRoutes.profile, params => {
             currentPage = {
                 route: WarriorProfile,
                 params,
             }
         })
-        .on('/battles', () => {
+        .on(appRoutes.battles, () => {
             currentPage = {
                 route: Battles,
                 params: {},
             }
         })
-        .on('/battle/:battleId', params => {
+        .on(`${appRoutes.battle}/:battleId`, params => {
             currentPage = {
                 route: Battle,
                 params,
             }
         })
-        .on('/admin', () => {
+        .on(appRoutes.admin, () => {
             currentPage = {
                 route: Admin,
                 params: {},
@@ -100,7 +101,7 @@
     function handle401() {
         eventTag('session_expired', 'engagement', 'unauthorized', () => {
             warrior.delete()
-            router.route('/login')
+            router.route(appRoutes.login)
         })
     }
 
@@ -109,7 +110,7 @@
             .then(function() {
                 eventTag('logout', 'engagement', 'success', () => {
                     warrior.delete()
-                    router.route('/', true)
+                    router.route(appRoutes.landing, true)
                 })
             })
             .catch(function(error) {
@@ -141,7 +142,7 @@
         role="navigation"
         aria-label="main navigation">
         <div class="flex items-center flex-shrink-0 mr-6">
-            <a href="/">
+            <a href="{appRoutes.landing}">
                 <img src="/img/logo.svg" alt="Thunderdome" class="nav-logo" />
             </a>
         </div>
@@ -149,11 +150,11 @@
             {#if activeWarrior.name}
                 <span class="font-bold mr-2 text-xl">
                     <WarriorIcon />
-                    <a href="/warrior-profile">{activeWarrior.name}</a>
+                    <a href="{appRoutes.profile}">{activeWarrior.name}</a>
                 </span>
                 <HollowButton
                     color="teal"
-                    href="/battles"
+                    href="{appRoutes.battles}"
                     additionalClasses="mr-2">
                     {$_('pages.myBattles.nav')}
                 </HollowButton>
@@ -161,19 +162,19 @@
                     {#if AllowRegistration}
                         <HollowButton
                             color="teal"
-                            href="/enlist"
+                            href="{appRoutes.register}"
                             additionalClasses="mr-2">
                             {$_('pages.createAccount.nav')}
                         </HollowButton>
                     {/if}
-                    <HollowButton href="/login">
+                    <HollowButton href="{appRoutes.login}">
                         {$_('pages.login.nav')}
                     </HollowButton>
                 {:else}
                     {#if activeWarrior.rank === 'GENERAL'}
                         <HollowButton
                             color="purple"
-                            href="/admin"
+                            href="{appRoutes.admin}"
                             additionalClasses="mr-2">
                             {$_('pages.admin.nav')}
                         </HollowButton>
@@ -186,12 +187,12 @@
                 {#if AllowRegistration}
                     <HollowButton
                         color="teal"
-                        href="/enlist"
+                        href="{appRoutes.register}"
                         additionalClasses="mr-2">
                         {$_('pages.createAccount.nav')}
                     </HollowButton>
                 {/if}
-                <HollowButton href="/login">
+                <HollowButton href="{appRoutes.login}">
                     {$_('pages.login.nav')}
                 </HollowButton>
             {/if}
