@@ -180,6 +180,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		FriendlyUIVerbs    bool
 		AuthMethod         string
 		AppVersion         string
+		CookieName         string
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -220,6 +221,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		FriendlyUIVerbs:    viper.GetBool("config.friendly_ui_verbs"),
 		AuthMethod:         viper.GetString("auth.method"),
 		AppVersion:         s.config.Version,
+		CookieName:         s.config.FrontendCookieName,
 	}
 
 	data := UIConfig{

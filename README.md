@@ -113,6 +113,8 @@ The following configuration options exists:
 | `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | strongest-avenger |
 | `http.port`                | PORT                 | Which port to listen for HTTP connections. | 8080 |
 | `http.secure_cookie`       | COOKIE_SECURE        | Use secure cookies or not.                 | true |
+| `http.backend_cookie_name` | BACKEND_COOKIE_NAME  | The name of the backend cookie utilized for actual auth/validation | warriorId |
+| `http.frontend_cookie_name`| FRONTEND_COOKIE_NAME | The name of the cookie utilized by the UI (purely for convenience not auth) | warrior |
 | `http.domain`              | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome.  Used for creating URLs in emails. | thunderdome.dev |
 | `analytics.enabled`        | ANALYTICS_ENABLED    | Enable/disable google analytics.           | true |
 | `analytics.id`             | ANALYTICS_ID         | Google analytics identifier.               | UA-140245309-1 |

@@ -18,7 +18,10 @@ func InitConfig() {
 	viper.SetDefault("http.cookie_hashkey", "strongest-avenger")
 	viper.SetDefault("http.port", "8080")
 	viper.SetDefault("http.secure_cookie", true)
+	viper.SetDefault("http.backend_cookie_name", "warriorId")
+	viper.SetDefault("http.frontend_cookie_name", "warrior")
 	viper.SetDefault("http.domain", "thunderdome.dev")
+
 	viper.SetDefault("analytics.enabled", true)
 	viper.SetDefault("analytics.id", "UA-140245309-1")
 
@@ -46,6 +49,7 @@ func InitConfig() {
 	viper.SetDefault("config.allow_jira_import", true)
 	viper.SetDefault("config.default_locale", "en")
 	viper.SetDefault("config.friendly_ui_verbs", false)
+
 	viper.SetDefault("auth.method", "normal")
 	viper.SetDefault("auth.ldap.filter", "(&(objectClass=posixAccount)(mail=%s))")
 	viper.SetDefault("auth.ldap.mail_attr", "mail")
@@ -54,7 +58,10 @@ func InitConfig() {
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")
 	viper.BindEnv("http.secure_cookie", "COOKIE_SECURE")
+	viper.BindEnv("http.backend_cookie_name", "SECURE_COOKIE_NAME")
+	viper.BindEnv("http.frontend_cookie_name", "FRONTEND_COOKIE_NAME")
 	viper.BindEnv("http.domain", "APP_DOMAIN")
+
 	viper.BindEnv("analytics.enabled", "ANALYTICS_ENABLED")
 	viper.BindEnv("analytics.id", "ANALYTICS_ID")
 	viper.BindEnv("admin.email", "ADMIN_EMAIL")
