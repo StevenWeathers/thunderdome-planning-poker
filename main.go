@@ -38,6 +38,8 @@ type ServerConfig struct {
 	AnalyticsID string
 	// the app version
 	Version string
+	// Which avatar service is utilized
+	AvatarService string
 }
 
 type server struct {
@@ -66,6 +68,7 @@ func main() {
 			AnalyticsEnabled:   viper.GetBool("analytics.enabled"),
 			AnalyticsID:        viper.GetString("analytics.id"),
 			Version:            version,
+			AvatarService:      viper.GetString(("config.avatar_service")),
 		},
 		router: mux.NewRouter(),
 		cookie: securecookie.New([]byte(cookieHashkey), nil),

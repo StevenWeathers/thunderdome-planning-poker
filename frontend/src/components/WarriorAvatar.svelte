@@ -19,6 +19,12 @@
     <img
         src="https://robohash.org/{warriorId}.png?set={avatar}&size={width}x{width}"
         alt="{$_('avatarAltText')}" />
+{:else if avatarService === 'govatar'}
+    <img
+        src="/avatar/{width}/{warriorId}/{avatar}"
+        alt="{$_('avatarAltText')}" />
+{:else if avatarService === 'goadorable'}
+    <img src="/avatar/{width}/{warriorId}" alt="{$_('avatarAltText')}" />
 {:else}
     <img
         src="https://api.adorable.io/avatars/{width}/{warriorId}.png"

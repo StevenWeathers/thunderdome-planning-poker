@@ -141,12 +141,16 @@ The following configuration options exists:
 
 ## Avatar Service configuration
 
-Use the name from table below to configure a service - if not set, `default` is used. Each service provides further options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the different sprites get available. The table shows all supported services and their sprites. In all cases the same ID (`ead26688-5148-4f3c-a35d-1b0117b4f2a9`) has been used creating the avatars.
+Use the name from table below to configure a service - if not set, `default` is used. Each service provides further options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the different sprites become available. The table shows all supported services and their sprites. In all cases the same ID (`ead26688-5148-4f3c-a35d-1b0117b4f2a9`) has been used creating the avatars.
 
 | Name |           |           |           |           |           |           |           |           |           |
 | ---------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
 | `default`  |           |           |           |           |           |           |           |           |           |
 |            | ![image](https://api.adorable.io/avatars/48/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png) |
+| `goadorable` (internal)  |           |           |           |           |           |           |           |           |           |
+|            | ![image](https://user-images.githubusercontent.com/846933/96212071-e4283d80-0f43-11eb-9f82-ff6c105f8b0a.png) |
+| `govatar` (internal) | male | female |  |  |
+|            | ![image](https://user-images.githubusercontent.com/846933/96212029-ce1a7d00-0f43-11eb-9e53-8ca13ba9d4b1.png) | ![image](https://user-images.githubusercontent.com/846933/96212031-ceb31380-0f43-11eb-832b-b02c275317a5.png) |  |  |
 | `dicebear` | male | female | human | identicon | bottts | avataaars | jdenticon | gridy | code |
 |            | ![image](https://avatars.dicebear.com/api/male/ead26688-5148-4f3c-a35d-1b0117b4f2a9.svg?w=48) | ![image](https://avatars.dicebear.com/api/female/ead26688-5148-4f3c-a35d-1b0117b4f2a9.svg?w=48) | ![image](https://avatars.dicebear.com/api/human/ead26688-5148-4f3c-a35d-1b0117b4f2a9.svg?w=48) | ![image](https://avatars.dicebear.com/api/identicon/ead26688-5148-4f3c-a35d-1b0117b4f2a9.svg?w=48) | ![image](https://avatars.dicebear.com/api/bottts/ead26688-5148-4f3c-a35d-1b0117b4f2a9.svg?w=48) | ![image](https://avatars.dicebear.com/api/avataaars/ead26688-5148-4f3c-a35d-1b0117b4f2a9.svg?w=48) | ![image](https://avatars.dicebear.com/api/jdenticon/ead26688-5148-4f3c-a35d-1b0117b4f2a9.svg?w=48) | ![image](https://avatars.dicebear.com/api/gridy/ead26688-5148-4f3c-a35d-1b0117b4f2a9.svg?w=48) | ![image](https://avatars.dicebear.com/api/code/ead26688-5148-4f3c-a35d-1b0117b4f2a9.svg?w=48) |
 | `gravatar` | mp | identicon | monsterid | wavatar | retro | robohash | | | |

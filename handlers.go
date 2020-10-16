@@ -1,16 +1,23 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"html/template"
+	"image"
+	"image/png"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	"github.com/anthonynsimon/bild/transform"
 	"github.com/gorilla/mux"
+	"github.com/ipsn/go-adorable"
 	"github.com/markbates/pkger"
+	"github.com/o1egl/govatar"
 	"github.com/spf13/viper"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -686,5 +693,51 @@ func (s *server) handleWarriorCreate() http.HandlerFunc {
 		s.email.SendWelcome(WarriorName, WarriorEmail, VerifyID)
 
 		RespondWithJSON(w, http.StatusOK, newWarrior)
+	}
+}
+
+// handleWarriorAvatar creates an avatar for the given warrior by ID
+func (s *server) handleWarriorAvatar() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		Width, _ := strconv.Atoi(vars["width"])
+		WarriorID := vars["id"]
+		AvatarGender := govatar.MALE
+		warriorGender, ok := vars["avatar"]
+		if ok {
+			if warriorGender == "female" {
+				AvatarGender = govatar.FEMALE
+			}
+		}
+
+		var avatar image.Image
+		if s.config.AvatarService == "govatar" {
+			avatar, _ = govatar.GenerateForUsername(AvatarGender, WarriorID)
+		} else { // must be goadorable
+			var err error
+			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(WarriorID))))
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+
+		img := transform.Resize(avatar, Width, Width, transform.Linear)
+		buffer := new(bytes.Buffer)
+
+		if err := png.Encode(buffer, img); err != nil {
+			log.Println("unable to encode image.")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
+
+		if _, err := w.Write(buffer.Bytes()); err != nil {
+			log.Println("unable to write image.")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 }

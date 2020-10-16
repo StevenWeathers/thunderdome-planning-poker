@@ -47,6 +47,8 @@
         ]
     } else if (avatarService == 'robohash') {
         avatars = ['set1', 'set2', 'set3', 'set4']
+    } else if (avatarService == 'govatar') {
+        avatars = ['male', 'female']
     }
 
     function toggleUpdatePassword() {
@@ -232,7 +234,7 @@
                         </label>
                     </div>
 
-                    {#if avatarService == 'dicebear' || avatarService == 'gravatar' || avatarService == 'robohash'}
+                    {#if avatarService == 'dicebear' || avatarService == 'gravatar' || avatarService == 'robohash' || avatarService == 'govatar'}
                         <div class="mb-4">
                             <label
                                 class="block text-gray-700 text-sm font-bold

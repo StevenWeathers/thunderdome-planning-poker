@@ -14,6 +14,11 @@ func (s *server) routes() {
 	s.router.PathPrefix("/js/").Handler(staticHandler)
 	s.router.PathPrefix("/img/").Handler(staticHandler)
 	s.router.PathPrefix("/lang/").Handler(staticHandler)
+	// warrior avatar generation
+	if s.config.AvatarService == "goadorable" || s.config.AvatarService == "govatar" {
+		s.router.PathPrefix("/avatar/{width}/{id}/{avatar}").Handler(s.handleWarriorAvatar()).Methods("GET")
+		s.router.PathPrefix("/avatar/{width}/{id}").Handler(s.handleWarriorAvatar()).Methods("GET")
+	}
 	// api (currently internal to UI application)
 	// warrior authentication, profile
 	if viper.GetString("auth.method") == "ldap" {
