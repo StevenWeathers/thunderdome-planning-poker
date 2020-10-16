@@ -8,21 +8,19 @@ const fallbackLocale = appConfig.DefaultLocale
 
 const defaultAppRoutes = {
     landing: '/',
-    register: '/enlist',
-    battles: '/battles',
-    battle: '/battle',
+    register: '/register',
     login: '/login',
     resetPwd: '/reset-password',
     verifyAct: '/verify-account',
-    profile: '/warrior-profile',
+    profile: '/profile',
     admin: '/admin',
+    battles: '/battles',
+    battle: '/battle',
 }
 const friendlyAppRoutes = {
     ...defaultAppRoutes,
-    register: '/register',
-    battles: '/sessions',
-    battle: '/session',
-    profile: '/user-profile',
+    battles: '/games',
+    battle: '/game',
 }
 const appRoutes = appConfig.FriendlyUIVerbs
     ? friendlyAppRoutes

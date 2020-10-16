@@ -5,19 +5,19 @@
     "actions": {
         "logout": {
             "button": "Logout",
-            "failure": "Error encountered attempting to logout user"
+            "failure": "Error encountered attempting to logout player"
         },
         "battle": {
-            "delete": "Delete Session",
-            "abandon": "Abandon Session",
-            "create": "Create Session",
-            "join": "Join Session",
+            "delete": "Delete Game",
+            "abandon": "Abandon Game",
+            "create": "Create Game",
+            "join": "Join Game",
             "save": "Save",
-            "edit": "Edit Session",
+            "edit": "Edit Game",
             "editPointsDisabled": "Voting is active, cannot modify allowed points."
         },
         "warrior": {
-            "create": "Create User",
+            "create": "Create Player",
             "nudge": "Nudge",
             "promote": "Promote"
         },
@@ -78,32 +78,32 @@
         "landing": {
             "title": "Thunderdome is an Open Source Agile Planning Poker app",
             "bullet1": "Built on cool tech like Svelte, Go, and WebSockets",
-            "bullet2": "Simple User Experience",
+            "bullet2": "Simple Player Experience",
             "bullet3": "Works on all {mbOpen}modern browsers*{mbClose}, including mobile",
             "bullet3NotSorry": "*sorry, not sorry IE",
             "features": {
                 "title": "Features",
-                "bullet1": "No limit on number of Users in a Session",
-                "bullet2": "Secure voting, keeps your Users from cheating",
+                "bullet1": "No limit on number of Players in a Game",
+                "bullet2": "Secure voting, keeps your Players from cheating",
                 "bullet3": "Voting Results that are clear and helpful",
-                "bullet4": "Ability to promote any User to Session Leader",
+                "bullet4": "Ability to promote any Player to Game Leader",
                 "bullet5": "Customizable pointing scales",
                 "bullet6": "Open Source, feel free to {contribOpen}contribute and suggest features{contribClose}",
                 "bullet7": "No fees and Ad free"
             }
         },
         "myBattles": {
-            "nav": "My Sessions",
-            "title": "My Sessions",
-            "battlesError": "Error finding your sessions",
+            "nav": "My Games",
+            "title": "My Games",
+            "battlesError": "Error finding your games",
             "countPlansPointed": "{totalPointed} of {totalPlans} stories pointed",
             "createBattle": {
-                "title": "Create a Session",
-                "createError": "Error encountered creating session",
+                "title": "Create a Game",
+                "createError": "Error encountered creating game",
                 "fields": {
                     "name": {
-                        "label": "Session Name",
-                        "placeholder": "Enter a session name"
+                        "label": "Game Name",
+                        "placeholder": "Enter a game name"
                     },
                     "allowedPointValues": {
                         "label": "Allowed Point Values"
@@ -119,19 +119,19 @@
                         }
                     },
                     "autoFinishVoting": {
-                        "label": "Auto Finish Voting when all Users have voted"
+                        "label": "Auto Finish Voting when all Players have voted"
                     }
                 }
             }
         },
         "createAccount": {
             "nav": "Create Account",
-            "title": "Register to join pointing sessions",
+            "title": "Register to join pointing games",
             "registrationDisabled": "Registration is disabled.",
             "guestForm": {
                 "title": "Register as Guest",
                 "saveButton": "Register",
-                "createError": "Error encountered registering user as guest",
+                "createError": "Error encountered registering player as guest",
                 "fields": {
                     "name": {
                         "label": "Name",
@@ -142,7 +142,7 @@
             "createAccountForm": {
                 "saveButton": "Create",
                 "title": "Create an Account {optionalOpen}(optional){optionalClose}",
-                "createError": "Error encountered creating user",
+                "createError": "Error encountered creating player",
                 "fields": {
                     "name": {
                         "label": "Name",
@@ -195,7 +195,7 @@
                     "label": "Avatar"
                 },
                 "enable_notifications": {
-                    "label": "Enable session notifications"
+                    "label": "Enable game notifications"
                 }
             },
             "updatePasswordForm": {
@@ -218,13 +218,13 @@
             "nav": "Admin",
             "title": "Admin",
             "counts": {
-                "registered": "Registered Users",
-                "unregistered": "Unregistered Users",
-                "battles": "Sessions",
+                "registered": "Registered Players",
+                "unregistered": "Unregistered Players",
+                "battles": "Games",
                 "plans": "Stories"
             },
             "registeredWarriors": {
-                "title": "Registered Users",
+                "title": "Registered Players",
                 "name": "Name",
                 "email": "Email",
                 "verified": "Verified"
@@ -234,7 +234,7 @@
             "nav": "Login",
             "title": "Login",
             "button": "Login",
-            "authError": "Error encountered attempting to authenticate user",
+            "authError": "Error encountered attempting to authenticate player",
             "sendResetSuccess": "Password reset instructions sent to {email}",
             "sendResetError": "Error encountered attempting to send password reset",
             "fields": {
@@ -265,18 +265,18 @@
             }
         },
         "battle": {
-            "title": "Session",
-            "warriors": "Users",
-            "socketReconnecting": "Ooops, reloading Session...",
-            "socketError": "Error joining session, refresh and try again.",
-            "loading": "Loading Session...",
+            "title": "Game",
+            "warriors": "Players",
+            "socketReconnecting": "Ooops, reloading Game...",
+            "socketError": "Error joining game, refresh and try again.",
+            "loading": "Loading Game...",
             "votingNotStarted": "Voting not started",
-            "warriorJoined": "{name} has joined the session",
-            "warriorRetreated": "{name} has left the session",
+            "warriorJoined": "{name} has joined the game",
+            "warriorRetreated": "{name} has left the game",
             "warriorVoted": "{name} has voted",
             "warriorRetractedVote": "{name} has retracted vote",
             "warriorNudge": "pst... {name}, waiting on you to vote.",
-            "warriorInvite": "Invite a User",
+            "warriorInvite": "Invite a Player",
             "warriorLeader": "Leader",
             "finalPoints": "Final Points",
             "points": "Points",
@@ -286,7 +286,7 @@
                 "average": "Average",
                 "highest": "Highest",
                 "showVoters": "Show Voters",
-                "unknownWarrior": "Unknown User"
+                "unknownWarrior": "Unknown Player"
             }
         }
     },
