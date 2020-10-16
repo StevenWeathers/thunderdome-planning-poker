@@ -1,3 +1,4 @@
+import { PathPrefix } from './config'
 /**
  * Extends fetch with common inputs e.g. credentials, content-type
  * and checks response status/ok for common errors
@@ -27,7 +28,7 @@ export default function(handle401) {
             config.body = JSON.stringify(config.body)
         }
 
-        return fetch(endpoint, config).then(response => {
+        return fetch(`${PathPrefix}${endpoint}`, config).then(response => {
             if (response.status === 401) {
                 handle401()
             }

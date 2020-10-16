@@ -86,7 +86,7 @@ func (s *server) createWarriorCookie(w http.ResponseWriter, isRegistered bool, W
 	cookie := &http.Cookie{
 		Name:     s.config.SecureCookieName,
 		Value:    encoded,
-		Path:     "/",
+		Path:     s.config.PathPrefix + "/",
 		HttpOnly: true,
 		Domain:   s.config.AppDomain,
 		MaxAge:   86400 * cookiedays,
@@ -102,13 +102,13 @@ func (s *server) clearWarriorCookies(w http.ResponseWriter) {
 	feCookie := &http.Cookie{
 		Name:   s.config.FrontendCookieName,
 		Value:  "",
-		Path:   "/",
+		Path:   s.config.PathPrefix + "/",
 		MaxAge: -1,
 	}
 	beCookie := &http.Cookie{
 		Name:     s.config.SecureCookieName,
 		Value:    "",
-		Path:     "/",
+		Path:     s.config.PathPrefix + "/",
 		MaxAge:   -1,
 		HttpOnly: true,
 	}
@@ -181,6 +181,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		AuthMethod         string
 		AppVersion         string
 		CookieName         string
+		PathPrefix         string
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -222,6 +223,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		AuthMethod:         viper.GetString("auth.method"),
 		AppVersion:         s.config.Version,
 		CookieName:         s.config.FrontendCookieName,
+		PathPrefix:         s.config.PathPrefix,
 	}
 
 	data := UIConfig{

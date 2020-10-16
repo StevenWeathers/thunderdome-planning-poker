@@ -17,7 +17,7 @@ export default {
         sourcemap: false,
         format: 'iife',
         name: 'app',
-        file: `dist/js/bundle.[hash].js`,
+        file: `dist/static/bundle.[hash].js`,
     },
     plugins: [
         del({ targets: 'dist/*' }),
@@ -32,11 +32,11 @@ export default {
             // we'll extract any component CSS out into
             // a separate file — better for performance
             css: css => {
-                css.write(`dist/css/bundle.[hash].css`, false)
+                css.write(`dist/static/bundle.[hash].css`, false)
             },
         }),
         postcss({
-            extract: `dist/css/tailwind.[hash].css`,
+            extract: `dist/static/tailwind.[hash].css`,
             config: {
                 path: 'build/postcss.config.js'
             }
@@ -54,6 +54,7 @@ export default {
             dest: 'dist',
             filename: 'index.html',
             absolute: true,
+            onlinePath: "{{.AppConfig.PathPrefix}}/static"
         }),
 
         copy({

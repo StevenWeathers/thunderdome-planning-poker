@@ -10,10 +10,9 @@ import (
 func (s *server) routes() {
 	staticHandler := http.FileServer(pkger.Dir("/dist"))
 	// static assets
-	s.router.PathPrefix("/css/").Handler(staticHandler)
-	s.router.PathPrefix("/js/").Handler(staticHandler)
-	s.router.PathPrefix("/img/").Handler(staticHandler)
-	s.router.PathPrefix("/lang/").Handler(staticHandler)
+	s.router.PathPrefix("/static/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
+	s.router.PathPrefix("/img/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
+	s.router.PathPrefix("/lang/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
 	// warrior avatar generation
 	if s.config.AvatarService == "goadorable" || s.config.AvatarService == "govatar" {
 		s.router.PathPrefix("/avatar/{width}/{id}/{avatar}").Handler(s.handleWarriorAvatar()).Methods("GET")

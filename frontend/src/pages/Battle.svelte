@@ -14,7 +14,7 @@
     import EditBattle from '../components/EditBattle.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
-    import { appRoutes } from '../config'
+    import { appRoutes, PathPrefix } from '../config'
 
     export let battleId
     export let notifications
@@ -209,7 +209,7 @@
     }
 
     const ws = new Sockette(
-        `${socketExtension}://${window.location.host}/api/arena/${battleId}`,
+        `${socketExtension}://${window.location.host}${PathPrefix}/api/arena/${battleId}`,
         {
             timeout: 2e3,
             maxAttempts: 15,

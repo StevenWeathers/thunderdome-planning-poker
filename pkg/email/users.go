@@ -20,7 +20,7 @@ func (m *Email) SendWelcome(WarriorName string, WarriorEmail string, VerifyID st
 					Button: hermes.Button{
 						Color: "#22BC66",
 						Text:  "Verify Account",
-						Link:  "https://" + m.config.AppDomain + "/verify-account/" + VerifyID,
+						Link:  m.config.AppURL + "verify-account/" + VerifyID,
 					},
 				},
 				{
@@ -65,7 +65,7 @@ func (m *Email) SendForgotPassword(WarriorName string, WarriorEmail string, Rese
 					Instructions: "Reset your password now, the following link will expire within an hour of the original request.",
 					Button: hermes.Button{
 						Text: "Reset Password",
-						Link: "https://" + m.config.AppDomain + "/reset-password/" + ResetID,
+						Link: m.config.AppURL + "reset-password/" + ResetID,
 					},
 				},
 				{
