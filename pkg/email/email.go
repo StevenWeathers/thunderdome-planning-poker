@@ -32,7 +32,7 @@ var smtpAuth smtp.Auth
 
 // Config contains all the mailserver values
 type Config struct {
-	AppDomain    string
+	AppURL       string
 	SenderName   string
 	smtpHost     string
 	smtpPort     string
@@ -90,11 +90,12 @@ func GetBoolEnv(key string, fallback bool) bool {
 }
 
 // New creates a new instance of Email
-func New(AppDomain string) *Email {
+func New(AppDomain string, PathPrefix string) *Email {
+	var AppURL string = "https://" + AppDomain + PathPrefix + "/"
 	var m = &Email{
 		// read environment variables and sets up mailserver configuration values
 		config: &Config{
-			AppDomain:    AppDomain,
+			AppURL:       AppURL,
 			SenderName:   "Thunderdome",
 			smtpHost:     viper.GetString("smtp.host"),
 			smtpPort:     viper.GetString("smtp.port"),
@@ -133,8 +134,8 @@ func (m *Email) generateBody(Body hermes.Body) (emailBody string, generateErr er
 	hms := hermes.Hermes{
 		Product: hermes.Product{
 			Name:      "Thunderdome",
-			Link:      "https://" + m.config.AppDomain + "/",
-			Logo:      "https://" + m.config.AppDomain + "/img/thunderdome-email-logo.png",
+			Link:      m.config.AppURL,
+			Logo:      m.config.AppURL + "img/thunderdome-email-logo.png",
 			Copyright: "Copyright © " + year + " Thunderdome. All rights reserved.",
 		},
 	}

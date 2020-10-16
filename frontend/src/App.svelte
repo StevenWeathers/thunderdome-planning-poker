@@ -23,7 +23,7 @@
 
     setupI18n()
 
-    const { AllowRegistration, AppVersion } = appConfig
+    const { AllowRegistration, AppVersion, PathPrefix } = appConfig
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
 
     let notifications
@@ -39,7 +39,7 @@
         params: {},
     }
 
-    const router = Navaid(appRoutes.landing)
+    const router = Navaid('/')
         .on(appRoutes.landing, () => {
             currentPage = {
                 route: Landing,
@@ -143,7 +143,7 @@
         aria-label="main navigation">
         <div class="flex items-center flex-shrink-0 mr-6">
             <a href="{appRoutes.landing}">
-                <img src="/img/logo.svg" alt="Thunderdome" class="nav-logo" />
+                <img src="{PathPrefix}/img/logo.svg" alt="Thunderdome" class="nav-logo" />
             </a>
         </div>
         <div class="text-right mt-4 md:mt-0">

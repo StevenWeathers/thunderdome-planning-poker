@@ -21,6 +21,7 @@ func InitConfig() {
 	viper.SetDefault("http.backend_cookie_name", "warriorId")
 	viper.SetDefault("http.frontend_cookie_name", "warrior")
 	viper.SetDefault("http.domain", "thunderdome.dev")
+	viper.SetDefault("http.path_prefix", "")
 
 	viper.SetDefault("analytics.enabled", true)
 	viper.SetDefault("analytics.id", "UA-140245309-1")
@@ -61,6 +62,7 @@ func InitConfig() {
 	viper.BindEnv("http.backend_cookie_name", "SECURE_COOKIE_NAME")
 	viper.BindEnv("http.frontend_cookie_name", "FRONTEND_COOKIE_NAME")
 	viper.BindEnv("http.domain", "APP_DOMAIN")
+	viper.BindEnv("http.path_prefix", "PATH_PREFIX")
 
 	viper.BindEnv("analytics.enabled", "ANALYTICS_ENABLED")
 	viper.BindEnv("analytics.id", "ANALYTICS_ID")

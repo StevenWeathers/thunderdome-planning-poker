@@ -40,6 +40,8 @@ type ServerConfig struct {
 	Version string
 	// Which avatar service is utilized
 	AvatarService string
+	// PathPrefix allows the application to be run on a shared domain
+	PathPrefix string
 }
 
 type server struct {
@@ -55,7 +57,13 @@ func main() {
 
 	InitConfig()
 
-	var cookieHashkey = viper.GetString("http.cookie_hashkey")
+	cookieHashkey := viper.GetString("http.cookie_hashkey")
+	pathPrefix := viper.GetString("http.path_prefix")
+	router := mux.NewRouter()
+
+	if pathPrefix != "" {
+		router = router.PathPrefix(pathPrefix).Subrouter()
+	}
 
 	s := &server{
 		config: &ServerConfig{
@@ -69,11 +77,12 @@ func main() {
 			AnalyticsID:        viper.GetString("analytics.id"),
 			Version:            version,
 			AvatarService:      viper.GetString(("config.avatar_service")),
+			PathPrefix:         pathPrefix,
 		},
-		router: mux.NewRouter(),
+		router: router,
 		cookie: securecookie.New([]byte(cookieHashkey), nil),
 	}
-	s.email = email.New(s.config.AppDomain)
+	s.email = email.New(s.config.AppDomain, s.config.PathPrefix)
 	s.database = database.New(s.config.AdminEmail)
 
 	go h.run()

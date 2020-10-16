@@ -20,7 +20,7 @@ func (s *server) createCookie(warriorID string) *http.Cookie {
 		NewCookie = &http.Cookie{
 			Name:     s.config.SecureCookieName,
 			Value:    encoded,
-			Path:     "/",
+			Path:     s.config.PathPrefix + "/",
 			HttpOnly: true,
 			Domain:   s.config.AppDomain,
 			MaxAge:   86400 * 30, // 30 days
