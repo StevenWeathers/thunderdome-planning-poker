@@ -14,7 +14,7 @@
             "join": "Sitzung beitreten",
             "save": "Speichern",
             "edit": "Sitzung bearbeiten",
-            "editPointsDisabled": "Abstimmung ist aktiv, zul\u00E4ssige Punkte k\u00F6nnen nicht ge\u00E4ndert werden."
+            "editPointsDisabled": "Sch\u00E4tzung ist aktiv, zul\u00E4ssige Punkte k\u00F6nnen nicht ge\u00E4ndert werden."
         },
         "warrior": {
             "create": "Benutzer erstellen",
@@ -30,8 +30,8 @@
             "skip": "Plan \u00FCberspringen",
             "pointed": "Gesch\u00E4tzt ({count})",
             "unpointed": "Ungesch\u00E4tzt ({count})",
-            "finishVoting": "Abstimmung beenden",
-            "restartVoting": "Abstimmung neu starten",
+            "finishVoting": "Sch\u00E4tzung beenden",
+            "restartVoting": "Sch\u00E4tzung neu starten",
             "save": "Speichern",
             "importJiraXML": {
                 "button": "Jira XML Import",
@@ -84,8 +84,8 @@
             "features": {
                 "title": "Eigenschaften",
                 "bullet1": "Keine Beschr\u00E4nkung der Benutzeranzahl einer Sitzung",
-                "bullet2": "Sichere Abstimmung verhindert, dass ein Benutzer schummelt",
-                "bullet3": "Abstimmungsergebnisse, die klar und hilfreich sind",
+                "bullet2": "Sichere Sch\u00E4tzung verhindert, dass ein Benutzer schummelt",
+                "bullet3": "Sch\u00E4tzungsergebnisse, die klar und hilfreich sind",
                 "bullet4": "M\u00F6glichkeit, jeden Benutzer zum Boss zu bef\u00F6rdern",
                 "bullet5": "Anpassbare Punkte-Skalierung",
                 "bullet6": "Open Source, gerne {contribOpen}teilnehmen und neue Funktionen vorschlagen{contribClose}",
@@ -119,7 +119,7 @@
                         }
                     },
                     "autoFinishVoting": {
-                        "label": "Abstimmung automatisch beenden, wenn alle Benutzer gesch\u00E4tzt haben"
+                        "label": "Sch\u00E4tzung automatisch beenden, wenn alle Benutzer gesch\u00E4tzt haben"
                     }
                 }
             }
@@ -282,10 +282,10 @@
             "points": "Punkte",
             "planSkipped": "Plan \u00FCbersprungen",
             "voteResults": {
-                "totalVotes": "Abstimmer",
+                "totalVotes": "Sch\u00E4tzungen",
                 "average": "Durchschnitt",
                 "highest": "H\u00F6chster",
-                "showVoters": "Zeige Abstimmer",
+                "showVoters": "Zeige Sch\u00E4tzer",
                 "unknownWarrior": "Unbekannter Benutzer"
             }
         }
