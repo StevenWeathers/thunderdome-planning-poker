@@ -53,7 +53,7 @@ type server struct {
 }
 
 func main() {
-	fmt.Printf("Thunderdome version %s", version)
+	log.Println("Thunderdome version " + version)
 
 	InitConfig()
 
