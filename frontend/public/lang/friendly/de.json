@@ -1,6 +1,6 @@
 {
     "appName": "Thunderdome",
-    "appVersion": "Ausführung {version}",
+    "appVersion": "Version {version}",
     "avatarAltText": "Avatar Platzhalter",
     "actions": {
         "logout": {
@@ -25,11 +25,11 @@
             "add": "Plan hinzuf\u00FCgen",
             "view": "Anzeigen",
             "edit": "Bearbeiten",
-            "delete": "l\u00F6schen",
+            "delete": "L\u00F6schen",
             "activate": "Aktivieren",
             "skip": "Plan \u00FCberspringen",
-            "pointed": "Abgestimmt ({count})",
-            "unpointed": "Offen ({count})",
+            "pointed": "Gesch\u00E4tzt ({count})",
+            "unpointed": "Ungesch\u00E4tzt ({count})",
             "finishVoting": "Abstimmung beenden",
             "restartVoting": "Abstimmung neu starten",
             "save": "Speichern",
@@ -52,8 +52,8 @@
                     "placeholder": "Link zum Plan eingeben"
                 },
                 "referenceId": {
-                    "label": "Referenz-ID",
-                    "placeholder": "Referenz-ID eingeben"
+                    "label": "Referenz ID",
+                    "placeholder": "Referenz ID eingeben"
                 },
                 "description": {
                     "label": "Beschreibung",
@@ -76,19 +76,19 @@
     },
     "pages": {
         "landing": {
-            "title": "Thunderdome ist eine Open Source Agile Planning Poker App mit einer lustigen Thematik",
+            "title": "Thunderdome ist eine Open Source Agile Planning Poker App mit einem lustigen Thema",
             "bullet1": "Gebaut mit coolen Technologien wie Svelte, Go und WebSockets",
-            "bullet2": "Einfache {crossoutOpen}Benutzer{crossoutClose}Benutzer Erfahrung",
+            "bullet2": "Einfache Benutzer-Erfahrung",
             "bullet3": "Funktioniert mit allen {mbOpen}modernen Browsers*{mbClose}, inklusive Mobile",
-            "bullet3NotSorry": "*sorry, nicht sorry IE",
+            "bullet3NotSorry": "*Entschuldigung, keine Entschuldigung bei IE",
             "features": {
-                "title": "Features",
+                "title": "Eigenschaften",
                 "bullet1": "Keine Beschr\u00E4nkung der Benutzeranzahl einer Sitzung",
                 "bullet2": "Sichere Abstimmung verhindert, dass ein Benutzer schummelt",
                 "bullet3": "Abstimmungsergebnisse, die klar und hilfreich sind",
                 "bullet4": "M\u00F6glichkeit, jeden Benutzer zum Boss zu bef\u00F6rdern",
                 "bullet5": "Anpassbare Punkte-Skalierung",
-                "bullet6": "Open Source, gerne {contribOpen}teilnehmen und neue Features vorschlagen{contribClose}",
+                "bullet6": "Open Source, gerne {contribOpen}teilnehmen und neue Funktionen vorschlagen{contribClose}",
                 "bullet7": "Keine Geb\u00FChren und ohne Werbung"
             }
         },
@@ -110,16 +110,16 @@
                     },
                     "plans": {
                         "label": "Pl\u00E4ne",
-                        "addButton": "Plan hinzuf\u00FCgen",
+                        "addButton": "Hinzuf\u00FCgen",
                         "removeButton": "Entfernen",
                         "fields": {
                             "name": {
-                                "placeholder": "Plan Namen eingeben"
+                                "placeholder": "Name f\u00FCr den Plan eingeben"
                             }
                         }
                     },
                     "autoFinishVoting": {
-                        "label": "Abstimmung automatisch beenden, wenn alle Benutzer abgegeben haben"
+                        "label": "Abstimmung automatisch beenden, wenn alle Benutzer gesch\u00E4tzt haben"
                     }
                 }
             }
@@ -167,7 +167,7 @@
             "loading": "Konto\u00FCberpr\u00FCfung...",
             "verified": {
                 "title": "Konto \u00FCberpr\u00FCft",
-                "thanks": "Vielen Dank f\u00FCr die Best\u00E4tigung der E-Mail."
+                "thanks": "Vielen Dank f\u00FCr die Best\u00E4tigung der E-Mail-Adresse."
             },
             "failed": {
                 "title": "\u00DCberpr\u00FCfung fehlgeschlagen",
@@ -195,7 +195,7 @@
                     "label": "Avatar"
                 },
                 "enable_notifications": {
-                    "label": "Enable session notifications"
+                    "label": "Benachrichtigungen aktivieren"
                 }
             },
             "updatePasswordForm": {
@@ -270,17 +270,17 @@
             "socketReconnecting": "Ooops, Sitzungen werden neu geladen...",
             "socketError": "Fehler beim Eintritt in die Sitzung, bitte aktualisieren und nochmals versuchen.",
             "loading": "Lade Sitzungen...",
-            "votingNotStarted": "Votum noch nicht gestartet",
+            "votingNotStarted": "Sch\u00E4tzung noch nicht gestartet",
             "warriorJoined": "{name} hat die Sitzung betreten",
             "warriorRetreated": "{name} hat die Sitzung verlassen",
-            "warriorVoted": "{name} hat ein Votum abegeben",
-            "warriorRetractedVote": "{name} hat das Votum zur\u00FCckgezogen",
-            "warriorNudge": "pst... {name}, wir warten auf ein Votum.",
+            "warriorVoted": "{name} hat eine Sch\u00E4tzung abegeben",
+            "warriorRetractedVote": "{name} hat die Sch\u00E4tzung zur\u00FCckgezogen",
+            "warriorNudge": "pst... {name}, wir warten auf eine Sch\u00E4tzung",
             "warriorInvite": "Benutzer einladen",
             "warriorLeader": "Chef",
             "finalPoints": "Finale Punkte",
             "points": "Punkte",
-            "planSkipped": "Plan übersprungen",
+            "planSkipped": "Plan \u00FCbersprungen",
             "voteResults": {
                 "totalVotes": "Abstimmer",
                 "average": "Durchschnitt",
