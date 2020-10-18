@@ -11,7 +11,7 @@ import (
 )
 
 // GetPlans retrieves plans for given battle from db
-func (d *Database) GetPlans(BattleID string) []*Plan {
+func (d *Database) GetPlans(BattleID string, WarriorID string) []*Plan {
 	var plans = make([]*Plan, 0)
 	planRows, plansErr := d.db.Query(
 		`SELECT
@@ -56,10 +56,10 @@ func (d *Database) GetPlans(BattleID string) []*Plan {
 					log.Println(err)
 				}
 
-				// don't send vote values to client, prevent sneaky devs from peaking at votes
+				// don't send others vote values to client, prevent sneaky devs from peaking at votes
 				for i := range p.Votes {
 					vote := p.Votes[i]
-					if p.PlanActive {
+					if p.PlanActive && p.Votes[i].WarriorID != WarriorID {
 						vote.VoteValue = ""
 					}
 				}
@@ -89,7 +89,7 @@ func (d *Database) CreatePlan(BattleID string, warriorID string, PlanName string
 		log.Println(err)
 	}
 
-	plans := d.GetPlans(BattleID)
+	plans := d.GetPlans(BattleID, "")
 
 	return plans, nil
 }
@@ -107,7 +107,7 @@ func (d *Database) ActivatePlanVoting(BattleID string, warriorID string, PlanID 
 		log.Println(err)
 	}
 
-	plans := d.GetPlans(BattleID)
+	plans := d.GetPlans(BattleID, "")
 
 	return plans, nil
 }
@@ -119,7 +119,7 @@ func (d *Database) SetVote(BattleID string, WarriorID string, PlanID string, Vot
 		log.Println(err)
 	}
 
-	Plans := d.GetPlans(BattleID)
+	Plans := d.GetPlans(BattleID, "")
 	ActiveWarriors := d.GetBattleActiveWarriors(BattleID)
 
 	// determine if all active warriors have voted
@@ -152,7 +152,7 @@ func (d *Database) RetractVote(BattleID string, WarriorID string, PlanID string)
 		log.Println(err)
 	}
 
-	plans := d.GetPlans(BattleID)
+	plans := d.GetPlans(BattleID, "")
 
 	return plans
 }
@@ -171,7 +171,7 @@ func (d *Database) EndPlanVoting(BattleID string, warriorID string, PlanID strin
 		log.Println(err)
 	}
 
-	plans := d.GetPlans(BattleID)
+	plans := d.GetPlans(BattleID, "")
 
 	return plans, nil
 }
@@ -188,7 +188,7 @@ func (d *Database) SkipPlan(BattleID string, warriorID string, PlanID string) ([
 		log.Println(err)
 	}
 
-	plans := d.GetPlans(BattleID)
+	plans := d.GetPlans(BattleID, "")
 
 	return plans, nil
 }
@@ -206,7 +206,7 @@ func (d *Database) RevisePlan(BattleID string, warriorID string, PlanID string, 
 		log.Println(err)
 	}
 
-	plans := d.GetPlans(BattleID)
+	plans := d.GetPlans(BattleID, "")
 
 	return plans, nil
 }
@@ -223,7 +223,7 @@ func (d *Database) BurnPlan(BattleID string, warriorID string, PlanID string) ([
 		log.Println(err)
 	}
 
-	plans := d.GetPlans(BattleID)
+	plans := d.GetPlans(BattleID, "")
 
 	return plans, nil
 }
@@ -240,7 +240,7 @@ func (d *Database) FinalizePlan(BattleID string, warriorID string, PlanID string
 		log.Println(err)
 	}
 
-	plans := d.GetPlans(BattleID)
+	plans := d.GetPlans(BattleID, "")
 
 	return plans, nil
 }

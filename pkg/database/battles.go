@@ -76,7 +76,7 @@ func (d *Database) ReviseBattle(BattleID string, warriorID string, BattleName st
 }
 
 // GetBattle gets a battle by ID
-func (d *Database) GetBattle(BattleID string) (*Battle, error) {
+func (d *Database) GetBattle(BattleID string, WarriorID string) (*Battle, error) {
 	var b = &Battle{
 		BattleID:           BattleID,
 		LeaderID:           "",
@@ -112,7 +112,7 @@ func (d *Database) GetBattle(BattleID string) (*Battle, error) {
 	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 	b.ActivePlanID = ActivePlanID.String
 	b.Warriors = d.GetBattleWarriors(BattleID)
-	b.Plans = d.GetPlans(BattleID)
+	b.Plans = d.GetPlans(BattleID, WarriorID)
 
 	return b, nil
 }

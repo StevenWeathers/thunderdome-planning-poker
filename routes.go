@@ -36,7 +36,6 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/warrior/{id}", s.handleWarriorProfileUpdate()).Methods("POST")
 	// battle(s)
 	s.router.HandleFunc("/api/battle", s.handleBattleCreate()).Methods("POST")
-	s.router.HandleFunc("/api/battle/{id}", s.handleBattleGet())
 	s.router.HandleFunc("/api/battles", s.handleBattlesGet())
 	// admin routes
 	s.router.HandleFunc("/api/admin/stats", s.adminOnly(s.handleAppStats()))

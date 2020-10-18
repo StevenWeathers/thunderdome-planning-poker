@@ -422,23 +422,6 @@ func (s *server) handleWarriorEnlist() http.HandlerFunc {
 	}
 }
 
-// handleBattleGet looks up battle or returns notfound status
-func (s *server) handleBattleGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		BattleID := vars["id"]
-
-		battle, err := s.database.GetBattle(BattleID)
-
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-
-		RespondWithJSON(w, http.StatusOK, battle)
-	}
-}
-
 // handleBattlesGet looks up battles associated with warriorID
 func (s *server) handleBattlesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

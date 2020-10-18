@@ -295,7 +295,6 @@ func (s *subscription) writePump() {
 // serveWs handles websocket requests from the peer.
 func (s *server) serveWs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var unauthorized = false
 		vars := mux.Vars(r)
 		battleID := vars["id"]
 
@@ -306,8 +305,16 @@ func (s *server) serveWs() http.HandlerFunc {
 			return
 		}
 
+		// make sure warrior cookies are valid
+		warriorID, cookieErr := s.validateWarriorCookie(w, r)
+		if cookieErr != nil {
+			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4001, "unauthorized"))
+			ws.Close()
+			return
+		}
+
 		// make sure battle is legit
-		b, battleErr := s.database.GetBattle(battleID)
+		b, battleErr := s.database.GetBattle(battleID, warriorID)
 		if battleErr != nil {
 			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4004, "battle not found"))
 			ws.Close()
@@ -315,22 +322,12 @@ func (s *server) serveWs() http.HandlerFunc {
 		}
 		battle, _ := json.Marshal(b)
 
-		// make sure warrior cookies are valid
-		warriorID, cookieErr := s.validateWarriorCookie(w, r)
-		if cookieErr != nil {
-			unauthorized = true
-		} else {
-			// make sure warrior exists
-			_, warErr := s.database.GetBattleWarrior(battleID, warriorID)
+		// make sure warrior exists
+		_, warErr := s.database.GetBattleWarrior(battleID, warriorID)
 
-			if warErr != nil {
-				log.Println("error finding warrior : " + warErr.Error() + "\n")
-				s.clearWarriorCookies(w)
-				unauthorized = true
-			}
-		}
-
-		if unauthorized {
+		if warErr != nil {
+			log.Println("error finding warrior : " + warErr.Error() + "\n")
+			s.clearWarriorCookies(w)
 			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4001, "unauthorized"))
 			ws.Close()
 			return
