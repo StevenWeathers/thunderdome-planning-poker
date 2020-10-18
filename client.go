@@ -107,7 +107,7 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(Plans)
 			msg = CreateSocketEvent("vote_activity", string(updatedPlans), warriorID)
 
-			if AllVoted == true && wv.AutoFinishVoting == true {
+			if AllVoted && wv.AutoFinishVoting {
 				plans, err := srv.database.EndPlanVoting(battleID, warriorID, wv.PlanID, true)
 				if err != nil {
 					badEvent = true
@@ -253,7 +253,7 @@ func (s subscription) readPump(srv *server) {
 		default:
 		}
 
-		if badEvent != true {
+		if !badEvent {
 			m := message{msg, s.arena}
 			h.broadcast <- m
 		}

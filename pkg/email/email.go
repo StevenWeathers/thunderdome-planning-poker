@@ -184,7 +184,7 @@ func (m *Email) Send(WarriorName string, WarriorEmail string, Subject string, Bo
 	c.StartTLS(tlsConfig)
 
 	// Auth
-	if m.config.smtpSecure == true {
+	if m.config.smtpSecure {
 		if err = c.Auth(smtpAuth); err != nil {
 			log.Println("Error authenticating SMTP: ", err)
 			return err
