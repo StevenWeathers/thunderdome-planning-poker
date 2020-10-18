@@ -82,7 +82,6 @@ func (d *Database) GetWarriorByEmail(WarriorEmail string) (*Warrior, error) {
 	return &w, nil
 }
 
-
 // AuthWarrior attempts to authenticate the warrior
 func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) {
 	var w Warrior
@@ -105,7 +104,7 @@ func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Wa
 		return nil, errors.New("warrior not found")
 	}
 
-	if ComparePasswords(passHash, []byte(WarriorPassword)) == false {
+	if !ComparePasswords(passHash, []byte(WarriorPassword)) {
 		return nil, errors.New("password invalid")
 	}
 

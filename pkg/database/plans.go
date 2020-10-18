@@ -133,8 +133,7 @@ func (d *Database) SetVote(BattleID string, WarriorID string, PlanID string, Vot
 				activePlanVoters[WarriorID] = true
 			}
 			for _, war := range ActiveWarriors {
-				_, warriorVoted := activePlanVoters[war.WarriorID]
-				if warriorVoted == false {
+				if _, warriorVoted := activePlanVoters[war.WarriorID]; !warriorVoted {
 					AllVoted = false
 					break
 				}
@@ -160,7 +159,7 @@ func (d *Database) RetractVote(BattleID string, WarriorID string, PlanID string)
 
 // EndPlanVoting sets plan to active: false
 func (d *Database) EndPlanVoting(BattleID string, warriorID string, PlanID string, AutoFinishVoting bool) ([]*Plan, error) {
-	if AutoFinishVoting == false {
+	if !AutoFinishVoting {
 		err := d.ConfirmLeader(BattleID, warriorID)
 		if err != nil {
 			return nil, errors.New("incorrect permissions")

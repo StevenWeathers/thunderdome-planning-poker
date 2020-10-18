@@ -47,7 +47,7 @@ func TestGetBoolEnvDefault(t *testing.T) {
 	var TestEnv bool
 	TestEnv = GetBoolEnv("TESTING_BOOL_ENV", true)
 
-	if TestEnv != true {
+	if !TestEnv {
 		t.Error("Expected true, got ", TestEnv)
 	}
 }
@@ -57,7 +57,7 @@ func TestGetBoolEnvNonDefault(t *testing.T) {
 	var TestEnv bool
 	TestEnv = GetBoolEnv("TESTING_BOOL_ENV_NON_DEFAULT", false)
 
-	if TestEnv != true {
+	if !TestEnv {
 		t.Error("Expected true, got ", TestEnv)
 	}
 }

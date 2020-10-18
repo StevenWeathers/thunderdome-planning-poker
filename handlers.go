@@ -72,7 +72,7 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 // createWarriorCookie creates the warriors cookie
 func (s *server) createWarriorCookie(w http.ResponseWriter, isRegistered bool, WarriorID string) {
 	var cookiedays = 365 // 356 days
-	if isRegistered == true {
+	if isRegistered {
 		cookiedays = 30 // 30 days
 	}
 
@@ -349,7 +349,7 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 func (s *server) handleWarriorRecruit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
-		if AllowGuests != true {
+		if !AllowGuests {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -381,7 +381,7 @@ func (s *server) handleWarriorRecruit() http.HandlerFunc {
 func (s *server) handleWarriorEnlist() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
-		if AllowRegistration != true {
+		if !AllowRegistration {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
