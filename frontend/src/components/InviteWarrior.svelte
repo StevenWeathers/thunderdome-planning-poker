@@ -1,6 +1,7 @@
 <script>
     import SolidButton from './SolidButton.svelte'
     import { _ } from '../i18n'
+    import { appRoutes, PathPrefix } from '../config'
 
     export let hostname = ''
     export let battleId = ''
@@ -23,7 +24,7 @@
         appearance-none text-gray-700 focus:outline-none focus:bg-white
         focus:border-purple-500 "
         type="text"
-        value="{hostname}/battle/{battleId}"
+        value="{hostname}{PathPrefix}{appRoutes.battle}/{battleId}"
         id="BattleLink"
         readonly />
     <div class="flex -mr-px">

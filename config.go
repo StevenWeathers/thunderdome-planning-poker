@@ -52,6 +52,11 @@ func InitConfig() {
 	viper.SetDefault("config.friendly_ui_verbs", false)
 
 	viper.SetDefault("auth.method", "normal")
+	viper.SetDefault("auth.ldap.url", "")
+	viper.SetDefault("auth.ldap.use_tls", true)
+	viper.SetDefault("auth.ldap.bindname", "")
+	viper.SetDefault("auth.ldap.bindpass", "")
+	viper.SetDefault("auth.ldap.basedn", "")
 	viper.SetDefault("auth.ldap.filter", "(&(objectClass=posixAccount)(mail=%s))")
 	viper.SetDefault("auth.ldap.mail_attr", "mail")
 	viper.SetDefault("auth.ldap.cn_attr", "cn")
@@ -93,6 +98,16 @@ func InitConfig() {
 	viper.BindEnv("config.allow_jira_import", "CONFIG_ALLOW_JIRA_IMPORT")
 	viper.BindEnv("config.default_locale", "CONFIG_DEFAULT_LOCALE")
 	viper.BindEnv("config.friendly_ui_verbs", "CONFIG_FRIENDLY_UI_VERBS")
+
+	viper.BindEnv("auth.method", "AUTH_METHOD")
+	viper.BindEnv("auth.ldap.url", "AUTH_LDAP_URL")
+	viper.BindEnv("auth.ldap.use_tls", "AUTH_LDAP_USE_TLS")
+	viper.BindEnv("auth.ldap.bindname", "AUTH_LDAP_BINDNAME")
+	viper.BindEnv("auth.ldap.bindpass", "AUTH_LDAP_BINDPASS")
+	viper.BindEnv("auth.ldap.basedn", "AUTH_LDAP_BASEDN")
+	viper.BindEnv("auth.ldap.filter", "AUTH_LDAP_FILTER")
+	viper.BindEnv("auth.ldap.mail_attr", "AUTH_LDAP_MAIL_ATTR")
+	viper.BindEnv("auth.ldap.cn_attr", "AUTH_LDAP_CN_ATTR")
 
 	err := viper.ReadInConfig()
 	if err != nil {

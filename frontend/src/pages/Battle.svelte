@@ -60,7 +60,9 @@
                     const activePlan = battle.plans.find(
                         p => p.id === battle.activePlanId,
                     )
-                    const warriorVote = activePlan.votes.find(v => v.warriorId === $warrior.id) || { vote: '' }
+                    const warriorVote = activePlan.votes.find(
+                        v => v.warriorId === $warrior.id,
+                    ) || { vote: '' }
                     currentPlan = activePlan
                     voteStartTime = new Date(activePlan.voteStartTime)
                     vote = warriorVote.vote

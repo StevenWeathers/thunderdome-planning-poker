@@ -143,7 +143,10 @@
         aria-label="main navigation">
         <div class="flex items-center flex-shrink-0 mr-6">
             <a href="{appRoutes.landing}">
-                <img src="{PathPrefix}/img/logo.svg" alt="Thunderdome" class="nav-logo" />
+                <img
+                    src="{PathPrefix}/img/logo.svg"
+                    alt="Thunderdome"
+                    class="nav-logo" />
             </a>
         </div>
         <div class="text-right mt-4 md:mt-0">

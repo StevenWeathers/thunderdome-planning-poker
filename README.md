@@ -140,7 +140,7 @@ The following configuration options exists:
 | `config.allow_jira_import`     | CONFIG_ALLOW_JIRA_IMPORT | Whether or not to allow import plans from JIRA XML. | true |
 | `config.default_locale`   | CONFIG_DEFAULT_LOCALE | The default locale (language) for the UI | en |
 | `config.friendly_ui_verbs`    | CONFIG_FRIENDLY_UI_VERBS | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly | false |
-| `auth.method`              |                      | Choose `normal` or `ldap` as authentication method.  See separate section on LDAP configuration. | normal |
+| `auth.method`              |  AUTH_METHOD   | Choose `normal` or `ldap` as authentication method.  See separate section on LDAP configuration. | normal |
 
 ## Avatar Service configuration
 
@@ -169,15 +169,16 @@ profile is automatically generated.
 
 The following configuration options are specific to the LDAP authentication method:
 
-| Option                      | Description                                                        |
-| --------------------------- | ------------------------------------------------------------------ |
-| `auth.ldap.url`             | URL to LDAP server, typically `ldap://host:port`                   |
-| `auth.ldap.use_tls`         | Create a TLS connection after establishing the initial connection. |
-| `auth.ldap.bindname`        | Bind name / bind DN for connecting to LDAP.  Leave empty for no authentication. |
-| `auth.ldap.bindpass`        | Password for the bind.                                             |
-| `auth.ldap.basedn`          | Base DN for the search for the user.                               |
-| `auth.ldap.filter`          | Filter for searching for the user's login id.  See below.          |
-| `auth.ldap.mail_attr`       | The LDAP property containing the user's emil address.              |
+| Option                      | Environment Variable | Description                                                        |
+| --------------------------- | -------------------- | ------------------------------------------------------------------ |
+| `auth.ldap.url`             | AUTH_LDAP_URL        | URL to LDAP server, typically `ldap://host:port`                   |
+| `auth.ldap.use_tls`         | AUTH_LDAP_USE_TLS    | Create a TLS connection after establishing the initial connection. |
+| `auth.ldap.bindname`        | AUTH_LDAP_BINDNAME   | Bind name / bind DN for connecting to LDAP.  Leave empty for no authentication. |
+| `auth.ldap.bindpass`        | AUTH_LDAP_BINDPASS   | Password for the bind.                                             |
+| `auth.ldap.basedn`          | AUTH_LDAP_BASEDN     | Base DN for the search for the user.                               |
+| `auth.ldap.filter`          | AUTH_LDAP_FILTER     | Filter for searching for the user's login id.  See below.          |
+| `auth.ldap.mail_attr`       | AUTH_LDAP_MAIL_ATTR  | The LDAP property containing the user's emil address.              |
+| `auth.ldap.cn_attr`         | AUTH_LDAP_CN_ATTR    | The LDAP property containing the user's name.                      |
 
 The default `filter` is `(&(objectClass=posixAccount)(mail=%s))`.  The filter must include a `%s` that will be replaced by the user's login id.
 The `mail_attr` configuration option must point to the LDAP attribute containing the user's email address.  The default is `mail`. 
