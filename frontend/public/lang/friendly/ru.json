@@ -38,6 +38,10 @@
                 "badFileType": "Ошибка: плохой тип файла",
                 "errorReadingFile": "Ошибка чтения файла"
             },
+            "importJiraRest": {
+                "button": "Import Jira REST",
+                "process": "Import"
+            },
             "fields": {
                 "name": {
                     "label": "Заголовок задачи",
@@ -287,6 +291,29 @@
                 "highest": "Лучшее",
                 "showVoters": "Показать проголосовавших",
                 "unknownWarrior": "Неизвестный участник"
+            }
+        },
+        "jiraRestCfg": {
+            "fields":{
+                "username" : {
+                    "label": "Username",
+                    "placeholder": "Please enter username"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "Please enter password"
+                },
+                "apiEndpoint": {
+                    "label": "JIRA Server URL",
+                    "placeholder": "Please enter JIRA Server URL"
+                },
+                "jql": {
+                    "label": "JQL Ticket search string",
+                    "placeholder": "Please enter JQL search string"
+                }
+            },
+            "sendRequest": {
+                "error": "Unable to retrieve the tickets from Jira via REST"
             }
         }
     },

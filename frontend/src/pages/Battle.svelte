@@ -17,6 +17,7 @@
     import { appRoutes, PathPrefix } from '../config'
 
     export let battleId
+    export let xfetch
     export let notifications
     export let eventTag
     export let router
@@ -490,7 +491,8 @@
                     isLeader="{battle.leaderId === $warrior.id}"
                     {sendSocketEvent}
                     {eventTag}
-                    {notifications} />
+                    {notifications}
+                    {xfetch} />
             </div>
 
             <div class="w-full lg:w-1/4 px-4">

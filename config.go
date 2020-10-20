@@ -47,7 +47,8 @@ func InitConfig() {
 	viper.SetDefault("config.toast_timeout", 1000)
 	viper.SetDefault("config.allow_guests", true)
 	viper.SetDefault("config.allow_registration", true)
-	viper.SetDefault("config.allow_jira_import", true)
+	viper.SetDefault("config.allow_jira_import_xml", true)
+	viper.SetDefault("config.allow_jira_import_rest", false)
 	viper.SetDefault("config.default_locale", "en")
 	viper.SetDefault("config.friendly_ui_verbs", false)
 
@@ -60,6 +61,10 @@ func InitConfig() {
 	viper.SetDefault("auth.ldap.filter", "(&(objectClass=posixAccount)(mail=%s))")
 	viper.SetDefault("auth.ldap.mail_attr", "mail")
 	viper.SetDefault("auth.ldap.cn_attr", "cn")
+
+	viper.SetDefault("jira.server_url", "https://[[server]]/jira")
+	viper.SetDefault("jira.limit", 30)
+	viper.SetDefault("jira.acceptance_fieldname", "")
 
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")
@@ -95,7 +100,8 @@ func InitConfig() {
 	viper.BindEnv("config.toast_timeout", "CONFIG_TOAST_TIMEOUT")
 	viper.BindEnv("config.allow_guests", "CONFIG_ALLOW_GUESTS")
 	viper.BindEnv("config.allow_registration", "CONFIG_ALLOW_REGISTRATION")
-	viper.BindEnv("config.allow_jira_import", "CONFIG_ALLOW_JIRA_IMPORT")
+	viper.BindEnv("config.allow_jira_import_xml", "CONFIG_ALLOW_JIRA_IMPORT_XML")
+	viper.BindEnv("config.allow_jira_import_rest", "CONFIG_ALLOW_JIRA_IMPORT_REST")
 	viper.BindEnv("config.default_locale", "CONFIG_DEFAULT_LOCALE")
 	viper.BindEnv("config.friendly_ui_verbs", "CONFIG_FRIENDLY_UI_VERBS")
 
@@ -108,6 +114,10 @@ func InitConfig() {
 	viper.BindEnv("auth.ldap.filter", "AUTH_LDAP_FILTER")
 	viper.BindEnv("auth.ldap.mail_attr", "AUTH_LDAP_MAIL_ATTR")
 	viper.BindEnv("auth.ldap.cn_attr", "AUTH_LDAP_CN_ATTR")
+
+	viper.BindEnv("jira.server_url", "JIRA_SERVER_URL")
+	viper.BindEnv("jira.limit", "JIRA_LIMIT")
+	viper.BindEnv("jira.acceptance_fieldname", "JIRA_ACCEPTANCE_FIELDNAME")
 
 	err := viper.ReadInConfig()
 	if err != nil {

@@ -38,7 +38,11 @@
                 "badFileType": "Fehler: falscher Datei-Typ",
                 "errorReadingFile": "Fehler beim Lesen der Datei"
             },
-            "fields": {
+            "importJiraRest": {
+                "button": "Jira REST Import",
+                "process": "Import"
+            },
+           "fields": {
                 "name": {
                     "label": "Plan Name",
                     "placeholder": "Plan Name eingeben"
@@ -287,6 +291,29 @@
                 "highest": "H\u00F6chster",
                 "showVoters": "Zeige Sch\u00E4tzer",
                 "unknownWarrior": "Unbekannter Benutzer"
+            }
+        },
+        "jiraRestCfg": {
+            "fields":{
+                "username" : {
+                    "label": "Benutzername",
+                    "placeholder": "Benutzername eingeben"
+                },
+                "password": {
+                    "label": "Passwort",
+                    "placeholder": "Passwort eingeben"
+                },
+                "apiEndpoint": {
+                    "label": "JIRA Server URL",
+                    "placeholder": "JIRA Server URL eingeben"
+                },
+                "jql": {
+                    "label": "Erweiterte Suche (JQL)",
+                    "placeholder": "JQL eingeben"
+                }
+            },
+            "sendRequest": {
+                "error": "Es ist nicht m\u00F6glich, Tickets per REST zu beziehen"
             }
         }
     },

@@ -34,9 +34,13 @@
             "restartVoting": "Restart Voting",
             "save": "Save",
             "importJiraXML": {
-                "button": "Import plans from Jira XML",
+                "button": "Import Jira XML",
                 "badFileType": "Error bad file type",
                 "errorReadingFile": "Error reading file"
+            },
+            "importJiraRest": {
+                "button": "Import Jira REST",
+                "process": "Import"
             },
             "fields": {
                 "name": {
@@ -287,6 +291,29 @@
                 "highest": "Highest",
                 "showVoters": "Show Voters",
                 "unknownWarrior": "Unknown Warrior"
+            }
+        },
+        "jiraRestCfg": {
+            "fields":{
+                "username" : {
+                    "label": "Username",
+                    "placeholder": "Please enter username"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "Please enter password"
+                },
+                "apiEndpoint": {
+                    "label": "JIRA Server URL",
+                    "placeholder": "Please enter JIRA Server URL"
+                },
+                "jql": {
+                    "label": "JQL Ticket search string",
+                    "placeholder": "Please enter JQL search string"
+                }
+            },
+            "sendRequest": {
+                "error": "Unable to retrieve the tickets from Jira via REST"
             }
         }
     },

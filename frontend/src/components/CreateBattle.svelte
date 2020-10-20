@@ -4,6 +4,7 @@
     import SolidButton from './SolidButton.svelte'
     import HollowButton from './HollowButton.svelte'
     import JiraImport from './JiraImport.svelte'
+    import JiraImportRest from './JiraImportRest.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -141,6 +142,11 @@
                 handlePlanAdd="{handlePlanImport}"
                 {notifications}
                 {eventTag} />
+            <JiraImportRest
+                handlePlanAdd="{handlePlanImport}"
+                {notifications}
+                {eventTag}
+                {xfetch} />
             <HollowButton onClick="{addPlan}">
                 {$_('pages.myBattles.createBattle.fields.plans.addButton')}
             </HollowButton>

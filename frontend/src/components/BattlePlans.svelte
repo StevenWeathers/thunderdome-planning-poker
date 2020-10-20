@@ -4,6 +4,7 @@
     import HollowButton from './HollowButton.svelte'
     import ViewPlan from './ViewPlan.svelte'
     import JiraImport from './JiraImport.svelte'
+    import JiraImportRest from './JiraImportRest.svelte'
     import { _ } from '../i18n'
 
     export let plans = []
@@ -11,6 +12,7 @@
     export let sendSocketEvent = () => {}
     export let eventTag
     export let notifications
+    export let xfetch
 
     const defaultPlan = {
         id: '',
@@ -90,7 +92,15 @@
         </div>
         <div class="w-1/2 text-right">
             {#if isLeader}
-                <JiraImport {handlePlanAdd} {notifications} {eventTag} />
+                <JiraImport
+                        {handlePlanAdd}
+                        {notifications}
+                        {eventTag} />
+                <JiraImportRest
+                        {handlePlanAdd}
+                        {notifications}
+                        {eventTag}
+                        {xfetch} />
                 <HollowButton onClick="{toggleAddPlan()}">
                     {$_('actions.plan.add')}
                 </HollowButton>

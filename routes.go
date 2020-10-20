@@ -37,6 +37,8 @@ func (s *server) routes() {
 	// battle(s)
 	s.router.HandleFunc("/api/battle", s.handleBattleCreate()).Methods("POST")
 	s.router.HandleFunc("/api/battles", s.handleBattlesGet())
+	// jira rest
+	s.router.HandleFunc("/api/jira/tickets", s.handleGetJiraTickets())
 	// admin routes
 	s.router.HandleFunc("/api/admin/stats", s.adminOnly(s.handleAppStats()))
 	s.router.HandleFunc("/api/admin/warriors", s.adminOnly(s.handleGetRegisteredWarriors()))
