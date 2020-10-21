@@ -1,0 +1,48 @@
+version: '3.1'
+
+services:
+  thunderdome:
+    image: stevenweathers/thunderdome-planning-poker:latest
+    # restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      - asgard
+    environment:
+      APP_DOMAIN: ".127.0.0.1"
+      COOKIE_SECURE: "false"
+      SMTP_SECURE: "false"
+      SMTP_HOST: mail
+    volumes:
+      - ./etc:/etc/thunderdome
+  db: 
+    image: postgres:latest
+    # restart: always
+    environment:
+      POSTGRES_DB: thunderdome
+      POSTGRES_USER: thor
+      POSTGRES_PASSWORD: odinson
+    ports:
+      - 5432:5432
+    volumes:
+      - thunderdome_data:/var/lib/postgresql/data
+    networks:
+      - asgard
+  mail:
+    image: djfarrelly/maildev:latest
+    # restart: always
+    ports:
+      - 1080:80
+      - 1025:25
+    networks:
+      - asgard
+
+networks:
+ asgard:
+
+volumes:
+  thunderdome_data:

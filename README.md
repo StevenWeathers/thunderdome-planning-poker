@@ -21,8 +21,18 @@ Thunderdome is an open source agile planning poker tool in the theme of Battling
 
 ## Use latest docker image
 
+### Docker image
+
 ```
 docker pull stevenweathers/thunderdome-planning-poker
+```
+
+### Using Docker Compose for starting the application (latest version from Docker Hub)
+
+Simply start the application together with database as deamon.
+
+```
+docker-compose -f tpp-compose/docker-compose.yml -d up
 ```
 
 ## Use latest released binary
@@ -33,10 +43,13 @@ docker pull stevenweathers/thunderdome-planning-poker
 
 ## Building and running with Docker (preferred solution)
 
-### Using Docker Compose
+### Using Docker Compose for building the application
+
+Builds the thunderdome docker image (with newest GIT tag as version) and starts the application together with database and connection configuration
 
 ```
-docker-compose up --build
+docker-compose build --build-arg BUILD_VERSION=`git tag --sort=-version:refname | head -n 1`-dev
+docker-compose up
 ```
 
 ### Using Docker without Compose
