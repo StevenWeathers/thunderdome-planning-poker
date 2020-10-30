@@ -18,17 +18,21 @@
         showJiraRestConfig = !showJiraRestConfig
     }
 
+    function transformLineBreaks(text) {
+        return text.replace(/\r/g, "").replace(/\n/g, "<br/>")
+    }
+
     function processResponse(response) {
         if (response != null) {
             for (let i = 0; i < response.issues.length; i++) {
                 const item = response.issues[i]
                 // decode description and acceptance criteria
-                const decodedDescription = he.decode(
+                const decodedDescription = transformLineBreaks(he.decode(
                     item.fields.description,
-                )
-                const acceptanceCriteria = he.decode(
+                ))
+                const acceptanceCriteria = transformLineBreaks(he.decode(
                     item.fields.acceptanceCriteria,
-                )
+                ))
                 const ticketLink = jiraServerUrl + "/browse/" + item.key
                 const plan = {
                     id: '',
