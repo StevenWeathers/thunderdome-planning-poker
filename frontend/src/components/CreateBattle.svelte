@@ -40,7 +40,7 @@
             name: newPlan.planName,
             type: newPlan.type,
             referenceId: newPlan.referenceId,
-            link: newPlan.Link,
+            link: newPlan.link,
             description: newPlan.description,
             acceptanceCriteria: newPlan.acceptanceCriteria,
         }
