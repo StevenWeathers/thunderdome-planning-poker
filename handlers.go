@@ -181,6 +181,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		FriendlyUIVerbs     bool
 		AuthMethod          string
 		JiraServerUrl       string
+		JiraAuthMethod      string
 		AppVersion          string
 		CookieName          string
 		PathPrefix          string
@@ -219,12 +220,13 @@ func (s *server) handleIndex() http.HandlerFunc {
 		ToastTimeout:        viper.GetInt("config.toast_timeout"),
 		AllowGuests:         viper.GetBool("config.allow_guests"),
 		AllowRegistration:   viper.GetBool("config.allow_registration") && viper.GetString("auth.method") == "normal",
-		AllowJiraImportXml:  viper.GetBool("config.allow_jira_import_xml"),
-		AllowJiraImportRest: viper.GetBool("config.allow_jira_import_rest"),
+		AllowJiraImportXml:  viper.GetBool("config.allow_jira_import"),
+		AllowJiraImportRest: viper.GetBool("jira.allow_import_rest"),
 		DefaultLocale:       viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:     viper.GetBool("config.friendly_ui_verbs"),
 		AuthMethod:          viper.GetString("auth.method"),
 		JiraServerUrl:       viper.GetString("jira.server_url"),
+		JiraAuthMethod:      viper.GetString("jira.auth_method"),
 		AppVersion:          s.config.Version,
 		CookieName:          s.config.FrontendCookieName,
 		PathPrefix:          s.config.PathPrefix,
@@ -578,6 +580,7 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 		json.Unmarshal(body, &keyVal) // check for errors
 		WarriorName := keyVal["warriorName"].(string)
 		WarriorAvatar := keyVal["warriorAvatar"].(string)
+		JiraRestApiToken := keyVal["jiraRestApiToken"].(string)
 		NotificationsEnabled, _ := keyVal["notificationsEnabled"].(bool)
 
 		WarriorID := vars["id"]
@@ -587,7 +590,7 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName, WarriorAvatar, NotificationsEnabled)
+		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName, WarriorAvatar, NotificationsEnabled, JiraRestApiToken)
 		if updateErr != nil {
 			log.Println("error attempting to update warrior profile : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)

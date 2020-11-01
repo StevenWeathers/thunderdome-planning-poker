@@ -200,6 +200,10 @@
                 },
                 "enable_notifications": {
                     "label": "Benachrichtigungen aktivieren"
+                },
+                "jiraRestApiToken": {
+                    "label": "JIRA Rest API Token (passend zur E-Mail)",
+                    "placeholder": "Bitte das API Token eingeben"
                 }
             },
             "updatePasswordForm": {
@@ -303,7 +307,7 @@
                     "label": "Passwort",
                     "placeholder": "Passwort eingeben"
                 },
-                "apiEndpoint": {
+                "serverUrl": {
                     "label": "JIRA Server URL",
                     "placeholder": "JIRA Server URL eingeben"
                 },
@@ -314,6 +318,9 @@
             },
             "sendRequest": {
                 "error": "Es ist nicht m\u00F6glich, Tickets per REST zu beziehen"
+            },
+            "apiToken": {
+                "error": "Der Rest Service ist f\u00FCr Jira API Token konfiguriert. Bitte im Benutzer-Profil ein entsprechendes Token konfigurieren."
             }
         }
     },

@@ -57,7 +57,7 @@
         const body = {
             userName: restCfg.userName,
             password: restCfg.password,
-            endpoint: restCfg.apiEndpoint,
+            endpoint: restCfg.serverUrl,
             jql: restCfg.jql,
         }
 

@@ -2,31 +2,43 @@
     import SolidButton from './SolidButton.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
     import {_} from '../i18n'
+    import { warrior } from '../stores.js'
 
-    const apiEndPointConfigured = appConfig.JiraServerUrl
+    const serverUrlConfigured = appConfig.JiraServerUrl
+    const jiraAuthMethod = appConfig.JiraAuthMethod.toLowerCase()
+    const tokenMissing = jiraAuthMethod == 'token' && ($warrior.jiraRestApiToken == null || $warrior.jiraRestApiToken == '')
 
     export let toggleJiraRestConfig = () => {}
     export let handleImportFromRest = () => {}
 
     export let userName = ''
     export let password = ''
-    export let apiEndpoint = apiEndPointConfigured
+    export let serverUrl = serverUrlConfigured
     export let jql = ''
 
     function takeOverConfig(e) {
         e.preventDefault()
 
+        let reqUserName
+        let reqPassword
+
+        if ($warrior.jiraRestApiToken == '') {
+            reqUserName = userName
+            reqPassword = password
+        } else {
+            reqUserName = $warrior.email
+            reqPassword = $warrior.jiraRestApiToken
+        }
+
         const restCfg = {
-            userName,
-            password,
-            apiEndpoint,
+            userName:reqUserName,
+            password:reqPassword,
+            serverUrl,
             jql
         }
 
         handleImportFromRest(restCfg)
     }
-
-
 </script>
 <div
         class="fixed inset-0 flex items-center z-40 max-h-screen overflow-y-scroll">
@@ -46,6 +58,12 @@
                     </button>
                 </div>
                 <form on:submit="{takeOverConfig}" name="JiraRestConfig">
+                    {#if tokenMissing}
+                    <div
+                            class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-500 p-4 font-bold">
+                        {$_('pages.jiraRestCfg.apiToken.error')}
+                    </div>
+                    {:else if jiraAuthMethod == 'basic'}
                     <div class="mb-4">
                         <label
                                 class="block text-gray-700 text-sm font-bold mb-2"
@@ -84,25 +102,28 @@
                                     required/>
                         </div>
                     </div>
+                    {/if}
+                    {#if serverUrl == ''}
                     <div class="mb-4">
                         <label
                                 class="block text-gray-700 text-sm font-bold mb-2"
-                                for="apiEndpoint">
-                            {$_('pages.jiraRestCfg.fields.apiEndpoint.label')}
+                                for="serverUrl">
+                            {$_('pages.jiraRestCfg.fields.serverUrl.label')}
                         </label>
                         <div class="control">
                             <input
-                                    name="apiEndpoint"
-                                    bind:value="{apiEndpoint}"
-                                    placeholder="{$_('pages.jiraRestCfg.fields.apiEndpoint.placeholder')}"
+                                    name="serverUrl"
+                                    bind:value="{serverUrl}"
+                                    placeholder="{$_('pages.jiraRestCfg.fields.serverUrl.placeholder')}"
                                     class="bg-gray-200 border-gray-200 border-2
                                 appearance-none rounded w-full py-2 px-3
                                 text-gray-700 leading-tight focus:outline-none
                                 focus:bg-white focus:border-purple-500"
-                                    id="apiEndpoint"
+                                    id="serverUrl"
                                     required/>
                         </div>
                     </div>
+                    {/if}
                     <div class="mb-4">
                         <label
                                 class="block text-gray-700 text-sm font-bold mb-2"
@@ -125,7 +146,7 @@
                     </div>
 
                     <div class="text-right">
-                        <SolidButton type="submit">
+                        <SolidButton type="submit" disabled="{tokenMissing}">
                             {$_('actions.plan.importJiraRest.button')}
                         </SolidButton>
                     </div>

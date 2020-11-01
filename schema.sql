@@ -82,6 +82,8 @@ ALTER TABLE plans ADD COLUMN IF NOT EXISTS type VARCHAR(64) DEFAULT 'story';
 
 ALTER TABLE battles_warriors ADD COLUMN IF NOT EXISTS abandoned BOOL DEFAULT false;
 
+ALTER TABLE warriors ADD COLUMN IF NOT EXISTS jira_rest_api_token VARCHAR(128) DEFAULT '';
+
 --
 -- Types (used in Stored Procedures)
 --

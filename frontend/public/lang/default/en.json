@@ -200,6 +200,10 @@
                 },
                 "enable_notifications": {
                     "label": "Enable battle notifications"
+                },
+                "jiraRestApiToken": {
+                    "label": "JIRA Rest API Token (associated with email)",
+                    "placeholder": "Enter REST API token"
                 }
             },
             "updatePasswordForm": {
@@ -303,7 +307,7 @@
                     "label": "Password",
                     "placeholder": "Please enter password"
                 },
-                "apiEndpoint": {
+                "serverUrl": {
                     "label": "JIRA Server URL",
                     "placeholder": "Please enter JIRA Server URL"
                 },
@@ -314,6 +318,9 @@
             },
             "sendRequest": {
                 "error": "Unable to retrieve the tickets from Jira via REST"
+            },
+            "apiToken": {
+                "error": "The REST service has been configured to use Jira API Token. Please add one to your profile."
             }
         }
     },

@@ -20,7 +20,10 @@
     let updatePassword = false
     let warriorPassword1 = ''
     let warriorPassword2 = ''
+    let jiraRestApiToken = ''
 
+    const allowJiraImport = appConfig.AllowJiraImportRest
+    const jiraAuthMethod = appConfig.JiraAuthMethod.toLowerCase()
     const avatarService = appConfig.AvatarService
     let avatars
 
@@ -75,6 +78,7 @@
         const body = {
             warriorName: warriorProfile.name,
             warriorAvatar: warriorProfile.avatar,
+            jiraRestApiToken: warriorProfile.jiraRestApiToken,
             notificationsEnabled: warriorProfile.notificationsEnabled,
         }
         const validName = validateName(body.warriorName)
@@ -96,6 +100,7 @@
                         email: warriorProfile.email,
                         rank: warriorProfile.rank,
                         avatar: warriorProfile.avatar,
+                        jiraRestApiToken: warriorProfile.jiraRestApiToken,
                         notificationsEnabled:
                             warriorProfile.notificationsEnabled,
                     })
@@ -233,7 +238,26 @@
                             </span>
                         </label>
                     </div>
-
+                    {#if allowJiraImport && jiraAuthMethod == 'token'}
+                        <div class="mb-4">
+                            <label
+                                class="block text-gray-700 text-sm font-bold mb-2"
+                                for="jiraRestApiToken">
+                                {$_('pages.warriorProfile.fields.jiraRestApiToken.label')}
+                            </label>
+                            <input 
+                                bind:value="{warriorProfile.jiraRestApiToken}"
+                                placeholder="{$_('pages.warriorProfile.fields.jiraRestApiToken.placeholder')}"
+                                class="bg-gray-200 border-gray-200 border-2
+                                appearance-none rounded w-full py-2 px-3
+                                text-gray-700 leading-tight focus:outline-none
+                                focus:bg-white focus:border-purple-500"
+                                id="jiraRestApiToken"
+                                name="jiraRestApiToken"/>
+                        </div>
+                    {/if}
+                
+                
                     {#if avatarService == 'dicebear' || avatarService == 'gravatar' || avatarService == 'robohash' || avatarService == 'govatar'}
                         <div class="mb-4">
                             <label
