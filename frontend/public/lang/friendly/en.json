@@ -19,7 +19,8 @@
         "warrior": {
             "create": "Create Player",
             "nudge": "Nudge",
-            "promote": "Promote"
+            "promote": "Promote",
+            "demote": "Demote"
         },
         "plan": {
             "add": "Add Story",
@@ -228,7 +229,8 @@
                 "title": "Registered Players",
                 "name": "Name",
                 "email": "Email",
-                "verified": "Verified"
+                "verified": "Verified",
+                "rank": "Rank"
             }
         },
         "login": {

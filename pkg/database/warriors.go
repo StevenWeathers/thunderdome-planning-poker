@@ -10,7 +10,7 @@ import (
 func (d *Database) GetRegisteredWarriors() []*Warrior {
 	var warriors = make([]*Warrior, 0)
 	rows, err := d.db.Query(
-		"SELECT id, name, email, rank, avatar, verified FROM warriors WHERE email IS NOT NULL",
+		"SELECT id, name, email, rank, avatar, verified FROM warriors WHERE email IS NOT NULL ORDER BY created_date",
 	)
 	if err == nil {
 		defer rows.Close()

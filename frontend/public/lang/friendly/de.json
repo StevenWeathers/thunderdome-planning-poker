@@ -19,7 +19,8 @@
         "warrior": {
             "create": "Benutzer erstellen",
             "nudge": "Anstubsen",
-            "promote": "Bef\u00F6rdern"
+            "promote": "Bef\u00F6rdern",
+            "demote": "Demote"
         },
         "plan": {
             "add": "Plan hinzuf\u00FCgen",
@@ -228,7 +229,8 @@
                 "title": "Registrierte Benutzer",
                 "name": "Name",
                 "email": "E-Mail",
-                "verified": "Best\u00E4tigt"
+                "verified": "Best\u00E4tigt",
+                "rank": "Rank"
             }
         },
         "login": {
