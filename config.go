@@ -43,7 +43,7 @@ func InitConfig() {
 	viper.SetDefault("config.defaultPointValues",
 		[]string{"1", "2", "3", "5", "8", "13", "?"})
 	viper.SetDefault("config.show_warrior_rank", false)
-	viper.SetDefault("config.avatar_service", "default")
+	viper.SetDefault("config.avatar_service", "goadorable")
 	viper.SetDefault("config.toast_timeout", 1000)
 	viper.SetDefault("config.allow_guests", true)
 	viper.SetDefault("config.allow_registration", true)

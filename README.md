@@ -144,7 +144,7 @@ The following configuration options exists:
 
 ## Avatar Service configuration
 
-Use the name from table below to configure a service - if not set, `default` is used. Each service provides further options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the different sprites become available. The table shows all supported services and their sprites. In all cases the same ID (`ead26688-5148-4f3c-a35d-1b0117b4f2a9`) has been used creating the avatars.
+Use the name from table below to configure a service - if not set, `goadorable` is used. Each service provides further options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the different sprites become available. The table shows all supported services and their sprites. In all cases the same ID (`ead26688-5148-4f3c-a35d-1b0117b4f2a9`) has been used creating the avatars.
 
 | Name |           |           |           |           |           |           |           |           |           |
 | ---------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
