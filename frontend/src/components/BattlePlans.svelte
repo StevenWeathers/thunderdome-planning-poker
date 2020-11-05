@@ -198,7 +198,9 @@
         referenceId="{selectedPlan.referenceId}"
         planLink="{selectedPlan.link}"
         description="{selectedPlan.description}"
-        acceptanceCriteria="{selectedPlan.acceptanceCriteria}" />
+        acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
+        {notifications}
+        {eventTag} />
 {/if}
 
 {#if showViewPlan}

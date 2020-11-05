@@ -49,7 +49,8 @@
                 },
                 "link": {
                     "label": "Ссылка",
-                    "placeholder": "Введите ссылку на задачу"
+                    "placeholder": "Введите ссылку на задачу",
+                    "invalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)"
                 },
                 "referenceId": {
                     "label": "ID ссылки",

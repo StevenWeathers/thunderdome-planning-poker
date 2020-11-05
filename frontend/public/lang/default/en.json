@@ -49,7 +49,8 @@
                 },
                 "link": {
                     "label": "Link",
-                    "placeholder": "Enter a link to plan"
+                    "placeholder": "Enter a link to plan",
+                    "invalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)"
                 },
                 "referenceId": {
                     "label": "Reference ID",
