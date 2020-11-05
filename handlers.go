@@ -109,6 +109,9 @@ func (s *server) clearWarriorCookies(w http.ResponseWriter) {
 		Name:     s.config.SecureCookieName,
 		Value:    "",
 		Path:     s.config.PathPrefix + "/",
+		Domain:   s.config.AppDomain,
+		Secure:   s.config.SecureCookieFlag,
+		SameSite: http.SameSiteStrictMode,
 		MaxAge:   -1,
 		HttpOnly: true,
 	}
