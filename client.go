@@ -74,10 +74,14 @@ func (s subscription) readPump(srv *server) {
 		h.broadcast <- m
 
 		h.unregister <- s
-		if !forceClosed {
-			c.ws.Close()
-		} else {
-			c.ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4002, "abandoned"))
+		if forceClosed {
+			cm := websocket.FormatCloseMessage(4002, "abandoned")
+			if err := c.ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
+				log.Printf("abandon error: %v", err)
+			}
+		}
+		if err := c.ws.Close(); err != nil {
+			log.Printf("close error: %v", err)
 		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
@@ -315,14 +319,26 @@ func (s *server) serveWs() http.HandlerFunc {
 		// make sure warrior cookies are valid
 		warriorID, cookieErr := s.validateWarriorCookie(w, r)
 		if cookieErr != nil {
-			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4001, "unauthorized"))
+			cm := websocket.FormatCloseMessage(4001, "unauthorized")
+			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
+				log.Printf("unauthorized close error: %v", err)
+			}
+			if err := ws.Close(); err != nil {
+				log.Printf("close error: %v", err)
+			}
 			return
 		}
 
 		// make sure battle is legit
 		b, battleErr := s.database.GetBattle(battleID, warriorID)
 		if battleErr != nil {
-			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4004, "battle not found"))
+			cm := websocket.FormatCloseMessage(4004, "battle not found")
+			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
+				log.Printf("not found close error: %v", err)
+			}
+			if err := ws.Close(); err != nil {
+				log.Printf("close error: %v", err)
+			}
 			return
 		}
 		battle, _ := json.Marshal(b)
@@ -333,7 +349,13 @@ func (s *server) serveWs() http.HandlerFunc {
 		if warErr != nil {
 			log.Println("error finding warrior : " + warErr.Error() + "\n")
 			s.clearWarriorCookies(w)
-			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4001, "unauthorized"))
+			cm := websocket.FormatCloseMessage(4001, "unauthorized")
+			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
+				log.Printf("unauthorized close error: %v", err)
+			}
+			if err := ws.Close(); err != nil {
+				log.Printf("close error: %v", err)
+			}
 			return
 		}
 
@@ -352,6 +374,6 @@ func (s *server) serveWs() http.HandlerFunc {
 		h.broadcast <- m
 
 		go ss.writePump()
-		ss.readPump(s)
+		go ss.readPump(s)
 	}
 }
