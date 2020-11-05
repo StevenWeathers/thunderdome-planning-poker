@@ -250,6 +250,7 @@ func (s subscription) readPump(srv *server) {
 			h.unregister <- s
 			c.ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4002, "abandoned"))
 			c.ws.Close()
+			badEvent = true // don't want this event to cause write panic
 		default:
 		}
 
