@@ -252,7 +252,6 @@ func (s subscription) readPump(srv *server) {
 
 			h.unregister <- s
 			c.ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4002, "abandoned"))
-			c.ws.Close()
 			badEvent = true // don't want this event to cause write panic
 			forceClosed = true
 		default:
@@ -314,7 +313,6 @@ func (s *server) serveWs() http.HandlerFunc {
 		warriorID, cookieErr := s.validateWarriorCookie(w, r)
 		if cookieErr != nil {
 			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4001, "unauthorized"))
-			ws.Close()
 			return
 		}
 
@@ -322,7 +320,6 @@ func (s *server) serveWs() http.HandlerFunc {
 		b, battleErr := s.database.GetBattle(battleID, warriorID)
 		if battleErr != nil {
 			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4004, "battle not found"))
-			ws.Close()
 			return
 		}
 		battle, _ := json.Marshal(b)
@@ -334,7 +331,6 @@ func (s *server) serveWs() http.HandlerFunc {
 			log.Println("error finding warrior : " + warErr.Error() + "\n")
 			s.clearWarriorCookies(w)
 			ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4001, "unauthorized"))
-			ws.Close()
 			return
 		}
 
