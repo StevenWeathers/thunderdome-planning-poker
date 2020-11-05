@@ -88,7 +88,7 @@ func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Wa
 	var passHash string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, rank, password, avatar, verified FROM warriors WHERE email = $1`,
+		`SELECT id, name, email, rank, password, avatar, verified, notifications_enabled FROM warriors WHERE email = $1`,
 		WarriorEmail,
 	).Scan(
 		&w.WarriorID,
@@ -98,6 +98,7 @@ func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Wa
 		&passHash,
 		&w.WarriorAvatar,
 		&w.Verified,
+		&w.NotificationsEnabled,
 	)
 	if e != nil {
 		log.Println(e)

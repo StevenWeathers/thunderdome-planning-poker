@@ -73,9 +73,11 @@ func (s subscription) readPump(srv *server) {
 		m := message{retreatEvent, BattleID}
 		h.broadcast <- m
 
+		h.unregister <- s
 		if !forceClosed {
-			h.unregister <- s
 			c.ws.Close()
+		} else {
+			c.ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4002, "abandoned"))
 		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
@@ -249,9 +251,6 @@ func (s subscription) readPump(srv *server) {
 				badEvent = true
 				break
 			}
-
-			h.unregister <- s
-			c.ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4002, "abandoned"))
 			badEvent = true // don't want this event to cause write panic
 			forceClosed = true
 		default:
@@ -260,6 +259,10 @@ func (s subscription) readPump(srv *server) {
 		if !badEvent {
 			m := message{msg, s.arena}
 			h.broadcast <- m
+		}
+
+		if forceClosed {
+			break
 		}
 	}
 }
