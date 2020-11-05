@@ -60,6 +60,7 @@ func CreateSocketEvent(EventType string, EventValue string, EventWarrior string)
 
 // readPump pumps messages from the websocket connection to the hub.
 func (s subscription) readPump(srv *server) {
+	var forceClosed bool
 	c := s.conn
 	defer func() {
 		BattleID := s.arena
@@ -72,8 +73,10 @@ func (s subscription) readPump(srv *server) {
 		m := message{retreatEvent, BattleID}
 		h.broadcast <- m
 
-		h.unregister <- s
-		c.ws.Close()
+		if !forceClosed {
+			h.unregister <- s
+			c.ws.Close()
+		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
 	c.ws.SetReadDeadline(time.Now().Add(pongWait))
@@ -251,6 +254,7 @@ func (s subscription) readPump(srv *server) {
 			c.ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(4002, "abandoned"))
 			c.ws.Close()
 			badEvent = true // don't want this event to cause write panic
+			forceClosed = true
 		default:
 		}
 
