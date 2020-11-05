@@ -76,7 +76,7 @@ func (s subscription) readPump(srv *server) {
 		h.unregister <- s
 		if forceClosed {
 			cm := websocket.FormatCloseMessage(4002, "abandoned")
-			if err := c.ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
+			if err := c.ws.WriteControl(websocket.CloseMessage, cm, time.Now().Add(writeWait)); err != nil {
 				log.Printf("abandon error: %v", err)
 			}
 		}
