@@ -4,6 +4,7 @@
     import DownCarrotIcon from '../components/icons/DownCarrotIcon.svelte'
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
+    import HollowButton from '../components/HollowButton.svelte'
     import WarriorAvatar from '../components/WarriorAvatar.svelte'
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
@@ -16,16 +17,17 @@
     export let eventTag
 
     let warriorProfile = {}
+    let apiKeys = []
 
     let updatePassword = false
     let warriorPassword1 = ''
     let warriorPassword2 = ''
 
-    const avatarService = appConfig.AvatarService
-    let avatars
-
-    if (avatarService == 'dicebear') {
-        avatars = [
+    const { APIEnabled, AvatarService, AuthMethod } = appConfig
+    const configurableAvatarServices = ['dicebear', 'gravatar', 'robohash', 'govatar']
+    const isAvatarConfigurable = configurableAvatarServices.includes(AvatarService)
+    const avatarOptions = {
+        dicebear: [
             'male',
             'female',
             'human',
@@ -35,21 +37,20 @@
             'jdenticon',
             'gridy',
             'code',
-        ]
-    } else if (avatarService == 'gravatar') {
-        avatars = [
+        ],
+        gravatar: [
             'mp',
             'identicon',
             'monsterid',
             'wavatar',
             'retro',
             'robohash',
-        ]
-    } else if (avatarService == 'robohash') {
-        avatars = ['set1', 'set2', 'set3', 'set4']
-    } else if (avatarService == 'govatar') {
-        avatars = ['male', 'female']
+        ],
+        robohash: ['set1', 'set2', 'set3', 'set4'],
+        govatar: ['male', 'female']
     }
+    
+    let avatars = isAvatarConfigurable ? avatarOptions[AvatarService] : []
 
     function toggleUpdatePassword() {
         updatePassword = !updatePassword
@@ -149,6 +150,39 @@
         }
     }
 
+    function getApiKeys() {
+        xfetch(`/api/warrior/${$warrior.id}/apikeys`)
+            .then(res => res.json())
+            .then(function(apks) {
+                apiKeys = apks
+            })
+            .catch(function(error) {
+                notifications.danger($_('pages.warriorProfile.errorRetreivingApiKeys'))
+                eventTag('fetch_profile_apikeys', 'engagement', 'failure')
+            })
+    }
+    getApiKeys()
+
+    function createApiKey() {
+        const body = {
+            name: 'test',
+        }
+
+        xfetch(`/api/warrior/${$warrior.id}/apikey`, { body })
+                .then(function() {
+                    notifications.success(
+                        'Api Key created',
+                        1500,
+                    )
+                    getApiKeys()
+                })
+                .catch(function(error) {
+                    notifications.danger(
+                        'Failed to create api key'
+                    )
+                })
+    }
+
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.register)
@@ -159,11 +193,11 @@
     $: updatePasswordDisabled =
         warriorPassword1 === '' ||
         warriorPassword2 === '' ||
-        appConfig.authMethod === 'ldap'
+        AuthMethod === 'ldap'
 </script>
 
 <PageLayout>
-    <div class="flex justify-center">
+    <div class="flex justify-center flex-wrap">
         <div class="w-full md:w-1/2 lg:w-1/3">
             {#if !updatePassword}
                 <form
@@ -234,7 +268,7 @@
                         </label>
                     </div>
 
-                    {#if avatarService == 'dicebear' || avatarService == 'gravatar' || avatarService == 'robohash' || avatarService == 'govatar'}
+                    {#if isAvatarConfigurable}
                         <div class="mb-4">
                             <label
                                 class="block text-gray-700 text-sm font-bold
@@ -273,7 +307,7 @@
                                         <WarriorAvatar
                                             warriorId="{warriorProfile.id}"
                                             avatar="{warriorProfile.avatar}"
-                                            {avatarService}
+                                            avatarService={AvatarService}
                                             width="40" />
                                     </span>
                                 </div>
@@ -364,6 +398,57 @@
                         </SolidButton>
                     </div>
                 </form>
+            {/if}
+        </div>
+        <div class="w-full">
+            {#if APIEnabled}
+                <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
+                    <div class="flex w-full">
+                        <div class="w-4/5">
+                            <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                                API Keys
+                            </h2>
+                        </div>
+                        <div class="w-1/5">
+                            <div class="text-right">
+                                <HollowButton onClick={createApiKey}>
+                                    Create API Key
+                                </HollowButton>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table-fixed w-full">
+                        <thead>
+                            <tr>
+                                <th class="w-2/6 px-4 py-2">
+                                    Name
+                                </th>
+                                <th class="w-1/6 px-4 py-2">
+                                    Prefix
+                                </th>
+                                <th class="w-1/6 px-4 py-2">
+                                    Active
+                                </th>
+                                <th class="w-2/6 px-4 py-2">
+                                    Created
+                                </th>
+                                <th class="w-1/6 px-4 py-2"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#each apiKeys as apk}
+                                <tr>
+                                    <td class="border px-4 py-2">{apk.name}</td>
+                                    <td class="border px-4 py-2">{apk.prefix}</td>
+                                    <td class="border px-4 py-2">{apk.active}</td>
+                                    <td class="border px-4 py-2">{new Date(apk.createdDate).toLocaleString()}</td>
+                                    <td class="border px-4 py-2"></td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
             {/if}
         </div>
     </div>

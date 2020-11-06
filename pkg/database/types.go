@@ -77,3 +77,13 @@ type Plan struct {
 	VoteStartTime      time.Time `json:"voteStartTime"`
 	VoteEndTime        time.Time `json:"voteEndTime"`
 }
+
+// APIKey structure
+type APIKey struct {
+	Prefix      string    `json:"prefix"`
+	WarriorID   string    `json:"warriorId"`
+	Name        string    `json:"name"`
+	Key         string    `json:"apiKey"`
+	Active      bool      `json:"active"`
+	CreatedDate time.Time `json:"createdDate"`
+}

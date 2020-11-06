@@ -185,6 +185,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		AppVersion         string
 		CookieName         string
 		PathPrefix         string
+		APIEnabled         bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -224,6 +225,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		DefaultLocale:      viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:    viper.GetBool("config.friendly_ui_verbs"),
 		AuthMethod:         viper.GetString("auth.method"),
+		APIEnabled:         viper.GetBool("config.allow_external_api"),
 		AppVersion:         s.config.Version,
 		CookieName:         s.config.FrontendCookieName,
 		PathPrefix:         s.config.PathPrefix,
@@ -624,6 +626,102 @@ func (s *server) handleAccountVerification() http.HandlerFunc {
 	}
 }
 
+// handleWarriorAvatar creates an avatar for the given warrior by ID
+func (s *server) handleWarriorAvatar() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		Width, _ := strconv.Atoi(vars["width"])
+		WarriorID := vars["id"]
+		AvatarGender := govatar.MALE
+		warriorGender, ok := vars["avatar"]
+		if ok {
+			if warriorGender == "female" {
+				AvatarGender = govatar.FEMALE
+			}
+		}
+
+		var avatar image.Image
+		if s.config.AvatarService == "govatar" {
+			avatar, _ = govatar.GenerateForUsername(AvatarGender, WarriorID)
+		} else { // must be goadorable
+			var err error
+			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(WarriorID))))
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+
+		img := transform.Resize(avatar, Width, Width, transform.Linear)
+		buffer := new(bytes.Buffer)
+
+		if err := png.Encode(buffer, img); err != nil {
+			log.Println("unable to encode image.")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
+
+		if _, err := w.Write(buffer.Bytes()); err != nil {
+			log.Println("unable to write image.")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+// handleAPIKeyGenerate handles generating an API key for a warrior
+func (s *server) handleAPIKeyGenerate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]interface{})
+		json.Unmarshal(body, &keyVal) // check for errors
+		APIKeyName := keyVal["name"].(string)
+
+		WarriorID := vars["id"]
+		warriorCookieID, cookieErr := s.validateWarriorCookie(w, r)
+		if cookieErr != nil || WarriorID != warriorCookieID {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		APIKey, keyErr := s.database.GenerateAPIKey(WarriorID, APIKeyName)
+		if keyErr != nil {
+			log.Println("error attempting to generate api key : " + keyErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, APIKey)
+	}
+}
+
+// handleWarriorAPIKeys handles getting warrior API keys
+func (s *server) handleWarriorAPIKeys() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		WarriorID := vars["id"]
+		warriorCookieID, cookieErr := s.validateWarriorCookie(w, r)
+		if cookieErr != nil || WarriorID != warriorCookieID {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		APIKeys, keysErr := s.database.GetWarriorAPIKeys(WarriorID)
+		if keysErr != nil {
+			log.Println("error retrieving api keys : " + keysErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, APIKeys)
+	}
+}
+
 /*
 	Admin Handlers
 */
@@ -725,51 +823,5 @@ func (s *server) handleWarriorDemote() http.HandlerFunc {
 		}
 
 		return
-	}
-}
-
-// handleWarriorAvatar creates an avatar for the given warrior by ID
-func (s *server) handleWarriorAvatar() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		Width, _ := strconv.Atoi(vars["width"])
-		WarriorID := vars["id"]
-		AvatarGender := govatar.MALE
-		warriorGender, ok := vars["avatar"]
-		if ok {
-			if warriorGender == "female" {
-				AvatarGender = govatar.FEMALE
-			}
-		}
-
-		var avatar image.Image
-		if s.config.AvatarService == "govatar" {
-			avatar, _ = govatar.GenerateForUsername(AvatarGender, WarriorID)
-		} else { // must be goadorable
-			var err error
-			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(WarriorID))))
-			if err != nil {
-				log.Fatalln(err)
-			}
-		}
-
-		img := transform.Resize(avatar, Width, Width, transform.Linear)
-		buffer := new(bytes.Buffer)
-
-		if err := png.Encode(buffer, img); err != nil {
-			log.Println("unable to encode image.")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "image/png")
-		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
-
-		if _, err := w.Write(buffer.Bytes()); err != nil {
-			log.Println("unable to write image.")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
 	}
 }

@@ -49,6 +49,15 @@ CREATE TABLE IF NOT EXISTS warrior_verify (
     expire_date TIMESTAMP DEFAULT NOW() + INTERVAL '24 hour'
 );
 
+CREATE TABLE IF NOT EXISTS api_keys (
+    id TEXT NOT NULL PRIMARY KEY,
+    warrior_id UUID REFERENCES warriors NOT NULL,
+    name VARCHAR(256) NOT NULL,
+    active BOOL DEFAULT true,
+    created_date TIMESTAMP DEFAULT NOW(),
+    UNIQUE(warrior_id, name)
+);
+
 --
 -- Table Alterations
 --

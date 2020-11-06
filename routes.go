@@ -32,6 +32,8 @@ func (s *server) routes() {
 	}
 	s.router.HandleFunc("/api/warrior", s.handleWarriorRecruit()).Methods("POST")
 	s.router.HandleFunc("/api/auth/logout", s.handleLogout()).Methods("POST")
+	s.router.HandleFunc("/api/warrior/{id}/apikey", s.handleAPIKeyGenerate()).Methods("POST")
+	s.router.HandleFunc("/api/warrior/{id}/apikeys", s.handleWarriorAPIKeys()).Methods("GET")
 	s.router.HandleFunc("/api/warrior/{id}", s.handleWarriorProfile()).Methods("GET")
 	s.router.HandleFunc("/api/warrior/{id}", s.handleWarriorProfileUpdate()).Methods("POST")
 	// battle(s)
