@@ -41,14 +41,14 @@
 
         xfetch('/api/admin/warrior', { body })
             .then(function() {
-                eventTag('create_account', 'engagement', 'success')
+                eventTag('admin_create_warrior', 'engagement', 'success')
 
                 getWarriors()
                 toggleCreateWarrior()
             })
             .catch(function(error) {
                 notifications.danger('Error encountered creating warrior')
-                eventTag('create_account', 'engagement', 'failure')
+                eventTag('admin_create_warrior', 'engagement', 'failure')
             })
     }
 
@@ -70,6 +70,44 @@
             .catch(function(error) {
                 notifications.danger('Error getting warriors')
             })
+    }
+
+    function promoteWarrior(warriorId) {
+        return function() {
+            const body = {
+                warriorId
+            }
+
+            xfetch('/api/admin/promote', { body })
+            .then(function() {
+                eventTag('admin_promote_warrior', 'engagement', 'success')
+
+                getWarriors()
+            })
+            .catch(function(error) {
+                notifications.danger('Error encountered promoting warrior')
+                eventTag('admin_promote_warrior', 'engagement', 'failure')
+            })
+        }
+    }
+
+    function demoteWarrior(warriorId) {
+        return function() {
+            const body = {
+                warriorId
+            }
+
+            xfetch('/api/admin/demote', { body })
+            .then(function() {
+                eventTag('admin_demote_warrior', 'engagement', 'success')
+
+                getWarriors()
+            })
+            .catch(function(error) {
+                notifications.danger('Error encountered demoting warrior')
+                eventTag('admin_demote_warrior', 'engagement', 'failure')
+            })
+        }
     }
 
     onMount(() => {
@@ -152,6 +190,9 @@
                         <th class="w-1/6 px-4 py-2">
                             {$_('pages.admin.registeredWarriors.verified')}
                         </th>
+                        <th class="w-1/6 px-4 py-2">
+                            {$_('pages.admin.registeredWarriors.rank')}
+                        </th>
                         <th class="w-1/6 px-4 py-2"></th>
                     </tr>
                 </thead>
@@ -161,7 +202,18 @@
                             <td class="border px-4 py-2">{warrior.name}</td>
                             <td class="border px-4 py-2">{warrior.email}</td>
                             <td class="border px-4 py-2">{warrior.verified}</td>
-                            <td class="border px-4 py-2"></td>
+                            <td class="border px-4 py-2">{warrior.rank}</td>
+                            <td class="border px-4 py-2">
+                                {#if warrior.rank !== 'GENERAL'}
+                                    <HollowButton onClick="{promoteWarrior(warrior.id)}" color="blue">
+                                        {$_('actions.warrior.promote')}
+                                    </HollowButton>
+                                {:else}
+                                    <HollowButton onClick="{demoteWarrior(warrior.id)}" color="blue">
+                                        {$_('actions.warrior.demote')}
+                                    </HollowButton>
+                                {/if}
+                            </td>
                         </tr>
                     {/each}
                 </tbody>

@@ -109,6 +109,9 @@ func (s *server) clearWarriorCookies(w http.ResponseWriter) {
 		Name:     s.config.SecureCookieName,
 		Value:    "",
 		Path:     s.config.PathPrefix + "/",
+		Domain:   s.config.AppDomain,
+		Secure:   s.config.SecureCookieFlag,
+		SameSite: http.SameSiteStrictMode,
 		MaxAge:   -1,
 		HttpOnly: true,
 	}
@@ -687,6 +690,48 @@ func (s *server) handleWarriorCreate() http.HandlerFunc {
 		s.email.SendWelcome(WarriorName, WarriorEmail, VerifyID)
 
 		RespondWithJSON(w, http.StatusOK, newWarrior)
+	}
+}
+
+// handleWarriorPromote handles promoting a warrior to General (ADMIN) by ID
+func (s *server) handleWarriorPromote() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		err := s.database.PromoteWarrior(keyVal["warriorId"])
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
+// handleWarriorDemote handles demoting a warrior to Corporal (Registered) by ID
+func (s *server) handleWarriorDemote() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		err := s.database.DemoteWarrior(keyVal["warriorId"])
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
 	}
 }
 

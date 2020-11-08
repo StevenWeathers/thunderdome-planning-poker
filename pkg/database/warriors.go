@@ -10,7 +10,7 @@ import (
 func (d *Database) GetRegisteredWarriors() []*Warrior {
 	var warriors = make([]*Warrior, 0)
 	rows, err := d.db.Query(
-		"SELECT id, name, email, rank, avatar, verified FROM warriors WHERE email IS NOT NULL",
+		"SELECT id, name, email, rank, avatar, verified FROM warriors WHERE email IS NOT NULL ORDER BY created_date",
 	)
 	if err == nil {
 		defer rows.Close()
@@ -90,7 +90,7 @@ func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Wa
 	var passHash string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, rank, password, avatar, verified, jira_rest_api_token FROM warriors WHERE email = $1`,
+		`SELECT id, name, email, rank, password, avatar, verified, notifications_enabled, jira_rest_api_token FROM warriors WHERE email = $1`,
 		WarriorEmail,
 	).Scan(
 		&w.WarriorID,
@@ -100,6 +100,7 @@ func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Wa
 		&passHash,
 		&w.WarriorAvatar,
 		&w.Verified,
+		&w.NotificationsEnabled,
 		&w.JiraRestApiToken,
 	)
 	if e != nil {

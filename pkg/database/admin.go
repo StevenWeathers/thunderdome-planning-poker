@@ -67,3 +67,16 @@ func (d *Database) PromoteWarrior(WarriorID string) error {
 
 	return nil
 }
+
+// DemoteWarrior demotes a warrior to CORPORAL (Registered) rank
+func (d *Database) DemoteWarrior(WarriorID string) error {
+	if _, err := d.db.Exec(
+		`call demote_warrior($1);`,
+		WarriorID,
+	); err != nil {
+		log.Println(err)
+		return errors.New("error attempting to demote warrior to CORPORAL")
+	}
+
+	return nil
+}

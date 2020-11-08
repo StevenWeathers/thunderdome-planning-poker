@@ -19,7 +19,8 @@
         "warrior": {
             "create": "Create Warrior",
             "nudge": "Nudge",
-            "promote": "Promote"
+            "promote": "Promote",
+            "demote": "Demote"
         },
         "plan": {
             "add": "Add Plan",
@@ -53,7 +54,8 @@
                 },
                 "link": {
                     "label": "Link",
-                    "placeholder": "Enter a link to plan"
+                    "placeholder": "Enter a link to plan",
+                    "invalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)"
                 },
                 "referenceId": {
                     "label": "Reference ID",
@@ -235,7 +237,8 @@
                 "title": "Registered Warriors",
                 "name": "Name",
                 "email": "Email",
-                "verified": "Verified"
+                "verified": "Verified",
+                "rank": "Rank"
             }
         },
         "login": {

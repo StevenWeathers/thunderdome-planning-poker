@@ -19,7 +19,8 @@
         "warrior": {
             "create": "Создать участника",
             "nudge": "Пнуть",
-            "promote": "Сделать боссом"
+            "promote": "Сделать боссом",
+            "demote": "Demote"
         },
         "plan": {
             "add": "Добавить задачу",
@@ -53,7 +54,8 @@
                 },
                 "link": {
                     "label": "Ссылка",
-                    "placeholder": "Введите ссылку на задачу"
+                    "placeholder": "Введите ссылку на задачу",
+                    "invalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)"
                 },
                 "referenceId": {
                     "label": "ID ссылки",
@@ -235,7 +237,8 @@
                 "title": "Зарегистрированные участники",
                 "name": "Имя",
                 "email": "Электронная почта",
-                "verified": "Подтвержден"
+                "verified": "Подтвержден",
+                "rank": "Rank"
             }
         },
         "login": {

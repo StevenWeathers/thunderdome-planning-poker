@@ -19,7 +19,8 @@
         "warrior": {
             "create": "Create Player",
             "nudge": "Nudge",
-            "promote": "Promote"
+            "promote": "Promote",
+            "demote": "Demote"
         },
         "plan": {
             "add": "Add Story",
@@ -53,7 +54,8 @@
                 },
                 "link": {
                     "label": "Link",
-                    "placeholder": "Enter a link to story"
+                    "placeholder": "Enter a link to story",
+                    "invalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)"
                 },
                 "referenceId": {
                     "label": "Reference ID",
@@ -235,7 +237,8 @@
                 "title": "Registered Players",
                 "name": "Name",
                 "email": "Email",
-                "verified": "Verified"
+                "verified": "Verified",
+                "rank": "Rank"
             }
         },
         "login": {

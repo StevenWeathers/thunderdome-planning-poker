@@ -8,6 +8,8 @@
     export let handlePlanAdd = () => {}
     export let toggleAddPlan = () => {}
     export let handlePlanRevision = () => {}
+    export let eventTag = () => {}
+    export let notifications
 
     // going by common Jira issue types for now
     const planTypes = [
@@ -27,8 +29,18 @@
     export let description = ''
     export let acceptanceCriteria = ''
 
+    const isAbsolute = new RegExp('^([a-z]+://|//)', 'i')
+
     function handleSubmit(event) {
         event.preventDefault()
+        let invalidPlan = false
+
+        if (planLink !== '' && !isAbsolute.test(planLink)) {
+            invalidPlan = true
+            notifications.danger($_('actions.plan.fields.link.invalid'))
+            eventTag('plan_add_invalid_link', 'battle', ``)
+        }
+
         const plan = {
             planName,
             type: planType,
@@ -37,14 +49,17 @@
             description,
             acceptanceCriteria,
         }
-        if (planId === '') {
-            handlePlanAdd(plan)
-        } else {
-            plan.planId = planId
-            handlePlanRevision(plan)
-        }
 
-        toggleAddPlan()
+        if (!invalidPlan) {
+            if (planId === '') {
+                handlePlanAdd(plan)
+            } else {
+                plan.planId = planId
+                handlePlanRevision(plan)
+            }
+
+            toggleAddPlan()
+        }
     }
 </script>
 

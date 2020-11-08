@@ -1,9 +1,11 @@
 FROM alpine:3.7
+RUN apk --update add ca-certificates
 RUN adduser -D -g '' appuser
 
 FROM scratch
 COPY thunderdome-planning-poker /
 
+COPY --from=0 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=0 /etc/passwd /etc/passwd
 USER appuser
 

@@ -342,6 +342,16 @@ BEGIN
 END;
 $$;
 
+-- Demote Warrior to CORPORAL Rank (Registered) by ID --
+CREATE OR REPLACE PROCEDURE demote_warrior(warriorId UUID)
+LANGUAGE plpgsql AS $$
+BEGIN
+    UPDATE warriors SET rank = 'CORPORAL' WHERE id = warriorId;
+
+    COMMIT;
+END;
+$$;
+
 --
 -- Stored Functions
 --
