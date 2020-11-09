@@ -133,7 +133,7 @@ The following configuration options exists:
 | `config.allowedPointValues` | CONFIG_POINTS_ALLOWED | List of available point values for creating battles. | 0, 1/2, 2, 3, 5, 8, 13, 20, 40, 100, ? |
 | `config.defaultPointValues` | CONFIG_POINTS_DEFAULT | List of default selected points for new battles. | 1, 2, 3, 5, 8 , 13, ? |
 | `config.show_warrior_rank` | CONFIG_SHOW_RANK     | Set to enable an icon showing the rank of a warrior during battle. | false |
-| `config.avatar_service`    | CONFIG_AVATAR_SERVICE | Avatar service used, possible values see next paragraph | default |
+| `config.avatar_service`    | CONFIG_AVATAR_SERVICE | Avatar service used, possible values see next paragraph | goadorable |
 | `config.toast_timeout`     | CONFIG_TOAST_TIMEOUT | Number of milliseconds before notifications are hidden. | 1000 |
 | `config.allow_guests`     | CONFIG_ALLOW_GUESTS | Whether or not to allow guest (anonymous) users. | true |
 | `config.allow_registration`     | CONFIG_ALLOW_REGISTRATION | Whether or not to allow user registration (outside Admin). | true |
@@ -149,8 +149,6 @@ Use the name from table below to configure a service - if not set, `goadorable` 
 
 | Name |           |           |           |           |           |           |           |           |           |
 | ---------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
-| `default`  |           |           |           |           |           |           |           |           |           |
-|            | ![image](https://api.adorable.io/avatars/48/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png) |
 | `goadorable` (internal)  |           |           |           |           |           |           |           |           |           |
 |            | ![image](https://user-images.githubusercontent.com/846933/96212071-e4283d80-0f43-11eb-9f82-ff6c105f8b0a.png) |
 | `govatar` (internal) | male | female |  |  |

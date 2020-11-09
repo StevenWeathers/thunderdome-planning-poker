@@ -25,8 +25,4 @@
         alt="{$_('avatarAltText')}" />
 {:else if avatarService === 'goadorable'}
     <img src="/avatar/{width}/{warriorId}" alt="{$_('avatarAltText')}" />
-{:else}
-    <img
-        src="https://api.adorable.io/avatars/{width}/{warriorId}.png"
-        alt="{$_('avatarAltText')}" />
 {/if}
