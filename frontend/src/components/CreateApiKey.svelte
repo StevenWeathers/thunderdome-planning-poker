@@ -18,12 +18,15 @@
         event.preventDefault()
 
         if (keyName === '') {
-            notifications.danger('Please enter a key name')
+            notifications.danger(
+                $_('pages.warriorProfile.apiKeys.fields.name.invalid'),
+            )
+            eventTag('create_api_key_name_invalid', 'engagement', 'failure')
             return false
         }
 
         const body = {
-            name: keyName
+            name: keyName,
         }
 
         xfetch(`/api/warrior/${$warrior.id}/apikey`, { body })
@@ -31,11 +34,13 @@
             .then(function(apk) {
                 handleApiKeyCreate()
                 apiKey = apk.apiKey
+                eventTag('create_api_key', 'engagement', 'success')
             })
             .catch(function(error) {
                 notifications.danger(
-                    'Failed to create api key'
+                    $_('pages.warriorProfile.apiKeys.createFailed'),
                 )
+                eventTag('create_api_key', 'engagement', 'failure')
             })
     }
 
@@ -70,7 +75,7 @@
                             <label
                                 class="block text-sm font-bold mb-2"
                                 for="keyName">
-                                Key Name
+                                {$_('pages.warriorProfile.apiKeys.fields.name.label')}
                             </label>
                             <input
                                 class="bg-gray-200 border-gray-200 border-2
@@ -81,48 +86,59 @@
                                 id="keyName"
                                 name="keyName"
                                 bind:value="{keyName}"
-                                placeholder="Enter a key name"
+                                placeholder="{$_('pages.warriorProfile.apiKeys.fields.name.placeholder')}"
                                 required />
                         </div>
                         <div class="text-right">
                             <div>
                                 <SolidButton type="submit">
-                                    Create
+                                    {$_('pages.warriorProfile.apiKeys.fields.submitButton')}
                                 </SolidButton>
                             </div>
                         </div>
                     </form>
                 {:else}
                     <div class="mb-4">
-                        <p class="mb-3 mt-3">New Api Key (<span class="font-bold">{keyName}</span>) created and <span class="font-bold">it will be displayed only now</span></p>
+                        <p class="mb-3 mt-3">
+                            {@html $_(
+                                'pages.warriorProfile.apiKeys.createSuccess',
+                                {
+                                    values: {
+                                        keyName: `<span class="font-bold">${keyName}</span>`,
+                                        onlyNowOpen: '<span class="font-bold">',
+                                        onlyNowClose: '</span>',
+                                    },
+                                },
+                            )}
+                        </p>
                         <div class="flex flex-wrap items-stretch w-full mb-3">
                             <input
-                                class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1
-                                border-2 h-10 bg-gray-200 border-gray-200 rounded rounded-r-none px-4
-                                appearance-none text-gray-800 font-bold focus:outline-none focus:bg-white
-                                focus:border-purple-500 "
+                                class="flex-shrink flex-grow flex-auto
+                                leading-normal w-px flex-1 border-2 h-10
+                                bg-gray-200 border-gray-200 rounded
+                                rounded-r-none px-4 appearance-none
+                                text-gray-800 font-bold focus:outline-none
+                                focus:bg-white focus:border-purple-500 "
                                 type="text"
-                                value={apiKey}
+                                value="{apiKey}"
                                 id="apiKey"
                                 readonly />
                             <div class="invisible md:visible md:flex md:-mr-px">
                                 <SolidButton
                                     color="blue-copy"
                                     onClick="{copyKey}"
-                                    additionalClasses="flex items-center leading-normal
-                                    whitespace-no-wrap text-sm">
+                                    additionalClasses="flex items-center
+                                    leading-normal whitespace-no-wrap text-sm">
                                     <ClipboardIcon />
                                 </SolidButton>
                             </div>
                         </div>
-                        <p>
-                            Please store it somewhere safe because as soon as you navigate away from this page, we will not be able to retrieve or restore this generated token.
-                        </p>
+                        <p>{$_('pages.warriorProfile.apiKeys.storeWarning')}</p>
                     </div>
                     <div class="text-right">
                         <div>
-                            <SolidButton onClick={toggleCreateApiKey}>
-                                Close
+                            <SolidButton onClick="{toggleCreateApiKey}">
+                                {$_('pages.warriorProfile.apiKeys.fields.closeButton')}
                             </SolidButton>
                         </div>
                     </div>

@@ -75,38 +75,38 @@
     function promoteWarrior(warriorId) {
         return function() {
             const body = {
-                warriorId
+                warriorId,
             }
 
             xfetch('/api/admin/promote', { body })
-            .then(function() {
-                eventTag('admin_promote_warrior', 'engagement', 'success')
+                .then(function() {
+                    eventTag('admin_promote_warrior', 'engagement', 'success')
 
-                getWarriors()
-            })
-            .catch(function(error) {
-                notifications.danger('Error encountered promoting warrior')
-                eventTag('admin_promote_warrior', 'engagement', 'failure')
-            })
+                    getWarriors()
+                })
+                .catch(function(error) {
+                    notifications.danger('Error encountered promoting warrior')
+                    eventTag('admin_promote_warrior', 'engagement', 'failure')
+                })
         }
     }
 
     function demoteWarrior(warriorId) {
         return function() {
             const body = {
-                warriorId
+                warriorId,
             }
 
             xfetch('/api/admin/demote', { body })
-            .then(function() {
-                eventTag('admin_demote_warrior', 'engagement', 'success')
+                .then(function() {
+                    eventTag('admin_demote_warrior', 'engagement', 'success')
 
-                getWarriors()
-            })
-            .catch(function(error) {
-                notifications.danger('Error encountered demoting warrior')
-                eventTag('admin_demote_warrior', 'engagement', 'failure')
-            })
+                    getWarriors()
+                })
+                .catch(function(error) {
+                    notifications.danger('Error encountered demoting warrior')
+                    eventTag('admin_demote_warrior', 'engagement', 'failure')
+                })
         }
     }
 
@@ -205,11 +205,15 @@
                             <td class="border px-4 py-2">{warrior.rank}</td>
                             <td class="border px-4 py-2">
                                 {#if warrior.rank !== 'GENERAL'}
-                                    <HollowButton onClick="{promoteWarrior(warrior.id)}" color="blue">
+                                    <HollowButton
+                                        onClick="{promoteWarrior(warrior.id)}"
+                                        color="blue">
                                         {$_('actions.warrior.promote')}
                                     </HollowButton>
                                 {:else}
-                                    <HollowButton onClick="{demoteWarrior(warrior.id)}" color="blue">
+                                    <HollowButton
+                                        onClick="{demoteWarrior(warrior.id)}"
+                                        color="blue">
                                         {$_('actions.warrior.demote')}
                                     </HollowButton>
                                 {/if}

@@ -12,8 +12,9 @@ import {
 
 import { locales, fallbackLocale, PathPrefix } from './config'
 
-const verbsType = appConfig.FriendlyUIVerbs ? 'friendly' : 'default'
-const MESSAGE_FILE_URL_TEMPLATE = `${PathPrefix}/lang/${verbsType}/{locale}.json`
+const { AppVersion, FriendlyUIVerbs } = appConfig
+const verbsType = FriendlyUIVerbs ? 'friendly' : 'default'
+const MESSAGE_FILE_URL_TEMPLATE = `${PathPrefix}/lang/${verbsType}/{locale}.json?v=${AppVersion}`
 
 let _activeLocale
 

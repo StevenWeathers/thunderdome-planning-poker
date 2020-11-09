@@ -10,7 +10,7 @@
     import { validateName, validatePasswords } from '../validationUtils.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
-import CreateApiKey from '../components/CreateApiKey.svelte'
+    import CreateApiKey from '../components/CreateApiKey.svelte'
 
     export let xfetch
     export let router
@@ -26,8 +26,15 @@ import CreateApiKey from '../components/CreateApiKey.svelte'
     let warriorPassword2 = ''
 
     const { APIEnabled, AvatarService, AuthMethod } = appConfig
-    const configurableAvatarServices = ['dicebear', 'gravatar', 'robohash', 'govatar']
-    const isAvatarConfigurable = configurableAvatarServices.includes(AvatarService)
+    const configurableAvatarServices = [
+        'dicebear',
+        'gravatar',
+        'robohash',
+        'govatar',
+    ]
+    const isAvatarConfigurable = configurableAvatarServices.includes(
+        AvatarService,
+    )
     const avatarOptions = {
         dicebear: [
             'male',
@@ -49,9 +56,9 @@ import CreateApiKey from '../components/CreateApiKey.svelte'
             'robohash',
         ],
         robohash: ['set1', 'set2', 'set3', 'set4'],
-        govatar: ['male', 'female']
+        govatar: ['male', 'female'],
     }
-    
+
     let avatars = isAvatarConfigurable ? avatarOptions[AvatarService] : []
 
     function toggleUpdatePassword() {
@@ -103,7 +110,9 @@ import CreateApiKey from '../components/CreateApiKey.svelte'
                             warriorProfile.notificationsEnabled,
                     })
 
-                    notifications.success('Profile updated.')
+                    notifications.success(
+                        $_('pages.warriorProfile.updateSuccess'),
+                    )
                     eventTag('update_profile', 'engagement', 'success')
                 })
                 .catch(function(error) {
@@ -159,44 +168,54 @@ import CreateApiKey from '../components/CreateApiKey.svelte'
                 apiKeys = apks
             })
             .catch(function(error) {
-                notifications.danger($_('pages.warriorProfile.errorRetreivingApiKeys'))
+                notifications.danger(
+                    $_('pages.warriorProfile.apiKeys.errorRetreiving'),
+                )
                 eventTag('fetch_profile_apikeys', 'engagement', 'failure')
             })
     }
     getApiKeys()
 
-
     function deleteApiKey(apk) {
-        return function () {
-            xfetch(`/api/warrior/${$warrior.id}/apikey/${apk}`, { method: 'DELETE' })
-            .then(res => res.json())
-            .then(function(apks) {
-                    notifications.success('Api Key deleted')
+        return function() {
+            xfetch(`/api/warrior/${$warrior.id}/apikey/${apk}`, {
+                method: 'DELETE',
+            })
+                .then(res => res.json())
+                .then(function(apks) {
+                    notifications.success(
+                        $_('pages.warriorProfile.apiKeys.deleteSuccess'),
+                    )
                     apiKeys = apks
                 })
                 .catch(function(error) {
                     notifications.danger(
-                        'Failed to delete api key'
+                        $_('pages.warriorProfile.apiKeys.deleteFailed'),
                     )
                 })
         }
     }
 
     function toggleApiKeyActiveStatus(apk, active) {
-        return function () {
+        return function() {
             const body = {
-                active: !active
+                active: !active,
             }
 
-            xfetch(`/api/warrior/${$warrior.id}/apikey/${apk}`, { body, method: 'PUT' })
+            xfetch(`/api/warrior/${$warrior.id}/apikey/${apk}`, {
+                body,
+                method: 'PUT',
+            })
                 .then(res => res.json())
                 .then(function(apks) {
-                    notifications.success('Api Key activated')
+                    notifications.success(
+                        $_('pages.warriorProfile.apiKeys.updateSuccess'),
+                    )
                     apiKeys = apks
                 })
                 .catch(function(error) {
                     notifications.danger(
-                        'Failed to activate api key'
+                        $_('pages.warriorProfile.apiKeys.updateFailed'),
                     )
                 })
         }
@@ -330,7 +349,7 @@ import CreateApiKey from '../components/CreateApiKey.svelte'
                                         <WarriorAvatar
                                             warriorId="{warriorProfile.id}"
                                             avatar="{warriorProfile.avatar}"
-                                            avatarService={AvatarService}
+                                            avatarService="{AvatarService}"
                                             width="40" />
                                     </span>
                                 </div>
@@ -428,14 +447,16 @@ import CreateApiKey from '../components/CreateApiKey.svelte'
                 <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
                     <div class="flex w-full">
                         <div class="w-4/5">
-                            <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
-                                API Keys
+                            <h2
+                                class="text-2xl md:text-3xl font-bold
+                                text-center mb-4">
+                                {$_('pages.warriorProfile.apiKeys.title')}
                             </h2>
                         </div>
                         <div class="w-1/5">
                             <div class="text-right">
-                                <HollowButton onClick={toggleCreateApiKey}>
-                                    Create API Key
+                                <HollowButton onClick="{toggleCreateApiKey}">
+                                    {$_('pages.warriorProfile.apiKeys.createButton')}
                                 </HollowButton>
                             </div>
                         </div>
@@ -445,19 +466,19 @@ import CreateApiKey from '../components/CreateApiKey.svelte'
                         <thead>
                             <tr>
                                 <th class="w-2/12 px-4 py-2">
-                                    Name
+                                    {$_('pages.warriorProfile.apiKeys.name')}
                                 </th>
                                 <th class="w-2/12 px-4 py-2">
-                                    Prefix
+                                    {$_('pages.warriorProfile.apiKeys.prefix')}
                                 </th>
                                 <th class="w-2/12 px-4 py-2">
-                                    Active
+                                    {$_('pages.warriorProfile.apiKeys.active')}
                                 </th>
                                 <th class="w-3/12 px-4 py-2">
-                                    Last Updated
+                                    {$_('pages.warriorProfile.apiKeys.updated')}
                                 </th>
                                 <th class="w-3/12 px-4 py-2">
-                                    Actions
+                                    {$_('pages.warriorProfile.apiKeys.actions')}
                                 </th>
                             </tr>
                         </thead>
@@ -465,17 +486,28 @@ import CreateApiKey from '../components/CreateApiKey.svelte'
                             {#each apiKeys as apk}
                                 <tr>
                                     <td class="border px-4 py-2">{apk.name}</td>
-                                    <td class="border px-4 py-2">{apk.prefix}</td>
-                                    <td class="border px-4 py-2">{apk.active}</td>
-                                    <td class="border px-4 py-2">{new Date(apk.updatedDate).toLocaleString()}</td>
                                     <td class="border px-4 py-2">
-                                        <HollowButton onClick={toggleApiKeyActiveStatus(apk.id, apk.active)}>
-                                            {#if !apk.active}Activate{:else}Deactivate{/if}
+                                        {apk.prefix}
+                                    </td>
+                                    <td class="border px-4 py-2">
+                                        {apk.active}
+                                    </td>
+                                    <td class="border px-4 py-2">
+                                        {new Date(apk.updatedDate).toLocaleString()}
+                                    </td>
+                                    <td class="border px-4 py-2">
+                                        <HollowButton
+                                            onClick="{toggleApiKeyActiveStatus(apk.id, apk.active)}">
+                                            {#if !apk.active}
+                                                {$_('pages.warriorProfile.apiKeys.activateButton')}
+                                            {:else}
+                                                {$_('pages.warriorProfile.apiKeys.deactivateButton')}
+                                            {/if}
                                         </HollowButton>
                                         <HollowButton
                                             color="red"
-                                            onClick={deleteApiKey(apk.id)}>
-                                            Delete
+                                            onClick="{deleteApiKey(apk.id)}">
+                                            {$_('pages.warriorProfile.apiKeys.deleteButton')}
                                         </HollowButton>
                                     </td>
                                 </tr>
@@ -489,10 +521,9 @@ import CreateApiKey from '../components/CreateApiKey.svelte'
     {#if showApiKeyCreate}
         <CreateApiKey
             {toggleCreateApiKey}
-            handleApiKeyCreate={getApiKeys}
+            handleApiKeyCreate="{getApiKeys}"
             {notifications}
             {xfetch}
-            {eventTag}
-        />
+            {eventTag} />
     {/if}
 </PageLayout>
