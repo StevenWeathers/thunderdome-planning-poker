@@ -1,8 +1,8 @@
 package database
 
 import (
-	"crypto/aes"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"log"
@@ -10,14 +10,13 @@ import (
 	"time"
 )
 
-// EncryptAPIKey encrypts a string using AES
-func (d *Database) EncryptAPIKey(plaintext string) string {
-	key := []byte(d.config.SecretKey)
-	c, _ := aes.NewCipher(key)
-	out := make([]byte, len(plaintext))
-	c.Encrypt(out, []byte(plaintext))
+// HashAPIKey hashes the API key using SHA256 (not reversible)
+func (d *Database) HashAPIKey(apikey string) string {
+	data := []byte(apikey)
+	hash := sha256.Sum256(data)
+	result := hex.EncodeToString(hash[:])
 
-	return hex.EncodeToString(out)
+	return result
 }
 
 // generate random secure string of X length
@@ -62,7 +61,7 @@ func (d *Database) GenerateAPIKey(WarriorID string, KeyName string) (*APIKey, er
 		Active:      true,
 		CreatedDate: time.Now(),
 	}
-	hashedKey := d.EncryptAPIKey(APIKEY.Key)
+	hashedKey := d.HashAPIKey(APIKEY.Key)
 	keyID := apiPrefix + "." + hashedKey
 
 	e := d.db.QueryRow(
@@ -152,7 +151,7 @@ func (d *Database) ValidateAPIKey(APK string) (WarriorID string, ValidatationErr
 	var warID string = ""
 
 	splitKey := strings.Split(APK, ".")
-	hashedKey := d.EncryptAPIKey(APK)
+	hashedKey := d.HashAPIKey(APK)
 	keyID := splitKey[0] + "." + hashedKey
 
 	e := d.db.QueryRow(

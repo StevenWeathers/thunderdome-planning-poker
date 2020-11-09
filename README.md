@@ -125,7 +125,6 @@ The following configuration options exists:
 | `db.pass`                  | DB_PASS              | Database user password.                    | odinson |
 | `db.name`                  | DB_NAME              | Database instance name.                    | thunderdome |
 | `db.sslmode`               | DB_SSLMODE           | Database SSL Mode (disable, allow, prefer, require, verify-ca, verify-full). | disable |
-| `db.secret_key`            | DB_SECRET_KEY        | Secret Key used for encrypting API keys (Must be exactly 16, 24, or 32 characters long)    | wedontneedanotherherothunderdome |
 | `smtp.host`                | SMTP_HOST            | Smtp server hostname.                      | localhost |
 | `smtp.port`                | SMTP_PORT            | Smtp server port number.                   | 25 |
 | `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  | true |

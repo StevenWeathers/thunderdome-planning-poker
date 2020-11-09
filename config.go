@@ -32,7 +32,6 @@ func InitConfig() {
 	viper.SetDefault("db.pass", "odinson")
 	viper.SetDefault("db.name", "thunderdome")
 	viper.SetDefault("db.sslmode", "disable")
-	viper.SetDefault("db.secret_key", "wedontneedanotherherothunderdome")
 
 	viper.SetDefault("smtp.host", "localhost")
 	viper.SetDefault("smtp.port", "25")
@@ -81,7 +80,6 @@ func InitConfig() {
 	viper.BindEnv("db.pass", "DB_PASS")
 	viper.BindEnv("db.name", "DB_NAME")
 	viper.BindEnv("db.sslmode", "DB_SSLMODE")
-	viper.BindEnv("db.secretKey", "DB_SECRET_KEY")
 
 	viper.BindEnv("smtp.host", "SMTP_HOST")
 	viper.BindEnv("smtp.port", "SMTP_PORT")
