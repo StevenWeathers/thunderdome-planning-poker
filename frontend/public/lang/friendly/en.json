@@ -39,6 +39,10 @@
                 "badFileType": "Error bad file type",
                 "errorReadingFile": "Error reading file"
             },
+            "importJiraRest": {
+                "button": "Import Jira REST",
+                "process": "Import"
+            },
             "fields": {
                 "name": {
                     "label": "Story Name",
@@ -198,6 +202,10 @@
                 },
                 "enable_notifications": {
                     "label": "Enable game notifications"
+                },
+                "jiraRestApiToken": {
+                    "label": "JIRA Rest API Token (associated with email)",
+                    "placeholder": "Enter REST API token"
                 }
             },
             "updatePasswordForm": {
@@ -290,6 +298,29 @@
                 "highest": "Highest",
                 "showVoters": "Show Voters",
                 "unknownWarrior": "Unknown Player"
+            }
+        },
+        "jiraRestCfg": {
+            "fields":{
+                "username" : {
+                    "label": "Username",
+                    "placeholder": "Please enter username"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "Please enter password"
+                },
+                "serverUrl": {
+                    "label": "JIRA Server URL",
+                    "placeholder": "Please enter JIRA Server URL"
+                },
+                "jql": {
+                    "label": "JQL Ticket search string",
+                    "placeholder": "Please enter JQL search string"
+                }
+            },
+            "sendRequest": {
+                "error": "Unable to retrieve the tickets from Jira via REST"
             }
         }
     },

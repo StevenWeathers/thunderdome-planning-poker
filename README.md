@@ -130,17 +130,21 @@ The following configuration options exists:
 | `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  | true |
 | `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity.  Usually unset. | |
 | `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome. | no-reply@thunderdome.dev |
-| `config.allowedPointValues` | CONFIG_POINTS_ALLOWED | List of available point values for creating battles. | 0, 1/2, 2, 3, 5, 8, 13, 20, 40, 100, ? |
-| `config.defaultPointValues` | CONFIG_POINTS_DEFAULT | List of default selected points for new battles. | 1, 2, 3, 5, 8 , 13, ? |
-| `config.show_warrior_rank` | CONFIG_SHOW_RANK     | Set to enable an icon showing the rank of a warrior during battle. | false |
-| `config.avatar_service`    | CONFIG_AVATAR_SERVICE | Avatar service used, possible values see next paragraph | default |
-| `config.toast_timeout`     | CONFIG_TOAST_TIMEOUT | Number of milliseconds before notifications are hidden. | 1000 |
-| `config.allow_guests`     | CONFIG_ALLOW_GUESTS | Whether or not to allow guest (anonymous) users. | true |
-| `config.allow_registration`     | CONFIG_ALLOW_REGISTRATION | Whether or not to allow user registration (outside Admin). | true |
-| `config.allow_jira_import`     | CONFIG_ALLOW_JIRA_IMPORT | Whether or not to allow import plans from JIRA XML. | true |
-| `config.default_locale`   | CONFIG_DEFAULT_LOCALE | The default locale (language) for the UI | en |
-| `config.friendly_ui_verbs`    | CONFIG_FRIENDLY_UI_VERBS | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly | false |
-| `auth.method`              |  AUTH_METHOD   | Choose `normal` or `ldap` as authentication method.  See separate section on LDAP configuration. | normal |
+| `config.allowedPointValues`     | CONFIG_POINTS_ALLOWED         | List of available point values for creating battles. | 0, 1/2, 2, 3, 5, 8, 13, 20, 40, 100, ? |
+| `config.defaultPointValues`     | CONFIG_POINTS_DEFAULT         | List of default selected points for new battles. | 1, 2, 3, 5, 8 , 13, ? |
+| `config.show_warrior_rank`      | CONFIG_SHOW_RANK              | Set to enable an icon showing the rank of a warrior during battle. | false |
+| `config.avatar_service`         | CONFIG_AVATAR_SERVICE         | Avatar service used, possible values see next paragraph | default |
+| `config.toast_timeout`          | CONFIG_TOAST_TIMEOUT          | Number of milliseconds before notifications are hidden. | 1000 |
+| `config.allow_guests`           | CONFIG_ALLOW_GUESTS           | Whether or not to allow guest (anonymous) users. | true |
+| `config.allow_registration`     | CONFIG_ALLOW_REGISTRATION     | Whether or not to allow user registration (outside Admin). | true |
+| `config.allow_jira_import`      | CONFIG_ALLOW_JIRA_IMPORT      | Whether or not to allow import plans from JIRA XML. | true |
+| `config.default_locale`         | CONFIG_DEFAULT_LOCALE         | The default locale (language) for the UI | en |
+| `config.friendly_ui_verbs`      | CONFIG_FRIENDLY_UI_VERBS      | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly | false |
+| `auth.method`                   | AUTH_METHOD                   | Choose `normal` or `ldap` as authentication method.  See separate section on LDAP configuration. | normal
+| `jira.allow_import_rest`        | JIRA_ALLOW_IMPORT_REST        | Whether or not to allow import plans via JIRA REST interface. | false | 
+| `jira.serverUrl`                | JIRA_SERVER_URL               | Jira server URL where the plans can be loaded from. The application assumes the REST api at path `${jira.serverUrl}/rest/api/2` | |
+| `jira.limit`                    | JIRA_LIMIT                    | Number of tickets imported in one step, must be between 1 - 50 | 30 |
+| `jira.acceptance_fieldname`     | JIRA_ACCEPTANCE_FIELDNAME     | Custom fieldname for acceptance criteria. If set this Jira custom field is used for acceptance criteria. Check your Jira server installation for the correct fieldname (should be something like `customfield_12345`) | |
 
 ## Avatar Service configuration
 

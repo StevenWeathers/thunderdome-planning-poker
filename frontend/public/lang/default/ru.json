@@ -39,6 +39,10 @@
                 "badFileType": "Ошибка: плохой тип файла",
                 "errorReadingFile": "Ошибка чтения файла"
             },
+            "importJiraRest": {
+                "button": "Import Jira REST",
+                "process": "Import"
+            },
             "fields": {
                 "name": {
                     "label": "Заголовок задачи",
@@ -198,6 +202,10 @@
                 },
                 "enable_notifications": {
                     "label": "Включить уведомления"
+                },
+                "jiraRestApiToken": {
+                    "label": "JIRA Rest API Token (associated with email)",
+                    "placeholder": "Enter REST API token"
                 }
             },
             "updatePasswordForm": {
@@ -290,6 +298,32 @@
                 "highest": "Лучшее",
                 "showVoters": "Показать проголосовавших",
                 "unknownWarrior": "Неизвестный участник"
+            }
+        },
+        "jiraRestCfg": {
+            "fields":{
+                "username" : {
+                    "label": "Username",
+                    "placeholder": "Please enter username"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "Please enter password"
+                },
+                "serverUrl": {
+                    "label": "JIRA Server URL",
+                    "placeholder": "Please enter JIRA Server URL"
+                },
+                "jql": {
+                    "label": "JQL Ticket search string",
+                    "placeholder": "Please enter JQL search string"
+                }
+            },
+            "sendRequest": {
+                "error": "Unable to retrieve the tickets from Jira via REST"
+            },
+            "apiToken": {
+                "error": "The REST service has been configured to use Jira API Token. Please add one to your profile."
             }
         }
     },

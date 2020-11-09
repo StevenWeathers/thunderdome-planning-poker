@@ -51,6 +51,7 @@ type Warrior struct {
 	WarriorEmail         string `json:"email"`
 	WarriorRank          string `json:"rank"`
 	WarriorAvatar        string `json:"avatar"`
+	JiraRestApiToken     string `json:"jiraRestApiToken"`
 	Verified             bool   `json:"verified"`
 	NotificationsEnabled bool   `json:"notificationsEnabled"`
 }

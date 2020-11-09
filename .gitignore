@@ -41,6 +41,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+*.iml
 
 # Optional eslint cache
 .eslintcache

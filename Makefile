@@ -39,6 +39,7 @@ format:
 	$(GOFMT) -s -w datasrc.go
 	$(GOFMT) -s -w handlers.go
 	$(GOFMT) -s -w client.go
+	$(GOFMT) -s -w jira-rest.go
 	$(GOFMT) -s -w hub.go
 	$(GOFMT) -s -w main.go
 	$(GOFMT) -s -w utils.go

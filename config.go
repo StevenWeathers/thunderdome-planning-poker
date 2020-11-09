@@ -61,6 +61,11 @@ func InitConfig() {
 	viper.SetDefault("auth.ldap.mail_attr", "mail")
 	viper.SetDefault("auth.ldap.cn_attr", "cn")
 
+	viper.SetDefault("jira.auth_method", "token")
+	viper.SetDefault("jira.allow_import_rest", false)
+	viper.SetDefault("jira.limit", 30)
+	viper.SetDefault("jira.acceptance_fieldname", "")
+
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")
 	viper.BindEnv("http.secure_cookie", "COOKIE_SECURE")
@@ -108,6 +113,12 @@ func InitConfig() {
 	viper.BindEnv("auth.ldap.filter", "AUTH_LDAP_FILTER")
 	viper.BindEnv("auth.ldap.mail_attr", "AUTH_LDAP_MAIL_ATTR")
 	viper.BindEnv("auth.ldap.cn_attr", "AUTH_LDAP_CN_ATTR")
+
+	viper.BindEnv("jira.allow_import_rest", "JIRA_ALLOW_IMPORT_REST")
+	viper.BindEnv("jira.auth_method", "JIRA_AUTH_METHOD")
+	viper.BindEnv("jira.server_url", "JIRA_SERVER_URL")
+	viper.BindEnv("jira.limit", "JIRA_LIMIT")
+	viper.BindEnv("jira.acceptance_fieldname", "JIRA_ACCEPTANCE_FIELDNAME")
 
 	err := viper.ReadInConfig()
 	if err != nil {

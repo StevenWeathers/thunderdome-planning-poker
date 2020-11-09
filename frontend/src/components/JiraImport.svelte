@@ -8,7 +8,7 @@
     export let eventTag = () => {}
     export let handlePlanAdd = () => {}
 
-    const allowJiraImport = appConfig.AllowJiraImport
+    const allowJiraImport = appConfig.AllowJiraImportXml
 
     function uploadFile() {
         let file = this.files[0]

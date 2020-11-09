@@ -171,20 +171,23 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 // handleIndex parses the index html file, injecting any relevant data
 func (s *server) handleIndex() http.HandlerFunc {
 	type AppConfig struct {
-		AllowedPointValues []string
-		DefaultPointValues []string
-		ShowWarriorRank    bool
-		AvatarService      string
-		ToastTimeout       int
-		AllowGuests        bool
-		AllowRegistration  bool
-		AllowJiraImport    bool
-		DefaultLocale      string
-		FriendlyUIVerbs    bool
-		AuthMethod         string
-		AppVersion         string
-		CookieName         string
-		PathPrefix         string
+		AllowedPointValues  []string
+		DefaultPointValues  []string
+		ShowWarriorRank     bool
+		AvatarService       string
+		ToastTimeout        int
+		AllowGuests         bool
+		AllowRegistration   bool
+		AllowJiraImportXml  bool
+		AllowJiraImportRest bool
+		DefaultLocale       string
+		FriendlyUIVerbs     bool
+		AuthMethod          string
+		JiraServerUrl       string
+		JiraAuthMethod      string
+		AppVersion          string
+		CookieName          string
+		PathPrefix          string
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -213,20 +216,23 @@ func (s *server) handleIndex() http.HandlerFunc {
 	}
 
 	appConfig := AppConfig{
-		AllowedPointValues: viper.GetStringSlice("config.allowedPointValues"),
-		DefaultPointValues: viper.GetStringSlice("config.defaultPointValues"),
-		ShowWarriorRank:    viper.GetBool("config.show_warrior_rank"),
-		AvatarService:      viper.GetString("config.avatar_service"),
-		ToastTimeout:       viper.GetInt("config.toast_timeout"),
-		AllowGuests:        viper.GetBool("config.allow_guests"),
-		AllowRegistration:  viper.GetBool("config.allow_registration") && viper.GetString("auth.method") == "normal",
-		AllowJiraImport:    viper.GetBool("config.allow_jira_import"),
-		DefaultLocale:      viper.GetString("config.default_locale"),
-		FriendlyUIVerbs:    viper.GetBool("config.friendly_ui_verbs"),
-		AuthMethod:         viper.GetString("auth.method"),
-		AppVersion:         s.config.Version,
-		CookieName:         s.config.FrontendCookieName,
-		PathPrefix:         s.config.PathPrefix,
+		AllowedPointValues:  viper.GetStringSlice("config.allowedPointValues"),
+		DefaultPointValues:  viper.GetStringSlice("config.defaultPointValues"),
+		ShowWarriorRank:     viper.GetBool("config.show_warrior_rank"),
+		AvatarService:       viper.GetString("config.avatar_service"),
+		ToastTimeout:        viper.GetInt("config.toast_timeout"),
+		AllowGuests:         viper.GetBool("config.allow_guests"),
+		AllowRegistration:   viper.GetBool("config.allow_registration") && viper.GetString("auth.method") == "normal",
+		AllowJiraImportXml:  viper.GetBool("config.allow_jira_import"),
+		AllowJiraImportRest: viper.GetBool("jira.allow_import_rest"),
+		DefaultLocale:       viper.GetString("config.default_locale"),
+		FriendlyUIVerbs:     viper.GetBool("config.friendly_ui_verbs"),
+		AuthMethod:          viper.GetString("auth.method"),
+		JiraServerUrl:       viper.GetString("jira.server_url"),
+		JiraAuthMethod:      viper.GetString("jira.auth_method"),
+		AppVersion:          s.config.Version,
+		CookieName:          s.config.FrontendCookieName,
+		PathPrefix:          s.config.PathPrefix,
 	}
 
 	data := UIConfig{
@@ -577,6 +583,7 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 		json.Unmarshal(body, &keyVal) // check for errors
 		WarriorName := keyVal["warriorName"].(string)
 		WarriorAvatar := keyVal["warriorAvatar"].(string)
+		JiraRestApiToken := keyVal["jiraRestApiToken"].(string)
 		NotificationsEnabled, _ := keyVal["notificationsEnabled"].(bool)
 
 		WarriorID := vars["id"]
@@ -586,7 +593,7 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName, WarriorAvatar, NotificationsEnabled)
+		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName, WarriorAvatar, NotificationsEnabled, JiraRestApiToken)
 		if updateErr != nil {
 			log.Println("error attempting to update warrior profile : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -771,5 +778,49 @@ func (s *server) handleWarriorAvatar() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+	}
+}
+
+/*
+	JIRA Rest handlers
+*/
+
+func (s *server) handleGetJiraTickets() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		warriorID, cookieErr := s.validateWarriorCookie(w, r)
+		if cookieErr != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		_, warErr := s.database.GetWarrior(warriorID)
+
+		if warErr != nil {
+			log.Println("error finding warrior : " + warErr.Error() + "\n")
+			s.clearWarriorCookies(w)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
+		if bodyErr != nil {
+			log.Println("error reading JIRA REST config : " + bodyErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		var keyVal struct {
+			UserName string `json:"userName"`
+			Password string `json:"password"`
+			EndPoint string `json:"endpoint"`
+			Jql      string `json:"jql"`
+		}
+		json.Unmarshal(body, &keyVal) // check for errors
+
+		api := keyVal.EndPoint + "/rest/api/2/search?jql="
+
+		response := getListOfTickets(keyVal.UserName, keyVal.Password, api, keyVal.Jql)
+
+		RespondWithJSON(w, http.StatusOK, response)
 	}
 }
