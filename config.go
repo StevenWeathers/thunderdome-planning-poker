@@ -50,7 +50,7 @@ func InitConfig() {
 	viper.SetDefault("config.allow_jira_import", true)
 	viper.SetDefault("config.default_locale", "en")
 	viper.SetDefault("config.friendly_ui_verbs", false)
-	viper.SetDefault("config.allow_external_api", true)
+	viper.SetDefault("config.allow_external_api", false)
 
 	viper.SetDefault("auth.method", "normal")
 	viper.SetDefault("auth.ldap.url", "")
