@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"html/template"
@@ -11,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
 	"github.com/anthonynsimon/bild/transform"
@@ -20,6 +22,13 @@ import (
 	"github.com/o1egl/govatar"
 	"github.com/spf13/viper"
 	"gopkg.in/go-playground/validator.v9"
+)
+
+type contextKey string
+
+var (
+	contextKeyWarriorID contextKey
+	apiKeyHeaderName    string = "X-API-Key"
 )
 
 type warriorAccount struct {
@@ -149,10 +158,25 @@ func (s *server) validateWarriorCookie(w http.ResponseWriter, r *http.Request) (
 // adminOnly middleware checks if the user is an admin, otherwise reject their request
 func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		warriorID, cookieErr := s.validateWarriorCookie(w, r)
-		if cookieErr != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
+		apiKey := r.Header.Get(apiKeyHeaderName)
+		apiKey = strings.TrimSpace(apiKey)
+		var warriorID string
+
+		if apiKey != "" {
+			var apiKeyErr error
+			warriorID, apiKeyErr = s.database.ValidateAPIKey(apiKey)
+			if apiKeyErr != nil {
+				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+		} else {
+			var cookieErr error
+			warriorID, cookieErr = s.validateWarriorCookie(w, r)
+			if cookieErr != nil {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
 		}
 
 		adminErr := s.database.ConfirmAdmin(warriorID)
@@ -160,7 +184,48 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		h(w, r)
+
+		ctx := context.WithValue(r.Context(), contextKeyWarriorID, warriorID)
+
+		h(w, r.WithContext(ctx))
+	}
+}
+
+// warriorOnly validates that the request was made by a valid warrior
+func (s *server) warriorOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		apiKey := r.Header.Get(apiKeyHeaderName)
+		apiKey = strings.TrimSpace(apiKey)
+		var warriorID string
+
+		if apiKey != "" {
+			var apiKeyErr error
+			warriorID, apiKeyErr = s.database.ValidateAPIKey(apiKey)
+			if apiKeyErr != nil {
+				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+		} else {
+			var cookieErr error
+			warriorID, cookieErr = s.validateWarriorCookie(w, r)
+			if cookieErr != nil {
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+		}
+
+		_, warErr := s.database.GetWarrior(warriorID)
+		if warErr != nil {
+			log.Println("error finding warrior : " + warErr.Error() + "\n")
+			s.clearWarriorCookies(w)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), contextKeyWarriorID, warriorID)
+
+		h(w, r.WithContext(ctx))
 	}
 }
 
@@ -242,6 +307,10 @@ func (s *server) handleIndex() http.HandlerFunc {
 	}
 }
 
+/*
+	Auth Handlers
+*/
+
 // handleLogin attempts to login the warrior by comparing email/password to whats in DB
 func (s *server) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -304,49 +373,6 @@ func (s *server) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.clearWarriorCookies(w)
 		return
-	}
-}
-
-// handleBattleCreate handles creating a battle (arena)
-func (s *server) handleBattleCreate() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		warriorID, cookieErr := s.validateWarriorCookie(w, r)
-		if cookieErr != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		_, warErr := s.database.GetWarrior(warriorID)
-
-		if warErr != nil {
-			log.Println("error finding warrior : " + warErr.Error() + "\n")
-			s.clearWarriorCookies(w)
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
-		if bodyErr != nil {
-			log.Println("error in reading warrior cookie : " + bodyErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		var keyVal struct {
-			BattleName         string           `json:"battleName"`
-			PointValuesAllowed []string         `json:"pointValuesAllowed"`
-			AutoFinishVoting   bool             `json:"autoFinishVoting"`
-			Plans              []*database.Plan `json:"plans"`
-		}
-		json.Unmarshal(body, &keyVal) // check for errors
-
-		newBattle, err := s.database.CreateBattle(warriorID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		RespondWithJSON(w, http.StatusOK, newBattle)
 	}
 }
 
@@ -427,35 +453,6 @@ func (s *server) handleWarriorEnlist() http.HandlerFunc {
 	}
 }
 
-// handleBattlesGet looks up battles associated with warriorID
-func (s *server) handleBattlesGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		warriorID, cookieErr := s.validateWarriorCookie(w, r)
-		if cookieErr != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		_, warErr := s.database.GetWarrior(warriorID)
-
-		if warErr != nil {
-			log.Println("error finding warrior : " + warErr.Error() + "\n")
-			s.clearWarriorCookies(w)
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		battles, err := s.database.GetBattlesByWarrior(warriorID)
-
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-
-		RespondWithJSON(w, http.StatusOK, battles)
-	}
-}
-
 // handleForgotPassword attempts to send a password reset email
 func (s *server) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -511,18 +508,17 @@ func (s *server) handleResetPassword() http.HandlerFunc {
 	}
 }
 
+/*
+	Warrior Handlers
+*/
+
 // handleUpdatePassword attempts to update a warriors password
 func (s *server) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, _ := ioutil.ReadAll(r.Body) // check for errors
 		keyVal := make(map[string]string)
 		json.Unmarshal(body, &keyVal) // check for errors
-
-		warriorID, cookieErr := s.validateWarriorCookie(w, r)
-		if cookieErr != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
+		warriorID := r.Context().Value(contextKeyWarriorID).(string)
 
 		WarriorPassword, passwordErr := ValidateWarriorPassword(
 			keyVal["warriorPassword1"],
@@ -552,9 +548,9 @@ func (s *server) handleWarriorProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		WarriorID := vars["id"]
+		warriorCookieID := r.Context().Value(contextKeyWarriorID).(string)
 
-		warriorCookieID, cookieErr := s.validateWarriorCookie(w, r)
-		if cookieErr != nil || WarriorID != warriorCookieID {
+		if WarriorID != warriorCookieID {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -582,8 +578,8 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 		NotificationsEnabled, _ := keyVal["notificationsEnabled"].(bool)
 
 		WarriorID := vars["id"]
-		warriorCookieID, cookieErr := s.validateWarriorCookie(w, r)
-		if cookieErr != nil || WarriorID != warriorCookieID {
+		warriorCookieID := r.Context().Value(contextKeyWarriorID).(string)
+		if WarriorID != warriorCookieID {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -672,6 +668,10 @@ func (s *server) handleWarriorAvatar() http.HandlerFunc {
 	}
 }
 
+/*
+	API Key Handlers
+*/
+
 // handleAPIKeyGenerate handles generating an API key for a warrior
 func (s *server) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -682,8 +682,8 @@ func (s *server) handleAPIKeyGenerate() http.HandlerFunc {
 		APIKeyName := keyVal["name"].(string)
 
 		WarriorID := vars["id"]
-		warriorCookieID, cookieErr := s.validateWarriorCookie(w, r)
-		if cookieErr != nil || WarriorID != warriorCookieID {
+		warriorCookieID := r.Context().Value(contextKeyWarriorID).(string)
+		if WarriorID != warriorCookieID {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -705,8 +705,8 @@ func (s *server) handleWarriorAPIKeys() http.HandlerFunc {
 		vars := mux.Vars(r)
 
 		WarriorID := vars["id"]
-		warriorCookieID, cookieErr := s.validateWarriorCookie(w, r)
-		if cookieErr != nil || WarriorID != warriorCookieID {
+		warriorCookieID := r.Context().Value(contextKeyWarriorID).(string)
+		if WarriorID != warriorCookieID {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -719,6 +719,105 @@ func (s *server) handleWarriorAPIKeys() http.HandlerFunc {
 		}
 
 		RespondWithJSON(w, http.StatusOK, APIKeys)
+	}
+}
+
+// handleWarriorAPIKeys handles getting warrior API keys
+func (s *server) handleWarriorAPIKeyUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		WarriorID := vars["id"]
+		warriorCookieID := r.Context().Value(contextKeyWarriorID).(string)
+		if WarriorID != warriorCookieID {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		APK := vars["keyID"]
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]interface{})
+		json.Unmarshal(body, &keyVal) // check for errors
+		active := keyVal["active"].(bool)
+
+		APIKeys, keysErr := s.database.UpdateWarriorAPIKey(WarriorID, APK, active)
+		if keysErr != nil {
+			log.Println("error updating api key : " + keysErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, APIKeys)
+	}
+}
+
+// handleWarriorAPIKeys handles getting warrior API keys
+func (s *server) handleWarriorAPIKeyDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		WarriorID := vars["id"]
+		warriorCookieID := r.Context().Value(contextKeyWarriorID).(string)
+		if WarriorID != warriorCookieID {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		APK := vars["keyID"]
+
+		APIKeys, keysErr := s.database.DeleteWarriorAPIKey(WarriorID, APK)
+		if keysErr != nil {
+			log.Println("error deleting api key : " + keysErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, APIKeys)
+	}
+}
+
+/*
+	Battle Handlers
+*/
+// handleBattleCreate handles creating a battle (arena)
+func (s *server) handleBattleCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		warriorID := r.Context().Value(contextKeyWarriorID).(string)
+		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
+		if bodyErr != nil {
+			log.Println("error in reading warrior cookie : " + bodyErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		var keyVal struct {
+			BattleName         string           `json:"battleName"`
+			PointValuesAllowed []string         `json:"pointValuesAllowed"`
+			AutoFinishVoting   bool             `json:"autoFinishVoting"`
+			Plans              []*database.Plan `json:"plans"`
+		}
+		json.Unmarshal(body, &keyVal) // check for errors
+
+		newBattle, err := s.database.CreateBattle(warriorID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, newBattle)
+	}
+}
+
+// handleBattlesGet looks up battles associated with warriorID
+func (s *server) handleBattlesGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		warriorID := r.Context().Value(contextKeyWarriorID).(string)
+		battles, err := s.database.GetBattlesByWarrior(warriorID)
+
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, battles)
 	}
 }
 

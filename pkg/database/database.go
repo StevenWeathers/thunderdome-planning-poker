@@ -91,15 +91,23 @@ func GetBoolEnv(key string, fallback bool) bool {
 // New runs db migrations, sets up a db connection pool
 // and sets previously active warriors to false during startup
 func New(AdminEmail string) *Database {
+	SecretKey := viper.GetString("db.secret_key")
+	// make sure SecretKey is one of the 3 valid lengths for AES encryption
+	var ValidSecretKey bool = (len(SecretKey) == 16 || len(SecretKey) == 24 || len(SecretKey) == 32)
+	if viper.GetBool("config.allow_external_api") && !ValidSecretKey {
+		log.Fatal("External API is enabled but db.secret_key is not one of three valid character lengths: 16, 24, 32")
+	}
+
 	var d = &Database{
 		// read environment variables and sets up database configuration values
 		config: &Config{
-			host:     viper.GetString("db.host"),
-			port:     viper.GetInt("db.port"),
-			user:     viper.GetString("db.user"),
-			password: viper.GetString("db.pass"),
-			dbname:   viper.GetString("db.name"),
-			sslmode:  viper.GetString("db.sslmode"),
+			host:      viper.GetString("db.host"),
+			port:      viper.GetInt("db.port"),
+			user:      viper.GetString("db.user"),
+			password:  viper.GetString("db.pass"),
+			dbname:    viper.GetString("db.name"),
+			sslmode:   viper.GetString("db.sslmode"),
+			SecretKey: SecretKey,
 		},
 	}
 

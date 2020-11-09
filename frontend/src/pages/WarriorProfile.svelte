@@ -10,6 +10,7 @@
     import { validateName, validatePasswords } from '../validationUtils.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
+import CreateApiKey from '../components/CreateApiKey.svelte'
 
     export let xfetch
     export let router
@@ -18,6 +19,7 @@
 
     let warriorProfile = {}
     let apiKeys = []
+    let showApiKeyCreate = false
 
     let updatePassword = false
     let warriorPassword1 = ''
@@ -101,7 +103,7 @@
                             warriorProfile.notificationsEnabled,
                     })
 
-                    notifications.success('Profile updated.', 1500)
+                    notifications.success('Profile updated.')
                     eventTag('update_profile', 'engagement', 'success')
                 })
                 .catch(function(error) {
@@ -163,24 +165,45 @@
     }
     getApiKeys()
 
-    function createApiKey() {
-        const body = {
-            name: 'test',
-        }
 
-        xfetch(`/api/warrior/${$warrior.id}/apikey`, { body })
-                .then(function() {
-                    notifications.success(
-                        'Api Key created',
-                        1500,
-                    )
-                    getApiKeys()
+    function deleteApiKey(apk) {
+        return function () {
+            xfetch(`/api/warrior/${$warrior.id}/apikey/${apk}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(function(apks) {
+                    notifications.success('Api Key deleted')
+                    apiKeys = apks
                 })
                 .catch(function(error) {
                     notifications.danger(
-                        'Failed to create api key'
+                        'Failed to delete api key'
                     )
                 })
+        }
+    }
+
+    function toggleApiKeyActiveStatus(apk, active) {
+        return function () {
+            const body = {
+                active: !active
+            }
+
+            xfetch(`/api/warrior/${$warrior.id}/apikey/${apk}`, { body, method: 'PUT' })
+                .then(res => res.json())
+                .then(function(apks) {
+                    notifications.success('Api Key activated')
+                    apiKeys = apks
+                })
+                .catch(function(error) {
+                    notifications.danger(
+                        'Failed to activate api key'
+                    )
+                })
+        }
+    }
+
+    function toggleCreateApiKey() {
+        showApiKeyCreate = !showApiKeyCreate
     }
 
     onMount(() => {
@@ -411,7 +434,7 @@
                         </div>
                         <div class="w-1/5">
                             <div class="text-right">
-                                <HollowButton onClick={createApiKey}>
+                                <HollowButton onClick={toggleCreateApiKey}>
                                     Create API Key
                                 </HollowButton>
                             </div>
@@ -421,19 +444,21 @@
                     <table class="table-fixed w-full">
                         <thead>
                             <tr>
-                                <th class="w-2/6 px-4 py-2">
+                                <th class="w-2/12 px-4 py-2">
                                     Name
                                 </th>
-                                <th class="w-1/6 px-4 py-2">
+                                <th class="w-2/12 px-4 py-2">
                                     Prefix
                                 </th>
-                                <th class="w-1/6 px-4 py-2">
+                                <th class="w-2/12 px-4 py-2">
                                     Active
                                 </th>
-                                <th class="w-2/6 px-4 py-2">
-                                    Created
+                                <th class="w-3/12 px-4 py-2">
+                                    Last Updated
                                 </th>
-                                <th class="w-1/6 px-4 py-2"></th>
+                                <th class="w-3/12 px-4 py-2">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -442,8 +467,17 @@
                                     <td class="border px-4 py-2">{apk.name}</td>
                                     <td class="border px-4 py-2">{apk.prefix}</td>
                                     <td class="border px-4 py-2">{apk.active}</td>
-                                    <td class="border px-4 py-2">{new Date(apk.createdDate).toLocaleString()}</td>
-                                    <td class="border px-4 py-2"></td>
+                                    <td class="border px-4 py-2">{new Date(apk.updatedDate).toLocaleString()}</td>
+                                    <td class="border px-4 py-2">
+                                        <HollowButton onClick={toggleApiKeyActiveStatus(apk.id, apk.active)}>
+                                            {#if !apk.active}Activate{:else}Deactivate{/if}
+                                        </HollowButton>
+                                        <HollowButton
+                                            color="red"
+                                            onClick={deleteApiKey(apk.id)}>
+                                            Delete
+                                        </HollowButton>
+                                    </td>
                                 </tr>
                             {/each}
                         </tbody>
@@ -452,4 +486,13 @@
             {/if}
         </div>
     </div>
+    {#if showApiKeyCreate}
+        <CreateApiKey
+            {toggleCreateApiKey}
+            handleApiKeyCreate={getApiKeys}
+            {notifications}
+            {xfetch}
+            {eventTag}
+        />
+    {/if}
 </PageLayout>

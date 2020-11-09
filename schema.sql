@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS api_keys (
     name VARCHAR(256) NOT NULL,
     active BOOL DEFAULT true,
     created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW(),
     UNIQUE(warrior_id, name)
 );
 

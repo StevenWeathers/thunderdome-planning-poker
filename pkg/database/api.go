@@ -12,7 +12,8 @@ import (
 )
 
 // EncryptAES encrypts a string using AES
-func EncryptAES(key []byte, plaintext string) string {
+func (d *Database) EncryptAES(plaintext string) string {
+	key := []byte(d.config.SecretKey)
 	c, _ := aes.NewCipher(key)
 	out := make([]byte, len(plaintext))
 	c.Encrypt(out, []byte(plaintext))
@@ -48,9 +49,7 @@ func (d *Database) GenerateAPIKey(WarriorID string, KeyName string) (*APIKey, er
 		Active:      true,
 		CreatedDate: time.Now(),
 	}
-	// cipher key
-	key := "thisis32bitlongpassphraseimusing"
-	hashedSecret := EncryptAES([]byte(key), apiSecret)
+	hashedSecret := d.EncryptAES(apiSecret)
 	keyID := apiPrefix + "." + hashedSecret
 
 	e := d.db.QueryRow(
@@ -71,7 +70,7 @@ func (d *Database) GenerateAPIKey(WarriorID string, KeyName string) (*APIKey, er
 func (d *Database) GetWarriorAPIKeys(WarriorID string) ([]*APIKey, error) {
 	var APIKeys = make([]*APIKey, 0)
 	rows, err := d.db.Query(
-		"SELECT id, name, warrior_id, active, created_date FROM api_keys WHERE warrior_id = $1 ORDER BY created_date",
+		"SELECT id, name, warrior_id, active, created_date, updated_date FROM api_keys WHERE warrior_id = $1 ORDER BY created_date",
 		WarriorID,
 	)
 	if err == nil {
@@ -86,15 +85,72 @@ func (d *Database) GetWarriorAPIKeys(WarriorID string) ([]*APIKey, error) {
 				&ak.WarriorID,
 				&ak.Active,
 				&ak.CreatedDate,
+				&ak.UpdatedDate,
 			); err != nil {
 				log.Println(err)
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
+				ak.ID = key
 				APIKeys = append(APIKeys, &ak)
 			}
 		}
 	}
 
 	return APIKeys, err
+}
+
+// UpdateWarriorAPIKey updates a warriors api key (active column only)
+func (d *Database) UpdateWarriorAPIKey(WarriorID string, KeyID string, Active bool) ([]*APIKey, error) {
+	if _, err := d.db.Exec(
+		`UPDATE api_keys SET active = $3, updated_date = NOW() WHERE id = $1 AND warrior_id = $2;`, KeyID, WarriorID, Active); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	keys, keysErr := d.GetWarriorAPIKeys(WarriorID)
+	if keysErr != nil {
+		log.Println(keysErr)
+		return nil, keysErr
+	}
+
+	return keys, nil
+}
+
+// DeleteWarriorAPIKey removes a warriors api key
+func (d *Database) DeleteWarriorAPIKey(WarriorID string, KeyID string) ([]*APIKey, error) {
+	if _, err := d.db.Exec(
+		`DELETE FROM api_keys WHERE id = $1 AND warrior_id = $2;`, KeyID, WarriorID); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	keys, keysErr := d.GetWarriorAPIKeys(WarriorID)
+	if keysErr != nil {
+		log.Println(keysErr)
+		return nil, keysErr
+	}
+
+	return keys, nil
+}
+
+// ValidateAPIKey checks to see if the API key exists in the database and if so returns WarriorID
+func (d *Database) ValidateAPIKey(APK string) (WarriorID string, ValidatationErr error) {
+	var warID string = ""
+
+	splitKey := strings.Split(APK, ".")
+	apiSecret := splitKey[1]
+	hashedSecret := d.EncryptAES(apiSecret)
+	keyID := splitKey[0] + "." + hashedSecret
+
+	e := d.db.QueryRow(
+		`SELECT warrior_id FROM api_keys WHERE id = $1 AND active = true`,
+		keyID,
+	).Scan(&warID)
+	if e != nil {
+		log.Println(e)
+		return "", errors.New("active API Key match not found")
+	}
+
+	return warID, nil
 }

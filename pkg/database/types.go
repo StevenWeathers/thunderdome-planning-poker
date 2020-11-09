@@ -7,12 +7,13 @@ import (
 
 // Config holds all the configuration for the db
 type Config struct {
-	host     string
-	port     int
-	user     string
-	password string
-	dbname   string
-	sslmode  string
+	host      string
+	port      int
+	user      string
+	password  string
+	dbname    string
+	sslmode   string
+	SecretKey string
 }
 
 // Database contains all the methods to interact with DB
@@ -80,10 +81,12 @@ type Plan struct {
 
 // APIKey structure
 type APIKey struct {
+	ID          string    `json:"id"`
 	Prefix      string    `json:"prefix"`
 	WarriorID   string    `json:"warriorId"`
 	Name        string    `json:"name"`
 	Key         string    `json:"apiKey"`
 	Active      bool      `json:"active"`
 	CreatedDate time.Time `json:"createdDate"`
+	UpdatedDate time.Time `json:"updatedDate"`
 }
