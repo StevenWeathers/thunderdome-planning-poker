@@ -5,14 +5,13 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"log"
 	"strings"
 	"time"
 )
 
-// EncryptAES encrypts a string using AES
-func (d *Database) EncryptAES(plaintext string) string {
+// EncryptAPIKey encrypts a string using AES
+func (d *Database) EncryptAPIKey(plaintext string) string {
 	key := []byte(d.config.SecretKey)
 	c, _ := aes.NewCipher(key)
 	out := make([]byte, len(plaintext))
@@ -21,25 +20,39 @@ func (d *Database) EncryptAES(plaintext string) string {
 	return hex.EncodeToString(out)
 }
 
+// generate random secure string of X length
+func random(length int) (string, error) {
+	chars := "-_+=!$0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	bytes := make([]byte, length)
+
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+
+	for i, b := range bytes {
+		bytes[i] = chars[b%byte(len(chars))]
+	}
+
+	return string(bytes), nil
+}
+
 // GenerateAPIKey generates a new API key for a Warrior
 func (d *Database) GenerateAPIKey(WarriorID string, KeyName string) (*APIKey, error) {
-	prefix := make([]byte, 4)
-	if _, prefixErr := rand.Read(prefix); prefixErr != nil {
+	apiPrefix, prefixErr := random(8)
+	if prefixErr != nil {
 		err := errors.New("error generating api prefix")
 		log.Println(err)
 		log.Println(prefixErr)
 		return nil, err
 	}
-	apiPrefix := fmt.Sprintf("%x", prefix)
 
-	secret := make([]byte, 16)
-	if _, secretErr := rand.Read(secret); secretErr != nil {
+	apiSecret, secretErr := random(32)
+	if secretErr != nil {
 		err := errors.New("error generating api secret")
 		log.Println(err)
 		log.Println(secretErr)
 		return nil, err
 	}
-	apiSecret := fmt.Sprintf("%x", secret)
 
 	APIKEY := &APIKey{
 		Name:        KeyName,
@@ -49,8 +62,8 @@ func (d *Database) GenerateAPIKey(WarriorID string, KeyName string) (*APIKey, er
 		Active:      true,
 		CreatedDate: time.Now(),
 	}
-	hashedSecret := d.EncryptAES(apiSecret)
-	keyID := apiPrefix + "." + hashedSecret
+	hashedKey := d.EncryptAPIKey(APIKEY.Key)
+	keyID := apiPrefix + "." + hashedKey
 
 	e := d.db.QueryRow(
 		`INSERT INTO api_keys (id, name, warrior_id ) VALUES ($1, $2, $3) RETURNING created_date`,
@@ -139,9 +152,8 @@ func (d *Database) ValidateAPIKey(APK string) (WarriorID string, ValidatationErr
 	var warID string = ""
 
 	splitKey := strings.Split(APK, ".")
-	apiSecret := splitKey[1]
-	hashedSecret := d.EncryptAES(apiSecret)
-	keyID := splitKey[0] + "." + hashedSecret
+	hashedKey := d.EncryptAPIKey(APK)
+	keyID := splitKey[0] + "." + hashedKey
 
 	e := d.db.QueryRow(
 		`SELECT warrior_id FROM api_keys WHERE id = $1 AND active = true`,
