@@ -463,13 +463,9 @@ func (s *server) handleForgotPassword() http.HandlerFunc {
 		WarriorEmail := keyVal["warriorEmail"]
 
 		ResetID, WarriorName, resetErr := s.database.WarriorResetRequest(WarriorEmail)
-		if resetErr != nil {
-			log.Println("error attempting to send warrior reset : " + resetErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+		if resetErr == nil {
+			s.email.SendForgotPassword(WarriorName, WarriorEmail, ResetID)
 		}
-
-		s.email.SendForgotPassword(WarriorName, WarriorEmail, ResetID)
 
 		w.WriteHeader(http.StatusOK)
 		return
@@ -783,7 +779,7 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 		warriorID := r.Context().Value(contextKeyWarriorID).(string)
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
-			log.Println("error in reading warrior cookie : " + bodyErr.Error() + "\n")
+			log.Println("error in reading request body: " + bodyErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

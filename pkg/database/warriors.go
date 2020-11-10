@@ -198,8 +198,7 @@ func (d *Database) WarriorResetRequest(WarriorEmail string) (resetID string, war
 	).Scan(&ResetID, &WarriorID, &WarriorName)
 	if e != nil {
 		log.Println("Unable to reset warrior: ", e)
-		// we don't want to alert the user that the email isn't valid
-		return "", "", nil
+		return "", "", e
 	}
 
 	return ResetID.String, WarriorName.String, nil

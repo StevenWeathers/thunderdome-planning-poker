@@ -391,7 +391,11 @@ CREATE FUNCTION insert_warrior_reset(
 AS $$ 
 BEGIN
     SELECT id, name INTO warriorId, warriorName FROM warriors WHERE email = warriorEmail;
-    INSERT INTO warrior_reset (warrior_id) VALUES (warriorId) RETURNING reset_id INTO resetId;
+    IF FOUND THEN
+        INSERT INTO warrior_reset (warrior_id) VALUES (warriorId) RETURNING reset_id INTO resetId;
+    ELSE
+        RAISE EXCEPTION 'Nonexistent User --> %', warriorEmail USING HINT = 'Please check your Email';
+    END IF;
 END;
 $$ LANGUAGE plpgsql;
 
