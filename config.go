@@ -63,6 +63,7 @@ func InitConfig() {
 
 	viper.SetDefault("jira.auth_method", "token")
 	viper.SetDefault("jira.allow_import_rest", false)
+	viper.SetDefault("jira.server_url", "")
 	viper.SetDefault("jira.limit", 30)
 	viper.SetDefault("jira.acceptance_fieldname", "")
 
