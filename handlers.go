@@ -817,7 +817,7 @@ func (s *server) handleGetJiraTickets() http.HandlerFunc {
 		}
 		json.Unmarshal(body, &keyVal) // check for errors
 
-		api := keyVal.EndPoint + "/rest/api/2/search?jql="
+		api := keyVal.EndPoint + "/rest/api/2/search"
 
 		response := getListOfTickets(keyVal.UserName, keyVal.Password, api, keyVal.Jql)
 
