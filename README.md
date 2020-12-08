@@ -106,30 +106,51 @@ located in one of:
 * `$HOME/.config/thunderdome/`
 * Current working directory
 
-The following configuration options exists:
+## Required configuration items
+
+For Thunderdome to work correctly the following configuration items are required:
 
 | Option                     | Environment Variable | Description                                | Default Value           |
 | -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
-| `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | strongest-avenger |
-| `http.port`                | PORT                 | Which port to listen for HTTP connections. | 8080 |
-| `http.secure_cookie`       | COOKIE_SECURE        | Use secure cookies or not.                 | true |
-| `http.backend_cookie_name` | BACKEND_COOKIE_NAME  | The name of the backend cookie utilized for actual auth/validation | warriorId |
-| `http.frontend_cookie_name`| FRONTEND_COOKIE_NAME | The name of the cookie utilized by the UI (purely for convenience not auth) | warrior |
 | `http.domain`              | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome.  Used for creating URLs in emails. | thunderdome.dev |
-| `http.path_prefix`         | PATH_PREFIX          | Prefix added to all application urls for shared domain use, in format of `/{prefix}` e.g. `/thunderdome` | |
-| `analytics.enabled`        | ANALYTICS_ENABLED    | Enable/disable google analytics.           | true |
-| `analytics.id`             | ANALYTICS_ID         | Google analytics identifier.               | UA-140245309-1 |
+| `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | strongest-avenger |
+
+### Database configuration
+
+Thunderdome uses a Postgres database to store all data, the following configuration options exist: 
+
+| Option                     | Environment Variable | Description                                | Default Value           |
+| -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
 | `db.host`                  | DB_HOST              | Database host name.                        | db |
 | `db.port`                  | DB_PORT              | Database port number.                      | 5432 |
 | `db.user`                  | DB_USER              | Database user id.                          | thor |
 | `db.pass`                  | DB_PASS              | Database user password.                    | odinson |
 | `db.name`                  | DB_NAME              | Database instance name.                    | thunderdome |
 | `db.sslmode`               | DB_SSLMODE           | Database SSL Mode (disable, allow, prefer, require, verify-ca, verify-full). | disable |
+
+### SMTP (Mail) server configuration
+
+Thunderdome sends emails for user registration related activities, the following configuration options exist:
+
+| Option                     | Environment Variable | Description                                | Default Value           |
+| -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
 | `smtp.host`                | SMTP_HOST            | Smtp server hostname.                      | localhost |
 | `smtp.port`                | SMTP_PORT            | Smtp server port number.                   | 25 |
 | `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  | true |
 | `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity.  Usually unset. | |
 | `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome. | no-reply@thunderdome.dev |
+
+## Optional configuration items
+
+| Option                     | Environment Variable | Description                                | Default Value           |
+| -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
+| `http.port`                | PORT                 | Which port to listen for HTTP connections. | 8080 |
+| `http.path_prefix`         | PATH_PREFIX          | Prefix added to all application urls for shared domain use, in format of `/{prefix}` e.g. `/thunderdome` | |
+| `http.secure_cookie`       | COOKIE_SECURE        | Use secure cookies or not.                 | true |
+| `http.backend_cookie_name` | BACKEND_COOKIE_NAME  | The name of the backend cookie utilized for actual auth/validation | warriorId |
+| `http.frontend_cookie_name`| FRONTEND_COOKIE_NAME | The name of the cookie utilized by the UI (purely for convenience not auth) | warrior |
+| `analytics.enabled`        | ANALYTICS_ENABLED    | Enable/disable google analytics.           | true |
+| `analytics.id`             | ANALYTICS_ID         | Google analytics identifier.               | UA-140245309-1 |
 | `config.allowedPointValues` | CONFIG_POINTS_ALLOWED | List of available point values for creating battles. | 0, 1/2, 2, 3, 5, 8, 13, 20, 40, 100, ? |
 | `config.defaultPointValues` | CONFIG_POINTS_DEFAULT | List of default selected points for new battles. | 1, 2, 3, 5, 8 , 13, ? |
 | `config.show_warrior_rank` | CONFIG_SHOW_RANK     | Set to enable an icon showing the rank of a warrior during battle. | false |
@@ -143,7 +164,7 @@ The following configuration options exists:
 | `config.allow_external_api`    | CONFIG_ALLOW_EXTERNAL_API | Whether or not to allow External API access | false |
 | `auth.method`              |  AUTH_METHOD   | Choose `normal` or `ldap` as authentication method.  See separate section on LDAP configuration. | normal |
 
-## Avatar Service configuration
+### Avatar Service configuration
 
 Use the name from table below to configure a service - if not set, `goadorable` is used. Each service provides further options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the different sprites become available. The table shows all supported services and their sprites. In all cases the same ID (`ead26688-5148-4f3c-a35d-1b0117b4f2a9`) has been used creating the avatars.
 
@@ -160,7 +181,7 @@ Use the name from table below to configure a service - if not set, `goadorable` 
 | `robohash` | set1 | set2 | set3 | set4 |
 |            | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set1&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set2&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set3&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set4&size=48x48) |
 
-## LDAP Configuration
+### LDAP Configuration
 
 If `auth.method` is set to `ldap`, then the Create Account function is disabled and authentication
 is done using LDAP.  If the LDAP server authenticates a new user successfully, the Thunderdome user 
