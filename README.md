@@ -29,75 +29,6 @@ docker pull stevenweathers/thunderdome-planning-poker
 
 [![](https://img.shields.io/github/v/release/stevenweathers/thunderdome-planning-poker?include_prereleases)](https://github.com/StevenWeathers/thunderdome-planning-poker/releases/latest)
 
-# Running locally
-
-## Building and running with Docker (preferred solution)
-
-### Using Docker Compose
-
-```
-docker-compose up --build
-```
-
-### Using Docker without Compose
-
-This solution will require you to pass environment variables or setup the config file, as well as setup and manage the DB yourself.
-
-```
-docker build ./ -f ./build/Dockerfile -t thunderdome:latest
-docker run --publish 8080:8080 --name thunderdome thunderdome:latest
-```
-
-## Building
-
-To run without docker you will need to first build, then setup the postgres DB,
-and pass the user, pass, name, host, and port to the application as environment variables 
-or in a config file.
-
-```
-DB_HOST=
-DB_PORT=
-DB_USER=
-DB_PASS=
-DB_NAME=
-```
-
-### Install dependencies
-```
-go get
-go install github.com/markbates/pkger/cmd/pkger
-npm install
-```
-
-## Build with Make
-```
-make build
-```
-### OR manual steps
-
-### Build static assets
-```
-npm run build
-```
-
-### bundle up static assets
-```
-pkger
-```
-
-### Build for current OS
-```
-go build
-```
-
-# Adding new Locale's
-Using svelte-i18n **Thunderdome** now supports Locale selection on the UI (Default en-US)
-
-Adding new locale's involves just a couple of steps.
-
-1. First add the locale dictionary json files in ```frontend/public/lang/default/``` and ```frontend/public/lang/friendly/``` by copying the en.json and just changing the values of all keys
-1. Second, the locale will need to be added to the locales list used by switcher component in ```frontend/config.js``` ```locales``` object
-
 # Configuration
 Thunderdome may be configured through environment variables or via a yaml file `config.yaml`
 located in one of:
@@ -212,6 +143,75 @@ ldapsearch -H auth.ldap.url [-Z] -x [-D auth.ldap.bindname -W] -b auth.ldap.base
 
 The `-Z` is only used if `auth.ldap.use_tls` is set, the `-D` and `-W` parameter is only used if `auth.ldap.bindname` is set.
 
-# Let the Pointing Battles begin!
+# Developing
+
+## Building and running with Docker (preferred solution)
+
+### Using Docker Compose
+
+```
+docker-compose up --build
+```
+
+### Using Docker without Compose
+
+This solution will require you to pass environment variables or setup the config file, as well as setup and manage the DB yourself.
+
+```
+docker build ./ -f ./build/Dockerfile -t thunderdome:latest
+docker run --publish 8080:8080 --name thunderdome thunderdome:latest
+```
+
+## Building
+
+To run without docker you will need to first build, then setup the postgres DB,
+and pass the user, pass, name, host, and port to the application as environment variables 
+or in a config file.
+
+```
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASS=
+DB_NAME=
+```
+
+### Install dependencies
+```
+go get
+go install github.com/markbates/pkger/cmd/pkger
+npm install
+```
+
+## Build with Make
+```
+make build
+```
+### OR manual steps
+
+### Build static assets
+```
+npm run build
+```
+
+### bundle up static assets
+```
+pkger
+```
+
+### Build for current OS
+```
+go build
+```
+
+## Let the Pointing Battles begin!
 
 Run the server and visit [http://localhost:8080](http://localhost:8080)
+
+# Adding new Localizations
+Using svelte-i18n **Thunderdome** now supports Locale selection on the UI (Default en-US)
+
+Adding new locale's involves just a couple of steps.
+
+1. First add the locale dictionary json files in ```frontend/public/lang/default/``` and ```frontend/public/lang/friendly/``` by copying the en.json and just changing the values of all keys
+1. Second, the locale will need to be added to the locales list used by switcher component in ```frontend/config.js``` ```locales``` object
