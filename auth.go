@@ -97,7 +97,7 @@ func (s *server) authAndCreateWarriorLdap(warriorUsername string, warriorPasswor
 	authedWarrior, err = s.database.GetWarriorByEmail(useremail)
 	if authedWarrior == nil {
 		log.Println("Warrior", useremail, "does not exist in database, auto-recruit")
-		authedWarrior, verifyID, err := s.database.CreateWarriorCorporal(usercn, useremail, "", "")
+		newWarrior, verifyID, err := s.database.CreateWarriorCorporal(usercn, useremail, "", "")
 		if err != nil {
 			log.Println("Failed auto-creating new warrior", err)
 			return authedWarrior, err
@@ -107,6 +107,7 @@ func (s *server) authAndCreateWarriorLdap(warriorUsername string, warriorPasswor
 			log.Println("Failed verifying new warrior", err)
 			return authedWarrior, err
 		}
+		authedWarrior = newWarrior
 	}
 
 	return authedWarrior, nil
