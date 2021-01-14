@@ -25,7 +25,7 @@
         appearance-none text-gray-700 focus:outline-none focus:bg-white
         focus:border-purple-500 "
         type="text"
-        value="{hostname}{PathPrefix}{appRoutes.battle}/{battleId}"
+        value="{hostname}{appRoutes.battle}/{battleId}"
         id="BattleLink"
         readonly />
     <div class="flex -mr-px">
