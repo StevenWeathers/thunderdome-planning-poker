@@ -37,6 +37,19 @@ located in one of:
 * `$HOME/.config/thunderdome/`
 * Current working directory
 
+### Example yaml configuration file
+
+```
+http:
+  domain: thunderdome.dev
+db:
+  host: localhost
+  port: 5432
+  user: thor
+  pass: odinson
+  name: thunderdome
+```
+
 ## Required configuration items
 
 For Thunderdome to work correctly the following configuration items are required:
@@ -217,3 +230,9 @@ Adding new locale's involves just a couple of steps.
 
 1. First add the locale dictionary json files in ```frontend/public/lang/default/``` and ```frontend/public/lang/friendly/``` by copying the en.json and just changing the values of all keys
 1. Second, the locale will need to be added to the locales list used by switcher component in ```frontend/config.js``` ```locales``` object
+
+# Donations
+
+For those who would like to donate a small amount for my efforts or monthly hosting costs of Thunderdome.dev I accept paypal.
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/smweathers?locale.x=en_US)
