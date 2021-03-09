@@ -4,6 +4,7 @@
     import PageLayout from '../components/PageLayout.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import CreateWarrior from '../components/CreateWarrior.svelte'
+    import Pagination from '../components/Pagination.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -13,6 +14,8 @@
     export let notifications
     export let eventTag
 
+    const warriorsPageLimit = 100
+
     let appStats = {
         unregisteredWarriorCount: 0,
         registeredWarriorCount: 0,
@@ -21,6 +24,8 @@
     }
     let warriors = []
     let showCreateWarrior = false
+    let warriorsPage = 1
+    let totalWarriorsPages = 1
 
     function toggleCreateWarrior() {
         showCreateWarrior = !showCreateWarrior
@@ -56,13 +61,17 @@
         .then(res => res.json())
         .then(function(result) {
             appStats = result
+            totalWarriorsPages = Math.ceil(
+                appStats.registeredWarriorCount / warriorsPageLimit,
+            )
         })
         .catch(function(error) {
             notifications.danger('Error getting application stats')
         })
 
     function getWarriors() {
-        xfetch('/api/admin/warriors')
+        const warriorsOffset = (warriorsPage - 1) * warriorsPageLimit
+        xfetch(`/api/admin/warriors/${warriorsPageLimit}/${warriorsOffset}`)
             .then(res => res.json())
             .then(function(result) {
                 warriors = result
@@ -108,6 +117,11 @@
                     eventTag('admin_demote_warrior', 'engagement', 'failure')
                 })
         }
+    }
+
+    const changePage = evt => {
+        warriorsPage = evt.detail
+        getWarriors()
     }
 
     onMount(() => {
@@ -222,6 +236,12 @@
                     {/each}
                 </tbody>
             </table>
+
+            {#if appStats.registeredWarriorCount > 0}
+            <div class="pt-6 flex justify-center">
+                <Pagination bind:current={warriorsPage} num_items={appStats.registeredWarriorCount} per_page={warriorsPageLimit} on:navigate={changePage} />
+            </div>
+            {/if}
         </div>
     </div>
 

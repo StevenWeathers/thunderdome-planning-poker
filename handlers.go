@@ -832,7 +832,11 @@ func (s *server) handleAppStats() http.HandlerFunc {
 // handleGetRegisteredWarriors gets a list of registered warriors
 func (s *server) handleGetRegisteredWarriors() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Warriors := s.database.GetRegisteredWarriors()
+		vars := mux.Vars(r)
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Warriors := s.database.GetRegisteredWarriors(Limit, Offset)
 
 		RespondWithJSON(w, http.StatusOK, Warriors)
 	}

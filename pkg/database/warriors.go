@@ -7,10 +7,19 @@ import (
 )
 
 // GetRegisteredWarriors retrieves the registered warriors from db
-func (d *Database) GetRegisteredWarriors() []*Warrior {
+func (d *Database) GetRegisteredWarriors(Limit int, Offset int) []*Warrior {
 	var warriors = make([]*Warrior, 0)
 	rows, err := d.db.Query(
-		"SELECT id, name, email, rank, avatar, verified FROM warriors WHERE email IS NOT NULL ORDER BY created_date",
+		`
+		SELECT id, name, email, rank, avatar, verified
+		FROM warriors
+		WHERE email IS NOT NULL
+		ORDER BY created_date
+		LIMIT $1
+		OFFSET $2
+		`,
+		Limit,
+		Offset,
 	)
 	if err == nil {
 		defer rows.Close()
@@ -18,18 +27,22 @@ func (d *Database) GetRegisteredWarriors() []*Warrior {
 			var w Warrior
 			var warriorEmail sql.NullString
 
-			if err := rows.Scan(&w.WarriorID,
+			if err := rows.Scan(
+				&w.WarriorID,
 				&w.WarriorName,
 				&warriorEmail,
 				&w.WarriorRank,
 				&w.WarriorAvatar,
-				&w.Verified); err != nil {
+				&w.Verified,
+			); err != nil {
 				log.Println(err)
 			} else {
 				w.WarriorEmail = warriorEmail.String
 				warriors = append(warriors, &w)
 			}
 		}
+	} else {
+		log.Println(err)
 	}
 
 	return warriors
