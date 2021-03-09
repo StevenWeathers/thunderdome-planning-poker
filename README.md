@@ -194,7 +194,6 @@ DB_NAME=
 ### Install dependencies
 ```
 go get
-go install github.com/markbates/pkger/cmd/pkger
 npm install
 ```
 
@@ -207,11 +206,6 @@ make build
 ### Build static assets
 ```
 npm run build
-```
-
-### bundle up static assets
-```
-pkger
 ```
 
 ### Build for current OS

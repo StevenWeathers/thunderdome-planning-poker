@@ -1,14 +1,23 @@
 package main
 
 import (
+	"embed"
+	"io/fs"
 	"net/http"
 
-	"github.com/markbates/pkger"
 	"github.com/spf13/viper"
 )
 
+//go:embed dist
+var f embed.FS
+
 func (s *server) routes() {
-	staticHandler := http.FileServer(pkger.Dir("/dist"))
+	fsys, err := fs.Sub(f, "dist")
+	if err != nil {
+		panic(err)
+	}
+	staticHandler := http.FileServer(http.FS(fsys))
+
 	// static assets
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
 	s.router.PathPrefix("/img/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))

@@ -3,13 +3,11 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
 
 	_ "github.com/lib/pq" // necessary for postgres
-	"github.com/markbates/pkger"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -90,7 +88,7 @@ func GetBoolEnv(key string, fallback bool) bool {
 
 // New runs db migrations, sets up a db connection pool
 // and sets previously active warriors to false during startup
-func New(AdminEmail string) *Database {
+func New(AdminEmail string, schemaSQL string) *Database {
 	var d = &Database{
 		// read environment variables and sets up database configuration values
 		config: &Config{
@@ -102,19 +100,6 @@ func New(AdminEmail string) *Database {
 			sslmode:  viper.GetString("db.sslmode"),
 		},
 	}
-
-	sqlFile, ioErr := pkger.Open("/schema.sql")
-	if ioErr != nil {
-		log.Println("Error reading schema.sql file required to migrate db")
-		log.Fatal(ioErr)
-	}
-	sqlContent, ioErr := ioutil.ReadAll(sqlFile)
-	if ioErr != nil {
-		// this will hopefully only possibly panic during development as the file is already in memory otherwise
-		log.Println("Error reading schema.sql file required to migrate db")
-		log.Fatal(ioErr)
-	}
-	migrationSQL := string(sqlContent)
 
 	psqlInfo := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
@@ -132,7 +117,7 @@ func New(AdminEmail string) *Database {
 	}
 	d.db = pdb
 
-	if _, err := d.db.Exec(migrationSQL); err != nil {
+	if _, err := d.db.Exec(schemaSQL); err != nil {
 		log.Fatal(err)
 	}
 

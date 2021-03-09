@@ -1,6 +1,5 @@
 # Go parameters
 GOCMD=go
-STATICPACKCMD=pkger
 NPMCMD=npm
 NPMBUILD=$(NPMCMD) run build
 GOBUILD=$(GOCMD) build
@@ -18,11 +17,9 @@ DOCKER_BUILD_VERSION=--build-arg BUILD_VERSION=${VERSION_TAG}
 all: build
 build-deps: 
 	$(NPMBUILD)
-	$(STATICPACKCMD)
 
 build: 
 	$(NPMBUILD)
-	$(STATICPACKCMD)
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 clean: 
@@ -52,12 +49,10 @@ build-windows:
 
 dev: 
 	$(NPMBUILD)
-	$(STATICPACKCMD)
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 	SMTP_SECURE="false" DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)
 dev-go: 
-	$(STATICPACKCMD)
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 	SMTP_SECURE="false" DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)

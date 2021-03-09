@@ -1,6 +1,6 @@
 module github.com/StevenWeathers/thunderdome-planning-poker
 
-go 1.12
+go 1.16
 
 require (
 	github.com/anthonynsimon/bild v0.13.0
@@ -14,7 +14,6 @@ require (
 	github.com/ipsn/go-adorable v1.0.0
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.8.0
-	github.com/markbates/pkger v0.10.1
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/o1egl/govatar v0.3.0
 	github.com/spf13/viper v1.6.3

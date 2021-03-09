@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"image"
 	"image/png"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -18,7 +19,6 @@ import (
 	"github.com/anthonynsimon/bild/transform"
 	"github.com/gorilla/mux"
 	"github.com/ipsn/go-adorable"
-	"github.com/markbates/pkger"
 	"github.com/o1egl/govatar"
 	"github.com/spf13/viper"
 	"gopkg.in/go-playground/validator.v9"
@@ -259,16 +259,10 @@ func (s *server) handleIndex() http.HandlerFunc {
 	}
 
 	// get the html template from dist, have it ready for requests
-	indexFile, ioErr := pkger.Open("/dist/index.html")
+	tmplContent, ioErr := fs.ReadFile(f, "dist/index.html")
 	if ioErr != nil {
 		log.Println("Error opening index template")
 		log.Fatal(ioErr)
-	}
-	tmplContent, ioReadErr := ioutil.ReadAll(indexFile)
-	if ioReadErr != nil {
-		// this will hopefully only possibly panic during development as the file is already in memory otherwise
-		log.Println("Error reading index template")
-		log.Fatal(ioReadErr)
 	}
 
 	tmplString := string(tmplContent)

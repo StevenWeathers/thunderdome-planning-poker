@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,6 +14,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+//go:embed schema.sql
+var schemaSQL string
 var (
 	version = "dev"
 )
@@ -83,7 +86,7 @@ func main() {
 		cookie: securecookie.New([]byte(cookieHashkey), nil),
 	}
 	s.email = email.New(s.config.AppDomain, s.config.PathPrefix)
-	s.database = database.New(s.config.AdminEmail)
+	s.database = database.New(s.config.AdminEmail, schemaSQL)
 
 	go h.run()
 
