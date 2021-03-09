@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         node-version: [12.x]
-        go-version: 1.16
+        go-version: [1.16]
 
     steps:
 
