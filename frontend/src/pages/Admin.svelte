@@ -25,7 +25,6 @@
     let warriors = []
     let showCreateWarrior = false
     let warriorsPage = 1
-    let totalWarriorsPages = 1
 
     function toggleCreateWarrior() {
         showCreateWarrior = !showCreateWarrior
@@ -61,9 +60,6 @@
         .then(res => res.json())
         .then(function(result) {
             appStats = result
-            totalWarriorsPages = Math.ceil(
-                appStats.registeredWarriorCount / warriorsPageLimit,
-            )
         })
         .catch(function(error) {
             notifications.danger('Error getting application stats')
@@ -237,7 +233,7 @@
                 </tbody>
             </table>
 
-            {#if appStats.registeredWarriorCount > 0}
+            {#if appStats.registeredWarriorCount > warriorsPageLimit}
             <div class="pt-6 flex justify-center">
                 <Pagination bind:current={warriorsPage} num_items={appStats.registeredWarriorCount} per_page={warriorsPageLimit} on:navigate={changePage} />
             </div>
