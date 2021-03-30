@@ -5,45 +5,46 @@ services:
     build:
       context: .
       dockerfile: ./build/Dockerfile
+    restart: always
     ports:
       - "8080:8080"
     depends_on:
       - db
-    links:
-      - db
     networks:
-      - asgard
+      - asgard_mail
+      - asgard_db
     environment:
       APP_DOMAIN: ".127.0.0.1"
       COOKIE_SECURE: "false"
       SMTP_SECURE: "false"
       SMTP_HOST: mail
+      DB_NAME: thunderdome
+      DB_USER: thor
+      DB_PASS: odinson
     volumes:
-      - ./etc:/etc/thunderdome
+      - ./data/thunderdome:/etc/thunderdome
   db: 
-    image: postgres:latest
+    image: postgres:13.2
     restart: always
     environment:
       POSTGRES_DB: thunderdome
       POSTGRES_USER: thor
       POSTGRES_PASSWORD: odinson
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
     volumes:
-      - thunderdome_data:/var/lib/postgresql/data
+      - :/data/postgres:/var/lib/postgresql/data
     networks:
-      - asgard
+      - asgard_db
   mail:
-    image: djfarrelly/maildev:latest
+    image: djfarrelly/maildev:1.1.0
     restart: always
     ports:
       - 1080:80
       - 1025:25
     networks:
-      - asgard
+      - asgard_mail
 
 networks:
- asgard:
-
-volumes:
-  thunderdome_data:
+ asgard_mail:
+ asgard_db:
