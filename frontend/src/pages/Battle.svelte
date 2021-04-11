@@ -400,7 +400,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route(`${appRoutes.register}/${battleId}`)
+            router.route(`${appRoutes.login}/${battleId}`)
         }
         const voteCounter = setInterval(() => {
             currentTime = new Date()

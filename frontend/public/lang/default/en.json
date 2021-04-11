@@ -266,6 +266,7 @@
         "login": {
             "nav": "Login",
             "title": "Login",
+            "registerForBattle": "or {registerOpen}Register{registerClose} to join the Battle",
             "button": "Login",
             "authError": "Error encountered attempting to authenticate warrior",
             "sendResetSuccess": "Password reset instructions sent to {email}",

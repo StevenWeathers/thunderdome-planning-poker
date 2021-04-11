@@ -122,7 +122,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route(appRoutes.register)
+            router.route(appRoutes.login)
         }
         if ($warrior.rank !== 'GENERAL') {
             router.route(appRoutes.landing)

@@ -100,6 +100,17 @@
                         md:leading-tight text-center">
                         {$_('pages.login.title')}
                     </div>
+                    {#if battleId}
+                        <div class="font-bold text-m md:text-l mb-2 md:mb-6
+                        md:leading-tight text-center">
+                            {@html $_('pages.login.registerForBattle', {
+                                values: {
+                                    registerOpen: `<a href="${appRoutes.register}/${battleId}" class="font-bold text-blue-500 hover:text-blue-800">`,
+                                    registerClose: `</a>`,
+                                },
+                            })}
+                        </div>
+                    {/if}
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"

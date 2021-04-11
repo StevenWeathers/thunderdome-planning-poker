@@ -266,6 +266,7 @@
         "login": {
             "nav": "Anmeldung",
             "title": "Anmeldung",
+            "registerForBattle": "or {registerOpen}Anmeldung{registerClose} to join the Battle",
             "button": "Anmelden",
             "authError": "Beim Versuch, den Krieger zu authentifizieren, ist ein Fehler aufgetreten",
             "sendResetSuccess": "Anweisungen zum Zur\u00FCcksetzen des Passworts wurden an {email} gesendet",

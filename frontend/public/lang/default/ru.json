@@ -266,6 +266,7 @@
         "login": {
             "nav": "Войти",
             "title": "Войти",
+            "registerForBattle": "or {registerOpen}Войти{registerClose} to join the Battle",
             "button": "Войти",
             "authError": "Ошибка при попытке авторизации",
             "sendResetSuccess": "Инструкция по сбросу отправлена на {email}",
