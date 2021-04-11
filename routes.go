@@ -27,7 +27,7 @@ func (s *server) routes() {
 		s.router.PathPrefix("/avatar/{width}/{id}/{avatar}").Handler(s.handleWarriorAvatar()).Methods("GET")
 		s.router.PathPrefix("/avatar/{width}/{id}").Handler(s.handleWarriorAvatar()).Methods("GET")
 	}
-	// api (currently internal to UI application)
+	// api
 	// warrior authentication, profile
 	if viper.GetString("auth.method") == "ldap" {
 		s.router.HandleFunc("/api/auth", s.handleLdapLogin()).Methods("POST")
@@ -56,6 +56,8 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/admin/warrior", s.adminOnly(s.handleWarriorCreate())).Methods("POST")
 	s.router.HandleFunc("/api/admin/promote", s.adminOnly(s.handleWarriorPromote())).Methods("POST")
 	s.router.HandleFunc("/api/admin/demote", s.adminOnly(s.handleWarriorDemote())).Methods("POST")
+	s.router.HandleFunc("/api/admin/clean-battles", s.adminOnly(s.handleCleanBattles())).Methods("DELETE")
+	s.router.HandleFunc("/api/admin/clean-guests", s.adminOnly(s.handleCleanGuests())).Methods("DELETE")
 	// websocket for battle
 	s.router.HandleFunc("/api/arena/{id}", s.serveWs())
 	// handle index.html

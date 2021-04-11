@@ -120,12 +120,15 @@ LANGUAGE plpgsql AS $$
 BEGIN
     INSERT INTO plans (id, battle_id, name, type, reference_id, link, description, acceptance_criteria)
     VALUES (planId, battleId, planName, planType, referenceId, planLink, planDescription, acceptanceCriteria);
+
+    UPDATE battles SET updated_date = NOW() WHERE id = battleId;
 END;
 $$;
 
 -- Revise Plan --
 CREATE OR REPLACE PROCEDURE revise_plan(planId UUID, planName VARCHAR(256), planType VARCHAR(64), referenceId VARCHAR(128), planLink TEXT, planDescription TEXT, acceptanceCriteria TEXT)
 LANGUAGE plpgsql AS $$
+DECLARE battleId UUID;
 BEGIN
     UPDATE plans
     SET
@@ -136,7 +139,9 @@ BEGIN
         link = planLink,
         description = planDescription,
         acceptance_criteria = acceptanceCriteria
-    WHERE id = planId;
+    WHERE id = planId RETURNING battle_id INTO battleId;
+
+    UPDATE battles SET updated_date = NOW() WHERE id = battleId;
 END;
 $$;
 
@@ -203,6 +208,8 @@ BEGIN
     
     IF active_plan_id = planId THEN
         UPDATE battles SET updated_date = NOW(), voting_locked = true, active_plan_id = null WHERE id = battleId;
+    ELSE
+        UPDATE battles SET updated_date = NOW() WHERE id = battleId;
     END IF;
     
     COMMIT;
@@ -355,6 +362,48 @@ CREATE OR REPLACE PROCEDURE demote_warrior(warriorId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
     UPDATE warriors SET rank = 'CORPORAL' WHERE id = warriorId;
+
+    COMMIT;
+END;
+$$;
+
+-- Clean up Battles older than X Days --
+CREATE OR REPLACE PROCEDURE clean_battles(daysOld INTEGER)
+LANGUAGE plpgsql AS $$
+DECLARE
+    battle RECORD;
+BEGIN
+    FOR battle IN SELECT * FROM battles WHERE updated_date < (NOW() - daysOld * interval '1 day')
+    LOOP
+        DELETE FROM plans WHERE battle_id = battle.id;
+        DELETE FROM battles_warriors WHERE battle_id = battle.id;
+        DELETE FROM battles WHERE id = battle.id;
+    END LOOP;
+
+    COMMIT;
+END;
+$$;
+
+-- Clean up Guest Warriors (and their created battles) older than X Days --
+CREATE OR REPLACE PROCEDURE clean_guest_warriors(daysOld INTEGER)
+LANGUAGE plpgsql AS $$
+DECLARE
+    warrior RECORD;
+    battle RECORD;
+BEGIN
+    FOR warrior IN SELECT * FROM warriors WHERE last_active < (NOW() - daysOld * interval '1 day') AND rank = 'PRIVATE'
+    LOOP
+        FOR battle IN SELECT * FROM battles WHERE leader_id = warrior.id
+        LOOP
+            DELETE FROM plans WHERE battle_id = battle.id;
+            DELETE FROM battles_warriors WHERE battle_id = battle.id;
+            DELETE FROM battles WHERE id = battle.id;
+        END LOOP;
+
+        DELETE FROM battles_warriors WHERE warrior_id = warrior.id;
+        DELETE FROM api_keys WHERE warrior_id = warrior.id;
+        DELETE FROM warriors WHERE id = warrior.id;
+    END LOOP;
 
     COMMIT;
 END;

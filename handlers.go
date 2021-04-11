@@ -236,21 +236,23 @@ func (s *server) warriorOnly(h http.HandlerFunc) http.HandlerFunc {
 // handleIndex parses the index html file, injecting any relevant data
 func (s *server) handleIndex() http.HandlerFunc {
 	type AppConfig struct {
-		AllowedPointValues []string
-		DefaultPointValues []string
-		ShowWarriorRank    bool
-		AvatarService      string
-		ToastTimeout       int
-		AllowGuests        bool
-		AllowRegistration  bool
-		AllowJiraImport    bool
-		DefaultLocale      string
-		FriendlyUIVerbs    bool
-		AuthMethod         string
-		AppVersion         string
-		CookieName         string
-		PathPrefix         string
-		APIEnabled         bool
+		AllowedPointValues    []string
+		DefaultPointValues    []string
+		ShowWarriorRank       bool
+		AvatarService         string
+		ToastTimeout          int
+		AllowGuests           bool
+		AllowRegistration     bool
+		AllowJiraImport       bool
+		DefaultLocale         string
+		FriendlyUIVerbs       bool
+		AuthMethod            string
+		AppVersion            string
+		CookieName            string
+		PathPrefix            string
+		APIEnabled            bool
+		CleanupGuestsDaysOld  int
+		CleanupBattlesDaysOld int
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -273,21 +275,23 @@ func (s *server) handleIndex() http.HandlerFunc {
 	}
 
 	appConfig := AppConfig{
-		AllowedPointValues: viper.GetStringSlice("config.allowedPointValues"),
-		DefaultPointValues: viper.GetStringSlice("config.defaultPointValues"),
-		ShowWarriorRank:    viper.GetBool("config.show_warrior_rank"),
-		AvatarService:      viper.GetString("config.avatar_service"),
-		ToastTimeout:       viper.GetInt("config.toast_timeout"),
-		AllowGuests:        viper.GetBool("config.allow_guests"),
-		AllowRegistration:  viper.GetBool("config.allow_registration") && viper.GetString("auth.method") == "normal",
-		AllowJiraImport:    viper.GetBool("config.allow_jira_import"),
-		DefaultLocale:      viper.GetString("config.default_locale"),
-		FriendlyUIVerbs:    viper.GetBool("config.friendly_ui_verbs"),
-		AuthMethod:         viper.GetString("auth.method"),
-		APIEnabled:         viper.GetBool("config.allow_external_api"),
-		AppVersion:         s.config.Version,
-		CookieName:         s.config.FrontendCookieName,
-		PathPrefix:         s.config.PathPrefix,
+		AllowedPointValues:    viper.GetStringSlice("config.allowedPointValues"),
+		DefaultPointValues:    viper.GetStringSlice("config.defaultPointValues"),
+		ShowWarriorRank:       viper.GetBool("config.show_warrior_rank"),
+		AvatarService:         viper.GetString("config.avatar_service"),
+		ToastTimeout:          viper.GetInt("config.toast_timeout"),
+		AllowGuests:           viper.GetBool("config.allow_guests"),
+		AllowRegistration:     viper.GetBool("config.allow_registration") && viper.GetString("auth.method") == "normal",
+		AllowJiraImport:       viper.GetBool("config.allow_jira_import"),
+		DefaultLocale:         viper.GetString("config.default_locale"),
+		FriendlyUIVerbs:       viper.GetBool("config.friendly_ui_verbs"),
+		AuthMethod:            viper.GetString("auth.method"),
+		APIEnabled:            viper.GetBool("config.allow_external_api"),
+		AppVersion:            s.config.Version,
+		CookieName:            s.config.FrontendCookieName,
+		PathPrefix:            s.config.PathPrefix,
+		CleanupGuestsDaysOld:  viper.GetInt("config.cleanup_guests_days_old"),
+		CleanupBattlesDaysOld: viper.GetInt("config.cleanup_battles_days_old"),
 	}
 
 	data := UIConfig{
@@ -910,6 +914,36 @@ func (s *server) handleWarriorDemote() http.HandlerFunc {
 		}
 
 		err := s.database.DemoteWarrior(keyVal["warriorId"])
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
+// handleCleanBattles handles cleaning up old battles (ADMIN Manaually Triggered)
+func (s *server) handleCleanBattles() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		DaysOld := viper.GetInt("config.cleanup_battles_days_old")
+
+		err := s.database.CleanBattles(DaysOld)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
+// handleCleanGuests handles cleaning up old guests (ADMIN Manaually Triggered)
+func (s *server) handleCleanGuests() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		DaysOld := viper.GetInt("config.cleanup_guests_days_old")
+
+		err := s.database.CleanGuests(DaysOld)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

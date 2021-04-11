@@ -14,6 +14,7 @@
     export let notifications
     export let eventTag
 
+    const { CleanupGuestsDaysOld, CleanupBattlesDaysOld } = appConfig
     const warriorsPageLimit = 100
 
     let appStats = {
@@ -56,14 +57,16 @@
             })
     }
 
-    xfetch('/api/admin/stats')
-        .then(res => res.json())
-        .then(function(result) {
-            appStats = result
-        })
-        .catch(function(error) {
-            notifications.danger('Error getting application stats')
-        })
+    function getAppStats() {
+        xfetch('/api/admin/stats')
+            .then(res => res.json())
+            .then(function(result) {
+                appStats = result
+            })
+            .catch(function(error) {
+                notifications.danger('Error getting application stats')
+            })
+    }
 
     function getWarriors() {
         const warriorsOffset = (warriorsPage - 1) * warriorsPageLimit
@@ -115,6 +118,32 @@
         }
     }
 
+    function cleanBattles() {
+        xfetch('/api/admin/clean-battles', { method: 'DELETE' })
+            .then(function() {
+                eventTag('admin_clean_battles', 'engagement', 'success')
+
+                getAppStats()
+            })
+            .catch(function(error) {
+                notifications.danger('Error encountered cleaning battles')
+                eventTag('admin_clean_battles', 'engagement', 'failure')
+            })
+    }
+
+    function cleanGuests() {
+        xfetch('/api/admin/clean-guests', { method: 'DELETE' })
+            .then(function() {
+                eventTag('admin_clean_guests', 'engagement', 'success')
+
+                getAppStats()
+            })
+            .catch(function(error) {
+                notifications.danger('Error encountered cleaning guests')
+                eventTag('admin_clean_guests', 'engagement', 'failure')
+            })
+    }
+
     const changePage = evt => {
         warriorsPage = evt.detail
         getWarriors()
@@ -128,6 +157,7 @@
             router.route(appRoutes.landing)
         }
 
+        getAppStats()
         getWarriors()
     })
 </script>
@@ -167,6 +197,24 @@
                     </div>
                     {appStats.planCount}
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-center mb-4">
+        <div class="w-full">
+            <div
+            class="text-center p-2 md:p-4 bg-white shadow-lg rounded text-xl">
+                <div class="text-2xl md:text-3xl font-bold text-center mb-4">
+                    {$_('pages.admin.maintenance.title')}
+                </div>
+                <HollowButton onClick="{cleanGuests}" color="red">
+                    {$_('pages.admin.maintenance.cleanGuests', { values: { daysOld: CleanupGuestsDaysOld } })}
+                </HollowButton>
+
+                <HollowButton onClick="{cleanBattles}" color="red">
+                    {$_('pages.admin.maintenance.cleanBattles', { values: { daysOld: CleanupBattlesDaysOld } })}
+                </HollowButton>
             </div>
         </div>
     </div>

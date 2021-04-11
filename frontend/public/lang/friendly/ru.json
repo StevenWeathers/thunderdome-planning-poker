@@ -261,6 +261,11 @@
                 "email": "Электронная почта",
                 "verified": "Подтвержден",
                 "rank": "Rank"
+            },
+            "maintenance": {
+                "title": "Maintenance",
+                "cleanGuests": "Clean Guests older than {daysOld} days",
+                "cleanBattles": "Clean Games older than {daysOld} days"
             }
         },
         "login": {

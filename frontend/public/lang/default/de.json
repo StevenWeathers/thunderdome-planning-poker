@@ -261,6 +261,11 @@
                 "email": "E-Mail",
                 "verified": "Best\u00E4tigt",
                 "rank": "Rank"
+            },
+            "maintenance": {
+                "title": "Maintenance",
+                "cleanGuests": "Clean Guests older than {daysOld} days",
+                "cleanBattles": "Clean Battles older than {daysOld} days"
             }
         },
         "login": {

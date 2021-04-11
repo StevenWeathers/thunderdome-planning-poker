@@ -80,3 +80,29 @@ func (d *Database) DemoteWarrior(WarriorID string) error {
 
 	return nil
 }
+
+// CleanBattles deletes battles older than X days
+func (d *Database) CleanBattles(DaysOld int) error {
+	if _, err := d.db.Exec(
+		`call clean_battles($1);`,
+		DaysOld,
+	); err != nil {
+		log.Println(err)
+		return errors.New("error attempting to clean battles")
+	}
+
+	return nil
+}
+
+// CleanGuests deletes guest warriors older than X days
+func (d *Database) CleanGuests(DaysOld int) error {
+	if _, err := d.db.Exec(
+		`call clean_guest_warriors($1);`,
+		DaysOld,
+	); err != nil {
+		log.Println(err)
+		return errors.New("error attempting to clean Guest Warriors")
+	}
+
+	return nil
+}
