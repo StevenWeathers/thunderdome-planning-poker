@@ -229,19 +229,16 @@
 
     function handleDeleteAccount() {
         xfetch(`/api/warrior/${$warrior.id}`, { method: "DELETE" })
-            .then(function(updatedWarrior) {
+            .then(function() {
                 warrior.delete()
 
-                notifications.success(
-                    $_('pages.warriorProfile.deleteSuccess'),
-                )
                 eventTag('delete_warrior', 'engagement', 'success')
 
                 router.route(appRoutes.landing)
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger(
-                    $_('pages.warriorProfile.errorDeleting'),
+                    $_('pages.warriorProfile.delete.error'),
                 )
                 eventTag('delete_warrior', 'engagement', 'failure')
             })
@@ -545,7 +542,9 @@
         </div>
 
         <div class="w-full text-center">
-            <HollowButton onClick={toggleDeleteAccount} color="red">Delete Account</HollowButton>
+            <HollowButton onClick={toggleDeleteAccount} color="red">
+                {$_('pages.warriorProfile.delete.deleteButton')}
+            </HollowButton>
         </div>
     </div>
     {#if showApiKeyCreate}
