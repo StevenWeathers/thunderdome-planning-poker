@@ -4,6 +4,8 @@
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
+    
+    const { AllowRegistration } = appConfig
 
     export let router
     export let xfetch
@@ -100,7 +102,7 @@
                         md:leading-tight text-center">
                         {$_('pages.login.title')}
                     </div>
-                    {#if battleId}
+                    {#if battleId && AllowRegistration}
                         <div class="font-bold text-m md:text-l mb-2 md:mb-6
                         md:leading-tight text-center">
                             {@html $_('pages.login.registerForBattle', {
