@@ -47,6 +47,7 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/warrior/{id}/apikeys", s.warriorOnly(s.handleWarriorAPIKeys())).Methods("GET")
 	s.router.HandleFunc("/api/warrior/{id}", s.warriorOnly(s.handleWarriorProfile())).Methods("GET")
 	s.router.HandleFunc("/api/warrior/{id}", s.warriorOnly(s.handleWarriorProfileUpdate())).Methods("POST")
+	s.router.HandleFunc("/api/warrior/{id}", s.warriorOnly(s.handleWarriorDelete())).Methods("DELETE")
 	// battle(s)
 	s.router.HandleFunc("/api/battle", s.warriorOnly(s.handleBattleCreate())).Methods("POST")
 	s.router.HandleFunc("/api/battles", s.warriorOnly(s.handleBattlesGet()))

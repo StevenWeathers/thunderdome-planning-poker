@@ -289,3 +289,16 @@ func (d *Database) VerifyWarriorAccount(VerifyID string) error {
 
 	return nil
 }
+
+// UpdateWarriorProfile attempts to delete a warrior
+func (d *Database) DeleteWarrior(WarriorID string) error {
+	if _, err := d.db.Exec(
+		`call delete_warrior($1);`,
+		WarriorID,
+	); err != nil {
+		log.Println(err)
+		return errors.New("error attempting to delete warrior")
+	}
+
+	return nil
+}

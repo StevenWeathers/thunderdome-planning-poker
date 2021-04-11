@@ -93,6 +93,54 @@ ALTER TABLE plans ADD COLUMN IF NOT EXISTS type VARCHAR(64) DEFAULT 'story';
 ALTER TABLE battles_warriors ADD COLUMN IF NOT EXISTS abandoned BOOL DEFAULT false;
 
 --
+-- Constraints
+--
+DO $$
+BEGIN
+  BEGIN
+    ALTER TABLE battles_warriors ADD CONSTRAINT bw_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
+  EXCEPTION
+    WHEN duplicate_object THEN RAISE NOTICE 'battles_warriors constraint bw_battle_id_fkey already exists';
+  END;
+
+  BEGIN
+    ALTER TABLE battles_warriors ADD CONSTRAINT bw_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
+  EXCEPTION
+    WHEN duplicate_object THEN RAISE NOTICE 'battles_warriors constraint bw_warrior_id_fkey already exists';
+  END;
+
+  BEGIN
+    ALTER TABLE plans ADD CONSTRAINT p_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
+  EXCEPTION
+    WHEN duplicate_object THEN RAISE NOTICE 'plans constraint p_battle_id_fkey already exists';
+  END;
+
+  BEGIN
+    ALTER TABLE battles ADD CONSTRAINT b_leader_id_fkey FOREIGN KEY (leader_id) REFERENCES warriors(id) ON DELETE CASCADE;
+  EXCEPTION
+    WHEN duplicate_object THEN RAISE NOTICE 'battles constraint b_leader_id_fkey already exists';
+  END;
+
+  BEGIN
+    ALTER TABLE warrior_reset ADD CONSTRAINT wr_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
+  EXCEPTION
+    WHEN duplicate_object THEN RAISE NOTICE 'warrior_reset constraint wr_warrior_id_fkey already exists';
+  END;
+
+  BEGIN
+    ALTER TABLE warrior_verify ADD CONSTRAINT wv_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
+  EXCEPTION
+    WHEN duplicate_object THEN RAISE NOTICE 'warrior_verify constraint wv_warrior_id_fkey already exists';
+  END;
+
+  BEGIN
+    ALTER TABLE api_keys ADD CONSTRAINT apk_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
+  EXCEPTION
+    WHEN duplicate_object THEN RAISE NOTICE 'api_keys constraint apk_warrior_id_fkey already exists';
+  END;
+END $$;
+
+--
 -- Types (used in Stored Procedures)
 --
 DROP TYPE IF EXISTS WarriorsVote;
@@ -228,8 +276,6 @@ $$;
 CREATE OR REPLACE PROCEDURE delete_battle(battleId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
-    DELETE FROM plans WHERE battle_id = battleId;
-    DELETE FROM battles_warriors WHERE battle_id = battleId;
     DELETE FROM battles WHERE id = battleId;
 
     COMMIT;
@@ -370,15 +416,8 @@ $$;
 -- Clean up Battles older than X Days --
 CREATE OR REPLACE PROCEDURE clean_battles(daysOld INTEGER)
 LANGUAGE plpgsql AS $$
-DECLARE
-    battle RECORD;
 BEGIN
-    FOR battle IN SELECT * FROM battles WHERE updated_date < (NOW() - daysOld * interval '1 day')
-    LOOP
-        DELETE FROM plans WHERE battle_id = battle.id;
-        DELETE FROM battles_warriors WHERE battle_id = battle.id;
-        DELETE FROM battles WHERE id = battle.id;
-    END LOOP;
+    DELETE FROM battles WHERE updated_date < (NOW() - daysOld * interval '1 day');
 
     COMMIT;
 END;
@@ -387,23 +426,18 @@ $$;
 -- Clean up Guest Warriors (and their created battles) older than X Days --
 CREATE OR REPLACE PROCEDURE clean_guest_warriors(daysOld INTEGER)
 LANGUAGE plpgsql AS $$
-DECLARE
-    warrior RECORD;
-    battle RECORD;
 BEGIN
-    FOR warrior IN SELECT * FROM warriors WHERE last_active < (NOW() - daysOld * interval '1 day') AND rank = 'PRIVATE'
-    LOOP
-        FOR battle IN SELECT * FROM battles WHERE leader_id = warrior.id
-        LOOP
-            DELETE FROM plans WHERE battle_id = battle.id;
-            DELETE FROM battles_warriors WHERE battle_id = battle.id;
-            DELETE FROM battles WHERE id = battle.id;
-        END LOOP;
+    DELETE FROM warriors WHERE last_active < (NOW() - daysOld * interval '1 day') AND rank = 'PRIVATE';
 
-        DELETE FROM battles_warriors WHERE warrior_id = warrior.id;
-        DELETE FROM api_keys WHERE warrior_id = warrior.id;
-        DELETE FROM warriors WHERE id = warrior.id;
-    END LOOP;
+    COMMIT;
+END;
+$$;
+
+-- Deletes a warrior and all his battle(s), api keys --
+CREATE OR REPLACE PROCEDURE delete_warrior(warriorId UUID)
+LANGUAGE plpgsql AS $$
+BEGIN
+    DELETE FROM warriors WHERE id = warriorId;
 
     COMMIT;
 END;

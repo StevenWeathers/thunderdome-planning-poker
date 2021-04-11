@@ -6,6 +6,7 @@
     import SolidButton from '../components/SolidButton.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import WarriorAvatar from '../components/WarriorAvatar.svelte'
+    import DeleteWarrior from '../components/DeleteWarrior.svelte'
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
     import { _ } from '../i18n'
@@ -20,6 +21,7 @@
     let warriorProfile = {}
     let apiKeys = []
     let showApiKeyCreate = false
+    let showAccountDeletion = false
 
     let updatePassword = false
     let warriorPassword1 = ''
@@ -225,6 +227,30 @@
         showApiKeyCreate = !showApiKeyCreate
     }
 
+    function handleDeleteAccount() {
+        xfetch(`/api/warrior/${$warrior.id}`, { method: "DELETE" })
+            .then(function(updatedWarrior) {
+                warrior.delete()
+
+                notifications.success(
+                    $_('pages.warriorProfile.deleteSuccess'),
+                )
+                eventTag('delete_warrior', 'engagement', 'success')
+
+                router.route(appRoutes.landing)
+            })
+            .catch(function(error) {
+                notifications.danger(
+                    $_('pages.warriorProfile.errorDeleting'),
+                )
+                eventTag('delete_warrior', 'engagement', 'failure')
+            })
+    }
+
+    function toggleDeleteAccount() {
+        showAccountDeletion = !showAccountDeletion
+    }
+
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.register)
@@ -246,7 +272,7 @@
                     on:submit="{updateWarriorProfile}"
                     class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
                     name="updateProfile">
-                    <h2
+                        <h2
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
                         md:leading-tight">
                         {$_('pages.warriorProfile.title')}
@@ -517,6 +543,10 @@
                 </div>
             {/if}
         </div>
+
+        <div class="w-full text-center">
+            <HollowButton onClick={toggleDeleteAccount} color="red">Delete Account</HollowButton>
+        </div>
     </div>
     {#if showApiKeyCreate}
         <CreateApiKey
@@ -525,5 +555,11 @@
             {notifications}
             {xfetch}
             {eventTag} />
+    {/if}
+
+    {#if showAccountDeletion}
+        <DeleteWarrior
+            {toggleDeleteAccount}
+            {handleDeleteAccount} />
     {/if}
 </PageLayout>

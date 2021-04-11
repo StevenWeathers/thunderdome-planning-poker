@@ -616,6 +616,31 @@ func (s *server) handleAccountVerification() http.HandlerFunc {
 	}
 }
 
+// handleWarriorDelete attempts to delete a warriors account
+func (s *server) handleWarriorDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		WarriorID := vars["id"]
+		warriorCookieID := r.Context().Value(contextKeyWarriorID).(string)
+		if WarriorID != warriorCookieID {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		updateErr := s.database.DeleteWarrior(WarriorID)
+		if updateErr != nil {
+			log.Println("error attempting to delete warrior : " + updateErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		s.clearWarriorCookies(w)
+
+		return
+	}
+}
+
 // handleWarriorAvatar creates an avatar for the given warrior by ID
 func (s *server) handleWarriorAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
