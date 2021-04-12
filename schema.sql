@@ -95,7 +95,7 @@ ALTER TABLE battles_warriors ADD COLUMN IF NOT EXISTS abandoned BOOL DEFAULT fal
 DO $$
 BEGIN
     -- migrate battles leaderId into new association table
-    DECLARE battleLeadersExists TEXT := (SELECT to_regclass('public.battles_leaders'));
+    DECLARE battleLeadersExists TEXT := (SELECT to_regclass('battles_leaders'));
     BEGIN
         IF battleLeadersExists IS NULL THEN
             CREATE TABLE battles_leaders AS SELECT id AS battle_id, leader_id AS warrior_id FROM battles;
