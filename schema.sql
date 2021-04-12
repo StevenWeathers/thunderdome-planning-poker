@@ -92,52 +92,60 @@ ALTER TABLE plans ADD COLUMN IF NOT EXISTS type VARCHAR(64) DEFAULT 'story';
 
 ALTER TABLE battles_warriors ADD COLUMN IF NOT EXISTS abandoned BOOL DEFAULT false;
 
---
--- Constraints
---
 DO $$
 BEGIN
-  BEGIN
-    ALTER TABLE battles_warriors ADD CONSTRAINT bw_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
-  EXCEPTION
-    WHEN duplicate_object THEN RAISE NOTICE 'battles_warriors constraint bw_battle_id_fkey already exists';
-  END;
+    -- migrate battles leaderId into new association table
+    DECLARE battleLeadersExists TEXT := (SELECT to_regclass('public.battles_leaders'));
+    BEGIN
+        IF battleLeadersExists IS NULL THEN
+            CREATE TABLE battles_leaders AS SELECT id AS battle_id, leader_id AS warrior_id FROM battles;
+            ALTER TABLE battles_leaders ADD PRIMARY KEY (battle_id, warrior_id);
+            ALTER TABLE battles_leaders ADD CONSTRAINT bl_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
+            ALTER TABLE battles_leaders ADD CONSTRAINT bl_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
+            ALTER TABLE battles DROP CONSTRAINT IF EXISTS b_leader_id_fkey;
+            ALTER TABLE battles RENAME COLUMN leader_id TO owner_id;
+            ALTER TABLE battles ADD CONSTRAINT b_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES warriors(id) ON DELETE CASCADE;
+        END IF;
+    END;
 
-  BEGIN
-    ALTER TABLE battles_warriors ADD CONSTRAINT bw_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
-  EXCEPTION
-    WHEN duplicate_object THEN RAISE NOTICE 'battles_warriors constraint bw_warrior_id_fkey already exists';
-  END;
+    --
+    -- Constraints
+    --
+    BEGIN
+        ALTER TABLE battles_warriors ADD CONSTRAINT bw_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
+        EXCEPTION
+        WHEN duplicate_object THEN RAISE NOTICE 'battles_warriors constraint bw_battle_id_fkey already exists';
+    END;
 
-  BEGIN
-    ALTER TABLE plans ADD CONSTRAINT p_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
-  EXCEPTION
-    WHEN duplicate_object THEN RAISE NOTICE 'plans constraint p_battle_id_fkey already exists';
-  END;
+    BEGIN
+        ALTER TABLE battles_warriors ADD CONSTRAINT bw_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
+        EXCEPTION
+        WHEN duplicate_object THEN RAISE NOTICE 'battles_warriors constraint bw_warrior_id_fkey already exists';
+    END;
 
-  BEGIN
-    ALTER TABLE battles ADD CONSTRAINT b_leader_id_fkey FOREIGN KEY (leader_id) REFERENCES warriors(id) ON DELETE CASCADE;
-  EXCEPTION
-    WHEN duplicate_object THEN RAISE NOTICE 'battles constraint b_leader_id_fkey already exists';
-  END;
+    BEGIN
+        ALTER TABLE plans ADD CONSTRAINT p_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
+        EXCEPTION
+        WHEN duplicate_object THEN RAISE NOTICE 'plans constraint p_battle_id_fkey already exists';
+    END;
 
-  BEGIN
-    ALTER TABLE warrior_reset ADD CONSTRAINT wr_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
-  EXCEPTION
-    WHEN duplicate_object THEN RAISE NOTICE 'warrior_reset constraint wr_warrior_id_fkey already exists';
-  END;
+    BEGIN
+        ALTER TABLE warrior_reset ADD CONSTRAINT wr_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
+        EXCEPTION
+        WHEN duplicate_object THEN RAISE NOTICE 'warrior_reset constraint wr_warrior_id_fkey already exists';
+    END;
 
-  BEGIN
-    ALTER TABLE warrior_verify ADD CONSTRAINT wv_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
-  EXCEPTION
-    WHEN duplicate_object THEN RAISE NOTICE 'warrior_verify constraint wv_warrior_id_fkey already exists';
-  END;
+    BEGIN
+        ALTER TABLE warrior_verify ADD CONSTRAINT wv_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
+        EXCEPTION
+        WHEN duplicate_object THEN RAISE NOTICE 'warrior_verify constraint wv_warrior_id_fkey already exists';
+    END;
 
-  BEGIN
-    ALTER TABLE api_keys ADD CONSTRAINT apk_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
-  EXCEPTION
-    WHEN duplicate_object THEN RAISE NOTICE 'api_keys constraint apk_warrior_id_fkey already exists';
-  END;
+    BEGIN
+        ALTER TABLE api_keys ADD CONSTRAINT apk_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
+        EXCEPTION
+        WHEN duplicate_object THEN RAISE NOTICE 'api_keys constraint apk_warrior_id_fkey already exists';
+    END;
 END $$;
 
 --
@@ -268,7 +276,15 @@ $$;
 CREATE OR REPLACE PROCEDURE set_battle_leader(battleId UUID, leaderId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE battles SET updated_date = NOW(), leader_id = leaderId WHERE id = battleId;
+    INSERT INTO battles_leaders (battle_id, warrior_id) VALUES (battleId, leaderId);
+END;
+$$;
+
+-- Demote Battle Leader --
+CREATE OR REPLACE PROCEDURE demote_battle_leader(battleId UUID, leaderId UUID)
+LANGUAGE plpgsql AS $$
+BEGIN
+    DELETE FROM battles_leaders WHERE battle_id = battleId AND warrior_id = leaderId;
 END;
 $$;
 
@@ -526,5 +542,21 @@ BEGIN
     RETURNING id INTO warriorId;
 
     INSERT INTO warrior_verify (warrior_id) VALUES (warriorId) RETURNING verify_id INTO verifyId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create Battle --
+DROP FUNCTION IF EXISTS create_battle(UUID, VARCHAR, JSONB, BOOL);
+CREATE FUNCTION create_battle(
+    IN leaderId UUID,
+    IN battleName VARCHAR(256),
+    IN pointsAllowed JSONB,
+    IN autoVoting BOOL,
+    OUT battleId UUID
+)
+AS $$
+BEGIN
+    INSERT INTO battles (owner_id, name, point_values_allowed, auto_finish_voting) VALUES (leaderId, battleName, pointsAllowed, autoVoting) RETURNING id INTO battleId;
+    INSERT INTO battles_leaders (battle_id, warrior_id) VALUES (battleId, leaderId);
 END;
 $$ LANGUAGE plpgsql;

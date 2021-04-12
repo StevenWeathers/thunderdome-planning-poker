@@ -213,13 +213,23 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_burned", string(updatedPlans), "")
 		case "promote_leader":
-			err := srv.database.SetBattleLeader(battleID, warriorID, keyVal["value"])
+			leaders, err := srv.database.SetBattleLeader(battleID, warriorID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
 			}
+			leadersJson, _ := json.Marshal(leaders)
 
-			msg = CreateSocketEvent("leader_updated", keyVal["value"], "")
+			msg = CreateSocketEvent("leaders_updated", string(leadersJson), "")
+		case "demote_leader":
+			leaders, err := srv.database.DemoteBattleLeader(battleID, warriorID, keyVal["value"])
+			if err != nil {
+				badEvent = true
+				break
+			}
+			leadersJson, _ := json.Marshal(leaders)
+
+			msg = CreateSocketEvent("leaders_updated", string(leadersJson), "")
 		case "revise_battle":
 			var revisedBattle struct {
 				BattleName         string   `json:"battleName"`

@@ -10,7 +10,7 @@
     export let voted = false
     export let warrior = {}
     export let isLeader = false
-    export let leaderId = ''
+    export let leaders = []
     export let points = ''
     export let sendSocketEvent = () => {}
     export let eventTag
@@ -22,6 +22,11 @@
     function promoteLeader() {
         sendSocketEvent('promote_leader', warrior.id)
         eventTag('promote_leader', 'battle', '')
+    }
+
+    function demoteLeader() {
+        sendSocketEvent('demote_leader', warrior.id)
+        eventTag('demote_leader', 'battle', '')
     }
 
     function jabWarrior() {
@@ -58,23 +63,32 @@
                     {/if}
                     {warrior.name}
                 </p>
-                {#if leaderId === warrior.id}
+                {#if leaders.includes(warrior.id)}
                     <p class="text-l text-gray-700 leading-tight">
                         <LeaderIcon />
-                        &nbsp;{$_('pages.battle.warriorLeader')}
+                        {#if isLeader}
+                        &nbsp;<button
+                            on:click="{demoteLeader}"
+                            class="inline text-sm text-red-500
+                            hover:text-red-800 bg-transparent border-transparent">
+                            {$_('actions.warrior.demote')}
+                        </button>
+                        {:else}
+                            &nbsp;{$_('pages.battle.warriorLeader')}
+                        {/if}
                     </p>
                 {:else if isLeader}
                     <button
                         on:click="{promoteLeader}"
-                        class="inline-block align-baseline text-sm text-blue-500
-                        hover:text-blue-600 bg-transparent border-transparent">
+                        class="inline-block align-baseline text-sm text-green-500
+                        hover:text-green-800 bg-transparent border-transparent">
                         {$_('actions.warrior.promote')}
                     </button>
                     &nbsp;|&nbsp;
                     <button
                         on:click="{jabWarrior}"
                         class="inline-block align-baseline text-sm text-blue-500
-                        hover:text-blue-600 bg-transparent border-transparent">
+                        hover:text-blue-800 bg-transparent border-transparent">
                         {$_('actions.warrior.nudge')}
                     </button>
                 {/if}

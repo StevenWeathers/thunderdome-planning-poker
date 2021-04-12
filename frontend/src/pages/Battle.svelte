@@ -38,7 +38,7 @@
     let points = []
     let vote = ''
     let voteStartTime = new Date()
-    let battle = {}
+    let battle = { leaders: [] }
     let currentPlan = { ...defaultPlan }
     let currentTime = new Date()
     let showEditBattle = false
@@ -184,8 +184,8 @@
                 battle.plans = postBurnPlans
 
                 break
-            case 'leader_updated':
-                battle.leaderId = parsedEvent.value
+            case 'leaders_updated':
+                battle.leaders = parsedEvent.value
                 break
             case 'battle_revised':
                 const revisedBattle = JSON.parse(parsedEvent.value)
@@ -230,7 +230,7 @@
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'battle', '', () => {
                         warrior.delete()
-                        router.route(`${appRoutes.register}/${battleId}`)
+                        router.route(`${appRoutes.login}/${battleId}`)
                     })
                 } else if (e.code === 4002) {
                     eventTag('battle_warrior_abandoned', 'battle', '', () => {
@@ -354,6 +354,8 @@
             : ''
     $: showVotingResults =
         battle.activePlanId !== '' && battle.votingLocked === true
+
+    $: isLeader = battle.leaders.includes($warrior.id)
 
     function concedeBattle() {
         eventTag('concede_battle', 'battle', '', () => {
@@ -487,7 +489,7 @@
 
                 <BattlePlans
                     plans="{battle.plans}"
-                    isLeader="{battle.leaderId === $warrior.id}"
+                    isLeader={isLeader}
                     {sendSocketEvent}
                     {eventTag}
                     {notifications} />
@@ -505,8 +507,8 @@
                         {#if war.active}
                             <WarriorCard
                                 warrior="{war}"
-                                leaderId="{battle.leaderId}"
-                                isLeader="{battle.leaderId === $warrior.id}"
+                                leaders={battle.leaders}
+                                isLeader={isLeader}
                                 voted="{didVote(war.id)}"
                                 points="{showVote(war.id)}"
                                 {sendSocketEvent}
@@ -514,7 +516,7 @@
                         {/if}
                     {/each}
 
-                    {#if battle.leaderId === $warrior.id}
+                    {#if isLeader}
                         <VotingControls
                             {points}
                             planId="{battle.activePlanId}"
@@ -527,7 +529,7 @@
 
                 <div class="bg-white shadow-lg p-4 mb-4 rounded">
                     <InviteWarrior {hostname} battleId="{battle.id}" />
-                    {#if battle.leaderId === $warrior.id}
+                    {#if isLeader}
                         <div class="mt-4 text-right">
                             <HollowButton
                                 color="blue"

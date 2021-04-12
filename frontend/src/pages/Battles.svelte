@@ -48,7 +48,7 @@
                         <div
                             class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight">
-                            {#if $warrior.id === battle.leaderId}
+                            {#if battle.leaders.includes($warrior.id)}
                                 <LeaderIcon />
                                 &nbsp;
                             {/if}

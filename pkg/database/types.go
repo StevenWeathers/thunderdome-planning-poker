@@ -34,7 +34,6 @@ type BattleWarrior struct {
 // Battle aka arena
 type Battle struct {
 	BattleID           string           `json:"id"`
-	LeaderID           string           `json:"leaderId"`
 	BattleName         string           `json:"name"`
 	Warriors           []*BattleWarrior `json:"warriors"`
 	Plans              []*Plan          `json:"plans"`
@@ -42,6 +41,7 @@ type Battle struct {
 	ActivePlanID       string           `json:"activePlanId"`
 	PointValuesAllowed []string         `json:"pointValuesAllowed"`
 	AutoFinishVoting   bool             `json:"autoFinishVoting"`
+	Leaders            []string         `json:"leaders"`
 }
 
 // Warrior aka user

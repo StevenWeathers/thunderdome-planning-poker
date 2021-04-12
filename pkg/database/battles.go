@@ -13,7 +13,6 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 
 	var b = &Battle{
 		BattleID:           "",
-		LeaderID:           LeaderID,
 		BattleName:         BattleName,
 		Warriors:           make([]*BattleWarrior, 0),
 		Plans:              make([]*Plan, 0),
@@ -21,10 +20,12 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 		ActivePlanID:       "",
 		PointValuesAllowed: PointValuesAllowed,
 		AutoFinishVoting:   AutoFinishVoting,
+		Leaders:            make([]string, 0),
 	}
+	b.Leaders = append(b.Leaders, LeaderID)
 
 	e := d.db.QueryRow(
-		`INSERT INTO battles (leader_id, name, point_values_allowed, auto_finish_voting) VALUES ($1, $2, $3, $4) RETURNING id`,
+		`SELECT battle_id FROM create_battle($1, $2, $3, $4);`,
 		LeaderID,
 		BattleName,
 		string(pointValuesJSON),
@@ -79,7 +80,6 @@ func (d *Database) ReviseBattle(BattleID string, warriorID string, BattleName st
 func (d *Database) GetBattle(BattleID string, WarriorID string) (*Battle, error) {
 	var b = &Battle{
 		BattleID:           BattleID,
-		LeaderID:           "",
 		BattleName:         "",
 		Warriors:           make([]*BattleWarrior, 0),
 		Plans:              make([]*Plan, 0),
@@ -87,22 +87,30 @@ func (d *Database) GetBattle(BattleID string, WarriorID string) (*Battle, error)
 		ActivePlanID:       "",
 		PointValuesAllowed: make([]string, 0),
 		AutoFinishVoting:   true,
+		Leaders:            make([]string, 0),
 	}
 
 	// get battle
 	var ActivePlanID sql.NullString
 	var pv string
+	var leaders string
 	e := d.db.QueryRow(
-		"SELECT id, name, leader_id, voting_locked, active_plan_id, point_values_allowed, auto_finish_voting FROM battles WHERE id = $1",
+		`
+		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting,
+		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.warrior_id)) END AS leaders
+		FROM battles b
+		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
+		WHERE b.id = $1
+		GROUP BY b.id`,
 		BattleID,
 	).Scan(
 		&b.BattleID,
 		&b.BattleName,
-		&b.LeaderID,
 		&b.VotingLocked,
 		&ActivePlanID,
 		&pv,
 		&b.AutoFinishVoting,
+		&leaders,
 	)
 	if e != nil {
 		log.Println(e)
@@ -110,6 +118,7 @@ func (d *Database) GetBattle(BattleID string, WarriorID string) (*Battle, error)
 	}
 
 	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
+	_ = json.Unmarshal([]byte(leaders), &b.Leaders)
 	b.ActivePlanID = ActivePlanID.String
 	b.Warriors = d.GetBattleWarriors(BattleID)
 	b.Plans = d.GetPlans(BattleID, WarriorID)
@@ -121,10 +130,12 @@ func (d *Database) GetBattle(BattleID string, WarriorID string) (*Battle, error)
 func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 	var battles = make([]*Battle, 0)
 	battleRows, battlesErr := d.db.Query(`
-		SELECT b.id, b.name, b.leader_id, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting,
-		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans
+		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting,
+		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans,
+		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.warrior_id)) END AS leaders
 		FROM battles b
 		LEFT JOIN plans p ON b.id = p.battle_id
+		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
 		LEFT JOIN battles_warriors bw ON b.id = bw.battle_id WHERE bw.warrior_id = $1 AND bw.abandoned = false
 		GROUP BY b.id ORDER BY b.created_date DESC
 	`, WarriorID)
@@ -136,10 +147,10 @@ func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 	for battleRows.Next() {
 		var plans string
 		var pv string
+		var leaders string
 		var ActivePlanID sql.NullString
 		var b = &Battle{
 			BattleID:           "",
-			LeaderID:           "",
 			BattleName:         "",
 			Warriors:           make([]*BattleWarrior, 0),
 			Plans:              make([]*Plan, 0),
@@ -147,21 +158,23 @@ func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 			ActivePlanID:       "",
 			PointValuesAllowed: make([]string, 0),
 			AutoFinishVoting:   true,
+			Leaders:            make([]string, 0),
 		}
 		if err := battleRows.Scan(
 			&b.BattleID,
 			&b.BattleName,
-			&b.LeaderID,
 			&b.VotingLocked,
 			&ActivePlanID,
 			&pv,
 			&b.AutoFinishVoting,
 			&plans,
+			&leaders,
 		); err != nil {
 			log.Println(err)
 		} else {
 			_ = json.Unmarshal([]byte(plans), &b.Plans)
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
+			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
 			b.ActivePlanID = ActivePlanID.String
 			battles = append(battles, b)
 		}
@@ -173,14 +186,10 @@ func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
 // ConfirmLeader confirms the warrior is infact leader of the battle
 func (d *Database) ConfirmLeader(BattleID string, warriorID string) error {
 	var leaderID string
-	e := d.db.QueryRow("SELECT leader_id FROM battles WHERE id = $1", BattleID).Scan(&leaderID)
+	e := d.db.QueryRow("SELECT warrior_id FROM battles_leaders WHERE battle_id = $1 AND warrior_id = $2", BattleID, warriorID).Scan(&leaderID)
 	if e != nil {
 		log.Println(e)
-		return errors.New("battle not found")
-	}
-
-	if leaderID != warriorID {
-		return errors.New("not leader")
+		return errors.New("not a battle leader")
 	}
 
 	return nil
@@ -326,20 +335,79 @@ func (d *Database) AbandonBattle(BattleID string, WarriorID string) ([]*BattleWa
 }
 
 // SetBattleLeader sets the leaderId for the battle
-func (d *Database) SetBattleLeader(BattleID string, warriorID string, LeaderID string) error {
+func (d *Database) SetBattleLeader(BattleID string, warriorID string, LeaderID string) ([]string, error) {
 	err := d.ConfirmLeader(BattleID, warriorID)
 	if err != nil {
-		return errors.New("incorrect permissions")
+		return nil, errors.New("incorrect permissions")
 	}
 
-	// set battle VotingLocked
+	leaders := make([]string, 0)
+
+	// set battle leader
 	if _, err := d.db.Exec(
 		`call set_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
 		log.Println(err)
-		return errors.New("unable to promote leader")
+		return nil, errors.New("unable to promote leader")
 	}
 
-	return nil
+	leaderRows, leadersErr := d.db.Query(`
+		SELECT warrior_id FROM battles_leaders WHERE battle_id = $1;
+	`, BattleID)
+	if leadersErr != nil {
+		return leaders, nil
+	}
+
+	defer leaderRows.Close()
+	for leaderRows.Next() {
+		var leader string
+		if err := leaderRows.Scan(
+			&leader,
+		); err != nil {
+			log.Println(err)
+		} else {
+			leaders = append(leaders, leader)
+		}
+	}
+
+	return leaders, nil
+}
+
+// DemoteBattleLeader removes a warrior from battle leaders
+func (d *Database) DemoteBattleLeader(BattleID string, warriorID string, LeaderID string) ([]string, error) {
+	err := d.ConfirmLeader(BattleID, warriorID)
+	if err != nil {
+		return nil, errors.New("incorrect permissions")
+	}
+
+	leaders := make([]string, 0)
+
+	// set battle leader
+	if _, err := d.db.Exec(
+		`call demote_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
+		log.Println(err)
+		return nil, errors.New("unable to demote leader")
+	}
+
+	leaderRows, leadersErr := d.db.Query(`
+		SELECT warrior_id FROM battles_leaders WHERE battle_id = $1;
+	`, BattleID)
+	if leadersErr != nil {
+		return leaders, nil
+	}
+
+	defer leaderRows.Close()
+	for leaderRows.Next() {
+		var leader string
+		if err := leaderRows.Scan(
+			&leader,
+		); err != nil {
+			log.Println(err)
+		} else {
+			leaders = append(leaders, leader)
+		}
+	}
+
+	return leaders, nil
 }
 
 // DeleteBattle removes all battle associations and the battle itself from DB by BattleID
