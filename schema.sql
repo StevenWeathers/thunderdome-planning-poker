@@ -111,6 +111,13 @@ BEGIN
     --
     -- Constraints
     --
+    ALTER TABLE battles_warriors DROP CONSTRAINT IF EXISTS battles_warriors_battle_id_fkey;
+    ALTER TABLE battles_warriors DROP CONSTRAINT IF EXISTS battles_warriors_warrior_id_fkey;
+    ALTER TABLE api_keys DROP CONSTRAINT IF EXISTS api_keys_warrior_id_fkey;
+    ALTER TABLE plans DROP CONSTRAINT IF EXISTS plans_battle_id_fkey;
+    ALTER TABLE warrior_verify DROP CONSTRAINT IF EXISTS warrior_verify_warrior_id_fkey;
+    ALTER TABLE warrior_reset DROP CONSTRAINT IF EXISTS warrior_reset_warrior_id_fkey;
+
     BEGIN
         ALTER TABLE battles_warriors ADD CONSTRAINT bw_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
         EXCEPTION
