@@ -25,7 +25,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 	b.Leaders = append(b.Leaders, LeaderID)
 
 	e := d.db.QueryRow(
-		`SELECT battle_id FROM create_battle($1, $2, $3, $4);`,
+		`SELECT battleId FROM create_battle($1, $2, $3, $4);`,
 		LeaderID,
 		BattleName,
 		string(pointValuesJSON),
