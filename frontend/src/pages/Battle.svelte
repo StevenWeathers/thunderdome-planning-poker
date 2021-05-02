@@ -192,6 +192,7 @@
                 battle.name = revisedBattle.battleName
                 points = revisedBattle.pointValuesAllowed
                 battle.autoFinishVoting = revisedBattle.autoFinishVoting
+                battle.pointAverageRounding = revisedBattle.pointAverageRounding
                 break
             case 'battle_conceded':
                 // battle over, goodbye.
