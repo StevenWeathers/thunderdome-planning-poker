@@ -232,13 +232,14 @@ func (s subscription) readPump(srv *server) {
 			msg = CreateSocketEvent("leaders_updated", string(leadersJson), "")
 		case "revise_battle":
 			var revisedBattle struct {
-				BattleName         string   `json:"battleName"`
-				PointValuesAllowed []string `json:"pointValuesAllowed"`
-				AutoFinishVoting   bool     `json:"autoFinishVoting"`
+				BattleName           string   `json:"battleName"`
+				PointValuesAllowed   []string `json:"pointValuesAllowed"`
+				AutoFinishVoting     bool     `json:"autoFinishVoting"`
+				PointAverageRounding string   `json:"pointAverageRounding"`
 			}
 			json.Unmarshal([]byte(keyVal["value"]), &revisedBattle)
 
-			err := srv.database.ReviseBattle(battleID, warriorID, revisedBattle.BattleName, revisedBattle.PointValuesAllowed, revisedBattle.AutoFinishVoting)
+			err := srv.database.ReviseBattle(battleID, warriorID, revisedBattle.BattleName, revisedBattle.PointValuesAllowed, revisedBattle.AutoFinishVoting, revisedBattle.PointAverageRounding)
 			if err != nil {
 				badEvent = true
 				break

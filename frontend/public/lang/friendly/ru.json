@@ -122,6 +122,9 @@
                     },
                     "autoFinishVoting": {
                         "label": "Автозавершение голосования когда все проголосовали"
+                    },
+                    "averageRounding": {
+                        "label": "Method of Point Average Rounding"
                     }
                 }
             }

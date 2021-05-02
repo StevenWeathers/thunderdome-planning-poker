@@ -122,6 +122,9 @@
                     },
                     "autoFinishVoting": {
                         "label": "Auto Finish Voting when all Warriors have voted"
+                    },
+                    "averageRounding": {
+                        "label": "Method of Point Average Rounding"
                     }
                 }
             }

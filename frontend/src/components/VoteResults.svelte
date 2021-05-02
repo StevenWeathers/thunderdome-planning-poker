@@ -8,6 +8,7 @@
     export let points = []
     export let warriors = []
     export let highestVote = ''
+    export let averageRounding = 'ceil'
 
     let totalVotes = plans.find(p => p.id === activePlanId).votes.length
 
@@ -30,7 +31,17 @@
                   )
                 : 0
 
-            average = Math.ceil(sum / votesToAverage.length) || 0
+            const preAverage = sum / votesToAverage.length || 0
+            switch (averageRounding) {
+                case "round":
+                    average = Math.round(preAverage)
+                    break;
+                case "floor":
+                    average = Math.floor(preAverage)
+                    break;
+                default:
+                    average = Math.ceil(preAverage)
+            }
         }
 
         return average

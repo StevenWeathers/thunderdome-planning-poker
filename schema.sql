@@ -67,6 +67,7 @@ ALTER TABLE battles ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW(
 ALTER TABLE battles ADD COLUMN IF NOT EXISTS point_values_allowed JSONB DEFAULT '["1/2", "1", "2", "3", "5", "8", "13", "?"]'::JSONB;
 ALTER TABLE battles ALTER COLUMN id SET DEFAULT uuid_generate_v4();
 ALTER TABLE battles ADD COLUMN IF NOT EXISTS auto_finish_voting BOOL DEFAULT true;
+ALTER TABLE battles ADD COLUMN IF NOT EXISTS point_average_rounding VARCHAR(5) DEFAULT 'ceil';
 
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW();
 ALTER TABLE warriors ADD COLUMN IF NOT EXISTS last_active TIMESTAMP DEFAULT NOW();
@@ -554,16 +555,18 @@ $$ LANGUAGE plpgsql;
 
 -- Create Battle --
 DROP FUNCTION IF EXISTS create_battle(UUID, VARCHAR, JSONB, BOOL);
+DROP FUNCTION IF EXISTS create_battle(UUID, VARCHAR, JSONB, BOOL, VARCHAR);
 CREATE FUNCTION create_battle(
     IN leaderId UUID,
     IN battleName VARCHAR(256),
     IN pointsAllowed JSONB,
     IN autoVoting BOOL,
+    IN pointAverageRounding VARCHAR(5),
     OUT battleId UUID
 )
 AS $$
 BEGIN
-    INSERT INTO battles (owner_id, name, point_values_allowed, auto_finish_voting) VALUES (leaderId, battleName, pointsAllowed, autoVoting) RETURNING id INTO battleId;
+    INSERT INTO battles (owner_id, name, point_values_allowed, auto_finish_voting, point_average_rounding) VALUES (leaderId, battleName, pointsAllowed, autoVoting, pointAverageRounding) RETURNING id INTO battleId;
     INSERT INTO battles_leaders (battle_id, warrior_id) VALUES (battleId, leaderId);
 END;
 $$ LANGUAGE plpgsql;

@@ -808,14 +808,15 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 		}
 
 		var keyVal struct {
-			BattleName         string           `json:"battleName"`
-			PointValuesAllowed []string         `json:"pointValuesAllowed"`
-			AutoFinishVoting   bool             `json:"autoFinishVoting"`
-			Plans              []*database.Plan `json:"plans"`
+			BattleName           string           `json:"battleName"`
+			PointValuesAllowed   []string         `json:"pointValuesAllowed"`
+			AutoFinishVoting     bool             `json:"autoFinishVoting"`
+			Plans                []*database.Plan `json:"plans"`
+			PointAverageRounding string           `json:"pointAverageRounding"`
 		}
 		json.Unmarshal(body, &keyVal) // check for errors
 
-		newBattle, err := s.database.CreateBattle(warriorID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting)
+		newBattle, err := s.database.CreateBattle(warriorID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting, keyVal.PointAverageRounding)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

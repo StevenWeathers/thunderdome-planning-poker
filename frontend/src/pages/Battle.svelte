@@ -471,7 +471,8 @@
                         plans="{battle.plans}"
                         activePlanId="{battle.activePlanId}"
                         {points}
-                        highestVote="{highestVoteCount}" />
+                        highestVote="{highestVoteCount}"
+                        averageRounding="{battle.pointAverageRounding}" />
                 {:else}
                     <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
                         {#each points as point}
@@ -556,6 +557,7 @@
                 {points}
                 votingLocked="{battle.votingLocked}"
                 autoFinishVoting="{battle.autoFinishVoting}"
+                pointAverageRounding="{battle.pointAverageRounding}"
                 {handleBattleEdit}
                 {toggleEditBattle} />
         {/if}

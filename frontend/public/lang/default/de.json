@@ -122,6 +122,9 @@
                     },
                     "autoFinishVoting": {
                         "label": "Sch\u00E4tzung automatisch beenden, wenn alle Krieger gesch\u00E4tzt haben"
+                    },
+                    "averageRounding": {
+                        "label": "Method of Point Average Rounding"
                     }
                 }
             }
