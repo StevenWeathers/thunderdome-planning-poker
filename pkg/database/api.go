@@ -78,8 +78,8 @@ func (d *Database) GenerateAPIKey(WarriorID string, KeyName string) (*APIKey, er
 	return APIKEY, nil
 }
 
-// GetWarriorAPIKeys gets a list of api keys for a warrior
-func (d *Database) GetWarriorAPIKeys(WarriorID string) ([]*APIKey, error) {
+// GetUserAPIKeys gets a list of api keys for a warrior
+func (d *Database) GetUserAPIKeys(WarriorID string) ([]*APIKey, error) {
 	var APIKeys = make([]*APIKey, 0)
 	rows, err := d.db.Query(
 		"SELECT id, name, warrior_id, active, created_date, updated_date FROM api_keys WHERE warrior_id = $1 ORDER BY created_date",
@@ -112,15 +112,15 @@ func (d *Database) GetWarriorAPIKeys(WarriorID string) ([]*APIKey, error) {
 	return APIKeys, err
 }
 
-// UpdateWarriorAPIKey updates a warriors api key (active column only)
-func (d *Database) UpdateWarriorAPIKey(WarriorID string, KeyID string, Active bool) ([]*APIKey, error) {
+// UpdateUserAPIKey updates a warriors api key (active column only)
+func (d *Database) UpdateUserAPIKey(WarriorID string, KeyID string, Active bool) ([]*APIKey, error) {
 	if _, err := d.db.Exec(
 		`UPDATE api_keys SET active = $3, updated_date = NOW() WHERE id = $1 AND warrior_id = $2;`, KeyID, WarriorID, Active); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	keys, keysErr := d.GetWarriorAPIKeys(WarriorID)
+	keys, keysErr := d.GetUserAPIKeys(WarriorID)
 	if keysErr != nil {
 		log.Println(keysErr)
 		return nil, keysErr
@@ -129,15 +129,15 @@ func (d *Database) UpdateWarriorAPIKey(WarriorID string, KeyID string, Active bo
 	return keys, nil
 }
 
-// DeleteWarriorAPIKey removes a warriors api key
-func (d *Database) DeleteWarriorAPIKey(WarriorID string, KeyID string) ([]*APIKey, error) {
+// DeleteUserAPIKey removes a warriors api key
+func (d *Database) DeleteUserAPIKey(WarriorID string, KeyID string) ([]*APIKey, error) {
 	if _, err := d.db.Exec(
 		`DELETE FROM api_keys WHERE id = $1 AND warrior_id = $2;`, KeyID, WarriorID); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	keys, keysErr := d.GetWarriorAPIKeys(WarriorID)
+	keys, keysErr := d.GetUserAPIKeys(WarriorID)
 	if keysErr != nil {
 		log.Println(keysErr)
 		return nil, keysErr

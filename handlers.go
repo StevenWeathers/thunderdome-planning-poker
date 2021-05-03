@@ -43,8 +43,8 @@ type warriorPassword struct {
 	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
 
-// ValidateWarriorAccount makes sure warrior name, email, and password are valid before creating the account
-func ValidateWarriorAccount(name string, email string, pwd1 string, pwd2 string) (WarriorName string, WarriorEmail string, WarriorPassword string, validateErr error) {
+// ValidateUserAccount makes sure warrior name, email, and password are valid before creating the account
+func ValidateUserAccount(name string, email string, pwd1 string, pwd2 string) (WarriorName string, WarriorEmail string, WarriorPassword string, validateErr error) {
 	v := validator.New()
 	a := warriorAccount{
 		Name:      name,
@@ -57,8 +57,8 @@ func ValidateWarriorAccount(name string, email string, pwd1 string, pwd2 string)
 	return name, email, pwd1, err
 }
 
-// ValidateWarriorPassword makes sure warrior password is valid before updating the password
-func ValidateWarriorPassword(pwd1 string, pwd2 string) (WarriorPassword string, validateErr error) {
+// ValidateUserPassword makes sure warrior password is valid before updating the password
+func ValidateUserPassword(pwd1 string, pwd2 string) (WarriorPassword string, validateErr error) {
 	v := validator.New()
 	a := warriorPassword{
 		Password1: pwd1,
@@ -78,8 +78,8 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(response)
 }
 
-// createWarriorCookie creates the warriors cookie
-func (s *server) createWarriorCookie(w http.ResponseWriter, isRegistered bool, WarriorID string) {
+// createUserCookie creates the warriors cookie
+func (s *server) createUserCookie(w http.ResponseWriter, isRegistered bool, WarriorID string) {
 	var cookiedays = 365 // 356 days
 	if isRegistered {
 		cookiedays = 30 // 30 days
@@ -105,9 +105,9 @@ func (s *server) createWarriorCookie(w http.ResponseWriter, isRegistered bool, W
 	http.SetCookie(w, cookie)
 }
 
-// clearWarriorCookies wipes the frontend and backend cookies
+// clearUserCookies wipes the frontend and backend cookies
 // used in the event of bad cookie reads
-func (s *server) clearWarriorCookies(w http.ResponseWriter) {
+func (s *server) clearUserCookies(w http.ResponseWriter) {
 	feCookie := &http.Cookie{
 		Name:   s.config.FrontendCookieName,
 		Value:  "",
@@ -129,8 +129,8 @@ func (s *server) clearWarriorCookies(w http.ResponseWriter) {
 	http.SetCookie(w, beCookie)
 }
 
-// validateWarriorCookie returns the warriorID from secure cookies or errors if failures getting it
-func (s *server) validateWarriorCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+// validateUserCookie returns the warriorID from secure cookies or errors if failures getting it
+func (s *server) validateUserCookie(w http.ResponseWriter, r *http.Request) (string, error) {
 	var warriorID string
 
 	if cookie, err := r.Cookie(s.config.SecureCookieName); err == nil {
@@ -139,12 +139,12 @@ func (s *server) validateWarriorCookie(w http.ResponseWriter, r *http.Request) (
 			warriorID = value
 		} else {
 			log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-			s.clearWarriorCookies(w)
+			s.clearUserCookies(w)
 			return "", errors.New("invalid warrior cookies")
 		}
 	} else {
 		log.Println("error in reading warrior cookie : " + err.Error() + "\n")
-		s.clearWarriorCookies(w)
+		s.clearUserCookies(w)
 		return "", errors.New("invalid warrior cookies")
 	}
 
@@ -172,7 +172,7 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		} else {
 			var cookieErr error
-			warriorID, cookieErr = s.validateWarriorCookie(w, r)
+			warriorID, cookieErr = s.validateUserCookie(w, r)
 			if cookieErr != nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
@@ -191,8 +191,8 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// warriorOnly validates that the request was made by a valid warrior
-func (s *server) warriorOnly(h http.HandlerFunc) http.HandlerFunc {
+// userOnly validates that the request was made by a valid warrior
+func (s *server) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
@@ -208,17 +208,17 @@ func (s *server) warriorOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		} else {
 			var cookieErr error
-			warriorID, cookieErr = s.validateWarriorCookie(w, r)
+			warriorID, cookieErr = s.validateUserCookie(w, r)
 			if cookieErr != nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 		}
 
-		_, warErr := s.database.GetWarrior(warriorID)
+		_, warErr := s.database.GetUser(warriorID)
 		if warErr != nil {
 			log.Println("error finding warrior : " + warErr.Error() + "\n")
-			s.clearWarriorCookies(w)
+			s.clearUserCookies(w)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -319,7 +319,7 @@ func (s *server) handleLogin() http.HandlerFunc {
 		WarriorEmail := keyVal["warriorEmail"]
 		WarriorPassword := keyVal["warriorPassword"]
 
-		authedWarrior, err := s.authWarriorDatabase(WarriorEmail, WarriorPassword)
+		authedWarrior, err := s.authUserDatabase(WarriorEmail, WarriorPassword)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -348,7 +348,7 @@ func (s *server) handleLdapLogin() http.HandlerFunc {
 		WarriorEmail := keyVal["warriorEmail"]
 		WarriorPassword := keyVal["warriorPassword"]
 
-		authedWarrior, err := s.authAndCreateWarriorLdap(WarriorEmail, WarriorPassword)
+		authedWarrior, err := s.authAndCreateUserLdap(WarriorEmail, WarriorPassword)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -369,13 +369,13 @@ func (s *server) handleLdapLogin() http.HandlerFunc {
 // handleLogout clears the warrior cookie(s) ending session
 func (s *server) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s.clearWarriorCookies(w)
+		s.clearUserCookies(w)
 		return
 	}
 }
 
-// handleWarriorRecruit registers a user as a private warrior (guest)
-func (s *server) handleWarriorRecruit() http.HandlerFunc {
+// handleUserRecruit registers a user as a private warrior (guest)
+func (s *server) handleUserRecruit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
 		if !AllowGuests {
@@ -394,20 +394,20 @@ func (s *server) handleWarriorRecruit() http.HandlerFunc {
 
 		WarriorName := keyVal["warriorName"]
 
-		newWarrior, err := s.database.CreateWarriorPrivate(WarriorName)
+		newWarrior, err := s.database.CreateUserGuest(WarriorName)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.createWarriorCookie(w, false, newWarrior.WarriorID)
+		s.createUserCookie(w, false, newWarrior.WarriorID)
 
 		RespondWithJSON(w, http.StatusOK, newWarrior)
 	}
 }
 
-// handleWarriorEnlist registers a user as a corporal warrior (authenticated)
-func (s *server) handleWarriorEnlist() http.HandlerFunc {
+// handleUserEnlist registers a user as a corporal warrior (authenticated)
+func (s *server) handleUserEnlist() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
 		if !AllowRegistration {
@@ -423,9 +423,9 @@ func (s *server) handleWarriorEnlist() http.HandlerFunc {
 			return
 		}
 
-		ActiveWarriorID, _ := s.validateWarriorCookie(w, r)
+		ActiveWarriorID, _ := s.validateUserCookie(w, r)
 
-		WarriorName, WarriorEmail, WarriorPassword, accountErr := ValidateWarriorAccount(
+		WarriorName, WarriorEmail, WarriorPassword, accountErr := ValidateUserAccount(
 			keyVal["warriorName"],
 			keyVal["warriorEmail"],
 			keyVal["warriorPassword1"],
@@ -437,13 +437,13 @@ func (s *server) handleWarriorEnlist() http.HandlerFunc {
 			return
 		}
 
-		newWarrior, VerifyID, err := s.database.CreateWarriorCorporal(WarriorName, WarriorEmail, WarriorPassword, ActiveWarriorID)
+		newWarrior, VerifyID, err := s.database.CreateUserRegistered(WarriorName, WarriorEmail, WarriorPassword, ActiveWarriorID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.createWarriorCookie(w, true, newWarrior.WarriorID)
+		s.createUserCookie(w, true, newWarrior.WarriorID)
 
 		s.email.SendWelcome(WarriorName, WarriorEmail, VerifyID)
 
@@ -460,7 +460,7 @@ func (s *server) handleForgotPassword() http.HandlerFunc {
 		json.Unmarshal(body, &keyVal) // check for errors
 		WarriorEmail := keyVal["warriorEmail"]
 
-		ResetID, WarriorName, resetErr := s.database.WarriorResetRequest(WarriorEmail)
+		ResetID, WarriorName, resetErr := s.database.UserResetRequest(WarriorEmail)
 		if resetErr == nil {
 			s.email.SendForgotPassword(WarriorName, WarriorEmail, ResetID)
 		}
@@ -479,7 +479,7 @@ func (s *server) handleResetPassword() http.HandlerFunc {
 		json.Unmarshal(body, &keyVal) // check for errors
 		ResetID := keyVal["resetId"]
 
-		WarriorPassword, passwordErr := ValidateWarriorPassword(
+		WarriorPassword, passwordErr := ValidateUserPassword(
 			keyVal["warriorPassword1"],
 			keyVal["warriorPassword2"],
 		)
@@ -489,7 +489,7 @@ func (s *server) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		WarriorName, WarriorEmail, resetErr := s.database.WarriorResetPassword(ResetID, WarriorPassword)
+		WarriorName, WarriorEmail, resetErr := s.database.UserResetPassword(ResetID, WarriorPassword)
 		if resetErr != nil {
 			log.Println("error attempting to reset warrior password : " + resetErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -514,7 +514,7 @@ func (s *server) handleUpdatePassword() http.HandlerFunc {
 		json.Unmarshal(body, &keyVal) // check for errors
 		warriorID := r.Context().Value(contextKeyWarriorID).(string)
 
-		WarriorPassword, passwordErr := ValidateWarriorPassword(
+		WarriorPassword, passwordErr := ValidateUserPassword(
 			keyVal["warriorPassword1"],
 			keyVal["warriorPassword2"],
 		)
@@ -524,7 +524,7 @@ func (s *server) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		WarriorName, WarriorEmail, updateErr := s.database.WarriorUpdatePassword(warriorID, WarriorPassword)
+		WarriorName, WarriorEmail, updateErr := s.database.UserUpdatePassword(warriorID, WarriorPassword)
 		if updateErr != nil {
 			log.Println("error attempting to update warrior password : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -537,8 +537,8 @@ func (s *server) handleUpdatePassword() http.HandlerFunc {
 	}
 }
 
-// handleWarriorProfile returns the warriors profile if it matches their session
-func (s *server) handleWarriorProfile() http.HandlerFunc {
+// handleUserProfile returns the warriors profile if it matches their session
+func (s *server) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		WarriorID := vars["id"]
@@ -549,7 +549,7 @@ func (s *server) handleWarriorProfile() http.HandlerFunc {
 			return
 		}
 
-		warrior, warErr := s.database.GetWarrior(WarriorID)
+		warrior, warErr := s.database.GetUser(WarriorID)
 		if warErr != nil {
 			log.Println("error finding warrior : " + warErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -560,8 +560,8 @@ func (s *server) handleWarriorProfile() http.HandlerFunc {
 	}
 }
 
-// handleWarriorProfileUpdate attempts to update warriors profile (currently limited to name)
-func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
+// handleUserProfileUpdate attempts to update warriors profile (currently limited to name)
+func (s *server) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		body, _ := ioutil.ReadAll(r.Body) // check for errors
@@ -578,14 +578,14 @@ func (s *server) handleWarriorProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		updateErr := s.database.UpdateWarriorProfile(WarriorID, WarriorName, WarriorAvatar, NotificationsEnabled)
+		updateErr := s.database.UpdateUserProfile(WarriorID, WarriorName, WarriorAvatar, NotificationsEnabled)
 		if updateErr != nil {
 			log.Println("error attempting to update warrior profile : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		warrior, warErr := s.database.GetWarrior(WarriorID)
+		warrior, warErr := s.database.GetUser(WarriorID)
 		if warErr != nil {
 			log.Println("error reloading warrior after update : " + warErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -605,7 +605,7 @@ func (s *server) handleAccountVerification() http.HandlerFunc {
 		json.Unmarshal(body, &keyVal) // check for errors
 		VerifyID := keyVal["verifyId"]
 
-		verifyErr := s.database.VerifyWarriorAccount(VerifyID)
+		verifyErr := s.database.VerifyUserAccount(VerifyID)
 		if verifyErr != nil {
 			log.Println("error attempting to verify warrior account : " + verifyErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -616,8 +616,8 @@ func (s *server) handleAccountVerification() http.HandlerFunc {
 	}
 }
 
-// handleWarriorDelete attempts to delete a warriors account
-func (s *server) handleWarriorDelete() http.HandlerFunc {
+// handleUserDelete attempts to delete a warriors account
+func (s *server) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -628,21 +628,21 @@ func (s *server) handleWarriorDelete() http.HandlerFunc {
 			return
 		}
 
-		updateErr := s.database.DeleteWarrior(WarriorID)
+		updateErr := s.database.DeleteUser(WarriorID)
 		if updateErr != nil {
 			log.Println("error attempting to delete warrior : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.clearWarriorCookies(w)
+		s.clearUserCookies(w)
 
 		return
 	}
 }
 
-// handleWarriorAvatar creates an avatar for the given warrior by ID
-func (s *server) handleWarriorAvatar() http.HandlerFunc {
+// handleUserAvatar creates an avatar for the given warrior by ID
+func (s *server) handleUserAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -718,8 +718,8 @@ func (s *server) handleAPIKeyGenerate() http.HandlerFunc {
 	}
 }
 
-// handleWarriorAPIKeys handles getting warrior API keys
-func (s *server) handleWarriorAPIKeys() http.HandlerFunc {
+// handleUserAPIKeys handles getting warrior API keys
+func (s *server) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -730,7 +730,7 @@ func (s *server) handleWarriorAPIKeys() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := s.database.GetWarriorAPIKeys(WarriorID)
+		APIKeys, keysErr := s.database.GetUserAPIKeys(WarriorID)
 		if keysErr != nil {
 			log.Println("error retrieving api keys : " + keysErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -741,8 +741,8 @@ func (s *server) handleWarriorAPIKeys() http.HandlerFunc {
 	}
 }
 
-// handleWarriorAPIKeys handles getting warrior API keys
-func (s *server) handleWarriorAPIKeyUpdate() http.HandlerFunc {
+// handleUserAPIKeyUpdate handles getting warrior API keys
+func (s *server) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -758,7 +758,7 @@ func (s *server) handleWarriorAPIKeyUpdate() http.HandlerFunc {
 		json.Unmarshal(body, &keyVal) // check for errors
 		active := keyVal["active"].(bool)
 
-		APIKeys, keysErr := s.database.UpdateWarriorAPIKey(WarriorID, APK, active)
+		APIKeys, keysErr := s.database.UpdateUserAPIKey(WarriorID, APK, active)
 		if keysErr != nil {
 			log.Println("error updating api key : " + keysErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -769,8 +769,8 @@ func (s *server) handleWarriorAPIKeyUpdate() http.HandlerFunc {
 	}
 }
 
-// handleWarriorAPIKeys handles getting warrior API keys
-func (s *server) handleWarriorAPIKeyDelete() http.HandlerFunc {
+// handleUserAPIKeyDelete handles getting warrior API keys
+func (s *server) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -782,7 +782,7 @@ func (s *server) handleWarriorAPIKeyDelete() http.HandlerFunc {
 		}
 		APK := vars["keyID"]
 
-		APIKeys, keysErr := s.database.DeleteWarriorAPIKey(WarriorID, APK)
+		APIKeys, keysErr := s.database.DeleteUserAPIKey(WarriorID, APK)
 		if keysErr != nil {
 			log.Println("error deleting api key : " + keysErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -830,7 +830,7 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 func (s *server) handleBattlesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		warriorID := r.Context().Value(contextKeyWarriorID).(string)
-		battles, err := s.database.GetBattlesByWarrior(warriorID)
+		battles, err := s.database.GetBattlesByUser(warriorID)
 
 		if err != nil {
 			http.NotFound(w, r)
@@ -859,21 +859,21 @@ func (s *server) handleAppStats() http.HandlerFunc {
 	}
 }
 
-// handleGetRegisteredWarriors gets a list of registered warriors
-func (s *server) handleGetRegisteredWarriors() http.HandlerFunc {
+// handleGetRegisteredUsers gets a list of registered warriors
+func (s *server) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		Limit, _ := strconv.Atoi(vars["limit"])
 		Offset, _ := strconv.Atoi(vars["offset"])
 
-		Warriors := s.database.GetRegisteredWarriors(Limit, Offset)
+		Warriors := s.database.GetRegisteredUsers(Limit, Offset)
 
 		RespondWithJSON(w, http.StatusOK, Warriors)
 	}
 }
 
-// handleWarriorCreate registers a user as a corporal warrior (authenticated)
-func (s *server) handleWarriorCreate() http.HandlerFunc {
+// handleUserCreate registers a user as a corporal warrior (authenticated)
+func (s *server) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, _ := ioutil.ReadAll(r.Body) // check for errors
 		keyVal := make(map[string]string)
@@ -883,7 +883,7 @@ func (s *server) handleWarriorCreate() http.HandlerFunc {
 			return
 		}
 
-		WarriorName, WarriorEmail, WarriorPassword, accountErr := ValidateWarriorAccount(
+		WarriorName, WarriorEmail, WarriorPassword, accountErr := ValidateUserAccount(
 			keyVal["warriorName"],
 			keyVal["warriorEmail"],
 			keyVal["warriorPassword1"],
@@ -895,7 +895,7 @@ func (s *server) handleWarriorCreate() http.HandlerFunc {
 			return
 		}
 
-		newWarrior, VerifyID, err := s.database.CreateWarriorCorporal(WarriorName, WarriorEmail, WarriorPassword, "")
+		newWarrior, VerifyID, err := s.database.CreateUserRegistered(WarriorName, WarriorEmail, WarriorPassword, "")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -907,8 +907,8 @@ func (s *server) handleWarriorCreate() http.HandlerFunc {
 	}
 }
 
-// handleWarriorPromote handles promoting a warrior to General (ADMIN) by ID
-func (s *server) handleWarriorPromote() http.HandlerFunc {
+// handleUserPromote handles promoting a warrior to General (ADMIN) by ID
+func (s *server) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, _ := ioutil.ReadAll(r.Body) // check for errors
 		keyVal := make(map[string]string)
@@ -918,7 +918,7 @@ func (s *server) handleWarriorPromote() http.HandlerFunc {
 			return
 		}
 
-		err := s.database.PromoteWarrior(keyVal["warriorId"])
+		err := s.database.PromoteUser(keyVal["warriorId"])
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -928,8 +928,8 @@ func (s *server) handleWarriorPromote() http.HandlerFunc {
 	}
 }
 
-// handleWarriorDemote handles demoting a warrior to Corporal (Registered) by ID
-func (s *server) handleWarriorDemote() http.HandlerFunc {
+// handleUserDemote handles demoting a warrior to Corporal (Registered) by ID
+func (s *server) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, _ := ioutil.ReadAll(r.Body) // check for errors
 		keyVal := make(map[string]string)
@@ -939,7 +939,7 @@ func (s *server) handleWarriorDemote() http.HandlerFunc {
 			return
 		}
 
-		err := s.database.DemoteWarrior(keyVal["warriorId"])
+		err := s.database.DemoteUser(keyVal["warriorId"])
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

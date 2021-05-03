@@ -55,8 +55,8 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 	return &Appstats, nil
 }
 
-// PromoteWarrior promotes a warrior to GENERAL (ADMIN) rank
-func (d *Database) PromoteWarrior(WarriorID string) error {
+// PromoteUser promotes a warrior to GENERAL (ADMIN) rank
+func (d *Database) PromoteUser(WarriorID string) error {
 	if _, err := d.db.Exec(
 		`call promote_warrior($1);`,
 		WarriorID,
@@ -68,8 +68,8 @@ func (d *Database) PromoteWarrior(WarriorID string) error {
 	return nil
 }
 
-// DemoteWarrior demotes a warrior to CORPORAL (Registered) rank
-func (d *Database) DemoteWarrior(WarriorID string) error {
+// DemoteUser demotes a warrior to CORPORAL (Registered) rank
+func (d *Database) DemoteUser(WarriorID string) error {
 	if _, err := d.db.Exec(
 		`call demote_warrior($1);`,
 		WarriorID,

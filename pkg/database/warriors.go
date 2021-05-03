@@ -6,8 +6,8 @@ import (
 	"log"
 )
 
-// GetRegisteredWarriors retrieves the registered warriors from db
-func (d *Database) GetRegisteredWarriors(Limit int, Offset int) []*Warrior {
+// GetRegisteredUsers retrieves the registered warriors from db
+func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*Warrior {
 	var warriors = make([]*Warrior, 0)
 	rows, err := d.db.Query(
 		`
@@ -48,8 +48,8 @@ func (d *Database) GetRegisteredWarriors(Limit int, Offset int) []*Warrior {
 	return warriors
 }
 
-// GetWarrior gets a warrior from db by ID
-func (d *Database) GetWarrior(WarriorID string) (*Warrior, error) {
+// GetUser gets a warrior from db by ID
+func (d *Database) GetUser(WarriorID string) (*Warrior, error) {
 	var w Warrior
 	var warriorEmail sql.NullString
 
@@ -75,7 +75,7 @@ func (d *Database) GetWarrior(WarriorID string) (*Warrior, error) {
 	return &w, nil
 }
 
-func (d *Database) GetWarriorByEmail(WarriorEmail string) (*Warrior, error) {
+func (d *Database) GetUserByEmail(WarriorEmail string) (*Warrior, error) {
 	var w Warrior
 	e := d.db.QueryRow(
 		"SELECT id, name, email, rank, verified FROM warriors WHERE email = $1",
@@ -95,8 +95,8 @@ func (d *Database) GetWarriorByEmail(WarriorEmail string) (*Warrior, error) {
 	return &w, nil
 }
 
-// AuthWarrior attempts to authenticate the warrior
-func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Warrior, error) {
+// AuthUser attempts to authenticate the warrior
+func (d *Database) AuthUser(WarriorEmail string, WarriorPassword string) (*Warrior, error) {
 	var w Warrior
 	var passHash string
 
@@ -125,8 +125,8 @@ func (d *Database) AuthWarrior(WarriorEmail string, WarriorPassword string) (*Wa
 	return &w, nil
 }
 
-// CreateWarriorPrivate adds a new warrior private (guest) to the db
-func (d *Database) CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
+// CreateUserGuest adds a new warrior private (guest) to the db
+func (d *Database) CreateUserGuest(WarriorName string) (*Warrior, error) {
 	var WarriorID string
 	e := d.db.QueryRow(`INSERT INTO warriors (name) VALUES ($1) RETURNING id`, WarriorName).Scan(&WarriorID)
 	if e != nil {
@@ -137,8 +137,8 @@ func (d *Database) CreateWarriorPrivate(WarriorName string) (*Warrior, error) {
 	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorAvatar: "identicon", NotificationsEnabled: true}, nil
 }
 
-// CreateWarriorCorporal adds a new warrior corporal (registered) to the db
-func (d *Database) CreateWarriorCorporal(WarriorName string, WarriorEmail string, WarriorPassword string, ActiveWarriorID string) (NewWarrior *Warrior, VerifyID string, RegisterErr error) {
+// CreateUserRegistered adds a new warrior corporal (registered) to the db
+func (d *Database) CreateUserRegistered(WarriorName string, WarriorEmail string, WarriorPassword string, ActiveWarriorID string) (NewWarrior *Warrior, VerifyID string, RegisterErr error) {
 	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
 	if hashErr != nil {
 		return nil, "", hashErr
@@ -179,8 +179,8 @@ func (d *Database) CreateWarriorCorporal(WarriorName string, WarriorEmail string
 	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank, WarriorAvatar: WarriorAvatar}, verifyID, nil
 }
 
-// UpdateWarriorProfile attempts to update the warriors profile
-func (d *Database) UpdateWarriorProfile(WarriorID string, WarriorName string, WarriorAvatar string, NotificationsEnabled bool) error {
+// UpdateUserProfile attempts to update the warriors profile
+func (d *Database) UpdateUserProfile(WarriorID string, WarriorName string, WarriorAvatar string, NotificationsEnabled bool) error {
 	if WarriorAvatar == "" {
 		WarriorAvatar = "identicon"
 	}
@@ -198,8 +198,8 @@ func (d *Database) UpdateWarriorProfile(WarriorID string, WarriorName string, Wa
 	return nil
 }
 
-// WarriorResetRequest inserts a new warrior reset request
-func (d *Database) WarriorResetRequest(WarriorEmail string) (resetID string, warriorName string, resetErr error) {
+// UserResetRequest inserts a new warrior reset request
+func (d *Database) UserResetRequest(WarriorEmail string) (resetID string, warriorName string, resetErr error) {
 	var ResetID sql.NullString
 	var WarriorID sql.NullString
 	var WarriorName sql.NullString
@@ -217,8 +217,8 @@ func (d *Database) WarriorResetRequest(WarriorEmail string) (resetID string, war
 	return ResetID.String, WarriorName.String, nil
 }
 
-// WarriorResetPassword attempts to reset a warriors password
-func (d *Database) WarriorResetPassword(ResetID string, WarriorPassword string) (warriorName string, warriorEmail string, resetErr error) {
+// UserResetPassword attempts to reset a warriors password
+func (d *Database) UserResetPassword(ResetID string, WarriorPassword string) (warriorName string, warriorEmail string, resetErr error) {
 	var WarriorName sql.NullString
 	var WarriorEmail sql.NullString
 
@@ -249,8 +249,8 @@ func (d *Database) WarriorResetPassword(ResetID string, WarriorPassword string) 
 	return WarriorName.String, WarriorEmail.String, nil
 }
 
-// WarriorUpdatePassword attempts to update a warriors password
-func (d *Database) WarriorUpdatePassword(WarriorID string, WarriorPassword string) (warriorName string, warriorEmail string, resetErr error) {
+// UserUpdatePassword attempts to update a warriors password
+func (d *Database) UserUpdatePassword(WarriorID string, WarriorPassword string) (warriorName string, warriorEmail string, resetErr error) {
 	var WarriorName sql.NullString
 	var WarriorEmail sql.NullString
 
@@ -280,8 +280,8 @@ func (d *Database) WarriorUpdatePassword(WarriorID string, WarriorPassword strin
 	return WarriorName.String, WarriorEmail.String, nil
 }
 
-// VerifyWarriorAccount attempts to verify a warriors account email
-func (d *Database) VerifyWarriorAccount(VerifyID string) error {
+// VerifyUserAccount attempts to verify a warriors account email
+func (d *Database) VerifyUserAccount(VerifyID string) error {
 	if _, err := d.db.Exec(
 		`call verify_warrior_account($1)`, VerifyID); err != nil {
 		return err
@@ -290,8 +290,8 @@ func (d *Database) VerifyWarriorAccount(VerifyID string) error {
 	return nil
 }
 
-// UpdateWarriorProfile attempts to delete a warrior
-func (d *Database) DeleteWarrior(WarriorID string) error {
+// UpdateUserProfile attempts to delete a warrior
+func (d *Database) DeleteUser(WarriorID string) error {
 	if _, err := d.db.Exec(
 		`call delete_warrior($1);`,
 		WarriorID,

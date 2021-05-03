@@ -66,7 +66,7 @@ func (s subscription) readPump(srv *server) {
 		BattleID := s.arena
 		WarriorID := s.warriorID
 
-		Warriors := srv.database.RetreatWarrior(BattleID, WarriorID)
+		Warriors := srv.database.RetreatUser(BattleID, WarriorID)
 		updatedWarriors, _ := json.Marshal(Warriors)
 
 		retreatEvent := CreateSocketEvent("warrior_retreated", string(updatedWarriors), WarriorID)
@@ -328,7 +328,7 @@ func (s *server) serveWs() http.HandlerFunc {
 		}
 
 		// make sure warrior cookies are valid
-		warriorID, cookieErr := s.validateWarriorCookie(w, r)
+		warriorID, cookieErr := s.validateUserCookie(w, r)
 		if cookieErr != nil {
 			cm := websocket.FormatCloseMessage(4001, "unauthorized")
 			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
@@ -355,11 +355,11 @@ func (s *server) serveWs() http.HandlerFunc {
 		battle, _ := json.Marshal(b)
 
 		// make sure warrior exists
-		_, warErr := s.database.GetBattleWarrior(battleID, warriorID)
+		_, warErr := s.database.GetBattleUser(battleID, warriorID)
 
 		if warErr != nil {
 			log.Println("error finding warrior : " + warErr.Error() + "\n")
-			s.clearWarriorCookies(w)
+			s.clearUserCookies(w)
 			cm := websocket.FormatCloseMessage(4001, "unauthorized")
 			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
 				log.Printf("unauthorized close error: %v", err)
@@ -374,7 +374,7 @@ func (s *server) serveWs() http.HandlerFunc {
 		ss := subscription{c, battleID, warriorID}
 		h.register <- ss
 
-		Warriors, _ := s.database.AddWarriorToBattle(ss.arena, warriorID)
+		Warriors, _ := s.database.AddUserToBattle(ss.arena, warriorID)
 		updatedWarriors, _ := json.Marshal(Warriors)
 
 		initEvent := CreateSocketEvent("init", string(battle), warriorID)

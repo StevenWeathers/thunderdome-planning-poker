@@ -124,14 +124,14 @@ func (d *Database) GetBattle(BattleID string, WarriorID string) (*Battle, error)
 	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 	_ = json.Unmarshal([]byte(leaders), &b.Leaders)
 	b.ActivePlanID = ActivePlanID.String
-	b.Warriors = d.GetBattleWarriors(BattleID)
+	b.Warriors = d.GetBattleUsers(BattleID)
 	b.Plans = d.GetPlans(BattleID, WarriorID)
 
 	return b, nil
 }
 
-// GetBattlesByWarrior gets a list of battles by WarriorID
-func (d *Database) GetBattlesByWarrior(WarriorID string) ([]*Battle, error) {
+// GetBattlesByUser gets a list of battles by WarriorID
+func (d *Database) GetBattlesByUser(WarriorID string) ([]*Battle, error) {
 	var battles = make([]*Battle, 0)
 	battleRows, battlesErr := d.db.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding,
@@ -201,8 +201,8 @@ func (d *Database) ConfirmLeader(BattleID string, warriorID string) error {
 	return nil
 }
 
-// GetBattleWarrior gets a warrior from db by ID and checks battle active status
-func (d *Database) GetBattleWarrior(BattleID string, WarriorID string) (*BattleWarrior, error) {
+// GetBattleUser gets a warrior from db by ID and checks battle active status
+func (d *Database) GetBattleUser(BattleID string, WarriorID string) (*BattleWarrior, error) {
 	var active bool
 	var w BattleWarrior
 
@@ -233,8 +233,8 @@ func (d *Database) GetBattleWarrior(BattleID string, WarriorID string) (*BattleW
 	return &w, nil
 }
 
-// GetBattleWarriors retrieves the warriors for a given battle from db
-func (d *Database) GetBattleWarriors(BattleID string) []*BattleWarrior {
+// GetBattleUsers retrieves the warriors for a given battle from db
+func (d *Database) GetBattleUsers(BattleID string) []*BattleWarrior {
 	var warriors = make([]*BattleWarrior, 0)
 	rows, err := d.db.Query(
 		`SELECT
@@ -260,8 +260,8 @@ func (d *Database) GetBattleWarriors(BattleID string) []*BattleWarrior {
 	return warriors
 }
 
-// GetBattleActiveWarriors retrieves the active warriors for a given battle from db
-func (d *Database) GetBattleActiveWarriors(BattleID string) []*BattleWarrior {
+// GetBattleActiveUsers retrieves the active warriors for a given battle from db
+func (d *Database) GetBattleActiveUsers(BattleID string) []*BattleWarrior {
 	var warriors = make([]*BattleWarrior, 0)
 	rows, err := d.db.Query(
 		`SELECT
@@ -287,8 +287,8 @@ func (d *Database) GetBattleActiveWarriors(BattleID string) []*BattleWarrior {
 	return warriors
 }
 
-// AddWarriorToBattle adds a warrior by ID to the battle by ID
-func (d *Database) AddWarriorToBattle(BattleID string, WarriorID string) ([]*BattleWarrior, error) {
+// AddUserToBattle adds a warrior by ID to the battle by ID
+func (d *Database) AddUserToBattle(BattleID string, WarriorID string) ([]*BattleWarrior, error) {
 	if _, err := d.db.Exec(
 		`INSERT INTO battles_warriors (battle_id, warrior_id, active)
 		VALUES ($1, $2, true)
@@ -299,13 +299,13 @@ func (d *Database) AddWarriorToBattle(BattleID string, WarriorID string) ([]*Bat
 		log.Println(err)
 	}
 
-	warriors := d.GetBattleWarriors(BattleID)
+	warriors := d.GetBattleUsers(BattleID)
 
 	return warriors, nil
 }
 
-// RetreatWarrior removes a warrior from the current battle by ID
-func (d *Database) RetreatWarrior(BattleID string, WarriorID string) []*BattleWarrior {
+// RetreatUser removes a warrior from the current battle by ID
+func (d *Database) RetreatUser(BattleID string, WarriorID string) []*BattleWarrior {
 	if _, err := d.db.Exec(
 		`UPDATE battles_warriors SET active = false WHERE battle_id = $1 AND warrior_id = $2`, BattleID, WarriorID); err != nil {
 		log.Println(err)
@@ -316,7 +316,7 @@ func (d *Database) RetreatWarrior(BattleID string, WarriorID string) []*BattleWa
 		log.Println(err)
 	}
 
-	warriors := d.GetBattleWarriors(BattleID)
+	warriors := d.GetBattleUsers(BattleID)
 
 	return warriors
 }
@@ -335,7 +335,7 @@ func (d *Database) AbandonBattle(BattleID string, WarriorID string) ([]*BattleWa
 		return nil, err
 	}
 
-	warriors := d.GetBattleWarriors(BattleID)
+	warriors := d.GetBattleUsers(BattleID)
 
 	return warriors, nil
 }

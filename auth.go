@@ -31,8 +31,8 @@ func (s *server) createCookie(warriorID string) *http.Cookie {
 	return NewCookie
 }
 
-func (s *server) authWarriorDatabase(warriorEmail string, warriorPassword string) (*database.Warrior, error) {
-	authedWarrior, err := s.database.AuthWarrior(warriorEmail, warriorPassword)
+func (s *server) authUserDatabase(warriorEmail string, warriorPassword string) (*database.Warrior, error) {
+	authedWarrior, err := s.database.AuthUser(warriorEmail, warriorPassword)
 	if err != nil {
 		log.Println("Failed authenticating user", warriorEmail)
 	} else if authedWarrior == nil {
@@ -42,7 +42,7 @@ func (s *server) authWarriorDatabase(warriorEmail string, warriorPassword string
 }
 
 // Authenticate using LDAP and if warrior does not exist, automatically add warror as a verified warrior
-func (s *server) authAndCreateWarriorLdap(warriorUsername string, warriorPassword string) (*database.Warrior, error) {
+func (s *server) authAndCreateUserLdap(warriorUsername string, warriorPassword string) (*database.Warrior, error) {
 	var authedWarrior *database.Warrior
 	l, err := ldap.DialURL(viper.GetString("auth.ldap.url"))
 	if err != nil {
@@ -94,15 +94,15 @@ func (s *server) authAndCreateWarriorLdap(warriorUsername string, warriorPasswor
 		return authedWarrior, err
 	}
 
-	authedWarrior, err = s.database.GetWarriorByEmail(useremail)
+	authedWarrior, err = s.database.GetUserByEmail(useremail)
 	if authedWarrior == nil {
 		log.Println("Warrior", useremail, "does not exist in database, auto-recruit")
-		newWarrior, verifyID, err := s.database.CreateWarriorCorporal(usercn, useremail, "", "")
+		newWarrior, verifyID, err := s.database.CreateUserRegistered(usercn, useremail, "", "")
 		if err != nil {
 			log.Println("Failed auto-creating new warrior", err)
 			return authedWarrior, err
 		}
-		err = s.database.VerifyWarriorAccount(verifyID)
+		err = s.database.VerifyUserAccount(verifyID)
 		if err != nil {
 			log.Println("Failed verifying new warrior", err)
 			return authedWarrior, err

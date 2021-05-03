@@ -120,7 +120,7 @@ func (d *Database) SetVote(BattleID string, WarriorID string, PlanID string, Vot
 	}
 
 	Plans := d.GetPlans(BattleID, "")
-	ActiveWarriors := d.GetBattleActiveWarriors(BattleID)
+	ActiveWarriors := d.GetBattleActiveUsers(BattleID)
 
 	// determine if all active warriors have voted
 	AllVoted := true
