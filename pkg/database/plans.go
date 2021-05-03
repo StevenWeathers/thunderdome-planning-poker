@@ -115,7 +115,7 @@ func (d *Database) ActivatePlanVoting(BattleID string, warriorID string, PlanID 
 // SetVote sets a warriors vote for the plan
 func (d *Database) SetVote(BattleID string, WarriorID string, PlanID string, VoteValue string) (BattlePlans []*Plan, AllWarriorsVoted bool) {
 	if _, err := d.db.Exec(
-		`call set_warrior_vote($1, $2, $3);`, PlanID, WarriorID, VoteValue); err != nil {
+		`call set_user_vote($1, $2, $3);`, PlanID, WarriorID, VoteValue); err != nil {
 		log.Println(err)
 	}
 
@@ -148,7 +148,7 @@ func (d *Database) SetVote(BattleID string, WarriorID string, PlanID string, Vot
 // RetractVote removes a warriors vote for the plan
 func (d *Database) RetractVote(BattleID string, WarriorID string, PlanID string) []*Plan {
 	if _, err := d.db.Exec(
-		`call retract_warrior_vote($1, $2);`, PlanID, WarriorID); err != nil {
+		`call retract_user_vote($1, $2);`, PlanID, WarriorID); err != nil {
 		log.Println(err)
 	}
 

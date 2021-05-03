@@ -35,8 +35,8 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 
 	statsErr := d.db.QueryRow(`
 		SELECT
-			unregistered_warrior_count,
-			registered_warrior_count,
+			unregistered_user_count,
+			registered_user_count,
 			battle_count,
 			plan_count
 		FROM get_app_stats();
@@ -58,7 +58,7 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 // PromoteUser promotes a warrior to GENERAL (ADMIN) rank
 func (d *Database) PromoteUser(WarriorID string) error {
 	if _, err := d.db.Exec(
-		`call promote_warrior($1);`,
+		`call promote_user($1);`,
 		WarriorID,
 	); err != nil {
 		log.Println(err)
@@ -71,7 +71,7 @@ func (d *Database) PromoteUser(WarriorID string) error {
 // DemoteUser demotes a warrior to CORPORAL (Registered) rank
 func (d *Database) DemoteUser(WarriorID string) error {
 	if _, err := d.db.Exec(
-		`call demote_warrior($1);`,
+		`call demote_user($1);`,
 		WarriorID,
 	); err != nil {
 		log.Println(err)
@@ -97,7 +97,7 @@ func (d *Database) CleanBattles(DaysOld int) error {
 // CleanGuests deletes guest warriors older than X days
 func (d *Database) CleanGuests(DaysOld int) error {
 	if _, err := d.db.Exec(
-		`call clean_guest_warriors($1);`,
+		`call clean_guest_users($1);`,
 		DaysOld,
 	); err != nil {
 		log.Println(err)

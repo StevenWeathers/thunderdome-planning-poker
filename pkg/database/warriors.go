@@ -151,7 +151,7 @@ func (d *Database) CreateUserRegistered(WarriorName string, WarriorEmail string,
 
 	if ActiveWarriorID != "" {
 		e := d.db.QueryRow(
-			`SELECT warriorId, verifyId FROM register_existing_warrior($1, $2, $3, $4, $5);`,
+			`SELECT userId, verifyId FROM register_existing_user($1, $2, $3, $4, $5);`,
 			ActiveWarriorID,
 			WarriorName,
 			WarriorEmail,
@@ -164,7 +164,7 @@ func (d *Database) CreateUserRegistered(WarriorName string, WarriorEmail string,
 		}
 	} else {
 		e := d.db.QueryRow(
-			`SELECT warriorId, verifyId FROM register_warrior($1, $2, $3, $4);`,
+			`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 			WarriorName,
 			WarriorEmail,
 			hashedPassword,
@@ -205,7 +205,7 @@ func (d *Database) UserResetRequest(WarriorEmail string) (resetID string, warrio
 	var WarriorName sql.NullString
 
 	e := d.db.QueryRow(`
-		SELECT resetId, warriorId, warriorName FROM insert_warrior_reset($1);
+		SELECT resetId, userId, warriorName FROM insert_user_reset($1);
 		`,
 		WarriorEmail,
 	).Scan(&ResetID, &WarriorID, &WarriorName)
@@ -242,7 +242,7 @@ func (d *Database) UserResetPassword(ResetID string, WarriorPassword string) (wa
 	}
 
 	if _, err := d.db.Exec(
-		`call reset_warrior_password($1, $2)`, ResetID, hashedPassword); err != nil {
+		`call reset_user_password($1, $2)`, ResetID, hashedPassword); err != nil {
 		return "", "", err
 	}
 
@@ -273,7 +273,7 @@ func (d *Database) UserUpdatePassword(WarriorID string, WarriorPassword string) 
 	}
 
 	if _, err := d.db.Exec(
-		`call update_warrior_password($1, $2)`, WarriorID, hashedPassword); err != nil {
+		`call update_user_password($1, $2)`, WarriorID, hashedPassword); err != nil {
 		return "", "", err
 	}
 
@@ -283,7 +283,7 @@ func (d *Database) UserUpdatePassword(WarriorID string, WarriorPassword string) 
 // VerifyUserAccount attempts to verify a warriors account email
 func (d *Database) VerifyUserAccount(VerifyID string) error {
 	if _, err := d.db.Exec(
-		`call verify_warrior_account($1)`, VerifyID); err != nil {
+		`call verify_user_account($1)`, VerifyID); err != nil {
 		return err
 	}
 
@@ -293,7 +293,7 @@ func (d *Database) VerifyUserAccount(VerifyID string) error {
 // UpdateUserProfile attempts to delete a warrior
 func (d *Database) DeleteUser(WarriorID string) error {
 	if _, err := d.db.Exec(
-		`call delete_warrior($1);`,
+		`call delete_user($1);`,
 		WarriorID,
 	); err != nil {
 		log.Println(err)

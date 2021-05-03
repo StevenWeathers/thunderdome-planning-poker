@@ -80,14 +80,14 @@ func New(AdminEmail string, schemaSQL string) *Database {
 
 	// on server start reset all warriors to active false for battles
 	if _, err := d.db.Exec(
-		`call deactivate_all_warriors();`); err != nil {
+		`call deactivate_all_users();`); err != nil {
 		log.Println(err)
 	}
 
 	// on server start if admin email is specified set that warrior to GENERAL rank
 	if AdminEmail != "" {
 		if _, err := d.db.Exec(
-			`call promote_warrior_by_email($1);`,
+			`call promote_user_by_email($1);`,
 			AdminEmail,
 		); err != nil {
 			log.Println(err)

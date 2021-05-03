@@ -160,7 +160,8 @@ END $$;
 -- Types (used in Stored Procedures)
 --
 DROP TYPE IF EXISTS WarriorsVote;
-CREATE TYPE WarriorsVote AS
+DROP TYPE IF EXISTS UsersVote;
+CREATE TYPE UsersVote AS
 (
     "warriorId"     uuid,
     "vote"   VARCHAR(3)
@@ -171,7 +172,8 @@ CREATE TYPE WarriorsVote AS
 --
 
 -- Reset All Warriors to Inactive, used by server restart --
-CREATE OR REPLACE PROCEDURE deactivate_all_warriors()
+DROP PROCEDURE IF EXISTS deactivate_all_warriors();
+CREATE OR REPLACE PROCEDURE deactivate_all_users()
 LANGUAGE plpgsql AS $$
 BEGIN
     UPDATE battles_warriors SET active = false WHERE active = true;
@@ -307,7 +309,8 @@ END;
 $$;
 
 -- Set Warrior Vote --
-CREATE OR REPLACE PROCEDURE set_warrior_vote(planId UUID, warriorsId UUID, warriorVote VARCHAR(3))
+DROP PROCEDURE IF EXISTS set_warrior_vote(planId UUID, warriorsId UUID, warriorVote VARCHAR(3));
+CREATE OR REPLACE PROCEDURE set_user_vote(planId UUID, userId UUID, userVote VARCHAR(3))
 LANGUAGE plpgsql AS $$
 BEGIN
 	UPDATE plans p1
@@ -315,9 +318,9 @@ BEGIN
         SELECT json_agg(data)
         FROM (
             SELECT coalesce(newVote."warriorId", oldVote."warriorId") AS "warriorId", coalesce(newVote.vote, oldVote.vote) AS vote
-            FROM jsonb_populate_recordset(null::WarriorsVote,p1.votes) AS oldVote
-            FULL JOIN jsonb_populate_recordset(null::WarriorsVote,
-                ('[{"warriorId":"'|| warriorsId::TEXT ||'", "vote":"'|| warriorVote ||'"}]')::JSONB
+            FROM jsonb_populate_recordset(null::UsersVote,p1.votes) AS oldVote
+            FULL JOIN jsonb_populate_recordset(null::UsersVote,
+                ('[{"warriorId":"'|| userId::TEXT ||'", "vote":"'|| userVote ||'"}]')::JSONB
             ) AS newVote
             ON newVote."warriorId" = oldVote."warriorId"
         ) data
@@ -329,7 +332,8 @@ END;
 $$;
 
 -- Retract Warrior Vote --
-CREATE OR REPLACE PROCEDURE retract_warrior_vote(planId UUID, warriorsId UUID)
+DROP PROCEDURE IF EXISTS retract_warrior_vote(planId UUID, warriorsId UUID);
+CREATE OR REPLACE PROCEDURE retract_user_vote(planId UUID, userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
 	UPDATE plans p1
@@ -337,8 +341,8 @@ BEGIN
         SELECT coalesce(json_agg(data), '[]'::JSON)
         FROM (
             SELECT coalesce(oldVote."warriorId") AS "warriorId", coalesce(oldVote.vote) AS vote
-            FROM jsonb_populate_recordset(null::WarriorsVote,p1.votes) AS oldVote
-            WHERE oldVote."warriorId" != warriorsId
+            FROM jsonb_populate_recordset(null::UsersVote,p1.votes) AS oldVote
+            WHERE oldVote."warriorId" != userId
         ) data
     )
     WHERE p1.id = planId;
@@ -348,24 +352,25 @@ END;
 $$;
 
 -- Reset Warrior Password --
-CREATE OR REPLACE PROCEDURE reset_warrior_password(resetId UUID, warriorPassword TEXT)
+DROP PROCEDURE IF EXISTS reset_warrior_password(resetId UUID, warriorPassword TEXT);
+CREATE OR REPLACE PROCEDURE reset_user_password(resetId UUID, userPassword TEXT)
 LANGUAGE plpgsql AS $$
-DECLARE matchedWarriorId UUID;
+DECLARE matchedUserId UUID;
 BEGIN
-	matchedWarriorId := (
+	matchedUserId := (
         SELECT w.id
         FROM warrior_reset wr
         LEFT JOIN warriors w ON w.id = wr.warrior_id
         WHERE wr.reset_id = resetId AND NOW() < wr.expire_date
     );
 
-    IF matchedWarriorId IS NULL THEN
+    IF matchedUserId IS NULL THEN
         -- attempt delete incase reset record expired
         DELETE FROM warrior_reset WHERE reset_id = resetId;
         RAISE 'Valid Reset ID not found';
     END IF;
 
-    UPDATE warriors SET password = warriorPassword, last_active = NOW() WHERE id = matchedWarriorId;
+    UPDATE warriors SET password = userPassword, last_active = NOW() WHERE id = matchedUserId;
     DELETE FROM warrior_reset WHERE reset_id = resetId;
 
     COMMIT;
@@ -373,34 +378,36 @@ END;
 $$;
 
 -- Update Warrior Password --
-CREATE OR REPLACE PROCEDURE update_warrior_password(warriorId UUID, warriorPassword TEXT)
+DROP PROCEDURE IF EXISTS update_warrior_password(warriorId UUID, warriorPassword TEXT);
+CREATE OR REPLACE PROCEDURE update_user_password(userId UUID, userPassword TEXT)
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE warriors SET password = warriorPassword, last_active = NOW() WHERE id = warriorId;
+    UPDATE warriors SET password = userPassword, last_active = NOW() WHERE id = userId;
 
     COMMIT;
 END;
 $$;
 
 -- Verify a warrior account email
-CREATE OR REPLACE PROCEDURE verify_warrior_account(verifyId UUID)
+DROP PROCEDURE IF EXISTS verify_warrior_account(verifyId UUID);
+CREATE OR REPLACE PROCEDURE verify_user_account(verifyId UUID)
 LANGUAGE plpgsql AS $$
-DECLARE matchedWarriorId UUID;
+DECLARE matchedUserId UUID;
 BEGIN
-	matchedWarriorId := (
+	matchedUserId := (
         SELECT w.id
         FROM warrior_verify wv
         LEFT JOIN warriors w ON w.id = wv.warrior_id
         WHERE wv.verify_id = verifyId AND NOW() < wv.expire_date
     );
 
-    IF matchedWarriorId IS NULL THEN
+    IF matchedUserId IS NULL THEN
         -- attempt delete incase verify record expired
         DELETE FROM warrior_verify WHERE verify_id = verifyId;
         RAISE 'Valid Verify ID not found';
     END IF;
 
-    UPDATE warriors SET verified = 'TRUE', last_active = NOW() WHERE id = matchedWarriorId;
+    UPDATE warriors SET verified = 'TRUE', last_active = NOW() WHERE id = matchedUserId;
     DELETE FROM warrior_verify WHERE verify_id = verifyId;
 
     COMMIT;
@@ -408,30 +415,33 @@ END;
 $$;
 
 -- Promote Warrior to GENERAL Rank (ADMIN) by ID --
-CREATE OR REPLACE PROCEDURE promote_warrior(warriorId UUID)
+DROP PROCEDURE IF EXISTS promote_warrior(warriorId UUID);
+CREATE OR REPLACE PROCEDURE promote_user(userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE warriors SET rank = 'GENERAL' WHERE id = warriorId;
+    UPDATE warriors SET rank = 'GENERAL' WHERE id = userId;
 
     COMMIT;
 END;
 $$;
 
 -- Promote Warrior to GENERAL Rank (ADMIN) by Email --
-CREATE OR REPLACE PROCEDURE promote_warrior_by_email(warriorEmail VARCHAR(320))
+DROP PROCEDURE IF EXISTS promote_warrior_by_email(warriorEmail VARCHAR(320));
+CREATE OR REPLACE PROCEDURE promote_user_by_email(userEmail VARCHAR(320))
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE warriors SET rank = 'GENERAL' WHERE email = warriorEmail;
+    UPDATE warriors SET rank = 'GENERAL' WHERE email = userEmail;
 
     COMMIT;
 END;
 $$;
 
 -- Demote Warrior to CORPORAL Rank (Registered) by ID --
-CREATE OR REPLACE PROCEDURE demote_warrior(warriorId UUID)
+DROP PROCEDURE IF EXISTS demote_user(warriorId UUID);
+CREATE OR REPLACE PROCEDURE demote_user(userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE warriors SET rank = 'CORPORAL' WHERE id = warriorId;
+    UPDATE warriors SET rank = 'CORPORAL' WHERE id = userId;
 
     COMMIT;
 END;
@@ -448,7 +458,8 @@ END;
 $$;
 
 -- Clean up Guest Warriors (and their created battles) older than X Days --
-CREATE OR REPLACE PROCEDURE clean_guest_warriors(daysOld INTEGER)
+DROP PROCEDURE IF EXISTS clean_guest_warriors(daysOld INTEGER);
+CREATE OR REPLACE PROCEDURE clean_guest_users(daysOld INTEGER)
 LANGUAGE plpgsql AS $$
 BEGIN
     DELETE FROM warriors WHERE last_active < (NOW() - daysOld * interval '1 day') AND rank = 'PRIVATE';
@@ -458,10 +469,11 @@ END;
 $$;
 
 -- Deletes a warrior and all his battle(s), api keys --
-CREATE OR REPLACE PROCEDURE delete_warrior(warriorId UUID)
+DROP PROCEDURE IF EXISTS delete_warrior(warriorId UUID);
+CREATE OR REPLACE PROCEDURE delete_user(userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
-    DELETE FROM warriors WHERE id = warriorId;
+    DELETE FROM warriors WHERE id = userId;
 
     COMMIT;
 END;
@@ -473,15 +485,21 @@ $$;
 
 -- Get Application Stats e.g. total user and battle counts
 DROP FUNCTION IF EXISTS get_app_stats();
+DROP FUNCTION IF EXISTS get_app_stats(
+    OUT unregistered_user_count INTEGER,
+    OUT registered_user_count INTEGER,
+    OUT battle_count INTEGER,
+    OUT plan_count INTEGER
+);
 CREATE FUNCTION get_app_stats(
-    OUT unregistered_warrior_count INTEGER,
-    OUT registered_warrior_count INTEGER,
+    OUT unregistered_user_count INTEGER,
+    OUT registered_user_count INTEGER,
     OUT battle_count INTEGER,
     OUT plan_count INTEGER
 ) AS $$
 BEGIN
-    SELECT COUNT(*) INTO unregistered_warrior_count FROM warriors WHERE email IS NULL;
-    SELECT COUNT(*) INTO registered_warrior_count FROM warriors WHERE email IS NOT NULL;
+    SELECT COUNT(*) INTO unregistered_user_count FROM warriors WHERE email IS NULL;
+    SELECT COUNT(*) INTO registered_user_count FROM warriors WHERE email IS NOT NULL;
     SELECT COUNT(*) INTO battle_count FROM battles;
     SELECT COUNT(*) INTO plan_count FROM plans;
 END;
@@ -489,46 +507,60 @@ $$ LANGUAGE plpgsql;
 
 -- Insert a new warrior password reset
 DROP FUNCTION IF EXISTS insert_warrior_reset(VARCHAR);
-CREATE FUNCTION insert_warrior_reset(
+DROP FUNCTION IF EXISTS insert_warrior_reset(
     IN warriorEmail VARCHAR(320),
     OUT resetId UUID,
     OUT warriorId UUID,
     OUT warriorName VARCHAR(64)
+);
+CREATE FUNCTION insert_user_reset(
+    IN userEmail VARCHAR(320),
+    OUT resetId UUID,
+    OUT userId UUID,
+    OUT userName VARCHAR(64)
 )
-AS $$ 
+AS $$
 BEGIN
-    SELECT id, name INTO warriorId, warriorName FROM warriors WHERE email = warriorEmail;
+    SELECT id, name INTO userId, userName FROM warriors WHERE email = userEmail;
     IF FOUND THEN
-        INSERT INTO warrior_reset (warrior_id) VALUES (warriorId) RETURNING reset_id INTO resetId;
+        INSERT INTO warrior_reset (warrior_id) VALUES (userId) RETURNING reset_id INTO resetId;
     ELSE
-        RAISE EXCEPTION 'Nonexistent User --> %', warriorEmail USING HINT = 'Please check your Email';
+        RAISE EXCEPTION 'Nonexistent User --> %', userEmail USING HINT = 'Please check your Email';
     END IF;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Register a new warrior
 DROP FUNCTION IF EXISTS register_warrior(VARCHAR, VARCHAR, TEXT, VARCHAR);
-CREATE FUNCTION register_warrior(
+DROP FUNCTION IF EXISTS register_warrior(
     IN warriorName VARCHAR(64),
     IN warriorEmail VARCHAR(320),
     IN hashedPassword TEXT,
     IN warriorRank VARCHAR(128),
     OUT warriorId UUID,
     OUT verifyId UUID
+);
+CREATE FUNCTION register_user(
+    IN userName VARCHAR(64),
+    IN userEmail VARCHAR(320),
+    IN hashedPassword TEXT,
+    IN userType VARCHAR(128),
+    OUT userId UUID,
+    OUT verifyId UUID
 )
 AS $$
 BEGIN
     INSERT INTO warriors (name, email, password, rank)
-    VALUES (warriorName, warriorEmail, hashedPassword, warriorRank)
-    RETURNING id INTO warriorId;
+    VALUES (userName, userEmail, hashedPassword, userType)
+    RETURNING id INTO userId;
 
-    INSERT INTO warrior_verify (warrior_id) VALUES (warriorId) RETURNING verify_id INTO verifyId;
+    INSERT INTO warrior_verify (warrior_id) VALUES (userId) RETURNING verify_id INTO verifyId;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Register a new warrior from existing private
 DROP FUNCTION IF EXISTS register_existing_warrior(UUID, VARCHAR, VARCHAR, TEXT, VARCHAR);
-CREATE FUNCTION register_existing_warrior(
+DROP FUNCTION IF EXISTS register_existing_warrior(
     IN activeWarriorId UUID,
     IN warriorName VARCHAR(64),
     IN warriorEmail VARCHAR(320),
@@ -536,20 +568,29 @@ CREATE FUNCTION register_existing_warrior(
     IN warriorRank VARCHAR(128),
     OUT warriorId UUID,
     OUT verifyId UUID
+);
+CREATE FUNCTION register_existing_user(
+    IN activeUserId UUID,
+    IN userName VARCHAR(64),
+    IN userEmail VARCHAR(320),
+    IN hashedPassword TEXT,
+    IN userType VARCHAR(128),
+    OUT userId UUID,
+    OUT verifyId UUID
 )
 AS $$
 BEGIN
     UPDATE warriors
     SET
-         name = warriorName,
-         email = warriorEmail,
+         name = userName,
+         email = userEmail,
          password = hashedPassword,
-         rank = warriorRank,
+         rank = userType,
          last_active = NOW()
-    WHERE id = activeWarriorId
-    RETURNING id INTO warriorId;
+    WHERE id = activeUserId
+    RETURNING id INTO userId;
 
-    INSERT INTO warrior_verify (warrior_id) VALUES (warriorId) RETURNING verify_id INTO verifyId;
+    INSERT INTO warrior_verify (warrior_id) VALUES (userId) RETURNING verify_id INTO verifyId;
 END;
 $$ LANGUAGE plpgsql;
 
