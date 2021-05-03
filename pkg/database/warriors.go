@@ -6,13 +6,13 @@ import (
 	"log"
 )
 
-// GetRegisteredUsers retrieves the registered warriors from db
-func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*Warrior {
-	var warriors = make([]*Warrior, 0)
+// GetRegisteredUsers retrieves the registered users from db
+func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*User {
+	var users = make([]*User, 0)
 	rows, err := d.db.Query(
 		`
-		SELECT id, name, email, rank, avatar, verified
-		FROM warriors
+		SELECT id, name, email, type, avatar, verified
+		FROM users
 		WHERE email IS NOT NULL
 		ORDER BY created_date
 		LIMIT $1
@@ -24,221 +24,221 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*Warrior {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w Warrior
-			var warriorEmail sql.NullString
+			var w User
+			var UserEmail sql.NullString
 
 			if err := rows.Scan(
-				&w.WarriorID,
-				&w.WarriorName,
-				&warriorEmail,
-				&w.WarriorRank,
-				&w.WarriorAvatar,
+				&w.UserID,
+				&w.UserName,
+				&UserEmail,
+				&w.UserType,
+				&w.UserAvatar,
 				&w.Verified,
 			); err != nil {
 				log.Println(err)
 			} else {
-				w.WarriorEmail = warriorEmail.String
-				warriors = append(warriors, &w)
+				w.UserEmail = UserEmail.String
+				users = append(users, &w)
 			}
 		}
 	} else {
 		log.Println(err)
 	}
 
-	return warriors
+	return users
 }
 
-// GetUser gets a warrior from db by ID
-func (d *Database) GetUser(WarriorID string) (*Warrior, error) {
-	var w Warrior
-	var warriorEmail sql.NullString
+// GetUser gets a user from db by ID
+func (d *Database) GetUser(UserID string) (*User, error) {
+	var w User
+	var UserEmail sql.NullString
 
 	e := d.db.QueryRow(
-		"SELECT id, name, email, rank, avatar, verified, notifications_enabled FROM warriors WHERE id = $1",
-		WarriorID,
+		"SELECT id, name, email, type, avatar, verified, notifications_enabled FROM users WHERE id = $1",
+		UserID,
 	).Scan(
-		&w.WarriorID,
-		&w.WarriorName,
-		&warriorEmail,
-		&w.WarriorRank,
-		&w.WarriorAvatar,
+		&w.UserID,
+		&w.UserName,
+		&UserEmail,
+		&w.UserType,
+		&w.UserAvatar,
 		&w.Verified,
 		&w.NotificationsEnabled,
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("warrior not found")
+		return nil, errors.New("user not found")
 	}
 
-	w.WarriorEmail = warriorEmail.String
+	w.UserEmail = UserEmail.String
 
 	return &w, nil
 }
 
-func (d *Database) GetUserByEmail(WarriorEmail string) (*Warrior, error) {
-	var w Warrior
+func (d *Database) GetUserByEmail(UserEmail string) (*User, error) {
+	var w User
 	e := d.db.QueryRow(
-		"SELECT id, name, email, rank, verified FROM warriors WHERE email = $1",
-		WarriorEmail,
+		"SELECT id, name, email, type, verified FROM users WHERE email = $1",
+		UserEmail,
 	).Scan(
-		&w.WarriorID,
-		&w.WarriorName,
-		&w.WarriorEmail,
-		&w.WarriorRank,
+		&w.UserID,
+		&w.UserName,
+		&w.UserEmail,
+		&w.UserType,
 		&w.Verified,
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("warrior email not found")
+		return nil, errors.New("user email not found")
 	}
 
 	return &w, nil
 }
 
-// AuthUser attempts to authenticate the warrior
-func (d *Database) AuthUser(WarriorEmail string, WarriorPassword string) (*Warrior, error) {
-	var w Warrior
+// AuthUser attempts to authenticate the user
+func (d *Database) AuthUser(UserEmail string, UserPassword string) (*User, error) {
+	var w User
 	var passHash string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, rank, password, avatar, verified, notifications_enabled FROM warriors WHERE email = $1`,
-		WarriorEmail,
+		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled FROM users WHERE email = $1`,
+		UserEmail,
 	).Scan(
-		&w.WarriorID,
-		&w.WarriorName,
-		&w.WarriorEmail,
-		&w.WarriorRank,
+		&w.UserID,
+		&w.UserName,
+		&w.UserEmail,
+		&w.UserType,
 		&passHash,
-		&w.WarriorAvatar,
+		&w.UserAvatar,
 		&w.Verified,
 		&w.NotificationsEnabled,
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("warrior not found")
+		return nil, errors.New("user not found")
 	}
 
-	if !ComparePasswords(passHash, []byte(WarriorPassword)) {
+	if !ComparePasswords(passHash, []byte(UserPassword)) {
 		return nil, errors.New("password invalid")
 	}
 
 	return &w, nil
 }
 
-// CreateUserGuest adds a new warrior private (guest) to the db
-func (d *Database) CreateUserGuest(WarriorName string) (*Warrior, error) {
-	var WarriorID string
-	e := d.db.QueryRow(`INSERT INTO warriors (name) VALUES ($1) RETURNING id`, WarriorName).Scan(&WarriorID)
+// CreateUserGuest adds a new guest user to the db
+func (d *Database) CreateUserGuest(UserName string) (*User, error) {
+	var UserID string
+	e := d.db.QueryRow(`INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("unable to create new warrior")
+		return nil, errors.New("unable to create new user")
 	}
 
-	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorAvatar: "identicon", NotificationsEnabled: true}, nil
+	return &User{UserID: UserID, UserName: UserName, UserAvatar: "identicon", NotificationsEnabled: true}, nil
 }
 
-// CreateUserRegistered adds a new warrior corporal (registered) to the db
-func (d *Database) CreateUserRegistered(WarriorName string, WarriorEmail string, WarriorPassword string, ActiveWarriorID string) (NewWarrior *Warrior, VerifyID string, RegisterErr error) {
-	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
+// CreateUserRegistered adds a new registered user to the db
+func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *User, VerifyID string, RegisterErr error) {
+	hashedPassword, hashErr := HashAndSalt([]byte(UserPassword))
 	if hashErr != nil {
 		return nil, "", hashErr
 	}
 
-	var WarriorID string
+	var UserID string
 	var verifyID string
-	WarriorRank := "CORPORAL"
-	WarriorAvatar := "identicon"
+	UserType := "CORPORAL"
+	UserAvatar := "identicon"
 
-	if ActiveWarriorID != "" {
+	if ActiveUserID != "" {
 		e := d.db.QueryRow(
 			`SELECT userId, verifyId FROM register_existing_user($1, $2, $3, $4, $5);`,
-			ActiveWarriorID,
-			WarriorName,
-			WarriorEmail,
+			ActiveUserID,
+			UserName,
+			UserEmail,
 			hashedPassword,
-			WarriorRank,
-		).Scan(&WarriorID, &verifyID)
+			UserType,
+		).Scan(&UserID, &verifyID)
 		if e != nil {
 			log.Println(e)
-			return nil, "", errors.New("a warrior with that email already exists")
+			return nil, "", errors.New("a user with that email already exists")
 		}
 	} else {
 		e := d.db.QueryRow(
 			`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
-			WarriorName,
-			WarriorEmail,
+			UserName,
+			UserEmail,
 			hashedPassword,
-			WarriorRank,
-		).Scan(&WarriorID, &verifyID)
+			UserType,
+		).Scan(&UserID, &verifyID)
 		if e != nil {
 			log.Println(e)
-			return nil, "", errors.New("a warrior with that email already exists")
+			return nil, "", errors.New("a user with that email already exists")
 		}
 	}
 
-	return &Warrior{WarriorID: WarriorID, WarriorName: WarriorName, WarriorEmail: WarriorEmail, WarriorRank: WarriorRank, WarriorAvatar: WarriorAvatar}, verifyID, nil
+	return &User{UserID: UserID, UserName: UserName, UserEmail: UserEmail, UserType: UserType, UserAvatar: UserAvatar}, verifyID, nil
 }
 
-// UpdateUserProfile attempts to update the warriors profile
-func (d *Database) UpdateUserProfile(WarriorID string, WarriorName string, WarriorAvatar string, NotificationsEnabled bool) error {
-	if WarriorAvatar == "" {
-		WarriorAvatar = "identicon"
+// UpdateUserProfile attempts to update the users profile
+func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar string, NotificationsEnabled bool) error {
+	if UserAvatar == "" {
+		UserAvatar = "identicon"
 	}
 	if _, err := d.db.Exec(
-		`UPDATE warriors SET name = $2, avatar = $3, notifications_enabled=$4 WHERE id = $1;`,
-		WarriorID,
-		WarriorName,
-		WarriorAvatar,
+		`UPDATE users SET name = $2, avatar = $3, notifications_enabled=$4 WHERE id = $1;`,
+		UserID,
+		UserName,
+		UserAvatar,
 		NotificationsEnabled,
 	); err != nil {
 		log.Println(err)
-		return errors.New("error attempting to update warriors profile")
+		return errors.New("error attempting to update users profile")
 	}
 
 	return nil
 }
 
-// UserResetRequest inserts a new warrior reset request
-func (d *Database) UserResetRequest(WarriorEmail string) (resetID string, warriorName string, resetErr error) {
+// UserResetRequest inserts a new user reset request
+func (d *Database) UserResetRequest(UserEmail string) (resetID string, UserName string, resetErr error) {
 	var ResetID sql.NullString
-	var WarriorID sql.NullString
-	var WarriorName sql.NullString
+	var UserID sql.NullString
+	var name sql.NullString
 
 	e := d.db.QueryRow(`
-		SELECT resetId, userId, warriorName FROM insert_user_reset($1);
+		SELECT resetId, userId, userName FROM insert_user_reset($1);
 		`,
-		WarriorEmail,
-	).Scan(&ResetID, &WarriorID, &WarriorName)
+		UserEmail,
+	).Scan(&ResetID, &UserID, &name)
 	if e != nil {
-		log.Println("Unable to reset warrior: ", e)
+		log.Println("Unable to reset user: ", e)
 		return "", "", e
 	}
 
-	return ResetID.String, WarriorName.String, nil
+	return ResetID.String, name.String, nil
 }
 
-// UserResetPassword attempts to reset a warriors password
-func (d *Database) UserResetPassword(ResetID string, WarriorPassword string) (warriorName string, warriorEmail string, resetErr error) {
-	var WarriorName sql.NullString
-	var WarriorEmail sql.NullString
+// UserResetPassword attempts to reset a users password
+func (d *Database) UserResetPassword(ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error) {
+	var name sql.NullString
+	var email sql.NullString
 
-	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
+	hashedPassword, hashErr := HashAndSalt([]byte(UserPassword))
 	if hashErr != nil {
 		return "", "", hashErr
 	}
 
-	warErr := d.db.QueryRow(`
+	UserErr := d.db.QueryRow(`
 		SELECT
 			w.name, w.email
-		FROM warrior_reset wr
-		LEFT JOIN warriors w ON w.id = wr.warrior_id
+		FROM user_reset wr
+		LEFT JOIN users w ON w.id = wr.user_id
 		WHERE wr.reset_id = $1;
 		`,
 		ResetID,
-	).Scan(&WarriorName, &WarriorEmail)
-	if warErr != nil {
-		log.Println("Unable to get warrior for password reset confirmation email: ", warErr)
-		return "", "", warErr
+	).Scan(&name, &email)
+	if UserErr != nil {
+		log.Println("Unable to get user for password reset confirmation email: ", UserErr)
+		return "", "", UserErr
 	}
 
 	if _, err := d.db.Exec(
@@ -246,41 +246,41 @@ func (d *Database) UserResetPassword(ResetID string, WarriorPassword string) (wa
 		return "", "", err
 	}
 
-	return WarriorName.String, WarriorEmail.String, nil
+	return name.String, email.String, nil
 }
 
-// UserUpdatePassword attempts to update a warriors password
-func (d *Database) UserUpdatePassword(WarriorID string, WarriorPassword string) (warriorName string, warriorEmail string, resetErr error) {
-	var WarriorName sql.NullString
-	var WarriorEmail sql.NullString
+// UserUpdatePassword attempts to update a users password
+func (d *Database) UserUpdatePassword(UserID string, UserPassword string) (Name string, Email string, resetErr error) {
+	var UserName sql.NullString
+	var UserEmail sql.NullString
 
-	warErr := d.db.QueryRow(`
+	UserErr := d.db.QueryRow(`
 		SELECT
 			w.name, w.email
-		FROM warriors w
+		FROM users w
 		WHERE w.id = $1;
 		`,
-		WarriorID,
-	).Scan(&WarriorName, &WarriorEmail)
-	if warErr != nil {
-		log.Println("Unable to get warrior for password update: ", warErr)
-		return "", "", warErr
+		UserID,
+	).Scan(&UserName, &UserEmail)
+	if UserErr != nil {
+		log.Println("Unable to get user for password update: ", UserErr)
+		return "", "", UserErr
 	}
 
-	hashedPassword, hashErr := HashAndSalt([]byte(WarriorPassword))
+	hashedPassword, hashErr := HashAndSalt([]byte(UserPassword))
 	if hashErr != nil {
 		return "", "", hashErr
 	}
 
 	if _, err := d.db.Exec(
-		`call update_user_password($1, $2)`, WarriorID, hashedPassword); err != nil {
+		`call update_user_password($1, $2)`, UserID, hashedPassword); err != nil {
 		return "", "", err
 	}
 
-	return WarriorName.String, WarriorEmail.String, nil
+	return UserName.String, UserEmail.String, nil
 }
 
-// VerifyUserAccount attempts to verify a warriors account email
+// VerifyUserAccount attempts to verify a users account email
 func (d *Database) VerifyUserAccount(VerifyID string) error {
 	if _, err := d.db.Exec(
 		`call verify_user_account($1)`, VerifyID); err != nil {
@@ -290,14 +290,14 @@ func (d *Database) VerifyUserAccount(VerifyID string) error {
 	return nil
 }
 
-// UpdateUserProfile attempts to delete a warrior
-func (d *Database) DeleteUser(WarriorID string) error {
+// UpdateUserProfile attempts to delete a user
+func (d *Database) DeleteUser(UserID string) error {
 	if _, err := d.db.Exec(
 		`call delete_user($1);`,
-		WarriorID,
+		UserID,
 	); err != nil {
 		log.Println(err)
-		return errors.New("error attempting to delete warrior")
+		return errors.New("error attempting to delete user")
 	}
 
 	return nil

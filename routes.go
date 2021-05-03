@@ -22,13 +22,13 @@ func (s *server) routes() {
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
 	s.router.PathPrefix("/img/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
 	s.router.PathPrefix("/lang/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
-	// warrior avatar generation
+	// user avatar generation
 	if s.config.AvatarService == "goadorable" || s.config.AvatarService == "govatar" {
 		s.router.PathPrefix("/avatar/{width}/{id}/{avatar}").Handler(s.handleUserAvatar()).Methods("GET")
 		s.router.PathPrefix("/avatar/{width}/{id}").Handler(s.handleUserAvatar()).Methods("GET")
 	}
 	// api
-	// warrior authentication, profile
+	// user authentication, profile
 	if viper.GetString("auth.method") == "ldap" {
 		s.router.HandleFunc("/api/auth", s.handleLdapLogin()).Methods("POST")
 	} else {

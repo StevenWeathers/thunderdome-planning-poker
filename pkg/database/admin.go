@@ -5,35 +5,35 @@ import (
 	"log"
 )
 
-// ConfirmAdmin confirms whether the warrior is infact a GENERAL (ADMIN)
-func (d *Database) ConfirmAdmin(AdminID string) error {
-	var warriorRank string
-	e := d.db.QueryRow("SELECT coalesce(rank, '') FROM warriors WHERE id = $1;", AdminID).Scan(&warriorRank)
+// ConfirmAdmin confirms whether the users is infact an admin
+func (d *Database) ConfirmAdmin(UserID string) error {
+	var UserType string
+	e := d.db.QueryRow("SELECT coalesce(type, '') FROM users WHERE id = $1;", UserID).Scan(&UserType)
 	if e != nil {
 		log.Println(e)
-		return errors.New("could not find warriors rank")
+		return errors.New("could not find users type")
 	}
 
-	if warriorRank != "GENERAL" {
-		return errors.New(("warrior is not an admin"))
+	if UserType != "GENERAL" {
+		return errors.New(("user is not an admin"))
 	}
 
 	return nil
 }
 
-// ApplicationStats includes warrior, battle, and plan counts
+// ApplicationStats includes user, battle, and plan counts
 type ApplicationStats struct {
-	RegisteredCount   int `json:"registeredWarriorCount"`
-	UnregisteredCount int `json:"unregisteredWarriorCount"`
+	RegisteredCount   int `json:"registeredUserCount"`
+	UnregisteredCount int `json:"unregisteredUserCount"`
 	BattleCount       int `json:"battleCount"`
 	PlanCount         int `json:"planCount"`
 }
 
-// GetAppStats gets counts of warriors (registered and unregistered), battles, and plans
+// GetAppStats gets counts of users (registered and unregistered), battles, and plans
 func (d *Database) GetAppStats() (*ApplicationStats, error) {
 	var Appstats ApplicationStats
 
-	statsErr := d.db.QueryRow(`
+	err := d.db.QueryRow(`
 		SELECT
 			unregistered_user_count,
 			registered_user_count,
@@ -47,35 +47,35 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 		&Appstats.BattleCount,
 		&Appstats.PlanCount,
 	)
-	if statsErr != nil {
-		log.Println("Unable to get application stats: ", statsErr)
-		return nil, statsErr
+	if err != nil {
+		log.Println("Unable to get application stats: ", err)
+		return nil, err
 	}
 
 	return &Appstats, nil
 }
 
-// PromoteUser promotes a warrior to GENERAL (ADMIN) rank
-func (d *Database) PromoteUser(WarriorID string) error {
+// PromoteUser promotes a user to admin type
+func (d *Database) PromoteUser(UserID string) error {
 	if _, err := d.db.Exec(
 		`call promote_user($1);`,
-		WarriorID,
+		UserID,
 	); err != nil {
 		log.Println(err)
-		return errors.New("error attempting to promote warrior to GENERAL")
+		return errors.New("error attempting to promote user to admin")
 	}
 
 	return nil
 }
 
-// DemoteUser demotes a warrior to CORPORAL (Registered) rank
-func (d *Database) DemoteUser(WarriorID string) error {
+// DemoteUser demotes a user to registered type
+func (d *Database) DemoteUser(UserID string) error {
 	if _, err := d.db.Exec(
 		`call demote_user($1);`,
-		WarriorID,
+		UserID,
 	); err != nil {
 		log.Println(err)
-		return errors.New("error attempting to demote warrior to CORPORAL")
+		return errors.New("error attempting to demote user to registered")
 	}
 
 	return nil
@@ -94,14 +94,14 @@ func (d *Database) CleanBattles(DaysOld int) error {
 	return nil
 }
 
-// CleanGuests deletes guest warriors older than X days
+// CleanGuests deletes guest users older than X days
 func (d *Database) CleanGuests(DaysOld int) error {
 	if _, err := d.db.Exec(
 		`call clean_guest_users($1);`,
 		DaysOld,
 	); err != nil {
 		log.Println(err)
-		return errors.New("error attempting to clean Guest Warriors")
+		return errors.New("error attempting to clean Guest Users")
 	}
 
 	return nil

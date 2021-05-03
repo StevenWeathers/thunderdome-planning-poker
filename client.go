@@ -40,17 +40,17 @@ type connection struct {
 
 // SocketEvent is the event structure used for socket messages
 type SocketEvent struct {
-	EventType    string `json:"type"`
-	EventValue   string `json:"value"`
-	EventWarrior string `json:"warriorId"`
+	EventType  string `json:"type"`
+	EventValue string `json:"value"`
+	EventUser  string `json:"warriorId"`
 }
 
 // CreateSocketEvent makes a SocketEvent struct and turns it into json []byte
-func CreateSocketEvent(EventType string, EventValue string, EventWarrior string) []byte {
+func CreateSocketEvent(EventType string, EventValue string, EventUser string) []byte {
 	newEvent := &SocketEvent{
-		EventType:    EventType,
-		EventValue:   EventValue,
-		EventWarrior: EventWarrior,
+		EventType:  EventType,
+		EventValue: EventValue,
+		EventUser:  EventUser,
 	}
 
 	event, _ := json.Marshal(newEvent)
@@ -64,12 +64,12 @@ func (s subscription) readPump(srv *server) {
 	c := s.conn
 	defer func() {
 		BattleID := s.arena
-		WarriorID := s.warriorID
+		UserID := s.UserID
 
-		Warriors := srv.database.RetreatUser(BattleID, WarriorID)
-		updatedWarriors, _ := json.Marshal(Warriors)
+		Users := srv.database.RetreatUser(BattleID, UserID)
+		UpdatedUsers, _ := json.Marshal(Users)
 
-		retreatEvent := CreateSocketEvent("warrior_retreated", string(updatedWarriors), WarriorID)
+		retreatEvent := CreateSocketEvent("warrior_retreated", string(UpdatedUsers), UserID)
 		m := message{retreatEvent, BattleID}
 		h.broadcast <- m
 
@@ -99,7 +99,7 @@ func (s subscription) readPump(srv *server) {
 		var badEvent bool
 		keyVal := make(map[string]string)
 		json.Unmarshal(msg, &keyVal) // check for errors
-		warriorID := s.warriorID
+		UserID := s.UserID
 		battleID := s.arena
 
 		switch keyVal["type"] {
@@ -111,13 +111,13 @@ func (s subscription) readPump(srv *server) {
 			}
 			json.Unmarshal([]byte(keyVal["value"]), &wv)
 
-			Plans, AllVoted := srv.database.SetVote(battleID, warriorID, wv.PlanID, wv.VoteValue)
+			Plans, AllVoted := srv.database.SetVote(battleID, UserID, wv.PlanID, wv.VoteValue)
 
 			updatedPlans, _ := json.Marshal(Plans)
-			msg = CreateSocketEvent("vote_activity", string(updatedPlans), warriorID)
+			msg = CreateSocketEvent("vote_activity", string(updatedPlans), UserID)
 
 			if AllVoted && wv.AutoFinishVoting {
-				plans, err := srv.database.EndPlanVoting(battleID, warriorID, wv.PlanID, true)
+				plans, err := srv.database.EndPlanVoting(battleID, UserID, wv.PlanID, true)
 				if err != nil {
 					badEvent = true
 					break
@@ -128,10 +128,10 @@ func (s subscription) readPump(srv *server) {
 		case "retract_vote":
 			PlanID := keyVal["value"]
 
-			plans := srv.database.RetractVote(battleID, warriorID, PlanID)
+			plans := srv.database.RetractVote(battleID, UserID, PlanID)
 
 			updatedPlans, _ := json.Marshal(plans)
-			msg = CreateSocketEvent("vote_retracted", string(updatedPlans), warriorID)
+			msg = CreateSocketEvent("vote_retracted", string(updatedPlans), UserID)
 		case "add_plan":
 			planObj := make(map[string]string)
 			json.Unmarshal([]byte(keyVal["value"]), &planObj)
@@ -142,7 +142,7 @@ func (s subscription) readPump(srv *server) {
 			Description := planObj["description"]
 			AcceptanceCriteria := planObj["acceptanceCriteria"]
 
-			plans, err := srv.database.CreatePlan(battleID, warriorID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria)
+			plans, err := srv.database.CreatePlan(battleID, UserID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria)
 			if err != nil {
 				badEvent = true
 				break
@@ -150,7 +150,7 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_added", string(updatedPlans), "")
 		case "activate_plan":
-			plans, err := srv.database.ActivatePlanVoting(battleID, warriorID, keyVal["value"])
+			plans, err := srv.database.ActivatePlanVoting(battleID, UserID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -158,7 +158,7 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_activated", string(updatedPlans), "")
 		case "skip_plan":
-			plans, err := srv.database.SkipPlan(battleID, warriorID, keyVal["value"])
+			plans, err := srv.database.SkipPlan(battleID, UserID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -166,7 +166,7 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_skipped", string(updatedPlans), "")
 		case "end_voting":
-			plans, err := srv.database.EndPlanVoting(battleID, warriorID, keyVal["value"], false)
+			plans, err := srv.database.EndPlanVoting(battleID, UserID, keyVal["value"], false)
 			if err != nil {
 				badEvent = true
 				break
@@ -179,7 +179,7 @@ func (s subscription) readPump(srv *server) {
 			PlanID := planObj["planId"]
 			PlanPoints := planObj["planPoints"]
 
-			plans, err := srv.database.FinalizePlan(battleID, warriorID, PlanID, PlanPoints)
+			plans, err := srv.database.FinalizePlan(battleID, UserID, PlanID, PlanPoints)
 			if err != nil {
 				badEvent = true
 				break
@@ -197,7 +197,7 @@ func (s subscription) readPump(srv *server) {
 			Description := planObj["description"]
 			AcceptanceCriteria := planObj["acceptanceCriteria"]
 
-			plans, err := srv.database.RevisePlan(battleID, warriorID, PlanID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria)
+			plans, err := srv.database.RevisePlan(battleID, UserID, PlanID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria)
 			if err != nil {
 				badEvent = true
 				break
@@ -205,7 +205,7 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_revised", string(updatedPlans), "")
 		case "burn_plan":
-			plans, err := srv.database.BurnPlan(battleID, warriorID, keyVal["value"])
+			plans, err := srv.database.BurnPlan(battleID, UserID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -213,7 +213,7 @@ func (s subscription) readPump(srv *server) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_burned", string(updatedPlans), "")
 		case "promote_leader":
-			leaders, err := srv.database.SetBattleLeader(battleID, warriorID, keyVal["value"])
+			leaders, err := srv.database.SetBattleLeader(battleID, UserID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -222,7 +222,7 @@ func (s subscription) readPump(srv *server) {
 
 			msg = CreateSocketEvent("leaders_updated", string(leadersJson), "")
 		case "demote_leader":
-			leaders, err := srv.database.DemoteBattleLeader(battleID, warriorID, keyVal["value"])
+			leaders, err := srv.database.DemoteBattleLeader(battleID, UserID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -239,7 +239,7 @@ func (s subscription) readPump(srv *server) {
 			}
 			json.Unmarshal([]byte(keyVal["value"]), &revisedBattle)
 
-			err := srv.database.ReviseBattle(battleID, warriorID, revisedBattle.BattleName, revisedBattle.PointValuesAllowed, revisedBattle.AutoFinishVoting, revisedBattle.PointAverageRounding)
+			err := srv.database.ReviseBattle(battleID, UserID, revisedBattle.BattleName, revisedBattle.PointValuesAllowed, revisedBattle.AutoFinishVoting, revisedBattle.PointAverageRounding)
 			if err != nil {
 				badEvent = true
 				break
@@ -248,20 +248,20 @@ func (s subscription) readPump(srv *server) {
 			updatedBattle, _ := json.Marshal(revisedBattle)
 			msg = CreateSocketEvent("battle_revised", string(updatedBattle), "")
 		case "concede_battle":
-			err := srv.database.DeleteBattle(battleID, warriorID)
+			err := srv.database.DeleteBattle(battleID, UserID)
 			if err != nil {
 				badEvent = true
 				break
 			}
 			msg = CreateSocketEvent("battle_conceded", "", "")
 		case "jab_warrior":
-			err := srv.database.ConfirmLeader(battleID, warriorID)
+			err := srv.database.ConfirmLeader(battleID, UserID)
 			if err != nil {
 				badEvent = true
 				break
 			}
 		case "abandon_battle":
-			_, err := srv.database.AbandonBattle(battleID, warriorID)
+			_, err := srv.database.AbandonBattle(battleID, UserID)
 			if err != nil {
 				badEvent = true
 				break
@@ -327,8 +327,8 @@ func (s *server) serveWs() http.HandlerFunc {
 			return
 		}
 
-		// make sure warrior cookies are valid
-		warriorID, cookieErr := s.validateUserCookie(w, r)
+		// make sure user cookies are valid
+		UserID, cookieErr := s.validateUserCookie(w, r)
 		if cookieErr != nil {
 			cm := websocket.FormatCloseMessage(4001, "unauthorized")
 			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
@@ -341,7 +341,7 @@ func (s *server) serveWs() http.HandlerFunc {
 		}
 
 		// make sure battle is legit
-		b, battleErr := s.database.GetBattle(battleID, warriorID)
+		b, battleErr := s.database.GetBattle(battleID, UserID)
 		if battleErr != nil {
 			cm := websocket.FormatCloseMessage(4004, "battle not found")
 			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
@@ -354,11 +354,11 @@ func (s *server) serveWs() http.HandlerFunc {
 		}
 		battle, _ := json.Marshal(b)
 
-		// make sure warrior exists
-		_, warErr := s.database.GetBattleUser(battleID, warriorID)
+		// make sure user exists
+		_, UserErr := s.database.GetBattleUser(battleID, UserID)
 
-		if warErr != nil {
-			log.Println("error finding warrior : " + warErr.Error() + "\n")
+		if UserErr != nil {
+			log.Println("error finding user : " + UserErr.Error() + "\n")
 			s.clearUserCookies(w)
 			cm := websocket.FormatCloseMessage(4001, "unauthorized")
 			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
@@ -371,16 +371,16 @@ func (s *server) serveWs() http.HandlerFunc {
 		}
 
 		c := &connection{send: make(chan []byte, 256), ws: ws}
-		ss := subscription{c, battleID, warriorID}
+		ss := subscription{c, battleID, UserID}
 		h.register <- ss
 
-		Warriors, _ := s.database.AddUserToBattle(ss.arena, warriorID)
-		updatedWarriors, _ := json.Marshal(Warriors)
+		Users, _ := s.database.AddUserToBattle(ss.arena, UserID)
+		UpdatedUsers, _ := json.Marshal(Users)
 
-		initEvent := CreateSocketEvent("init", string(battle), warriorID)
+		initEvent := CreateSocketEvent("init", string(battle), UserID)
 		_ = c.write(websocket.TextMessage, initEvent)
 
-		joinedEvent := CreateSocketEvent("warrior_joined", string(updatedWarriors), warriorID)
+		joinedEvent := CreateSocketEvent("warrior_joined", string(UpdatedUsers), UserID)
 		m := message{joinedEvent, ss.arena}
 		h.broadcast <- m
 

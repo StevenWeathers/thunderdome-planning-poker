@@ -7,10 +7,10 @@ import (
 )
 
 // SendWelcome sends the welcome email to new registered user
-func (m *Email) SendWelcome(WarriorName string, WarriorEmail string, VerifyID string) error {
+func (m *Email) SendWelcome(UserName string, UserEmail string, VerifyID string) error {
 	emailBody, err := m.generateBody(
 		hermes.Body{
-			Name: WarriorName,
+			Name: UserName,
 			Intros: []string{
 				"Welcome to the Thunderdome! Bring your own mouthguard.",
 			},
@@ -39,8 +39,8 @@ func (m *Email) SendWelcome(WarriorName string, WarriorEmail string, VerifyID st
 	}
 
 	sendErr := m.Send(
-		WarriorName,
-		WarriorEmail,
+		UserName,
+		UserEmail,
 		"Welcome to the Thunderdome!",
 		emailBody,
 	)
@@ -52,11 +52,11 @@ func (m *Email) SendWelcome(WarriorName string, WarriorEmail string, VerifyID st
 	return nil
 }
 
-// SendForgotPassword Sends a Forgot Password reset email to warrior
-func (m *Email) SendForgotPassword(WarriorName string, WarriorEmail string, ResetID string) error {
+// SendForgotPassword Sends a Forgot Password reset email to user
+func (m *Email) SendForgotPassword(UserName string, UserEmail string, ResetID string) error {
 	emailBody, err := m.generateBody(
 		hermes.Body{
-			Name: WarriorName,
+			Name: UserName,
 			Intros: []string{
 				"It seems you've forgot your Thunderdome password.",
 			},
@@ -84,8 +84,8 @@ func (m *Email) SendForgotPassword(WarriorName string, WarriorEmail string, Rese
 	}
 
 	sendErr := m.Send(
-		WarriorName,
-		WarriorEmail,
+		UserName,
+		UserEmail,
 		"Forgot your Thunderdome password?",
 		emailBody,
 	)
@@ -97,11 +97,11 @@ func (m *Email) SendForgotPassword(WarriorName string, WarriorEmail string, Rese
 	return nil
 }
 
-// SendPasswordReset Sends a Reset Password confirmation email to warrior
-func (m *Email) SendPasswordReset(WarriorName string, WarriorEmail string) error {
+// SendPasswordReset Sends a Reset Password confirmation email to user
+func (m *Email) SendPasswordReset(UserName string, UserEmail string) error {
 	emailBody, err := m.generateBody(
 		hermes.Body{
-			Name: WarriorName,
+			Name: UserName,
 			Intros: []string{
 				"Your Thunderdome password was successfully reset.",
 			},
@@ -122,8 +122,8 @@ func (m *Email) SendPasswordReset(WarriorName string, WarriorEmail string) error
 	}
 
 	sendErr := m.Send(
-		WarriorName,
-		WarriorEmail,
+		UserName,
+		UserEmail,
 		"Your Thunderdome password was successfully reset.",
 		emailBody,
 	)
@@ -135,11 +135,11 @@ func (m *Email) SendPasswordReset(WarriorName string, WarriorEmail string) error
 	return nil
 }
 
-// SendPasswordUpdate Sends an Update Password confirmation email to warrior
-func (m *Email) SendPasswordUpdate(WarriorName string, WarriorEmail string) error {
+// SendPasswordUpdate Sends an Update Password confirmation email to user
+func (m *Email) SendPasswordUpdate(UserName string, UserEmail string) error {
 	emailBody, err := m.generateBody(
 		hermes.Body{
-			Name: WarriorName,
+			Name: UserName,
 			Intros: []string{
 				"Your Thunderdome password was successfully been updated.",
 			},
@@ -160,8 +160,8 @@ func (m *Email) SendPasswordUpdate(WarriorName string, WarriorEmail string) erro
 	}
 
 	sendErr := m.Send(
-		WarriorName,
-		WarriorEmail,
+		UserName,
+		UserEmail,
 		"Your Thunderdome password was successfully updated.",
 		emailBody,
 	)

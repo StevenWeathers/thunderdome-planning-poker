@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func (s *server) createCookie(warriorID string) *http.Cookie {
-	encoded, err := s.cookie.Encode(s.config.SecureCookieName, warriorID)
+func (s *server) createCookie(UserID string) *http.Cookie {
+	encoded, err := s.cookie.Encode(s.config.SecureCookieName, UserID)
 	var NewCookie *http.Cookie
 
 	if err == nil {
@@ -31,30 +31,30 @@ func (s *server) createCookie(warriorID string) *http.Cookie {
 	return NewCookie
 }
 
-func (s *server) authUserDatabase(warriorEmail string, warriorPassword string) (*database.Warrior, error) {
-	authedWarrior, err := s.database.AuthUser(warriorEmail, warriorPassword)
+func (s *server) authUserDatabase(UserEmail string, UserPassword string) (*database.User, error) {
+	AuthedUser, err := s.database.AuthUser(UserEmail, UserPassword)
 	if err != nil {
-		log.Println("Failed authenticating user", warriorEmail)
-	} else if authedWarrior == nil {
-		log.Println("Unknown user", warriorEmail)
+		log.Println("Failed authenticating user", UserEmail)
+	} else if AuthedUser == nil {
+		log.Println("Unknown user", UserEmail)
 	}
-	return authedWarrior, err
+	return AuthedUser, err
 }
 
-// Authenticate using LDAP and if warrior does not exist, automatically add warror as a verified warrior
-func (s *server) authAndCreateUserLdap(warriorUsername string, warriorPassword string) (*database.Warrior, error) {
-	var authedWarrior *database.Warrior
+// Authenticate using LDAP and if user does not exist, automatically add user as a verified user
+func (s *server) authAndCreateUserLdap(UserName string, UserPassword string) (*database.User, error) {
+	var AuthedUser *database.User
 	l, err := ldap.DialURL(viper.GetString("auth.ldap.url"))
 	if err != nil {
 		log.Println("Failed connecting to ldap server at", viper.GetString("auth.ldap.url"))
-		return authedWarrior, err
+		return AuthedUser, err
 	}
 	defer l.Close()
 	if viper.GetBool("auth.ldap.use_tls") {
 		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 		if err != nil {
 			log.Println("Failed securing ldap connection", err)
-			return authedWarrior, err
+			return AuthedUser, err
 		}
 	}
 
@@ -62,53 +62,53 @@ func (s *server) authAndCreateUserLdap(warriorUsername string, warriorPassword s
 		err = l.Bind(viper.GetString("auth.ldap.bindname"), viper.GetString("auth.ldap.bindpass"))
 		if err != nil {
 			log.Println("Failed binding for authentication:", err)
-			return authedWarrior, err
+			return AuthedUser, err
 		}
 	}
 
 	searchRequest := ldap.NewSearchRequest(viper.GetString("auth.ldap.basedn"),
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf(viper.GetString("auth.ldap.filter"), warriorUsername),
+		fmt.Sprintf(viper.GetString("auth.ldap.filter"), UserName),
 		[]string{"dn", viper.GetString("auth.ldap.mail_attr"), viper.GetString("auth.ldap.cn_attr")},
 		nil,
 	)
 
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		log.Println("Failed performing ldap search query for", warriorUsername, ":", err)
-		return authedWarrior, err
+		log.Println("Failed performing ldap search query for", UserName, ":", err)
+		return AuthedUser, err
 	}
 
 	if len(sr.Entries) != 1 {
-		log.Println("User", warriorUsername, "does not exist or too many entries returned")
-		return authedWarrior, errors.New("warrior not found")
+		log.Println("User", UserName, "does not exist or too many entries returned")
+		return AuthedUser, errors.New("user not found")
 	}
 
 	userdn := sr.Entries[0].DN
 	useremail := sr.Entries[0].GetAttributeValue(viper.GetString("auth.ldap.mail_attr"))
 	usercn := sr.Entries[0].GetAttributeValue(viper.GetString("auth.ldap.cn_attr"))
 
-	err = l.Bind(userdn, warriorPassword)
+	err = l.Bind(userdn, UserPassword)
 	if err != nil {
-		log.Println("Failed authenticating user ", warriorUsername)
-		return authedWarrior, err
+		log.Println("Failed authenticating user ", UserName)
+		return AuthedUser, err
 	}
 
-	authedWarrior, err = s.database.GetUserByEmail(useremail)
-	if authedWarrior == nil {
-		log.Println("Warrior", useremail, "does not exist in database, auto-recruit")
-		newWarrior, verifyID, err := s.database.CreateUserRegistered(usercn, useremail, "", "")
+	AuthedUser, err = s.database.GetUserByEmail(useremail)
+	if AuthedUser == nil {
+		log.Println("User", useremail, "does not exist in database, auto-recruit")
+		newUser, verifyID, err := s.database.CreateUserRegistered(usercn, useremail, "", "")
 		if err != nil {
-			log.Println("Failed auto-creating new warrior", err)
-			return authedWarrior, err
+			log.Println("Failed auto-creating new user", err)
+			return AuthedUser, err
 		}
 		err = s.database.VerifyUserAccount(verifyID)
 		if err != nil {
-			log.Println("Failed verifying new warrior", err)
-			return authedWarrior, err
+			log.Println("Failed verifying new user", err)
+			return AuthedUser, err
 		}
-		authedWarrior = newWarrior
+		AuthedUser = newUser
 	}
 
-	return authedWarrior, nil
+	return AuthedUser, nil
 }

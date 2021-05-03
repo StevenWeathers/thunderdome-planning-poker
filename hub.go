@@ -6,9 +6,9 @@ type message struct {
 }
 
 type subscription struct {
-	conn      *connection
-	arena     string
-	warriorID string
+	conn   *connection
+	arena  string
+	UserID string
 }
 
 // hub maintains the set of active connections and broadcasts messages to the

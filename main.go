@@ -28,12 +28,12 @@ type ServerConfig struct {
 	AppDomain string
 	// name of the frontend cookie
 	FrontendCookieName string
-	// name of the warrior cookie
+	// name of the user cookie
 	SecureCookieName string
 	// controls whether or not the cookie is set to secure, only works over HTTPS
 	SecureCookieFlag bool
-	// email to promote a warrior to GENERAL on app startup
-	// the warrior should already be registered for this to work
+	// email to promote a user to Admin type on app startup
+	// the user should already be registered for this to work
 	AdminEmail string
 	// Whether or not to enable google analytics tracking
 	AnalyticsEnabled bool

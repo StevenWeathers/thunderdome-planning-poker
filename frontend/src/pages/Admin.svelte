@@ -18,8 +18,8 @@
     const warriorsPageLimit = 100
 
     let appStats = {
-        unregisteredWarriorCount: 0,
-        registeredWarriorCount: 0,
+        unregisteredUserCount: 0,
+        registeredUserCount: 0,
         battleCount: 0,
         planCount: 0,
     }
@@ -177,13 +177,13 @@
                     <div class="mb-2 font-bold">
                         {$_('pages.admin.counts.unregistered')}
                     </div>
-                    {appStats.unregisteredWarriorCount}
+                    {appStats.unregisteredUserCount}
                 </div>
                 <div class="w-1/4">
                     <div class="mb-2 font-bold">
                         {$_('pages.admin.counts.registered')}
                     </div>
-                    {appStats.registeredWarriorCount}
+                    {appStats.registeredUserCount}
                 </div>
                 <div class="w-1/4">
                     <div class="mb-2 font-bold">
@@ -281,9 +281,9 @@
                 </tbody>
             </table>
 
-            {#if appStats.registeredWarriorCount > warriorsPageLimit}
+            {#if appStats.registeredUserCount > warriorsPageLimit}
             <div class="pt-6 flex justify-center">
-                <Pagination bind:current={warriorsPage} num_items={appStats.registeredWarriorCount} per_page={warriorsPageLimit} on:navigate={changePage} />
+                <Pagination bind:current={warriorsPage} num_items={appStats.registeredUserCount} per_page={warriorsPageLimit} on:navigate={changePage} />
             </div>
             {/if}
         </div>

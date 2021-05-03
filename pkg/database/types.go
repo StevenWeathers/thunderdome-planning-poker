@@ -21,44 +21,44 @@ type Database struct {
 	db     *sql.DB
 }
 
-// BattleWarrior aka user
-type BattleWarrior struct {
-	WarriorID     string `json:"id"`
-	WarriorName   string `json:"name"`
-	WarriorRank   string `json:"rank"`
-	WarriorAvatar string `json:"avatar"`
-	Active        bool   `json:"active"`
-	Abandoned     bool   `json:"abandoned"`
+// BattleUser aka user
+type BattleUser struct {
+	UserID     string `json:"id"`
+	UserName   string `json:"name"`
+	UserType   string `json:"rank"`
+	UserAvatar string `json:"avatar"`
+	Active     bool   `json:"active"`
+	Abandoned  bool   `json:"abandoned"`
 }
 
 // Battle aka arena
 type Battle struct {
-	BattleID             string           `json:"id"`
-	BattleName           string           `json:"name"`
-	Warriors             []*BattleWarrior `json:"warriors"`
-	Plans                []*Plan          `json:"plans"`
-	VotingLocked         bool             `json:"votingLocked"`
-	ActivePlanID         string           `json:"activePlanId"`
-	PointValuesAllowed   []string         `json:"pointValuesAllowed"`
-	AutoFinishVoting     bool             `json:"autoFinishVoting"`
-	Leaders              []string         `json:"leaders"`
-	PointAverageRounding string           `json:"pointAverageRounding"`
+	BattleID             string        `json:"id"`
+	BattleName           string        `json:"name"`
+	Users                []*BattleUser `json:"warriors"`
+	Plans                []*Plan       `json:"plans"`
+	VotingLocked         bool          `json:"votingLocked"`
+	ActivePlanID         string        `json:"activePlanId"`
+	PointValuesAllowed   []string      `json:"pointValuesAllowed"`
+	AutoFinishVoting     bool          `json:"autoFinishVoting"`
+	Leaders              []string      `json:"leaders"`
+	PointAverageRounding string        `json:"pointAverageRounding"`
 }
 
-// Warrior aka user
-type Warrior struct {
-	WarriorID            string `json:"id"`
-	WarriorName          string `json:"name"`
-	WarriorEmail         string `json:"email"`
-	WarriorRank          string `json:"rank"`
-	WarriorAvatar        string `json:"avatar"`
+// User aka user
+type User struct {
+	UserID               string `json:"id"`
+	UserName             string `json:"name"`
+	UserEmail            string `json:"email"`
+	UserType             string `json:"rank"`
+	UserAvatar           string `json:"avatar"`
 	Verified             bool   `json:"verified"`
 	NotificationsEnabled bool   `json:"notificationsEnabled"`
 }
 
 // Vote structure
 type Vote struct {
-	WarriorID string `json:"warriorId"`
+	UserID    string `json:"warriorId"`
 	VoteValue string `json:"vote"`
 }
 
@@ -83,7 +83,7 @@ type Plan struct {
 type APIKey struct {
 	ID          string    `json:"id"`
 	Prefix      string    `json:"prefix"`
-	WarriorID   string    `json:"warriorId"`
+	UserID      string    `json:"warriorId"`
 	Name        string    `json:"name"`
 	Key         string    `json:"apiKey"`
 	Active      bool      `json:"active"`

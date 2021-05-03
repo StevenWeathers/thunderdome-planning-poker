@@ -44,7 +44,7 @@ func ComparePasswords(hashedPwd string, plainPwd []byte) bool {
 }
 
 // New runs db migrations, sets up a db connection pool
-// and sets previously active warriors to false during startup
+// and sets previously active users to false during startup
 func New(AdminEmail string, schemaSQL string) *Database {
 	var d = &Database{
 		// read environment variables and sets up database configuration values
@@ -78,13 +78,13 @@ func New(AdminEmail string, schemaSQL string) *Database {
 		log.Fatal(err)
 	}
 
-	// on server start reset all warriors to active false for battles
+	// on server start reset all users to active false for battles
 	if _, err := d.db.Exec(
 		`call deactivate_all_users();`); err != nil {
 		log.Println(err)
 	}
 
-	// on server start if admin email is specified set that warrior to GENERAL rank
+	// on server start if admin email is specified set that user to admin type
 	if AdminEmail != "" {
 		if _, err := d.db.Exec(
 			`call promote_user_by_email($1);`,
