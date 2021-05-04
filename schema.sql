@@ -986,6 +986,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Add User to Department --
+CREATE OR REPLACE FUNCTION organization_department_user_add(
+    IN departmentId UUID,
+    IN userId UUID,
+    IN userRole VARCHAR(16)
+) RETURNS void AS $$
+DECLARE orgId UUID;
+BEGIN    
+    SELECT organization_id INTO orgId FROM organization_user WHERE user_id = userId;
+
+    IF orgId IS NULL THEN
+        RAISE EXCEPTION 'User not in Organization -> %', userId USING HINT = 'Please add user to Organization before department';
+    END IF;
+
+    INSERT INTO department_user (department_id, user_id, role) VALUES (departmentId, userId, userRole);
+    UPDATE organization_department SET updated_date = NOW() WHERE id = departmentId;
+END;
+$$ LANGUAGE plpgsql;
+
 --
 -- TEAMS --
 --

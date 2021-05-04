@@ -89,7 +89,7 @@ func (d *Database) TeamCreate(UserID string, TeamName string) (string, error) {
 // TeamAddUser adds a user to a team
 func (d *Database) TeamAddUser(TeamID string, UserID string, Role string) (string, error) {
 	_, err := d.db.Exec(
-		`call team_user_add($1, $2, $3);`,
+		`SELECT team_user_add($1, $2, $3);`,
 		TeamID,
 		UserID,
 		Role,

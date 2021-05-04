@@ -120,7 +120,7 @@ func (d *Database) OrganizationUserList(OrgID string, Limit int, Offset int) []*
 // OrganizationAddUser adds a user to an organization
 func (d *Database) OrganizationAddUser(OrgID string, UserID string, Role string) (string, error) {
 	_, err := d.db.Exec(
-		`call organization_user_add($1, $2, $3);`,
+		`SELECT organization_user_add($1, $2, $3);`,
 		OrgID,
 		UserID,
 		Role,

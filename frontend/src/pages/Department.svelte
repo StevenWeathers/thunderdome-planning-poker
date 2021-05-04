@@ -4,7 +4,7 @@
     import PageLayout from '../components/PageLayout.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import CreateTeam from '../components/CreateTeam.svelte'
-    import DepartmentAddUser from '../components/DepartmentAddUser.svelte'
+    import AddUser from '../components/AddUser.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -102,6 +102,25 @@
             .catch(function(error) {
                 notifications.danger('Error attempting to create department team')
                 eventTag('create_department_team', 'engagement', 'failure')
+            })
+    }
+
+    function handleUserAdd(email, role) {
+        const body = {
+            email,
+            role
+        }
+
+        xfetch(`/api/department/${departmentId}/users`, { body })
+            .then(function() {
+                eventTag('department_add_user', 'engagement', 'success')
+                toggleAddUser()
+                notifications.success('User added successfully.')
+                getUsers()
+            })
+            .catch(function() {
+                notifications.danger('Error attempting to add user to department')
+                eventTag('department_add_user', 'engagement', 'failure')
             })
     }
 
@@ -211,6 +230,6 @@
     {/if}
 
     {#if showAddUser}
-        <DepartmentAddUser toggleAdd="{toggleAddUser}" />
+        <AddUser toggleAdd="{toggleAddUser}" handleAdd={handleUserAdd} />
     {/if}
 </PageLayout>

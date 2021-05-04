@@ -3,6 +3,7 @@
 
     import PageLayout from '../components/PageLayout.svelte'
     import HollowButton from '../components/HollowButton.svelte'
+    import AddUser from '../components/AddUser.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -12,6 +13,7 @@
     export let notifications
     export let eventTag
     export let organizationId
+    export let departmentId
     export let teamId
 
     const usersPageLimit = 1000
@@ -33,6 +35,25 @@
             })
             .catch(function(error) {
                 notifications.danger('Error getting team users')
+            })
+    }
+
+    function handleUserAdd(email, role) {
+        const body = {
+            email,
+            role
+        }
+
+        xfetch(`/api/team/${teamId}/users`, { body })
+            .then(function() {
+                eventTag('team_add_user', 'engagement', 'success')
+                toggleAddUser()
+                notifications.success('User added successfully.')
+                getUsers()
+            })
+            .catch(function() {
+                notifications.danger('Error attempting to add user to team')
+                eventTag('team_add_user', 'engagement', 'failure')
             })
     }
 
@@ -87,6 +108,6 @@
     </div>
 
     {#if showAddUser}
-        <!-- test-->
+        <AddUser toggleAdd={toggleAddUser} handleAdd={handleUserAdd} />
     {/if}
 </PageLayout>

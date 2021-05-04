@@ -1341,3 +1341,99 @@ func (s *server) handleCreateTeam() http.HandlerFunc {
 		RespondWithJSON(w, http.StatusOK, NewTeam)
 	}
 }
+
+// handleCreateTeam handles adding user to a team
+func (s *server) handleTeamAddUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		UserEmail := keyVal["email"]
+		Role := keyVal["role"]
+
+		User, UserErr := s.database.GetUserByEmail(UserEmail)
+		if UserErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		_, err := s.database.TeamAddUser(TeamID, User.UserID, Role)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
+// handleOrganizationAddUser handles adding user to an organization
+func (s *server) handleOrganizationAddUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		UserEmail := keyVal["email"]
+		Role := keyVal["role"]
+
+		User, UserErr := s.database.GetUserByEmail(UserEmail)
+		if UserErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		_, err := s.database.OrganizationAddUser(OrgID, User.UserID, Role)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
+// handleDepartmentAddUser handles adding user to an organization department
+func (s *server) handleDepartmentAddUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		vars := mux.Vars(r)
+		DepartmentId := vars["departmentId"]
+		UserEmail := keyVal["email"]
+		Role := keyVal["role"]
+
+		User, UserErr := s.database.GetUserByEmail(UserEmail)
+		if UserErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		_, err := s.database.DepartmentAddUser(DepartmentId, User.UserID, Role)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}

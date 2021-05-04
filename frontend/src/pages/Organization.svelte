@@ -5,7 +5,7 @@
     import HollowButton from '../components/HollowButton.svelte'
     import CreateDepartment from '../components/CreateDepartment.svelte'
     import CreateTeam from '../components/CreateTeam.svelte'
-    import OrganizationAddUser from '../components/OrganizationAddUser.svelte'
+    import AddUser from '../components/AddUser.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -141,6 +141,25 @@
             .catch(function(error) {
                 notifications.danger('Error attempting to create organization team')
                 eventTag('create_organization_team', 'engagement', 'failure')
+            })
+    }
+
+    function handleUserAdd(email, role) {
+        const body = {
+            email,
+            role
+        }
+
+        xfetch(`/api/organization/${organizationId}/users`, { body })
+            .then(function() {
+                eventTag('organization_add_user', 'engagement', 'success')
+                toggleAddUser()
+                notifications.success('User added successfully.')
+                getUsers()
+            })
+            .catch(function() {
+                notifications.danger('Error attempting to add user to organization')
+                eventTag('organization_add_user', 'engagement', 'failure')
             })
     }
 
@@ -298,6 +317,6 @@
     {/if}
 
     {#if showAddUser}
-        <OrganizationAddUser toggleAdd="{toggleAddUser}" />
+        <AddUser toggleAdd="{toggleAddUser}" handleAdd={handleUserAdd} />
     {/if}
 </PageLayout>

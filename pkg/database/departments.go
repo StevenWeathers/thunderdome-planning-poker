@@ -164,3 +164,20 @@ func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int
 
 	return users
 }
+
+// DepartmentAddUser adds a user to an organization department
+func (d *Database) DepartmentAddUser(DepartmentID string, UserID string, Role string) (string, error) {
+	_, err := d.db.Exec(
+		`SELECT organization_department_user_add($1, $2, $3);`,
+		DepartmentID,
+		UserID,
+		Role,
+	)
+
+	if err != nil {
+		log.Println("Unable to add user to department: ", err)
+		return "", err
+	}
+
+	return DepartmentID, nil
+}
