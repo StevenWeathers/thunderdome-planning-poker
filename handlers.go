@@ -1091,6 +1091,39 @@ func (s *server) handleGetOrganizationDepartments() http.HandlerFunc {
 	}
 }
 
+// handleGetDepartmentByUser gets an department with user role
+func (s *server) handleGetDepartmentByUser() http.HandlerFunc {
+	type DepartmentResponse struct {
+		Organization     *database.Organization `json:"organization"`
+		Department       *database.Department   `json:"department"`
+		OrganizationRole string                 `json:"organizationRole"`
+		DepartmentRole   string                 `json:"departmentRole"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+
+		Organization, OrganizationRole, err := s.database.OrganizationWithRole(UserID, vars["orgId"])
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		Department, DepartmentRole, err := s.database.DepartmentWithRole(UserID, vars["departmentId"])
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, &DepartmentResponse{
+			Organization:     Organization,
+			Department:       Department,
+			OrganizationRole: OrganizationRole,
+			DepartmentRole:   DepartmentRole,
+		})
+	}
+}
+
 // handleCreateDepartment handles creating an organization department
 func (s *server) handleCreateDepartment() http.HandlerFunc {
 	type CreateDepartmentResponse struct {
@@ -1149,6 +1182,100 @@ func (s *server) handleGetOrganizationUsers() http.HandlerFunc {
 		Teams := s.database.OrganizationUserList(OrgID, Limit, Offset)
 
 		RespondWithJSON(w, http.StatusOK, Teams)
+	}
+}
+
+// handleGetDepartmentTeams gets a list of teams associated to the department
+func (s *server) handleGetDepartmentTeams() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		DepartmentID := vars["departmentId"]
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Teams := s.database.DepartmentTeamList(DepartmentID, Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Teams)
+	}
+}
+
+// handleGetDepartmentUsers gets a list of users associated to the department
+func (s *server) handleGetDepartmentUsers() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		DepartmentID := vars["departmentId"]
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Teams := s.database.DepartmentUserList(DepartmentID, Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Teams)
+	}
+}
+
+// handleCreateOrganizationTeam handles creating an organization team
+func (s *server) handleCreateOrganizationTeam() http.HandlerFunc {
+	type CreateTeamResponse struct {
+		TeamID string `json:"id"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		// UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		TeamName := keyVal["name"]
+		OrgID := vars["orgId"]
+		TeamID, err := s.database.OrganizationTeamCreate(OrgID, TeamName)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		var NewTeam = &CreateTeamResponse{
+			TeamID: TeamID,
+		}
+
+		RespondWithJSON(w, http.StatusOK, NewTeam)
+	}
+}
+
+// handleCreateDepartmentTeam handles creating an department team
+func (s *server) handleCreateDepartmentTeam() http.HandlerFunc {
+	type CreateTeamResponse struct {
+		TeamID string `json:"id"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		// UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		TeamName := keyVal["name"]
+		DepartmentID := vars["departmentId"]
+		TeamID, err := s.database.DepartmentTeamCreate(DepartmentID, TeamName)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		var NewTeam = &CreateTeamResponse{
+			TeamID: TeamID,
+		}
+
+		RespondWithJSON(w, http.StatusOK, NewTeam)
 	}
 }
 

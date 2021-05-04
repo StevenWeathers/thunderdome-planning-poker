@@ -89,7 +89,7 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         Organizations
                     </h2>
                 </div>
@@ -129,7 +129,7 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         Teams
                     </h2>
                 </div>

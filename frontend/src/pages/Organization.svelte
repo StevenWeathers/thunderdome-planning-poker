@@ -21,7 +21,7 @@
     const usersPageLimit = 1000
 
     let organization = {
-        id: '',
+        id: organizationId,
         name: '',
         createdDate: '',
         updateDate: '',
@@ -125,6 +125,25 @@
             })
     }
 
+    function createTeamHandler(name) {
+        const body = {
+            name,
+        }
+
+        xfetch(`/api/organization/${organizationId}/teams`, { body })
+            .then(res => res.json())
+            .then(function(organization) {
+                eventTag('create_organization_team', 'engagement', 'success')
+                toggleCreateTeam()
+                notifications.success('Team created successfully.')
+                getTeams()
+            })
+            .catch(function(error) {
+                notifications.danger('Error attempting to create organization team')
+                eventTag('create_organization_team', 'engagement', 'failure')
+            })
+    }
+
     onMount(() => {
         if (!$warrior.id || $warrior.rank === 'PRIVATE') {
             router.route(appRoutes.login)
@@ -135,22 +154,24 @@
         getTeams()
         getUsers()
     })
+
+    $: isAdmin = role === 'ADMIN'
 </script>
 
 <PageLayout>
-    <h1 class="mb-4 text-3xl font-bold">{organization.name}</h1>
+    <h1 class="mb-4 text-3xl font-bold">Organization: {organization.name}</h1>
 
     <div class="w-full mb-4">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         Departments
                     </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
-                        {#if role === 'ADMIN'}
+                        {#if isAdmin}
                             <HollowButton onClick="{toggleCreateDepartment}">
                                 Create Department
                             </HollowButton>
@@ -186,13 +207,13 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         Teams
                     </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
-                        {#if role === 'ADMIN'}
+                        {#if isAdmin}
                             <HollowButton onClick="{toggleCreateTeam}">
                                 Create Team
                             </HollowButton>
@@ -228,13 +249,13 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         Users
                     </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
-                        {#if role === 'ADMIN'}
+                        {#if isAdmin}
                             <HollowButton onClick="{toggleAddUser}">
                                 Add User
                             </HollowButton>
@@ -279,7 +300,7 @@
     {/if}
 
     {#if showCreateTeam}
-        <CreateTeam toggleCreate="{toggleCreateTeam}" />
+        <CreateTeam toggleCreate="{toggleCreateTeam}" handleCreate={createTeamHandler} />
     {/if}
 
     {#if showAddUser}

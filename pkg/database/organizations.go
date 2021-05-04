@@ -166,3 +166,20 @@ func (d *Database) OrganizationTeamList(OrgID string, Limit int, Offset int) []*
 
 	return teams
 }
+
+// OrganizationTeamCreate creates an organization team
+func (d *Database) OrganizationTeamCreate(OrgID string, TeamName string) (string, error) {
+	var TeamID string
+	err := d.db.QueryRow(`
+		SELECT teamId FROM organization_team_create($1, $2);`,
+		OrgID,
+		TeamName,
+	).Scan(&TeamID)
+
+	if err != nil {
+		log.Println("Unable to create organization team: ", err)
+		return "", err
+	}
+
+	return TeamID, nil
+}

@@ -870,6 +870,36 @@ $$ LANGUAGE plpgsql;
 -- DEPARTMENTS --
 --
 
+-- Get Department --
+CREATE OR REPLACE FUNCTION organization_department_get_by_id(
+    IN departmentId UUID
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT od.id, od.name, od.created_date, od.updated_date
+        FROM organization_department od
+        WHERE od.id = departmentId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Department with Role --
+CREATE OR REPLACE FUNCTION organization_department_get_with_role(
+    IN userId UUID,
+    IN departmentId UUID
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP, role VARCHAR(16)
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT o.id, o.name, o.created_date, o.updated_date, ou.role
+        FROM department_user ou
+        LEFT JOIN organization_department o ON ou.department_id = o.id
+        WHERE ou.department_id = departmentId AND ou.user_id = userId;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Get Organization Departments --
 CREATE OR REPLACE FUNCTION organization_department_list(
     IN orgId UUID,
@@ -898,6 +928,59 @@ CREATE OR REPLACE FUNCTION organization_department_create(
 BEGIN
     INSERT INTO organization_department (name, organization_id) VALUES (departmentName, orgId) RETURNING id INTO departmentId;
     UPDATE organization SET updated_date = NOW() WHERE id = orgId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Department Teams --
+CREATE OR REPLACE FUNCTION organization_department_team_list(
+    IN departmentId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM department_team dt
+        LEFT JOIN team t ON dt.team_id = t.id
+        WHERE dt.department_id = departmentId
+        ORDER BY t.created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create Department Team --
+CREATE OR REPLACE FUNCTION organization_department_team_create(
+    IN departmentId UUID,
+    IN teamName VARCHAR(256),
+    OUT teamId UUID
+) AS $$
+BEGIN
+    INSERT INTO team (name) VALUES (teamName) RETURNING id INTO teamId;
+    INSERT INTO department_team (department_id, team_id) VALUES (departmentId, teamId);
+    UPDATE organization_department SET updated_date = NOW() WHERE id = departmentId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Department Users --
+CREATE OR REPLACE FUNCTION organization_department_user_list(
+    IN departmentId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256), email VARCHAR(256), role VARCHAR(16)
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT u.id, u.name, u.email, du.role
+        FROM department_user du
+        LEFT JOIN users u ON du.user_id = u.id
+        WHERE du.department_id = departmentId
+        ORDER BY du.created_date
+		LIMIT l_limit
+		OFFSET l_offset;
 END;
 $$ LANGUAGE plpgsql;
 

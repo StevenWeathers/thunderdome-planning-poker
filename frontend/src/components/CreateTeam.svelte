@@ -1,11 +1,21 @@
 <script>
     import CloseIcon from './icons/CloseIcon.svelte'
+    import SolidButton from './SolidButton.svelte'
 
     export let notifications
-    export let organizationId
+
+    export let teamName = ''
 
     export let toggleCreate = () => {}
     export let handleCreate = () => {}
+
+    function onSubmit(e) {
+        e.preventDefault()
+
+        handleCreate(teamName)
+    }
+
+    $: createDisabled = teamName === ''
 </script>
 
 <div class="fixed inset-0 flex items-center z-40">
@@ -23,7 +33,35 @@
                     <CloseIcon />
                 </button>
             </div>
-            Create Team Form
+            
+            
+            <form on:submit="{onSubmit}" name="createOrganization">
+                <div class="mb-4">
+                    <label
+                        class="block text-gray-700 text-sm font-bold mb-2"
+                        for="teamName">
+                        Team Name
+                    </label>
+                    <input
+                        bind:value="{teamName}"
+                        placeholder="Enter an team name"
+                        class="bg-gray-200 border-gray-200 border-2
+                        appearance-none rounded w-full py-2 px-3 text-gray-700
+                        leading-tight focus:outline-none focus:bg-white
+                        focus:border-purple-500"
+                        id="teamName"
+                        name="teamName"
+                        required />
+                </div>
+
+                <div>
+                    <div class="text-right">
+                        <SolidButton type="submit" disabled="{createDisabled}">
+                            Create Team
+                        </SolidButton>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

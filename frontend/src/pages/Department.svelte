@@ -19,6 +19,16 @@
     const teamsPageLimit = 1000
     const usersPageLimit = 1000
 
+    let organization = {
+        id: organizationId,
+        name: ''
+    }
+    let department = {
+        id: departmentId,
+        name: ''
+    }
+    let departmentRole = ''
+    let organizationRole = ''
     let teams = []
     let users = []
     let showCreateTeam = false
@@ -32,6 +42,20 @@
 
     function toggleAddUser() {
         showAddUser = !showAddUser
+    }
+
+    function getDepartment() {
+        xfetch(`/api/organization/${organizationId}/department/${departmentId}`)
+            .then(res => res.json())
+            .then(function(result) {
+                department = result.department
+                organization = result.organization
+                organizationRole = result.organizationRole
+                departmentRole = result.departmentRole
+            })
+            .catch(function(error) {
+                notifications.danger('Error getting department')
+            })
     }
 
     function getTeams() {
@@ -62,30 +86,57 @@
             })
     }
 
+    function createTeamHandler(name) {
+        const body = {
+            name,
+        }
+
+        xfetch(`/api/department/${departmentId}/teams`, { body })
+            .then(res => res.json())
+            .then(function(organization) {
+                eventTag('create_department_team', 'engagement', 'success')
+                toggleCreateTeam()
+                notifications.success('Team created successfully.')
+                getTeams()
+            })
+            .catch(function(error) {
+                notifications.danger('Error attempting to create department team')
+                eventTag('create_department_team', 'engagement', 'failure')
+            })
+    }
+
     onMount(() => {
         if (!$warrior.id || $warrior.rank === 'PRIVATE') {
             router.route(appRoutes.login)
         }
 
+        getDepartment()
         getTeams()
         getUsers()
     })
+
+    $: isAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN'
 </script>
 
 <PageLayout>
+    <h1 class="text-3xl font-bold">Department: {department.name}</h1>
+    <h2 class="mb-4 text-2xl">Organization: {organization.name}</h2>
+
     <div class="w-full mb-4">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         Teams
                     </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
-                        <HollowButton onClick="{toggleCreateTeam}">
-                            Create Team
-                        </HollowButton>
+                        {#if isAdmin}
+                            <HollowButton onClick="{toggleCreateTeam}">
+                                Create Team
+                            </HollowButton>
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -117,15 +168,17 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         Users
                     </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
-                        <HollowButton onClick="{toggleAddUser}">
-                            Add User
-                        </HollowButton>
+                        {#if isAdmin}
+                            <HollowButton onClick="{toggleAddUser}">
+                                Add User
+                            </HollowButton>
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -160,7 +213,7 @@
     </div>
 
     {#if showCreateTeam}
-        <CreateTeam toggleCreate="{toggleCreateTeam}" />
+        <CreateTeam toggleCreate="{toggleCreateTeam}" handleCreate={createTeamHandler} />
     {/if}
 
     {#if showAddUser}

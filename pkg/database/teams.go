@@ -69,17 +69,17 @@ func (d *Database) TeamListByUser(UserID string, Limit int, Offset int) []*Team 
 	return teams
 }
 
-// TeamCreate creates an organization team
-func (d *Database) TeamCreate(OrgID string, TeamName string) (string, error) {
+// TTeamCreate creates a team with current user as an ADMIN
+func (d *Database) TeamCreate(UserID string, TeamName string) (string, error) {
 	var TeamID string
 	err := d.db.QueryRow(`
-		SELECT teamId FROM organization_team_create($1, $2);`,
-		OrgID,
+		SELECT teamId FROM team_create($1, $2);`,
+		UserID,
 		TeamID,
 	).Scan(&TeamID)
 
 	if err != nil {
-		log.Println("Unable to create organization team: ", err)
+		log.Println("Unable to create team: ", err)
 		return "", err
 	}
 
