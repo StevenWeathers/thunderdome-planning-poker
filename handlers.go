@@ -69,13 +69,27 @@ func ValidateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, val
 	return pwd1, err
 }
 
-// RespondWithJSON takes a payload and writes the response
-func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+// respondWithJSON takes a payload and writes the response
+func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+// gets a JSON request body broken into a key/value map
+func getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[string]interface{} {
+	body, _ := ioutil.ReadAll(r.Body) // check for errors
+	keyVal := make(map[string]interface{})
+	jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+
+	if jsonErr != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return nil
+	}
+
+	return keyVal
 }
 
 // createUserCookie creates the users cookie
@@ -312,12 +326,9 @@ func (s *server) handleIndex() http.HandlerFunc {
 // handleLogin attempts to login the user by comparing email/password to whats in DB
 func (s *server) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-
-		keyVal := make(map[string]string)
-		json.Unmarshal(body, &keyVal) // check for errors
-		UserEmail := keyVal["warriorEmail"]
-		UserPassword := keyVal["warriorPassword"]
+		keyVal := getJSONRequestBody(r, w)
+		UserEmail := keyVal["warriorEmail"].(string)
+		UserPassword := keyVal["warriorPassword"].(string)
 
 		authedUser, err := s.authUserDatabase(UserEmail, UserPassword)
 		if err != nil {
@@ -334,7 +345,7 @@ func (s *server) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, authedUser)
+		respondWithJSON(w, http.StatusOK, authedUser)
 	}
 }
 
@@ -342,11 +353,9 @@ func (s *server) handleLogin() http.HandlerFunc {
 // via ldap, and then creates the user if not existing and logs them in
 func (s *server) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body)
-		keyVal := make(map[string]string)
-		json.Unmarshal(body, &keyVal)
-		UserEmail := keyVal["warriorEmail"]
-		UserPassword := keyVal["warriorPassword"]
+		keyVal := getJSONRequestBody(r, w)
+		UserEmail := keyVal["warriorEmail"].(string)
+		UserPassword := keyVal["warriorPassword"].(string)
 
 		authedUser, err := s.authAndCreateUserLdap(UserEmail, UserPassword)
 		if err != nil {
@@ -362,7 +371,7 @@ func (s *server) handleLdapLogin() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		RespondWithJSON(w, http.StatusOK, authedUser)
+		respondWithJSON(w, http.StatusOK, authedUser)
 	}
 }
 
@@ -383,16 +392,9 @@ func (s *server) handleUserRecruit() http.HandlerFunc {
 			return
 		}
 
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := getJSONRequestBody(r, w)
 
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		UserName := keyVal["warriorName"]
+		UserName := keyVal["warriorName"].(string)
 
 		newUser, err := s.database.CreateUserGuest(UserName)
 		if err != nil {
@@ -402,7 +404,7 @@ func (s *server) handleUserRecruit() http.HandlerFunc {
 
 		s.createUserCookie(w, false, newUser.UserID)
 
-		RespondWithJSON(w, http.StatusOK, newUser)
+		respondWithJSON(w, http.StatusOK, newUser)
 	}
 }
 
@@ -415,21 +417,15 @@ func (s *server) handleUserEnlist() http.HandlerFunc {
 			return
 		}
 
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
 		ActiveUserID, _ := s.validateUserCookie(w, r)
 
 		UserName, UserEmail, UserPassword, accountErr := ValidateUserAccount(
-			keyVal["warriorName"],
-			keyVal["warriorEmail"],
-			keyVal["warriorPassword1"],
-			keyVal["warriorPassword2"],
+			keyVal["warriorName"].(string),
+			keyVal["warriorEmail"].(string),
+			keyVal["warriorPassword1"].(string),
+			keyVal["warriorPassword2"].(string),
 		)
 
 		if accountErr != nil {
@@ -447,18 +443,15 @@ func (s *server) handleUserEnlist() http.HandlerFunc {
 
 		s.email.SendWelcome(UserName, UserEmail, VerifyID)
 
-		RespondWithJSON(w, http.StatusOK, newUser)
+		respondWithJSON(w, http.StatusOK, newUser)
 	}
 }
 
 // handleForgotPassword attempts to send a password reset email
 func (s *server) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-
-		keyVal := make(map[string]string)
-		json.Unmarshal(body, &keyVal) // check for errors
-		UserEmail := keyVal["warriorEmail"]
+		keyVal := getJSONRequestBody(r, w)
+		UserEmail := keyVal["warriorEmail"].(string)
 
 		ResetID, UserName, resetErr := s.database.UserResetRequest(UserEmail)
 		if resetErr == nil {
@@ -473,15 +466,12 @@ func (s *server) handleForgotPassword() http.HandlerFunc {
 // handleResetPassword attempts to reset a users password
 func (s *server) handleResetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-
-		keyVal := make(map[string]string)
-		json.Unmarshal(body, &keyVal) // check for errors
-		ResetID := keyVal["resetId"]
+		keyVal := getJSONRequestBody(r, w)
+		ResetID := keyVal["resetId"].(string)
 
 		UserPassword, passwordErr := ValidateUserPassword(
-			keyVal["warriorPassword1"],
-			keyVal["warriorPassword2"],
+			keyVal["warriorPassword1"].(string),
+			keyVal["warriorPassword2"].(string),
 		)
 
 		if passwordErr != nil {
@@ -509,14 +499,12 @@ func (s *server) handleResetPassword() http.HandlerFunc {
 // handleUpdatePassword attempts to update a users password
 func (s *server) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		json.Unmarshal(body, &keyVal) // check for errors
+		keyVal := getJSONRequestBody(r, w)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		UserPassword, passwordErr := ValidateUserPassword(
-			keyVal["warriorPassword1"],
-			keyVal["warriorPassword2"],
+			keyVal["warriorPassword1"].(string),
+			keyVal["warriorPassword2"].(string),
 		)
 
 		if passwordErr != nil {
@@ -556,7 +544,7 @@ func (s *server) handleUserProfile() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, User)
+		respondWithJSON(w, http.StatusOK, User)
 	}
 }
 
@@ -564,9 +552,7 @@ func (s *server) handleUserProfile() http.HandlerFunc {
 func (s *server) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]interface{})
-		json.Unmarshal(body, &keyVal) // check for errors
+		keyVal := getJSONRequestBody(r, w)
 		UserName := keyVal["warriorName"].(string)
 		UserAvatar := keyVal["warriorAvatar"].(string)
 		NotificationsEnabled, _ := keyVal["notificationsEnabled"].(bool)
@@ -592,18 +578,15 @@ func (s *server) handleUserProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, user)
+		respondWithJSON(w, http.StatusOK, user)
 	}
 }
 
 // handleAccountVerification attempts to verify a users account
 func (s *server) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-
-		keyVal := make(map[string]string)
-		json.Unmarshal(body, &keyVal) // check for errors
-		VerifyID := keyVal["verifyId"]
+		keyVal := getJSONRequestBody(r, w)
+		VerifyID := keyVal["verifyId"].(string)
 
 		verifyErr := s.database.VerifyUserAccount(VerifyID)
 		if verifyErr != nil {
@@ -695,9 +678,7 @@ func (s *server) handleUserAvatar() http.HandlerFunc {
 func (s *server) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]interface{})
-		json.Unmarshal(body, &keyVal) // check for errors
+		keyVal := getJSONRequestBody(r, w)
 		APIKeyName := keyVal["name"].(string)
 
 		UserID := vars["id"]
@@ -714,7 +695,7 @@ func (s *server) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, APIKey)
+		respondWithJSON(w, http.StatusOK, APIKey)
 	}
 }
 
@@ -737,7 +718,7 @@ func (s *server) handleUserAPIKeys() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, APIKeys)
+		respondWithJSON(w, http.StatusOK, APIKeys)
 	}
 }
 
@@ -753,9 +734,7 @@ func (s *server) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 		APK := vars["keyID"]
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]interface{})
-		json.Unmarshal(body, &keyVal) // check for errors
+		keyVal := getJSONRequestBody(r, w)
 		active := keyVal["active"].(bool)
 
 		APIKeys, keysErr := s.database.UpdateUserAPIKey(UserID, APK, active)
@@ -765,7 +744,7 @@ func (s *server) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, APIKeys)
+		respondWithJSON(w, http.StatusOK, APIKeys)
 	}
 }
 
@@ -789,7 +768,7 @@ func (s *server) handleUserAPIKeyDelete() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, APIKeys)
+		respondWithJSON(w, http.StatusOK, APIKeys)
 	}
 }
 
@@ -822,7 +801,7 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, newBattle)
+		respondWithJSON(w, http.StatusOK, newBattle)
 	}
 }
 
@@ -837,7 +816,7 @@ func (s *server) handleBattlesGet() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, battles)
+		respondWithJSON(w, http.StatusOK, battles)
 	}
 }
 
@@ -855,7 +834,7 @@ func (s *server) handleAppStats() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, AppStats)
+		respondWithJSON(w, http.StatusOK, AppStats)
 	}
 }
 
@@ -868,26 +847,20 @@ func (s *server) handleGetRegisteredUsers() http.HandlerFunc {
 
 		Users := s.database.GetRegisteredUsers(Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Users)
+		respondWithJSON(w, http.StatusOK, Users)
 	}
 }
 
 // handleUserCreate registers a new authenticated user
 func (s *server) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
 		UserName, UserEmail, UserPassword, accountErr := ValidateUserAccount(
-			keyVal["warriorName"],
-			keyVal["warriorEmail"],
-			keyVal["warriorPassword1"],
-			keyVal["warriorPassword2"],
+			keyVal["warriorName"].(string),
+			keyVal["warriorEmail"].(string),
+			keyVal["warriorPassword1"].(string),
+			keyVal["warriorPassword2"].(string),
 		)
 
 		if accountErr != nil {
@@ -903,22 +876,16 @@ func (s *server) handleUserCreate() http.HandlerFunc {
 
 		s.email.SendWelcome(UserName, UserEmail, VerifyID)
 
-		RespondWithJSON(w, http.StatusOK, newUser)
+		respondWithJSON(w, http.StatusOK, newUser)
 	}
 }
 
 // handleUserPromote handles promoting a user to admin
 func (s *server) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
-		err := s.database.PromoteUser(keyVal["warriorId"])
+		err := s.database.PromoteUser(keyVal["warriorId"].(string))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -931,15 +898,9 @@ func (s *server) handleUserPromote() http.HandlerFunc {
 // handleUserDemote handles demoting a user to registered
 func (s *server) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
-		err := s.database.DemoteUser(keyVal["warriorId"])
+		err := s.database.DemoteUser(keyVal["warriorId"].(string))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -988,7 +949,7 @@ func (s *server) handleGetOrganizations() http.HandlerFunc {
 
 		Organizations := s.database.OrganizationList(Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Organizations)
+		respondWithJSON(w, http.StatusOK, Organizations)
 	}
 }
 
@@ -1001,7 +962,7 @@ func (s *server) handleGetTeams() http.HandlerFunc {
 
 		Teams := s.database.TeamList(Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Teams)
+		respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
@@ -1019,7 +980,7 @@ func (s *server) handleGetOrganizationsByUser() http.HandlerFunc {
 
 		Organizations := s.database.OrganizationListByUser(UserID, Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Organizations)
+		respondWithJSON(w, http.StatusOK, Organizations)
 	}
 }
 
@@ -1039,7 +1000,7 @@ func (s *server) handleGetOrganizationByUser() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, &OrganizationResponse{
+		respondWithJSON(w, http.StatusOK, &OrganizationResponse{
 			Organization: Organization,
 			Role:         role,
 		})
@@ -1054,15 +1015,9 @@ func (s *server) handleCreateOrganization() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
-		OrgName := keyVal["name"]
+		OrgName := keyVal["name"].(string)
 		OrgId, err := s.database.OrganizationCreate(UserID, OrgName)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -1073,7 +1028,7 @@ func (s *server) handleCreateOrganization() http.HandlerFunc {
 			OrganizationID: OrgId,
 		}
 
-		RespondWithJSON(w, http.StatusOK, NewOrg)
+		respondWithJSON(w, http.StatusOK, NewOrg)
 	}
 }
 
@@ -1087,7 +1042,7 @@ func (s *server) handleGetOrganizationDepartments() http.HandlerFunc {
 
 		Teams := s.database.OrganizationDepartmentList(OrgID, Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Teams)
+		respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
@@ -1115,7 +1070,7 @@ func (s *server) handleGetDepartmentByUser() http.HandlerFunc {
 			return
 		}
 
-		RespondWithJSON(w, http.StatusOK, &DepartmentResponse{
+		respondWithJSON(w, http.StatusOK, &DepartmentResponse{
 			Organization:     Organization,
 			Department:       Department,
 			OrganizationRole: OrganizationRole,
@@ -1133,15 +1088,9 @@ func (s *server) handleCreateDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
-		OrgName := keyVal["name"]
+		OrgName := keyVal["name"].(string)
 		OrgID := vars["orgId"]
 		DepartmentID, err := s.database.DepartmentCreate(OrgID, OrgName)
 		if err != nil {
@@ -1153,7 +1102,7 @@ func (s *server) handleCreateDepartment() http.HandlerFunc {
 			DepartmentID: DepartmentID,
 		}
 
-		RespondWithJSON(w, http.StatusOK, NewDepartment)
+		respondWithJSON(w, http.StatusOK, NewDepartment)
 	}
 }
 
@@ -1167,7 +1116,7 @@ func (s *server) handleGetOrganizationTeams() http.HandlerFunc {
 
 		Teams := s.database.OrganizationTeamList(OrgID, Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Teams)
+		respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
@@ -1181,7 +1130,7 @@ func (s *server) handleGetOrganizationUsers() http.HandlerFunc {
 
 		Teams := s.database.OrganizationUserList(OrgID, Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Teams)
+		respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
@@ -1195,7 +1144,7 @@ func (s *server) handleGetDepartmentTeams() http.HandlerFunc {
 
 		Teams := s.database.DepartmentTeamList(DepartmentID, Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Teams)
+		respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
@@ -1209,7 +1158,7 @@ func (s *server) handleGetDepartmentUsers() http.HandlerFunc {
 
 		Teams := s.database.DepartmentUserList(DepartmentID, Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Teams)
+		respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
@@ -1222,15 +1171,9 @@ func (s *server) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
-		TeamName := keyVal["name"]
+		TeamName := keyVal["name"].(string)
 		OrgID := vars["orgId"]
 		TeamID, err := s.database.OrganizationTeamCreate(OrgID, TeamName)
 		if err != nil {
@@ -1242,7 +1185,7 @@ func (s *server) handleCreateOrganizationTeam() http.HandlerFunc {
 			TeamID: TeamID,
 		}
 
-		RespondWithJSON(w, http.StatusOK, NewTeam)
+		respondWithJSON(w, http.StatusOK, NewTeam)
 	}
 }
 
@@ -1255,15 +1198,9 @@ func (s *server) handleCreateDepartmentTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
-		TeamName := keyVal["name"]
+		TeamName := keyVal["name"].(string)
 		DepartmentID := vars["departmentId"]
 		TeamID, err := s.database.DepartmentTeamCreate(DepartmentID, TeamName)
 		if err != nil {
@@ -1275,7 +1212,7 @@ func (s *server) handleCreateDepartmentTeam() http.HandlerFunc {
 			TeamID: TeamID,
 		}
 
-		RespondWithJSON(w, http.StatusOK, NewTeam)
+		respondWithJSON(w, http.StatusOK, NewTeam)
 	}
 }
 
@@ -1293,7 +1230,7 @@ func (s *server) handleGetTeamsByUser() http.HandlerFunc {
 
 		Organizations := s.database.TeamListByUser(UserID, Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Organizations)
+		respondWithJSON(w, http.StatusOK, Organizations)
 	}
 }
 
@@ -1307,7 +1244,7 @@ func (s *server) handleGetTeamUsers() http.HandlerFunc {
 
 		Teams := s.database.TeamUserList(TeamID, Limit, Offset)
 
-		RespondWithJSON(w, http.StatusOK, Teams)
+		respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
@@ -1319,15 +1256,9 @@ func (s *server) handleCreateTeam() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
-		TeamName := keyVal["name"]
+		TeamName := keyVal["name"].(string)
 		TeamID, err := s.database.TeamCreate(UserID, TeamName)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -1338,25 +1269,19 @@ func (s *server) handleCreateTeam() http.HandlerFunc {
 			TeamID: TeamID,
 		}
 
-		RespondWithJSON(w, http.StatusOK, NewTeam)
+		respondWithJSON(w, http.StatusOK, NewTeam)
 	}
 }
 
 // handleCreateTeam handles adding user to a team
 func (s *server) handleTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		UserEmail := keyVal["email"]
-		Role := keyVal["role"]
+		UserEmail := keyVal["email"].(string)
+		Role := keyVal["role"].(string)
 
 		User, UserErr := s.database.GetUserByEmail(UserEmail)
 		if UserErr != nil {
@@ -1377,18 +1302,12 @@ func (s *server) handleTeamAddUser() http.HandlerFunc {
 // handleOrganizationAddUser handles adding user to an organization
 func (s *server) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
-		UserEmail := keyVal["email"]
-		Role := keyVal["role"]
+		UserEmail := keyVal["email"].(string)
+		Role := keyVal["role"].(string)
 
 		User, UserErr := s.database.GetUserByEmail(UserEmail)
 		if UserErr != nil {
@@ -1409,18 +1328,12 @@ func (s *server) handleOrganizationAddUser() http.HandlerFunc {
 // handleDepartmentAddUser handles adding user to an organization department
 func (s *server) handleDepartmentAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body) // check for errors
-		keyVal := make(map[string]string)
-		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-		if jsonErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		DepartmentId := vars["departmentId"]
-		UserEmail := keyVal["email"]
-		Role := keyVal["role"]
+		UserEmail := keyVal["email"].(string)
+		Role := keyVal["role"].(string)
 
 		User, UserErr := s.database.GetUserByEmail(UserEmail)
 		if UserErr != nil {
