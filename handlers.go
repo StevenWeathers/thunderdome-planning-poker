@@ -1310,3 +1310,34 @@ func (s *server) handleGetTeamUsers() http.HandlerFunc {
 		RespondWithJSON(w, http.StatusOK, Teams)
 	}
 }
+
+// handleCreateTeam handles creating an team with current user as admin
+func (s *server) handleCreateTeam() http.HandlerFunc {
+	type CreateTeamResponse struct {
+		TeamID string `json:"id"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		UserID := r.Context().Value(contextKeyUserID).(string)
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		TeamName := keyVal["name"]
+		TeamID, err := s.database.TeamCreate(UserID, TeamName)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		var NewTeam = &CreateTeamResponse{
+			TeamID: TeamID,
+		}
+
+		RespondWithJSON(w, http.StatusOK, NewTeam)
+	}
+}

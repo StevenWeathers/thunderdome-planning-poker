@@ -74,6 +74,24 @@
             })
     }
 
+    function createTeamHandler(name) {
+        const body = {
+            name,
+        }
+
+        xfetch('/api/teams', { body })
+            .then(res => res.json())
+            .then(function(team) {
+                eventTag('create_team', 'engagement', 'success', () => {
+                    router.route(`${appRoutes.team}/${team.id}`)
+                })
+            })
+            .catch(function(error) {
+                notifications.danger('Error attempting to create team')
+                eventTag('create_team', 'engagement', 'failure')
+            })
+    }
+
     onMount(() => {
         if (!$warrior.id || $warrior.rank === 'PRIVATE') {
             router.route(appRoutes.login)
@@ -172,6 +190,6 @@
     {/if}
 
     {#if showCreateTeam}
-        <CreateTeam toggleCreate="{toggleCreateTeam}" />
+        <CreateTeam toggleCreate="{toggleCreateTeam}" handleCreate="{createTeamHandler}" />
     {/if}
 </PageLayout>

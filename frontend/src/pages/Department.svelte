@@ -187,14 +187,8 @@
                 <thead>
                     <tr>
                         <th class="w-2/6 px-4 py-2">Name</th>
-                    </tr>
-                    <tr>
                         <th class="w-2/6 px-4 py-2">Email</th>
-                    </tr>
-                    <tr>
                         <th class="w-1/6 px-4 py-2">Role</th>
-                    </tr>
-                    <tr>
                         <th class="w-1/6 px-4 py-2"></th>
                     </tr>
                 </thead>

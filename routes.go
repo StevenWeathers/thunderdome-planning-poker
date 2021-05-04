@@ -66,6 +66,7 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/department/{departmentId}/teams", s.userOnly(s.handleCreateDepartmentTeam())).Methods("POST")
 	s.router.HandleFunc("/api/department/{departmentId}/users/{limit}/{offset}", s.userOnly(s.handleGetDepartmentUsers())).Methods("GET")
 	s.router.HandleFunc("/api/teams/{limit}/{offset}", s.userOnly(s.handleGetTeamsByUser())).Methods("GET")
+	s.router.HandleFunc("/api/teams", s.userOnly(s.handleCreateTeam())).Methods("POST")
 	s.router.HandleFunc("/api/team/{teamId}/users/{limit}/{offset}", s.userOnly(s.handleGetTeamUsers())).Methods("GET")
 	// teams(s)
 	// admin routes

@@ -75,7 +75,7 @@ func (d *Database) TeamCreate(UserID string, TeamName string) (string, error) {
 	err := d.db.QueryRow(`
 		SELECT teamId FROM team_create($1, $2);`,
 		UserID,
-		TeamID,
+		TeamName,
 	).Scan(&TeamID)
 
 	if err != nil {
