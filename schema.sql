@@ -599,6 +599,7 @@ CREATE OR REPLACE FUNCTION get_app_stats(
     OUT battle_count INTEGER,
     OUT plan_count INTEGER,
     OUT organization_count INTEGER,
+    OUT department_count INTEGER,
     OUT team_count INTEGER
 ) AS $$
 BEGIN
@@ -607,6 +608,7 @@ BEGIN
     SELECT COUNT(*) INTO battle_count FROM battles;
     SELECT COUNT(*) INTO plan_count FROM plans;
     SELECT COUNT(*) INTO organization_count FROM organization;
+    SELECT COUNT(*) INTO department_count FROM organization_department;
     SELECT COUNT(*) INTO team_count FROM team;
 END;
 $$ LANGUAGE plpgsql;

@@ -91,13 +91,14 @@ type APIKey struct {
 	UpdatedDate time.Time `json:"updatedDate"`
 }
 
-// ApplicationStats includes user, orginization, team, battle, and plan counts
+// ApplicationStats includes user, organization, team, battle, and plan counts
 type ApplicationStats struct {
 	RegisteredCount   int `json:"registeredUserCount"`
 	UnregisteredCount int `json:"unregisteredUserCount"`
 	BattleCount       int `json:"battleCount"`
 	PlanCount         int `json:"planCount"`
-	OrginizationCount int `json:"orginizationCount"`
+	OrganizationCount int `json:"organizationCount"`
+	DepartmentCount   int `json:"departmentCount"`
 	TeamCount         int `json:"teamCount"`
 }
 

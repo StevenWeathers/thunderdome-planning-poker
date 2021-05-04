@@ -31,7 +31,8 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 			registered_user_count,
 			battle_count,
 			plan_count,
-			orginization_count,
+			organization_count,
+			department_count,
 			team_count
 		FROM get_app_stats();
 		`,
@@ -40,7 +41,8 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 		&Appstats.RegisteredCount,
 		&Appstats.BattleCount,
 		&Appstats.PlanCount,
-		&Appstats.OrginizationCount,
+		&Appstats.OrganizationCount,
+		&Appstats.DepartmentCount,
 		&Appstats.TeamCount,
 	)
 	if err != nil {

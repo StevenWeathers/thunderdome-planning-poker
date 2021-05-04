@@ -22,6 +22,9 @@
         registeredUserCount: 0,
         battleCount: 0,
         planCount: 0,
+        organizationCount: 0,
+        departmentCount: 0,
+        teamCount: 0
     }
     let warriors = []
     let showCreateWarrior = false
@@ -196,6 +199,30 @@
                         {$_('pages.admin.counts.plans')}
                     </div>
                     {appStats.planCount}
+                </div>
+            </div>
+            <div
+                class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
+                md:pb-4 bg-white shadow-lg rounded text-xl">
+                <div class="w-1/4">
+                    <div class="mb-2 font-bold">
+                        Organizations
+                    </div>
+                    {appStats.organizationCount}
+                </div>
+                <div class="w-1/4">
+                    <div class="mb-2 font-bold">
+                        Departments
+                    </div>
+                    {appStats.departmentCount}
+                </div>
+                <div class="w-1/4">
+                    <div class="mb-2 font-bold">
+                        Teams
+                    </div>
+                    {appStats.teamCount}
+                </div>
+                <div class="w-1/4">
                 </div>
             </div>
         </div>
