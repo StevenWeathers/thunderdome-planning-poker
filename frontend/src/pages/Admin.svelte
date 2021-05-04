@@ -204,16 +204,20 @@
     <div class="flex justify-center mb-4">
         <div class="w-full">
             <div
-            class="text-center p-2 md:p-4 bg-white shadow-lg rounded text-xl">
+                class="text-center p-2 md:p-4 bg-white shadow-lg rounded text-xl">
                 <div class="text-2xl md:text-3xl font-bold text-center mb-4">
                     {$_('pages.admin.maintenance.title')}
                 </div>
                 <HollowButton onClick="{cleanGuests}" color="red">
-                    {$_('pages.admin.maintenance.cleanGuests', { values: { daysOld: CleanupGuestsDaysOld } })}
+                    {$_('pages.admin.maintenance.cleanGuests', {
+                        values: { daysOld: CleanupGuestsDaysOld },
+                    })}
                 </HollowButton>
 
                 <HollowButton onClick="{cleanBattles}" color="red">
-                    {$_('pages.admin.maintenance.cleanBattles', { values: { daysOld: CleanupBattlesDaysOld } })}
+                    {$_('pages.admin.maintenance.cleanBattles', {
+                        values: { daysOld: CleanupBattlesDaysOld },
+                    })}
                 </HollowButton>
             </div>
         </div>
@@ -282,9 +286,13 @@
             </table>
 
             {#if appStats.registeredUserCount > warriorsPageLimit}
-            <div class="pt-6 flex justify-center">
-                <Pagination bind:current={warriorsPage} num_items={appStats.registeredUserCount} per_page={warriorsPageLimit} on:navigate={changePage} />
-            </div>
+                <div class="pt-6 flex justify-center">
+                    <Pagination
+                        bind:current="{warriorsPage}"
+                        num_items="{appStats.registeredUserCount}"
+                        per_page="{warriorsPageLimit}"
+                        on:navigate="{changePage}" />
+                </div>
             {/if}
         </div>
     </div>

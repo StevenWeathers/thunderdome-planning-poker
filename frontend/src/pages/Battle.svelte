@@ -491,7 +491,7 @@
 
                 <BattlePlans
                     plans="{battle.plans}"
-                    isLeader={isLeader}
+                    {isLeader}
                     {sendSocketEvent}
                     {eventTag}
                     {notifications} />
@@ -509,8 +509,8 @@
                         {#if war.active}
                             <WarriorCard
                                 warrior="{war}"
-                                leaders={battle.leaders}
-                                isLeader={isLeader}
+                                leaders="{battle.leaders}"
+                                {isLeader}
                                 voted="{didVote(war.id)}"
                                 points="{showVote(war.id)}"
                                 {sendSocketEvent}

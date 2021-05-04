@@ -11,6 +11,10 @@
     import Landing from './pages/Landing.svelte'
     import Battles from './pages/Battles.svelte'
     import Battle from './pages/Battle.svelte'
+    import Organizations from './pages/Organizations.svelte'
+    import Organization from './pages/Organization.svelte'
+    import Department from './pages/Department.svelte'
+    import Team from './pages/Team.svelte'
     import Register from './pages/Register.svelte'
     import Login from './pages/Login.svelte'
     import ResetPassword from './pages/ResetPassword.svelte'
@@ -88,6 +92,42 @@
                 params,
             }
         })
+        .on(appRoutes.organizations, () => {
+            currentPage = {
+                route: Organizations,
+                params: {},
+            }
+        })
+        .on(`${appRoutes.organization}/:organizationId`, params => {
+            currentPage = {
+                route: Organization,
+                params,
+            }
+        })
+        .on(
+            `${appRoutes.organization}/:organizationId/team/:teamId`,
+            params => {
+                currentPage = {
+                    route: Team,
+                    params,
+                }
+            },
+        )
+        .on(
+            `${appRoutes.organization}/:organizationId/department/:departmentId`,
+            params => {
+                currentPage = {
+                    route: Department,
+                    params,
+                }
+            },
+        )
+        .on(`${appRoutes.team}/:teamId`, params => {
+            currentPage = {
+                route: Team,
+                params,
+            }
+        })
         .on(appRoutes.admin, () => {
             currentPage = {
                 route: Admin,
@@ -161,6 +201,14 @@
                     additionalClasses="mr-2">
                     {$_('pages.myBattles.nav')}
                 </HollowButton>
+                {#if activeWarrior.rank !== 'PRIVATE'}
+                    <HollowButton
+                        color="blue"
+                        href="{appRoutes.organizations}"
+                        additionalClasses="mr-2">
+                        Organizations &amp; Teams
+                    </HollowButton>
+                {/if}
                 {#if !activeWarrior.rank || activeWarrior.rank === 'PRIVATE'}
                     {#if AllowRegistration}
                         <HollowButton

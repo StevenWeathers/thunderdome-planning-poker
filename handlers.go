@@ -978,3 +978,208 @@ func (s *server) handleCleanGuests() http.HandlerFunc {
 		return
 	}
 }
+
+// handleGetOrganizations gets a list of organizations
+func (s *server) handleGetOrganizations() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Organizations := s.database.OrganizationList(Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Organizations)
+	}
+}
+
+// handleGetTeams gets a list of teams
+func (s *server) handleGetTeams() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Teams := s.database.TeamList(Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Teams)
+	}
+}
+
+/*
+ * Organization Handlers
+ */
+
+// handleGetOrganizationsByUser gets a list of organizations the user is apart of
+func (s *server) handleGetOrganizationsByUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Organizations := s.database.OrganizationListByUser(UserID, Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Organizations)
+	}
+}
+
+// handleGetOrganizationByUser gets an organization with user role
+func (s *server) handleGetOrganizationByUser() http.HandlerFunc {
+	type OrganizationResponse struct {
+		Organization *database.Organization `json:"organization"`
+		Role         string                 `json:"role"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+
+		Organization, role, err := s.database.OrganizationWithRole(UserID, vars["orgId"])
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, &OrganizationResponse{
+			Organization: Organization,
+			Role:         role,
+		})
+	}
+}
+
+// handleCreateOrganization handles creating an organization with current user as admin
+func (s *server) handleCreateOrganization() http.HandlerFunc {
+	type CreateOrgResponse struct {
+		OrganizationID string `json:"id"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		UserID := r.Context().Value(contextKeyUserID).(string)
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		OrgName := keyVal["name"]
+		OrgId, err := s.database.OrganizationCreate(UserID, OrgName)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		var NewOrg = &CreateOrgResponse{
+			OrganizationID: OrgId,
+		}
+
+		RespondWithJSON(w, http.StatusOK, NewOrg)
+	}
+}
+
+// handleGetOrganizationDepartments gets a list of departments associated to the organization
+func (s *server) handleGetOrganizationDepartments() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Teams := s.database.OrganizationDepartmentList(OrgID, Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Teams)
+	}
+}
+
+// handleCreateDepartment handles creating an organization department
+func (s *server) handleCreateDepartment() http.HandlerFunc {
+	type CreateDepartmentResponse struct {
+		DepartmentID string `json:"id"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		// UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		body, _ := ioutil.ReadAll(r.Body) // check for errors
+		keyVal := make(map[string]string)
+		jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+		if jsonErr != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		OrgName := keyVal["name"]
+		OrgID := vars["orgId"]
+		DepartmentID, err := s.database.DepartmentCreate(OrgID, OrgName)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		var NewDepartment = &CreateDepartmentResponse{
+			DepartmentID: DepartmentID,
+		}
+
+		RespondWithJSON(w, http.StatusOK, NewDepartment)
+	}
+}
+
+// handleGetOrganizationTeams gets a list of teams associated to the organization
+func (s *server) handleGetOrganizationTeams() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Teams := s.database.OrganizationTeamList(OrgID, Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Teams)
+	}
+}
+
+// handleGetOrganizationUsers gets a list of users associated to the organization
+func (s *server) handleGetOrganizationUsers() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Teams := s.database.OrganizationUserList(OrgID, Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Teams)
+	}
+}
+
+/*
+ * Team Handlers
+ */
+
+// handleGetTeamsByUser gets a list of teams the user is apart of
+func (s *server) handleGetTeamsByUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Organizations := s.database.TeamListByUser(UserID, Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Organizations)
+	}
+}
+
+// handleGetTeamUsers gets a list of users associated to the team
+func (s *server) handleGetTeamUsers() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Teams := s.database.TeamUserList(TeamID, Limit, Offset)
+
+		RespondWithJSON(w, http.StatusOK, Teams)
+	}
+}

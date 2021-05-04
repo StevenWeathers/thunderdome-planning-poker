@@ -176,6 +176,85 @@ BEGIN
     END;
 END $$;
 
+CREATE TABLE IF NOT EXISTS organization (
+    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(256),
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS organization_user (
+    organization_id UUID,
+    user_id UUID,
+    role VARCHAR(16) NOT NULL DEFAULT 'MEMBER',
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (organization_id, user_id),
+    CONSTRAINT ou_organization_id FOREIGN KEY(organization_id) REFERENCES organization(id) ON DELETE CASCADE,
+    CONSTRAINT ou_user_id FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS organization_department (
+    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    organization_id UUID,
+    name VARCHAR(256),
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW(),
+    UNIQUE(organization_id, name),
+    CONSTRAINT od_organization_id FOREIGN KEY(organization_id) REFERENCES organization(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS department_user (
+    department_id UUID,
+    user_id UUID,
+    role VARCHAR(16) NOT NULL DEFAULT 'MEMBER',
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (department_id, user_id),
+    CONSTRAINT du_department_id FOREIGN KEY(department_id) REFERENCES organization_department(id) ON DELETE CASCADE,
+    CONSTRAINT du_user_id FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS team (
+    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(256),
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS team_user (
+    team_id UUID,
+    user_id UUID,
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW(),
+    role VARCHAR(16) NOT NULL DEFAULT 'MEMBER',
+    PRIMARY KEY (team_id, user_id),
+    CONSTRAINT tu_team_id FOREIGN KEY(team_id) REFERENCES team(id) ON DELETE CASCADE,
+    CONSTRAINT tu_user_id FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS organization_team (
+    organization_id UUID,
+    team_id UUID,
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (organization_id, team_id),
+    UNIQUE(team_id),
+    CONSTRAINT ot_organization_id FOREIGN KEY(organization_id) REFERENCES organization(id) ON DELETE CASCADE,
+    CONSTRAINT ot_team_id FOREIGN KEY(team_id) REFERENCES team(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS department_team (
+    department_id UUID,
+    team_id UUID,
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (department_id, team_id),
+    UNIQUE(team_id),
+    CONSTRAINT dt_department_id FOREIGN KEY(department_id) REFERENCES organization_department(id) ON DELETE CASCADE,
+    CONSTRAINT dt_team_id FOREIGN KEY(team_id) REFERENCES team(id) ON DELETE CASCADE
+);
+
 --
 -- Types (used in Stored Procedures)
 --
@@ -518,13 +597,17 @@ CREATE OR REPLACE FUNCTION get_app_stats(
     OUT unregistered_user_count INTEGER,
     OUT registered_user_count INTEGER,
     OUT battle_count INTEGER,
-    OUT plan_count INTEGER
+    OUT plan_count INTEGER,
+    OUT organization_count INTEGER,
+    OUT team_count INTEGER
 ) AS $$
 BEGIN
     SELECT COUNT(*) INTO unregistered_user_count FROM users WHERE email IS NULL;
     SELECT COUNT(*) INTO registered_user_count FROM users WHERE email IS NOT NULL;
     SELECT COUNT(*) INTO battle_count FROM battles;
     SELECT COUNT(*) INTO plan_count FROM plans;
+    SELECT COUNT(*) INTO organization_count FROM organization;
+    SELECT COUNT(*) INTO team_count FROM team;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -627,10 +710,279 @@ CREATE OR REPLACE FUNCTION create_battle(
     IN autoVoting BOOL,
     IN pointAverageRounding VARCHAR(5),
     OUT battleId UUID
-)
-AS $$
+) AS $$
 BEGIN
     INSERT INTO battles (owner_id, name, point_values_allowed, auto_finish_voting, point_average_rounding) VALUES (leaderId, battleName, pointsAllowed, autoVoting, pointAverageRounding) RETURNING id INTO battleId;
     INSERT INTO battles_leaders (battle_id, user_id) VALUES (battleId, leaderId);
+END;
+$$ LANGUAGE plpgsql;
+
+
+--
+-- ORGANIZATIONS --
+--
+
+-- Get Organization --
+CREATE OR REPLACE FUNCTION organization_get_by_id(
+    IN orgId UUID
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT id, name, created_date, updated_date
+        FROM organization
+        WHERE id = orgId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Organization with Role --
+CREATE OR REPLACE FUNCTION organization_get_with_role(
+    IN userId UUID,
+    IN orgId UUID
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP, role VARCHAR(16)
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT o.id, o.name, o.created_date, o.updated_date, ou.role
+        FROM organization_user ou
+        LEFT JOIN organization o ON ou.organization_id = o.id
+        WHERE ou.organization_id = orgId AND ou.user_id = userId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Organizations --
+CREATE OR REPLACE FUNCTION organization_list(
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table(
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT id, name, created_date, updated_date
+        FROM organization
+        ORDER BY created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Organizations by User --
+CREATE OR REPLACE FUNCTION organization_list_by_user(
+    IN userId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP, role VARCHAR(16)
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT o.id, o.name, o.created_date, o.updated_date, ou.role
+        FROM organization_user ou
+        LEFT JOIN organization o ON ou.organization_id = o.id
+        WHERE ou.user_id = userId
+        ORDER BY created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create Organization --
+CREATE OR REPLACE FUNCTION organization_create(
+    IN userId UUID,
+    IN orgName VARCHAR(256),
+    OUT organizationId UUID
+) AS $$
+BEGIN
+    INSERT INTO organization (name) VALUES (orgName) RETURNING id INTO organizationId;
+    INSERT INTO organization_user (organization_id, user_id, role) VALUES (organizationId, userId, 'ADMIN');
+END;
+$$ LANGUAGE plpgsql;
+
+-- Add User to Organization --
+CREATE OR REPLACE FUNCTION organization_user_add(
+    IN orgId UUID,
+    IN userId UUID,
+    IN userRole VARCHAR(16)
+) RETURNS void AS $$
+BEGIN
+    INSERT INTO organization_user (organization_id, user_id, role) VALUES (orgId, userId, userRole);
+    UPDATE organization SET updated_date = NOW() WHERE id = orgId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Organization Users --
+CREATE OR REPLACE FUNCTION organization_user_list(
+    IN orgId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256), email VARCHAR(256), role VARCHAR(16)
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT u.id, u.name, u.email, ou.role
+        FROM organization_user ou
+        LEFT JOIN users u ON ou.user_id = u.id
+        WHERE ou.organization_id = orgId
+        ORDER BY ou.created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Organization Teams --
+CREATE OR REPLACE FUNCTION organization_team_list(
+    IN orgId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM organization_team ot
+        LEFT JOIN team t ON ot.team_id = t.id
+        WHERE ot.organization_id = orgId
+        ORDER BY t.created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create Organization Team --
+CREATE OR REPLACE FUNCTION organization_team_create(
+    IN orgId UUID,
+    IN teamName VARCHAR(256),
+    OUT teamId UUID
+) AS $$
+BEGIN
+    INSERT INTO team (name) VALUES (teamName) RETURNING id INTO teamId;
+    INSERT INTO organization_team (organization_id, team_id) VALUES (orgId, teamId);
+    UPDATE organization SET updated_date = NOW() WHERE id = orgId;
+END;
+$$ LANGUAGE plpgsql;
+
+--
+-- DEPARTMENTS --
+--
+
+-- Get Organization Departments --
+CREATE OR REPLACE FUNCTION organization_department_list(
+    IN orgId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT d.id, d.name, d.created_date, d.updated_date
+        FROM organization_department d
+        WHERE d.organization_id = orgId
+        ORDER BY d.created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create Organization Department --
+CREATE OR REPLACE FUNCTION organization_department_create(
+    IN orgId UUID,
+    IN departmentName VARCHAR(256),
+    OUT departmentId UUID
+) AS $$
+BEGIN
+    INSERT INTO organization_department (name, organization_id) VALUES (departmentName, orgId) RETURNING id INTO departmentId;
+    UPDATE organization SET updated_date = NOW() WHERE id = orgId;
+END;
+$$ LANGUAGE plpgsql;
+
+--
+-- TEAMS --
+--
+
+-- Get Teams --
+CREATE OR REPLACE FUNCTION team_list_by_user(
+    IN userId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM team t
+        ORDER BY t.created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Teams by User --
+CREATE OR REPLACE FUNCTION team_list_by_user(
+    IN userId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM team_user tu
+        LEFT JOIN team t ON tu.team_id = t.id
+        WHERE tu.user_id = userId
+        ORDER BY t.created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create Team --
+CREATE OR REPLACE FUNCTION team_create(
+    IN userId UUID,
+    IN teamName VARCHAR(256),
+    OUT teamId UUID
+) AS $$
+BEGIN
+    INSERT INTO team (name) VALUES (teamName) RETURNING id INTO teamId;
+    INSERT INTO team_user (team_id, user_id, role) VALUES (teamId, userId, 'ADMIN');
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Team Users --
+CREATE OR REPLACE FUNCTION team_user_list(
+    IN teamId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256), email VARCHAR(256), role VARCHAR(16)
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT u.id, u.name, u.email, tu.role
+        FROM team_user tu
+        LEFT JOIN users u ON tu.user_id = u.id
+        WHERE tu.team_id = teamId
+        ORDER BY tu.created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Add User to Team --
+CREATE OR REPLACE FUNCTION team_user_add(
+    IN teamId UUID,
+    IN userId UUID,
+    IN userRole VARCHAR(16)
+) RETURNS void AS $$
+BEGIN
+    INSERT INTO team_user (team_id, user_id, role) VALUES (teamId, userId, userRole);
+    UPDATE team SET updated_date = NOW() WHERE id = teamId;
 END;
 $$ LANGUAGE plpgsql;

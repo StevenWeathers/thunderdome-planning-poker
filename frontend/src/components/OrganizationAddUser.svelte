@@ -1,10 +1,11 @@
 <script>
     import CloseIcon from './icons/CloseIcon.svelte'
-    import WarriorRegisterForm from './WarriorRegisterForm.svelte'
 
     export let notifications
-    export let toggleCreate = () => {}
-    export let handleCreate = () => {}
+    export let organizationId
+
+    export let toggleAdd = () => {}
+    export let handleAdd = () => {}
 </script>
 
 <div class="fixed inset-0 flex items-center z-40">
@@ -17,15 +18,12 @@
             <div class="flex justify-end mb-2">
                 <button
                     aria-label="close"
-                    on:click="{toggleCreate}"
+                    on:click="{toggleAdd}"
                     class="text-gray-800">
                     <CloseIcon />
                 </button>
             </div>
-
-            <WarriorRegisterForm
-                handleSubmit="{handleCreate}"
-                {notifications} />
+            Organization Add User Form
         </div>
     </div>
 </div>

@@ -15,7 +15,7 @@
     export let xfetch
 
     const allowedPointValues = appConfig.AllowedPointValues
-    const allowedPointAverages = ["ceil", "round", "floor"]
+    const allowedPointAverages = ['ceil', 'round', 'floor']
 
     let points = appConfig.DefaultPointValues
     let battleName = ''
@@ -70,7 +70,7 @@
             pointValuesAllowed,
             plans,
             autoFinishVoting,
-            pointAverageRounding
+            pointAverageRounding,
         }
 
         xfetch('/api/battle', { body })
@@ -174,27 +174,26 @@
     </div>
 
     <div class="mb-4">
-        <label class="text-gray-700 text-sm font-bold mb-2" for="averageRounding">{$_('pages.myBattles.createBattle.fields.averageRounding.label')}</label>
+        <label
+            class="text-gray-700 text-sm font-bold mb-2"
+            for="averageRounding">
+            {$_('pages.myBattles.createBattle.fields.averageRounding.label')}
+        </label>
         <div class="relative">
             <select
                 bind:value="{pointAverageRounding}"
-                class="block appearance-none w-full
-                border-2 border-gray-400
-                text-gray-700 py-3 px-4 pr-8 rounded
-                leading-tight focus:outline-none
-                focus:border-purple-500"
+                class="block appearance-none w-full border-2 border-gray-400
+                text-gray-700 py-3 px-4 pr-8 rounded leading-tight
+                focus:outline-none focus:border-purple-500"
                 id="averageRounding"
                 name="averageRounding">
                 {#each allowedPointAverages as item}
-                    <option value="{item}">
-                        {item}
-                    </option>
+                    <option value="{item}">{item}</option>
                 {/each}
             </select>
             <div
-                class="pointer-events-none absolute
-                inset-y-0 right-0 flex items-center
-                px-2 text-gray-700">
+                class="pointer-events-none absolute inset-y-0 right-0 flex
+                items-center px-2 text-gray-700">
                 <DownCarrotIcon />
             </div>
         </div>

@@ -67,21 +67,22 @@
                     <p class="text-l text-gray-700 leading-tight">
                         <LeaderIcon />
                         {#if isLeader}
-                        &nbsp;<button
-                            on:click="{demoteLeader}"
-                            class="inline text-sm text-red-500
-                            hover:text-red-800 bg-transparent border-transparent">
-                            {$_('actions.warrior.demote')}
-                        </button>
-                        {:else}
-                            &nbsp;{$_('pages.battle.warriorLeader')}
-                        {/if}
+                            &nbsp;
+                            <button
+                                on:click="{demoteLeader}"
+                                class="inline text-sm text-red-500
+                                hover:text-red-800 bg-transparent
+                                border-transparent">
+                                {$_('actions.warrior.demote')}
+                            </button>
+                        {:else}&nbsp;{$_('pages.battle.warriorLeader')}{/if}
                     </p>
                 {:else if isLeader}
                     <button
                         on:click="{promoteLeader}"
-                        class="inline-block align-baseline text-sm text-green-500
-                        hover:text-green-800 bg-transparent border-transparent">
+                        class="inline-block align-baseline text-sm
+                        text-green-500 hover:text-green-800 bg-transparent
+                        border-transparent">
                         {$_('actions.warrior.promote')}
                     </button>
                     &nbsp;|&nbsp;

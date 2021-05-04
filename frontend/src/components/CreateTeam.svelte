@@ -1,8 +1,9 @@
 <script>
     import CloseIcon from './icons/CloseIcon.svelte'
-    import WarriorRegisterForm from './WarriorRegisterForm.svelte'
 
     export let notifications
+    export let organizationId
+
     export let toggleCreate = () => {}
     export let handleCreate = () => {}
 </script>
@@ -22,10 +23,7 @@
                     <CloseIcon />
                 </button>
             </div>
-
-            <WarriorRegisterForm
-                handleSubmit="{handleCreate}"
-                {notifications} />
+            Create Team Form
         </div>
     </div>
 </div>
