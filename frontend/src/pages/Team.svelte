@@ -5,6 +5,7 @@
     import HollowButton from '../components/HollowButton.svelte'
     import AddUser from '../components/AddUser.svelte'
     import RemoveUser from '../components/RemoveUser.svelte'
+    import ChevronRight from '../components/icons/ChevronRight.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -141,15 +142,15 @@ import Department from './Department.svelte'
 <PageLayout>
     <h1 class="text-3xl font-bold">Team: {team.name}</h1>
     {#if organizationId}
-        <div class="font-bold mb-4">
-            Organization &gt; <a class="text-blue-500 hover:text-blue-800" href="/organization/{organization.id}">{organization.name}</a>
+        <div class="font-bold">
+            Organization <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="/organization/{organization.id}">{organization.name}</a>
             {#if departmentId}
-                &nbsp;&gt; Department &gt; <a class="text-blue-500 hover:text-blue-800" href="/organization/{organization.id}/department/{department.id}">{department.name}</a>
+                &nbsp;<ChevronRight class="inline-block" /> Department <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="/organization/{organization.id}/department/{department.id}">{department.name}</a>
             {/if}
         </div>
     {/if}
 
-    <div class="w-full">
+    <div class="w-full mt-4">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
@@ -183,7 +184,7 @@ import Department from './Department.svelte'
                             <td class="border px-4 py-2">{usr.name}</td>
                             <td class="border px-4 py-2">{usr.email}</td>
                             <td class="border px-4 py-2">{usr.role}</td>
-                            <td class="border px-4 py-2">
+                            <td class="border px-4 py-2 text-right">
                                 {#if isAdmin}
                                     <HollowButton onClick="{toggleRemoveUser(usr.id)}" color="red">
                                         Remove

@@ -5,6 +5,7 @@
     import HollowButton from '../components/HollowButton.svelte'
     import CreateTeam from '../components/CreateTeam.svelte'
     import AddUser from '../components/AddUser.svelte'
+    import ChevronRight from '../components/icons/ChevronRight.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -140,7 +141,9 @@
 
 <PageLayout>
     <h1 class="text-3xl font-bold">Department: {department.name}</h1>
-    <h2 class="mb-4 text-2xl">Organization: {organization.name}</h2>
+    <div class="font-bold mb-4">
+        Organization <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="/organization/{organization.id}">{organization.name}</a>
+    </div>
 
     <div class="w-full mb-4">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
@@ -218,7 +221,7 @@
                             <td class="border px-4 py-2">{usr.name}</td>
                             <td class="border px-4 py-2">{usr.email}</td>
                             <td class="border px-4 py-2">{usr.role}</td>
-                            <td class="border px-4 py-2"></td>
+                            <td class="border px-4 py-2 text-right"></td>
                         </tr>
                     {/each}
                 </tbody>

@@ -299,7 +299,7 @@
                             <td class="border px-4 py-2">{usr.name}</td>
                             <td class="border px-4 py-2">{usr.email}</td>
                             <td class="border px-4 py-2">{usr.role}</td>
-                            <td class="border px-4 py-2"></td>
+                            <td class="border px-4 py-2 text-right"></td>
                         </tr>
                     {/each}
                 </tbody>
