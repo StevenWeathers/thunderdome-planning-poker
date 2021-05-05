@@ -33,12 +33,12 @@
 
             const preAverage = sum / votesToAverage.length || 0
             switch (averageRounding) {
-                case "round":
+                case 'round':
                     average = Math.round(preAverage)
-                    break;
-                case "floor":
+                    break
+                case 'floor':
                     average = Math.floor(preAverage)
-                    break;
+                    break
                 default:
                     average = Math.ceil(preAverage)
             }

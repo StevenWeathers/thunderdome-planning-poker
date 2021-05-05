@@ -228,7 +228,7 @@
     }
 
     function handleDeleteAccount() {
-        xfetch(`/api/warrior/${$warrior.id}`, { method: "DELETE" })
+        xfetch(`/api/warrior/${$warrior.id}`, { method: 'DELETE' })
             .then(function() {
                 warrior.delete()
 
@@ -237,9 +237,7 @@
                 router.route(appRoutes.landing)
             })
             .catch(function() {
-                notifications.danger(
-                    $_('pages.warriorProfile.delete.error'),
-                )
+                notifications.danger($_('pages.warriorProfile.delete.error'))
                 eventTag('delete_warrior', 'engagement', 'failure')
             })
     }
@@ -269,7 +267,7 @@
                     on:submit="{updateWarriorProfile}"
                     class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
                     name="updateProfile">
-                        <h2
+                    <h2
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
                         md:leading-tight">
                         {$_('pages.warriorProfile.title')}
@@ -542,7 +540,7 @@
         </div>
 
         <div class="w-full text-center">
-            <HollowButton onClick={toggleDeleteAccount} color="red">
+            <HollowButton onClick="{toggleDeleteAccount}" color="red">
                 {$_('pages.warriorProfile.delete.deleteButton')}
             </HollowButton>
         </div>
@@ -557,8 +555,6 @@
     {/if}
 
     {#if showAccountDeletion}
-        <DeleteWarrior
-            {toggleDeleteAccount}
-            {handleDeleteAccount} />
+        <DeleteWarrior {toggleDeleteAccount} {handleDeleteAccount} />
     {/if}
 </PageLayout>

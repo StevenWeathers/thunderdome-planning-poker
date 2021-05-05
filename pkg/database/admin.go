@@ -21,14 +21,6 @@ func (d *Database) ConfirmAdmin(UserID string) error {
 	return nil
 }
 
-// ApplicationStats includes user, battle, and plan counts
-type ApplicationStats struct {
-	RegisteredCount   int `json:"registeredUserCount"`
-	UnregisteredCount int `json:"unregisteredUserCount"`
-	BattleCount       int `json:"battleCount"`
-	PlanCount         int `json:"planCount"`
-}
-
 // GetAppStats gets counts of users (registered and unregistered), battles, and plans
 func (d *Database) GetAppStats() (*ApplicationStats, error) {
 	var Appstats ApplicationStats
@@ -38,7 +30,10 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 			unregistered_user_count,
 			registered_user_count,
 			battle_count,
-			plan_count
+			plan_count,
+			organization_count,
+			department_count,
+			team_count
 		FROM get_app_stats();
 		`,
 	).Scan(
@@ -46,6 +41,9 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 		&Appstats.RegisteredCount,
 		&Appstats.BattleCount,
 		&Appstats.PlanCount,
+		&Appstats.OrganizationCount,
+		&Appstats.DepartmentCount,
+		&Appstats.TeamCount,
 	)
 	if err != nil {
 		log.Println("Unable to get application stats: ", err)
@@ -105,4 +103,68 @@ func (d *Database) CleanGuests(DaysOld int) error {
 	}
 
 	return nil
+}
+
+// OrganizationList gets a list of organizations
+func (d *Database) OrganizationList(Limit int, Offset int) []*Organization {
+	var organizations = make([]*Organization, 0)
+	rows, err := d.db.Query(
+		`SELECT id, name, created_date, updated_date FROM organization_list($1, $2);`,
+		Limit,
+		Offset,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var org Organization
+
+			if err := rows.Scan(
+				&org.OrganizationID,
+				&org.Name,
+				&org.CreatedDate,
+				&org.UpdatedDate,
+			); err != nil {
+				log.Println(err)
+			} else {
+				organizations = append(organizations, &org)
+			}
+		}
+	} else {
+		log.Println(err)
+	}
+
+	return organizations
+}
+
+// TeamList gets a list of teams
+func (d *Database) TeamList(Limit int, Offset int) []*Team {
+	var teams = make([]*Team, 0)
+	rows, err := d.db.Query(
+		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
+		Limit,
+		Offset,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var team Team
+
+			if err := rows.Scan(
+				&team.TeamID,
+				&team.Name,
+				&team.CreatedDate,
+				&team.UpdatedDate,
+			); err != nil {
+				log.Println(err)
+			} else {
+				teams = append(teams, &team)
+			}
+		}
+	} else {
+		log.Println(err)
+	}
+
+	return teams
 }

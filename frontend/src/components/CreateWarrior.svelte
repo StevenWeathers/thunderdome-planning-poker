@@ -1,5 +1,4 @@
 <script>
-    import SolidButton from './SolidButton.svelte'
     import CloseIcon from './icons/CloseIcon.svelte'
     import WarriorRegisterForm from './WarriorRegisterForm.svelte'
 

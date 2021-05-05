@@ -90,3 +90,57 @@ type APIKey struct {
 	CreatedDate time.Time `json:"createdDate"`
 	UpdatedDate time.Time `json:"updatedDate"`
 }
+
+// ApplicationStats includes user, organization, team, battle, and plan counts
+type ApplicationStats struct {
+	RegisteredCount   int `json:"registeredUserCount"`
+	UnregisteredCount int `json:"unregisteredUserCount"`
+	BattleCount       int `json:"battleCount"`
+	PlanCount         int `json:"planCount"`
+	OrganizationCount int `json:"organizationCount"`
+	DepartmentCount   int `json:"departmentCount"`
+	TeamCount         int `json:"teamCount"`
+}
+
+// Organization can be a company
+type Organization struct {
+	OrganizationID string `json:"id"`
+	Name           string `json:"name"`
+	CreatedDate    string `json:"createdDate"`
+	UpdatedDate    string `json:"updatedDate"`
+}
+
+type OrganizationUser struct {
+	UserID string `json:"id"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Role   string `json:"role"`
+}
+
+type Department struct {
+	DepartmentID string `json:"id"`
+	Name         string `json:"name"`
+	CreatedDate  string `json:"createdDate"`
+	UpdatedDate  string `json:"updatedDate"`
+}
+
+type DepartmentUser struct {
+	UserID string `json:"id"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Role   string `json:"role"`
+}
+
+type Team struct {
+	TeamID      string `json:"id"`
+	Name        string `json:"name"`
+	CreatedDate string `json:"createdDate"`
+	UpdatedDate string `json:"updatedDate"`
+}
+
+type TeamUser struct {
+	UserID string `json:"id"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Role   string `json:"role"`
+}

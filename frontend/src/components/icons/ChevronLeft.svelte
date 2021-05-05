@@ -1,9 +1,9 @@
 <script>
-    let klass = "";
-    export { klass as class };
-  </script>
-  
-  <svg
+    let klass = ''
+    export { klass as class }
+</script>
+
+<svg
     class="{klass} stroke-current"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -16,10 +16,10 @@
     preserveAspectRatio="xMidYMid meet"
     viewBox="0 0 24 24">
     <g
-      fill="none"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round">
-      <path d="M15 18l-6-6l6-6" />
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M15 18l-6-6l6-6"></path>
     </g>
-  </svg>
+</svg>

@@ -4,7 +4,7 @@
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
-    
+
     const { AllowRegistration } = appConfig
 
     export let router
@@ -103,8 +103,9 @@
                         {$_('pages.login.title')}
                     </div>
                     {#if battleId && AllowRegistration}
-                        <div class="font-bold text-m md:text-l mb-2 md:mb-6
-                        md:leading-tight text-center">
+                        <div
+                            class="font-bold text-m md:text-l mb-2 md:mb-6
+                            md:leading-tight text-center">
                             {@html $_('pages.login.registerForBattle', {
                                 values: {
                                     registerOpen: `<a href="${appRoutes.register}/${battleId}" class="font-bold text-blue-500 hover:text-blue-800">`,
