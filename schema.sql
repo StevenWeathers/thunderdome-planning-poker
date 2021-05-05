@@ -822,6 +822,28 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Remove User from Organization --
+CREATE OR REPLACE PROCEDURE organization_user_remove(orgId UUID, userId UUID)
+AS $$
+DECLARE temprow record;
+BEGIN
+    FOR temprow IN
+        SELECT id FROM organization_department WHERE organization_id = orgId
+    LOOP
+        CALL department_user_remove(temprow.id, userId);
+    END LOOP;
+    DELETE FROM team_user tu WHERE tu.team_id IN (
+        SELECT ot.team_id
+        FROM organization_team ot
+        WHERE ot.organization_id = orgId
+    ) AND tu.user_id = userId;
+    DELETE FROM organization_user WHERE organization_id = orgId AND user_id = userId;
+    UPDATE organization SET updated_date = NOW() WHERE id = orgId;
+
+    COMMIT;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Get Organization Users --
 CREATE OR REPLACE FUNCTION organization_user_list(
     IN orgId UUID,
@@ -1049,6 +1071,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Remove User from Department --
+CREATE OR REPLACE PROCEDURE department_user_remove(departmentId UUID, userId UUID)
+AS $$
+BEGIN
+    DELETE FROM team_user tu WHERE tu.team_id IN (
+        SELECT dt.team_id
+        FROM department_team dt
+        WHERE dt.department_id = departmentId
+    ) AND tu.user_id = userId;
+    DELETE FROM department_user WHERE department_id = departmentId AND user_id = userId;
+    UPDATE organization_department SET updated_date = NOW() WHERE id = departmentId;
+
+    COMMIT;
+END;
+$$ LANGUAGE plpgsql;
+
 --
 -- TEAMS --
 --
@@ -1165,10 +1203,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Remove User from Team --
-CREATE OR REPLACE FUNCTION team_user_remove(
-    IN teamId UUID,
-    IN userId UUID
-) RETURNS void AS $$
+CREATE OR REPLACE PROCEDURE team_user_remove(teamId UUID, userId UUID)
+AS $$
 BEGIN
     DELETE FROM team_user WHERE team_id = teamId AND user_id = userId;
     UPDATE team SET updated_date = NOW() WHERE id = teamId;

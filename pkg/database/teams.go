@@ -153,7 +153,7 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*Organiz
 // TeamRemoveUser removes a user from a team
 func (d *Database) TeamRemoveUser(TeamID string, UserID string) error {
 	_, err := d.db.Exec(
-		`SELECT team_user_remove($1, $2);`,
+		`CALL team_user_remove($1, $2);`,
 		TeamID,
 		UserID,
 	)

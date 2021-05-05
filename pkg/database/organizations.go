@@ -150,6 +150,22 @@ func (d *Database) OrganizationAddUser(OrgID string, UserID string, Role string)
 	return OrgID, nil
 }
 
+// OrganizationRemoveUser removes a user from a organization
+func (d *Database) OrganizationRemoveUser(OrganizationID string, UserID string) error {
+	_, err := d.db.Exec(
+		`CALL organization_user_remove($1, $2);`,
+		OrganizationID,
+		UserID,
+	)
+
+	if err != nil {
+		log.Println("Unable to remove user from organization: ", err)
+		return err
+	}
+
+	return nil
+}
+
 // OrganizationTeamList gets a list of organization teams
 func (d *Database) OrganizationTeamList(OrgID string, Limit int, Offset int) []*Team {
 	var teams = make([]*Team, 0)

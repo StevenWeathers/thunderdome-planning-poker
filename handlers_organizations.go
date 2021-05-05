@@ -152,6 +152,25 @@ func (s *server) handleOrganizationAddUser() http.HandlerFunc {
 	}
 }
 
+// handleOrganizationRemoveUser handles removing user from an organization (including departments, teams)
+func (s *server) handleOrganizationRemoveUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		keyVal := s.getJSONRequestBody(r, w)
+
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		UserID := keyVal["id"].(string)
+
+		err := s.database.OrganizationRemoveUser(OrgID, UserID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
 // handleGetOrganizationTeamByUser gets a team with users roles
 func (s *server) handleGetOrganizationTeamByUser() http.HandlerFunc {
 	type TeamResponse struct {

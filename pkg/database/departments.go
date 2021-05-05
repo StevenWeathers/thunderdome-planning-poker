@@ -203,6 +203,22 @@ func (d *Database) DepartmentAddUser(DepartmentID string, UserID string, Role st
 	return DepartmentID, nil
 }
 
+// DepartmentRemoveUser removes a user from a department (and department teams)
+func (d *Database) DepartmentRemoveUser(DepartmentID string, UserID string) error {
+	_, err := d.db.Exec(
+		`CALL department_user_remove($1, $2);`,
+		DepartmentID,
+		UserID,
+	)
+
+	if err != nil {
+		log.Println("Unable to remove user from department: ", err)
+		return err
+	}
+
+	return nil
+}
+
 // DepartmentTeamUserRole gets a users role in organization department team
 func (d *Database) DepartmentTeamUserRole(UserID string, OrgID string, DepartmentID string, TeamID string) (string, string, string, error) {
 	var orgRole string

@@ -5,6 +5,7 @@
     import HollowButton from '../components/HollowButton.svelte'
     import CreateTeam from '../components/CreateTeam.svelte'
     import AddUser from '../components/AddUser.svelte'
+    import RemoveUser from '../components/RemoveUser.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
@@ -34,6 +35,8 @@
     let users = []
     let showCreateTeam = false
     let showAddUser = false
+    let showRemoveUser = false
+    let removeUserId = null
     let teamsPage = 1
     let usersPage = 1
 
@@ -43,6 +46,11 @@
 
     function toggleAddUser() {
         showAddUser = !showAddUser
+    }
+
+    const toggleRemoveUser = (userId) => () => {
+        showRemoveUser = !showRemoveUser
+        removeUserId = userId
     }
 
     function getDepartment() {
@@ -125,6 +133,24 @@
             .catch(function() {
                 notifications.danger('Error attempting to add user to department')
                 eventTag('department_add_user', 'engagement', 'failure')
+            })
+    }
+
+    function handleUserRemove() {
+        const body = {
+            id: removeUserId
+        }
+
+        xfetch(`/api/organization/${organizationId}/department/${departmentId}/user`, { body, method: 'DELETE' })
+            .then(function() {
+                eventTag('department_remove_user', 'engagement', 'success')
+                toggleRemoveUser(null)()
+                notifications.success('User removed successfully.')
+                getUsers()
+            })
+            .catch(function() {
+                notifications.danger('Error attempting to remove user from department')
+                eventTag('department_remove_user', 'engagement', 'failure')
             })
     }
 
@@ -221,7 +247,13 @@
                             <td class="border px-4 py-2">{usr.name}</td>
                             <td class="border px-4 py-2">{usr.email}</td>
                             <td class="border px-4 py-2">{usr.role}</td>
-                            <td class="border px-4 py-2 text-right"></td>
+                            <td class="border px-4 py-2 text-right">
+                                {#if isAdmin}
+                                    <HollowButton onClick="{toggleRemoveUser(usr.id)}" color="red">
+                                        Remove
+                                    </HollowButton>
+                                {/if}
+                            </td>
                         </tr>
                     {/each}
                 </tbody>
@@ -235,5 +267,9 @@
 
     {#if showAddUser}
         <AddUser toggleAdd="{toggleAddUser}" handleAdd={handleUserAdd} />
+    {/if}
+
+    {#if showRemoveUser}
+        <RemoveUser toggleRemove={toggleRemoveUser(null)} handleRemove={handleUserRemove} />
     {/if}
 </PageLayout>

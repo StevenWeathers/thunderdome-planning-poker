@@ -61,6 +61,7 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/teams", s.userOnly(s.departmentAdminOnly(s.handleCreateDepartmentTeam()))).Methods("POST")
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/users/{limit}/{offset}", s.userOnly(s.departmentUserOnly(s.handleGetDepartmentUsers()))).Methods("GET")
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/users", s.userOnly(s.departmentAdminOnly(s.handleDepartmentAddUser()))).Methods("POST")
+	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/user", s.userOnly(s.departmentAdminOnly(s.handleDepartmentRemoveUser()))).Methods("DELETE")
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/team/{teamId}/battles/{limit}/{offset}", s.userOnly(s.departmentTeamUserOnly(s.handleGetTeamBattles()))).Methods("GET")
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/team/{teamId}/battle", s.userOnly(s.departmentTeamUserOnly(s.handleBattleCreate()))).Methods("POST")
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/team/{teamId}/battle", s.userOnly(s.departmentTeamAdminOnly(s.handleTeamRemoveBattle()))).Methods("DELETE")
@@ -82,6 +83,7 @@ func (s *server) routes() {
 	// org users
 	s.router.HandleFunc("/api/organization/{orgId}/users/{limit}/{offset}", s.userOnly(s.orgUserOnly(s.handleGetOrganizationUsers()))).Methods("GET")
 	s.router.HandleFunc("/api/organization/{orgId}/users", s.userOnly(s.orgAdminOnly(s.handleOrganizationAddUser()))).Methods("POST")
+	s.router.HandleFunc("/api/organization/{orgId}/user", s.userOnly(s.orgAdminOnly(s.handleOrganizationRemoveUser()))).Methods("DELETE")
 	s.router.HandleFunc("/api/organization/{orgId}", s.userOnly(s.orgUserOnly(s.handleGetOrganizationByUser()))).Methods("GET")
 	// teams(s)
 	s.router.HandleFunc("/api/teams/{limit}/{offset}", s.userOnly(s.handleGetTeamsByUser())).Methods("GET")

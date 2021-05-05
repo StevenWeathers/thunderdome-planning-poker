@@ -166,6 +166,25 @@ func (s *server) handleDepartmentAddUser() http.HandlerFunc {
 	}
 }
 
+// handleDepartmentRemoveUser handles removing user from a department (and department teams)
+func (s *server) handleDepartmentRemoveUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		keyVal := s.getJSONRequestBody(r, w)
+
+		vars := mux.Vars(r)
+		DepartmentID := vars["departmentId"]
+		UserID := keyVal["id"].(string)
+
+		err := s.database.DepartmentRemoveUser(DepartmentID, UserID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
 // handleDepartmentTeamAddUser handles adding user to a team so long as they are in the department
 func (s *server) handleDepartmentTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
