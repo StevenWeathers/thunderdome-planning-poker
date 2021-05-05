@@ -143,3 +143,22 @@ func (s *server) handleGetTeamBattles() http.HandlerFunc {
 		s.respondWithJSON(w, http.StatusOK, Battles)
 	}
 }
+
+// handleTeamRemoveBattle handles removing battle from a team
+func (s *server) handleTeamRemoveBattle() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		keyVal := s.getJSONRequestBody(r, w)
+
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		BattleID := keyVal["id"].(string)
+
+		err := s.database.TeamRemoveBattle(TeamID, BattleID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}

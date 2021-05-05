@@ -5,11 +5,11 @@
     import HollowButton from '../components/HollowButton.svelte'
     import AddUser from '../components/AddUser.svelte'
     import RemoveUser from '../components/RemoveUser.svelte'
+    import RemoveBattle from '../components/RemoveBattle.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
-import Department from './Department.svelte'
 
     export let xfetch
     export let router
@@ -38,6 +38,8 @@ import Department from './Department.svelte'
     let battles = []
     let showAddUser = false
     let showRemoveUser = false
+    let showRemoveBattle = false
+    let removeBattleId = null
     let removeUserId = null
     let usersPage = 1
     let battlesPage = 1
@@ -57,6 +59,11 @@ import Department from './Department.svelte'
     const toggleRemoveUser = (userId) => () => {
         showRemoveUser = !showRemoveUser
         removeUserId = userId
+    }
+
+    const toggleRemoveBattle = (battleId) => () => {
+        showRemoveBattle = !showRemoveBattle
+        removeBattleId = battleId
     }
 
     function getTeam() {
@@ -144,6 +151,24 @@ import Department from './Department.svelte'
             })
     }
 
+    function handleBattleRemove() {
+        const body = {
+            id: removeBattleId
+        }
+
+        xfetch(`${teamPrefix}/battles`, { body, method: 'DELETE' })
+            .then(function() {
+                eventTag('team_remove_battle', 'engagement', 'success')
+                toggleRemoveBattle(null)()
+                notifications.success('Battle removed successfully.')
+                getBattles()
+            })
+            .catch(function() {
+                notifications.danger('Error attempting to remove battle from team')
+                eventTag('team_remove_battle', 'engagement', 'failure')
+            })
+    }
+
     onMount(() => {
         if (!$warrior.id || $warrior.rank === 'PRIVATE') {
             router.route(appRoutes.login)
@@ -192,6 +217,11 @@ import Department from './Department.svelte'
                         <tr>
                             <td class="border px-4 py-2">{battle.name}</td>
                             <td class="border px-4 py-2 text-right">
+                                {#if isAdmin}
+                                    <HollowButton onClick="{toggleRemoveBattle(battle.id)}" color="red">
+                                        Remove
+                                    </HollowButton>
+                                {/if}
                                 <HollowButton href="{appRoutes.battle}/{battle.id}">
                                     Join Battle
                                 </HollowButton>
@@ -257,5 +287,9 @@ import Department from './Department.svelte'
 
     {#if showRemoveUser}
         <RemoveUser toggleRemove={toggleRemoveUser(null)} handleRemove={handleUserRemove} />
+    {/if}
+
+    {#if showRemoveBattle}
+        <RemoveBattle toggleRemove={toggleRemoveBattle(null)} handleRemove={handleBattleRemove} />
     {/if}
 </PageLayout>
