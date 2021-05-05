@@ -142,7 +142,7 @@
 <PageLayout>
     <h1 class="text-3xl font-bold">Department: {department.name}</h1>
     <div class="font-bold mb-4">
-        Organization <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="/organization/{organization.id}">{organization.name}</a>
+        Organization <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="{appRoutes.organization}/{organization.id}">{organization.name}</a>
     </div>
 
     <div class="w-full mb-4">
@@ -175,7 +175,7 @@
                         <tr>
                             <td class="border px-4 py-2">
                                 <a
-                                    href="/organization/{organizationId}/department/{departmentId}/team/{team.id}"
+                                    href="{appRoutes.organization}/{organizationId}/department/{departmentId}/team/{team.id}"
                                     class="text-blue-500 hover:text-blue-800">
                                     {team.name}
                                 </a>

@@ -129,3 +129,17 @@ func (s *server) handleTeamRemoveUser() http.HandlerFunc {
 		return
 	}
 }
+
+// handleGetTeamBattles gets a list of battles associated to the team
+func (s *server) handleGetTeamBattles() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Battles := s.database.TeamBattleList(TeamID, Limit, Offset)
+
+		s.respondWithJSON(w, http.StatusOK, Battles)
+	}
+}

@@ -255,6 +255,16 @@ CREATE TABLE IF NOT EXISTS department_team (
     CONSTRAINT dt_team_id FOREIGN KEY(team_id) REFERENCES team(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS team_battle (
+    team_id UUID,
+    battle_id UUID,
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (team_id, battle_id),
+    CONSTRAINT tb_team_id FOREIGN KEY(team_id) REFERENCES team(id) ON DELETE CASCADE,
+    CONSTRAINT tb_battle_id FOREIGN KEY(battle_id) REFERENCES battles(id) ON DELETE CASCADE
+);
+
 --
 -- Types (used in Stored Procedures)
 --
@@ -1180,6 +1190,48 @@ CREATE OR REPLACE FUNCTION team_user_remove(
 ) RETURNS void AS $$
 BEGIN
     DELETE FROM team_user WHERE team_id = teamId AND user_id = userId;
+    UPDATE team SET updated_date = NOW() WHERE id = teamId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get Team Battles --
+CREATE OR REPLACE FUNCTION team_battle_list(
+    IN teamId UUID,
+    IN l_limit INTEGER,
+    IN l_offset INTEGER
+) RETURNS table (
+    id UUID, name VARCHAR(256)
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT b.id, b.name
+        FROM team_battle tb
+        LEFT JOIN battles b ON tb.battle_id = b.id
+        WHERE tb.team_id = teamId
+        ORDER BY tb.created_date
+		LIMIT l_limit
+		OFFSET l_offset;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Add Battle to Team --
+CREATE OR REPLACE FUNCTION team_battle_add(
+    IN teamId UUID,
+    IN battleId UUID
+) RETURNS void AS $$
+BEGIN
+    INSERT INTO team_battle (team_id, battle) VALUES (teamId, battleId);
+    UPDATE team SET updated_date = NOW() WHERE id = teamId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Remove Battle from Team --
+CREATE OR REPLACE FUNCTION team_battle_remove(
+    IN teamId UUID,
+    IN battleId UUID
+) RETURNS void AS $$
+BEGIN
+    DELETE FROM team_battle WHERE battle_id = battleId AND team_id = teamId;
     UPDATE team SET updated_date = NOW() WHERE id = teamId;
 END;
 $$ LANGUAGE plpgsql;

@@ -131,7 +131,7 @@
                         <tr>
                             <td class="border px-4 py-2">
                                 <a
-                                    href="/organization/{org.id}"
+                                    href="{appRoutes.organization}/{org.id}"
                                     class="text-blue-500 hover:text-blue-800">
                                     {org.name}
                                 </a>

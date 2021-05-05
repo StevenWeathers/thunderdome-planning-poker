@@ -211,7 +211,7 @@
                         <tr>
                             <td class="border px-4 py-2">
                                 <a
-                                    href="/organization/{organizationId}/department/{department.id}"
+                                    href="{appRoutes.organization}/{organizationId}/department/{department.id}"
                                     class="text-blue-500 hover:text-blue-800">
                                     {department.name}
                                 </a>
@@ -253,7 +253,7 @@
                         <tr>
                             <td class="border px-4 py-2">
                                 <a
-                                    href="/organization/{organizationId}/team/{team.id}"
+                                    href="{appRoutes.organization}/{organizationId}/team/{team.id}"
                                     class="text-blue-500 hover:text-blue-800">
                                     {team.name}
                                 </a>

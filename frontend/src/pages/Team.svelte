@@ -19,6 +19,7 @@ import Department from './Department.svelte'
     export let departmentId
     export let teamId
 
+    const battlesPageLimit = 1000
     const usersPageLimit = 1000
 
     let team = {
@@ -34,10 +35,12 @@ import Department from './Department.svelte'
         name: ''
     }
     let users = []
+    let battles = []
     let showAddUser = false
     let showRemoveUser = false
     let removeUserId = null
     let usersPage = 1
+    let battlesPage = 1
 
     let organizationRole = ''
     let departmentRole = ''
@@ -72,6 +75,7 @@ import Department from './Department.svelte'
                     organizationRole = result.organizationRole
                 }
 
+                getBattles()
                 getUsers()
             })
             .catch(function(error) {
@@ -88,6 +92,18 @@ import Department from './Department.svelte'
             })
             .catch(function(error) {
                 notifications.danger('Error getting team users')
+            })
+    }
+
+    function getBattles() {
+        const battlesOffset = (battlesPage - 1) * battlesPageLimit
+        xfetch(`${teamPrefix}/battles/${battlesPageLimit}/${battlesOffset}`)
+            .then(res => res.json())
+            .then(function(result) {
+                battles = result
+            })
+            .catch(function(error) {
+                notifications.danger('Error getting team battles')
             })
     }
 
@@ -143,9 +159,9 @@ import Department from './Department.svelte'
     <h1 class="text-3xl font-bold">Team: {team.name}</h1>
     {#if organizationId}
         <div class="font-bold">
-            Organization <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="/organization/{organization.id}">{organization.name}</a>
+            Organization <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="{appRoutes.organization}/{organization.id}">{organization.name}</a>
             {#if departmentId}
-                &nbsp;<ChevronRight class="inline-block" /> Department <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="/organization/{organization.id}/department/{department.id}">{department.name}</a>
+                &nbsp;<ChevronRight class="inline-block" /> Department <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="{appRoutes.organization}/{organization.id}/department/{department.id}">{department.name}</a>
             {/if}
         </div>
     {/if}
@@ -154,7 +170,44 @@ import Department from './Department.svelte'
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                        Battles
+                    </h2>
+                </div>
+                <div class="w-1/5">
+                    <div class="text-right">
+                    </div>
+                </div>
+            </div>
+
+            <table class="table-fixed w-full">
+                <thead>
+                    <tr>
+                        <th class="w-2/6 px-4 py-2">Name</th>
+                        <th class="w-1/6 px-4 py-2"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each battles as battle}
+                        <tr>
+                            <td class="border px-4 py-2">{battle.name}</td>
+                            <td class="border px-4 py-2 text-right">
+                                <HollowButton href="{appRoutes.battle}/{battle.id}">
+                                    Join Battle
+                                </HollowButton>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="w-full mt-4">
+        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
+            <div class="flex w-full">
+                <div class="w-4/5">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         Users
                     </h2>
                 </div>

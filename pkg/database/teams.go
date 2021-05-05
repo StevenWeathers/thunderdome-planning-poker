@@ -165,3 +165,66 @@ func (d *Database) TeamRemoveUser(TeamID string, UserID string) error {
 
 	return nil
 }
+
+// TeamBattleList gets a list of team battles
+func (d *Database) TeamBattleList(TeamID string, Limit int, Offset int) []*Battle {
+	var battles = make([]*Battle, 0)
+	rows, err := d.db.Query(
+		`SELECT id, name FROM team_battle_list($1, $2, $3);`,
+		TeamID,
+		Limit,
+		Offset,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var tb Battle
+
+			if err := rows.Scan(
+				&tb.BattleID,
+				&tb.BattleName,
+			); err != nil {
+				log.Println(err)
+			} else {
+				battles = append(battles, &tb)
+			}
+		}
+	} else {
+		log.Println(err)
+	}
+
+	return battles
+}
+
+// TeamAddBattle adds a battle to a team
+func (d *Database) TeamAddBattle(TeamID string, BattleID string) error {
+	_, err := d.db.Exec(
+		`SELECT team_battle_add($1, $2);`,
+		TeamID,
+		BattleID,
+	)
+
+	if err != nil {
+		log.Println("Unable to add battle to team: ", err)
+		return err
+	}
+
+	return nil
+}
+
+// TeamRemoveBattle removes a battle from a team
+func (d *Database) TeamRemoveBattle(TeamID string, BattleID string) error {
+	_, err := d.db.Exec(
+		`SELECT team_battle_remove($1, $2);`,
+		TeamID,
+		BattleID,
+	)
+
+	if err != nil {
+		log.Println("Unable to remove battle from team: ", err)
+		return err
+	}
+
+	return nil
+}
