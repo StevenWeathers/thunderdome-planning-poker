@@ -4,8 +4,33 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
 	"github.com/gorilla/mux"
 )
+
+// handleGetTeamByUser gets an team with user role
+func (s *server) handleGetTeamByUser() http.HandlerFunc {
+	type TeamResponse struct {
+		Team     *database.Team `json:"team"`
+		TeamRole string         `json:"teamRole"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+		TeamID := vars["teamId"]
+
+		Team, err := s.database.TeamGet(TeamID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		s.respondWithJSON(w, http.StatusOK, &TeamResponse{
+			Team:     Team,
+			TeamRole: TeamRole,
+		})
+	}
+}
 
 // handleGetTeamsByUser gets a list of teams the user is apart of
 func (s *server) handleGetTeamsByUser() http.HandlerFunc {
@@ -72,11 +97,30 @@ func (s *server) handleTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := s.database.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		_, err := s.database.TeamAddUser(TeamID, User.UserID, Role)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
+// handleTeamRemoveUser handles removing user from a team
+func (s *server) handleTeamRemoveUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		keyVal := s.getJSONRequestBody(r, w)
+
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		UserID := keyVal["id"].(string)
+
+		err := s.database.TeamRemoveUser(TeamID, UserID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

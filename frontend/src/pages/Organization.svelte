@@ -55,6 +55,10 @@
             .then(function(result) {
                 organization = result.organization
                 role = result.role
+
+                getDepartments()
+                getTeams()
+                getUsers()
             })
             .catch(function(error) {
                 notifications.danger('Error getting organization')
@@ -169,9 +173,6 @@
         }
 
         getOrganization()
-        getDepartments()
-        getTeams()
-        getUsers()
     })
 
     $: isAdmin = role === 'ADMIN'

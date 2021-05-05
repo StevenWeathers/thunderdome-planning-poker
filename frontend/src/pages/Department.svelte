@@ -52,6 +52,9 @@
                 organization = result.organization
                 organizationRole = result.organizationRole
                 departmentRole = result.departmentRole
+
+                getTeams()
+                getUsers()
             })
             .catch(function(error) {
                 notifications.danger('Error getting department')
@@ -61,7 +64,7 @@
     function getTeams() {
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
         xfetch(
-            `/api/department/${departmentId}/teams/${teamsPageLimit}/${teamsOffset}`,
+            `/api/organization/${organizationId}/department/${departmentId}/teams/${teamsPageLimit}/${teamsOffset}`,
         )
             .then(res => res.json())
             .then(function(result) {
@@ -75,7 +78,7 @@
     function getUsers() {
         const usersOffset = (usersPage - 1) * usersPageLimit
         xfetch(
-            `/api/department/${departmentId}/users/${usersPageLimit}/${usersOffset}`,
+            `/api/organization/${organizationId}/department/${departmentId}/users/${usersPageLimit}/${usersOffset}`,
         )
             .then(res => res.json())
             .then(function(result) {
@@ -91,7 +94,7 @@
             name,
         }
 
-        xfetch(`/api/department/${departmentId}/teams`, { body })
+        xfetch(`/api/organization/${organizationId}/department/${departmentId}/teams`, { body })
             .then(res => res.json())
             .then(function(organization) {
                 eventTag('create_department_team', 'engagement', 'success')
@@ -111,7 +114,7 @@
             role
         }
 
-        xfetch(`/api/department/${departmentId}/users`, { body })
+        xfetch(`/api/organization/${organizationId}/department/${departmentId}/users`, { body })
             .then(function() {
                 eventTag('department_add_user', 'engagement', 'success')
                 toggleAddUser()
@@ -130,8 +133,6 @@
         }
 
         getDepartment()
-        getTeams()
-        getUsers()
     })
 
     $: isAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN'
@@ -171,7 +172,7 @@
                         <tr>
                             <td class="border px-4 py-2">
                                 <a
-                                    href="/organization/{organizationId}/team/{team.id}"
+                                    href="/organization/{organizationId}/department/{departmentId}/team/{team.id}"
                                     class="text-blue-500 hover:text-blue-800">
                                     {team.name}
                                 </a>

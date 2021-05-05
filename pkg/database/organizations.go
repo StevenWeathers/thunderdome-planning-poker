@@ -5,33 +5,49 @@ import (
 	"log"
 )
 
-// OrganizationWithRole gets an organization with current users role
-func (d *Database) OrganizationWithRole(UserID string, OrgID string) (*Organization, string, error) {
+// OrganizationGet gets an organization
+func (d *Database) OrganizationGet(OrgID string) (*Organization, error) {
 	var org = &Organization{
 		OrganizationID: "",
 		Name:           "",
 		CreatedDate:    "",
 		UpdatedDate:    "",
 	}
-	var role string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, created_date, updated_date, role FROM organization_get_with_role($1, $2)`,
-		UserID,
+		`SELECT id, name, created_date, updated_date FROM organization_get_by_id($1)`,
 		OrgID,
 	).Scan(
 		&org.OrganizationID,
 		&org.Name,
 		&org.CreatedDate,
-		&org.CreatedDate,
+		&org.UpdatedDate,
+	)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("error getting organization")
+	}
+
+	return org, nil
+}
+
+// OrganizationUserRole gets a users role in organization
+func (d *Database) OrganizationUserRole(UserID string, OrgID string) (string, error) {
+	var role string
+
+	e := d.db.QueryRow(
+		`SELECT role FROM organization_get_user_role($1, $2)`,
+		UserID,
+		OrgID,
+	).Scan(
 		&role,
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, "", errors.New("organization not found")
+		return "", errors.New("error getting organization users role")
 	}
 
-	return org, role, nil
+	return role, nil
 }
 
 // OrganizationList gets a list of organizations the user is apart of
@@ -182,4 +198,26 @@ func (d *Database) OrganizationTeamCreate(OrgID string, TeamName string) (string
 	}
 
 	return TeamID, nil
+}
+
+// OrganizationTeamUserRole gets a users role in organization team
+func (d *Database) OrganizationTeamUserRole(UserID string, OrgID string, TeamID string) (string, string, error) {
+	var orgRole string
+	var teamRole string
+
+	e := d.db.QueryRow(
+		`SELECT orgRole, teamRole FROM organization_team_user_role($1, $2, $3)`,
+		UserID,
+		OrgID,
+		TeamID,
+	).Scan(
+		&orgRole,
+		&teamRole,
+	)
+	if e != nil {
+		log.Println(e)
+		return "", "", errors.New("error getting organization team users role")
+	}
+
+	return orgRole, teamRole, nil
 }

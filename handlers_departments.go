@@ -31,25 +31,28 @@ func (s *server) handleGetDepartmentByUser() http.HandlerFunc {
 		DepartmentRole   string                 `json:"departmentRole"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
+		DepartmentRole := r.Context().Value(contextKeyDepartmentRole).(string)
 		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		DepartmentID := vars["departmentId"]
 
-		Organization, OrganizationRole, err := s.database.OrganizationWithRole(UserID, vars["orgId"])
+		Organization, err := s.database.OrganizationGet(OrgID)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		Department, DepartmentRole, err := s.database.DepartmentWithRole(UserID, vars["departmentId"])
+		Department, err := s.database.DepartmentGet(DepartmentID)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		s.respondWithJSON(w, http.StatusOK, &DepartmentResponse{
 			Organization:     Organization,
 			Department:       Department,
-			OrganizationRole: OrganizationRole,
+			OrganizationRole: OrgRole,
 			DepartmentRole:   DepartmentRole,
 		})
 	}
@@ -149,7 +152,7 @@ func (s *server) handleDepartmentAddUser() http.HandlerFunc {
 
 		User, UserErr := s.database.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
@@ -160,5 +163,53 @@ func (s *server) handleDepartmentAddUser() http.HandlerFunc {
 		}
 
 		return
+	}
+}
+
+// handleDepartmentTeamByUser gets a team with users roles
+func (s *server) handleDepartmentTeamByUser() http.HandlerFunc {
+	type TeamResponse struct {
+		Organization     *database.Organization `json:"organization"`
+		Department       *database.Department   `json:"department"`
+		Team             *database.Team         `json:"team"`
+		OrganizationRole string                 `json:"organizationRole"`
+		DepartmentRole   string                 `json:"departmentRole"`
+		TeamRole         string                 `json:"teamRole"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
+		DepartmentRole := r.Context().Value(contextKeyDepartmentRole).(string)
+		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		DepartmentID := vars["departmentId"]
+		TeamID := vars["teamId"]
+
+		Organization, err := s.database.OrganizationGet(OrgID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		Department, err := s.database.DepartmentGet(DepartmentID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		Team, err := s.database.TeamGet(TeamID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		s.respondWithJSON(w, http.StatusOK, &TeamResponse{
+			Organization:     Organization,
+			Department:       Department,
+			Team:             Team,
+			OrganizationRole: OrgRole,
+			DepartmentRole:   DepartmentRole,
+			TeamRole:         TeamRole,
+		})
 	}
 }

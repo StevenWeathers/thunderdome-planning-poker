@@ -1,39 +1,53 @@
 package database
 
 import (
+	"errors"
 	"log"
 )
 
-// TeamList gets a list of teams
-func (d *Database) TeamList(Limit int, Offset int) []*Team {
-	var teams = make([]*Team, 0)
-	rows, err := d.db.Query(
-		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
-		Limit,
-		Offset,
+// TeamUserRole gets a users role in team
+func (d *Database) TeamUserRole(UserID string, TeamID string) (string, error) {
+	var teamRole string
+
+	e := d.db.QueryRow(
+		`SELECT role FROM team_get_user_role($1, $2)`,
+		UserID,
+		TeamID,
+	).Scan(
+		&teamRole,
 	)
-
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var team Team
-
-			if err := rows.Scan(
-				&team.TeamID,
-				&team.Name,
-				&team.CreatedDate,
-				&team.UpdatedDate,
-			); err != nil {
-				log.Println(err)
-			} else {
-				teams = append(teams, &team)
-			}
-		}
-	} else {
-		log.Println(err)
+	if e != nil {
+		log.Println(e)
+		return "", errors.New("error getting team users role")
 	}
 
-	return teams
+	return teamRole, nil
+}
+
+// TeamGet gets an team
+func (d *Database) TeamGet(TeamID string) (*Team, error) {
+	var team = &Team{
+		TeamID:      "",
+		Name:        "",
+		CreatedDate: "",
+		UpdatedDate: "",
+	}
+
+	e := d.db.QueryRow(
+		`SELECT id, name, created_date, updated_date FROM team_get_by_id($1)`,
+		TeamID,
+	).Scan(
+		&team.TeamID,
+		&team.Name,
+		&team.CreatedDate,
+		&team.UpdatedDate,
+	)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("team not found")
+	}
+
+	return team, nil
 }
 
 // TeamListByUser gets a list of teams the user is on
@@ -134,4 +148,20 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*Organiz
 	}
 
 	return users
+}
+
+// TeamRemoveUser removes a user from a team
+func (d *Database) TeamRemoveUser(TeamID string, UserID string) error {
+	_, err := d.db.Exec(
+		`SELECT team_user_remove($1, $2);`,
+		TeamID,
+		UserID,
+	)
+
+	if err != nil {
+		log.Println("Unable to remove user from team: ", err)
+		return err
+	}
+
+	return nil
 }

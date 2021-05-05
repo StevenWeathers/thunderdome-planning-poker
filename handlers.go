@@ -17,8 +17,11 @@ import (
 type contextKey string
 
 var (
-	contextKeyUserID contextKey
-	apiKeyHeaderName string = "X-API-Key"
+	contextKeyUserID         contextKey = "userId"
+	apiKeyHeaderName         string     = "X-API-Key"
+	contextKeyOrgRole        contextKey = "orgRole"
+	contextKeyDepartmentRole contextKey = "departmentRole"
+	contextKeyTeamRole       contextKey = "teamRole"
 )
 
 type UserAccount struct {

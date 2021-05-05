@@ -5,38 +5,59 @@ import (
 	"log"
 )
 
-// DepartmentWithRole gets an department with current users role
-func (d *Database) DepartmentWithRole(UserID string, DepartmentID string) (*Department, string, error) {
+// DepartmentUserRole gets a users role in department (and organization)
+func (d *Database) DepartmentUserRole(UserID string, OrgID string, DepartmentID string) (string, string, error) {
+	var orgRole string
+	var departmentRole string
+
+	e := d.db.QueryRow(
+		`SELECT orgRole, departmentRole FROM department_get_user_role($1, $2, $3)`,
+		UserID,
+		OrgID,
+		DepartmentID,
+	).Scan(
+		&orgRole,
+		&departmentRole,
+	)
+	if e != nil {
+		log.Println(e)
+		return "", "", errors.New("error getting department users role")
+	}
+
+	return orgRole, departmentRole, nil
+}
+
+// DepartmentGet gets a department
+func (d *Database) DepartmentGet(DepartmentID string) (*Department, error) {
 	var org = &Department{
 		DepartmentID: "",
 		Name:         "",
 		CreatedDate:  "",
 		UpdatedDate:  "",
 	}
-	var role string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, created_date, updated_date FROM organization_department_get_by_id($1)`,
+		`SELECT id, name, created_date, updated_date FROM department_get_by_id($1)`,
 		DepartmentID,
 	).Scan(
 		&org.DepartmentID,
 		&org.Name,
 		&org.CreatedDate,
-		&org.CreatedDate,
+		&org.UpdatedDate,
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, "", errors.New("department not found")
+		return nil, errors.New("department not found")
 	}
 
-	return org, role, nil
+	return org, nil
 }
 
 // OrganizationDepartmentList gets a list of organization departments
 func (d *Database) OrganizationDepartmentList(OrgID string, Limit int, Offset int) []*Department {
 	var departments = make([]*Department, 0)
 	rows, err := d.db.Query(
-		`SELECT id, name, created_date, updated_date FROM organization_department_list($1, $2, $3);`,
+		`SELECT id, name, created_date, updated_date FROM department_list($1, $2, $3);`,
 		OrgID,
 		Limit,
 		Offset,
@@ -69,7 +90,7 @@ func (d *Database) OrganizationDepartmentList(OrgID string, Limit int, Offset in
 func (d *Database) DepartmentCreate(OrgID string, OrgName string) (string, error) {
 	var DepartmentID string
 	err := d.db.QueryRow(`
-		SELECT departmentId FROM organization_department_create($1, $2);`,
+		SELECT departmentId FROM department_create($1, $2);`,
 		OrgID,
 		OrgName,
 	).Scan(&DepartmentID)
@@ -86,7 +107,7 @@ func (d *Database) DepartmentCreate(OrgID string, OrgName string) (string, error
 func (d *Database) DepartmentTeamList(DepartmentID string, Limit int, Offset int) []*Team {
 	var teams = make([]*Team, 0)
 	rows, err := d.db.Query(
-		`SELECT id, name, created_date, updated_date FROM organization_department_team_list($1, $2, $3);`,
+		`SELECT id, name, created_date, updated_date FROM department_team_list($1, $2, $3);`,
 		DepartmentID,
 		Limit,
 		Offset,
@@ -119,7 +140,7 @@ func (d *Database) DepartmentTeamList(DepartmentID string, Limit int, Offset int
 func (d *Database) DepartmentTeamCreate(DepartmentID string, TeamName string) (string, error) {
 	var TeamID string
 	err := d.db.QueryRow(`
-		SELECT teamId FROM organization_department_team_create($1, $2);`,
+		SELECT teamId FROM department_team_create($1, $2);`,
 		DepartmentID,
 		TeamName,
 	).Scan(&TeamID)
@@ -136,7 +157,7 @@ func (d *Database) DepartmentTeamCreate(DepartmentID string, TeamName string) (s
 func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int) []*DepartmentUser {
 	var users = make([]*DepartmentUser, 0)
 	rows, err := d.db.Query(
-		`SELECT id, name, email, role FROM organization_department_user_list($1, $2, $3);`,
+		`SELECT id, name, email, role FROM department_user_list($1, $2, $3);`,
 		DepartmentID,
 		Limit,
 		Offset,
@@ -168,7 +189,7 @@ func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int
 // DepartmentAddUser adds a user to an organization department
 func (d *Database) DepartmentAddUser(DepartmentID string, UserID string, Role string) (string, error) {
 	_, err := d.db.Exec(
-		`SELECT organization_department_user_add($1, $2, $3);`,
+		`SELECT department_user_add($1, $2, $3);`,
 		DepartmentID,
 		UserID,
 		Role,
@@ -180,4 +201,29 @@ func (d *Database) DepartmentAddUser(DepartmentID string, UserID string, Role st
 	}
 
 	return DepartmentID, nil
+}
+
+// DepartmentTeamUserRole gets a users role in organization department team
+func (d *Database) DepartmentTeamUserRole(UserID string, OrgID string, DepartmentID string, TeamID string) (string, string, string, error) {
+	var orgRole string
+	var departmentRole string
+	var teamRole string
+
+	e := d.db.QueryRow(
+		`SELECT orgRole, departmentRole, teamRole FROM department_team_user_role($1, $2, $3, $4)`,
+		UserID,
+		OrgID,
+		DepartmentID,
+		TeamID,
+	).Scan(
+		&orgRole,
+		&departmentRole,
+		&teamRole,
+	)
+	if e != nil {
+		log.Println(e)
+		return "", "", "", errors.New("error getting department team users role")
+	}
+
+	return orgRole, departmentRole, teamRole, nil
 }

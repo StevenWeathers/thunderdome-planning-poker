@@ -136,3 +136,35 @@ func (d *Database) OrganizationList(Limit int, Offset int) []*Organization {
 
 	return organizations
 }
+
+// TeamList gets a list of teams
+func (d *Database) TeamList(Limit int, Offset int) []*Team {
+	var teams = make([]*Team, 0)
+	rows, err := d.db.Query(
+		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
+		Limit,
+		Offset,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var team Team
+
+			if err := rows.Scan(
+				&team.TeamID,
+				&team.Name,
+				&team.CreatedDate,
+				&team.UpdatedDate,
+			); err != nil {
+				log.Println(err)
+			} else {
+				teams = append(teams, &team)
+			}
+		}
+	} else {
+		log.Println(err)
+	}
+
+	return teams
+}

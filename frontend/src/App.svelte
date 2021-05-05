@@ -122,6 +122,15 @@
                 }
             },
         )
+        .on(
+            `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId`,
+            params => {
+                currentPage = {
+                    route: Team,
+                    params,
+                }
+            },
+        )
         .on(`${appRoutes.team}/:teamId`, params => {
             currentPage = {
                 route: Team,
