@@ -1252,3 +1252,11 @@ BEGIN
     UPDATE team SET updated_date = NOW() WHERE id = teamId;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Delete Team --
+CREATE OR REPLACE PROCEDURE team_delete(teamId UUID)
+AS $$
+BEGIN
+    DELETE FROM team WHERE id = teamId;
+END;
+$$ LANGUAGE plpgsql;

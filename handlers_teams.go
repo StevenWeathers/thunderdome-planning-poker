@@ -162,3 +162,19 @@ func (s *server) handleTeamRemoveBattle() http.HandlerFunc {
 		return
 	}
 }
+
+// handleDeleteTeam handles deleting a team
+func (s *server) handleDeleteTeam() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		keyVal := s.getJSONRequestBody(r, w)
+		TeamID := keyVal["id"].(string)
+
+		err := s.database.TeamDelete(TeamID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}

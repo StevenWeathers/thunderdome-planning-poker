@@ -228,3 +228,18 @@ func (d *Database) TeamRemoveBattle(TeamID string, BattleID string) error {
 
 	return nil
 }
+
+// TeamDelete deletes a team
+func (d *Database) TeamDelete(TeamID string) error {
+	_, err := d.db.Exec(
+		`CALL team_delete($1);`,
+		TeamID,
+	)
+
+	if err != nil {
+		log.Println("Unable to delete team: ", err)
+		return err
+	}
+
+	return nil
+}

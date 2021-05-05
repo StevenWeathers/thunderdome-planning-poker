@@ -69,6 +69,7 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/team/{teamId}/users", s.userOnly(s.departmentTeamAdminOnly(s.handleDepartmentTeamAddUser()))).Methods("POST")
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/team/{teamId}/user", s.userOnly(s.departmentTeamAdminOnly(s.handleTeamRemoveUser()))).Methods("DELETE")
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/team/{teamId}", s.userOnly(s.departmentTeamUserOnly(s.handleDepartmentTeamByUser()))).Methods("GET")
+	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}/team", s.userOnly(s.departmentAdminOnly(s.handleDeleteTeam()))).Methods("DELETE")
 	s.router.HandleFunc("/api/organization/{orgId}/department/{departmentId}", s.userOnly(s.departmentUserOnly(s.handleGetDepartmentByUser()))).Methods("GET")
 	// org teams
 	s.router.HandleFunc("/api/organization/{orgId}/teams/{limit}/{offset}", s.userOnly(s.orgUserOnly(s.handleGetOrganizationTeams()))).Methods("GET")
@@ -80,6 +81,7 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/organization/{orgId}/team/{teamId}/users", s.userOnly(s.orgTeamAdminOnly(s.handleOrganizationTeamAddUser()))).Methods("POST")
 	s.router.HandleFunc("/api/organization/{orgId}/team/{teamId}/user", s.userOnly(s.orgTeamAdminOnly(s.handleTeamRemoveUser()))).Methods("DELETE")
 	s.router.HandleFunc("/api/organization/{orgId}/team/{teamId}", s.userOnly(s.orgTeamOnly(s.handleGetOrganizationTeamByUser()))).Methods("GET")
+	s.router.HandleFunc("/api/organization/{orgId}/team", s.userOnly(s.orgAdminOnly(s.handleDeleteTeam()))).Methods("DELETE")
 	// org users
 	s.router.HandleFunc("/api/organization/{orgId}/users/{limit}/{offset}", s.userOnly(s.orgUserOnly(s.handleGetOrganizationUsers()))).Methods("GET")
 	s.router.HandleFunc("/api/organization/{orgId}/users", s.userOnly(s.orgAdminOnly(s.handleOrganizationAddUser()))).Methods("POST")
@@ -95,6 +97,7 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/team/{teamId}/users", s.userOnly(s.teamAdminOnly(s.handleTeamAddUser()))).Methods("POST")
 	s.router.HandleFunc("/api/team/{teamId}/user", s.userOnly(s.teamAdminOnly(s.handleTeamRemoveUser()))).Methods("DELETE")
 	s.router.HandleFunc("/api/team/{teamId}", s.userOnly(s.teamUserOnly(s.handleGetTeamByUser()))).Methods("GET")
+	s.router.HandleFunc("/api/team", s.userOnly(s.teamAdminOnly(s.handleDeleteTeam()))).Methods("DELETE")
 	// teams(s)
 	// admin routes
 	s.router.HandleFunc("/api/admin/stats", s.adminOnly(s.handleAppStats())).Methods("GET")

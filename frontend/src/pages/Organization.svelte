@@ -7,6 +7,7 @@
     import CreateTeam from '../components/CreateTeam.svelte'
     import AddUser from '../components/AddUser.svelte'
     import RemoveUser from '../components/RemoveUser.svelte'
+    import DeleteTeam from '../components/DeleteTeam.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -36,6 +37,8 @@
     let showAddUser = false
     let showRemoveUser = false
     let removeUserId = null
+    let showDeleteTeam = false
+    let deleteTeamId = null
     let teamsPage = 1
     let usersPage = 1
     let departmentsPage = 1
@@ -55,6 +58,11 @@
     const toggleRemoveUser = (userId) => () => {
         showRemoveUser = !showRemoveUser
         removeUserId = userId
+    }
+
+    const toggleDeleteTeam = (teamId) => () => {
+        showDeleteTeam = !showDeleteTeam
+        deleteTeamId = teamId
     }
 
     function getOrganization() {
@@ -193,6 +201,24 @@
             })
     }
 
+    function handleDeleteTeam() {
+        const body = {
+            id: deleteTeamId
+        }
+
+        xfetch(`/api/organization/${organizationId}/team`, { body, method: 'DELETE' })
+            .then(function() {
+                eventTag('organization_delete_team', 'engagement', 'success')
+                toggleDeleteTeam(null)()
+                notifications.success('Team deleted successfully.')
+                getTeams()
+            })
+            .catch(function() {
+                notifications.danger('Error attempting to delete team')
+                eventTag('organization_delete_team', 'engagement', 'failure')
+            })
+    }
+
     onMount(() => {
         if (!$warrior.id || $warrior.rank === 'PRIVATE') {
             router.route(appRoutes.login)
@@ -271,7 +297,8 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">Name</th>
+                        <th class="w-4/6 px-4 py-2">Name</th>
+                        <th class="w-2/6 px-4 py-2"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -283,6 +310,13 @@
                                     class="text-blue-500 hover:text-blue-800">
                                     {team.name}
                                 </a>
+                            </td>
+                            <td class="border px-4 py-2 text-right">
+                                {#if isAdmin}
+                                    <HollowButton onClick="{toggleDeleteTeam(team.id)}" color="red">
+                                        Delete
+                                    </HollowButton>
+                                {/if}
                             </td>
                         </tr>
                     {/each}
@@ -355,5 +389,9 @@
 
     {#if showRemoveUser}
         <RemoveUser toggleRemove={toggleRemoveUser(null)} handleRemove={handleUserRemove} />
+    {/if}
+
+    {#if showDeleteTeam}
+        <DeleteTeam toggleDelete={toggleDeleteTeam(null)} handleDelete={handleDeleteTeam} />
     {/if}
 </PageLayout>
