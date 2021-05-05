@@ -885,9 +885,9 @@ CREATE OR REPLACE FUNCTION organization_team_user_role(
 ) AS $$
 BEGIN
     RETURN QUERY
-        SELECT ou.role, COALESCE(tu.role, '')
+        SELECT ou.role AS orgRole, COALESCE(tu.role, '') AS teamRole
         FROM organization_user ou
-        LEFT JOIN team_user tu ON tu.user_id = userId
+        LEFT JOIN team_user tu ON tu.user_id = userId AND tu.team_id = teamId
         WHERE ou.organization_id = orgId AND ou.user_id = userId;
 END;
 $$ LANGUAGE plpgsql;
@@ -920,9 +920,9 @@ CREATE OR REPLACE FUNCTION department_get_user_role(
 ) AS $$
 BEGIN
     RETURN QUERY
-        SELECT ou.role, COALESCE(du.role, '')
+        SELECT ou.role AS orgRole, COALESCE(du.role, '') AS departmentRole
         FROM organization_user ou
-        LEFT JOIN department_user du ON du.user_id = userId
+        LEFT JOIN department_user du ON du.user_id = userId AND du.department_id = departmentId
         WHERE ou.organization_id = orgId AND ou.user_id = userId;
 END;
 $$ LANGUAGE plpgsql;
@@ -1002,10 +1002,10 @@ CREATE OR REPLACE FUNCTION department_team_user_role(
 ) AS $$
 BEGIN
     RETURN QUERY
-        SELECT ou.role, COALESCE(du.role, ''), COALESCE(tu.role, '')
+        SELECT ou.role AS orgRole, COALESCE(du.role, '') AS departmentRole, COALESCE(tu.role, '') AS teamRole
         FROM organization_user ou
-        LEFT JOIN department_user du ON du.user_id = userId
-        LEFT JOIN team_user tu ON tu.user_id = userId
+        LEFT JOIN department_user du ON du.user_id = userId AND du.department_id = departmentId
+        LEFT JOIN team_user tu ON tu.user_id = userId AND tu.team_id = teamId
         WHERE ou.organization_id = orgId AND ou.user_id = userId;
 END;
 $$ LANGUAGE plpgsql;
@@ -1046,25 +1046,6 @@ BEGIN
 
     INSERT INTO department_user (department_id, user_id, role) VALUES (departmentId, userId, userRole);
     UPDATE organization_department SET updated_date = NOW() WHERE id = departmentId;
-END;
-$$ LANGUAGE plpgsql;
-
--- Get Department Team User Role --
-CREATE OR REPLACE FUNCTION department_team_user_role(
-    IN userId UUID,
-    IN orgId UUID,
-    IN departmentId UUID,
-    IN teamId UUID
-) RETURNS table (
-    orgRole VARCHAR(16), departmentRole VARCHAR(16), teamRole VARCHAR(16)
-) AS $$
-BEGIN
-    RETURN QUERY
-        SELECT ou.role, COALESCE(du.role, ''), COALESCE(tu.role, '')
-        FROM organization_user ou
-        LEFT JOIN department_user du ON du.user_id = userId
-        LEFT JOIN team_user tu ON tu.user_id = userId
-        WHERE ou.organization_id = orgId AND ou.user_id = userId;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -1220,7 +1201,7 @@ CREATE OR REPLACE FUNCTION team_battle_add(
     IN battleId UUID
 ) RETURNS void AS $$
 BEGIN
-    INSERT INTO team_battle (team_id, battle) VALUES (teamId, battleId);
+    INSERT INTO team_battle (team_id, battle_id) VALUES (teamId, battleId);
     UPDATE team SET updated_date = NOW() WHERE id = teamId;
 END;
 $$ LANGUAGE plpgsql;

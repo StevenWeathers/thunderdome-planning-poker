@@ -187,3 +187,36 @@ func (s *server) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		})
 	}
 }
+
+// handleOrganizationTeamAddUser handles adding user to a team so long as they are in the organization
+func (s *server) handleOrganizationTeamAddUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		keyVal := s.getJSONRequestBody(r, w)
+
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		TeamID := vars["teamId"]
+		UserEmail := keyVal["email"].(string)
+		Role := keyVal["role"].(string)
+
+		User, UserErr := s.database.GetUserByEmail(UserEmail)
+		if UserErr != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		OrgRole, roleErr := s.database.OrganizationUserRole(User.UserID, OrgID)
+		if OrgRole == "" || roleErr != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, err := s.database.TeamAddUser(TeamID, User.UserID, Role)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}

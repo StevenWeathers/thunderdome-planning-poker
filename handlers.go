@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -241,6 +242,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 func (s *server) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
 			log.Println("error in reading request body: " + bodyErr.Error() + "\n")
@@ -261,6 +263,30 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
+		}
+
+		// if battle created with team association
+		TeamID, ok := vars["teamId"]
+		if ok {
+			OrgRole := r.Context().Value(contextKeyOrgRole)
+			DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
+			TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+			var isAdmin bool
+			if DepartmentRole != nil && DepartmentRole.(string) == "ADMIN" {
+				isAdmin = true
+			}
+			if OrgRole != nil && OrgRole.(string) == "ADMIN" {
+				isAdmin = true
+			}
+
+			if isAdmin == true || TeamRole != "" {
+				err := s.database.TeamAddBattle(TeamID, newBattle.BattleID)
+
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+			}
 		}
 
 		s.respondWithJSON(w, http.StatusOK, newBattle)

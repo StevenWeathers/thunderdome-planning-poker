@@ -85,7 +85,7 @@ func (s *server) handleCreateTeam() http.HandlerFunc {
 	}
 }
 
-// handleCreateTeam handles adding user to a team
+// handleTeamAddUser handles adding user to a team
 func (s *server) handleTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := s.getJSONRequestBody(r, w)

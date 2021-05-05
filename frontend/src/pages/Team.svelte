@@ -7,6 +7,7 @@
     import RemoveUser from '../components/RemoveUser.svelte'
     import RemoveBattle from '../components/RemoveBattle.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
+    import CreateBattle from '../components/CreateBattle.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -138,7 +139,7 @@
             id: removeUserId
         }
 
-        xfetch(`${teamPrefix}/users`, { body, method: 'DELETE' })
+        xfetch(`${teamPrefix}/user`, { body, method: 'DELETE' })
             .then(function() {
                 eventTag('team_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
@@ -156,7 +157,7 @@
             id: removeBattleId
         }
 
-        xfetch(`${teamPrefix}/battles`, { body, method: 'DELETE' })
+        xfetch(`${teamPrefix}/battle`, { body, method: 'DELETE' })
             .then(function() {
                 eventTag('team_remove_battle', 'engagement', 'success')
                 toggleRemoveBattle(null)()
@@ -178,6 +179,7 @@
     })
 
     $: isAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole === 'ADMIN'
+    $: isTeamMember = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole !== ''
 </script>
 
 <PageLayout>
@@ -192,44 +194,49 @@
     {/if}
 
     <div class="w-full mt-4">
-        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-            <div class="flex w-full">
-                <div class="w-4/5">
+        <div class="p-4 md:p-6 bg-white shadow-lg rounded flex">
+            <div class="w-full md:w-1/2 lg:w-3/5 md:pr-4">
+                <div class="flex w-full">
                     <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         Battles
                     </h2>
                 </div>
-                <div class="w-1/5">
-                    <div class="text-right">
-                    </div>
-                </div>
+
+                <table class="table-fixed w-full">
+                    <thead>
+                        <tr>
+                            <th class="w-2/6 px-4 py-2">Name</th>
+                            <th class="w-1/6 px-4 py-2"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each battles as battle}
+                            <tr>
+                                <td class="border px-4 py-2">{battle.name}</td>
+                                <td class="border px-4 py-2 text-right">
+                                    {#if isAdmin}
+                                        <HollowButton onClick="{toggleRemoveBattle(battle.id)}" color="red">
+                                            Remove
+                                        </HollowButton>
+                                    {/if}
+                                    <HollowButton href="{appRoutes.battle}/{battle.id}">
+                                        Join Battle
+                                    </HollowButton>
+                                </td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                </table>
             </div>
 
-            <table class="table-fixed w-full">
-                <thead>
-                    <tr>
-                        <th class="w-2/6 px-4 py-2">Name</th>
-                        <th class="w-1/6 px-4 py-2"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each battles as battle}
-                        <tr>
-                            <td class="border px-4 py-2">{battle.name}</td>
-                            <td class="border px-4 py-2 text-right">
-                                {#if isAdmin}
-                                    <HollowButton onClick="{toggleRemoveBattle(battle.id)}" color="red">
-                                        Remove
-                                    </HollowButton>
-                                {/if}
-                                <HollowButton href="{appRoutes.battle}/{battle.id}">
-                                    Join Battle
-                                </HollowButton>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
+            <div class="w-full md:w-1/2 lg:w-2/5 md:pl-2 xl:pl-4">
+                {#if isTeamMember}
+                    <h2 class="mb-4 text-2xl font-bold leading-tight">
+                        {$_('pages.myBattles.createBattle.title')}
+                    </h2>
+                    <CreateBattle apiPrefix={teamPrefix} {notifications} {router} {eventTag} {xfetch} />
+                {/if}
+            </div>
         </div>
     </div>
 

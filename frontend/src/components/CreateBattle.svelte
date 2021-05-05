@@ -13,6 +13,7 @@
     export let eventTag
     export let router
     export let xfetch
+    export let apiPrefix = '/api'
 
     const allowedPointValues = appConfig.AllowedPointValues
     const allowedPointAverages = ['ceil', 'round', 'floor']
@@ -73,7 +74,7 @@
             pointAverageRounding,
         }
 
-        xfetch('/api/battle', { body })
+        xfetch(`${apiPrefix}/battle`, { body })
             .then(res => res.json())
             .then(function(battle) {
                 eventTag('create_battle', 'engagement', 'success', () => {

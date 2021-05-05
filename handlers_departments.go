@@ -166,6 +166,40 @@ func (s *server) handleDepartmentAddUser() http.HandlerFunc {
 	}
 }
 
+// handleDepartmentTeamAddUser handles adding user to a team so long as they are in the department
+func (s *server) handleDepartmentTeamAddUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		keyVal := s.getJSONRequestBody(r, w)
+
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		DepartmentID := vars["departmentId"]
+		TeamID := vars["teamId"]
+		UserEmail := keyVal["email"].(string)
+		Role := keyVal["role"].(string)
+
+		User, UserErr := s.database.GetUserByEmail(UserEmail)
+		if UserErr != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, DepartmentRole, roleErr := s.database.DepartmentUserRole(User.UserID, OrgID, DepartmentID)
+		if DepartmentRole == "" || roleErr != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, err := s.database.TeamAddUser(TeamID, User.UserID, Role)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}
+
 // handleDepartmentTeamByUser gets a team with users roles
 func (s *server) handleDepartmentTeamByUser() http.HandlerFunc {
 	type TeamResponse struct {
