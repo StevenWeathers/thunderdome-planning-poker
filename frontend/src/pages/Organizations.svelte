@@ -147,9 +147,7 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
-                        Teams
-                    </h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Teams</h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
@@ -190,6 +188,8 @@
     {/if}
 
     {#if showCreateTeam}
-        <CreateTeam toggleCreate="{toggleCreateTeam}" handleCreate="{createTeamHandler}" />
+        <CreateTeam
+            toggleCreate="{toggleCreateTeam}"
+            handleCreate="{createTeamHandler}" />
     {/if}
 </PageLayout>

@@ -25,15 +25,15 @@
 
     let team = {
         id: teamId,
-        name: ''
+        name: '',
     }
     let organization = {
         id: organizationId,
-        name: ''
+        name: '',
     }
     let department = {
         id: departmentId,
-        name: ''
+        name: '',
     }
     let users = []
     let battles = []
@@ -50,19 +50,23 @@
     let teamRole = ''
 
     const apiPrefix = '/api'
-    $: orgPrefix = departmentId ? `${apiPrefix}/organization/${organizationId}/department/${departmentId}` : `${apiPrefix}/organization/${organizationId}`
-    $: teamPrefix = organizationId ? `${orgPrefix}/team/${teamId}` : `${apiPrefix}/team/${teamId}`
+    $: orgPrefix = departmentId
+        ? `${apiPrefix}/organization/${organizationId}/department/${departmentId}`
+        : `${apiPrefix}/organization/${organizationId}`
+    $: teamPrefix = organizationId
+        ? `${orgPrefix}/team/${teamId}`
+        : `${apiPrefix}/team/${teamId}`
 
     function toggleAddUser() {
         showAddUser = !showAddUser
     }
 
-    const toggleRemoveUser = (userId) => () => {
+    const toggleRemoveUser = userId => () => {
         showRemoveUser = !showRemoveUser
         removeUserId = userId
     }
 
-    const toggleRemoveBattle = (battleId) => () => {
+    const toggleRemoveBattle = battleId => () => {
         showRemoveBattle = !showRemoveBattle
         removeBattleId = battleId
     }
@@ -118,7 +122,7 @@
     function handleUserAdd(email, role) {
         const body = {
             email,
-            role
+            role,
         }
 
         xfetch(`${teamPrefix}/users`, { body })
@@ -136,7 +140,7 @@
 
     function handleUserRemove() {
         const body = {
-            id: removeUserId
+            id: removeUserId,
         }
 
         xfetch(`${teamPrefix}/user`, { body, method: 'DELETE' })
@@ -147,14 +151,16 @@
                 getUsers()
             })
             .catch(function() {
-                notifications.danger('Error attempting to remove user from team')
+                notifications.danger(
+                    'Error attempting to remove user from team',
+                )
                 eventTag('team_remove_user', 'engagement', 'failure')
             })
     }
 
     function handleBattleRemove() {
         const body = {
-            id: removeBattleId
+            id: removeBattleId,
         }
 
         xfetch(`${teamPrefix}/battle`, { body, method: 'DELETE' })
@@ -165,7 +171,9 @@
                 getBattles()
             })
             .catch(function() {
-                notifications.danger('Error attempting to remove battle from team')
+                notifications.danger(
+                    'Error attempting to remove battle from team',
+                )
                 eventTag('team_remove_battle', 'engagement', 'failure')
             })
     }
@@ -178,17 +186,37 @@
         getTeam()
     })
 
-    $: isAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole === 'ADMIN'
-    $: isTeamMember = organizationRole === 'ADMIN' || departmentRole === 'ADMIN' || teamRole !== ''
+    $: isAdmin =
+        organizationRole === 'ADMIN' ||
+        departmentRole === 'ADMIN' ||
+        teamRole === 'ADMIN'
+    $: isTeamMember =
+        organizationRole === 'ADMIN' ||
+        departmentRole === 'ADMIN' ||
+        teamRole !== ''
 </script>
 
 <PageLayout>
     <h1 class="text-3xl font-bold">Team: {team.name}</h1>
     {#if organizationId}
         <div class="font-bold">
-            Organization <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="{appRoutes.organization}/{organization.id}">{organization.name}</a>
+            Organization
+            <ChevronRight class="inline-block" />
+            <a
+                class="text-blue-500 hover:text-blue-800"
+                href="{appRoutes.organization}/{organization.id}">
+                {organization.name}
+            </a>
             {#if departmentId}
-                &nbsp;<ChevronRight class="inline-block" /> Department <ChevronRight class="inline-block" /> <a class="text-blue-500 hover:text-blue-800" href="{appRoutes.organization}/{organization.id}/department/{department.id}">{department.name}</a>
+                &nbsp;
+                <ChevronRight class="inline-block" />
+                Department
+                <ChevronRight class="inline-block" />
+                <a
+                    class="text-blue-500 hover:text-blue-800"
+                    href="{appRoutes.organization}/{organization.id}/department/{department.id}">
+                    {department.name}
+                </a>
             {/if}
         </div>
     {/if}
@@ -197,9 +225,7 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded flex">
             <div class="w-full md:w-1/2 lg:w-3/5 md:pr-4">
                 <div class="flex w-full">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
-                        Battles
-                    </h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Battles</h2>
                 </div>
 
                 <table class="table-fixed w-full">
@@ -215,11 +241,14 @@
                                 <td class="border px-4 py-2">{battle.name}</td>
                                 <td class="border px-4 py-2 text-right">
                                     {#if isAdmin}
-                                        <HollowButton onClick="{toggleRemoveBattle(battle.id)}" color="red">
+                                        <HollowButton
+                                            onClick="{toggleRemoveBattle(battle.id)}"
+                                            color="red">
                                             Remove
                                         </HollowButton>
                                     {/if}
-                                    <HollowButton href="{appRoutes.battle}/{battle.id}">
+                                    <HollowButton
+                                        href="{appRoutes.battle}/{battle.id}">
                                         Join Battle
                                     </HollowButton>
                                 </td>
@@ -234,7 +263,12 @@
                     <h2 class="mb-4 text-2xl font-bold leading-tight">
                         {$_('pages.myBattles.createBattle.title')}
                     </h2>
-                    <CreateBattle apiPrefix={teamPrefix} {notifications} {router} {eventTag} {xfetch} />
+                    <CreateBattle
+                        apiPrefix="{teamPrefix}"
+                        {notifications}
+                        {router}
+                        {eventTag}
+                        {xfetch} />
                 {/if}
             </div>
         </div>
@@ -244,9 +278,7 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
-                        Users
-                    </h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Users</h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
@@ -276,7 +308,9 @@
                             <td class="border px-4 py-2">{usr.role}</td>
                             <td class="border px-4 py-2 text-right">
                                 {#if isAdmin}
-                                    <HollowButton onClick="{toggleRemoveUser(usr.id)}" color="red">
+                                    <HollowButton
+                                        onClick="{toggleRemoveUser(usr.id)}"
+                                        color="red">
                                         Remove
                                     </HollowButton>
                                 {/if}
@@ -289,14 +323,18 @@
     </div>
 
     {#if showAddUser}
-        <AddUser toggleAdd={toggleAddUser} handleAdd={handleUserAdd} />
+        <AddUser toggleAdd="{toggleAddUser}" handleAdd="{handleUserAdd}" />
     {/if}
 
     {#if showRemoveUser}
-        <RemoveUser toggleRemove={toggleRemoveUser(null)} handleRemove={handleUserRemove} />
+        <RemoveUser
+            toggleRemove="{toggleRemoveUser(null)}"
+            handleRemove="{handleUserRemove}" />
     {/if}
 
     {#if showRemoveBattle}
-        <RemoveBattle toggleRemove={toggleRemoveBattle(null)} handleRemove={handleBattleRemove} />
+        <RemoveBattle
+            toggleRemove="{toggleRemoveBattle(null)}"
+            handleRemove="{handleBattleRemove}" />
     {/if}
 </PageLayout>

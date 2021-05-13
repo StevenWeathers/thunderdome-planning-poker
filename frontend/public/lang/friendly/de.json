@@ -84,14 +84,7 @@
             "bullet3": "Funktioniert mit allen {mbOpen}modernen Browsers*{mbClose}, inklusive Mobile",
             "bullet3NotSorry": "*Entschuldigung, keine Entschuldigung bei IE",
             "features": {
-                "title": "Eigenschaften",
-                "bullet1": "Keine Beschr\u00E4nkung der Benutzeranzahl einer Sitzung",
-                "bullet2": "Sichere Sch\u00E4tzung verhindert, dass ein Benutzer schummelt",
-                "bullet3": "Sch\u00E4tzungsergebnisse, die klar und hilfreich sind",
-                "bullet4": "M\u00F6glichkeit, jeden Benutzer zum Boss zu bef\u00F6rdern",
-                "bullet5": "Anpassbare Punkte-Skalierung",
-                "bullet6": "Open Source, gerne {contribOpen}teilnehmen und neue Funktionen vorschlagen{contribClose}",
-                "bullet7": "Keine Geb\u00FChren und ohne Werbung"
+                "title": "Eigenschaften"
             }
         },
         "myBattles": {

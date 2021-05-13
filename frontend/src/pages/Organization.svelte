@@ -55,12 +55,12 @@
         showAddUser = !showAddUser
     }
 
-    const toggleRemoveUser = (userId) => () => {
+    const toggleRemoveUser = userId => () => {
         showRemoveUser = !showRemoveUser
         removeUserId = userId
     }
 
-    const toggleDeleteTeam = (teamId) => () => {
+    const toggleDeleteTeam = teamId => () => {
         showDeleteTeam = !showDeleteTeam
         deleteTeamId = teamId
     }
@@ -159,7 +159,9 @@
                 getTeams()
             })
             .catch(function(error) {
-                notifications.danger('Error attempting to create organization team')
+                notifications.danger(
+                    'Error attempting to create organization team',
+                )
                 eventTag('create_organization_team', 'engagement', 'failure')
             })
     }
@@ -167,7 +169,7 @@
     function handleUserAdd(email, role) {
         const body = {
             email,
-            role
+            role,
         }
 
         xfetch(`/api/organization/${organizationId}/users`, { body })
@@ -178,17 +180,22 @@
                 getUsers()
             })
             .catch(function() {
-                notifications.danger('Error attempting to add user to organization')
+                notifications.danger(
+                    'Error attempting to add user to organization',
+                )
                 eventTag('organization_add_user', 'engagement', 'failure')
             })
     }
 
     function handleUserRemove() {
         const body = {
-            id: removeUserId
+            id: removeUserId,
         }
 
-        xfetch(`/api/organization/${organizationId}/user`, { body, method: 'DELETE' })
+        xfetch(`/api/organization/${organizationId}/user`, {
+            body,
+            method: 'DELETE',
+        })
             .then(function() {
                 eventTag('organization_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
@@ -196,17 +203,22 @@
                 getUsers()
             })
             .catch(function() {
-                notifications.danger('Error attempting to remove user from organization')
+                notifications.danger(
+                    'Error attempting to remove user from organization',
+                )
                 eventTag('organization_remove_user', 'engagement', 'failure')
             })
     }
 
     function handleDeleteTeam() {
         const body = {
-            id: deleteTeamId
+            id: deleteTeamId,
         }
 
-        xfetch(`/api/organization/${organizationId}/team`, { body, method: 'DELETE' })
+        xfetch(`/api/organization/${organizationId}/team`, {
+            body,
+            method: 'DELETE',
+        })
             .then(function() {
                 eventTag('organization_delete_team', 'engagement', 'success')
                 toggleDeleteTeam(null)()
@@ -279,9 +291,7 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
-                        Teams
-                    </h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Teams</h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
@@ -313,7 +323,9 @@
                             </td>
                             <td class="border px-4 py-2 text-right">
                                 {#if isAdmin}
-                                    <HollowButton onClick="{toggleDeleteTeam(team.id)}" color="red">
+                                    <HollowButton
+                                        onClick="{toggleDeleteTeam(team.id)}"
+                                        color="red">
                                         Delete
                                     </HollowButton>
                                 {/if}
@@ -329,9 +341,7 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
-                        Users
-                    </h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Users</h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
@@ -361,7 +371,9 @@
                             <td class="border px-4 py-2">{usr.role}</td>
                             <td class="border px-4 py-2 text-right">
                                 {#if isAdmin}
-                                    <HollowButton onClick="{toggleRemoveUser(usr.id)}" color="red">
+                                    <HollowButton
+                                        onClick="{toggleRemoveUser(usr.id)}"
+                                        color="red">
                                         Remove
                                     </HollowButton>
                                 {/if}
@@ -380,18 +392,24 @@
     {/if}
 
     {#if showCreateTeam}
-        <CreateTeam toggleCreate="{toggleCreateTeam}" handleCreate={createTeamHandler} />
+        <CreateTeam
+            toggleCreate="{toggleCreateTeam}"
+            handleCreate="{createTeamHandler}" />
     {/if}
 
     {#if showAddUser}
-        <AddUser toggleAdd="{toggleAddUser}" handleAdd={handleUserAdd} />
+        <AddUser toggleAdd="{toggleAddUser}" handleAdd="{handleUserAdd}" />
     {/if}
 
     {#if showRemoveUser}
-        <RemoveUser toggleRemove={toggleRemoveUser(null)} handleRemove={handleUserRemove} />
+        <RemoveUser
+            toggleRemove="{toggleRemoveUser(null)}"
+            handleRemove="{handleUserRemove}" />
     {/if}
 
     {#if showDeleteTeam}
-        <DeleteTeam toggleDelete={toggleDeleteTeam(null)} handleDelete={handleDeleteTeam} />
+        <DeleteTeam
+            toggleDelete="{toggleDeleteTeam(null)}"
+            handleDelete="{handleDeleteTeam}" />
     {/if}
 </PageLayout>

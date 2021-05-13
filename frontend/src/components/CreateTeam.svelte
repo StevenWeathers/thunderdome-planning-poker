@@ -33,8 +33,7 @@
                     <CloseIcon />
                 </button>
             </div>
-            
-            
+
             <form on:submit="{onSubmit}" name="createOrganization">
                 <div class="mb-4">
                     <label

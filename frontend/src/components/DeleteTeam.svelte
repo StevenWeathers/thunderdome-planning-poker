@@ -27,7 +27,8 @@
 
                 <div class="mb-4">
                     <p class="font-bold text-xl text-red-600">
-                        Are you sure you want to delete this team?<br />
+                        Are you sure you want to delete this team?
+                        <br />
                         This cannot be undone.
                     </p>
                 </div>

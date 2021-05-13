@@ -84,14 +84,7 @@
             "bullet3": "Works on all {mbOpen}modern browsers*{mbClose}, including mobile",
             "bullet3NotSorry": "*sorry, not sorry IE",
             "features": {
-                "title": "Features",
-                "bullet1": "No limit on number of Players in a Game",
-                "bullet2": "Secure voting, keeps your Players from cheating",
-                "bullet3": "Voting Results that are clear and helpful",
-                "bullet4": "Ability to promote any Player to Game Leader",
-                "bullet5": "Customizable pointing scales",
-                "bullet6": "Open Source, feel free to {contribOpen}contribute and suggest features{contribClose}",
-                "bullet7": "No fees and Ad free"
+                "title": "Features"
             }
         },
         "myBattles": {

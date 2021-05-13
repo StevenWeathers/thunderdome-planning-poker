@@ -26,22 +26,22 @@
                 </div>
 
                 <div class="mb-4">
-                        <p class="font-bold text-xl text-red-600">
-                            Are you sure you want to remove this user?
-                        </p>
-                    </div>
-                    <div class="text-right">
-                        <button
-                            type="button"
-                            class="inline-block align-baseline font-bold
-                            text-sm text-blue-500 hover:text-blue-800 mr-4"
-                            on:click="{toggleRemove}">
-                            Cancel
-                        </button>
-                        <SolidButton onClick="{handleRemove}" color="red">
-                            Remove User
-                        </SolidButton>
-                    </div>
+                    <p class="font-bold text-xl text-red-600">
+                        Are you sure you want to remove this user?
+                    </p>
+                </div>
+                <div class="text-right">
+                    <button
+                        type="button"
+                        class="inline-block align-baseline font-bold text-sm
+                        text-blue-500 hover:text-blue-800 mr-4"
+                        on:click="{toggleRemove}">
+                        Cancel
+                    </button>
+                    <SolidButton onClick="{handleRemove}" color="red">
+                        Remove User
+                    </SolidButton>
+                </div>
             </div>
         </div>
     </div>

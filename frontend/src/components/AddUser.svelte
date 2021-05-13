@@ -34,7 +34,7 @@
                     <CloseIcon />
                 </button>
             </div>
-            
+
             <form on:submit="{onSubmit}" name="teamAddUser">
                 <div class="mb-4">
                     <label
@@ -63,9 +63,10 @@
                     <div class="relative">
                         <select
                             bind:value="{role}"
-                            class="block appearance-none w-full border-2 border-gray-400
-                            text-gray-700 py-3 px-4 pr-8 rounded leading-tight
-                            focus:outline-none focus:border-purple-500"
+                            class="block appearance-none w-full border-2
+                            border-gray-400 text-gray-700 py-3 px-4 pr-8 rounded
+                            leading-tight focus:outline-none
+                            focus:border-purple-500"
                             id="userRole"
                             name="userRole">
                             {#each roles as userRole}
@@ -73,8 +74,8 @@
                             {/each}
                         </select>
                         <div
-                            class="pointer-events-none absolute inset-y-0 right-0 flex
-                            items-center px-2 text-gray-700">
+                            class="pointer-events-none absolute inset-y-0
+                            right-0 flex items-center px-2 text-gray-700">
                             <DownCarrotIcon />
                         </div>
                     </div>
