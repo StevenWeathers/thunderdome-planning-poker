@@ -11,7 +11,7 @@ COPY ./*.js /webapp/
 WORKDIR /webapp
 # install node packages
 RUN npm set progress=false
-RUN npm ci
+RUN npm ci --no-optional
 # Build the web app
 RUN npm run build
 ############################

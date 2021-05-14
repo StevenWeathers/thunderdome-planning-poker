@@ -31,7 +31,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
+    - run: npm ci --no-optional
     - run: npm run build --if-present
       env:
         CI: true
