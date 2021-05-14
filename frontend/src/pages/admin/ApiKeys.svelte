@@ -109,8 +109,8 @@
                             <td class="border px-4 py-2">{apikey.prefix}</td>
                             <td class="border px-4 py-2">{apikey.warriorId}</td>
                             <td class="border px-4 py-2">{apikey.active}</td>
-                            <td class="border px-4 py-2">{apikey.createdDate}</td>
-                            <td class="border px-4 py-2">{apikey.updatedDate}</td>
+                            <td class="border px-4 py-2">{new Date(apikey.createdDate).toLocaleString()}</td>
+                            <td class="border px-4 py-2">{new Date(apikey.updatedDate).toLocaleString()}</td>
                             <td class="border px-4 py-2"></td>
                         </tr>
                     {/each}

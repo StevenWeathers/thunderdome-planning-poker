@@ -1,7 +1,7 @@
 ############################
 # STEP 1 build the ui
 ############################
-FROM node:12-alpine as builderNode
+FROM node:14-alpine as builderNode
 
 RUN mkdir /webapp
 COPY ./frontend/ /webapp/frontend/
