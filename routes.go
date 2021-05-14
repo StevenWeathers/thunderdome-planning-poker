@@ -108,6 +108,8 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/admin/clean-battles", s.adminOnly(s.handleCleanBattles())).Methods("DELETE")
 	s.router.HandleFunc("/api/admin/clean-guests", s.adminOnly(s.handleCleanGuests())).Methods("DELETE")
 	s.router.HandleFunc("/api/admin/organizations/{limit}/{offset}", s.adminOnly(s.handleGetOrganizations())).Methods("GET")
+	s.router.HandleFunc("/api/admin/teams/{limit}/{offset}", s.adminOnly(s.handleGetTeams())).Methods("GET")
+	s.router.HandleFunc("/api/admin/apikeys/{limit}/{offset}", s.adminOnly(s.handleGetAPIKeys())).Methods("GET")
 	// websocket for battle
 	s.router.HandleFunc("/api/arena/{id}", s.serveWs())
 	// handle index.html

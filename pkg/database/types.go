@@ -100,6 +100,7 @@ type ApplicationStats struct {
 	OrganizationCount int `json:"organizationCount"`
 	DepartmentCount   int `json:"departmentCount"`
 	TeamCount         int `json:"teamCount"`
+	APIKeyCount       int `json:"apikeyCount"`
 }
 
 // Organization can be a company

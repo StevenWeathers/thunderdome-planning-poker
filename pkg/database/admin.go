@@ -3,6 +3,7 @@ package database
 import (
 	"errors"
 	"log"
+	"strings"
 )
 
 // ConfirmAdmin confirms whether the users is infact an admin
@@ -33,7 +34,8 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 			plan_count,
 			organization_count,
 			department_count,
-			team_count
+			team_count,
+			apikey_count
 		FROM get_app_stats();
 		`,
 	).Scan(
@@ -44,6 +46,7 @@ func (d *Database) GetAppStats() (*ApplicationStats, error) {
 		&Appstats.OrganizationCount,
 		&Appstats.DepartmentCount,
 		&Appstats.TeamCount,
+		&Appstats.APIKeyCount,
 	)
 	if err != nil {
 		log.Println("Unable to get application stats: ", err)
@@ -167,4 +170,44 @@ func (d *Database) TeamList(Limit int, Offset int) []*Team {
 	}
 
 	return teams
+}
+
+// GetAPIKeys gets a list of api keys
+func (d *Database) GetAPIKeys(Limit int, Offset int) []*APIKey {
+	var APIKeys = make([]*APIKey, 0)
+	rows, err := d.db.Query(
+		`SELECT apk.id, apk.name, u.email, apk.active, apk.created_date, apk.updated_date
+		FROM api_keys apk
+		LEFT JOIN users u ON apk.user_id = u.id
+		ORDER BY apk.created_date
+		LIMIT $1
+		OFFSET $2;`,
+		Limit,
+		Offset,
+	)
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var ak APIKey
+			var key string
+
+			if err := rows.Scan(
+				&key,
+				&ak.Name,
+				&ak.UserID,
+				&ak.Active,
+				&ak.CreatedDate,
+				&ak.UpdatedDate,
+			); err != nil {
+				log.Println(err)
+			} else {
+				splitKey := strings.Split(key, ".")
+				ak.Prefix = splitKey[0]
+				ak.ID = key
+				APIKeys = append(APIKeys, &ak)
+			}
+		}
+	}
+
+	return APIKeys
 }

@@ -603,7 +603,7 @@ DROP FUNCTION IF EXISTS get_app_stats(
     OUT battle_count INTEGER,
     OUT plan_count INTEGER
 );
-CREATE OR REPLACE FUNCTION get_app_stats(
+DROP FUNCTION IF EXISTS get_app_stats(
     OUT unregistered_user_count INTEGER,
     OUT registered_user_count INTEGER,
     OUT battle_count INTEGER,
@@ -611,6 +611,16 @@ CREATE OR REPLACE FUNCTION get_app_stats(
     OUT organization_count INTEGER,
     OUT department_count INTEGER,
     OUT team_count INTEGER
+);
+CREATE OR REPLACE FUNCTION get_app_stats(
+    OUT unregistered_user_count INTEGER,
+    OUT registered_user_count INTEGER,
+    OUT battle_count INTEGER,
+    OUT plan_count INTEGER,
+    OUT organization_count INTEGER,
+    OUT department_count INTEGER,
+    OUT team_count INTEGER,
+    OUT apikey_count INTEGER
 ) AS $$
 BEGIN
     SELECT COUNT(*) INTO unregistered_user_count FROM users WHERE email IS NULL;
@@ -620,6 +630,7 @@ BEGIN
     SELECT COUNT(*) INTO organization_count FROM organization;
     SELECT COUNT(*) INTO department_count FROM organization_department;
     SELECT COUNT(*) INTO team_count FROM team;
+    SELECT COUNT(*) INTO apikey_count FROM api_keys;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -770,9 +781,9 @@ CREATE OR REPLACE FUNCTION organization_list(
 ) AS $$
 BEGIN
     RETURN QUERY
-        SELECT id, name, created_date, updated_date
-        FROM organization
-        ORDER BY created_date
+        SELECT o.id, o.name, o.created_date, o.updated_date
+        FROM organization o
+        ORDER BY o.created_date
 		LIMIT l_limit
 		OFFSET l_offset;
 END;
@@ -1121,8 +1132,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Get Teams --
-CREATE OR REPLACE FUNCTION team_list_by_user(
-    IN userId UUID,
+CREATE OR REPLACE FUNCTION team_list(
     IN l_limit INTEGER,
     IN l_offset INTEGER
 ) RETURNS table (

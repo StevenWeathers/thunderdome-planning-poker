@@ -20,7 +20,11 @@
     import ResetPassword from './pages/ResetPassword.svelte'
     import VerifyAccount from './pages/VerifyAccount.svelte'
     import WarriorProfile from './pages/WarriorProfile.svelte'
-    import Admin from './pages/Admin.svelte'
+    import Admin from './pages/admin/Admin.svelte'
+    import AdminUsers from './pages/admin/Users.svelte'
+    import AdminOrganizations from './pages/admin/Organizations.svelte'
+    import AdminTeams from './pages/admin/Teams.svelte'
+    import AdminApikeys from './pages/admin/ApiKeys.svelte'
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
     import apiclient from './apiclient.js'
@@ -140,6 +144,30 @@
         .on(appRoutes.admin, () => {
             currentPage = {
                 route: Admin,
+                params: {},
+            }
+        })
+        .on(`${appRoutes.admin}/users`, () => {
+            currentPage = {
+                route: AdminUsers,
+                params: {},
+            }
+        })
+        .on(`${appRoutes.admin}/organizations`, () => {
+            currentPage = {
+                route: AdminOrganizations,
+                params: {},
+            }
+        })
+        .on(`${appRoutes.admin}/teams`, () => {
+            currentPage = {
+                route: AdminTeams,
+                params: {},
+            }
+        })
+        .on(`${appRoutes.admin}/apikeys`, () => {
+            currentPage = {
+                route: AdminApikeys,
                 params: {},
             }
         })

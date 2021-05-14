@@ -149,3 +149,16 @@ func (s *server) handleGetTeams() http.HandlerFunc {
 		s.respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
+
+// handleGetAPIKeys gets a list of APIKeys
+func (s *server) handleGetAPIKeys() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Teams := s.database.GetAPIKeys(Limit, Offset)
+
+		s.respondWithJSON(w, http.StatusOK, Teams)
+	}
+}
