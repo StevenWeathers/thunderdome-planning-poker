@@ -51,6 +51,10 @@ func (s *server) routes() {
 	// battle(s)
 	s.router.HandleFunc("/api/battle", s.userOnly(s.handleBattleCreate())).Methods("POST")
 	s.router.HandleFunc("/api/battles", s.userOnly(s.handleBattlesGet())).Methods("GET")
+	// country(s)
+	if viper.GetBool("config.show_active_countries") {
+		s.router.HandleFunc("/api/active-countries", s.handleGetActiveCountries()).Methods("GET")
+	}
 	// organization(s)
 	s.router.HandleFunc("/api/organizations/{limit}/{offset}", s.userOnly(s.handleGetOrganizationsByUser())).Methods("GET")
 	s.router.HandleFunc("/api/organizations", s.userOnly(s.handleCreateOrganization())).Methods("POST")

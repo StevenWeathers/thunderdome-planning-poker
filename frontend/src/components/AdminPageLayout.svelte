@@ -7,7 +7,8 @@
     const { APIEnabled } = appConfig
 
     let activePillClasses = 'border-blue-500 bg-blue-500 text-white'
-    let nonActivePillClasses = 'border-gray-300 hover:border-gray-400 bg-gray-300 text-blue-500 hover:bg-gray-400'
+    let nonActivePillClasses =
+        'border-gray-300 hover:border-gray-400 bg-gray-300 text-blue-500 hover:bg-gray-400'
 </script>
 
 <style>
@@ -21,29 +22,47 @@
 </style>
 
 <div class="flex px-6 py-2 border-b-2 bg-gray-300 border-gray-400">
-    <div class="w-1/3">
-        {$_('pages.admin.title')}
-    </div>
+    <div class="w-1/3">{$_('pages.admin.title')}</div>
     <div class="w-2/3">
         <ul class="flex justify-end">
             <li class="ml-3">
-                <a class="admin-nav-pill {activePage === 'admin' ? activePillClasses : nonActivePillClasses}" href="{appRoutes.admin}">Admin</a>
+                <a
+                    class="admin-nav-pill {activePage === 'admin' ? activePillClasses : nonActivePillClasses}"
+                    href="{appRoutes.admin}">
+                    Admin
+                </a>
             </li>
             <li class="ml-3">
-                <a class="admin-nav-pill {activePage === 'users' ? activePillClasses : nonActivePillClasses}" href="{appRoutes.admin}/users">Users</a>
+                <a
+                    class="admin-nav-pill {activePage === 'users' ? activePillClasses : nonActivePillClasses}"
+                    href="{appRoutes.admin}/users">
+                    Users
+                </a>
             </li>
             <li class="ml-3">
-                <a class="admin-nav-pill {activePage === 'organizations' ? activePillClasses : nonActivePillClasses}" href="{appRoutes.admin}/organizations">Organizations</a>
+                <a
+                    class="admin-nav-pill {activePage === 'organizations' ? activePillClasses : nonActivePillClasses}"
+                    href="{appRoutes.admin}/organizations">
+                    Organizations
+                </a>
             </li>
             <li class="ml-3">
-                <a class="admin-nav-pill {activePage === 'teams' ? activePillClasses : nonActivePillClasses}" href="{appRoutes.admin}/teams">Teams</a>
+                <a
+                    class="admin-nav-pill {activePage === 'teams' ? activePillClasses : nonActivePillClasses}"
+                    href="{appRoutes.admin}/teams">
+                    Teams
+                </a>
             </li>
             {#if APIEnabled}
-            <li class="ml-3">
-                <a class="admin-nav-pill {activePage === 'apikeys' ? activePillClasses : nonActivePillClasses}" href="{appRoutes.admin}/apikeys">API Keys</a>
-            </li>
+                <li class="ml-3">
+                    <a
+                        class="admin-nav-pill {activePage === 'apikeys' ? activePillClasses : nonActivePillClasses}"
+                        href="{appRoutes.admin}/apikeys">
+                        API Keys
+                    </a>
+                </li>
             {/if}
-          </ul>
+        </ul>
     </div>
 </div>
 

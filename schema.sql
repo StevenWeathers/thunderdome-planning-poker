@@ -176,6 +176,10 @@ BEGIN
     END;
 END $$;
 
+ALTER TABLE users ADD COLUMN IF NOT EXISTS country VARCHAR(2);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS company VARCHAR(256);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS job_title VARCHAR(128);
+
 CREATE TABLE IF NOT EXISTS organization (
     id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
     name VARCHAR(256),
@@ -275,6 +279,11 @@ CREATE TYPE UsersVote AS
     "warriorId"     uuid,
     "vote"   VARCHAR(3)
 );
+
+--
+-- Views
+--
+CREATE MATERIALIZED VIEW IF NOT EXISTS active_countries AS SELECT DISTINCT country FROM users;
 
 --
 -- Stored Procedures
@@ -575,6 +584,7 @@ CREATE OR REPLACE PROCEDURE clean_guest_users(daysOld INTEGER)
 LANGUAGE plpgsql AS $$
 BEGIN
     DELETE FROM users WHERE last_active < (NOW() - daysOld * interval '1 day') AND type = 'PRIVATE';
+    REFRESH MATERIALIZED VIEW active_countries;
 
     COMMIT;
 END;
@@ -586,8 +596,28 @@ CREATE OR REPLACE PROCEDURE delete_user(userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
     DELETE FROM users WHERE id = userId;
+    REFRESH MATERIALIZED VIEW active_countries;
 
     COMMIT;
+END;
+$$;
+
+-- Updates a users profile --
+CREATE OR REPLACE PROCEDURE user_profile_update(
+    userId UUID,
+    userName VARCHAR(64),
+    userAvatar VARCHAR(128),
+    notificationsEnabled BOOLEAN,
+    userCountry VARCHAR(2),
+    userCompany VARCHAR(256),
+    userJobTitle VARCHAR(128)
+)
+LANGUAGE plpgsql AS $$
+BEGIN
+    UPDATE users
+    SET name = userName, avatar = userAvatar, notifications_enabled = notificationsEnabled, country = userCountry, company = userCompany, job_title = userJobTitle, last_active = NOW()
+    WHERE id = userId;
+    REFRESH MATERIALIZED VIEW active_countries;
 END;
 $$;
 
@@ -740,7 +770,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
+-- Get a list of countries
+CREATE OR REPLACE FUNCTION countries_active() RETURNS table (
+    country VARCHAR(2)
+) AS $$
+BEGIN
+    RETURN QUERY SELECT ac.country FROM active_countries ac;
+END;
+$$ LANGUAGE plpgsql;
 --
 -- ORGANIZATIONS --
 --

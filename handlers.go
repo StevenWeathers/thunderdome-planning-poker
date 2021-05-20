@@ -183,6 +183,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		APIEnabled            bool
 		CleanupGuestsDaysOld  int
 		CleanupBattlesDaysOld int
+		ShowActiveCountries   bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -222,6 +223,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		PathPrefix:            s.config.PathPrefix,
 		CleanupGuestsDaysOld:  viper.GetInt("config.cleanup_guests_days_old"),
 		CleanupBattlesDaysOld: viper.GetInt("config.cleanup_battles_days_old"),
+		ShowActiveCountries:   viper.GetBool("config.show_active_countries"),
 	}
 
 	data := UIConfig{

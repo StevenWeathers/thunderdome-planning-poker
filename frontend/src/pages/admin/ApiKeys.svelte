@@ -23,7 +23,7 @@
         organizationCount: 0,
         departmentCount: 0,
         teamCount: 0,
-        apikeyCount: 0
+        apikeyCount: 0,
     }
     let apikeys = []
     let apikeysPage = 1
@@ -71,9 +71,7 @@
 
 <AdminPageLayout activePage="apikeys">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">
-            API Keys
-        </h1>
+        <h1 class="text-3xl md:text-4xl font-bold">API Keys</h1>
     </div>
 
     <div class="w-full">
@@ -81,24 +79,12 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-3/12 px-4 py-2">
-                            Name
-                        </th>
-                        <th class="w-1/12 px-4 py-2">
-                            Prefix
-                        </th>
-                        <th class="w-2/12 px-4 py-2">
-                            Email
-                        </th>
-                        <th class="w-1/12 px-4 py-2">
-                            Active
-                        </th>
-                        <th class="w-2/12 px-4 py-2">
-                            Created Date
-                        </th>
-                        <th class="w-2/12 px-4 py-2">
-                            Updated Date
-                        </th>
+                        <th class="w-3/12 px-4 py-2">Name</th>
+                        <th class="w-1/12 px-4 py-2">Prefix</th>
+                        <th class="w-2/12 px-4 py-2">Email</th>
+                        <th class="w-1/12 px-4 py-2">Active</th>
+                        <th class="w-2/12 px-4 py-2">Created Date</th>
+                        <th class="w-2/12 px-4 py-2">Updated Date</th>
                         <th class="w-1/12 px-4 py-2"></th>
                     </tr>
                 </thead>
@@ -109,8 +95,12 @@
                             <td class="border px-4 py-2">{apikey.prefix}</td>
                             <td class="border px-4 py-2">{apikey.warriorId}</td>
                             <td class="border px-4 py-2">{apikey.active}</td>
-                            <td class="border px-4 py-2">{new Date(apikey.createdDate).toLocaleString()}</td>
-                            <td class="border px-4 py-2">{new Date(apikey.updatedDate).toLocaleString()}</td>
+                            <td class="border px-4 py-2">
+                                {new Date(apikey.createdDate).toLocaleString()}
+                            </td>
+                            <td class="border px-4 py-2">
+                                {new Date(apikey.updatedDate).toLocaleString()}
+                            </td>
                             <td class="border px-4 py-2"></td>
                         </tr>
                     {/each}

@@ -11,6 +11,7 @@
     import { validateName, validatePasswords } from '../validationUtils.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
+    import { countryList } from '../country'
     import CreateApiKey from '../components/CreateApiKey.svelte'
 
     export let xfetch
@@ -88,6 +89,9 @@
             warriorName: warriorProfile.name,
             warriorAvatar: warriorProfile.avatar,
             notificationsEnabled: warriorProfile.notificationsEnabled,
+            country: warriorProfile.country,
+            company: warriorProfile.company,
+            jobTitle: warriorProfile.jobTitle,
         }
         const validName = validateName(body.warriorName)
 
@@ -101,7 +105,7 @@
         if (noFormErrors) {
             xfetch(`/api/warrior/${$warrior.id}`, { body })
                 .then(res => res.json())
-                .then(function(updatedWarrior) {
+                .then(function() {
                     warrior.update({
                         id: warriorProfile.id,
                         name: warriorProfile.name,
@@ -316,6 +320,75 @@
                             name="yourEmail"
                             type="email"
                             disabled />
+                    </div>
+
+                    <div class="mb-4">
+                        <label
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                            for="yourCountry">
+                            {$_('pages.warriorProfile.fields.country.label')}
+                        </label>
+
+                        <div class="relative">
+                            <select
+                                bind:value="{warriorProfile.country}"
+                                class="block appearance-none w-full border-2
+                                border-gray-400 text-gray-700 py-3 px-4 pr-8
+                                rounded leading-tight focus:outline-none
+                                focus:border-purple-500"
+                                id="yourCountry"
+                                name="yourCountry">
+                                <option value="">
+                                    {$_('pages.warriorProfile.fields.country.placeholder')}
+                                </option>
+                                {#each countryList as item}
+                                    <option value="{item.abbrev}">
+                                        {item.name} [{item.abbrev}]
+                                    </option>
+                                {/each}
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0
+                                right-0 flex items-center px-2 text-gray-700">
+                                <DownCarrotIcon />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                            for="yourCompany">
+                            {$_('pages.warriorProfile.fields.company.label')}
+                        </label>
+                        <input
+                            bind:value="{warriorProfile.company}"
+                            placeholder="{$_('pages.warriorProfile.fields.company.placeholder')}"
+                            class="bg-gray-200 border-gray-200 border-2
+                            appearance-none rounded w-full py-2 px-3
+                            text-gray-700 leading-tight focus:outline-none
+                            focus:bg-white focus:border-purple-500"
+                            id="yourCompany"
+                            name="yourCompany"
+                            type="text" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                            for="yourJobTitle">
+                            {$_('pages.warriorProfile.fields.jobTitle.label')}
+                        </label>
+                        <input
+                            bind:value="{warriorProfile.jobTitle}"
+                            placeholder="{$_('pages.warriorProfile.fields.jobTitle.placeholder')}"
+                            class="bg-gray-200 border-gray-200 border-2
+                            appearance-none rounded w-full py-2 px-3
+                            text-gray-700 leading-tight focus:outline-none
+                            focus:bg-white focus:border-purple-500"
+                            id="yourJobTitle"
+                            name="yourJobTitle"
+                            type="text" />
                     </div>
 
                     <div class="mb-4">

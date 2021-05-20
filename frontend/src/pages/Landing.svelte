@@ -1,9 +1,15 @@
 <script>
+    import Countries from '../components/Countries.svelte'
     import CheckIcon from '../components/icons/CheckIcon.svelte'
 
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
     import { warrior } from '../stores'
+
+    export let xfetch
+    export let eventTag
+
+    const { ShowActiveCountries } = appConfig
 </script>
 
 <style>
@@ -96,8 +102,8 @@
                         class="feature-link">
                         repository
                     </a>
-                    at GitHub to request or contribute enhancements, locale translations, and bug
-                    fixes or to
+                    at GitHub to request or contribute enhancements, locale
+                    translations, and bug fixes or to
                     <a
                         href="https://github.com/StevenWeathers/thunderdome-planning-poker#donations"
                         class="feature-link">
@@ -110,9 +116,7 @@
                     Hosted service or self-hosted
                 </h3>
                 <p class="px-2">
-                    <a
-                        href="https://thunderdome.dev"
-                        class="feature-link">
+                    <a href="https://thunderdome.dev" class="feature-link">
                         Thunderdome.dev
                     </a>
                     is a free hosted service (SaaS) without Ads, alternatively
@@ -140,7 +144,8 @@
                 <p class="px-2">
                     Each battle can set the allowed point values from the
                     configured (default 0-100 scale) set as well as whether or
-                    not to automatically finish voting when all votes have been cast.
+                    not to automatically finish voting when all votes have been
+                    cast.
                 </p>
             </div>
         </div>
@@ -148,8 +153,10 @@
             <div class="w-1/2">
                 <h3 class="text-2xl font-bold">Concise Voting Results</h3>
                 <p class="px-2">
-                    Voting results show how many and whom voted for each point value. A tally of total votes, highest vote, and a
-                    rounded (customizable per battle) average vote helps quickly come to a consensus.
+                    Voting results show how many and whom voted for each point
+                    value. A tally of total votes, highest vote, and a rounded
+                    (customizable per battle) average vote helps quickly come to
+                    a consensus.
                 </p>
             </div>
             <div class="w-1/2">
@@ -173,20 +180,17 @@
                 <p class="px-2">
                     Thunderdome is fast and small (under 20mb single executable)
                     thanks to
-                    <a
-                        href="https://golang.org/"
-                        class="feature-link">
-                        Go
-                    </a>.
+                    <a href="https://golang.org/" class="feature-link">Go</a>
+                    .
                     <br />
-                    <a
-                        href="https://svelte.dev/"
-                        class="feature-link">
+                    <a href="https://svelte.dev/" class="feature-link">
                         Svelte
                     </a>
                     and Websockets provide a reactive web app experience.
                     <br />
-                    <span class="font-bold">Over 30 active users in a battle tested!</span>
+                    <span class="font-bold">
+                        Over 30 active users in a battle tested!
+                    </span>
                 </p>
             </div>
             <div class="w-1/2">
@@ -203,6 +207,10 @@
         </div>
     </div>
 </section>
+
+{#if ShowActiveCountries}
+    <Countries {xfetch} {eventTag} />
+{/if}
 
 <section class="bg-exo-grey text-white mb-8">
     <div class="container mx-auto px-4 py-2 lg:py-4">

@@ -35,7 +35,7 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		adminErr := s.database.ConfirmAdmin(UserID)
 		if adminErr != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 

@@ -11,7 +11,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*User {
 	var users = make([]*User, 0)
 	rows, err := d.db.Query(
 		`
-		SELECT id, name, email, type, avatar, verified
+		SELECT id, name, email, type, avatar, verified, country, company, job_title
 		FROM users
 		WHERE email IS NOT NULL
 		ORDER BY created_date
@@ -26,6 +26,9 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*User {
 		for rows.Next() {
 			var w User
 			var UserEmail sql.NullString
+			var UserCountry sql.NullString
+			var UserCompany sql.NullString
+			var UserJobTitle sql.NullString
 
 			if err := rows.Scan(
 				&w.UserID,
@@ -34,10 +37,16 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*User {
 				&w.UserType,
 				&w.UserAvatar,
 				&w.Verified,
+				&UserCountry,
+				&UserCompany,
+				&UserJobTitle,
 			); err != nil {
 				log.Println(err)
 			} else {
 				w.UserEmail = UserEmail.String
+				w.Country = UserCountry.String
+				w.Company = UserCompany.String
+				w.JobTitle = UserJobTitle.String
 				users = append(users, &w)
 			}
 		}
@@ -52,9 +61,12 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*User {
 func (d *Database) GetUser(UserID string) (*User, error) {
 	var w User
 	var UserEmail sql.NullString
+	var UserCountry sql.NullString
+	var UserCompany sql.NullString
+	var UserJobTitle sql.NullString
 
 	e := d.db.QueryRow(
-		"SELECT id, name, email, type, avatar, verified, notifications_enabled FROM users WHERE id = $1",
+		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, company, job_title FROM users WHERE id = $1",
 		UserID,
 	).Scan(
 		&w.UserID,
@@ -64,6 +76,9 @@ func (d *Database) GetUser(UserID string) (*User, error) {
 		&w.UserAvatar,
 		&w.Verified,
 		&w.NotificationsEnabled,
+		&UserCountry,
+		&UserCompany,
+		&UserJobTitle,
 	)
 	if e != nil {
 		log.Println(e)
@@ -71,10 +86,14 @@ func (d *Database) GetUser(UserID string) (*User, error) {
 	}
 
 	w.UserEmail = UserEmail.String
+	w.Country = UserCountry.String
+	w.Company = UserCompany.String
+	w.JobTitle = UserJobTitle.String
 
 	return &w, nil
 }
 
+// GetUserByEmail gets the user by email
 func (d *Database) GetUserByEmail(UserEmail string) (*User, error) {
 	var w User
 	e := d.db.QueryRow(
@@ -180,16 +199,19 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 }
 
 // UpdateUserProfile attempts to update the users profile
-func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar string, NotificationsEnabled bool) error {
+func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "identicon"
 	}
 	if _, err := d.db.Exec(
-		`UPDATE users SET name = $2, avatar = $3, notifications_enabled=$4 WHERE id = $1;`,
+		`call user_profile_update($1, $2, $3, $4, $5, $6, $7);`,
 		UserID,
 		UserName,
 		UserAvatar,
 		NotificationsEnabled,
+		Country,
+		Company,
+		JobTitle,
 	); err != nil {
 		log.Println(err)
 		return errors.New("error attempting to update users profile")
@@ -301,4 +323,31 @@ func (d *Database) DeleteUser(UserID string) error {
 	}
 
 	return nil
+}
+
+// GetActiveCountries gets a list of user countries
+func (d *Database) GetActiveCountries() ([]string, error) {
+	var countries = make([]string, 0)
+
+	rows, err := d.db.Query(`SELECT * FROM countries_active();`)
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var country sql.NullString
+			if err := rows.Scan(
+				&country,
+			); err != nil {
+				log.Println(err)
+			} else {
+				if country.String != "" {
+					countries = append(countries, country.String)
+				}
+			}
+		}
+	} else {
+		log.Println(err)
+		return nil, errors.New("error attempting to get active countries")
+	}
+
+	return countries, nil
 }

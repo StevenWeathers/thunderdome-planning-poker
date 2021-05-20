@@ -108,6 +108,7 @@ Thunderdome sends emails for user registration related activities, the following
 | `config.default_locale`   | CONFIG_DEFAULT_LOCALE | The default locale (language) for the UI | en |
 | `config.friendly_ui_verbs`    | CONFIG_FRIENDLY_UI_VERBS | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly | false |
 | `config.allow_external_api`    | CONFIG_ALLOW_EXTERNAL_API | Whether or not to allow External API access | false |
+| `config.show_active_countries`    | CONFIG_SHOW_ACTIVE_COUNTRIES | Whether or not to show active countries on landing page | false |
 | `config.cleanup_battles_days_old` | CONFIG_CLEANUP_BATTLES_DAYS_OLD | How many days back to clean up old battles, e.g. battles older than 180 days. Triggered manually by Admins . | 180 |
 | `config.cleanup_guests_days_old` | CONFIG_CLEANUP_GUESTS_DAYS_OLD | How many days back to clean up old guests, e.g. guests older than 180 days.  Triggered manually by Admins. | 180 |
 | `auth.method`              |  AUTH_METHOD   | Choose `normal` or `ldap` as authentication method.  See separate section on LDAP configuration. | normal |

@@ -12,7 +12,11 @@
     export let notifications
     export let eventTag
 
-    const { CleanupGuestsDaysOld, CleanupBattlesDaysOld, APIEnabled } = appConfig
+    const {
+        CleanupGuestsDaysOld,
+        CleanupBattlesDaysOld,
+        APIEnabled,
+    } = appConfig
 
     let appStats = {
         unregisteredUserCount: 0,
@@ -22,7 +26,7 @@
         organizationCount: 0,
         departmentCount: 0,
         teamCount: 0,
-        apikeyCount: 0
+        apikeyCount: 0,
     }
 
     function getAppStats() {

@@ -54,6 +54,9 @@ type User struct {
 	UserAvatar           string `json:"avatar"`
 	Verified             bool   `json:"verified"`
 	NotificationsEnabled bool   `json:"notificationsEnabled"`
+	Country              string `json:"country"`
+	Company              string `json:"company"`
+	JobTitle             string `json:"jobTitle"`
 }
 
 // Vote structure

@@ -85,7 +85,8 @@
             "bullet3NotSorry": "*Entschuldigung, keine Entschuldigung bei IE",
             "features": {
                 "title": "Eigenschaften"
-            }
+            },
+            "countriesTitle": "Warriors in over {count} countries"
         },
         "myBattles": {
             "nav": "Meine Schlachten",
@@ -190,6 +191,18 @@
                     "label": "E-Mail",
                     "verified": "Best\u00E4tigt"
                 },
+                "country": {
+                    "label": "Country",
+                    "placeholder": "Choose your country (optional)"
+                },
+                "company": {
+                    "label": "Company",
+                    "placeholder": "Enter your company (optional)"
+                },
+                "jobTitle": {
+                    "label": "Job Title",
+                    "placeholder": "Enter your job title (optional)"
+                },
                 "avatar": {
                     "label": "Avatar"
                 },
@@ -262,6 +275,9 @@
                 "title": "Registrierte Krieger",
                 "name": "Name",
                 "email": "E-Mail",
+                "country": "Country",
+                "company": "Company",
+                "jobTitle": "Job Title",
                 "verified": "Best\u00E4tigt",
                 "rank": "Rank"
             },
