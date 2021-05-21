@@ -2,7 +2,6 @@
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
-    import HollowButton from '../../components/HollowButton.svelte'
     import Pagination from '../../components/Pagination.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
@@ -11,7 +10,6 @@
     export let xfetch
     export let router
     export let notifications
-    export let eventTag
 
     const teamsPageLimit = 100
 
@@ -38,7 +36,7 @@
             })
     }
 
-    function getWarriors() {
+    function getTeams() {
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
         xfetch(`/api/admin/teams/${teamsPageLimit}/${teamsOffset}`)
             .then(res => res.json())
@@ -52,7 +50,7 @@
 
     const changePage = evt => {
         teamsPage = evt.detail
-        getWarriors()
+        getTeams()
     }
 
     onMount(() => {
@@ -64,7 +62,7 @@
         }
 
         getAppStats()
-        getWarriors()
+        getTeams()
     })
 </script>
 

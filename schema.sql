@@ -269,6 +269,18 @@ CREATE TABLE IF NOT EXISTS team_battle (
     CONSTRAINT tb_battle_id FOREIGN KEY(battle_id) REFERENCES battles(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS alert (
+    id UUID  NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(256) NOT NULL,
+    type VARCHAR(128) DEFAULT 'NEW',
+    content TEXT NOT NULL,
+    active BOOLEAN DEFAULT true,
+    allow_dismiss BOOLEAN DEFAULT true,
+    registered_only BOOLEAN DEFAULT true,
+    created_date TIMESTAMP DEFAULT NOW(),
+    updated_date TIMESTAMP DEFAULT NOW()
+);
+
 --
 -- Types (used in Stored Procedures)
 --

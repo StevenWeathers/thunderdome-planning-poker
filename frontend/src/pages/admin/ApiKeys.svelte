@@ -39,7 +39,7 @@
             })
     }
 
-    function getWarriors() {
+    function getApiKeys() {
         const apikeysOffset = (apikeysPage - 1) * apikeysPageLimit
         xfetch(`/api/admin/apikeys/${apikeysPageLimit}/${apikeysOffset}`)
             .then(res => res.json())
@@ -53,7 +53,7 @@
 
     const changePage = evt => {
         apikeysPage = evt.detail
-        getWarriors()
+        getApiKeys()
     }
 
     onMount(() => {
@@ -65,7 +65,7 @@
         }
 
         getAppStats()
-        getWarriors()
+        getApiKeys()
     })
 </script>
 

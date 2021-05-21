@@ -8,6 +8,7 @@
     import WarriorIcon from './components/icons/WarriorIcon.svelte'
     import HollowButton from './components/HollowButton.svelte'
     import LocaleSwitcher from './components/LocaleSwitcher.svelte'
+    import GlobalAlerts from './components/GlobalAlerts.svelte'
     import Landing from './pages/Landing.svelte'
     import Battles from './pages/Battles.svelte'
     import Battle from './pages/Battle.svelte'
@@ -25,6 +26,7 @@
     import AdminOrganizations from './pages/admin/Organizations.svelte'
     import AdminTeams from './pages/admin/Teams.svelte'
     import AdminApikeys from './pages/admin/ApiKeys.svelte'
+    import AdminAlerts from './pages/admin/Alerts.svelte'
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
     import apiclient from './apiclient.js'
@@ -37,8 +39,7 @@
     let notifications
 
     let activeWarrior
-
-    const unsubscribe = warrior.subscribe(w => {
+    warrior.subscribe(w => {
         activeWarrior = w
     })
 
@@ -171,6 +172,12 @@
                 params: {},
             }
         })
+        .on(`${appRoutes.admin}/alerts`, () => {
+            currentPage = {
+                route: AdminAlerts,
+                params: {},
+            }
+        })
         .listen()
 
     const xfetch = apiclient(handle401)
@@ -214,6 +221,8 @@
 <Notifications bind:this="{notifications}" />
 
 {#if $isLocaleLoaded}
+    <GlobalAlerts registered="{!!activeWarrior.name}" />
+
     <nav
         class="flex items-center justify-between flex-wrap bg-white p-6"
         role="navigation"

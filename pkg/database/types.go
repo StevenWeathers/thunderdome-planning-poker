@@ -148,3 +148,15 @@ type TeamUser struct {
 	Email  string `json:"email"`
 	Role   string `json:"role"`
 }
+
+type Alert struct {
+	AlertID        string `json:"id" db:"id"`
+	Name           string `json:"name" db:"name"`
+	Type           string `json:"type" db:"type"`
+	Content        string `json:"content" db:"content"`
+	Active         bool   `json:"active" db:"active"`
+	AllowDismiss   bool   `json:"allowDismiss" db:"allow_dismiss"`
+	RegisteredOnly bool   `json:"registeredOnly" db:"registered_only"`
+	CreatedDate    string `json:"createdDate" db:"created_date"`
+	UpdatedDate    string `json:"updatedDate" db:"updated_date"`
+}

@@ -38,7 +38,7 @@
             })
     }
 
-    function getWarriors() {
+    function getOrganizations() {
         const organizationsOffset =
             (organizationsPage - 1) * organizationsPageLimit
         xfetch(
@@ -55,7 +55,7 @@
 
     const changePage = evt => {
         organizationsPage = evt.detail
-        getWarriors()
+        getOrganizations()
     }
 
     onMount(() => {
@@ -67,7 +67,7 @@
         }
 
         getAppStats()
-        getWarriors()
+        getOrganizations()
     })
 </script>
 

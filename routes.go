@@ -114,6 +114,10 @@ func (s *server) routes() {
 	s.router.HandleFunc("/api/admin/organizations/{limit}/{offset}", s.adminOnly(s.handleGetOrganizations())).Methods("GET")
 	s.router.HandleFunc("/api/admin/teams/{limit}/{offset}", s.adminOnly(s.handleGetTeams())).Methods("GET")
 	s.router.HandleFunc("/api/admin/apikeys/{limit}/{offset}", s.adminOnly(s.handleGetAPIKeys())).Methods("GET")
+	s.router.HandleFunc("/api/admin/alerts/{limit}/{offset}", s.adminOnly(s.handleGetAlerts())).Methods("GET")
+	s.router.HandleFunc("/api/admin/alert/{id}", s.adminOnly(s.handleAlertUpdate())).Methods("PUT")
+	s.router.HandleFunc("/api/admin/alert", s.adminOnly(s.handleAlertCreate())).Methods("POST")
+	s.router.HandleFunc("/api/admin/alert", s.adminOnly(s.handleAlertDelete())).Methods("DELETE")
 	// websocket for battle
 	s.router.HandleFunc("/api/arena/{id}", s.serveWs())
 	// handle index.html

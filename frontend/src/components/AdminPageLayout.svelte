@@ -6,6 +6,36 @@
 
     const { APIEnabled } = appConfig
 
+    const pages = [
+        {
+            name: 'Admin',
+            path: '',
+        },
+        {
+            name: 'Alerts',
+            path: '/alerts',
+        },
+        {
+            name: 'Organizations',
+            path: '/organizations',
+        },
+        {
+            name: 'Teams',
+            path: '/teams',
+        },
+        {
+            name: 'Users',
+            path: '/users',
+        },
+    ]
+
+    if (APIEnabled) {
+        pages.push({
+            name: 'API Keys',
+            path: '/apikeys',
+        })
+    }
+
     let activePillClasses = 'border-blue-500 bg-blue-500 text-white'
     let nonActivePillClasses =
         'border-gray-300 hover:border-gray-400 bg-gray-300 text-blue-500 hover:bg-gray-400'
@@ -25,43 +55,15 @@
     <div class="w-1/3">{$_('pages.admin.title')}</div>
     <div class="w-2/3">
         <ul class="flex justify-end">
-            <li class="ml-3">
-                <a
-                    class="admin-nav-pill {activePage === 'admin' ? activePillClasses : nonActivePillClasses}"
-                    href="{appRoutes.admin}">
-                    Admin
-                </a>
-            </li>
-            <li class="ml-3">
-                <a
-                    class="admin-nav-pill {activePage === 'users' ? activePillClasses : nonActivePillClasses}"
-                    href="{appRoutes.admin}/users">
-                    Users
-                </a>
-            </li>
-            <li class="ml-3">
-                <a
-                    class="admin-nav-pill {activePage === 'organizations' ? activePillClasses : nonActivePillClasses}"
-                    href="{appRoutes.admin}/organizations">
-                    Organizations
-                </a>
-            </li>
-            <li class="ml-3">
-                <a
-                    class="admin-nav-pill {activePage === 'teams' ? activePillClasses : nonActivePillClasses}"
-                    href="{appRoutes.admin}/teams">
-                    Teams
-                </a>
-            </li>
-            {#if APIEnabled}
+            {#each pages as page}
                 <li class="ml-3">
                     <a
-                        class="admin-nav-pill {activePage === 'apikeys' ? activePillClasses : nonActivePillClasses}"
-                        href="{appRoutes.admin}/apikeys">
-                        API Keys
+                        class="admin-nav-pill {activePage === page.name.toLowerCase() ? activePillClasses : nonActivePillClasses}"
+                        href="{appRoutes.admin}{page.path}">
+                        {page.name}
                     </a>
                 </li>
-            {/if}
+            {/each}
         </ul>
     </div>
 </div>
