@@ -6,6 +6,7 @@
     import { appRoutes } from './config'
     import Notifications from './components/Notifications.svelte'
     import WarriorIcon from './components/icons/WarriorIcon.svelte'
+    import GithubIcon from './components/icons/Github.svelte'
     import HollowButton from './components/HollowButton.svelte'
     import LocaleSwitcher from './components/LocaleSwitcher.svelte'
     import GlobalAlerts from './components/GlobalAlerts.svelte'
@@ -310,6 +311,8 @@
         {xfetch} />
 
     <footer class="p-6 text-center">
+        <GithubIcon />
+        &nbsp;
         <a
             href="https://github.com/StevenWeathers/thunderdome-planning-poker"
             class="{footerLinkClasses}">

@@ -1,6 +1,7 @@
 <script>
     import Countries from '../components/Countries.svelte'
     import CheckIcon from '../components/icons/CheckIcon.svelte'
+    import GithubIcon from '../components/icons/Github.svelte'
 
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -97,13 +98,14 @@
                 <h3 class="text-2xl font-bold">Open Source</h3>
                 <p class="px-2">
                     Check out the
+                    <GithubIcon />
                     <a
                         href="https://github.com/StevenWeathers/thunderdome-planning-poker"
                         class="feature-link">
                         repository
                     </a>
-                    at GitHub to request or contribute enhancements, locale
-                    translations, and bug fixes or to
+                    to request or contribute enhancements, locale translations,
+                    and bug fixes or to
                     <a
                         href="https://github.com/StevenWeathers/thunderdome-planning-poker#donations"
                         class="feature-link">

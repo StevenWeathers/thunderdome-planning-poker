@@ -19,7 +19,6 @@ const defaultAppRoutes = {
     organizations: `${PathPrefix}/organizations`,
     organization: `${PathPrefix}/organization`,
     team: `${PathPrefix}/team`,
-    alerts: `${PathPrefix}/alerts`,
 }
 const friendlyAppRoutes = {
     ...defaultAppRoutes,
