@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -359,8 +360,13 @@ func (s *server) serveWs() http.HandlerFunc {
 
 		if UserErr != nil {
 			log.Println("error finding user : " + UserErr.Error() + "\n")
-			s.clearUserCookies(w)
-			cm := websocket.FormatCloseMessage(4001, "unauthorized")
+			cm := websocket.FormatCloseMessage(4003, "duplicate session")
+
+			if fmt.Sprint(UserErr) == "user not found" {
+				s.clearUserCookies(w)
+				cm = websocket.FormatCloseMessage(4001, "unauthorized")
+			}
+
 			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
 				log.Printf("unauthorized close error: %v", err)
 			}

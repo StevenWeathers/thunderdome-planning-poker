@@ -233,6 +233,11 @@
                         warrior.delete()
                         router.route(`${appRoutes.login}/${battleId}`)
                     })
+                } else if (e.code === 4003) {
+                    eventTag('socket_duplicate', 'battle', '', () => {
+                        notifications.danger(`Duplicate battle session exists for your ID`)
+                        router.route(`${appRoutes.battles}`)
+                    })
                 } else if (e.code === 4002) {
                     eventTag('battle_warrior_abandoned', 'battle', '', () => {
                         router.route(appRoutes.battles)
