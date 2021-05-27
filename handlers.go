@@ -161,12 +161,35 @@ func (s *server) validateUserCookie(w http.ResponseWriter, r *http.Request) (str
 	return UserID, nil
 }
 
+// get the index template from embedded filesystem
+func (s *server) getIndexTemplate(FSS fs.FS) *template.Template {
+	// get the html template from dist, have it ready for requests
+	tmplContent, ioErr := fs.ReadFile(FSS, "dist/index.html")
+	if ioErr != nil {
+		log.Println("Error opening index template")
+		if !embedUseOS {
+			log.Fatal(ioErr)
+		}
+	}
+
+	tmplString := string(tmplContent)
+	tmpl, tmplErr := template.New("index").Parse(tmplString)
+	if tmplErr != nil {
+		log.Println("Error parsing index template")
+		if !embedUseOS {
+			log.Fatal(tmplErr)
+		}
+	}
+
+	return tmpl
+}
+
 /*
 	Handlers
 */
 
 // handleIndex parses the index html file, injecting any relevant data
-func (s *server) handleIndex() http.HandlerFunc {
+func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 	type AppConfig struct {
 		AllowedPointValues    []string
 		DefaultPointValues    []string
@@ -194,19 +217,7 @@ func (s *server) handleIndex() http.HandlerFunc {
 		ActiveAlerts     []interface{}
 	}
 
-	// get the html template from dist, have it ready for requests
-	tmplContent, ioErr := fs.ReadFile(f, "dist/index.html")
-	if ioErr != nil {
-		log.Println("Error opening index template")
-		log.Fatal(ioErr)
-	}
-
-	tmplString := string(tmplContent)
-	tmpl, tmplErr := template.New("index").Parse(tmplString)
-	if tmplErr != nil {
-		log.Println("Error parsing index template")
-		log.Fatal(tmplErr)
-	}
+	tmpl := s.getIndexTemplate(FSS)
 
 	appConfig := AppConfig{
 		AllowedPointValues:    viper.GetStringSlice("config.allowedPointValues"),
@@ -239,6 +250,10 @@ func (s *server) handleIndex() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		data.ActiveAlerts = ActiveAlerts // get latest alerts from memory
+
+		if embedUseOS {
+			tmpl = s.getIndexTemplate(FSS)
+		}
 
 		tmpl.Execute(w, data)
 	}

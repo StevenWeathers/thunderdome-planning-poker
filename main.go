@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
@@ -16,6 +17,7 @@ import (
 
 //go:embed schema.sql
 var schemaSQL string
+var embedUseOS bool
 var (
 	version = "dev"
 )
@@ -56,6 +58,7 @@ type server struct {
 }
 
 func main() {
+	embedUseOS = len(os.Args) > 1 && os.Args[1] == "live"
 	log.Println("Thunderdome version " + version)
 
 	InitConfig()

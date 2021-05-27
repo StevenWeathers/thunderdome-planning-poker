@@ -3,7 +3,9 @@ package main
 import (
 	"embed"
 	"io/fs"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -11,12 +13,23 @@ import (
 //go:embed dist
 var f embed.FS
 
-func (s *server) routes() {
+func getFileSystem(useOS bool) (http.FileSystem, fs.FS) {
+	if useOS {
+		log.Print("using live mode")
+		return http.FS(os.DirFS("dist")), fs.FS(os.DirFS("./"))
+	}
+
 	fsys, err := fs.Sub(f, "dist")
 	if err != nil {
 		panic(err)
 	}
-	staticHandler := http.FileServer(http.FS(fsys))
+
+	return http.FS(fsys), fs.FS(fsys)
+}
+
+func (s *server) routes() {
+	HFS, FSS := getFileSystem(embedUseOS)
+	staticHandler := http.FileServer(HFS)
 
 	// static assets
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
@@ -121,5 +134,5 @@ func (s *server) routes() {
 	// websocket for battle
 	s.router.HandleFunc("/api/arena/{id}", s.serveWs())
 	// handle index.html
-	s.router.PathPrefix("/").HandlerFunc(s.handleIndex())
+	s.router.PathPrefix("/").HandlerFunc(s.handleIndex(FSS))
 }
