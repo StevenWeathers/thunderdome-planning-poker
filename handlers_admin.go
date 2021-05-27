@@ -18,6 +18,14 @@ func (s *server) handleAppStats() http.HandlerFunc {
 			return
 		}
 
+		ActiveBattleUserCount := 0
+		for _, s := range h.arenas {
+			ActiveBattleUserCount = ActiveBattleUserCount + len(s)
+		}
+
+		AppStats.ActiveBattleCount = len(h.arenas)
+		AppStats.ActiveBattleUserCount = ActiveBattleUserCount
+
 		s.respondWithJSON(w, http.StatusOK, AppStats)
 	}
 }

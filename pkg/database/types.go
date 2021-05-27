@@ -96,14 +96,16 @@ type APIKey struct {
 
 // ApplicationStats includes user, organization, team, battle, and plan counts
 type ApplicationStats struct {
-	RegisteredCount   int `json:"registeredUserCount"`
-	UnregisteredCount int `json:"unregisteredUserCount"`
-	BattleCount       int `json:"battleCount"`
-	PlanCount         int `json:"planCount"`
-	OrganizationCount int `json:"organizationCount"`
-	DepartmentCount   int `json:"departmentCount"`
-	TeamCount         int `json:"teamCount"`
-	APIKeyCount       int `json:"apikeyCount"`
+	RegisteredCount       int `json:"registeredUserCount"`
+	UnregisteredCount     int `json:"unregisteredUserCount"`
+	BattleCount           int `json:"battleCount"`
+	PlanCount             int `json:"planCount"`
+	OrganizationCount     int `json:"organizationCount"`
+	DepartmentCount       int `json:"departmentCount"`
+	TeamCount             int `json:"teamCount"`
+	APIKeyCount           int `json:"apikeyCount"`
+	ActiveBattleCount     int `json:"activeBattleCount"`
+	ActiveBattleUserCount int `json:"activeBattleUserCount"`
 }
 
 // Organization can be a company
