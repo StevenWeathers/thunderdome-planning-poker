@@ -16,7 +16,7 @@ var f embed.FS
 func getFileSystem(useOS bool) (http.FileSystem, fs.FS) {
 	if useOS {
 		log.Print("using live mode")
-		return http.FS(os.DirFS("dist")), fs.FS(os.DirFS("./"))
+		return http.FS(os.DirFS("dist")), fs.FS(os.DirFS("dist"))
 	}
 
 	fsys, err := fs.Sub(f, "dist")
