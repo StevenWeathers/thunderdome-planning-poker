@@ -7,7 +7,7 @@ RUN mkdir /webapp
 COPY ./frontend/ /webapp/frontend/
 COPY ./build/*.js /webapp/build/
 COPY ./*.json /webapp/
-COPY ./*.js /webapp/
+# COPY ./*.js /webapp/
 WORKDIR /webapp
 # install node packages
 RUN npm set progress=false
