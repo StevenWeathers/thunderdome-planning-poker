@@ -12,6 +12,7 @@
     import HollowButton from '../components/HollowButton.svelte'
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
     import EditBattle from '../components/EditBattle.svelte'
+    import DeleteBattle from '../components/DeleteBattle.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes, PathPrefix } from '../config'
@@ -42,6 +43,7 @@
     let currentPlan = { ...defaultPlan }
     let currentTime = new Date()
     let showEditBattle = false
+    let showDeleteBattle = false
 
     $: countdown =
         battle.currentPlanId !== '' && battle.votingLocked === false
@@ -196,6 +198,7 @@
                 break
             case 'battle_conceded':
                 // battle over, goodbye.
+                notifications.warning($_('pages.battle.battleDeleted'))
                 router.route(appRoutes.battles)
                 break
             case 'jab_warrior':
@@ -379,6 +382,10 @@
         showEditBattle = !showEditBattle
     }
 
+    const toggleDeleteBattle = () => {
+        showDeleteBattle = !showDeleteBattle
+    }
+
     function handleBattleEdit(revisedBattle) {
         sendSocketEvent('revise_battle', JSON.stringify(revisedBattle))
         eventTag('revise_battle', 'battle', '')
@@ -543,7 +550,7 @@
                                 onClick="{toggleEditBattle}">
                                 {$_('actions.battle.edit')}
                             </HollowButton>
-                            <HollowButton color="red" onClick="{concedeBattle}">
+                            <HollowButton color="red" onClick="{toggleDeleteBattle}">
                                 {$_('actions.battle.delete')}
                             </HollowButton>
                         </div>
@@ -591,5 +598,11 @@
                 </h1>
             </div>
         </div>
+    {/if}
+
+    {#if showDeleteBattle}
+        <DeleteBattle
+            toggleDelete="{toggleDeleteBattle}"
+            handleDelete="{concedeBattle}" />
     {/if}
 </PageLayout>

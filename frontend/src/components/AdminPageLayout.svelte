@@ -52,8 +52,7 @@
 </style>
 
 <div class="flex px-6 py-2 border-b-2 bg-gray-300 border-gray-400">
-    <div class="w-1/3">{$_('pages.admin.title')}</div>
-    <div class="w-2/3">
+    <div class="w-full">
         <ul class="flex justify-end">
             {#each pages as page}
                 <li class="ml-3">

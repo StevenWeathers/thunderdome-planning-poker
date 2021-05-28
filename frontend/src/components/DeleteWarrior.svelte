@@ -1,48 +1,28 @@
 <script>
     import SolidButton from './SolidButton.svelte'
-    import CloseIcon from './icons/CloseIcon.svelte'
+    import Modal from './Modal.svelte'
     import { _ } from '../i18n'
 
     export let handleDeleteAccount = () => {}
     export let toggleDeleteAccount = () => {}
 </script>
 
-<div
-    class="fixed inset-0 flex items-center z-40 max-h-screen overflow-y-scroll">
-    <div class="fixed inset-0 bg-gray-900 opacity-75"></div>
-
-    <div
-        class="relative mx-4 md:mx-auto w-full md:w-2/3 lg:w-3/5 xl:w-1/3 z-50
-        max-h-full">
-        <div class="py-8">
-            <div class="shadow-xl bg-white rounded-lg p-4 xl:p-6 max-h-full">
-                <div class="flex justify-end mb-2">
-                    <button
-                        aria-label="close"
-                        on:click="{toggleDeleteAccount}"
-                        class="text-gray-800">
-                        <CloseIcon />
-                    </button>
-                </div>
-
-                <div class="mb-4">
-                    <p class="font-bold text-xl text-red-600">
-                        {$_('pages.warriorProfile.delete.warningStatement')}
-                    </p>
-                </div>
-                <div class="text-right">
-                    <button
-                        type="button"
-                        class="inline-block align-baseline font-bold text-sm
-                        text-blue-500 hover:text-blue-800 mr-4"
-                        on:click="{toggleDeleteAccount}">
-                        {$_('pages.warriorProfile.delete.cancelButton')}
-                    </button>
-                    <SolidButton onClick="{handleDeleteAccount}" color="red">
-                        {$_('pages.warriorProfile.delete.confirmButton')}
-                    </SolidButton>
-                </div>
-            </div>
-        </div>
+<Modal closeModal={toggleDeleteAccount}>
+    <div class="mb-4">
+        <p class="font-bold text-xl text-red-600">
+            {$_('pages.warriorProfile.delete.warningStatement')}
+        </p>
     </div>
-</div>
+    <div class="text-right">
+        <button
+            type="button"
+            class="inline-block align-baseline font-bold text-sm
+            text-blue-500 hover:text-blue-800 mr-4"
+            on:click="{toggleDeleteAccount}">
+            {$_('pages.warriorProfile.delete.cancelButton')}
+        </button>
+        <SolidButton onClick="{handleDeleteAccount}" color="red">
+            {$_('pages.warriorProfile.delete.confirmButton')}
+        </SolidButton>
+    </div>
+</Modal>

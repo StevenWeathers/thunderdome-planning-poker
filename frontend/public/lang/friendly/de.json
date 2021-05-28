@@ -345,12 +345,43 @@
                 "highest": "H\u00F6chster",
                 "showVoters": "Zeige Sch\u00E4tzer",
                 "unknownWarrior": "Unbekannter Benutzer"
-            }
+            },
+            "battleDeleted": "Game deleted"
         }
     },
     "footer": {
         "authoredBy": "by {authorOpen}Steven Weathers{authorClose}.",
         "license": "The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.",
         "poweredBy": "Powered by {svelteOpen}Svelte{svelteClose} and {goOpen}Go{goClose}"
-    }
+    },
+    "plans": "Stories",
+    "cancel": "Cancel",
+    "cannotBeUndone": "This cannot be undone.",
+    "userEmail": "User Email",
+    "userEmailPlaceholder": "Enter a registered users email",
+    "role": "Role",
+    "rolePlaceholder": "Select users role",
+    "addUser": "addUser",
+    "flag": "Flag",
+    "alertName": "Alert Name",
+    "alertNamePlaceholder": "Enter an alert name",
+    "alertType": "Alert Type",
+    "alertTypePlaceholder": "Select an alert type",
+    "alertContent": "Alert Content",
+    "alertContentPlaceholder": "Enter alert content",
+    "alertActive": "Active",
+    "alertRegisteredOnly": "Registered Only",
+    "alertAllowDismiss": "Allow dismiss",
+    "alertSave": "Save Alert",
+    "alertDelete": "Delete Alert",
+    "alertDeleteConfirmation": "Are you sure you want to delete this alert?",
+    "departmentName": "Department Name",
+    "departmentNamePlaceholder": "Enter an department name",
+    "departmentSave": "Save Department",
+    "organizationName": "Organization Name",
+    "organizationNamePlaceholder": "Enter an organization name",
+    "organizationSave": "Save Organization",
+    "teamName": "Team Name",
+    "teamNamePlaceholder": "Enter an team name",
+    "teamSave": "Save Team"
 }

@@ -1,5 +1,6 @@
 <script>
     import { countryMap } from '../country'
+    import { _ } from '../i18n'
 
     export let country = ''
     export let size = 64
@@ -8,6 +9,6 @@
 
 <img
     src="https://www.countryflags.io/{country.toLowerCase()}/shiny/{size}.png"
-    alt="{countryMap[country]} Flag"
+    alt="{countryMap[country]} {$_('flag')}"
     title="{countryMap[country]}"
     class="{additionalClass}" />

@@ -10,7 +10,7 @@
 <Modal closeModal={toggleDelete}>
     <div class="mb-4">
         <p class="font-bold text-xl text-red-600">
-            {$_('alertDeleteConfirmation')}
+            Are you sure you want to delete this battle?
             <br />
             {$_('cannotBeUndone')}
         </p>
@@ -24,7 +24,7 @@
             {$_('cancel')}
         </button>
         <SolidButton onClick="{handleDelete}" color="red">
-            {$_('alertDelete')}
+            Delete Battle
         </SolidButton>
     </div>
 </Modal>
