@@ -84,17 +84,13 @@
                     )
                 }
             } catch (e) {
-                notifications.danger(
-                    $_('importJiraXMLReadFileError'),
-                )
+                notifications.danger($_('importJiraXMLReadFileError'))
                 eventTag('jira_import_failed', 'battle', `ferror reading file`)
             }
         }
 
         reader.onerror = () => {
-            notifications.danger(
-                $_('importJiraXMLReadFileError'),
-            )
+            notifications.danger($_('importJiraXMLReadFileError'))
             eventTag('jira_import_failed', 'battle', `ferror reading file`)
         }
     }

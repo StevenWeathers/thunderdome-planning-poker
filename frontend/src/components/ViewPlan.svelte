@@ -15,27 +15,19 @@
 
 <Modal closeModal="{togglePlanView}" widthClasses="md:w-2/3 lg:w-3/5">
     <div class="mb-4">
-        <div class="text-sm font-bold mb-2">
-            {$_('planType')}
-        </div>
+        <div class="text-sm font-bold mb-2">{$_('planType')}</div>
         {planType}
     </div>
     <div class="mb-4">
-        <div class="text-sm font-bold mb-2">
-            {$_('planName')}
-        </div>
+        <div class="text-sm font-bold mb-2">{$_('planName')}</div>
         {planName}
     </div>
     <div class="mb-4">
-        <div class="text-sm font-bold mb-2">
-            {$_('planReferenceId')}
-        </div>
+        <div class="text-sm font-bold mb-2">{$_('planReferenceId')}</div>
         {referenceId}
     </div>
     <div class="mb-4">
-        <div class="text-sm font-bold mb-2">
-            {$_('planLink')}
-        </div>
+        <div class="text-sm font-bold mb-2">{$_('planLink')}</div>
         {#if planLink !== ''}
             <a href="{planLink}" target="_blank" class="text-blue-800">
                 <ExternalLinkIcon />
@@ -44,17 +36,13 @@
         {/if}
     </div>
     <div class="mb-4">
-        <div class="text-sm font-bold mb-2">
-            {$_('planDescription')}
-        </div>
+        <div class="text-sm font-bold mb-2">{$_('planDescription')}</div>
         <div class="unreset">
             {@html description}
         </div>
     </div>
     <div class="mb-4">
-        <div class="text-sm font-bold mb-2">
-            {$_('planAcceptanceCriteria')}
-        </div>
+        <div class="text-sm font-bold mb-2">{$_('planAcceptanceCriteria')}</div>
         <div class="unreset">
             {@html acceptanceCriteria}
         </div>

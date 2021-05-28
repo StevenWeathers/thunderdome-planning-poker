@@ -104,9 +104,7 @@
                 class="{showCompleted ? 'hover:text-blue-600 text-blue-400' : 'border-b border-blue-500 text-blue-600 hover:text-blue-800'}
                 bg-white inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(false)}">
-                {$_('unpointed', {
-                    values: { count: unpointedPlans.length },
-                })}
+                {$_('unpointed', { values: { count: unpointedPlans.length } })}
             </button>
         </li>
         <li class="mr-1 {showCompleted ? 'mr-1' : ''}">
@@ -114,9 +112,7 @@
                 class="{showCompleted ? 'border-b border-blue-500 text-blue-600 hover:text-blue-800' : 'hover:text-blue-600 text-blue-400'}
                 bg-white inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(true)}">
-                {$_('pointed', {
-                    values: { count: pointedPlans.length },
-                })}
+                {$_('pointed', { values: { count: pointedPlans.length } })}
             </button>
         </li>
     </ul>

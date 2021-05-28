@@ -89,9 +89,7 @@
 <section class="bg-white">
     <div class="container mx-auto px-4 py-6 lg:py-10">
         <div class="text-center mb-6">
-            <h2 class="text-4xl font-bold">
-                {$_('landingFeatures')}
-            </h2>
+            <h2 class="text-4xl font-bold">{$_('landingFeatures')}</h2>
         </div>
         <div class="flex text-center mb-8">
             <div class="w-1/2">

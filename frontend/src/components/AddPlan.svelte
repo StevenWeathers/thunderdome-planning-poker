@@ -134,9 +134,7 @@
                 placeholder="{$_('planLinkPlaceholder')}" />
         </div>
         <div class="mb-16">
-            <div class="text-sm font-bold mb-2">
-                {$_('planDescription')}
-            </div>
+            <div class="text-sm font-bold mb-2">{$_('planDescription')}</div>
             <div class="h-48">
                 <div
                     class="w-full"
@@ -159,9 +157,7 @@
         </div>
         <div class="text-right">
             <div>
-                <SolidButton type="submit">
-                    {$_('save')}
-                </SolidButton>
+                <SolidButton type="submit">{$_('save')}</SolidButton>
             </div>
         </div>
     </form>
