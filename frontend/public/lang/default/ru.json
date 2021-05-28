@@ -82,7 +82,10 @@
                         "label": "Автозавершение голосования когда все проголосовали"
                     },
                     "averageRounding": {
-                        "label": "Method of Point Average Rounding"
+                        "label": "Method of Point Average Rounding",
+                        "ceil": "Ceil",
+                        "floor": "Floor",
+                        "round": "Round"
                     }
                 }
             }

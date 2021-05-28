@@ -189,7 +189,7 @@
                 id="averageRounding"
                 name="averageRounding">
                 {#each allowedPointAverages as item}
-                    <option value="{item}">{item}</option>
+                    <option value="{item}">{$_('pages.myBattles.createBattle.fields.averageRounding.' + item)}</option>
                 {/each}
             </select>
             <div
