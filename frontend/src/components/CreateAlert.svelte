@@ -48,21 +48,20 @@
     $: createDisabled = alertName === '' || alertType === '' || content === ''
 </script>
 
-<Modal closeModal={toggleClose}>
+<Modal closeModal="{toggleClose}">
     <form on:submit="{onSubmit}" name="createAlert">
         <div class="mb-4">
             <label
                 class="block text-gray-700 text-sm font-bold mb-2"
                 for="alertName">
-                {$_('alertName')}
+                {$_('name')}
             </label>
             <input
                 bind:value="{alertName}"
                 placeholder="{$_('alertNamePlaceholder')}"
-                class="bg-gray-200 border-gray-200 border-2
-                appearance-none rounded w-full py-2 px-3 text-gray-700
-                leading-tight focus:outline-none focus:bg-white
-                focus:border-purple-500"
+                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 leading-tight
+                focus:outline-none focus:bg-white focus:border-purple-500"
                 id="alertName"
                 name="alertName"
                 required />
@@ -70,17 +69,16 @@
 
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2" for="alertType">
-                {$_('alertType')}
+                {$_('type')}
             </label>
             <div class="relative">
                 <select
                     name="alertType"
                     bind:value="{alertType}"
                     required
-                    class="block appearance-none w-full border-2
-                    border-gray-400 text-gray-700 py-3 px-4 pr-8 rounded
-                    leading-tight focus:outline-none
-                    focus:border-purple-500">
+                    class="block appearance-none w-full border-2 border-gray-400
+                    text-gray-700 py-3 px-4 pr-8 rounded leading-tight
+                    focus:outline-none focus:border-purple-500">
                     <option value="" disabled>
                         {$_('alertTypePlaceholder')}
                     </option>
@@ -89,8 +87,8 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0
-                    right-0 flex items-center px-2 text-gray-700">
+                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                    items-center px-2 text-gray-700">
                     <DownCarrotIcon />
                 </div>
             </div>
@@ -105,10 +103,9 @@
             <input
                 bind:value="{content}"
                 placeholder="{$_('alertContentPlaceholder')}"
-                class="bg-gray-200 border-gray-200 border-2
-                appearance-none rounded w-full py-2 px-3 text-gray-700
-                leading-tight focus:outline-none focus:bg-white
-                focus:border-purple-500"
+                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 leading-tight
+                focus:outline-none focus:bg-white focus:border-purple-500"
                 id="alertContent"
                 name="alertContent"
                 required />
@@ -121,7 +118,7 @@
                     bind:checked="{active}"
                     id="active"
                     name="active" />
-                {$_('alertActive')}
+                {$_('active')}
             </label>
         </div>
         <div class="mb-4">

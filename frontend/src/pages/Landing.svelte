@@ -71,7 +71,7 @@
                         text-yellow-thunder py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded"
                         href="{$warrior.id ? appRoutes.battles : appRoutes.register}">
-                        {$_('actions.battle.create')}
+                        {$_('battleCreate')}
                     </a>
                 </div>
             </div>

@@ -238,7 +238,7 @@
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'battle', '', () => {
-                        notifications.danger(`Duplicate battle session exists for your ID`)
+                        notifications.danger($_('sessionDuplicate'))
                         router.route(`${appRoutes.battles}`)
                     })
                 } else if (e.code === 4002) {
@@ -548,16 +548,18 @@
                             <HollowButton
                                 color="blue"
                                 onClick="{toggleEditBattle}">
-                                {$_('actions.battle.edit')}
+                                {$_('battleEdit')}
                             </HollowButton>
-                            <HollowButton color="red" onClick="{toggleDeleteBattle}">
-                                {$_('actions.battle.delete')}
+                            <HollowButton
+                                color="red"
+                                onClick="{toggleDeleteBattle}">
+                                {$_('battleDelete')}
                             </HollowButton>
                         </div>
                     {:else}
                         <div class="mt-4 text-right">
                             <HollowButton color="red" onClick="{abandonBattle}">
-                                {$_('actions.battle.abandon')}
+                                {$_('battleAbandon')}
                             </HollowButton>
                         </div>
                     {/if}

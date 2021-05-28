@@ -91,7 +91,7 @@
                 getUsers()
             })
             .catch(function(error) {
-                notifications.danger('Error getting team')
+                notifications.danger($_('teamGetError'))
             })
     }
 
@@ -103,7 +103,7 @@
                 users = result
             })
             .catch(function(error) {
-                notifications.danger('Error getting team users')
+                notifications.danger($_('teamGetUsersError'))
             })
     }
 
@@ -115,7 +115,7 @@
                 battles = result
             })
             .catch(function(error) {
-                notifications.danger('Error getting team battles')
+                notifications.danger($_('teamGetBattlesError'))
             })
     }
 
@@ -129,11 +129,11 @@
             .then(function() {
                 eventTag('team_add_user', 'engagement', 'success')
                 toggleAddUser()
-                notifications.success('User added successfully.')
+                notifications.success($_('userAddSuccess'))
                 getUsers()
             })
             .catch(function() {
-                notifications.danger('Error attempting to add user to team')
+                notifications.danger($_('userAddError'))
                 eventTag('team_add_user', 'engagement', 'failure')
             })
     }
@@ -147,13 +147,11 @@
             .then(function() {
                 eventTag('team_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
-                notifications.success('User removed successfully.')
+                notifications.success($_('userRemoveSuccess'))
                 getUsers()
             })
             .catch(function() {
-                notifications.danger(
-                    'Error attempting to remove user from team',
-                )
+                notifications.danger($_('userRemoveError'))
                 eventTag('team_remove_user', 'engagement', 'failure')
             })
     }
@@ -167,13 +165,11 @@
             .then(function() {
                 eventTag('team_remove_battle', 'engagement', 'success')
                 toggleRemoveBattle(null)()
-                notifications.success('Battle removed successfully.')
+                notifications.success($_('battleRemoveSuccess'))
                 getBattles()
             })
             .catch(function() {
-                notifications.danger(
-                    'Error attempting to remove battle from team',
-                )
+                notifications.danger($_('battleRemoveError'))
                 eventTag('team_remove_battle', 'engagement', 'failure')
             })
     }
@@ -200,7 +196,7 @@
     <h1 class="text-3xl font-bold">Team: {team.name}</h1>
     {#if organizationId}
         <div class="font-bold">
-            Organization
+            {$_('organization')}
             <ChevronRight class="inline-block" />
             <a
                 class="text-blue-500 hover:text-blue-800"
@@ -210,7 +206,7 @@
             {#if departmentId}
                 &nbsp;
                 <ChevronRight class="inline-block" />
-                Department
+                {$_('department')}
                 <ChevronRight class="inline-block" />
                 <a
                     class="text-blue-500 hover:text-blue-800"
@@ -225,13 +221,15 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded flex">
             <div class="w-full md:w-1/2 lg:w-3/5 md:pr-4">
                 <div class="flex w-full">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Battles</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                        {$_('battles')}
+                    </h2>
                 </div>
 
                 <table class="table-fixed w-full">
                     <thead>
                         <tr>
-                            <th class="w-2/6 px-4 py-2">Name</th>
+                            <th class="w-2/6 px-4 py-2">{$_('name')}</th>
                             <th class="w-1/6 px-4 py-2"></th>
                         </tr>
                     </thead>
@@ -244,12 +242,12 @@
                                         <HollowButton
                                             onClick="{toggleRemoveBattle(battle.id)}"
                                             color="red">
-                                            Remove
+                                            {$_('remove')}
                                         </HollowButton>
                                     {/if}
                                     <HollowButton
                                         href="{appRoutes.battle}/{battle.id}">
-                                        Join Battle
+                                        {$_('battleJoin')}
                                     </HollowButton>
                                 </td>
                             </tr>
@@ -284,7 +282,7 @@
                     <div class="text-right">
                         {#if isAdmin}
                             <HollowButton onClick="{toggleAddUser}">
-                                Add User
+                                {$_('userAdd')}
                             </HollowButton>
                         {/if}
                     </div>
@@ -294,9 +292,9 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">Name</th>
-                        <th class="w-2/6 px-4 py-2">Email</th>
-                        <th class="w-1/6 px-4 py-2">Role</th>
+                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
+                        <th class="w-2/6 px-4 py-2">{$_('email')}</th>
+                        <th class="w-1/6 px-4 py-2">{$_('role')}</th>
                         <th class="w-1/6 px-4 py-2"></th>
                     </tr>
                 </thead>
@@ -311,7 +309,7 @@
                                     <HollowButton
                                         onClick="{toggleRemoveUser(usr.id)}"
                                         color="red">
-                                        Remove
+                                        {$_('remove')}
                                     </HollowButton>
                                 {/if}
                             </td>

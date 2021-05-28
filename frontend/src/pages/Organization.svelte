@@ -77,7 +77,7 @@
                 getUsers()
             })
             .catch(function(error) {
-                notifications.danger('Error getting organization')
+                notifications.danger($_('organizationGetError'))
             })
     }
 
@@ -91,7 +91,7 @@
                 departments = result
             })
             .catch(function(error) {
-                notifications.danger('Error getting organization departments')
+                notifications.danger($_('organizationGetDepartmentsError'))
             })
     }
 
@@ -105,7 +105,7 @@
                 teams = result
             })
             .catch(function(error) {
-                notifications.danger('Error getting organization teams')
+                notifications.danger($_('organizationGetTeamsError'))
             })
     }
 
@@ -119,7 +119,7 @@
                 users = result
             })
             .catch(function(error) {
-                notifications.danger('Error getting organization users')
+                notifications.danger($_('organizationGetUsersError'))
             })
     }
 
@@ -138,9 +138,7 @@
                 })
             })
             .catch(function(error) {
-                notifications.danger(
-                    'Error attempting to create organization department',
-                )
+                notifications.danger($_('departmentCreateError'))
                 eventTag('create_department', 'engagement', 'failure')
             })
     }
@@ -155,13 +153,11 @@
             .then(function(organization) {
                 eventTag('create_organization_team', 'engagement', 'success')
                 toggleCreateTeam()
-                notifications.success('Team created successfully.')
+                notifications.success($_('teamCreateSuccess'))
                 getTeams()
             })
             .catch(function(error) {
-                notifications.danger(
-                    'Error attempting to create organization team',
-                )
+                notifications.danger($_('teamCreateError'))
                 eventTag('create_organization_team', 'engagement', 'failure')
             })
     }
@@ -176,13 +172,11 @@
             .then(function() {
                 eventTag('organization_add_user', 'engagement', 'success')
                 toggleAddUser()
-                notifications.success('User added successfully.')
+                notifications.success($_('userAddSuccess'))
                 getUsers()
             })
             .catch(function() {
-                notifications.danger(
-                    'Error attempting to add user to organization',
-                )
+                notifications.danger($_('userAddError'))
                 eventTag('organization_add_user', 'engagement', 'failure')
             })
     }
@@ -199,13 +193,11 @@
             .then(function() {
                 eventTag('organization_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
-                notifications.success('User removed successfully.')
+                notifications.success($_('userRemoveSuccess'))
                 getUsers()
             })
             .catch(function() {
-                notifications.danger(
-                    'Error attempting to remove user from organization',
-                )
+                notifications.danger($_('userRemoveError'))
                 eventTag('organization_remove_user', 'engagement', 'failure')
             })
     }
@@ -222,11 +214,11 @@
             .then(function() {
                 eventTag('organization_delete_team', 'engagement', 'success')
                 toggleDeleteTeam(null)()
-                notifications.success('Team deleted successfully.')
+                notifications.success($_('teamDeleteSuccess'))
                 getTeams()
             })
             .catch(function() {
-                notifications.danger('Error attempting to delete team')
+                notifications.danger($_('teamDeleteError'))
                 eventTag('organization_delete_team', 'engagement', 'failure')
             })
     }
@@ -250,14 +242,14 @@
             <div class="flex w-full">
                 <div class="w-4/5">
                     <h2 class="text-2xl md:text-3xl font-bold mb-4">
-                        Departments
+                        {$_('departments')}
                     </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
                         {#if isAdmin}
                             <HollowButton onClick="{toggleCreateDepartment}">
-                                Create Department
+                                {$_('departmentCreate')}
                             </HollowButton>
                         {/if}
                     </div>
@@ -267,7 +259,7 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">Name</th>
+                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -291,13 +283,15 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Teams</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                        {$_('teams')}
+                    </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
                         {#if isAdmin}
                             <HollowButton onClick="{toggleCreateTeam}">
-                                Create Team
+                                {$_('teamCreate')}
                             </HollowButton>
                         {/if}
                     </div>
@@ -307,7 +301,7 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-4/6 px-4 py-2">Name</th>
+                        <th class="w-4/6 px-4 py-2">{$_('name')}</th>
                         <th class="w-2/6 px-4 py-2"></th>
                     </tr>
                 </thead>
@@ -326,7 +320,7 @@
                                     <HollowButton
                                         onClick="{toggleDeleteTeam(team.id)}"
                                         color="red">
-                                        Delete
+                                        {$_('delete')}
                                     </HollowButton>
                                 {/if}
                             </td>
@@ -341,13 +335,15 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Users</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                        {$_('users')}
+                    </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
                         {#if isAdmin}
                             <HollowButton onClick="{toggleAddUser}">
-                                Add User
+                                {$_('userAdd')}
                             </HollowButton>
                         {/if}
                     </div>
@@ -357,9 +353,9 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">Name</th>
-                        <th class="w-2/6 px-4 py-2">Email</th>
-                        <th class="w-1/6 px-4 py-2">Role</th>
+                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
+                        <th class="w-2/6 px-4 py-2">{$_('email')}</th>
+                        <th class="w-1/6 px-4 py-2">{$_('role')}</th>
                         <th class="w-1/6 px-4 py-2"></th>
                     </tr>
                 </thead>
@@ -374,7 +370,7 @@
                                     <HollowButton
                                         onClick="{toggleRemoveUser(usr.id)}"
                                         color="red">
-                                        Remove
+                                        {$_('remove')}
                                     </HollowButton>
                                 {/if}
                             </td>

@@ -9,6 +9,7 @@
 
 <img
     src="https://www.countryflags.io/{country.toLowerCase()}/shiny/{size}.png"
-    alt="{countryMap[country]} {$_('flag')}"
+    alt="{countryMap[country]}
+    {$_('flag')}"
     title="{countryMap[country]}"
     class="{additionalClass}" />

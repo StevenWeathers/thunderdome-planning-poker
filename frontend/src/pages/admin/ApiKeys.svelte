@@ -71,7 +71,7 @@
 
 <AdminPageLayout activePage="apikeys">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">API Keys</h1>
+        <h1 class="text-3xl md:text-4xl font-bold">{$_('apiKeys')}</h1>
     </div>
 
     <div class="w-full">
@@ -79,12 +79,12 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-3/12 px-4 py-2">Name</th>
-                        <th class="w-1/12 px-4 py-2">Prefix</th>
-                        <th class="w-2/12 px-4 py-2">Email</th>
-                        <th class="w-1/12 px-4 py-2">Active</th>
-                        <th class="w-2/12 px-4 py-2">Created Date</th>
-                        <th class="w-2/12 px-4 py-2">Updated Date</th>
+                        <th class="w-3/12 px-4 py-2">{$_('name')}</th>
+                        <th class="w-1/12 px-4 py-2">{$_('prefix')}</th>
+                        <th class="w-2/12 px-4 py-2">{$_('email')}</th>
+                        <th class="w-1/12 px-4 py-2">{$_('active')}</th>
+                        <th class="w-2/12 px-4 py-2">{$_('dateCreated')}</th>
+                        <th class="w-2/12 px-4 py-2">{$_('dateUpdated')}</th>
                         <th class="w-1/12 px-4 py-2"></th>
                     </tr>
                 </thead>

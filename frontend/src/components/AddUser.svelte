@@ -20,7 +20,7 @@
     $: createDisabled = userEmail === '' || role === ''
 </script>
 
-<Modal closeModal={toggleAdd}>
+<Modal closeModal="{toggleAdd}">
     <form on:submit="{onSubmit}" name="teamAddUser">
         <div class="mb-4">
             <label
@@ -31,28 +31,24 @@
             <input
                 bind:value="{userEmail}"
                 placeholder="{$_('userEmailPlaceholder')}"
-                class="bg-gray-200 border-gray-200 border-2
-                appearance-none rounded w-full py-2 px-3 text-gray-700
-                leading-tight focus:outline-none focus:bg-white
-                focus:border-purple-500"
+                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 leading-tight
+                focus:outline-none focus:bg-white focus:border-purple-500"
                 id="userEmail"
                 name="userEmail"
                 required />
         </div>
 
         <div class="mb-4">
-            <label
-                class="text-gray-700 text-sm font-bold mb-2"
-                for="userRole">
+            <label class="text-gray-700 text-sm font-bold mb-2" for="userRole">
                 {$_('role')}
             </label>
             <div class="relative">
                 <select
                     bind:value="{role}"
-                    class="block appearance-none w-full border-2
-                    border-gray-400 text-gray-700 py-3 px-4 pr-8 rounded
-                    leading-tight focus:outline-none
-                    focus:border-purple-500"
+                    class="block appearance-none w-full border-2 border-gray-400
+                    text-gray-700 py-3 px-4 pr-8 rounded leading-tight
+                    focus:outline-none focus:border-purple-500"
                     id="userRole"
                     name="userRole">
                     <option value="">{$_('rolePlaceholder')}</option>
@@ -61,8 +57,8 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0
-                    right-0 flex items-center px-2 text-gray-700">
+                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                    items-center px-2 text-gray-700">
                     <DownCarrotIcon />
                 </div>
             </div>

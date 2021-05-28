@@ -73,7 +73,7 @@
                                 class="inline text-sm text-red-500
                                 hover:text-red-800 bg-transparent
                                 border-transparent">
-                                {$_('actions.warrior.demote')}
+                                {$_('demote')}
                             </button>
                         {:else}&nbsp;{$_('pages.battle.warriorLeader')}{/if}
                     </p>
@@ -83,14 +83,14 @@
                         class="inline-block align-baseline text-sm
                         text-green-500 hover:text-green-800 bg-transparent
                         border-transparent">
-                        {$_('actions.warrior.promote')}
+                        {$_('promote')}
                     </button>
                     &nbsp;|&nbsp;
                     <button
                         on:click="{jabWarrior}"
                         class="inline-block align-baseline text-sm text-blue-500
                         hover:text-blue-800 bg-transparent border-transparent">
-                        {$_('actions.warrior.nudge')}
+                        {$_('warriorNudge')}
                     </button>
                 {/if}
             </div>

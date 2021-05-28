@@ -13,7 +13,7 @@
     export let acceptanceCriteria = ''
 </script>
 
-<Modal closeModal={togglePlanView} widthClasses="md:w-2/3 lg:w-3/5">
+<Modal closeModal="{togglePlanView}" widthClasses="md:w-2/3 lg:w-3/5">
     <div class="mb-4">
         <div class="text-sm font-bold mb-2">
             {$_('actions.plan.fields.type.label')}
@@ -37,10 +37,7 @@
             {$_('actions.plan.fields.link.label')}
         </div>
         {#if planLink !== ''}
-            <a
-                href="{planLink}"
-                target="_blank"
-                class="text-blue-800">
+            <a href="{planLink}" target="_blank" class="text-blue-800">
                 <ExternalLinkIcon />
                 {planLink}
             </a>

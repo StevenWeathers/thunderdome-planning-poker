@@ -17,7 +17,7 @@
     $: createDisabled = organizationName === ''
 </script>
 
-<Modal closeModal={toggleCreate}>
+<Modal closeModal="{toggleCreate}">
     <form on:submit="{onSubmit}" name="createOrganization">
         <div class="mb-4">
             <label
@@ -28,10 +28,9 @@
             <input
                 bind:value="{organizationName}"
                 placeholder="{$_('organizationNamePlaceholder')}"
-                class="bg-gray-200 border-gray-200 border-2
-                appearance-none rounded w-full py-2 px-3 text-gray-700
-                leading-tight focus:outline-none focus:bg-white
-                focus:border-purple-500"
+                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 leading-tight
+                focus:outline-none focus:bg-white focus:border-purple-500"
                 id="organizationName"
                 name="organizationName"
                 required />

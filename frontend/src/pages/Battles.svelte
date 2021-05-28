@@ -66,7 +66,7 @@
                         </div>
                         <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                             <HollowButton href="{appRoutes.battle}/{battle.id}">
-                                {$_('actions.battle.join')}
+                                {$_('battleJoin')}
                             </HollowButton>
                         </div>
                     </div>

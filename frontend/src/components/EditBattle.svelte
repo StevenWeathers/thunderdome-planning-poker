@@ -36,7 +36,9 @@
     }
 </script>
 
-<Modal closeModal={toggleEditBattle} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal
+    closeModal="{toggleEditBattle}"
+    widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
     <form on:submit="{saveBattle}" name="createBattle">
         <div class="mb-4">
             <label
@@ -49,10 +51,9 @@
                     name="battleName"
                     bind:value="{battleName}"
                     placeholder="{$_('pages.myBattles.createBattle.fields.name.placeholder')}"
-                    class="bg-gray-200 border-gray-200 border-2
-                    appearance-none rounded w-full py-2 px-3
-                    text-gray-700 leading-tight focus:outline-none
-                    focus:bg-white focus:border-purple-500"
+                    class="bg-gray-200 border-gray-200 border-2 appearance-none
+                    rounded w-full py-2 px-3 text-gray-700 leading-tight
+                    focus:outline-none focus:bg-white focus:border-purple-500"
                     id="battleName"
                     required />
             </div>
@@ -72,8 +73,8 @@
                     <label
                         class="
                         {points.includes(point) ? checkedPointColor : uncheckedPointColor}
-                        cursor-pointer font-bold border p-2 mr-2
-                        xl:mr-1 mb-2 xl:mb-0 rounded inline-block {!votingLocked ? 'opacity-25 cursor-not-allowed' : 'cursor-pointer'}">
+                        cursor-pointer font-bold border p-2 mr-2 xl:mr-1 mb-2
+                        xl:mb-0 rounded inline-block {!votingLocked ? 'opacity-25 cursor-not-allowed' : 'cursor-pointer'}">
                         <input
                             type="checkbox"
                             bind:group="{points}"
@@ -95,10 +96,9 @@
             <div class="relative">
                 <select
                     bind:value="{pointAverageRounding}"
-                    class="block appearance-none w-full border-2
-                    border-gray-400 text-gray-700 py-3 px-4 pr-8
-                    rounded leading-tight focus:outline-none
-                    focus:border-purple-500"
+                    class="block appearance-none w-full border-2 border-gray-400
+                    text-gray-700 py-3 px-4 pr-8 rounded leading-tight
+                    focus:outline-none focus:border-purple-500"
                     id="averageRounding"
                     name="averageRounding">
                     {#each allowedPointAverages as item}
@@ -106,8 +106,8 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0
-                    right-0 flex items-center px-2 text-gray-700">
+                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                    items-center px-2 text-gray-700">
                     <DownCarrotIcon />
                 </div>
             </div>
@@ -126,10 +126,7 @@
         </div>
 
         <div class="text-right">
-            <SolidButton type="submit">
-                {$_('actions.battle.save')}
-            </SolidButton>
+            <SolidButton type="submit">{$_('save')}</SolidButton>
         </div>
     </form>
 </Modal>
-

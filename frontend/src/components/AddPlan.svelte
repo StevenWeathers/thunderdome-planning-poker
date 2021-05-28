@@ -63,12 +63,10 @@
     }
 </script>
 
-<Modal closeModal={toggleAddPlan} widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+<Modal closeModal="{toggleAddPlan}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
     <form on:submit="{handleSubmit}" name="addPlan">
         <div class="mb-4">
-            <label
-                class="block text-sm font-bold mb-2"
-                for="planName">
+            <label class="block text-sm font-bold mb-2" for="planName">
                 {$_('actions.plan.fields.type.label')}
             </label>
             <div class="relative">
@@ -76,10 +74,9 @@
                     name="planType"
                     bind:value="{planType}"
                     required
-                    class="block appearance-none w-full border-2
-                    border-gray-400 text-gray-700 py-3 px-4 pr-8
-                    rounded leading-tight focus:outline-none
-                    focus:border-purple-500">
+                    class="block appearance-none w-full border-2 border-gray-400
+                    text-gray-700 py-3 px-4 pr-8 rounded leading-tight
+                    focus:outline-none focus:border-purple-500">
                     <option value="" disabled>
                         {$_('actions.plan.fields.type.placeholder')}
                     </option>
@@ -88,23 +85,20 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0
-                    right-0 flex items-center px-2 text-gray-700">
+                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                    items-center px-2 text-gray-700">
                     <DownCarrotIcon />
                 </div>
             </div>
         </div>
         <div class="mb-4">
-            <label
-                class="block text-sm font-bold mb-2"
-                for="planName">
+            <label class="block text-sm font-bold mb-2" for="planName">
                 {$_('actions.plan.fields.name.label')}
             </label>
             <input
-                class="bg-gray-200 border-gray-200 border-2
-                appearance-none rounded w-full py-2 px-3
-                text-gray-700 leading-tight focus:outline-none
-                focus:bg-white focus:border-purple-500"
+                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 leading-tight
+                focus:outline-none focus:bg-white focus:border-purple-500"
                 type="text"
                 id="planName"
                 name="planName"
@@ -112,16 +106,13 @@
                 placeholder="{$_('actions.plan.fields.name.placeholder')}" />
         </div>
         <div class="mb-4">
-            <label
-                class="block text-sm font-bold mb-2"
-                for="referenceId">
+            <label class="block text-sm font-bold mb-2" for="referenceId">
                 {$_('actions.plan.fields.referenceId.label')}
             </label>
             <input
-                class="bg-gray-200 border-gray-200 border-2
-                appearance-none rounded w-full py-2 px-3
-                text-gray-700 leading-tight focus:outline-none
-                focus:bg-white focus:border-purple-500"
+                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 leading-tight
+                focus:outline-none focus:bg-white focus:border-purple-500"
                 type="text"
                 id="referenceId"
                 name="referenceId"
@@ -129,16 +120,13 @@
                 placeholder="{$_('actions.plan.fields.referenceId.placeholder')}" />
         </div>
         <div class="mb-4">
-            <label
-                class="block text-sm font-bold mb-2"
-                for="planLink">
+            <label class="block text-sm font-bold mb-2" for="planLink">
                 {$_('actions.plan.fields.link.label')}
             </label>
             <input
-                class="bg-gray-200 border-gray-200 border-2
-                appearance-none rounded w-full py-2 px-3
-                text-gray-700 leading-tight focus:outline-none
-                focus:bg-white focus:border-purple-500"
+                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 leading-tight
+                focus:outline-none focus:bg-white focus:border-purple-500"
                 type="text"
                 id="planLink"
                 name="planLink"

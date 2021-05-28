@@ -142,7 +142,7 @@
 
 <AdminPageLayout activePage="users">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">Users</h1>
+        <h1 class="text-3xl md:text-4xl font-bold">{$_('users')}</h1>
     </div>
 
     <div class="w-full">
@@ -156,7 +156,7 @@
                 <div class="w-1/5">
                     <div class="text-right">
                         <HollowButton onClick="{toggleCreateWarrior}">
-                            {$_('actions.warrior.create')}
+                            {$_('warriorCreate')}
                         </HollowButton>
                     </div>
                 </div>
@@ -219,13 +219,13 @@
                                     <HollowButton
                                         onClick="{promoteWarrior(warrior.id)}"
                                         color="blue">
-                                        {$_('actions.warrior.promote')}
+                                        {$_('promote')}
                                     </HollowButton>
                                 {:else}
                                     <HollowButton
                                         onClick="{demoteWarrior(warrior.id)}"
                                         color="blue">
-                                        {$_('actions.warrior.demote')}
+                                        {$_('demote')}
                                     </HollowButton>
                                 {/if}
                             </td>

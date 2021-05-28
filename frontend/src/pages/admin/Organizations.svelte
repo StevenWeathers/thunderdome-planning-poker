@@ -73,7 +73,7 @@
 
 <AdminPageLayout activePage="organizations">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">Organizations</h1>
+        <h1 class="text-3xl md:text-4xl font-bold">{$_('organizations')}</h1>
     </div>
 
     <div class="w-full">
@@ -81,7 +81,7 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">Name</th>
+                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
                         <th class="w-1/6 px-4 py-2"></th>
                     </tr>
                 </thead>

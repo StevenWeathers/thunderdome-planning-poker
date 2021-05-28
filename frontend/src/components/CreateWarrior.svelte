@@ -7,8 +7,6 @@
     export let handleCreate = () => {}
 </script>
 
-<Modal closeModal={toggleCreate}>
-    <WarriorRegisterForm
-        handleSubmit="{handleCreate}"
-        {notifications} />
+<Modal closeModal="{toggleCreate}">
+    <WarriorRegisterForm handleSubmit="{handleCreate}" {notifications} />
 </Modal>

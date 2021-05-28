@@ -199,7 +199,7 @@
                 })
             })
             .catch(function(error) {
-                notifications.danger($_('actions.logout.failure'))
+                notifications.danger($_('logoutError'))
                 eventTag('logout', 'engagement', 'failure')
             })
     }
@@ -253,7 +253,7 @@
                         color="blue"
                         href="{appRoutes.organizations}"
                         additionalClasses="mr-2">
-                        Organizations &amp; Teams
+                        {$_('organizations')} &amp; {$_('teams')}
                     </HollowButton>
                 {/if}
                 {#if !activeWarrior.rank || activeWarrior.rank === 'PRIVATE'}
@@ -278,7 +278,7 @@
                         </HollowButton>
                     {/if}
                     <HollowButton color="red" onClick="{logoutWarrior}">
-                        {$_('actions.logout.button')}
+                        {$_('logout')}
                     </HollowButton>
                 {/if}
             {:else}

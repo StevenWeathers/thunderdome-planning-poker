@@ -212,6 +212,6 @@
     </div>
 
     <div class="text-right">
-        <SolidButton type="submit">{$_('actions.battle.create')}</SolidButton>
+        <SolidButton type="submit">{$_('battleCreate')}</SolidButton>
     </div>
 </form>
