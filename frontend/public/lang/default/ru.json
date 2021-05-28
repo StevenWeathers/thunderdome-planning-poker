@@ -361,7 +361,7 @@
     "userEmailPlaceholder": "Enter a registered users email",
     "role": "Role",
     "rolePlaceholder": "Select users role",
-    "addUser": "addUser",
+    "userAdd": "Add User",
     "flag": "Flag",
     "alertName": "Alert Name",
     "alertNamePlaceholder": "Enter an alert name",

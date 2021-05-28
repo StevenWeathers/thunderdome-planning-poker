@@ -71,7 +71,7 @@
         <div>
             <div class="text-right">
                 <SolidButton type="submit" disabled="{createDisabled}">
-                    {$_('addUser')}
+                    {$_('userAdd')}
                 </SolidButton>
             </div>
         </div>
