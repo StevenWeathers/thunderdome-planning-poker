@@ -17,7 +17,7 @@
         handleAdd(userEmail, role)
     }
 
-    $: createDisabled = userEmail === ''
+    $: createDisabled = userEmail === '' || role = ''
 </script>
 
 <Modal closeModal={toggleAdd}>
