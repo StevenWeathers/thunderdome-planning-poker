@@ -31,17 +31,17 @@
         <div class="flex flex-wrap items-center -mx-4">
             <div class="w-full md:w-1/2 mb-4 lg:mb-0 px-4">
                 <h1 class="mb-2 lg:mb-4 text-4xl font-bold leading-tight">
-                    {$_('pages.landing.title')}
+                    {$_('landingTitle')}
                 </h1>
 
                 <ul class="text-lg lg:text-2xl mb-4">
                     <li class="py-2 lg:py-4">
                         <CheckIcon />
-                        {$_('pages.landing.bullet1')}
+                        {$_('landingBullet1')}
                     </li>
                     <li class="py-2 lg:py-4">
                         <CheckIcon />
-                        {@html $_('pages.landing.bullet2', {
+                        {@html $_('landingBullet2', {
                             values: {
                                 crossoutOpen: `<span class="line-through">`,
                                 crossoutClose: '</span>',
@@ -50,7 +50,7 @@
                     </li>
                     <li class="py-2 lg:py-4">
                         <CheckIcon />
-                        {@html $_('pages.landing.bullet3', {
+                        {@html $_('landingBullet3', {
                             values: {
                                 mbOpen: `<span class="font-semibold">`,
                                 mbClose: '</span>',
@@ -58,7 +58,7 @@
                         })}
                         <br />
                         <span class="text-sm">
-                            {$_('pages.landing.bullet3NotSorry')}
+                            {$_('landingBullet3NotSorry')}
                         </span>
                     </li>
                 </ul>
@@ -90,7 +90,7 @@
     <div class="container mx-auto px-4 py-6 lg:py-10">
         <div class="text-center mb-6">
             <h2 class="text-4xl font-bold">
-                {$_('pages.landing.features.title')}
+                {$_('landingFeatures')}
             </h2>
         </div>
         <div class="flex text-center mb-8">

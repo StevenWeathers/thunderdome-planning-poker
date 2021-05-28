@@ -21,7 +21,7 @@
     <div class="container mx-auto px-4 py-6 lg:py-10">
         <div class="text-center mb-6">
             <h2 class="text-4xl font-bold">
-                {$_('pages.landing.countriesTitle', {
+                {$_('landingCountries', {
                     values: { count: activeCountries.length },
                 })}
             </h2>

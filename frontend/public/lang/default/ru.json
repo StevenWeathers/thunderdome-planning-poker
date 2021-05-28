@@ -44,18 +44,14 @@
     "planTypeEpic": "эпик",
     "planTypeTask": "задача",
     "planTypeSubtask": "подзадача",
+    "landingTitle": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
+    "landingBullet1": "Built on cool tech like Svelte, Go, and WebSockets",
+    "landingBullet2": "Simple {crossoutOpen}User{crossoutClose}Warrior Experience",
+    "landingBullet3": "Works on all {mbOpen}modern browsers*{mbClose}, including mobile",
+    "landingBullet3NotSorry": "*sorry, not sorry IE",
+    "landingFeatures": "Features",
+    "landingCountries": "Warriors in over {count} countries",
     "pages": {
-        "landing": {
-            "title": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
-            "bullet1": "Built on cool tech like Svelte, Go, and WebSockets",
-            "bullet2": "Simple {crossoutOpen}User{crossoutClose}Warrior Experience",
-            "bullet3": "Works on all {mbOpen}modern browsers*{mbClose}, including mobile",
-            "bullet3NotSorry": "*sorry, not sorry IE",
-            "features": {
-                "title": "Features"
-            },
-            "countriesTitle": "Warriors in over {count} countries"
-        },
         "myBattles": {
             "nav": "Мои битвы",
             "title": "Мои битвы",

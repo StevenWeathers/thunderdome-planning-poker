@@ -44,18 +44,14 @@
     "planTypeEpic": "Epic",
     "planTypeTask": "Task",
     "planTypeSubtask": "Subtask",
+    "landingTitle": "Thunderdome ist eine Open Source Agile Planning Poker App mit einem lustigen Thema",
+    "landingBullet1": "Gebaut mit coolen Technologien wie Svelte, Go und WebSockets",
+    "landingBullet2": "Einfache Benutzer-Erfahrung",
+    "landingBullet3": "Funktioniert mit allen {mbOpen}modernen Browsers*{mbClose}, inklusive Mobile",
+    "landingBullet3NotSorry": "*Entschuldigung, keine Entschuldigung bei IE",
+    "landingFeatures": "Eigenschaften",
+    "landingCountries": "Users in over {count} countries",
     "pages": {
-        "landing": {
-            "title": "Thunderdome ist eine Open Source Agile Planning Poker App mit einem lustigen Thema",
-            "bullet1": "Gebaut mit coolen Technologien wie Svelte, Go und WebSockets",
-            "bullet2": "Einfache Benutzer-Erfahrung",
-            "bullet3": "Funktioniert mit allen {mbOpen}modernen Browsers*{mbClose}, inklusive Mobile",
-            "bullet3NotSorry": "*Entschuldigung, keine Entschuldigung bei IE",
-            "features": {
-                "title": "Eigenschaften"
-            },
-            "countriesTitle": "Users in over {count} countries"
-        },
         "myBattles": {
             "nav": "Meine Sitzungen",
             "title": "Meine Sitzungen",
