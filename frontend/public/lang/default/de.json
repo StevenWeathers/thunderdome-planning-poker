@@ -15,61 +15,36 @@
     "warriorNudge": "Anstubsen",
     "promote": "Bef\u00F6rdern",
     "demote": "Demote",
-    "actions": {
-        "plan": {
-            "add": "Plan hinzuf\u00FCgen",
-            "view": "Anzeigen",
-            "edit": "Bearbeiten",
-            "delete": "L\u00F6schen",
-            "activate": "Aktivieren",
-            "skip": "Plan \u00FCberspringen",
-            "pointed": "Gesch\u00E4tzt ({count})",
-            "unpointed": "Ungesch\u00E4tzt ({count})",
-            "finishVoting": "Sch\u00E4tzung beenden",
-            "restartVoting": "Sch\u00E4tzung neu starten",
-            "save": "Speichern",
-            "importJiraXML": {
-                "button": "Jira XML Import",
-                "badFileType": "Fehler: falscher Datei-Typ",
-                "errorReadingFile": "Fehler beim Lesen der Datei"
-            },
-            "fields": {
-                "name": {
-                    "label": "Plan Name",
-                    "placeholder": "Plan Name eingeben"
-                },
-                "type": {
-                    "label": "Plan Typ",
-                    "placeholder": "Typen"
-                },
-                "link": {
-                    "label": "Link",
-                    "placeholder": "Link zum Plan eingeben",
-                    "invalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)"
-                },
-                "referenceId": {
-                    "label": "Referenz ID",
-                    "placeholder": "Referenz ID eingeben"
-                },
-                "description": {
-                    "label": "Beschreibung",
-                    "placeholder": "Beschreibung eingeben"
-                },
-                "acceptanceCriteria": {
-                    "label": "Akzeptanzkriterien",
-                    "placeholder": "Akzeptanzkriterien eingeben"
-                }
-            },
-            "types": {
-                "story": "Story",
-                "bug": "Bug",
-                "spike": "Spike",
-                "epic": "Epic",
-                "task": "Task",
-                "subtask": "Subtask"
-            }
-        }
-    },
+    "planAdd": "Plan hinzuf\u00FCgen",
+    "planSkip": "Plan \u00FCberspringen",
+    "planName": "Plan Name",
+    "planNamePlaceholder": "Plan Name eingeben",
+    "planType": "Plan Typ",
+    "planTypePlaceholder": "Typen",
+    "planLink": "Link",
+    "planLinkPlaceholder": "Link zum Plan eingeben",
+    "planLinkInvalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)",
+    "planReferenceId": "Referenz ID",
+    "planReferenceIdPlaceholder": "Referenz ID eingeben",
+    "planDescription": "Beschreibung",
+    "planDescriptionPlaceholder": "Beschreibung eingeben",
+    "planAcceptanceCriteria": "Akzeptanzkriterien",
+    "planAcceptanceCriteriaPlaceholder": "Akzeptanzkriterien eingeben",
+    "pointed": "Gesch\u00E4tzt ({count})",
+    "unpointed": "Ungesch\u00E4tzt ({count})",
+    "view": "Anzeigen",
+    "activate": "Aktivieren",
+    "votingFinish": "Sch\u00E4tzung beenden",
+    "votingRestart": "Sch\u00E4tzung neu starten",
+    "importJiraXML": "Jira XML Import",
+    "importJiraXMLBadFileTypeError": "Fehler: falscher Datei-Typ",
+    "importJiraXMLReadFileError": "Fehler beim Lesen der Datei",
+    "planTypeStory": "Story",
+    "planTypeBug": "Bug",
+    "planTypeSpike": "Spike",
+    "planTypeEpic": "Epic",
+    "planTypeTask": "Task",
+    "planTypeSubtask": "Subtask",
     "pages": {
         "landing": {
             "title": "Thunderdome ist eine Open Source Agile Planning Poker App mit einem lustigen Thema",
@@ -352,8 +327,8 @@
     "email": "Email",
     "plans": "Plans",
     "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
+    "delete": "L\u00F6schen",
+    "edit": "Bearbeiten",
     "users": "Users",
     "type": "Type",
     "active": "Active",

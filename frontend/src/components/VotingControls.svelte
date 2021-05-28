@@ -49,18 +49,18 @@
             color="blue"
             additionalClasses="mb-2 w-full"
             onClick="{skipPlan}">
-            {$_('actions.plan.skip')}
+            {$_('planSkip')}
         </SolidButton>
         {#if !votingLocked}
             <SolidButton additionalClasses="w-full" onClick="{endPlanVoting}">
-                {$_('actions.plan.finishVoting')}
+                {$_('votingFinish')}
             </SolidButton>
         {:else}
             <SolidButton
                 color="blue"
                 additionalClasses="mb-2 w-full"
                 onClick="{restartVoting}">
-                {$_('actions.plan.restartVoting')}
+                {$_('votingRestart')}
             </SolidButton>
             <form on:submit="{handleSubmit}" name="savePlanPoints">
                 <legend class="text-xl mb-2 font-semibold leading-tight">
@@ -95,7 +95,7 @@
                         <SolidButton
                             additionalClasses="w-full h-full"
                             type="submit">
-                            {$_('actions.plan.save')}
+                            {$_('save')}
                         </SolidButton>
                     </div>
                 </div>

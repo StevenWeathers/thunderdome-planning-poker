@@ -16,7 +16,7 @@
             return
         }
         if (file.type !== 'text/xml') {
-            notifications.danger($_('actions.plan.importJiraXML.badFileType'))
+            notifications.danger($_('importJiraXMLBadFileTypeError'))
             eventTag('jira_import_failed', 'battle', `file.type not text/xml`)
             return
         }
@@ -85,7 +85,7 @@
                 }
             } catch (e) {
                 notifications.danger(
-                    $_('actions.plan.importJiraXML.errorReadingFile'),
+                    $_('importJiraXMLReadFileError'),
                 )
                 eventTag('jira_import_failed', 'battle', `ferror reading file`)
             }
@@ -93,7 +93,7 @@
 
         reader.onerror = () => {
             notifications.danger(
-                $_('actions.plan.importJiraXML.errorReadingFile'),
+                $_('importJiraXMLReadFileError'),
             )
             eventTag('jira_import_failed', 'battle', `ferror reading file`)
         }
@@ -102,7 +102,7 @@
 
 {#if allowJiraImport}
     <HollowButton type="label" additionalClasses="mr-2" color="blue">
-        {$_('actions.plan.importJiraXML.button')}
+        {$_('importJiraXML')}
         <input type="file" on:change="{uploadFile}" class="hidden" />
     </HollowButton>
 {/if}

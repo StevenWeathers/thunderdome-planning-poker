@@ -16,25 +16,25 @@
 <Modal closeModal="{togglePlanView}" widthClasses="md:w-2/3 lg:w-3/5">
     <div class="mb-4">
         <div class="text-sm font-bold mb-2">
-            {$_('actions.plan.fields.type.label')}
+            {$_('planType')}
         </div>
         {planType}
     </div>
     <div class="mb-4">
         <div class="text-sm font-bold mb-2">
-            {$_('actions.plan.fields.name.label')}
+            {$_('planName')}
         </div>
         {planName}
     </div>
     <div class="mb-4">
         <div class="text-sm font-bold mb-2">
-            {$_('actions.plan.fields.referenceId.label')}
+            {$_('planReferenceId')}
         </div>
         {referenceId}
     </div>
     <div class="mb-4">
         <div class="text-sm font-bold mb-2">
-            {$_('actions.plan.fields.link.label')}
+            {$_('planLink')}
         </div>
         {#if planLink !== ''}
             <a href="{planLink}" target="_blank" class="text-blue-800">
@@ -45,7 +45,7 @@
     </div>
     <div class="mb-4">
         <div class="text-sm font-bold mb-2">
-            {$_('actions.plan.fields.description.label')}
+            {$_('planDescription')}
         </div>
         <div class="unreset">
             {@html description}
@@ -53,7 +53,7 @@
     </div>
     <div class="mb-4">
         <div class="text-sm font-bold mb-2">
-            {$_('actions.plan.fields.acceptanceCriteria.label')}
+            {$_('planAcceptanceCriteria')}
         </div>
         <div class="unreset">
             {@html acceptanceCriteria}

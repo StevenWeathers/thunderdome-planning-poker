@@ -13,17 +13,17 @@
 
     // going by common Jira issue types for now
     const planTypes = [
-        $_('actions.plan.types.story'),
-        $_('actions.plan.types.bug'),
-        $_('actions.plan.types.spike'),
-        $_('actions.plan.types.epic'),
-        $_('actions.plan.types.task'),
-        $_('actions.plan.types.subtask'),
+        $_('planTypeStory'),
+        $_('planTypeBug'),
+        $_('planTypeSpike'),
+        $_('planTypeEpic'),
+        $_('planTypeTask'),
+        $_('planTypeSubtask'),
     ]
 
     export let planId = ''
     export let planName = ''
-    export let planType = $_('actions.plan.types.story')
+    export let planType = $_('planTypeStory')
     export let referenceId = ''
     export let planLink = ''
     export let description = ''
@@ -37,7 +37,7 @@
 
         if (planLink !== '' && !isAbsolute.test(planLink)) {
             invalidPlan = true
-            notifications.danger($_('actions.plan.fields.link.invalid'))
+            notifications.danger($_('planLinkInvalid'))
             eventTag('plan_add_invalid_link', 'battle', ``)
         }
 
@@ -67,7 +67,7 @@
     <form on:submit="{handleSubmit}" name="addPlan">
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2" for="planName">
-                {$_('actions.plan.fields.type.label')}
+                {$_('planType')}
             </label>
             <div class="relative">
                 <select
@@ -78,7 +78,7 @@
                     text-gray-700 py-3 px-4 pr-8 rounded leading-tight
                     focus:outline-none focus:border-purple-500">
                     <option value="" disabled>
-                        {$_('actions.plan.fields.type.placeholder')}
+                        {$_('planTypePlaceholder')}
                     </option>
                     {#each planTypes as pType}
                         <option value="{pType}">{pType}</option>
@@ -93,7 +93,7 @@
         </div>
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2" for="planName">
-                {$_('actions.plan.fields.name.label')}
+                {$_('planName')}
             </label>
             <input
                 class="bg-gray-200 border-gray-200 border-2 appearance-none
@@ -103,11 +103,11 @@
                 id="planName"
                 name="planName"
                 bind:value="{planName}"
-                placeholder="{$_('actions.plan.fields.name.placeholder')}" />
+                placeholder="{$_('planNamePlaceholder')}" />
         </div>
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2" for="referenceId">
-                {$_('actions.plan.fields.referenceId.label')}
+                {$_('planReferenceId')}
             </label>
             <input
                 class="bg-gray-200 border-gray-200 border-2 appearance-none
@@ -117,11 +117,11 @@
                 id="referenceId"
                 name="referenceId"
                 bind:value="{referenceId}"
-                placeholder="{$_('actions.plan.fields.referenceId.placeholder')}" />
+                placeholder="{$_('planReferenceIdPlaceholder')}" />
         </div>
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2" for="planLink">
-                {$_('actions.plan.fields.link.label')}
+                {$_('planLink')}
             </label>
             <input
                 class="bg-gray-200 border-gray-200 border-2 appearance-none
@@ -131,28 +131,28 @@
                 id="planLink"
                 name="planLink"
                 bind:value="{planLink}"
-                placeholder="{$_('actions.plan.fields.link.placeholder')}" />
+                placeholder="{$_('planLinkPlaceholder')}" />
         </div>
         <div class="mb-16">
             <div class="text-sm font-bold mb-2">
-                {$_('actions.plan.fields.description.label')}
+                {$_('planDescription')}
             </div>
             <div class="h-48">
                 <div
                     class="w-full"
-                    use:quill="{{ placeholder: $_('actions.plan.fields.description.placeholder'), content: description }}"
+                    use:quill="{{ placeholder: $_('planDescriptionPlaceholder'), content: description }}"
                     on:text-change="{e => (description = e.detail.html)}"
                     id="description"></div>
             </div>
         </div>
         <div class="mb-16">
             <div class="text-sm font-bold mb-2">
-                {$_('actions.plan.fields.acceptanceCriteria.label')}
+                {$_('planAcceptanceCriteria')}
             </div>
             <div class="h-48">
                 <div
                     class="w-full"
-                    use:quill="{{ placeholder: $_('actions.plan.fields.acceptanceCriteria.placeholder'), content: acceptanceCriteria }}"
+                    use:quill="{{ placeholder: $_('planAcceptanceCriteriaPlaceholder'), content: acceptanceCriteria }}"
                     on:text-change="{e => (acceptanceCriteria = e.detail.html)}"
                     id="acceptanceCriteria"></div>
             </div>
@@ -160,7 +160,7 @@
         <div class="text-right">
             <div>
                 <SolidButton type="submit">
-                    {$_('actions.plan.save')}
+                    {$_('save')}
                 </SolidButton>
             </div>
         </div>

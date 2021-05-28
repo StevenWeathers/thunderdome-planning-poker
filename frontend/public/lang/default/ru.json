@@ -14,61 +14,36 @@
     "warriorNudge": "Напомнить",
     "promote": "Сделать лидером",
     "demote": "Demote",
-    "actions": {
-        "plan": {
-            "add": "Добавить задачу",
-            "view": "Просмотр",
-            "edit": "Изменить",
-            "delete": "Удалить",
-            "activate": "Активировать",
-            "skip": "Пропустить задачу",
-            "pointed": "Оцененные ({count})",
-            "unpointed": "Неоцененные ({count})",
-            "finishVoting": "Закончить голосование",
-            "restartVoting": "Перезапустить голосование",
-            "save": "Сохранить",
-            "importJiraXML": {
-                "button": "Импорт задач из джиры",
-                "badFileType": "Ошибка: плохой тип файла",
-                "errorReadingFile": "Ошибка чтения файла"
-            },
-            "fields": {
-                "name": {
-                    "label": "Заголовок задачи",
-                    "placeholder": "Введите заголовок задачи"
-                },
-                "type": {
-                    "label": "Тип задач",
-                    "placeholder": "Типы задач"
-                },
-                "link": {
-                    "label": "Ссылка",
-                    "placeholder": "Введите ссылку на задачу",
-                    "invalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)"
-                },
-                "referenceId": {
-                    "label": "ID ссылки",
-                    "placeholder": "Введите ID ссылки"
-                },
-                "description": {
-                    "label": "Описание",
-                    "placeholder": "Введите описание"
-                },
-                "acceptanceCriteria": {
-                    "label": "Критерии выполнения",
-                    "placeholder": "Введите критерии выполнения задачи"
-                }
-            },
-            "types": {
-                "story": "история",
-                "bug": "ошибка",
-                "spike": "spike",
-                "epic": "эпик",
-                "task": "задача",
-                "subtask": "подзадача"
-            }
-        }
-    },
+    "planAdd": "Добавить задачу",
+    "planSkip": "Пропустить задачу",
+    "planName": "Заголовок задачи",
+    "planNamePlaceholder": "Введите заголовок задачи",
+    "planType": "Тип задач",
+    "planTypePlaceholder": "Типы задач",
+    "planLink": "Ссылка",
+    "planLinkPlaceholder": "Введите ссылку на задачу",
+    "planLinkInvalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)",
+    "planReferenceId": "ID ссылки",
+    "planReferenceIdPlaceholder": "Введите ID ссылки",
+    "planDescription": "Описание",
+    "planDescriptionPlaceholder": "Введите описание",
+    "planAcceptanceCriteria": "Критерии выполнения",
+    "planAcceptanceCriteriaPlaceholder": "Введите критерии выполнения задачи",
+    "pointed": "Оцененные ({count})",
+    "unpointed": "Неоцененные ({count})",
+    "view": "Просмотр",
+    "activate": "Активировать",
+    "votingFinish": "Закончить голосование",
+    "votingRestart": "Перезапустить голосование",
+    "importJiraXML": "Импорт задач из джиры",
+    "importJiraXMLBadFileTypeError": "Ошибка: плохой тип файла",
+    "importJiraXMLReadFileError": "Ошибка чтения файла",
+    "planTypeStory": "история",
+    "planTypeBug": "ошибка",
+    "planTypeSpike": "spike",
+    "planTypeEpic": "эпик",
+    "planTypeTask": "задача",
+    "planTypeSubtask": "подзадача",
     "pages": {
         "landing": {
             "title": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
@@ -351,8 +326,8 @@
     "email": "Email",
     "plans": "Plans",
     "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
+    "delete": "Удалить",
+    "edit": "Изменить",
     "users": "Users",
     "type": "Type",
     "active": "Active",

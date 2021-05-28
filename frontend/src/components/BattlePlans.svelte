@@ -15,7 +15,7 @@
     const defaultPlan = {
         id: '',
         name: '',
-        type: $_('actions.plan.types.story'),
+        type: $_('planTypeStory'),
         referenceId: '',
         link: '',
         description: '',
@@ -92,7 +92,7 @@
             {#if isLeader}
                 <JiraImport {handlePlanAdd} {notifications} {eventTag} />
                 <HollowButton onClick="{toggleAddPlan()}">
-                    {$_('actions.plan.add')}
+                    {$_('planAdd')}
                 </HollowButton>
             {/if}
         </div>
@@ -104,7 +104,7 @@
                 class="{showCompleted ? 'hover:text-blue-600 text-blue-400' : 'border-b border-blue-500 text-blue-600 hover:text-blue-800'}
                 bg-white inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(false)}">
-                {$_('actions.plan.unpointed', {
+                {$_('unpointed', {
                     values: { count: unpointedPlans.length },
                 })}
             </button>
@@ -114,7 +114,7 @@
                 class="{showCompleted ? 'border-b border-blue-500 text-blue-600 hover:text-blue-800' : 'hover:text-blue-600 text-blue-400'}
                 bg-white inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(true)}">
-                {$_('actions.plan.pointed', {
+                {$_('pointed', {
                     values: { count: pointedPlans.length },
                 })}
             </button>
@@ -161,24 +161,24 @@
             </div>
             <div class="w-full lg:w-1/3 text-right">
                 <HollowButton color="blue" onClick="{togglePlanView(plan.id)}">
-                    {$_('actions.plan.view')}
+                    {$_('view')}
                 </HollowButton>
                 {#if isLeader}
                     {#if !plan.active}
                         <HollowButton
                             color="red"
                             onClick="{handlePlanDeletion(plan.id)}">
-                            {$_('actions.plan.delete')}
+                            {$_('delete')}
                         </HollowButton>
                     {/if}
                     <HollowButton
                         color="purple"
                         onClick="{toggleAddPlan(plan.id)}">
-                        {$_('actions.plan.edit')}
+                        {$_('edit')}
                     </HollowButton>
                     {#if !plan.active}
                         <HollowButton onClick="{activatePlan(plan.id)}">
-                            {$_('actions.plan.activate')}
+                            {$_('activate')}
                         </HollowButton>
                     {/if}
                 {/if}

@@ -14,61 +14,36 @@
     "warriorNudge": "Nudge",
     "promote": "Promote",
     "demote": "Demote",
-    "actions": {
-        "plan": {
-            "add": "Add Plan",
-            "view": "View",
-            "edit": "Edit",
-            "delete": "Delete",
-            "activate": "Activate",
-            "skip": "Skip Plan",
-            "pointed": "Pointed ({count})",
-            "unpointed": "Unpointed ({count})",
-            "finishVoting": "Finish Voting",
-            "restartVoting": "Restart Voting",
-            "save": "Save",
-            "importJiraXML": {
-                "button": "Import plans from Jira XML",
-                "badFileType": "Error bad file type",
-                "errorReadingFile": "Error reading file"
-            },
-            "fields": {
-                "name": {
-                    "label": "Plan Name",
-                    "placeholder": "Enter a plan name"
-                },
-                "type": {
-                    "label": "Plan Type",
-                    "placeholder": "Types"
-                },
-                "link": {
-                    "label": "Link",
-                    "placeholder": "Enter a link to plan",
-                    "invalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)"
-                },
-                "referenceId": {
-                    "label": "Reference ID",
-                    "placeholder": "Enter a reference ID"
-                },
-                "description": {
-                    "label": "Description",
-                    "placeholder": "Enter a description"
-                },
-                "acceptanceCriteria": {
-                    "label": "Acceptance Criteria",
-                    "placeholder": "Enter acceptance criteria"
-                }
-            },
-            "types": {
-                "story": "Story",
-                "bug": "Bug",
-                "spike": "Spike",
-                "epic": "Epic",
-                "task": "Task",
-                "subtask": "Subtask"
-            }
-        }
-    },
+    "planAdd": "Add Plan",
+    "planSkip": "Skip Plan",
+    "planName": "Plan Name",
+    "planNamePlaceholder": "Enter a plan name",
+    "planType": "Plan Type",
+    "planTypePlaceholder": "Types",
+    "planLink": "Link",
+    "planLinkPlaceholder": "Enter a link to plan",
+    "planLinkInvalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)",
+    "planReferenceId": "Reference ID",
+    "planReferenceIdPlaceholder": "Enter a reference ID",
+    "planDescription": "Description",
+    "planDescriptionPlaceholder": "Enter a description",
+    "planAcceptanceCriteria": "Acceptance Criteria",
+    "planAcceptanceCriteriaPlaceholder": "Enter acceptance criteria",
+    "pointed": "Pointed ({count})",
+    "unpointed": "Unpointed ({count})",
+    "view": "View",
+    "activate": "Activate",
+    "votingFinish": "Finish Voting",
+    "votingRestart": "Restart Voting",
+    "importJiraXML": "Import plans from Jira XML",
+    "importJiraXMLBadFileTypeError": "Error bad file type",
+    "importJiraXMLReadFileError": "Error reading file",
+    "planTypeStory": "Story",
+    "planTypeBug": "Bug",
+    "planTypeSpike": "Spike",
+    "planTypeEpic": "Epic",
+    "planTypeTask": "Task",
+    "planTypeSubtask": "Subtask",
     "pages": {
         "landing": {
             "title": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
