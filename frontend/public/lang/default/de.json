@@ -22,7 +22,7 @@
     "planTypePlaceholder": "Typen",
     "planLink": "Link",
     "planLinkPlaceholder": "Link zum Plan eingeben",
-    "planLinkInvalid": "Der Link ist keine g\u00FCltige absolute URL, ent\u00E4lt z.B. das Protokol (HTTP/HTTPS)",
+    "planLinkInvalid": "Der Link ist keine g\u00FCltige absolute URL, enth\u00E4lt z.B. das Protokol (HTTP/HTTPS)",
     "planReferenceId": "Referenz ID",
     "planReferenceIdPlaceholder": "Referenz ID eingeben",
     "planDescription": "Beschreibung",
