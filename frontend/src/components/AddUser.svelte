@@ -9,7 +9,7 @@
 
     const roles = ['ADMIN', 'MEMBER']
     let userEmail = ''
-    let role = 'MEMBER'
+    let role = ''
 
     function onSubmit(e) {
         e.preventDefault()
@@ -55,8 +55,8 @@
                     focus:border-purple-500"
                     id="userRole"
                     name="userRole">
+                    <option value="">{$_('rolePlaceholder')}</option>
                     {#each roles as userRole}
-                        <option value="">{$_('rolePlaceholder')}</option>
                         <option value="{userRole}">{userRole}</option>
                     {/each}
                 </select>
