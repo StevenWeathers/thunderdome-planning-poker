@@ -14,7 +14,8 @@ import { locales, fallbackLocale, PathPrefix } from './config'
 
 const { AppVersion, FriendlyUIVerbs } = appConfig
 const verbsType = FriendlyUIVerbs ? 'friendly' : 'default'
-const MESSAGE_FILE_URL_TEMPLATE = `${PathPrefix}/lang/${verbsType}/{locale}.json?v=${AppVersion}`
+const MESSAGE_FILE_URL_BASE = `${PathPrefix}/lang/{locale}.json?v=${AppVersion}`
+const MESSAGE_FILE_URL_ADD = `${PathPrefix}/lang/${verbsType}/{locale}.json?v=${AppVersion}`
 
 let _activeLocale
 
@@ -32,22 +33,36 @@ function setupI18n(options = {}) {
     if (!hasLoadedLocale(locale_)) {
         isDownloading.set(true)
 
-        const messagesFileUrl = MESSAGE_FILE_URL_TEMPLATE.replace(
+        const messagesFileUrlBase = MESSAGE_FILE_URL_BASE.replace(
             '{locale}',
             locale_,
         )
 
         // Download translation file for given locale/language
-        return loadJson(messagesFileUrl).then(messages => {
-            _activeLocale = locale_
+        loadJson(messagesFileUrlBase).then(messages => {
+            //console.log("Load base file: " + messagesFileUrlBase)
+
+            // Add messages for locale
+            addMessages(locale_, messages)
+        })
+
+        const messageFileUrlAdd = MESSAGE_FILE_URL_ADD.replace(
+            '{locale}',
+            locale_,
+        )
+
+        // Download additional translation file (default/friendly) for given locale/language
+        loadJson(messageFileUrlAdd).then(messages => {
+            //console.log("Load additional file: " + messageFileUrlAdd)
 
             // Configure svelte-i18n to use the locale
-            addMessages(locale_, messages)
-
+            _activeLocale = locale_
             locale.set(locale_)
 
-            isDownloading.set(false)
+            addMessages(locale_, messages)
         })
+
+        isDownloading.set(false)
     }
 }
 

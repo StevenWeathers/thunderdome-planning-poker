@@ -93,8 +93,21 @@
         </div>
         <div class="flex text-center mb-8">
             <div class="w-1/2">
-                <h3 class="text-2xl font-bold">Open Source</h3>
+                <h3 class="text-2xl font-bold">
+                    {$_('landingFeatureOpenSourceTitle')}
+                </h3>
                 <p class="px-2">
+                    {@html $_('landingFeatureOpenSourceText', {
+                        values: {
+                            githubIcon: GithubIcon,
+                            repoOpen: `<a href="https://github.com/StevenWeathers/thunderdome-planning-poker" class="feature-link">`,
+                            repoClose: '</a>',
+                            donateOpen: `<a href="https://github.com/StevenWeathers/thunderdome-planning-poker#donations" class="feature-link">`,
+                            donateClose: `</a>`,
+                        },
+                    })}
+                    <br />
+                    <br />
                     Check out the
                     <GithubIcon />
                     <a
