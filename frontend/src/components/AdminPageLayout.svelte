@@ -8,23 +8,28 @@
 
     const pages = [
         {
-            name: $_('adminPageAdmin'),
+            name: 'Admin',
+            label: $_('adminPageAdmin'),
             path: '',
         },
         {
-            name: $_('adminPageAlerts'),
+            name: 'Alerts',
+            label: $_('adminPageAlerts'),
             path: '/alerts',
         },
         {
-            name: $_('adminPageOrganizations'),
+            name: 'Organizations',
+            label: $_('adminPageOrganizations'),
             path: '/organizations',
         },
         {
-            name: $_('adminPageTeams'),
+            name: 'Teams',
+            label: $_('adminPageTeams'),
             path: '/teams',
         },
         {
-            name: $_('adminPageUsers'),
+            name: 'Users',
+            label: $_('adminPageUsers'),
             path: '/users',
         },
     ]
@@ -32,6 +37,7 @@
     if (APIEnabled) {
         pages.push({
             name: 'API Keys',
+            label: $_('adminPageApi'),
             path: '/apikeys',
         })
     }
@@ -59,7 +65,7 @@
                     <a
                         class="admin-nav-pill {activePage === page.name.toLowerCase() ? activePillClasses : nonActivePillClasses}"
                         href="{appRoutes.admin}{page.path}">
-                        {page.name}
+                        {page.label}
                     </a>
                 </li>
             {/each}

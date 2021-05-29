@@ -361,5 +361,6 @@
     "adminPageAlerts": "Alerts",
     "adminPageOrganizations": "Organizations",
     "adminPageTeams": "Teams",
-    "adminPageUsers": "Users"
+    "adminPageUsers": "Users",
+    "adminPageApi": "API Keys"
 }

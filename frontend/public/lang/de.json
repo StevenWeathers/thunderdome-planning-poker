@@ -353,5 +353,6 @@
     "adminPageAlerts": "Benachrichtigungen",
     "adminPageOrganizations": "Unternehmen",
     "adminPageTeams": "Teams",
-    "adminPageUsers": "Benutzer"
+    "adminPageUsers": "Benutzer",
+    "adminPageApi": "API Keys"
 }
