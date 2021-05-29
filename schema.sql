@@ -179,6 +179,7 @@ END $$;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS country VARCHAR(2);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS company VARCHAR(256);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS job_title VARCHAR(128);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW();
 
 CREATE TABLE IF NOT EXISTS organization (
     id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -503,7 +504,7 @@ BEGIN
         RAISE 'Valid Reset ID not found';
     END IF;
 
-    UPDATE users SET password = userPassword, last_active = NOW() WHERE id = matchedUserId;
+    UPDATE users SET password = userPassword, last_active = NOW(), updated_date = NOW() WHERE id = matchedUserId;
     DELETE FROM user_reset WHERE reset_id = resetId;
 
     COMMIT;
@@ -515,7 +516,7 @@ DROP PROCEDURE IF EXISTS update_warrior_password(warriorId UUID, warriorPassword
 CREATE OR REPLACE PROCEDURE update_user_password(userId UUID, userPassword TEXT)
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE users SET password = userPassword, last_active = NOW() WHERE id = userId;
+    UPDATE users SET password = userPassword, last_active = NOW(), updated_date = NOW() WHERE id = userId;
 
     COMMIT;
 END;
@@ -540,7 +541,7 @@ BEGIN
         RAISE 'Valid Verify ID not found';
     END IF;
 
-    UPDATE users SET verified = 'TRUE', last_active = NOW() WHERE id = matchedUserId;
+    UPDATE users SET verified = 'TRUE', last_active = NOW(), updated_date = NOW() WHERE id = matchedUserId;
     DELETE FROM user_verify WHERE verify_id = verifyId;
 
     COMMIT;
@@ -552,7 +553,7 @@ DROP PROCEDURE IF EXISTS promote_warrior(warriorId UUID);
 CREATE OR REPLACE PROCEDURE promote_user(userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE users SET type = 'GENERAL' WHERE id = userId;
+    UPDATE users SET type = 'GENERAL', updated_date = NOW() WHERE id = userId;
 
     COMMIT;
 END;
@@ -563,7 +564,7 @@ DROP PROCEDURE IF EXISTS promote_warrior_by_email(warriorEmail VARCHAR(320));
 CREATE OR REPLACE PROCEDURE promote_user_by_email(userEmail VARCHAR(320))
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE users SET type = 'GENERAL' WHERE email = userEmail;
+    UPDATE users SET type = 'GENERAL', updated_date = NOW() WHERE email = userEmail;
 
     COMMIT;
 END;
@@ -574,7 +575,7 @@ DROP PROCEDURE IF EXISTS demote_warrior(warriorId UUID);
 CREATE OR REPLACE PROCEDURE demote_user(userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
-    UPDATE users SET type = 'CORPORAL' WHERE id = userId;
+    UPDATE users SET type = 'CORPORAL', updated_date = NOW() WHERE id = userId;
 
     COMMIT;
 END;
@@ -627,7 +628,15 @@ CREATE OR REPLACE PROCEDURE user_profile_update(
 LANGUAGE plpgsql AS $$
 BEGIN
     UPDATE users
-    SET name = userName, avatar = userAvatar, notifications_enabled = notificationsEnabled, country = userCountry, company = userCompany, job_title = userJobTitle, last_active = NOW()
+    SET
+        name = userName,
+        avatar = userAvatar,
+        notifications_enabled = notificationsEnabled,
+        country = userCountry,
+        company = userCompany,
+        job_title = userJobTitle,
+        last_active = NOW(),
+        updated_date = NOW()
     WHERE id = userId;
     REFRESH MATERIALIZED VIEW active_countries;
 END;
@@ -757,7 +766,8 @@ BEGIN
         email = userEmail,
         password = hashedPassword,
         type = userType,
-        last_active = NOW()
+        last_active = NOW(),
+        updated_date = NOW()
     WHERE id = activeUserId
     RETURNING id INTO userId;
 

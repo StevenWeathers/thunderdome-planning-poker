@@ -14,9 +14,6 @@
 </script>
 
 <style>
-    .bg-exo-grey {
-        background-color: #2c2d2c;
-    }
     .feature-link {
         @apply no-underline;
         @apply text-blue-600;
@@ -212,17 +209,16 @@
     <Countries {xfetch} {eventTag} />
 {/if}
 
-<section class="bg-exo-grey text-white mb-8">
+<section class="mb-8">
     <div class="container mx-auto px-4 py-2 lg:py-4">
         <div class="flex text-center">
             <div class="w-full">
-                <h4 class="font-bold text-xl">
+                <h4 class="font-bold text-xl align-middle">
                     Check out
                     <a href="https://exothermic.dev">
                         <img
-                            src="/img/exothermic-logo.png"
-                            alt="Exothermic - Open Source Agile Story Mapping
-                            tool"
+                            src="/img/exothermic-logo-2.png"
+                            alt="Exothermic logo"
                             title="Exothermic - Open Source Agile Story Mapping
                             tool"
                             class="inline-block mx-2" />
