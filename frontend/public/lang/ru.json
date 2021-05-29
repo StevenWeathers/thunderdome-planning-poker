@@ -297,6 +297,7 @@
     "email": "Email",
     "cancel": "Cancel",
     "delete": "Удалить",
+    "remove": "Remove",
     "users": "Users",
     "type": "Type",
     "active": "Active",
@@ -355,5 +356,10 @@
     "teamDeleteSuccess": "Team deleted successfully.",
     "teamDeleteError": "Error attempting to delete team",
     "teamGetError": "Error getting team",
-    "teamGetUsersError": "Error getting team users"
+    "teamGetUsersError": "Error getting team users",
+    "adminPageAdmin": "Admin",
+    "adminPageAlerts": "Alerts",
+    "adminPageOrganizations": "Organizations",
+    "adminPageTeams": "Teams",
+    "adminPageUsers": "Users"
 }

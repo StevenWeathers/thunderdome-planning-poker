@@ -288,6 +288,7 @@
     "plans": "Pl\u00E4ne",
     "cancel": "Abbruch",
     "delete": "L\u00F6schen",
+    "remove": "Entfernen",
     "edit": "Bearbeiten",
     "users": "Benutzer",
     "type": "Typ",
@@ -347,5 +348,10 @@
     "teamDeleteSuccess": "Team erfolgreich gel\u00F6scht",
     "teamDeleteError": "Fehler beim L\u00F6schen des Teams",
     "teamGetError": "Fehler beim Ermitteln des Teams",
-    "teamGetUsersError": "Fehler beim Ermitteln der Benutzer des Teams"
+    "teamGetUsersError": "Fehler beim Ermitteln der Benutzer des Teams",
+    "adminPageAdmin": "Allgemein",
+    "adminPageAlerts": "Benachrichtigungen",
+    "adminPageOrganizations": "Unternehmen",
+    "adminPageTeams": "Teams",
+    "adminPageUsers": "Benutzer"
 }

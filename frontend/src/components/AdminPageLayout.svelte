@@ -8,23 +8,23 @@
 
     const pages = [
         {
-            name: 'Admin',
+            name: $_('adminPageAdmin'),
             path: '',
         },
         {
-            name: 'Alerts',
+            name: $_('adminPageAlerts'),
             path: '/alerts',
         },
         {
-            name: 'Organizations',
+            name: $_('adminPageOrganizations'),
             path: '/organizations',
         },
         {
-            name: 'Teams',
+            name: $_('adminPageTeams'),
             path: '/teams',
         },
         {
-            name: 'Users',
+            name: $_('adminPageUsers'),
             path: '/users',
         },
     ]
