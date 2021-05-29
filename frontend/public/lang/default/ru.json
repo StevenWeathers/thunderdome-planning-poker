@@ -1,62 +1,19 @@
 {
-    "appName": "Thunderdome",
-    "appVersion": "Версия {version}",
-    "avatarAltText": "Placeholder Avatar",
-    "logout": "Выйти",
-    "logoutError": "Ошибка при попытке выйти из профиля",
     "battleDelete": "Удалить битву",
     "battleAbandon": "Покинуть битву",
     "battleCreate": "Создать битву",
     "battleEdit": "Редактировать битву",
-    "battleEditPointsDisabled": "Нельзя менять карточки пока активно голосование.",
-    "save": "Сохранить",
-    "warriorCreate": "Создать участника",
     "warriorNudge": "Напомнить",
     "promote": "Сделать лидером",
-    "demote": "Demote",
-    "planAdd": "Добавить задачу",
-    "planSkip": "Пропустить задачу",
-    "planName": "Заголовок задачи",
-    "planNamePlaceholder": "Введите заголовок задачи",
-    "planType": "Тип задач",
-    "planTypePlaceholder": "Типы задач",
-    "planLink": "Ссылка",
-    "planLinkPlaceholder": "Введите ссылку на задачу",
-    "planLinkInvalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)",
-    "planReferenceId": "ID ссылки",
-    "planReferenceIdPlaceholder": "Введите ID ссылки",
-    "planDescription": "Описание",
-    "planDescriptionPlaceholder": "Введите описание",
-    "planAcceptanceCriteria": "Критерии выполнения",
-    "planAcceptanceCriteriaPlaceholder": "Введите критерии выполнения задачи",
-    "pointed": "Оцененные ({count})",
-    "unpointed": "Неоцененные ({count})",
     "view": "Просмотр",
-    "activate": "Активировать",
-    "votingFinish": "Закончить голосование",
-    "votingRestart": "Перезапустить голосование",
-    "importJiraXML": "Импорт задач из джиры",
-    "importJiraXMLBadFileTypeError": "Ошибка: плохой тип файла",
-    "importJiraXMLReadFileError": "Ошибка чтения файла",
-    "planTypeStory": "история",
-    "planTypeBug": "ошибка",
-    "planTypeSpike": "spike",
-    "planTypeEpic": "эпик",
-    "planTypeTask": "задача",
-    "planTypeSubtask": "подзадача",
     "landingTitle": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
-    "landingBullet1": "Built on cool tech like Svelte, Go, and WebSockets",
     "landingBullet2": "Simple {crossoutOpen}User{crossoutClose}Warrior Experience",
-    "landingBullet3": "Works on all {mbOpen}modern browsers*{mbClose}, including mobile",
-    "landingBullet3NotSorry": "*sorry, not sorry IE",
-    "landingFeatures": "Features",
     "landingCountries": "Warriors in over {count} countries",
     "pages": {
         "myBattles": {
             "nav": "Мои битвы",
             "title": "Мои битвы",
             "battlesError": "Ошибка поиска ваших битв",
-            "countPlansPointed": "{totalPointed} из {totalPlans} задач оценено",
             "createBattle": {
                 "title": "Создать битву",
                 "createError": "Ошибка создания битвы",
@@ -64,297 +21,34 @@
                     "name": {
                         "label": "Название битвы",
                         "placeholder": "Введите название битвы"
-                    },
-                    "allowedPointValues": {
-                        "label": "Разрешенные карточки"
-                    },
-                    "plans": {
-                        "label": "Задачи",
-                        "addButton": "Добавить задачу",
-                        "removeButton": "Удалить",
-                        "fields": {
-                            "name": {
-                                "placeholder": "Введите заголовок задачи"
-                            }
-                        }
-                    },
-                    "autoFinishVoting": {
-                        "label": "Автозавершение голосования когда все проголосовали"
-                    },
-                    "averageRounding": {
-                        "label": "Method of Point Average Rounding",
-                        "ceil": "Ceil",
-                        "floor": "Floor",
-                        "round": "Round"
                     }
                 }
             }
         },
         "createAccount": {
-            "nav": "Создать профиль",
-            "title": "Войти в битву",
-            "registrationDisabled": "Регистрация отключена.",
-            "guestForm": {
-                "title": "Войти как гость",
-                "saveButton": "Зарегистировать",
-                "createError": "Ошибка регистрации как гостя",
-                "fields": {
-                    "name": {
-                        "label": "Имя",
-                        "placeholder": "Введите имя"
-                    }
-                }
-            },
-            "createAccountForm": {
-                "saveButton": "Создать",
-                "title": "Создать аккаунт {optionalOpen}(Необязательно){optionalClose}",
-                "createError": "Ошибка создания участника",
-                "fields": {
-                    "name": {
-                        "label": "Имя",
-                        "placeholder": "Введите имя"
-                    },
-                    "email": {
-                        "label": "Электронная почта",
-                        "placeholder": "Введите электронную почту"
-                    },
-                    "password": {
-                        "label": "Пароль",
-                        "placeholder": "Введите пароль"
-                    },
-                    "confirmPassword": {
-                        "label": "Подтвердить пароль",
-                        "placeholder": "Повторите пароль"
-                    }
-                }
-            }
-        },
-        "verifyAccount": {
-            "loading": "Подтверждение профиля...",
-            "verified": {
-                "title": "Профиль подтвержден",
-                "thanks": "Спасибо за подтверждение почты."
-            },
-            "failed": {
-                "title": "Верификация завершилась ошибкой",
-                "error": "Произошла ошибка верификации."
-            }
-        },
-        "warriorProfile": {
-            "title": "Профиль",
-            "errorRetreiving": "Ошибка получения профиля",
-            "errorUpdating": "Ошибка обновления профиля",
-            "updateSuccess": "Profile updated",
-            "passwordUpdated": "Пароль обновлен.",
-            "passwordUpdateError": "Ошибка обновления пароля",
-            "updatePasswordButton": "Обновить пароль",
-            "saveProfileButton": "Обновить профиль",
-            "fields": {
-                "name": {
-                    "label": "Имя",
-                    "placeholder": "Введите имя"
-                },
-                "email": {
-                    "label": "Электронная почта",
-                    "verified": "Подтвержден"
-                },
-                "country": {
-                    "label": "Country",
-                    "placeholder": "Choose your country (optional)"
-                },
-                "company": {
-                    "label": "Company",
-                    "placeholder": "Enter your company (optional)"
-                },
-                "jobTitle": {
-                    "label": "Job Title",
-                    "placeholder": "Enter your job title (optional)"
-                },
-                "avatar": {
-                    "label": "Аватар"
-                },
-                "enable_notifications": {
-                    "label": "Включить уведомления"
-                }
-            },
-            "updatePasswordForm": {
-                "title": "Обновить пароль",
-                "cancelButton": "Отмена",
-                "saveButton": "Обновить",
-                "fields": {
-                    "password": {
-                        "label": "Пароль",
-                        "placeholder": "Введите пароль"
-                    },
-                    "confirmPassword": {
-                        "label": "Подтвердить пароль",
-                        "placeholder": "Повторите пароль"
-                    }
-                }
-            },
-            "apiKeys": {
-                "title": "API Keys",
-                "createButton": "Create API Key",
-                "name": "Key Name",
-                "prefix": "Key Prefix",
-                "active": "Active",
-                "updated": "Last Updated",
-                "actions": "Actions",
-                "activateButton": "Activate",
-                "deactivateButton": "Deactivate",
-                "deleteButton": "Delete",
-                "errorRetreiving": "Failed to get API keys",
-                "createFailed": "Failed to create API Key",
-                "deleteFailed": "Failed to delete API Key",
-                "deleteSuccess": "API Key deleted",
-                "updateSuccess": "API Key updated",
-                "updateFailed": "Failed to update API Key",
-                "fields": {
-                    "name": {
-                        "label": "Key Name",
-                        "placeholder": "Enter a Key Name",
-                        "invalid": "Please enter a key name"
-                    },
-                    "submitButton": "Create",
-                    "closeButton": "Close"
-                },
-                "createSuccess": "New Api Key {keyName} created and {onlyNowOpen}it will be displayed only now{onlyNowClose}",
-                "storeWarning": "Please store it somewhere safe because as soon as you navigate away from this page, we will not be able to retrieve or restore this generated token."
-            },
-            "delete": {
-                "deleteButton": "Delete Account",
-                "error": "Error encountered attempting to delete your account.",
-                "warningStatement": "Are you sure you want to delete your account, this cannot be undone.",
-                "confirmButton": "Confirm Delete",
-                "cancelButton": "Cancel"
-            }
+            "title": "Войти в битву"
         },
         "admin": {
-            "nav": "Админка",
-            "title": "Админка",
             "counts": {
-                "registered": "Зарегистрированные участники",
-                "unregistered": "Незарегистрированные",
-                "battles": "Битвы",
-                "plans": "Задачи"
-            },
-            "registeredWarriors": {
-                "title": "Зарегистрированные участники",
-                "name": "Имя",
-                "email": "Электронная почта",
-                "country": "Country",
-                "company": "Company",
-                "jobTitle": "Job Title",
-                "verified": "Подтвержден",
-                "rank": "Rank"
+                "battles": "Битвы"
             },
             "maintenance": {
-                "title": "Maintenance",
-                "cleanGuests": "Clean Guests older than {daysOld} days",
                 "cleanBattles": "Clean Battles older than {daysOld} days"
             }
         },
         "login": {
-            "nav": "Войти",
-            "title": "Войти",
-            "registerForBattle": "or {registerOpen}Войти{registerClose} to join the Battle",
-            "button": "Войти",
-            "authError": "Ошибка при попытке авторизации",
-            "sendResetSuccess": "Инструкция по сбросу отправлена на {email}",
-            "sendResetError": "Ошибка при попытки отправить инструкцию сброса",
-            "fields": {
-                "email": {
-                    "label": "Электронная почта",
-                    "placeholder": "Введите электронную почту"
-                },
-                "password": {
-                    "label": "Пароль",
-                    "placeholder": "Введите пароль",
-                    "forgotLabel": "Забыл пароль"
-                }
-            },
-            "passwordReset": {
-                "title": "Сбросить пароль",
-                "resetError": "Ошибка при попытке сбросить пароль",
-                "saveButton": "Сбросить",
-                "fields": {
-                    "password": {
-                        "label": "Пароль",
-                        "placeholder": "Введите пароль"
-                    },
-                    "confirmPassword": {
-                        "label": "Подтвердить пароль",
-                        "placeholder": "Подтвердить пароль"
-                    }
-                }
-            }
+            "registerForBattle": "or {registerOpen}Войти{registerClose} to join the Battle"
         },
         "battle": {
             "title": "Битва",
-            "warriors": "Участники",
-            "socketReconnecting": "Упс, перезагрузка списка задач...",
-            "socketError": "Ошибка: обновите страницу или попробуйте позже.",
-            "loading": "Загрузка списка задач...",
-            "votingNotStarted": "Голосование еще не началось",
             "warriorJoined": "{name} присоединился к битве",
             "warriorRetreated": "{name} ушел с поля боя",
-            "warriorVoted": "{name} проголосовал",
-            "warriorRetractedVote": "{name} убрал оценку",
-            "warriorNudge": "Хей... {name}, ждем твоего голоса.",
-            "warriorInvite": "Пригласить участника",
             "warriorLeader": "Лидер",
-            "finalPoints": "Итого голосов",
-            "points": "Голоса",
-            "planSkipped": "Задача пропущена",
-            "voteResults": {
-                "totalVotes": "Всего голосов",
-                "average": "Среднее",
-                "highest": "Лучшее",
-                "showVoters": "Показать проголосовавших",
-                "unknownWarrior": "Неизвестный участник"
-            },
             "battleDeleted": "Battle deleted"
         }
     },
-    "footer": {
-        "authoredBy": "by {authorOpen}Steven Weathers{authorClose}.",
-        "license": "The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.",
-        "poweredBy": "Powered by {svelteOpen}Svelte{svelteClose} and {goOpen}Go{goClose}"
-    },
-    "name": "Name",
-    "email": "Email",
     "plans": "Plans",
-    "cancel": "Cancel",
-    "delete": "Удалить",
     "edit": "Изменить",
-    "users": "Users",
-    "type": "Type",
-    "active": "Active",
-    "apiKeys": "API Keys",
-    "dateUpdated": "Updated Date",
-    "dateCreated": "Created Date",
-    "cannotBeUndone": "This cannot be undone.",
-    "userEmail": "User Email",
-    "userEmailPlaceholder": "Enter a registered users email",
-    "userAddSuccess": "User added successfully.",
-    "userAddError": "Error attempting to add user.",
-    "userRemoveSuccess": "User removed successfully.",
-    "userRemoveError": "Error attempting to remove user.",
-    "role": "Role",
-    "rolePlaceholder": "Select users role",
-    "userAdd": "Add User",
-    "flag": "Flag",
-    "alerts": "Alerts",
-    "alertCreate": "Create Alert",
-    "alertNamePlaceholder": "Enter an alert name",
-    "alertTypePlaceholder": "Select an alert type",
-    "alertContent": "Alert Content",
-    "alertContentPlaceholder": "Enter alert content",
-    "alertRegisteredOnly": "Registered Only",
-    "alertAllowDismiss": "Allow Dismiss",
-    "alertSave": "Save Alert",
-    "alertDelete": "Delete Alert",
-    "alertDeleteConfirmation": "Are you sure you want to delete this alert?",
     "battle": "Battle",
     "battles": "Battles",
     "battlesActive": "Active Battles",
@@ -362,37 +56,6 @@
     "battleJoin": "Join Battle",
     "battleRemoveSuccess": "Battle removed successfully.",
     "battleRemoveError": "Error attempting to remove battle.",
-    "department": "Department",
-    "departments": "Departments",
-    "departmentCreate": "Create Department",
-    "departmentName": "Department Name",
-    "departmentNamePlaceholder": "Enter an department name",
-    "departmentSave": "Save Department",
-    "departmentGetError": "Error getting department",
-    "departmentUsersGetError": "Error getting department users",
-    "departmentTeamsGetError": "Error getting department teams",
-    "departmentCreateError": "Error attempting to create department",
-    "organization": "Organization",
-    "organizations": "Organizations",
-    "organizationName": "Organization Name",
-    "organizationNamePlaceholder": "Enter an organization name",
-    "organizationSave": "Save Organization",
-    "organizationGetError": "Error getting organization",
-    "organizationGetDepartmentsError": "Error getting organization departments",
-    "organizationGetTeamsError": "Error getting organization teams",
-    "organizationGetUsersError": "Error getting organization users",
-    "team": "Team",
-    "teams": "Teams",
-    "teamCreate": "Create Team",
-    "teamCreateSuccess": "Team created successfully.",
-    "teamCreateError": "Error attempting to create team.",
-    "teamName": "Team Name",
-    "teamNamePlaceholder": "Enter an team name",
-    "teamSave": "Save Team",
-    "teamDeleteSuccess": "Team deleted successfully.",
-    "teamDeleteError": "Error attempting to delete team",
-    "teamGetError": "Error getting team",
-    "teamGetUsersError": "Error getting team users",
     "teamGetBattlesError": "Error getting team battles",
     "sessionDuplicate": "Duplicate battle session exists for your ID"
 }

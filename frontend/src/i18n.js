@@ -14,7 +14,8 @@ import { locales, fallbackLocale, PathPrefix } from './config'
 
 const { AppVersion, FriendlyUIVerbs } = appConfig
 const verbsType = FriendlyUIVerbs ? 'friendly' : 'default'
-const MESSAGE_FILE_URL_TEMPLATE = `${PathPrefix}/lang/${verbsType}/{locale}.json?v=${AppVersion}`
+const MESSAGE_FILE_URL_BASE = `${PathPrefix}/lang/{locale}.json?v=${AppVersion}`
+const MESSAGE_FILE_URL_ADD = `${PathPrefix}/lang/${verbsType}/{locale}.json?v=${AppVersion}`
 
 let _activeLocale
 
@@ -32,21 +33,35 @@ function setupI18n(options = {}) {
     if (!hasLoadedLocale(locale_)) {
         isDownloading.set(true)
 
-        const messagesFileUrl = MESSAGE_FILE_URL_TEMPLATE.replace(
+        const messagesFileUrlBase = MESSAGE_FILE_URL_BASE.replace(
+            '{locale}',
+            locale_,
+        )
+        const messageFileUrlAdd = MESSAGE_FILE_URL_ADD.replace(
             '{locale}',
             locale_,
         )
 
-        // Download translation file for given locale/language
-        return loadJson(messagesFileUrl).then(messages => {
-            _activeLocale = locale_
+        // Download basic translation file for given locale/language
+        return loadJson(messagesFileUrlBase).then(messagesBase => {
+            // console.log("Load base file: " + messagesFileUrlBase)
 
-            // Configure svelte-i18n to use the locale
-            addMessages(locale_, messages)
+            // Add basic messages for locale
+            addMessages(locale_, messagesBase)
 
-            locale.set(locale_)
+            // Download additional translation file (default/friendly) for given locale/language
+            loadJson(messageFileUrlAdd).then(messagesAdd => {
+                // console.log("Load additional file: " + messageFileUrlAdd)
 
-            isDownloading.set(false)
+                // Configure svelte-i18n to use the locale
+                _activeLocale = locale_
+                locale.set(locale_)
+
+                // add experience messages for the locale
+                addMessages(locale_, messagesAdd)
+
+                isDownloading.set(false)
+            })
         })
     }
 }

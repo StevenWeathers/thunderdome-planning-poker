@@ -1,62 +1,17 @@
 {
-    "appName": "Thunderdome",
-    "appVersion": "Version {version}",
-    "avatarAltText": "Avatar Platzhalter",
-    "logout": "Abmelden",
     "logoutError": "Fehler beim Abmelden des Kriegers",
     "battleDelete": "Schlacht l\u00F6schen",
     "battleAbandon": "Schlacht verlassen",
     "battleCreate": "Schlacht erstellen",
     "battleEdit": "Schlacht bearbeiten",
-    "battleEditPointsDisabled": "Sch\u00E4tzung ist aktiv, zul\u00E4ssige Punkte k\u00F6nnen nicht ge\u00E4ndert werden.",
-    "save": "Speichern",
     "warriorCreate": "Krieger erstellen",
-    "warriorNudge": "Anstubsen",
-    "promote": "Bef\u00F6rdern",
-    "demote": "Degradieren",
-    "planAdd": "Plan hinzuf\u00FCgen",
-    "planSkip": "Plan \u00FCberspringen",
-    "planName": "Plan Name",
-    "planNamePlaceholder": "Plan Name eingeben",
-    "planType": "Plan Typ",
-    "planTypePlaceholder": "Typen",
-    "planLink": "Link",
-    "planLinkPlaceholder": "Link zum Plan eingeben",
-    "planLinkInvalid": "Der Link ist keine g\u00FCltige absolute URL, enth\u00E4lt z.B. das Protokol (HTTP/HTTPS)",
-    "planReferenceId": "Referenz ID",
-    "planReferenceIdPlaceholder": "Referenz ID eingeben",
-    "planDescription": "Beschreibung",
-    "planDescriptionPlaceholder": "Beschreibung eingeben",
-    "planAcceptanceCriteria": "Akzeptanzkriterien",
-    "planAcceptanceCriteriaPlaceholder": "Akzeptanzkriterien eingeben",
-    "pointed": "Gesch\u00E4tzt ({count})",
-    "unpointed": "Ungesch\u00E4tzt ({count})",
-    "view": "Anzeigen",
-    "activate": "Aktivieren",
-    "votingFinish": "Sch\u00E4tzung beenden",
-    "votingRestart": "Sch\u00E4tzung neu starten",
-    "importJiraXML": "Jira XML Import",
-    "importJiraXMLBadFileTypeError": "Fehler: falscher Datei-Typ",
-    "importJiraXMLReadFileError": "Fehler beim Lesen der Datei",
-    "planTypeStory": "Story",
-    "planTypeBug": "Bug",
-    "planTypeSpike": "Spike",
-    "planTypeEpic": "Epic",
-    "planTypeTask": "Task",
-    "planTypeSubtask": "Subtask",
-    "landingTitle": "Thunderdome ist eine Open Source Agile Planning Poker App mit einem lustigen Thema",
-    "landingBullet1": "Gebaut mit coolen Technologien wie Svelte, Go und WebSockets",
     "landingBullet2": "Einfache {crossoutOpen}Benutzer{crossoutClose}Krieger-Erfahrung",
-    "landingBullet3": "Funktioniert mit allen {mbOpen}modernen Browsern*{mbClose}, inklusive Mobile",
-    "landingBullet3NotSorry": "*Entschuldigung, keine Entschuldigung bei IE",
-    "landingFeatures": "Eigenschaften",
     "landingCountries": "Krieger in \u00FCber {count} L\u00E4ndern",
     "pages": {
         "myBattles": {
             "nav": "Meine Schlachten",
             "title": "Meine Schlachten",
             "battlesError": "Fehler: Keine Schlacht gefunden",
-            "countPlansPointed": "{totalPointed} von {totalPlans} Pl\u00E4nen gesch\u00E4tzt",
             "createBattle": {
                 "title": "Schlacht erstellen",
                 "createError": "Fehler beim Erstellen einer Schlacht",
@@ -65,229 +20,37 @@
                         "label": "Name der Schlacht",
                         "placeholder": "Name der Schlacht eingeben"
                     },
-                    "allowedPointValues": {
-                        "label": "Zul\u00E4ssige Sch\u00E4tzwerte"
-                    },
-                    "plans": {
-                        "label": "Pl\u00E4ne",
-                        "addButton": "Hinzuf\u00FCgen",
-                        "removeButton": "Entfernen",
-                        "fields": {
-                            "name": {
-                                "placeholder": "Name f\u00FCr den Plan eingeben"
-                            }
-                        }
-                    },
                     "autoFinishVoting": {
                         "label": "Sch\u00E4tzung automatisch beenden, wenn alle Krieger gesch\u00E4tzt haben"
-                    },
-                    "averageRounding": {
-                        "label": "Methode zur Rundung des Punkteschnitts",
-                        "ceil": "Aufrunden",
-                        "floor": "Abrunden",
-                        "round": "Kaufm. Runden"
                     }
                 }
             }
         },
         "createAccount": {
-            "nav": "Konto erstellen",
             "title": "Der Schlacht beitreten",
-            "registrationDisabled": "Registrierung ist deaktiviert.",
             "guestForm": {
-                "title": "Als Gast teilnehmen",
-                "saveButton": "Teilnehmen",
-                "createError": "Beim Registrieren als Gast-Krieger ist ein Fehler aufgetreten",
-                "fields": {
-                    "name": {
-                        "label": "Name",
-                        "placeholder": "Name eingeben"
-                    }
-                }
+                "createError": "Beim Registrieren als Gast-Krieger ist ein Fehler aufgetreten"
             },
             "createAccountForm": {
-                "saveButton": "Erstellen",
-                "title": "Konto erstellen {optionalOpen}(optional){optionalClose}",
-                "createError": "Beim Erstellen des Kriegers ist ein Fehler aufgetreten",
-                "fields": {
-                    "name": {
-                        "label": "Name",
-                        "placeholder": "Name eingeben"
-                    },
-                    "email": {
-                        "label": "E-Mail",
-                        "placeholder": "E-Mail eingeben"
-                    },
-                    "password": {
-                        "label": "Passwort",
-                        "placeholder": "Passwort eingeben"
-                    },
-                    "confirmPassword": {
-                        "label": "Passwort best\u00E4tigen",
-                        "placeholder": "Passwort best\u00E4tigen"
-                    }
-                }
-            }
-        },
-        "verifyAccount": {
-            "loading": "Konto\u00FCberpr\u00FCfung...",
-            "verified": {
-                "title": "Konto \u00FCberpr\u00FCft",
-                "thanks": "Vielen Dank f\u00FCr die Best\u00E4tigung der E-Mail-Adresse."
-            },
-            "failed": {
-                "title": "\u00DCberpr\u00FCfung fehlgeschlagen",
-                "error": "Bei der \u00DCberpr\u00FCfung des Kontos ist ein Fehler aufgetreten. M\u00F6glicherweise ist dieser Link abgelaufen oder wurde bereits verwendet."
-            }
-        },
-        "warriorProfile": {
-            "title": "Profil",
-            "errorRetreiving": "Beim Laden des Profils ist ein Fehler aufgetreten",
-            "errorUpdating": "Beim Aktualisieren des Profils ist ein Fehler aufgetreten",
-            "updateSuccess": "Profil aktualisiert",
-            "passwordUpdated": "Passwort aktualisiert",
-            "passwordUpdateError": "Beim Versuch, das Kennwort zu aktualisieren, ist ein Fehler aufgetreten",
-            "updatePasswordButton": "Passwort \u00E4ndern",
-            "saveProfileButton": "Profil aktualisieren",
-            "fields": {
-                "name": {
-                    "label": "Name",
-                    "placeholder": "Name eingeben"
-                },
-                "email": {
-                    "label": "E-Mail",
-                    "verified": "Best\u00E4tigt"
-                },
-                "country": {
-                    "label": "Land",
-                    "placeholder": "Land w\u00E4hlen (optional)"
-                },
-                "company": {
-                    "label": "Firma",
-                    "placeholder": "Firma eingeben (optional)"
-                },
-                "jobTitle": {
-                    "label": "Berufsbezeichnung",
-                    "placeholder": "Berufsbezeichnung eingeben (optional)"
-                },
-                "avatar": {
-                    "label": "Avatar"
-                },
-                "enable_notifications": {
-                    "label": "Benachrichtigungen aktivieren"
-                }
-            },
-            "updatePasswordForm": {
-                "title": "Passwort \u00E4ndern",
-                "cancelButton": "Abbruch",
-                "saveButton": "Speichern",
-                "fields": {
-                    "password": {
-                        "label": "Passwort",
-                        "placeholder": "Passwort eingeben"
-                    },
-                    "confirmPassword": {
-                        "label": "Passwort best\u00E4tigen",
-                        "placeholder": "Passwort best\u00E4tigen"
-                    }
-                }
-            },
-            "apiKeys": {
-                "title": "API Key",
-                "createButton": "API Key erstellen",
-                "name": "Key Name",
-                "prefix": "Key Pr\u00E4fix",
-                "active": "Aktiv",
-                "updated": "Zuletzt aktualisiert",
-                "actions": "Aktionen",
-                "activateButton": "Aktivieren",
-                "deactivateButton": "Deaktivieren",
-                "deleteButton": "L\u00F6schen",
-                "errorRetreiving": "API keys konnten nicht abgerufen werden ",
-                "createFailed": "API Key konnte nicht erstellt werden",
-                "deleteFailed": "API Key konnte nicht gel\u00F6scht werden",
-                "deleteSuccess": "API Key gel\u00F6scht",
-                "updateSuccess": "API Key aktualisiert",
-                "updateFailed": "API Key konnte nicht aktualisiert werden",
-                "fields": {
-                    "name": {
-                        "label": "Key Name",
-                        "placeholder": "Key Name eingeben",
-                        "invalid": "Bitte einen Key Namen angeben"
-                    },
-                    "submitButton": "Erstellen",
-                    "closeButton": "Schlie\u00dfen"
-                },
-                "createSuccess": "Neuer Api Key {keyName} erstellt und {onlyNowOpen}dieser wird nur jetzt angezeigt{onlyNowClose}",
-                "storeWarning": "Bitte den Api Key an einem sicheren Ort aufbewahren, da dieses generierte Token nicht mehr abgerufen oder wiederhergestellt werden kann, sobald diese Seite verlassen wurde."
-            },
-            "delete": {
-                "deleteButton": "Konto l\u00F6schen",
-                "error": "Es ist ein Fehler beim L\u00F6schen des Kontos aufgetreten.",
-                "warningStatement": "Konto wirklich l\u00F6schen? Dies kann nicht R\u00FCckg\u00E4ngig gemacht werden.",
-                "confirmButton": "L\u00F6schen best\u00E4tigen",
-                "cancelButton": "Abbruch"
+                "createError": "Beim Erstellen des Kriegers ist ein Fehler aufgetreten"
             }
         },
         "admin": {
-            "nav": "Verwaltung",
-            "title": "Verwaltung",
             "counts": {
                 "registered": "Registrierte Krieger",
                 "unregistered": "Nicht registrierte Krieger",
-                "battles": "Schlachten",
-                "plans": "Pl\u00E4ne"
+                "battles": "Schlachten"
             },
             "registeredWarriors": {
-                "title": "Registrierte Krieger",
-                "name": "Name",
-                "email": "E-Mail",
-                "country": "Land",
-                "company": "Firma",
-                "jobTitle": "Berufsbezeichnung",
-                "verified": "Best\u00E4tigt",
-                "rank": "Rang"
+                "title": "Registrierte Krieger"
             },
             "maintenance": {
-                "title": "Wartung",
-                "cleanGuests": "Entferne G\u00E4ste \u00E4lter als {daysOld} Tage",
                 "cleanBattles": "Entferne Schlachten \u00E4lter als {daysOld} Tage"
             }
         },
         "login": {
-            "nav": "Anmeldung",
-            "title": "Anmeldung",
             "registerForBattle": "oder {registerOpen}Anmeldung{registerClose}, um der Schlacht beizutreten",
-            "button": "Anmelden",
-            "authError": "Beim Versuch, den Krieger zu authentifizieren, ist ein Fehler aufgetreten",
-            "sendResetSuccess": "Anweisungen zum Zur\u00FCcksetzen des Passworts wurden an {email} gesendet",
-            "sendResetError": "Beim Senden der E-Mail zum Zur\u00FCcksetzen ist ein Fehler aufgetreten",
-            "fields": {
-                "email": {
-                    "label": "E-Mail",
-                    "placeholder": "E-Mail eingeben"
-                },
-                "password": {
-                    "label": "Password",
-                    "placeholder": "Passwort eingeben",
-                    "forgotLabel": "Passwort vergessen?"
-                }
-            },
-            "passwordReset": {
-                "title": "Passwort zur\u00FCcksetzen",
-                "resetError": "Fehler beim Versuch, das Passwort zur\u00FCckzusetzen",
-                "saveButton": "Zur\u00FCcksetzen",
-                "fields": {
-                    "password": {
-                        "label": "Passwort",
-                        "placeholder": "Passwort eingeben"
-                    },
-                    "confirmPassword": {
-                        "label": "Passwort best\u00E4tigen",
-                        "placeholder": "Passwort eingeben"
-                    }
-                }
-            }
+            "authError": "Beim Versuch, den Krieger zu authentifizieren, ist ein Fehler aufgetreten"
         },
         "battle": {
             "title": "Schlacht",
@@ -295,66 +58,15 @@
             "socketReconnecting": "Ooops, Schlachtpl\u00E4ne werden neu geladen...",
             "socketError": "Fehler beim Eintritt in die Schlacht, bitte aktualisieren und nochmals versuchen.",
             "loading": "Lade Schlachtpl\u00E4ne...",
-            "votingNotStarted": "Sch\u00E4tzung noch nicht gestartet",
             "warriorJoined": "{name} hat das Schlachtfeld betreten",
             "warriorRetreated": "{name} hat das Schlachtfeld verlassen",
-            "warriorVoted": "{name} hat eine Sch\u00E4tzung abegeben",
-            "warriorRetractedVote": "{name} hat die Sch\u00E4tzung zur\u00FCckgezogen",
-            "warriorNudge": "pst... {name}, wir warten auf eine Sch\u00E4tzung",
             "warriorInvite": "Krieger einladen",
-            "warriorLeader": "Chef",
-            "finalPoints": "Finale Punkte",
-            "points": "Punkte",
-            "planSkipped": "Plan \u00FCbersprungen",
             "voteResults": {
-                "totalVotes": "Sch\u00E4tzungen",
-                "average": "Durchschnitt",
-                "highest": "H\u00F6chster",
-                "showVoters": "Zeige Sch\u00E4tzer",
                 "unknownWarrior": "Unbekannter Krieger"
             },
             "battleDeleted": "Schlacht gel\u00F6scht"
         }
     },
-    "footer": {
-        "authoredBy": "by {authorOpen}Steven Weathers{authorClose}.",
-        "license": "Der Source Code ist lizensiert {licenseOpen}Apache 2.0{licenseClose}.",
-        "poweredBy": "Erstellt mit {svelteOpen}Svelte{svelteClose} und {goOpen}Go{goClose}"
-    },
-    "name": "Name",
-    "email": "E-Mail",
-    "plans": "Pl\u00E4ne",
-    "cancel": "Abbruch",
-    "delete": "L\u00F6schen",
-    "edit": "Bearbeiten",
-    "users": "Benutzer",
-    "type": "Typ",
-    "active": "Aktiv",
-    "apiKeys": "API Keys",
-    "dateUpdated": "Aktualisierungsdatum",
-    "dateCreated": "Erstellungsdatum",
-    "cannotBeUndone": "Das kann nicht r\u00FCckg\u00E4ngig gemacht werden.",
-    "userEmail": "Benutzer E-Mail",
-    "userEmailPlaceholder": "E-Mail-Adresse eines registrierten Benutzers eingeben",
-    "userAddSuccess": "Benutzer erfolgreich hinzugef\u00FCgt.",
-    "userAddError": "Fehler beim Versuch, den Benutzer anzulegen.",
-    "userRemoveSuccess": "Benutzer erfolgreich entfernt.",
-    "userRemoveError": "Fehler beim Versuch, den Benutzer zu entfernen.",
-    "role": "Rolle",
-    "rolePlaceholder": "Benutzerrolle ausw\u00E4hlen",
-    "userAdd": "Benutzer hinzuf\u00FCgen",
-    "flag": "Flag",
-    "alerts": "Benachrichtigungen",
-    "alertCreate": "Benachrichtigung erstellen",
-    "alertNamePlaceholder": "Name f\u00FCr die Benachrichtigung eingeben",
-    "alertTypePlaceholder": "Benachrichtigungstyp ausw\u00E4hlen",
-    "alertContent": "Benachrichtigungsinhalt",
-    "alertContentPlaceholder": "Benachrichtigungsinhalt eingeben",
-    "alertRegisteredOnly": "Nur registrierte",
-    "alertAllowDismiss": "Ablehnen zulassen",
-    "alertSave": "Benachrichtigung speichern",
-    "alertDelete": "Benachrichtigung l\u00F6schen",
-    "alertDeleteConfirmation": "Diese Benachrichtigung wirklich l\u00F6schen?",
     "battle": "Schlacht",
     "battles": "Schlachten",
     "battlesActive": "Aktive Schlachten",
@@ -362,37 +74,6 @@
     "battleJoin": "Schlacht beitreten",
     "battleRemoveSuccess": "Schlacht erfolgreich entfernt.",
     "battleRemoveError": "Fehler beim Entfernen der Schlacht aufgetreten.",
-    "department": "Abteilung",
-    "departments": "Abteilungen",
-    "departmentCreate": "Abteilung anlegen",
-    "departmentName": "Abteilungsname",
-    "departmentNamePlaceholder": "Abteilungsname angeben",
-    "departmentSave": "Abteilung speichern",
-    "departmentGetError": "Fehler beim Ermitteln der Abteilung",
-    "departmentUsersGetError": "Fehler beim Ermitteln der Benutzer der Abteilung",
-    "departmentTeamsGetError": "Fehler beim Ermitteln der Teams der Abteilung",
-    "departmentCreateError": "Fehler beim Erstellen der Abteilung",
-    "organization": "Unternehmen",
-    "organizations": "Unternehmen",
-    "organizationName": "Unternehmensname",
-    "organizationNamePlaceholder": "Unternehmensname angeben",
-    "organizationSave": "Unternehmen speichern",
-    "organizationGetError": "Fehler beim Ermitteln des Unternehmens",
-    "organizationGetDepartmentsError": "Fehler beim Ermitteln der Unternehmens-Abteilungen",
-    "organizationGetTeamsError": "Fehler beim Ermitteln der Teams des Unternehmens",
-    "organizationGetUsersError": "Fehler beim Ermitteln der Benutzer des Unternehmens",
-    "team": "Team",
-    "teams": "Teams",
-    "teamCreate": "Team erstellen",
-    "teamCreateSuccess": "Team erfolgreich angelegt.",
-    "teamCreateError": "Fehler beim Erstellen des Teams.",
-    "teamName": "Team Name",
-    "teamNamePlaceholder": "Team Name angeben",
-    "teamSave": "Team speichern",
-    "teamDeleteSuccess": "Team erfolgreich gel\u00F6scht",
-    "teamDeleteError": "Fehler beim L\u00F6schen des Teams",
-    "teamGetError": "Fehler beim Ermitteln des Teams",
-    "teamGetUsersError": "Fehler beim Ermitteln der Benutzer des Teams",
     "teamGetBattlesError": "Fehler beim Ermitteln der Schlachten des Teams",
     "sessionDuplicate": "Es existiert bereits eine Schlacht-Sitzung f\u00FCr Ihre ID"
 }
