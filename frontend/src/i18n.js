@@ -37,32 +37,32 @@ function setupI18n(options = {}) {
             '{locale}',
             locale_,
         )
-
-        // Download translation file for given locale/language
-        loadJson(messagesFileUrlBase).then(messages => {
-            //console.log("Load base file: " + messagesFileUrlBase)
-
-            // Add messages for locale
-            addMessages(locale_, messages)
-        })
-
         const messageFileUrlAdd = MESSAGE_FILE_URL_ADD.replace(
             '{locale}',
             locale_,
         )
 
-        // Download additional translation file (default/friendly) for given locale/language
-        loadJson(messageFileUrlAdd).then(messages => {
-            //console.log("Load additional file: " + messageFileUrlAdd)
+        // Download basic translation file for given locale/language
+        return loadJson(messagesFileUrlBase).then(messagesBase => {
+            // console.log("Load base file: " + messagesFileUrlBase)
 
-            // Configure svelte-i18n to use the locale
-            _activeLocale = locale_
-            locale.set(locale_)
+            // Add basic messages for locale
+            addMessages(locale_, messagesBase)
 
-            addMessages(locale_, messages)
+            // Download additional translation file (default/friendly) for given locale/language
+            loadJson(messageFileUrlAdd).then(messagesAdd => {
+                // console.log("Load additional file: " + messageFileUrlAdd)
+
+                // Configure svelte-i18n to use the locale
+                _activeLocale = locale_
+                locale.set(locale_)
+
+                // add experience messages for the locale
+                addMessages(locale_, messagesAdd)
+
+                isDownloading.set(false)
+            })
         })
-
-        isDownloading.set(false)
     }
 }
 
