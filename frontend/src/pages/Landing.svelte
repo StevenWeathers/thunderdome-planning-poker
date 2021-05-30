@@ -213,19 +213,30 @@
     <div class="container mx-auto px-4 py-2 lg:py-4">
         <div class="flex text-center">
             <div class="w-full">
-                <h4 class="font-bold text-xl align-middle">
-                    Check out
-                    <a href="https://exothermic.dev">
-                        <img
-                            src="/img/exothermic-logo-2.png"
-                            alt="Exothermic logo"
-                            title="Exothermic - Open Source Agile Story Mapping
-                            tool"
-                            class="inline-block mx-2" />
-                    </a>
-                    an open source agile story mapping tool brought to you by
-                    yours truly!
-                </h4>
+                <h2 class="font-bold text-4xl mb-4">{$_('additionalTools')}</h2>
+                <div class="font-bold text-xl align-middle flex justify-center">
+                    <div class="flex-initial px-4">
+                        <a href="https://exothermic.dev">
+                            <img
+                                src="/img/exothermic-logo-2.png"
+                                alt="Exothermic logo"
+                                title="Exothermic - Open Source Agile Story Mapping
+                                tool"
+                                class="inline-block mx-2 mb-1" />
+                        </a><br />
+                        {$_('exothermicDescription')}
+                    </div>
+                    <div class="flex-initial px-4">
+                        <a href="https://wakita.dev">
+                            <img
+                                src="/img/wakita-logo.png"
+                                alt="Wakita logo"
+                                title="Wakita - Open Source Agile Retrospective tool"
+                                class="inline-block mx-2 mb-1" /><br />
+                                {$_('wakitaDescription')}
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

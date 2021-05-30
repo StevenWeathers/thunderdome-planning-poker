@@ -354,5 +354,8 @@
     "adminPageOrganizations": "Unternehmen",
     "adminPageTeams": "Teams",
     "adminPageUsers": "Benutzer",
-    "adminPageApi": "API Keys"
+    "adminPageApi": "API Keys",
+    "additionalTools": "Additional Tools",
+    "exothermicDescription": "Agile Story Mapping",
+    "wakitaDescription": "Agile Retrospective"
 }
