@@ -7,9 +7,10 @@
     import HollowButton from '../components/HollowButton.svelte'
     import WarriorAvatar from '../components/WarriorAvatar.svelte'
     import DeleteWarrior from '../components/DeleteWarrior.svelte'
+    import LocaleSwitcher from '../components/LocaleSwitcher.svelte'
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
-    import { _ } from '../i18n'
+    import { _, locale, setupI18n } from '../i18n'
     import { appRoutes } from '../config'
     import { countryList } from '../country'
     import CreateApiKey from '../components/CreateApiKey.svelte'
@@ -90,6 +91,7 @@
             warriorAvatar: warriorProfile.avatar,
             notificationsEnabled: warriorProfile.notificationsEnabled,
             country: warriorProfile.country,
+            locale: $locale,
             company: warriorProfile.company,
             jobTitle: warriorProfile.jobTitle,
         }
@@ -353,6 +355,19 @@
                                 <DownCarrotIcon />
                             </div>
                         </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                            for="yourLocale">
+                            {$_('pages.warriorProfile.fields.locale.label')}
+                        </label>
+                        <LocaleSwitcher
+                            selectedLocale="{$locale}"
+                            on:locale-changed="{e => setupI18n({
+                                    withLocale: e.detail,
+                                })}" />
                     </div>
 
                     <div class="mb-4">

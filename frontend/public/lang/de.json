@@ -141,6 +141,10 @@
                     "label": "Land",
                     "placeholder": "Land w\u00E4hlen (optional)"
                 },
+                "locale": {
+                    "label": "Sprache",
+                    "placeholder": "Bevorzugte Sprache w\u00E4hlen (optional)"
+                },
                 "company": {
                     "label": "Firma",
                     "placeholder": "Firma eingeben (optional)"

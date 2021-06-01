@@ -4,7 +4,7 @@
     import DownCarrotIcon from './icons/DownCarrotIcon.svelte'
     import { locales } from '../i18n'
 
-    export let selectedLocale = 'en-US'
+    export let selectedLocale = 'en'
     const supportedLocales = []
 
     for (const [key, value] of Object.entries(locales)) {

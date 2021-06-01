@@ -142,6 +142,10 @@
                     "label": "Country",
                     "placeholder": "Choose your country (optional)"
                 },
+                "locale": {
+                    "label": "Locale",
+                    "placeholder": "Choose your preferred locale (optional)"
+                },
                 "company": {
                     "label": "Company",
                     "placeholder": "Enter your company (optional)"

@@ -75,6 +75,7 @@ func (s *server) handleUserProfileUpdate() http.HandlerFunc {
 		UserAvatar := keyVal["warriorAvatar"].(string)
 		NotificationsEnabled, _ := keyVal["notificationsEnabled"].(bool)
 		Country := keyVal["country"].(string)
+		Locale := keyVal["locale"].(string)
 		Company := keyVal["company"].(string)
 		JobTitle := keyVal["jobTitle"].(string)
 
@@ -85,7 +86,7 @@ func (s *server) handleUserProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		updateErr := s.database.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Company, JobTitle)
+		updateErr := s.database.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 		if updateErr != nil {
 			log.Println("error attempting to update user profile : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)

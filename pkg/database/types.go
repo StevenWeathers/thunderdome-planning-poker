@@ -55,6 +55,7 @@ type User struct {
 	Verified             bool   `json:"verified"`
 	NotificationsEnabled bool   `json:"notificationsEnabled"`
 	Country              string `json:"country"`
+	Locale               string `json:"locale"`
 	Company              string `json:"company"`
 	JobTitle             string `json:"jobTitle"`
 }
