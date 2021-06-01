@@ -297,6 +297,7 @@
                 </HollowButton>
             {/if}
             <LocaleSwitcher
+                class="ml-2"
                 selectedLocale="{$locale}"
                 on:locale-changed="{e => setupI18n({
                         withLocale: e.detail,

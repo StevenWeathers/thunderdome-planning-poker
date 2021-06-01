@@ -5,6 +5,8 @@
     import { locales } from '../i18n'
 
     export let selectedLocale = 'en'
+    let klass = ''
+    export { klass as class }
     const supportedLocales = []
 
     for (const [key, value] of Object.entries(locales)) {
@@ -23,7 +25,7 @@
     }
 </script>
 
-<div class="ml-2 inline-block">
+<div class="{klass} inline-block">
     <div class="relative">
         <select
             name="locale"
