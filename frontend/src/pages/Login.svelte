@@ -2,7 +2,7 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
-    import { _ } from '../i18n'
+    import { _, setupI18n } from '../i18n'
     import { appRoutes } from '../config'
 
     const { AllowRegistration } = appConfig
@@ -40,10 +40,14 @@
                     name: newWarrior.name,
                     email: newWarrior.email,
                     rank: newWarrior.rank,
+                    locale: newWarrior.locale,
                     notificationsEnabled: newWarrior.notificationsEnabled,
                 })
 
                 eventTag('login', 'engagement', 'success', () => {
+                    setupI18n({
+                        withLocale: newWarrior.locale,
+                    })
                     router.route(targetPage, true)
                 })
             })

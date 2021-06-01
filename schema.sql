@@ -177,6 +177,7 @@ BEGIN
 END $$;
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS country VARCHAR(2);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS locale VARCHAR(2);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS company VARCHAR(256);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS job_title VARCHAR(128);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW();
@@ -622,6 +623,7 @@ CREATE OR REPLACE PROCEDURE user_profile_update(
     userAvatar VARCHAR(128),
     notificationsEnabled BOOLEAN,
     userCountry VARCHAR(2),
+    userLocale VARCHAR(2),
     userCompany VARCHAR(256),
     userJobTitle VARCHAR(128)
 )
@@ -633,6 +635,7 @@ BEGIN
         avatar = userAvatar,
         notifications_enabled = notificationsEnabled,
         country = userCountry,
+        locale = userLocale,
         company = userCompany,
         job_title = userJobTitle,
         last_active = NOW(),

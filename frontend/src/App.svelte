@@ -32,8 +32,6 @@
     import eventTag from './eventTag.js'
     import apiclient from './apiclient.js'
 
-    setupI18n()
-
     const { AllowRegistration, AppVersion, PathPrefix } = appConfig
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
 
@@ -42,6 +40,10 @@
     let activeWarrior
     warrior.subscribe(w => {
         activeWarrior = w
+    })
+
+    setupI18n({
+        withLocale: activeWarrior ? activeWarrior.locale : 'en',
     })
 
     let currentPage = {

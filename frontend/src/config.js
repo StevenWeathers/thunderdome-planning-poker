@@ -2,8 +2,8 @@ const locales = {
     de: 'Deutsch',
     en: 'English',
     es: 'Español',
-    fr: 'français',
-    pt: 'português',
+    fr: 'Français',
+    pt: 'Português',
     ru: 'Русский',
 }
 

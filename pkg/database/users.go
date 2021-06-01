@@ -62,11 +62,12 @@ func (d *Database) GetUser(UserID string) (*User, error) {
 	var w User
 	var UserEmail sql.NullString
 	var UserCountry sql.NullString
+	var UserLocale sql.NullString
 	var UserCompany sql.NullString
 	var UserJobTitle sql.NullString
 
 	e := d.db.QueryRow(
-		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, company, job_title FROM users WHERE id = $1",
+		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title FROM users WHERE id = $1",
 		UserID,
 	).Scan(
 		&w.UserID,
@@ -77,6 +78,7 @@ func (d *Database) GetUser(UserID string) (*User, error) {
 		&w.Verified,
 		&w.NotificationsEnabled,
 		&UserCountry,
+		&UserLocale,
 		&UserCompany,
 		&UserJobTitle,
 	)
@@ -87,6 +89,7 @@ func (d *Database) GetUser(UserID string) (*User, error) {
 
 	w.UserEmail = UserEmail.String
 	w.Country = UserCountry.String
+	w.Locale = UserLocale.String
 	w.Company = UserCompany.String
 	w.JobTitle = UserJobTitle.String
 
@@ -118,9 +121,10 @@ func (d *Database) GetUserByEmail(UserEmail string) (*User, error) {
 func (d *Database) AuthUser(UserEmail string, UserPassword string) (*User, error) {
 	var w User
 	var passHash string
+	var UserLocale sql.NullString
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled FROM users WHERE email = $1`,
+		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, locale FROM users WHERE email = $1`,
 		UserEmail,
 	).Scan(
 		&w.UserID,
@@ -131,6 +135,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*User, error
 		&w.UserAvatar,
 		&w.Verified,
 		&w.NotificationsEnabled,
+		&UserLocale,
 	)
 	if e != nil {
 		log.Println(e)
@@ -140,6 +145,8 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*User, error
 	if !ComparePasswords(passHash, []byte(UserPassword)) {
 		return nil, errors.New("password invalid")
 	}
+
+	w.Locale = UserLocale.String
 
 	return &w, nil
 }
@@ -153,7 +160,7 @@ func (d *Database) CreateUserGuest(UserName string) (*User, error) {
 		return nil, errors.New("unable to create new user")
 	}
 
-	return &User{UserID: UserID, UserName: UserName, UserAvatar: "identicon", NotificationsEnabled: true}, nil
+	return &User{UserID: UserID, UserName: UserName, UserAvatar: "identicon", NotificationsEnabled: true, Locale: "en"}, nil
 }
 
 // CreateUserRegistered adds a new registered user to the db
@@ -199,17 +206,18 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 }
 
 // UpdateUserProfile attempts to update the users profile
-func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Company string, JobTitle string) error {
+func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "identicon"
 	}
 	if _, err := d.db.Exec(
-		`call user_profile_update($1, $2, $3, $4, $5, $6, $7);`,
+		`call user_profile_update($1, $2, $3, $4, $5, $6, $7, $8);`,
 		UserID,
 		UserName,
 		UserAvatar,
 		NotificationsEnabled,
 		Country,
+		Locale,
 		Company,
 		JobTitle,
 	); err != nil {
