@@ -183,7 +183,7 @@
                     <WarriorRegisterForm
                         guestWarriorsName="{warriorName}"
                         handleSubmit="{createWarriorCorporal}"
-                        notifications />
+                        {notifications} />
                 </div>
             </div>
         {:else}
