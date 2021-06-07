@@ -107,16 +107,18 @@
         <h1 class="text-3xl md:text-4xl font-bold">
             {$_('pages.createAccount.title')}
         </h1>
-        <div
-            class="font-bold text-m md:text-l mb-2 md:mb-6
-            md:leading-tight text-center">
-            {@html $_('pages.createAccount.loginForBattle', {
-                values: {
-                    loginOpen: `<a href="${appRoutes.login}/${battleId}" class="font-bold text-blue-500 hover:text-blue-800">`,
-                    loginClose: `</a>`,
-                },
-            })}
-        </div>
+        {#if battleId}
+            <div
+                class="font-bold text-m md:text-l mb-2 md:mb-6
+                md:leading-tight text-center">
+                {@html $_('pages.createAccount.loginForBattle', {
+                    values: {
+                        loginOpen: `<a href="${appRoutes.login}/${battleId}" class="font-bold text-blue-500 hover:text-blue-800">`,
+                        loginClose: `</a>`,
+                    },
+                })}
+            </div>
+        {/if}
     </div>
     <div class="flex flex-wrap justify-center">
         {#if !$warrior.id && guestsAllowed && registrationAllowed}
