@@ -43,7 +43,7 @@ func (d *Database) AlertsList(Limit int, Offset int) []interface{} {
 
 	rows, err := d.db.Query(
 		`SELECT id, name, type, content, active, allow_dismiss, registered_only, created_date, updated_date
-		FROM alert WHERE active IS TRUE
+		FROM alert
 		LIMIT $1
 		OFFSET $2;
 		`,

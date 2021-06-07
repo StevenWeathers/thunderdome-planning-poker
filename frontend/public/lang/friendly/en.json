@@ -46,6 +46,7 @@
         },
         "createAccount": {
             "title": "Register to join pointing games",
+            "loginForBattle": "or {loginOpen}Login{loginClose} to join the Game",
             "guestForm": {
                 "createError": "Error encountered registering player as guest"
             },

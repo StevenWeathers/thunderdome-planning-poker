@@ -26,7 +26,8 @@
             }
         },
         "createAccount": {
-            "title": "Войти в битву"
+            "title": "Войти в битву",
+            "loginForBattle": "or {loginOpen}Login{loginClose} to join the Battle"
         },
         "admin": {
             "counts": {

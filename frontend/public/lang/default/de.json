@@ -28,6 +28,7 @@
         },
         "createAccount": {
             "title": "Der Schlacht beitreten",
+            "loginForBattle": "or {loginOpen}Login{loginClose} to join the Battle",
             "guestForm": {
                 "createError": "Beim Registrieren als Gast-Krieger ist ein Fehler aufgetreten"
             },

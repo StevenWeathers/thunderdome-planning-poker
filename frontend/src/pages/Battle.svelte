@@ -22,6 +22,9 @@
     export let eventTag
     export let router
 
+    const { AllowRegistration } = appConfig
+    const loginOrRegister = AllowRegistration ? appRoutes.register : appRoutes.login
+
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
     const defaultPlan = {
@@ -415,7 +418,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route(`${appRoutes.login}/${battleId}`)
+            router.route(`${loginOrRegister}/${battleId}`)
         }
         const voteCounter = setInterval(() => {
             currentTime = new Date()

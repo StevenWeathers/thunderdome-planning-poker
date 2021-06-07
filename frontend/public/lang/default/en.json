@@ -46,6 +46,7 @@
         },
         "createAccount": {
             "title": "Enlist to Battle",
+            "loginForBattle": "or {loginOpen}Login{loginClose} to join the Battle",
             "guestForm": {
                 "createError": "Error encountered registering warrior as guest"
             },
