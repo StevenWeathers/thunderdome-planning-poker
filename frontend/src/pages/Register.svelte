@@ -109,8 +109,8 @@
         </h1>
         {#if battleId}
             <div
-                class="font-bold text-m md:text-l mb-2 md:mb-6
-                md:leading-tight text-center">
+                class="font-bold text-m md:text-l mb-2 md:mb-6 md:leading-tight
+                text-center">
                 {@html $_('pages.createAccount.loginForBattle', {
                     values: {
                         loginOpen: `<a href="${appRoutes.login}/${battleId}" class="font-bold text-blue-500 hover:text-blue-800">`,

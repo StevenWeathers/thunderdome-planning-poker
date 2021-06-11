@@ -115,8 +115,8 @@
                         rank: warriorProfile.rank,
                         avatar: warriorProfile.avatar,
                         notificationsEnabled:
-                        warriorProfile.notificationsEnabled,
-                        locale: $locale
+                            warriorProfile.notificationsEnabled,
+                        locale: $locale,
                     })
 
                     notifications.success(

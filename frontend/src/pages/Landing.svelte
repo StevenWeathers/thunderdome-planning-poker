@@ -220,10 +220,11 @@
                             <img
                                 src="/img/exothermic-logo-2.png"
                                 alt="Exothermic logo"
-                                title="Exothermic - Open Source Agile Story Mapping
-                                tool"
+                                title="Exothermic - Open Source Agile Story
+                                Mapping tool"
                                 class="inline-block mx-2 mb-1" />
-                        </a><br />
+                        </a>
+                        <br />
                         {$_('exothermicDescription')}
                     </div>
                     <div class="flex-initial px-4">
@@ -231,9 +232,11 @@
                             <img
                                 src="/img/wakita-logo.png"
                                 alt="Wakita logo"
-                                title="Wakita - Open Source Agile Retrospective tool"
-                                class="inline-block mx-2 mb-1" /><br />
-                                {$_('wakitaDescription')}
+                                title="Wakita - Open Source Agile Retrospective
+                                tool"
+                                class="inline-block mx-2 mb-1" />
+                            <br />
+                            {$_('wakitaDescription')}
                         </a>
                     </div>
                 </div>
