@@ -102,6 +102,10 @@
     $: registerDisabled = warriorName === ''
 </script>
 
+<svelte:head>
+    <title>{$_('register')} | {$_('appName')}</title>
+</svelte:head>
+
 <PageLayout>
     <div class="text-center px-2 mb-4">
         <h1 class="text-3xl md:text-4xl font-bold">

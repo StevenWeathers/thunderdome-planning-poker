@@ -144,6 +144,10 @@
     })
 </script>
 
+<svelte:head>
+    <title>{$_('alerts')} {$_('pages.admin.title')} | {$_('appName')}</title>
+</svelte:head>
+
 <AdminPageLayout activePage="alerts">
     <div class="text-center px-2 mb-4">
         <h1 class="text-3xl md:text-4xl font-bold">{$_('alerts')}</h1>

@@ -203,6 +203,10 @@
     $: isAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN'
 </script>
 
+<svelte:head>
+    <title>{$_('department')} {department.name} | {$_('appName')}</title>
+</svelte:head>
+
 <PageLayout>
     <h1 class="text-3xl font-bold">{$_('department')}: {department.name}</h1>
     <div class="font-bold mb-4">

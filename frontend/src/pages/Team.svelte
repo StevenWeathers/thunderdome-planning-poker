@@ -192,8 +192,12 @@
         teamRole !== ''
 </script>
 
+<svelte:head>
+    <title>{$_('team')} {team.name} | {$_('appName')}</title>
+</svelte:head>
+
 <PageLayout>
-    <h1 class="text-3xl font-bold">Team: {team.name}</h1>
+    <h1 class="text-3xl font-bold">{$_('team')}: {team.name}</h1>
     {#if organizationId}
         <div class="font-bold">
             {$_('organization')}
@@ -276,7 +280,7 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Users</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">{$_('users')}</h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">

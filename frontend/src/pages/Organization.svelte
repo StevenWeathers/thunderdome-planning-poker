@@ -234,8 +234,12 @@
     $: isAdmin = role === 'ADMIN'
 </script>
 
+<svelte:head>
+    <title>{$_('organization')} {organization.name} | {$_('appName')}</title>
+</svelte:head>
+
 <PageLayout>
-    <h1 class="mb-4 text-3xl font-bold">Organization: {organization.name}</h1>
+    <h1 class="mb-4 text-3xl font-bold">{$_('organization')}: {organization.name}</h1>
 
     <div class="w-full mb-4">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">

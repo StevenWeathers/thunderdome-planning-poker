@@ -23,6 +23,10 @@
     }
 </style>
 
+<svelte:head>
+    <title>{$_('appName')} - Open Source Agile Planning Poker app</title>
+</svelte:head>
+
 <section class="bg-yellow-thunder text-gray-800">
     <div class="container mx-auto px-4 py-6 lg:py-10">
         <div class="flex flex-wrap items-center -mx-4">

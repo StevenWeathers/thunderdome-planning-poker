@@ -35,6 +35,10 @@
     })
 </script>
 
+<svelte:head>
+    <title>{$_('pages.myBattles.title')} | {$_('appName')}</title>
+</svelte:head>
+
 <PageLayout>
     <h1 class="mb-4 text-3xl font-bold">{$_('pages.myBattles.title')}</h1>
 

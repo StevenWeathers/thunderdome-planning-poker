@@ -53,6 +53,10 @@
     $: resetDisabled = warriorPassword1 === '' || warriorPassword2 === ''
 </script>
 
+<svelte:head>
+    <title>{$_('pages.login.passwordReset.title')} | {$_('appName')}</title>
+</svelte:head>
+
 <PageLayout>
     <div class="flex justify-center">
         <div class="w-full md:w-1/2 lg:w-1/3">

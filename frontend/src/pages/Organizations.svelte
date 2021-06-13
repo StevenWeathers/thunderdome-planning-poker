@@ -102,19 +102,23 @@
     })
 </script>
 
+<svelte:head>
+    <title>{$_('organizations')} | {$_('appName')}</title>
+</svelte:head>
+
 <PageLayout>
     <div class="w-full">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
                     <h2 class="text-2xl md:text-3xl font-bold mb-4">
-                        Organizations
+                        {$_('organizations')}
                     </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
                         <HollowButton onClick="{toggleCreateOrganization}">
-                            Create Organization
+                            {$_('organizationCreate')}
                         </HollowButton>
                     </div>
                 </div>
@@ -123,7 +127,7 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">Name</th>
+                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -147,12 +151,12 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">Teams</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">{$_('teams')}</h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
                         <HollowButton onClick="{toggleCreateTeam}">
-                            Create Team
+                            {$_('teamCreate')}
                         </HollowButton>
                     </div>
                 </div>
@@ -161,7 +165,7 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">Name</th>
+                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
                     </tr>
                 </thead>
                 <tbody>
