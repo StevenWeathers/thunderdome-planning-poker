@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
 	"github.com/gorilla/mux"
@@ -92,7 +93,7 @@ func (s *server) handleTeamAddUser() http.HandlerFunc {
 
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		UserEmail := keyVal["email"].(string)
+		UserEmail := strings.ToLower(keyVal["email"].(string))
 		Role := keyVal["role"].(string)
 
 		User, UserErr := s.database.GetUserByEmail(UserEmail)

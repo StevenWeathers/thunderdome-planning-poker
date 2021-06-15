@@ -364,5 +364,6 @@
     "adminPageApi": "API Keys",
     "additionalTools": "Additional Tools",
     "exothermicDescription": "Agile Story Mapping",
-    "wakitaDescription": "Agile Retrospective"
+    "wakitaDescription": "Agile Retrospective",
+    "maintenanceLowercaseEmails": "Lowercase User Emails"
 }

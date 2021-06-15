@@ -108,6 +108,68 @@ func (d *Database) CleanGuests(DaysOld int) error {
 	return nil
 }
 
+// LowercaseUserEmails goes through and lowercases any user email that has any uppercase letters
+// returning the list of updated users
+func (d *Database) LowercaseUserEmails() ([]*User, error) {
+	var users = make([]*User, 0)
+	rows, err := d.db.Query(
+		`SELECT name, email FROM lowercase_unique_user_emails();`,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var usr User
+
+			if err := rows.Scan(
+				&usr.UserName,
+				&usr.UserEmail,
+			); err != nil {
+				log.Println(err)
+				return nil, err
+			} else {
+				users = append(users, &usr)
+			}
+		}
+	} else {
+		log.Println(err)
+		return nil, err
+	}
+
+	return users, nil
+}
+
+// MergeDuplicateAccounts goes through and merges any user accounts with duplicate emails that has any uppercase letters
+// returning the list of merged users
+func (d *Database) MergeDuplicateAccounts() ([]*User, error) {
+	var users = make([]*User, 0)
+	rows, err := d.db.Query(
+		`SELECT name, email FROM merge_nonunique_user_accounts();`,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var usr User
+
+			if err := rows.Scan(
+				&usr.UserName,
+				&usr.UserEmail,
+			); err != nil {
+				log.Println(err)
+				return nil, err
+			} else {
+				users = append(users, &usr)
+			}
+		}
+	} else {
+		log.Println(err)
+		return nil, err
+	}
+
+	return users, nil
+}
+
 // OrganizationList gets a list of organizations
 func (d *Database) OrganizationList(Limit int, Offset int) []*Organization {
 	var organizations = make([]*Organization, 0)

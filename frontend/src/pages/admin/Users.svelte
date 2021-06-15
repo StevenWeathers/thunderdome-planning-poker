@@ -7,6 +7,7 @@
     import Pagination from '../../components/Pagination.svelte'
     import CountryFlag from '../../components/CountryFlag.svelte'
     import CheckIcon from '../../components/icons/CheckIcon.svelte'
+    import DeleteWarrior from '../../components/DeleteWarrior.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
     import { appRoutes } from '../../config'
@@ -30,6 +31,13 @@
     let warriors = []
     let showCreateWarrior = false
     let warriorsPage = 1
+    let warriorDeleteId = null
+    let showWarriorDeletion = false
+
+    const toggleDeleteWarrior = (id) => () => {
+        showWarriorDeletion = !showWarriorDeletion
+        warriorDeleteId = id
+    }
 
     function toggleCreateWarrior() {
         showCreateWarrior = !showCreateWarrior
@@ -122,6 +130,20 @@
         }
     }
 
+    function handleDeleteWarrior() {
+        xfetch(`/api/admin/user/${warriorDeleteId}`, { method: "DELETE" })
+            .then(function() {
+                eventTag('admin_demote_warrior', 'engagement', 'success')
+
+                getWarriors()
+                toggleDeleteWarrior(null)()
+            })
+            .catch(function(error) {
+                notifications.danger('Error encountered demoting warrior')
+                eventTag('admin_demote_warrior', 'engagement', 'failure')
+            })
+    }
+
     const changePage = evt => {
         warriorsPage = evt.detail
         getWarriors()
@@ -169,19 +191,19 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-3/12 p-2">
+                        <th class="flex-1 p-2">
                             {$_('pages.admin.registeredWarriors.name')}
                         </th>
-                        <th class="w-3/12 p-2">
+                        <th class="flex-1 p-2">
                             {$_('pages.admin.registeredWarriors.email')}
                         </th>
-                        <th class="w-3/12 p-2">
+                        <th class="flex-1 p-2">
                             {$_('pages.admin.registeredWarriors.company')}
                         </th>
-                        <th class="w-2/12 p-2">
+                        <th class="flex-1 p-2">
                             {$_('pages.admin.registeredWarriors.rank')}
                         </th>
-                        <th class="w-1/12 p-2"></th>
+                        <th class="flex-1 p-2"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -232,6 +254,9 @@
                                         {$_('demote')}
                                     </HollowButton>
                                 {/if}
+                                <HollowButton color="red" onClick={toggleDeleteWarrior(warrior.id)}>
+                                    {$_('delete')}
+                                </HollowButton>
                             </td>
                         </tr>
                     {/each}
@@ -255,5 +280,9 @@
             toggleCreate="{toggleCreateWarrior}"
             handleCreate="{createWarrior}"
             notifications />
+    {/if}
+
+    {#if showWarriorDeletion}
+        <DeleteWarrior toggleDeleteAccount={toggleDeleteWarrior(null)} handleDeleteAccount={handleDeleteWarrior} />
     {/if}
 </AdminPageLayout>

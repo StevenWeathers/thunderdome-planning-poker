@@ -12,7 +12,7 @@ import (
 func (s *server) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := s.getJSONRequestBody(r, w)
-		UserEmail := keyVal["warriorEmail"].(string)
+		UserEmail := strings.ToLower(keyVal["warriorEmail"].(string))
 		UserPassword := keyVal["warriorPassword"].(string)
 
 		authedUser, err := s.authUserDatabase(UserEmail, UserPassword)
@@ -39,7 +39,7 @@ func (s *server) handleLogin() http.HandlerFunc {
 func (s *server) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := s.getJSONRequestBody(r, w)
-		UserEmail := keyVal["warriorEmail"].(string)
+		UserEmail := strings.ToLower(keyVal["warriorEmail"].(string))
 		UserPassword := keyVal["warriorPassword"].(string)
 
 		authedUser, err := s.authAndCreateUserLdap(UserEmail, UserPassword)
@@ -136,7 +136,7 @@ func (s *server) handleUserEnlist() http.HandlerFunc {
 func (s *server) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := s.getJSONRequestBody(r, w)
-		UserEmail := keyVal["warriorEmail"].(string)
+		UserEmail := strings.ToLower(keyVal["warriorEmail"].(string))
 
 		ResetID, UserName, resetErr := s.database.UserResetRequest(UserEmail)
 		if resetErr == nil {

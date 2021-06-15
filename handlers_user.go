@@ -133,12 +133,21 @@ func (s *server) handleUserDelete() http.HandlerFunc {
 			return
 		}
 
+		User, UserErr := s.database.GetUser(UserID)
+		if UserErr != nil {
+			log.Println("error finding user : " + UserErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		updateErr := s.database.DeleteUser(UserID)
 		if updateErr != nil {
 			log.Println("error attempting to delete user : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+
+		s.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
 
 		s.clearUserCookies(w)
 

@@ -43,7 +43,7 @@
     }
 
     function cleanBattles() {
-        xfetch('/api/admin/clean-battles', { method: 'DELETE' })
+        xfetch('/api/admin/maintenance/clean-battles', { method: 'DELETE' })
             .then(function() {
                 eventTag('admin_clean_battles', 'engagement', 'success')
 
@@ -56,7 +56,7 @@
     }
 
     function cleanGuests() {
-        xfetch('/api/admin/clean-guests', { method: 'DELETE' })
+        xfetch('/api/admin/maintenance/clean-guests', { method: 'DELETE' })
             .then(function() {
                 eventTag('admin_clean_guests', 'engagement', 'success')
 
@@ -65,6 +65,20 @@
             .catch(function(error) {
                 notifications.danger('Error encountered cleaning guests')
                 eventTag('admin_clean_guests', 'engagement', 'failure')
+            })
+    }
+
+    function lowercaseEmails() {
+        xfetch('/api/admin/maintenance/lowercase-emails', { method: 'PUT' })
+            .then(function() {
+                eventTag('admin_lowercase_emails', 'engagement', 'success')
+                notifications.success('Lowercased user emails successfully')
+
+                getAppStats()
+            })
+            .catch(function(error) {
+                notifications.danger('Error encountered lowercasing user emails')
+                eventTag('admin_lowercase_emails', 'engagement', 'failure')
             })
     }
 
@@ -174,6 +188,10 @@
                     {$_('pages.admin.maintenance.cleanBattles', {
                         values: { daysOld: CleanupBattlesDaysOld },
                     })}
+                </HollowButton>
+
+                <HollowButton onClick="{lowercaseEmails}" color="red">
+                    {$_('maintenanceLowercaseEmails')}
                 </HollowButton>
             </div>
         </div>

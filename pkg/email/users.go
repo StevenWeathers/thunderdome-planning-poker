@@ -172,3 +172,117 @@ func (m *Email) SendPasswordUpdate(UserName string, UserEmail string) error {
 
 	return nil
 }
+
+// SendDeleteConfirmation Sends an delete account confirmation email to user
+func (m *Email) SendDeleteConfirmation(UserName string, UserEmail string) error {
+	emailBody, err := m.generateBody(
+		hermes.Body{
+			Name: UserName,
+			Intros: []string{
+				"Your Thunderdome account was successfully been deleted.",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		log.Println("Error Generating Delete Account Confirmation Email HTML: ", err)
+		return err
+	}
+
+	sendErr := m.Send(
+		UserName,
+		UserEmail,
+		"Your Thunderdome account was deleted.",
+		emailBody,
+	)
+	if sendErr != nil {
+		log.Println("Error sending Delete Account Confirmation Email: ", sendErr)
+		return sendErr
+	}
+
+	return nil
+}
+
+// SendEmailUpdate Sends an Update Email confirmation email to user
+func (m *Email) SendEmailUpdate(UserName string, UserEmail string) error {
+	emailBody, err := m.generateBody(
+		hermes.Body{
+			Name: UserName,
+			Intros: []string{
+				"Your Thunderdome account email has been lowercased in order to improve unique constraints.",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		log.Println("Error Generating Update Email Email HTML: ", err)
+		return err
+	}
+
+	sendErr := m.Send(
+		UserName,
+		UserEmail,
+		"Your Thunderdome account email has been updated.",
+		emailBody,
+	)
+	if sendErr != nil {
+		log.Println("Error sending Update Email Email: ", sendErr)
+		return sendErr
+	}
+
+	return nil
+}
+
+// SendMergedUpdate Sends an Update Email confirmation email to user
+func (m *Email) SendMergedUpdate(UserName string, UserEmail string) error {
+	emailBody, err := m.generateBody(
+		hermes.Body{
+			Name: UserName,
+			Intros: []string{
+				"Your duplicate Thunderdome accounts under the same email (lowercased) have been merged in order to improve unique constraints. The last active account password was used, in the event you can't login try resetting your password.",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		log.Println("Error Generating Merged Email Email HTML: ", err)
+		return err
+	}
+
+	sendErr := m.Send(
+		UserName,
+		UserEmail,
+		"Your Thunderdome duplicate accounts have been merged.",
+		emailBody,
+	)
+	if sendErr != nil {
+		log.Println("Error sending Update Merged Email: ", sendErr)
+		return sendErr
+	}
+
+	return nil
+}

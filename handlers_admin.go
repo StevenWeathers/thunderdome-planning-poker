@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -73,6 +74,32 @@ func (s *server) handleUserCreate() http.HandlerFunc {
 	}
 }
 
+// handleAdminUserDelete attempts to delete a users account
+func (s *server) handleAdminUserDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		UserID := vars["id"]
+
+		User, UserErr := s.database.GetUser(UserID)
+		if UserErr != nil {
+			log.Println("error finding user : " + UserErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		updateErr := s.database.DeleteUser(UserID)
+		if updateErr != nil {
+			log.Println("error attempting to delete user : " + updateErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		s.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
+
+		return
+	}
+}
+
 // handleUserPromote handles promoting a user to admin
 func (s *server) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -127,6 +154,35 @@ func (s *server) handleCleanGuests() http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
+		}
+
+		return
+	}
+}
+
+// handleLowercaseUserEmails handles lowercasing any user emails that have any uppercase letters
+func (s *server) handleLowercaseUserEmails() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		lowercasedUsers, err := s.database.LowercaseUserEmails()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		log.Println("Lowercased", len(lowercasedUsers), "user emails")
+		for _, u := range lowercasedUsers {
+			s.email.SendEmailUpdate(u.UserName, u.UserEmail)
+		}
+
+		mergedUsers, err := s.database.MergeDuplicateAccounts()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		log.Println("Merged", len(mergedUsers), "user accounts")
+		for _, u := range mergedUsers {
+			s.email.SendMergedUpdate(u.UserName, u.UserEmail)
 		}
 
 		return
