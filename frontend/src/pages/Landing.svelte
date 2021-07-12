@@ -10,7 +10,7 @@
     export let xfetch
     export let eventTag
 
-    const { ShowActiveCountries } = appConfig
+    const { ShowActiveCountries, PathPrefix } = appConfig
 </script>
 
 <style>
@@ -222,7 +222,7 @@
                     <div class="flex-initial px-4">
                         <a href="https://exothermic.dev">
                             <img
-                                src="/img/exothermic-logo-2.png"
+                                src="{PathPrefix}/img/exothermic-logo-2.png"
                                 alt="Exothermic logo"
                                 title="Exothermic - Open Source Agile Story
                                 Mapping tool"
@@ -234,7 +234,7 @@
                     <div class="flex-initial px-4">
                         <a href="https://wakita.dev">
                             <img
-                                src="/img/wakita-logo.png"
+                                src="{PathPrefix}/img/wakita-logo.png"
                                 alt="Wakita logo"
                                 title="Wakita - Open Source Agile Retrospective
                                 tool"
