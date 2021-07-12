@@ -1,6 +1,8 @@
 <script>
     import { _ } from '../i18n'
 
+    const { PathPrefix } = appConfig
+
     export let avatarService = ''
     export let warriorId = ''
     export let avatar = ''
@@ -21,8 +23,8 @@
         alt="{$_('avatarAltText')}" />
 {:else if avatarService === 'govatar'}
     <img
-        src="/avatar/{width}/{warriorId}/{avatar}"
+        src="{PathPrefix}/avatar/{width}/{warriorId}/{avatar}"
         alt="{$_('avatarAltText')}" />
 {:else if avatarService === 'goadorable'}
-    <img src="/avatar/{width}/{warriorId}" alt="{$_('avatarAltText')}" />
+    <img src="{PathPrefix}/avatar/{width}/{warriorId}" alt="{$_('avatarAltText')}" />
 {/if}
