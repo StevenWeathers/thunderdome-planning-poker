@@ -63,10 +63,10 @@
             case 'init': {
                 battle = JSON.parse(parsedEvent.value)
                 points = battle.pointValuesAllowed
-                const joinedWarrior = battle.warriors.find(
+                const { spectator = false } = battle.warriors.find(
                     w => w.id === $warrior.id,
                 )
-                isSpectator = joinedWarrior.spectator
+                isSpectator = spectator
 
                 if (battle.activePlanId !== '') {
                     const activePlan = battle.plans.find(

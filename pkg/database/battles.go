@@ -208,7 +208,7 @@ func (d *Database) GetBattleUser(BattleID string, UserID string) (*BattleUser, e
 
 	e := d.db.QueryRow(
 		`SELECT
-			w.id, w.name, w.type, w.avatar, coalesce(bw.active, FALSE), bw.spectator
+			w.id, w.name, w.type, w.avatar, coalesce(bw.active, FALSE), coalesce(bw.spectator, FALSE)
 		FROM users w
 		LEFT JOIN battles_users bw ON bw.user_id = w.id AND bw.battle_id = $1
 		WHERE id = $2`,
