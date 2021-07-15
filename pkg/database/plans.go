@@ -133,7 +133,7 @@ func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteVa
 				activePlanVoters[UserID] = true
 			}
 			for _, war := range ActiveUsers {
-				if _, UserVoted := activePlanVoters[war.UserID]; !UserVoted {
+				if _, UserVoted := activePlanVoters[war.UserID]; !UserVoted && !war.Spectator {
 					AllVoted = false
 					break
 				}

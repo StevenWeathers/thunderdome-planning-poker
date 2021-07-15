@@ -208,7 +208,7 @@ func (d *Database) GetBattleUser(BattleID string, UserID string) (*BattleUser, e
 
 	e := d.db.QueryRow(
 		`SELECT
-			w.id, w.name, w.type, w.avatar, coalesce(bw.active, FALSE)
+			w.id, w.name, w.type, w.avatar, coalesce(bw.active, FALSE), bw.spectator
 		FROM users w
 		LEFT JOIN battles_users bw ON bw.user_id = w.id AND bw.battle_id = $1
 		WHERE id = $2`,
@@ -220,6 +220,7 @@ func (d *Database) GetBattleUser(BattleID string, UserID string) (*BattleUser, e
 		&w.UserType,
 		&w.UserAvatar,
 		&active,
+		&w.Spectator,
 	)
 	if e != nil {
 		log.Println(e)
@@ -238,7 +239,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*BattleUser {
 	var users = make([]*BattleUser, 0)
 	rows, err := d.db.Query(
 		`SELECT
-			w.id, w.name, w.type, w.avatar, bw.active
+			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator
 		FROM battles_users bw
 		LEFT JOIN users w ON bw.user_id = w.id
 		WHERE bw.battle_id = $1
@@ -249,7 +250,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*BattleUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w BattleUser
-			if err := rows.Scan(&w.UserID, &w.UserName, &w.UserType, &w.UserAvatar, &w.Active); err != nil {
+			if err := rows.Scan(&w.UserID, &w.UserName, &w.UserType, &w.UserAvatar, &w.Active, &w.Spectator); err != nil {
 				log.Println(err)
 			} else {
 				users = append(users, &w)
@@ -265,7 +266,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*BattleUser {
 	var users = make([]*BattleUser, 0)
 	rows, err := d.db.Query(
 		`SELECT
-			w.id, w.name, w.type, w.avatar, bw.active
+			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator
 		FROM battles_users bw
 		LEFT JOIN users w ON bw.user_id = w.id
 		WHERE bw.battle_id = $1 AND bw.active = true
@@ -276,7 +277,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*BattleUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w BattleUser
-			if err := rows.Scan(&w.UserID, &w.UserName, &w.UserType, &w.UserAvatar, &w.Active); err != nil {
+			if err := rows.Scan(&w.UserID, &w.UserName, &w.UserType, &w.UserAvatar, &w.Active, &w.Spectator); err != nil {
 				log.Println(err)
 			} else {
 				users = append(users, &w)
@@ -414,6 +415,23 @@ func (d *Database) DemoteBattleLeader(BattleID string, UserID string, LeaderID s
 	}
 
 	return leaders, nil
+}
+
+func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*BattleUser, error) {
+	if _, err := d.db.Exec(
+		`UPDATE battles_users SET spectator = $3 WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	if _, err := d.db.Exec(
+		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
+		log.Println(err)
+	}
+
+	users := d.GetBattleUsers(BattleID)
+
+	return users, nil
 }
 
 // DeleteBattle removes all battle associations and the battle itself from DB by BattleID

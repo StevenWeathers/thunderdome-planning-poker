@@ -19,7 +19,10 @@
 
         if (activePlan.votes.length > 0) {
             const votesToAverage = activePlan.votes
-                .filter(v => v.vote !== '?')
+                .filter(v => {
+                    const { spectator = false } = warriors.find(w => w.id === v.warriorId)
+                    return !spectator && v.vote !== '?'
+                })
                 .map(v => {
                     const vote = v.vote === '1/2' ? 0.5 : parseInt(v.vote)
                     return vote
@@ -59,6 +62,9 @@
             if (warriors.length) {
                 const warrior = warriors.find(w => w.id === v.warriorId)
                 warriorName = warrior ? warrior.name : warriorName
+                if (warrior.spectator) {
+                    return obj
+                }
             }
             currentVote.voters.push(warriorName)
 
@@ -70,7 +76,7 @@
         }, {})
     }
 
-    let average = getVoteAverage()
+    $: average = getVoteAverage(warriors)
     $: counts = compileVoteCounts(warriors)
     let showHighestVoters = false
 </script>

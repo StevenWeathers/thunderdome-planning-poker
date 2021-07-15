@@ -365,5 +365,8 @@
     "additionalTools": "Additional Tools",
     "exothermicDescription": "Agile Story Mapping",
     "wakitaDescription": "Agile Retrospective",
-    "maintenanceLowercaseEmails": "Lowercase User Emails"
+    "maintenanceLowercaseEmails": "Lowercase User Emails",
+    "becomeSpectator": "Become Spectator",
+    "becomeParticipant": "Become Participant",
+    "spectator": "Spectator"
 }

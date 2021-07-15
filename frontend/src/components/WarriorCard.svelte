@@ -6,10 +6,12 @@
     import WarriorRankGeneral from './icons/WarriorRankGeneral.svelte'
     import WarriorAvatar from './WarriorAvatar.svelte'
     import { _ } from '../i18n'
+    import { warrior as activeWarrior } from '../stores.js'
 
     export let voted = false
     export let warrior = {}
     export let isLeader = false
+    export let autoFinishVoting = false
     export let leaders = []
     export let points = ''
     export let sendSocketEvent = () => {}
@@ -32,6 +34,13 @@
     function jabWarrior() {
         sendSocketEvent('jab_warrior', warrior.id)
         eventTag('jab_warrior', 'battle', '')
+    }
+
+    function toggleSpectator() {
+        sendSocketEvent('spectator_toggle', JSON.stringify({
+            spectator: !warrior.spectator
+        }))
+        eventTag(`spectator_toggle`, 'battle', '')
     }
 </script>
 
@@ -61,7 +70,12 @@
                             <WarriorRankPrivate />
                         {/if}
                     {/if}
-                    {warrior.name}
+                    {#if autoFinishVoting && warrior.spectator}
+                        <span class="text-gray-600" title="{$_('spectator')}">{warrior.name}</span>
+                    {:else}
+                        <span>{warrior.name}</span>
+                    {/if}
+                    
                 </p>
                 {#if leaders.includes(warrior.id)}
                     <p class="text-l text-gray-700 leading-tight">
@@ -85,6 +99,7 @@
                         border-transparent">
                         {$_('promote')}
                     </button>
+                    {#if !warrior.spectator}
                     &nbsp;|&nbsp;
                     <button
                         on:click="{jabWarrior}"
@@ -92,20 +107,35 @@
                         hover:text-blue-800 bg-transparent border-transparent">
                         {$_('warriorNudge')}
                     </button>
+                    {/if}
+                {/if}
+                {#if autoFinishVoting && (warrior.id === $activeWarrior.id)}
+                    <button
+                    on:click="{toggleSpectator}"
+                    class="inline-block align-baseline text-sm text-blue-500
+                    hover:text-blue-800 bg-transparent border-transparent">
+                    {#if !warrior.spectator}
+                        {$_('becomeSpectator')}
+                    {:else}
+                        {$_('becomeParticipant')}
+                    {/if}
+                    </button>
                 {/if}
             </div>
             <div class="w-1/4 text-right">
-                {#if voted && points === ''}
-                    <span class="text-green-500">
-                        <VoteIcon />
-                    </span>
-                {:else if voted && points !== ''}
-                    <span
-                        class="font-bold text-green-600 border-green-500 border
-                        p-2 rounded ml-2"
-                        data-testId="warriorPoints">
-                        {points}
-                    </span>
+                {#if !warrior.spectator}
+                    {#if voted && points === ''}
+                        <span class="text-green-500">
+                            <VoteIcon />
+                        </span>
+                    {:else if voted && points !== ''}
+                        <span
+                            class="font-bold text-green-600 border-green-500 border
+                            p-2 rounded ml-2"
+                            data-testId="warriorPoints">
+                            {points}
+                        </span>
+                    {/if}
                 {/if}
             </div>
         </div>

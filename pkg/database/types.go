@@ -29,6 +29,7 @@ type BattleUser struct {
 	UserAvatar string `json:"avatar"`
 	Active     bool   `json:"active"`
 	Abandoned  bool   `json:"abandoned"`
+	Spectator  bool   `json:"spectator"`
 }
 
 // Battle aka arena

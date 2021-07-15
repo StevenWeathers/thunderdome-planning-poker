@@ -231,6 +231,19 @@ func (s subscription) readPump(srv *server) {
 			leadersJson, _ := json.Marshal(leaders)
 
 			msg = CreateSocketEvent("leaders_updated", string(leadersJson), "")
+		case "spectator_toggle":
+			var st struct {
+				Spectator bool `json:"spectator"`
+			}
+			json.Unmarshal([]byte(keyVal["value"]), &st)
+			users, err := srv.database.ToggleSpectator(battleID, UserID, st.Spectator)
+			if err != nil {
+				badEvent = true
+				break
+			}
+			usersJson, _ := json.Marshal(users)
+
+			msg = CreateSocketEvent("users_updated", string(usersJson), "")
 		case "revise_battle":
 			var revisedBattle struct {
 				BattleName           string   `json:"battleName"`

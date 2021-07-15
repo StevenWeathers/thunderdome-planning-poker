@@ -49,6 +49,7 @@
     let currentTime = new Date()
     let showEditBattle = false
     let showDeleteBattle = false
+    let isSpectator = false
 
     $: countdown =
         battle.currentPlanId !== '' && battle.votingLocked === false
@@ -59,9 +60,13 @@
         const parsedEvent = JSON.parse(evt.data)
 
         switch (parsedEvent.type) {
-            case 'init':
+            case 'init': {
                 battle = JSON.parse(parsedEvent.value)
                 points = battle.pointValuesAllowed
+                const joinedWarrior = battle.warriors.find(
+                    w => w.id === $warrior.id,
+                )
+                isSpectator = joinedWarrior.spectator
 
                 if (battle.activePlanId !== '') {
                     const activePlan = battle.plans.find(
@@ -77,11 +82,15 @@
 
                 eventTag('join', 'battle', '')
                 break
-            case 'warrior_joined':
+            }
+            case 'warrior_joined': {
                 battle.warriors = JSON.parse(parsedEvent.value)
                 const joinedWarrior = battle.warriors.find(
                     w => w.id === parsedEvent.warriorId,
                 )
+                if (joinedWarrior.id === $warrior.id) {
+                    isSpectator = joinedWarrior.spectator
+                }
                 if ($warrior.notificationsEnabled) {
                     notifications.success(
                         `${$_('pages.battle.warriorJoined', {
@@ -90,6 +99,7 @@
                     )
                 }
                 break
+            }
             case 'warrior_retreated':
                 const leftWarrior = battle.warriors.find(
                     w => w.id === parsedEvent.warriorId,
@@ -103,6 +113,13 @@
                         })}`,
                     )
                 }
+                break
+            case 'users_updated':
+                battle.warriors = JSON.parse(parsedEvent.value)
+                const updatedWarrior = battle.warriors.find(
+                    w => w.id === $warrior.id,
+                )
+                isSpectator = updatedWarrior.spectator
                 break
             case 'plan_added':
                 battle.plans = JSON.parse(parsedEvent.value)
@@ -239,7 +256,7 @@
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'battle', '', () => {
                         warrior.delete()
-                        router.route(`${appRoutes.login}/${battleId}`)
+                        router.route(`${appRoutes.register}/${battleId}`)
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'battle', '', () => {
@@ -345,7 +362,10 @@
 
             // build a count of each vote
             activePlan.votes.forEach(v => {
-                if (typeof voteCounts[v.vote] !== 'undefined') {
+                const { spectator = false } = battle.warriors.find(
+                    w => w.id === v.warriorId,
+                )
+                if (typeof voteCounts[v.vote] !== 'undefined' && !spectator) {
                     ++voteCounts[v.vote]
                 }
             })
@@ -500,7 +520,7 @@
                                     active="{vote === point}"
                                     on:voted="{handleVote}"
                                     on:voteRetraction="{handleUnvote}"
-                                    isLocked="{battle.votingLocked}" />
+                                    isLocked="{battle.votingLocked || isSpectator}" />
                             </div>
                         {/each}
                     </div>
@@ -530,6 +550,7 @@
                                 {isLeader}
                                 voted="{didVote(war.id)}"
                                 points="{showVote(war.id)}"
+                                autoFinishVoting="{battle.autoFinishVoting}"
                                 {sendSocketEvent}
                                 {eventTag} />
                         {/if}
