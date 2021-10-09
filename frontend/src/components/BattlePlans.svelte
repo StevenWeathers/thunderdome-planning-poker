@@ -78,6 +78,10 @@
     }
 
     $: pointedPlans = plans.filter(p => p.points !== '')
+    $: totalPoints = pointedPlans.reduce((previousValue, currentValue) => {
+                          var currentPoints = currentValue.points === '1/2' ? 0.5 : parseInt(currentValue.points);
+                          return isNaN(currentPoints) ? previousValue : previousValue + currentPoints;
+                      }, 0)
     $: unpointedPlans = plans.filter(p => p.points === '')
 
     $: plansToShow = showCompleted ? pointedPlans : unpointedPlans
@@ -181,6 +185,21 @@
             </div>
         </div>
     {/each}
+    {#if showCompleted && totalPoints}
+        <div class="flex flex-wrap items-center border-b border-gray-400 p-4">
+            <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
+                <div class="inline-block font-bold align-middle">
+                    {$_('totalPoints')}:
+                </div>
+                &nbsp;
+                <div
+                    class="inline-block font-bold text-green-600
+                    border-green-500 border px-2 py-1 rounded ml-2">
+                    {totalPoints}
+                </div>
+            </div>
+        </div>
+    {/if}
 </div>
 
 {#if showAddPlan}

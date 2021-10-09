@@ -25,6 +25,7 @@
     "planAcceptanceCriteriaPlaceholder": "Akzeptanzkriterien eingeben",
     "pointed": "Gesch\u00E4tzt ({count})",
     "unpointed": "Ungesch\u00E4tzt ({count})",
+    "totalPoints": "Gesamt",
     "view": "Anzeigen",
     "activate": "Aktivieren",
     "votingFinish": "Sch\u00E4tzung beenden",
