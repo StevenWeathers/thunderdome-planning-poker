@@ -19,6 +19,7 @@
     "planAcceptanceCriteriaPlaceholder": "Enter acceptance criteria",
     "pointed": "Pointed ({count})",
     "unpointed": "Unpointed ({count})",
+    "totalPoints": "Total",
     "view": "View",
     "activate": "Activate",
     "votingFinish": "Finish Voting",
