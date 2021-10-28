@@ -1,108 +1,108 @@
 {
-    "logoutError": "Error encountered attempting to logout user",
-    "battleDelete": "Delete Game",
-    "battleAbandon": "Abandon Game",
-    "battleCreate": "Create Game",
-    "battleEdit": "Edit Game",
-    "warriorCreate": "Create User",
-    "planAdd": "Add Story",
-    "planSkip": "Skip Story",
-    "planName": "Story Name",
-    "planNamePlaceholder": "Enter a story name",
-    "planType": "Story Type",
-    "planLinkPlaceholder": "Enter a link to story",
-    "importJiraXML": "Import stories from Jira XML",
-    "landingTitle": "Thunderdome is an Open Source Agile Planning Poker app",
-    "landingBullet2": "Simple Player Experience",
-    "landingCountries": "Users in over {count} countries",
+    "logoutError": "Erreur lors de la tentative de déconnexion de l'utilisateur",
+    "battleDelete": "Supprimer le Jeu",
+    "battleAbandon": "Abandonner le Jeu",
+    "battleCreate": "Créer le Jeu",
+    "battleEdit": "Editer le Jeu",
+    "warriorCreate": "Créer un Utilisateur",
+    "planAdd": "Ajouter une Story",
+    "planSkip": "Passer la Story",
+    "planName": "Nom de la Story",
+    "planNamePlaceholder": "Entrer un nom de story",
+    "planType": "Type de Story",
+    "planLinkPlaceholder": "Entrer un lien pour la story",
+    "importJiraXML": "Importer les stories depuis un XML Jira",
+    "landingTitle": "Thunderdome est une app Open Source de Planning Poker Agile",
+    "landingBullet2": "Experience Joueur Simple",
+    "landingCountries": "Utilisateurs dans plus de {count} pays",
     "pages": {
         "myBattles": {
-            "nav": "My Games",
-            "title": "My Games",
-            "battlesError": "Error finding your games",
-            "countPlansPointed": "{totalPointed} of {totalPlans} stories pointed",
+            "nav": "Mes Jeux",
+            "title": "Mes Jeux",
+            "battlesError": "Erreur pour trouver vos jeux",
+            "countPlansPointed": "{totalPointed} sur {totalPlans} stories pointées",
             "createBattle": {
-                "title": "Create a Game",
-                "createError": "Error encountered creating game",
+                "title": "Créer un Jeu",
+                "createError": "Erreur lors de la création du jeu",
                 "fields": {
                     "name": {
-                        "label": "Game Name",
-                        "placeholder": "Enter a game name"
+                        "label": "Nom du Jeu",
+                        "placeholder": "Entrer un nom de jeu"
                     },
                     "plans": {
                         "label": "Stories",
-                        "addButton": "Add Story",
+                        "addButton": "Ajouter une Story",
                         "fields": {
                             "name": {
-                                "placeholder": "Enter a story name"
+                                "placeholder": "Entrer un nom de story"
                             }
                         }
                     },
                     "autoFinishVoting": {
-                        "label": "Auto Finish Voting when all Players have voted"
+                        "label": "Terminer automatiquement le vote quand tous les Utilisateurs ont voté"
                     }
                 }
             }
         },
         "createAccount": {
-            "title": "Register to join pointing games",
-            "loginForBattle": "or {loginOpen}Login{loginClose} to join the Game",
+            "title": "S'enregistrer pour rejoindre les jeux de pointage",
+            "loginForBattle": "ou {loginOpen}Login{loginClose} pour rejoindre le Jeu",
             "guestForm": {
-                "createError": "Error encountered registering player as guest"
+                "createError": "Erreur lors de l'enregistrement du joueur comme invité"
             },
             "createAccountForm": {
-                "createError": "Error encountered creating player"
+                "createError": "Erreur lors de la création du joueur"
             }
         },
         "warriorProfile": {
             "fields": {
                 "enable_notifications": {
-                    "label": "Enable game notifications"
+                    "label": "Activer les notifications du jeu"
                 }
             }
         },
         "admin": {
             "counts": {
-                "registered": "Registered Players",
-                "unregistered": "Unregistered Players",
-                "battles": "Games",
+                "registered": "Joueurs enregistrés",
+                "unregistered": "Joueurs non enregistrés",
+                "battles": "Jeux",
                 "plans": "Stories"
             },
             "registeredWarriors": {
-                "title": "Registered Players"
+                "title": "Joueurs enregistrés"
             },
             "maintenance": {
-                "cleanBattles": "Clean Games older than {daysOld} days"
+                "cleanBattles": "Nettoyer les Jeux plus vieux que {daysOld} jours"
             }
         },
         "login": {
-            "registerForBattle": "or {registerOpen}Register{registerClose} to join the Game",
-            "authError": "Error encountered attempting to authenticate player"
+            "registerForBattle": "ou {registerOpen}S'enregistrer{registerClose} pour rejoindre le Jeu",
+            "authError": "Erreur lors de l'authentification du joueur"
         },
         "battle": {
-            "title": "Game",
-            "warriors": "Players",
-            "socketReconnecting": "Ooops, reloading Game...",
-            "socketError": "Error joining game, refresh and try again.",
-            "loading": "Loading Game...",
-            "warriorJoined": "{name} has joined the game",
-            "warriorRetreated": "{name} has left the game",
-            "warriorInvite": "Invite a Player",
-            "planSkipped": "Story skipped",
+            "title": "Jeu",
+            "warriors": "Joueurs",
+            "socketReconnecting": "Ooops, rechargement du Jeu...",
+            "socketError": "Erreur pour joindre le jeu, rafraîchir et réessayer.",
+            "loading": "Chargement du Jeu...",
+            "warriorJoined": "{name} a rejoint le jeu",
+            "warriorRetreated": "{name} a quitté le jeu",
+            "warriorInvite": "Inviter un Joueur",
+            "planSkipped": "Story passée",
             "voteResults": {
-                "unknownWarrior": "Unknown Player"
+                "unknownWarrior": "Joueur inconnu"
             },
-            "battleDeleted": "Game deleted"
+            "battleDeleted": "Jeu supprimé"
         }
     },
     "plans": "Stories",
-    "battle": "Game",
-    "battles": "Games",
-    "battlesActive": "Active Games",
-    "battlesActiveUsers": "Active Game Users",
-    "battleJoin": "Join Game",
-    "battleRemoveSuccess": "Game removed successfully.",
-    "battleRemoveError": "Error attempting to remove game.",
-    "teamGetBattlesError": "Error getting team games",
-    "sessionDuplicate": "Duplicate game session exists for your ID"
+    "battle": "Jeu",
+    "battles": "Jeux",
+    "battlesActive": "Jeux actifs",
+    "battlesActiveUsers": "Utilisateurs du jeu actif",
+    "battleJoin": "Rejoindre le Jeu",
+    "battleRemoveSuccess": "Jeu supprimé avec succès.",
+    "battleRemoveError": "Erreur lors de la suppression du jeu.",
+    "teamGetBattlesError": "Erreur lors de la récupération des jeux de l'équipe",
+    "sessionDuplicate": "Un doublon de jeu existe pour votre ID"
 }
