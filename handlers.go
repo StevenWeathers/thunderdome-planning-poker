@@ -280,6 +280,7 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 			AutoFinishVoting     bool             `json:"autoFinishVoting"`
 			Plans                []*database.Plan `json:"plans"`
 			PointAverageRounding string           `json:"pointAverageRounding"`
+			BattleLeaders        []string         `json:"battleLeaders"`
 		}
 		json.Unmarshal(body, &keyVal) // check for errors
 
@@ -287,6 +288,16 @@ func (s *server) handleBattleCreate() http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
+		}
+
+		// when battleLeaders array is passed add additional leaders to battle
+		if len(keyVal.BattleLeaders) > 0 {
+			updatedLeaders, err := s.database.AddBattleLeadersByEmail(newBattle.BattleID, UserID, keyVal.BattleLeaders)
+			if err != nil {
+				log.Println("error adding additional battle leaders")
+			} else {
+				newBattle.Leaders = updatedLeaders
+			}
 		}
 
 		// if battle created with team association

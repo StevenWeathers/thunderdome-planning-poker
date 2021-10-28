@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"strings"
 )
 
 //CreateBattle adds a new battle to the db
@@ -448,4 +449,28 @@ func (d *Database) DeleteBattle(BattleID string, UserID string) error {
 	}
 
 	return nil
+}
+
+// AddBattleLeadersByEmail adds additional battle leaders using provided emails for matches
+func (d *Database) AddBattleLeadersByEmail(BattleID string, UserID string, LeaderEmails []string) ([]string, error) {
+	err := d.ConfirmLeader(BattleID, UserID)
+	if err != nil {
+		return nil, errors.New("incorrect permissions")
+	}
+
+	var leaders string
+	var newLeaders []string
+	emails := strings.Join(LeaderEmails[:], ",")
+
+	e := d.db.QueryRow(
+		`select leaders FROM add_battle_leaders_by_email($1, $2);`, BattleID, emails,
+	).Scan(&leaders)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("error creating battle")
+	}
+
+	_ = json.Unmarshal([]byte(leaders), &newLeaders)
+
+	return newLeaders, nil
 }
