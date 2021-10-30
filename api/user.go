@@ -8,6 +8,15 @@ import (
 )
 
 // handleUserProfile returns the users profile if it matches their session
+// @Summary Get Profile
+// @Description get a users profile
+// @Tags user
+// @Produce  json
+// @Param id path int false "the user ID"
+// @Success 200 object standardJsonResponse{data=model.User}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /users/{id} [get]
 func (a *api) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -31,6 +40,15 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 }
 
 // handleUserProfileUpdate attempts to update users profile
+// @Summary Update Profile
+// @Description Update a users profile
+// @Tags user
+// @Produce  json
+// @Param id path int false "the user ID"
+// @Success 200 object standardJsonResponse{data=model.User}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /users/{id} [put]
 func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -70,6 +88,15 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 }
 
 // handleUserDelete attempts to delete a users account
+// @Summary Delete User
+// @Description Deletes a user
+// @Tags user
+// @Produce  json
+// @Param id path int false "the user ID"
+// @Success 200 object standardJsonResponse{}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /users/{id} [delete]
 func (a *api) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -105,6 +132,12 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 }
 
 // handleGetActiveCountries gets a list of registered users countries
+// @Summary Get Active Countries
+// @Description get a list of users countries
+// @Produce  json
+// @Success 200 object standardJsonResponse{[]string}
+// @Failure 500 object standardJsonResponse{}
+// @Router /active-countries [get]
 func (a *api) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		countries, err := a.db.GetActiveCountries()
