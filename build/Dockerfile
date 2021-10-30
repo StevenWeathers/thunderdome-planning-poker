@@ -38,6 +38,9 @@ COPY --from=builderNode /webapp/dist $GOPATH/src/github.com/stevenweathers/thund
 WORKDIR $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 # Fetch dependencies.
 RUN go mod download
+# Generate swagger docs
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN swag init -g api/api.go -o swaggerdocs
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -ldflags "-X main.version=$BUILD_VERSION" -o /go/bin/thunderdome
 ############################

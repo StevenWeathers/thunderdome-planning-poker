@@ -62,7 +62,7 @@
     }
 
     function createAlert(body) {
-        xfetch('/api/admin/alert', { body })
+        xfetch('/api/alerts', { body })
             .then(res => res.json())
             .then(function(result) {
                 eventTag('admin_create_alert', 'engagement', 'success')
@@ -79,7 +79,7 @@
     }
 
     function updateAlert(id, body) {
-        xfetch(`/api/admin/alert/${id}`, { body, method: 'PUT' })
+        xfetch(`/api/alerts/${id}`, { body, method: 'PUT' })
             .then(res => res.json())
             .then(function(result) {
                 eventTag('admin_update_alert', 'engagement', 'success')
@@ -97,7 +97,7 @@
 
     function getAlerts() {
         const alertsOffset = (alertsPage - 1) * alertsPageLimit
-        xfetch(`/api/admin/alerts/${alertsPageLimit}/${alertsOffset}`)
+        xfetch(`/api/alerts?limit=${alertsPageLimit}&offset=${alertsOffset}`)
             .then(res => res.json())
             .then(function(result) {
                 alerts = result
@@ -108,11 +108,7 @@
     }
 
     function handleDeleteAlert() {
-        const body = {
-            id: deleteAlertId,
-        }
-
-        xfetch(`/api/admin/alert`, { body, method: 'DELETE' })
+        xfetch(`/api/alerts/${deleteAlertId}`, { method: 'DELETE' })
             .then(res => res.json())
             .then(function(result) {
                 eventTag('admin_delete_alert', 'engagement', 'success')

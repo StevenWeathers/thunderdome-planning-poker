@@ -15,7 +15,7 @@
     const {
         CleanupGuestsDaysOld,
         CleanupBattlesDaysOld,
-        APIEnabled,
+        ExternalAPIEnabled,
     } = appConfig
 
     let appStats = {
@@ -43,7 +43,7 @@
     }
 
     function cleanBattles() {
-        xfetch('/api/admin/maintenance/clean-battles', { method: 'DELETE' })
+        xfetch('/api/maintenance/clean-battles', { method: 'DELETE' })
             .then(function() {
                 eventTag('admin_clean_battles', 'engagement', 'success')
 
@@ -56,7 +56,7 @@
     }
 
     function cleanGuests() {
-        xfetch('/api/admin/maintenance/clean-guests', { method: 'DELETE' })
+        xfetch('/api/maintenance/clean-guests', { method: 'DELETE' })
             .then(function() {
                 eventTag('admin_clean_guests', 'engagement', 'success')
 
@@ -69,7 +69,7 @@
     }
 
     function lowercaseEmails() {
-        xfetch('/api/admin/maintenance/lowercase-emails', { method: 'PUT' })
+        xfetch('/api/maintenance/lowercase-emails', { method: 'PUT' })
             .then(function() {
                 eventTag('admin_lowercase_emails', 'engagement', 'success')
                 notifications.success('Lowercased user emails successfully')
@@ -149,19 +149,19 @@
             <div
                 class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
                 md:pb-4 bg-white shadow-lg rounded text-xl">
-                <div class="{APIEnabled ? 'w-1/4' : 'w-1/3'}">
+                <div class="{ExternalAPIEnabled ? 'w-1/4' : 'w-1/3'}">
                     <div class="mb-2 font-bold">{$_('organizations')}</div>
                     {appStats.organizationCount}
                 </div>
-                <div class="{APIEnabled ? 'w-1/4' : 'w-1/3'}">
+                <div class="{ExternalAPIEnabled ? 'w-1/4' : 'w-1/3'}">
                     <div class="mb-2 font-bold">{$_('departments')}</div>
                     {appStats.departmentCount}
                 </div>
-                <div class="{APIEnabled ? 'w-1/4' : 'w-1/3'}">
+                <div class="{ExternalAPIEnabled ? 'w-1/4' : 'w-1/3'}">
                     <div class="mb-2 font-bold">{$_('teams')}</div>
                     {appStats.teamCount}
                 </div>
-                {#if APIEnabled}
+                {#if ExternalAPIEnabled}
                     <div class="w-1/4">
                         <div class="mb-2 font-bold">{$_('apiKeys')}</div>
                         {appStats.apikeyCount}

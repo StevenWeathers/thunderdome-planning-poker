@@ -4,7 +4,7 @@
 
     export let activePage = 'admin'
 
-    const { APIEnabled } = appConfig
+    const { ExternalAPIEnabled } = appConfig
 
     const pages = [
         {
@@ -34,7 +34,7 @@
         },
     ]
 
-    if (APIEnabled) {
+    if (ExternalAPIEnabled) {
         pages.push({
             name: 'API Keys',
             label: $_('adminPageApi'),

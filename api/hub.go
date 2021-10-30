@@ -1,4 +1,4 @@
-package main
+package api
 
 type message struct {
 	data  []byte
@@ -37,21 +37,21 @@ var h = hub{
 func (h *hub) run() {
 	for {
 		select {
-		case s := <-h.register:
-			connections := h.arenas[s.arena]
+		case a := <-h.register:
+			connections := h.arenas[a.arena]
 			if connections == nil {
 				connections = make(map[*connection]bool)
-				h.arenas[s.arena] = connections
+				h.arenas[a.arena] = connections
 			}
-			h.arenas[s.arena][s.conn] = true
-		case s := <-h.unregister:
-			connections := h.arenas[s.arena]
+			h.arenas[a.arena][a.conn] = true
+		case a := <-h.unregister:
+			connections := h.arenas[a.arena]
 			if connections != nil {
-				if _, ok := connections[s.conn]; ok {
-					delete(connections, s.conn)
-					close(s.conn.send)
+				if _, ok := connections[a.conn]; ok {
+					delete(connections, a.conn)
+					close(a.conn.send)
 					if len(connections) == 0 {
-						delete(h.arenas, s.arena)
+						delete(h.arenas, a.arena)
 					}
 				}
 			}

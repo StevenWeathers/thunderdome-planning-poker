@@ -1,23 +1,16 @@
-package main
+package api
 
 import (
-	"bytes"
-	"image"
-	"image/png"
 	"log"
 	"net/http"
-	"strconv"
 
-	"github.com/anthonynsimon/bild/transform"
 	"github.com/gorilla/mux"
-	"github.com/ipsn/go-adorable"
-	"github.com/o1egl/govatar"
 )
 
 // handleUpdatePassword attempts to update a users password
-func (s *server) handleUpdatePassword() http.HandlerFunc {
+func (a *api) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		UserPassword, passwordErr := ValidateUserPassword(
@@ -30,21 +23,21 @@ func (s *server) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := s.database.UserUpdatePassword(UserID, UserPassword)
+		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(UserID, UserPassword)
 		if updateErr != nil {
 			log.Println("error attempting to update user password : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.email.SendPasswordUpdate(UserName, UserEmail)
+		a.email.SendPasswordUpdate(UserName, UserEmail)
 
 		return
 	}
 }
 
 // handleUserProfile returns the users profile if it matches their session
-func (s *server) handleUserProfile() http.HandlerFunc {
+func (a *api) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["id"]
@@ -55,22 +48,22 @@ func (s *server) handleUserProfile() http.HandlerFunc {
 			return
 		}
 
-		User, UserErr := s.database.GetUser(UserID)
+		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
 			log.Println("error finding user : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, User)
+		a.respondWithJSON(w, http.StatusOK, User)
 	}
 }
 
 // handleUserProfileUpdate attempts to update users profile
-func (s *server) handleUserProfileUpdate() http.HandlerFunc {
+func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 		UserName := keyVal["warriorName"].(string)
 		UserAvatar := keyVal["warriorAvatar"].(string)
 		NotificationsEnabled, _ := keyVal["notificationsEnabled"].(bool)
@@ -86,31 +79,31 @@ func (s *server) handleUserProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		updateErr := s.database.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
+		updateErr := a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 		if updateErr != nil {
 			log.Println("error attempting to update user profile : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		user, UserErr := s.database.GetUser(UserID)
+		user, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
 			log.Println("error reloading user after update : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, user)
+		a.respondWithJSON(w, http.StatusOK, user)
 	}
 }
 
 // handleAccountVerification attempts to verify a users account
-func (s *server) handleAccountVerification() http.HandlerFunc {
+func (a *api) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 		VerifyID := keyVal["verifyId"].(string)
 
-		verifyErr := s.database.VerifyUserAccount(VerifyID)
+		verifyErr := a.db.VerifyUserAccount(VerifyID)
 		if verifyErr != nil {
 			log.Println("error attempting to verify user account : " + verifyErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -122,7 +115,7 @@ func (s *server) handleAccountVerification() http.HandlerFunc {
 }
 
 // handleUserDelete attempts to delete a users account
-func (s *server) handleUserDelete() http.HandlerFunc {
+func (a *api) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -133,78 +126,32 @@ func (s *server) handleUserDelete() http.HandlerFunc {
 			return
 		}
 
-		User, UserErr := s.database.GetUser(UserID)
+		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
 			log.Println("error finding user : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		updateErr := s.database.DeleteUser(UserID)
+		updateErr := a.db.DeleteUser(UserID)
 		if updateErr != nil {
 			log.Println("error attempting to delete user : " + updateErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
+		a.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
 
-		s.clearUserCookies(w)
+		a.clearUserCookies(w)
 
 		return
 	}
 }
 
-// handleUserAvatar creates an avatar for the given user by ID
-func (s *server) handleUserAvatar() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		Width, _ := strconv.Atoi(vars["width"])
-		UserID := vars["id"]
-		AvatarGender := govatar.MALE
-		userGender, ok := vars["avatar"]
-		if ok {
-			if userGender == "female" {
-				AvatarGender = govatar.FEMALE
-			}
-		}
-
-		var avatar image.Image
-		if s.config.AvatarService == "govatar" {
-			avatar, _ = govatar.GenerateForUsername(AvatarGender, UserID)
-		} else { // must be goadorable
-			var err error
-			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(UserID))))
-			if err != nil {
-				log.Fatalln(err)
-			}
-		}
-
-		img := transform.Resize(avatar, Width, Width, transform.Linear)
-		buffer := new(bytes.Buffer)
-
-		if err := png.Encode(buffer, img); err != nil {
-			log.Println("unable to encode image.")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "image/png")
-		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
-
-		if _, err := w.Write(buffer.Bytes()); err != nil {
-			log.Println("unable to write image.")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-	}
-}
-
 // handleGetActiveCountries gets a list of registered users countries
-func (s *server) handleGetActiveCountries() http.HandlerFunc {
+func (a *api) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		countries, err := s.database.GetActiveCountries()
+		countries, err := a.db.GetActiveCountries()
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -212,6 +159,6 @@ func (s *server) handleGetActiveCountries() http.HandlerFunc {
 		}
 
 		w.Header().Set("Cache-Control", "max-age=3600") // cache for 1 hour just to decrease load
-		s.respondWithJSON(w, http.StatusOK, countries)
+		a.respondWithJSON(w, http.StatusOK, countries)
 	}
 }

@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"log"
@@ -8,10 +8,17 @@ import (
 )
 
 // handleAPIKeyGenerate handles generating an API key for a user
-func (s *server) handleAPIKeyGenerate() http.HandlerFunc {
+// @Summary Generate API Key
+// @Description Generates an API key for the authenticated user
+// @Tags apikey
+// @Produce  json
+// @Param id path int false "the user ID to generate API key for"
+// @Success 200
+// @Router /warrior/{id}/apikey [post]
+func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 		APIKeyName := keyVal["name"].(string)
 
 		UserID := vars["id"]
@@ -21,19 +28,26 @@ func (s *server) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		APIKey, keyErr := s.database.GenerateAPIKey(UserID, APIKeyName)
+		APIKey, keyErr := a.db.GenerateAPIKey(UserID, APIKeyName)
 		if keyErr != nil {
 			log.Println("error attempting to generate api key : " + keyErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, APIKey)
+		a.respondWithJSON(w, http.StatusOK, APIKey)
 	}
 }
 
 // handleUserAPIKeys handles getting user API keys
-func (s *server) handleUserAPIKeys() http.HandlerFunc {
+// @Summary Get API Keys
+// @Description get list of API keys for authenticated user
+// @Tags apikey
+// @Produce  json
+// @Param id path int false "the user ID to get API keys for"
+// @Success 200
+// @Router /warrior/{id}/apikeys [get]
+func (a *api) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -44,19 +58,27 @@ func (s *server) handleUserAPIKeys() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := s.database.GetUserAPIKeys(UserID)
+		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
 		if keysErr != nil {
 			log.Println("error retrieving api keys : " + keysErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, APIKeys)
+		a.respondWithJSON(w, http.StatusOK, APIKeys)
 	}
 }
 
-// handleUserAPIKeyUpdate handles getting user API keys
-func (s *server) handleUserAPIKeyUpdate() http.HandlerFunc {
+// handleUserAPIKeyUpdate handles updating a users API key
+// @Summary Update API Key
+// @Description Updates the API key of the authenticated user
+// @Tags apikey
+// @Produce  json
+// @Param id path int false "the user ID to update API key"
+// @Param keyID path int false "the API Key ID to update"
+// @Success 200
+// @Router /warrior/{id}/apikey/{keyID} [put]
+func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -67,22 +89,30 @@ func (s *server) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 		APK := vars["keyID"]
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 		active := keyVal["active"].(bool)
 
-		APIKeys, keysErr := s.database.UpdateUserAPIKey(UserID, APK, active)
+		APIKeys, keysErr := a.db.UpdateUserAPIKey(UserID, APK, active)
 		if keysErr != nil {
 			log.Println("error updating api key : " + keysErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, APIKeys)
+		a.respondWithJSON(w, http.StatusOK, APIKeys)
 	}
 }
 
-// handleUserAPIKeyDelete handles getting user API keys
-func (s *server) handleUserAPIKeyDelete() http.HandlerFunc {
+// handleUserAPIKeyDelete handles deleting a users API key
+// @Summary Delete API Key
+// @Description Deletes the API key
+// @Tags apikey
+// @Produce  json
+// @Param id path int false "the user ID to update API key"
+// @Param keyID path int false "the API Key ID to update"
+// @Success 200
+// @Router /warrior/{id}/apikey/{keyID} [delete]
+func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -94,13 +124,13 @@ func (s *server) handleUserAPIKeyDelete() http.HandlerFunc {
 		}
 		APK := vars["keyID"]
 
-		APIKeys, keysErr := s.database.DeleteUserAPIKey(UserID, APK)
+		APIKeys, keysErr := a.db.DeleteUserAPIKey(UserID, APK)
 		if keysErr != nil {
 			log.Println("error deleting api key : " + keysErr.Error() + "\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, APIKeys)
+		a.respondWithJSON(w, http.StatusOK, APIKeys)
 	}
 }

@@ -45,6 +45,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
+      - run: go install github.com/swaggo/swag/cmd/swag@latest
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:

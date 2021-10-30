@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"net/http"
@@ -10,7 +10,7 @@ import (
 )
 
 // handleGetTeamByUser gets an team with user role
-func (s *server) handleGetTeamByUser() http.HandlerFunc {
+func (a *api) handleGetTeamByUser() http.HandlerFunc {
 	type TeamResponse struct {
 		Team     *database.Team `json:"team"`
 		TeamRole string         `json:"teamRole"`
@@ -20,13 +20,13 @@ func (s *server) handleGetTeamByUser() http.HandlerFunc {
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 		TeamID := vars["teamId"]
 
-		Team, err := s.database.TeamGet(TeamID)
+		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, &TeamResponse{
+		a.respondWithJSON(w, http.StatusOK, &TeamResponse{
 			Team:     Team,
 			TeamRole: TeamRole,
 		})
@@ -34,45 +34,45 @@ func (s *server) handleGetTeamByUser() http.HandlerFunc {
 }
 
 // handleGetTeamsByUser gets a list of teams the user is apart of
-func (s *server) handleGetTeamsByUser() http.HandlerFunc {
+func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		Limit, _ := strconv.Atoi(vars["limit"])
 		Offset, _ := strconv.Atoi(vars["offset"])
 
-		Organizations := s.database.TeamListByUser(UserID, Limit, Offset)
+		Organizations := a.db.TeamListByUser(UserID, Limit, Offset)
 
-		s.respondWithJSON(w, http.StatusOK, Organizations)
+		a.respondWithJSON(w, http.StatusOK, Organizations)
 	}
 }
 
 // handleGetTeamUsers gets a list of users associated to the team
-func (s *server) handleGetTeamUsers() http.HandlerFunc {
+func (a *api) handleGetTeamUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, _ := strconv.Atoi(vars["limit"])
 		Offset, _ := strconv.Atoi(vars["offset"])
 
-		Teams := s.database.TeamUserList(TeamID, Limit, Offset)
+		Teams := a.db.TeamUserList(TeamID, Limit, Offset)
 
-		s.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
 // handleCreateTeam handles creating an team with current user as admin
-func (s *server) handleCreateTeam() http.HandlerFunc {
+func (a *api) handleCreateTeam() http.HandlerFunc {
 	type CreateTeamResponse struct {
 		TeamID string `json:"id"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 
 		TeamName := keyVal["name"].(string)
-		TeamID, err := s.database.TeamCreate(UserID, TeamName)
+		TeamID, err := a.db.TeamCreate(UserID, TeamName)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -82,27 +82,27 @@ func (s *server) handleCreateTeam() http.HandlerFunc {
 			TeamID: TeamID,
 		}
 
-		s.respondWithJSON(w, http.StatusOK, NewTeam)
+		a.respondWithJSON(w, http.StatusOK, NewTeam)
 	}
 }
 
 // handleTeamAddUser handles adding user to a team
-func (s *server) handleTeamAddUser() http.HandlerFunc {
+func (a *api) handleTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		UserEmail := strings.ToLower(keyVal["email"].(string))
 		Role := keyVal["role"].(string)
 
-		User, UserErr := s.database.GetUserByEmail(UserEmail)
+		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		_, err := s.database.TeamAddUser(TeamID, User.UserID, Role)
+		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -113,15 +113,15 @@ func (s *server) handleTeamAddUser() http.HandlerFunc {
 }
 
 // handleTeamRemoveUser handles removing user from a team
-func (s *server) handleTeamRemoveUser() http.HandlerFunc {
+func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		UserID := keyVal["id"].(string)
 
-		err := s.database.TeamRemoveUser(TeamID, UserID)
+		err := a.db.TeamRemoveUser(TeamID, UserID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -132,29 +132,29 @@ func (s *server) handleTeamRemoveUser() http.HandlerFunc {
 }
 
 // handleGetTeamBattles gets a list of battles associated to the team
-func (s *server) handleGetTeamBattles() http.HandlerFunc {
+func (a *api) handleGetTeamBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, _ := strconv.Atoi(vars["limit"])
 		Offset, _ := strconv.Atoi(vars["offset"])
 
-		Battles := s.database.TeamBattleList(TeamID, Limit, Offset)
+		Battles := a.db.TeamBattleList(TeamID, Limit, Offset)
 
-		s.respondWithJSON(w, http.StatusOK, Battles)
+		a.respondWithJSON(w, http.StatusOK, Battles)
 	}
 }
 
 // handleTeamRemoveBattle handles removing battle from a team
-func (s *server) handleTeamRemoveBattle() http.HandlerFunc {
+func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		BattleID := keyVal["id"].(string)
 
-		err := s.database.TeamRemoveBattle(TeamID, BattleID)
+		err := a.db.TeamRemoveBattle(TeamID, BattleID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -165,12 +165,12 @@ func (s *server) handleTeamRemoveBattle() http.HandlerFunc {
 }
 
 // handleDeleteTeam handles deleting a team
-func (s *server) handleDeleteTeam() http.HandlerFunc {
+func (a *api) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 		TeamID := keyVal["id"].(string)
 
-		err := s.database.TeamDelete(TeamID)
+		err := a.db.TeamDelete(TeamID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

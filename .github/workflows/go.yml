@@ -44,6 +44,12 @@ jobs:
             dep ensure
         fi
 
+    - name: Install swag
+      run: go install github.com/swaggo/swag/cmd/swag@latest
+
+    - name: Generate swagger docs
+      run: swag init -g api/api.go -o swaggerdocs
+
     # - name: Test
     #   run: go test
 

@@ -197,6 +197,7 @@ DB_NAME=
 ### Install dependencies
 ```
 go get
+go install github.com/swaggo/swag/cmd/swag@latest
 npm install
 ```
 
@@ -213,6 +214,7 @@ npm run build
 
 ### Build for current OS
 ```
+swag init -g api/api.go -o swaggerdocs
 go build
 ```
 

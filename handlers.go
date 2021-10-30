@@ -1,165 +1,22 @@
 package main
 
 import (
-	"encoding/json"
-	"errors"
+	"bytes"
 	"html/template"
+	"image"
+	"image/png"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	api "github.com/StevenWeathers/thunderdome-planning-poker/api"
+	"github.com/anthonynsimon/bild/transform"
 	"github.com/gorilla/mux"
+	"github.com/ipsn/go-adorable"
+	"github.com/o1egl/govatar"
 	"github.com/spf13/viper"
-	"gopkg.in/go-playground/validator.v9"
 )
-
-var ActiveAlerts []interface{}
-
-type contextKey string
-
-var (
-	contextKeyUserID         contextKey = "userId"
-	apiKeyHeaderName         string     = "X-API-Key"
-	contextKeyOrgRole        contextKey = "orgRole"
-	contextKeyDepartmentRole contextKey = "departmentRole"
-	contextKeyTeamRole       contextKey = "teamRole"
-)
-
-type UserAccount struct {
-	Name      string `json:"name" validate:"required"`
-	Email     string `json:"email" validate:"required,email"`
-	Password1 string `json:"password1" validate:"required,min=6,max=72"`
-	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
-}
-
-type UserPassword struct {
-	Password1 string `json:"password1" validate:"required,min=6,max=72"`
-	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
-}
-
-// ValidateUserAccount makes sure user name, email, and password are valid before creating the account
-func ValidateUserAccount(name string, email string, pwd1 string, pwd2 string) (UserName string, UserEmail string, UpdatedPassword string, validateErr error) {
-	v := validator.New()
-	a := UserAccount{
-		Name:      name,
-		Email:     email,
-		Password1: pwd1,
-		Password2: pwd2,
-	}
-	err := v.Struct(a)
-
-	return name, email, pwd1, err
-}
-
-// ValidateUserPassword makes sure user password is valid before updating the password
-func ValidateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, validateErr error) {
-	v := validator.New()
-	a := UserPassword{
-		Password1: pwd1,
-		Password2: pwd2,
-	}
-	err := v.Struct(a)
-
-	return pwd1, err
-}
-
-// respondWithJSON takes a payload and writes the response
-func (s *server) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(response)
-}
-
-// getJSONRequestBody gets a JSON request body broken into a key/value map
-func (s *server) getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[string]interface{} {
-	body, _ := ioutil.ReadAll(r.Body) // check for errors
-	keyVal := make(map[string]interface{})
-	jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-
-	if jsonErr != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return nil
-	}
-
-	return keyVal
-}
-
-// createUserCookie creates the users cookie
-func (s *server) createUserCookie(w http.ResponseWriter, isRegistered bool, UserID string) {
-	var cookiedays = 365 // 356 days
-	if isRegistered {
-		cookiedays = 30 // 30 days
-	}
-
-	encoded, err := s.cookie.Encode(s.config.SecureCookieName, UserID)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-
-	}
-
-	cookie := &http.Cookie{
-		Name:     s.config.SecureCookieName,
-		Value:    encoded,
-		Path:     s.config.PathPrefix + "/",
-		HttpOnly: true,
-		Domain:   s.config.AppDomain,
-		MaxAge:   86400 * cookiedays,
-		Secure:   s.config.SecureCookieFlag,
-		SameSite: http.SameSiteStrictMode,
-	}
-	http.SetCookie(w, cookie)
-}
-
-// clearUserCookies wipes the frontend and backend cookies
-// used in the event of bad cookie reads
-func (s *server) clearUserCookies(w http.ResponseWriter) {
-	feCookie := &http.Cookie{
-		Name:   s.config.FrontendCookieName,
-		Value:  "",
-		Path:   s.config.PathPrefix + "/",
-		MaxAge: -1,
-	}
-	beCookie := &http.Cookie{
-		Name:     s.config.SecureCookieName,
-		Value:    "",
-		Path:     s.config.PathPrefix + "/",
-		Domain:   s.config.AppDomain,
-		Secure:   s.config.SecureCookieFlag,
-		SameSite: http.SameSiteStrictMode,
-		MaxAge:   -1,
-		HttpOnly: true,
-	}
-
-	http.SetCookie(w, feCookie)
-	http.SetCookie(w, beCookie)
-}
-
-// validateUserCookie returns the UserID from secure cookies or errors if failures getting it
-func (s *server) validateUserCookie(w http.ResponseWriter, r *http.Request) (string, error) {
-	var UserID string
-
-	if cookie, err := r.Cookie(s.config.SecureCookieName); err == nil {
-		var value string
-		if err = s.cookie.Decode(s.config.SecureCookieName, cookie.Value, &value); err == nil {
-			UserID = value
-		} else {
-			log.Println("error in reading user cookie : " + err.Error() + "\n")
-			s.clearUserCookies(w)
-			return "", errors.New("invalid user cookies")
-		}
-	} else {
-		log.Println("error in reading user cookie : " + err.Error() + "\n")
-		s.clearUserCookies(w)
-		return "", errors.New("invalid user cookies")
-	}
-
-	return UserID, nil
-}
 
 // get the index template from embedded filesystem
 func (s *server) getIndexTemplate(FSS fs.FS) *template.Template {
@@ -205,7 +62,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AppVersion            string
 		CookieName            string
 		PathPrefix            string
-		APIEnabled            bool
+		ExternalAPIEnabled    bool
 		CleanupGuestsDaysOld  int
 		CleanupBattlesDaysOld int
 		ShowActiveCountries   bool
@@ -231,7 +88,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		DefaultLocale:         viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:       viper.GetBool("config.friendly_ui_verbs"),
 		AuthMethod:            viper.GetString("auth.method"),
-		APIEnabled:            viper.GetBool("config.allow_external_api"),
+		ExternalAPIEnabled:    s.config.ExternalAPIEnabled,
 		AppVersion:            s.config.Version,
 		CookieName:            s.config.FrontendCookieName,
 		PathPrefix:            s.config.PathPrefix,
@@ -240,16 +97,16 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		ShowActiveCountries:   viper.GetBool("config.show_active_countries"),
 	}
 
-	ActiveAlerts = s.database.GetActiveAlerts()
-
 	data := UIConfig{
 		AnalyticsEnabled: s.config.AnalyticsEnabled,
 		AnalyticsID:      s.config.AnalyticsID,
 		AppConfig:        appConfig,
 	}
 
+	api.ActiveAlerts = s.database.GetActiveAlerts() // prime the active alerts cache
+
 	return func(w http.ResponseWriter, r *http.Request) {
-		data.ActiveAlerts = ActiveAlerts // get latest alerts from memory
+		data.ActiveAlerts = api.ActiveAlerts // get latest alerts from memory
 
 		if embedUseOS {
 			tmpl = s.getIndexTemplate(FSS)
@@ -259,86 +116,48 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 	}
 }
 
-/*
-	Battle Handlers
-*/
-// handleBattleCreate handles creating a battle (arena)
-func (s *server) handleBattleCreate() http.HandlerFunc {
+// handleUserAvatar creates an avatar for the given user by ID
+func (s *server) handleUserAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
-		if bodyErr != nil {
-			log.Println("error in reading request body: " + bodyErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
 
-		var keyVal struct {
-			BattleName           string           `json:"battleName"`
-			PointValuesAllowed   []string         `json:"pointValuesAllowed"`
-			AutoFinishVoting     bool             `json:"autoFinishVoting"`
-			Plans                []*database.Plan `json:"plans"`
-			PointAverageRounding string           `json:"pointAverageRounding"`
-			BattleLeaders        []string         `json:"battleLeaders"`
-		}
-		json.Unmarshal(body, &keyVal) // check for errors
-
-		newBattle, err := s.database.CreateBattle(UserID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting, keyVal.PointAverageRounding)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		// when battleLeaders array is passed add additional leaders to battle
-		if len(keyVal.BattleLeaders) > 0 {
-			updatedLeaders, err := s.database.AddBattleLeadersByEmail(newBattle.BattleID, UserID, keyVal.BattleLeaders)
-			if err != nil {
-				log.Println("error adding additional battle leaders")
-			} else {
-				newBattle.Leaders = updatedLeaders
-			}
-		}
-
-		// if battle created with team association
-		TeamID, ok := vars["teamId"]
+		Width, _ := strconv.Atoi(vars["width"])
+		UserID := vars["id"]
+		AvatarGender := govatar.MALE
+		userGender, ok := vars["avatar"]
 		if ok {
-			OrgRole := r.Context().Value(contextKeyOrgRole)
-			DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
-			TeamRole := r.Context().Value(contextKeyTeamRole).(string)
-			var isAdmin bool
-			if DepartmentRole != nil && DepartmentRole.(string) == "ADMIN" {
-				isAdmin = true
-			}
-			if OrgRole != nil && OrgRole.(string) == "ADMIN" {
-				isAdmin = true
-			}
-
-			if isAdmin == true || TeamRole != "" {
-				err := s.database.TeamAddBattle(TeamID, newBattle.BattleID)
-
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-					return
-				}
+			if userGender == "female" {
+				AvatarGender = govatar.FEMALE
 			}
 		}
 
-		s.respondWithJSON(w, http.StatusOK, newBattle)
-	}
-}
+		var avatar image.Image
+		if s.config.AvatarService == "govatar" {
+			avatar, _ = govatar.GenerateForUsername(AvatarGender, UserID)
+		} else { // must be goadorable
+			var err error
+			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(UserID))))
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
 
-// handleBattlesGet looks up battles associated with UserID
-func (s *server) handleBattlesGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		battles, err := s.database.GetBattlesByUser(UserID)
+		img := transform.Resize(avatar, Width, Width, transform.Linear)
+		buffer := new(bytes.Buffer)
 
-		if err != nil {
-			http.NotFound(w, r)
+		if err := png.Encode(buffer, img); err != nil {
+			log.Println("unable to encode image.")
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, battles)
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
+
+		if _, err := w.Write(buffer.Bytes()); err != nil {
+			log.Println("unable to write image.")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 }

@@ -29,7 +29,7 @@
     let warriorPassword1 = ''
     let warriorPassword2 = ''
 
-    const { APIEnabled, AvatarService, AuthMethod } = appConfig
+    const { ExternalAPIEnabled, AvatarService, AuthMethod } = appConfig
     const configurableAvatarServices = [
         'dicebear',
         'gravatar',
@@ -183,7 +183,9 @@
                 eventTag('fetch_profile_apikeys', 'engagement', 'failure')
             })
     }
-    getApiKeys()
+    if (ExternalAPIEnabled) {
+        getApiKeys()
+    }
 
     function deleteApiKey(apk) {
         return function() {
@@ -557,7 +559,7 @@
             {/if}
         </div>
         <div class="w-full">
-            {#if APIEnabled}
+            {#if ExternalAPIEnabled}
                 <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
                     <div class="flex w-full">
                         <div class="w-4/5">

@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"net/http"
@@ -10,21 +10,29 @@ import (
 )
 
 // handleGetOrganizationsByUser gets a list of organizations the user is apart of
-func (s *server) handleGetOrganizationsByUser() http.HandlerFunc {
+// @Summary Get Users Organizations
+// @Description get list of organizations for the authenticated user
+// @Tags organizations
+// @Produce  json
+// @Param limit path int false "Max number of results to return"
+// @Param offset path int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Success 200
+// @Router /organizations/{limit}/{offset} [get]
+func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		Limit, _ := strconv.Atoi(vars["limit"])
 		Offset, _ := strconv.Atoi(vars["offset"])
 
-		Organizations := s.database.OrganizationListByUser(UserID, Limit, Offset)
+		Organizations := a.db.OrganizationListByUser(UserID, Limit, Offset)
 
-		s.respondWithJSON(w, http.StatusOK, Organizations)
+		a.respondWithJSON(w, http.StatusOK, Organizations)
 	}
 }
 
 // handleGetOrganizationByUser gets an organization with user role
-func (s *server) handleGetOrganizationByUser() http.HandlerFunc {
+func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 	type OrganizationResponse struct {
 		Organization *database.Organization `json:"organization"`
 		Role         string                 `json:"role"`
@@ -34,13 +42,13 @@ func (s *server) handleGetOrganizationByUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
-		Organization, err := s.database.OrganizationGet(OrgID)
+		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, &OrganizationResponse{
+		a.respondWithJSON(w, http.StatusOK, &OrganizationResponse{
 			Organization: Organization,
 			Role:         OrgRole,
 		})
@@ -48,17 +56,17 @@ func (s *server) handleGetOrganizationByUser() http.HandlerFunc {
 }
 
 // handleCreateOrganization handles creating an organization with current user as admin
-func (s *server) handleCreateOrganization() http.HandlerFunc {
+func (a *api) handleCreateOrganization() http.HandlerFunc {
 	type CreateOrgResponse struct {
 		OrganizationID string `json:"id"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 
 		OrgName := keyVal["name"].(string)
-		OrgId, err := s.database.OrganizationCreate(UserID, OrgName)
+		OrgId, err := a.db.OrganizationCreate(UserID, OrgName)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -68,40 +76,40 @@ func (s *server) handleCreateOrganization() http.HandlerFunc {
 			OrganizationID: OrgId,
 		}
 
-		s.respondWithJSON(w, http.StatusOK, NewOrg)
+		a.respondWithJSON(w, http.StatusOK, NewOrg)
 	}
 }
 
 // handleGetOrganizationTeams gets a list of teams associated to the organization
-func (s *server) handleGetOrganizationTeams() http.HandlerFunc {
+func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		Limit, _ := strconv.Atoi(vars["limit"])
 		Offset, _ := strconv.Atoi(vars["offset"])
 
-		Teams := s.database.OrganizationTeamList(OrgID, Limit, Offset)
+		Teams := a.db.OrganizationTeamList(OrgID, Limit, Offset)
 
-		s.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
 // handleGetOrganizationUsers gets a list of users associated to the organization
-func (s *server) handleGetOrganizationUsers() http.HandlerFunc {
+func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		Limit, _ := strconv.Atoi(vars["limit"])
 		Offset, _ := strconv.Atoi(vars["offset"])
 
-		Teams := s.database.OrganizationUserList(OrgID, Limit, Offset)
+		Teams := a.db.OrganizationUserList(OrgID, Limit, Offset)
 
-		s.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithJSON(w, http.StatusOK, Teams)
 	}
 }
 
 // handleCreateOrganizationTeam handles creating an organization team
-func (s *server) handleCreateOrganizationTeam() http.HandlerFunc {
+func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 	type CreateTeamResponse struct {
 		TeamID string `json:"id"`
 	}
@@ -109,11 +117,11 @@ func (s *server) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 
 		TeamName := keyVal["name"].(string)
 		OrgID := vars["orgId"]
-		TeamID, err := s.database.OrganizationTeamCreate(OrgID, TeamName)
+		TeamID, err := a.db.OrganizationTeamCreate(OrgID, TeamName)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -123,27 +131,27 @@ func (s *server) handleCreateOrganizationTeam() http.HandlerFunc {
 			TeamID: TeamID,
 		}
 
-		s.respondWithJSON(w, http.StatusOK, NewTeam)
+		a.respondWithJSON(w, http.StatusOK, NewTeam)
 	}
 }
 
 // handleOrganizationAddUser handles adding user to an organization
-func (s *server) handleOrganizationAddUser() http.HandlerFunc {
+func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		UserEmail := strings.ToLower(keyVal["email"].(string))
 		Role := keyVal["role"].(string)
 
-		User, UserErr := s.database.GetUserByEmail(UserEmail)
+		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		_, err := s.database.OrganizationAddUser(OrgID, User.UserID, Role)
+		_, err := a.db.OrganizationAddUser(OrgID, User.UserID, Role)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -154,15 +162,15 @@ func (s *server) handleOrganizationAddUser() http.HandlerFunc {
 }
 
 // handleOrganizationRemoveUser handles removing user from an organization (including departments, teams)
-func (s *server) handleOrganizationRemoveUser() http.HandlerFunc {
+func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		UserID := keyVal["id"].(string)
 
-		err := s.database.OrganizationRemoveUser(OrgID, UserID)
+		err := a.db.OrganizationRemoveUser(OrgID, UserID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -173,7 +181,7 @@ func (s *server) handleOrganizationRemoveUser() http.HandlerFunc {
 }
 
 // handleGetOrganizationTeamByUser gets a team with users roles
-func (s *server) handleGetOrganizationTeamByUser() http.HandlerFunc {
+func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 	type TeamResponse struct {
 		Organization     *database.Organization `json:"organization"`
 		Team             *database.Team         `json:"team"`
@@ -187,19 +195,19 @@ func (s *server) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		Organization, err := s.database.OrganizationGet(OrgID)
+		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		Team, err := s.database.TeamGet(TeamID)
+		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		s.respondWithJSON(w, http.StatusOK, &TeamResponse{
+		a.respondWithJSON(w, http.StatusOK, &TeamResponse{
 			Organization:     Organization,
 			Team:             Team,
 			OrganizationRole: OrgRole,
@@ -209,9 +217,9 @@ func (s *server) handleGetOrganizationTeamByUser() http.HandlerFunc {
 }
 
 // handleOrganizationTeamAddUser handles adding user to a team so long as they are in the organization
-func (s *server) handleOrganizationTeamAddUser() http.HandlerFunc {
+func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := s.getJSONRequestBody(r, w)
+		keyVal := a.getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
@@ -219,19 +227,19 @@ func (s *server) handleOrganizationTeamAddUser() http.HandlerFunc {
 		UserEmail := strings.ToLower(keyVal["email"].(string))
 		Role := keyVal["role"].(string)
 
-		User, UserErr := s.database.GetUserByEmail(UserEmail)
+		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		OrgRole, roleErr := s.database.OrganizationUserRole(User.UserID, OrgID)
+		OrgRole, roleErr := a.db.OrganizationUserRole(User.UserID, OrgID)
 		if OrgRole == "" || roleErr != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		_, err := s.database.TeamAddUser(TeamID, User.UserID, Role)
+		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

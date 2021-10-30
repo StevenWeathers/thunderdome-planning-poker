@@ -28,12 +28,8 @@ type ServerConfig struct {
 	ListenPort string
 	// the domain of the application for cookie securing
 	AppDomain string
-	// name of the frontend cookie
+	// name of the cookie used exclusively by the UI
 	FrontendCookieName string
-	// name of the user cookie
-	SecureCookieName string
-	// controls whether or not the cookie is set to secure, only works over HTTPS
-	SecureCookieFlag bool
 	// email to promote a user to Admin type on app startup
 	// the user should already be registered for this to work
 	AdminEmail string
@@ -47,6 +43,8 @@ type ServerConfig struct {
 	AvatarService string
 	// PathPrefix allows the application to be run on a shared domain
 	PathPrefix string
+	// Whether or not the external API is enabled
+	ExternalAPIEnabled bool
 }
 
 type server struct {
@@ -77,21 +75,19 @@ func main() {
 			AppDomain:          viper.GetString("http.domain"),
 			AdminEmail:         viper.GetString("admin.email"),
 			FrontendCookieName: viper.GetString("http.frontend_cookie_name"),
-			SecureCookieName:   viper.GetString("http.backend_cookie_name"),
-			SecureCookieFlag:   viper.GetBool("http.secure_cookie"),
 			AnalyticsEnabled:   viper.GetBool("analytics.enabled"),
 			AnalyticsID:        viper.GetString("analytics.id"),
 			Version:            version,
 			AvatarService:      viper.GetString(("config.avatar_service")),
 			PathPrefix:         pathPrefix,
+			ExternalAPIEnabled: viper.GetBool("config.allow_external_api"),
 		},
 		router: router,
 		cookie: securecookie.New([]byte(cookieHashkey), nil),
 	}
+
 	s.email = email.New(s.config.AppDomain, s.config.PathPrefix)
 	s.database = database.New(s.config.AdminEmail, schemaSQL)
-
-	go h.run()
 
 	s.routes()
 

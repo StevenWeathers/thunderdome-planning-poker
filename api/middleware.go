@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 // adminOnly middleware checks if the user is an admin, otherwise reject their request
-func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
@@ -18,7 +18,7 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		if apiKey != "" {
 			var apiKeyErr error
-			UserID, apiKeyErr = s.database.ValidateAPIKey(apiKey)
+			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
 			if apiKeyErr != nil {
 				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
 				w.WriteHeader(http.StatusUnauthorized)
@@ -26,14 +26,14 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		} else {
 			var cookieErr error
-			UserID, cookieErr = s.validateUserCookie(w, r)
+			UserID, cookieErr = a.validateUserCookie(w, r)
 			if cookieErr != nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 		}
 
-		adminErr := s.database.ConfirmAdmin(UserID)
+		adminErr := a.db.ConfirmAdmin(UserID)
 		if adminErr != nil {
 			w.WriteHeader(http.StatusForbidden)
 			return
@@ -46,15 +46,15 @@ func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // userOnly validates that the request was made by a valid user
-func (s *server) userOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
 		var UserID string
 
-		if apiKey != "" {
+		if apiKey != "" && a.config.ExternalAPIEnabled == true {
 			var apiKeyErr error
-			UserID, apiKeyErr = s.database.ValidateAPIKey(apiKey)
+			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
 			if apiKeyErr != nil {
 				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
 				w.WriteHeader(http.StatusUnauthorized)
@@ -62,17 +62,17 @@ func (s *server) userOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		} else {
 			var cookieErr error
-			UserID, cookieErr = s.validateUserCookie(w, r)
+			UserID, cookieErr = a.validateUserCookie(w, r)
 			if cookieErr != nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 		}
 
-		_, UserErr := s.database.GetUser(UserID)
+		_, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
 			log.Println("error finding user : " + UserErr.Error() + "\n")
-			s.clearUserCookies(w)
+			a.clearUserCookies(w)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -84,13 +84,13 @@ func (s *server) userOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgUserOnly validates that the request was made by a valid user of the organization
-func (s *server) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		OrgID := vars["orgId"]
 
-		Role, UserErr := s.database.OrganizationUserRole(UserID, OrgID)
+		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
@@ -104,13 +104,13 @@ func (s *server) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgAdminOnly validates that the request was made by an ADMIN of the organization
-func (s *server) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		OrgID := vars["orgId"]
 
-		Role, UserErr := s.database.OrganizationUserRole(UserID, OrgID)
+		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
@@ -129,14 +129,14 @@ func (s *server) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgTeamOnly validates that the request was made by an user of the organization team (or organization)
-func (s *server) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		OrgRole, TeamRole, UserErr := s.database.OrganizationTeamUserRole(UserID, OrgID, TeamID)
+		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
@@ -151,14 +151,14 @@ func (s *server) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgTeamAdminOnly validates that the request was made by an ADMIN of the organization team (or organization)
-func (s *server) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		OrgRole, TeamRole, UserErr := s.database.OrganizationTeamUserRole(UserID, OrgID, TeamID)
+		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
@@ -178,14 +178,14 @@ func (s *server) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentUserOnly validates that the request was made by a valid user of the organization (with department role)
-func (s *server) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 
-		OrgRole, DepartmentRole, UserErr := s.database.DepartmentUserRole(UserID, OrgID, DepartmentID)
+		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
@@ -200,14 +200,14 @@ func (s *server) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentAdminOnly validates that the request was made by an ADMIN of the organization (with department role)
-func (s *server) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 
-		OrgRole, DepartmentRole, UserErr := s.database.DepartmentUserRole(UserID, OrgID, DepartmentID)
+		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
@@ -227,7 +227,7 @@ func (s *server) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentTeamUserOnly validates that the request was made by an user of the department team (or organization)
-func (s *server) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
@@ -235,7 +235,7 @@ func (s *server) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		TeamID := vars["teamId"]
 
-		OrgRole, DepartmentRole, TeamRole, UserErr := s.database.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
+		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in department team : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
@@ -251,7 +251,7 @@ func (s *server) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentTeamAdminOnly validates that the request was made by an ADMIN of the department team (or organization)
-func (s *server) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
@@ -259,7 +259,7 @@ func (s *server) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		TeamID := vars["teamId"]
 
-		OrgRole, DepartmentRole, TeamRole, UserErr := s.database.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
+		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in department team : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
@@ -281,13 +281,13 @@ func (s *server) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // teamUserOnly validates that the request was made by a valid user of the team
-func (s *server) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		TeamID := vars["teamId"]
 
-		Role, UserErr := s.database.TeamUserRole(UserID, TeamID)
+		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in team : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
@@ -301,13 +301,13 @@ func (s *server) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // teamAdminOnly validates that the request was made by an ADMIN of the team
-func (s *server) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		TeamID := vars["teamId"]
 
-		Role, UserErr := s.database.TeamUserRole(UserID, TeamID)
+		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in team : " + UserErr.Error() + "\n")
 			w.WriteHeader(http.StatusForbidden)
