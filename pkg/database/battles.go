@@ -6,17 +6,19 @@ import (
 	"errors"
 	"log"
 	"strings"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
 //CreateBattle adds a new battle to the db
-func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*Plan, AutoFinishVoting bool, PointAverageRounding string) (*Battle, error) {
+func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string) (*model.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 
-	var b = &Battle{
+	var b = &model.Battle{
 		BattleID:             "",
 		BattleName:           BattleName,
-		Users:                make([]*BattleUser, 0),
-		Plans:                make([]*Plan, 0),
+		Users:                make([]*model.BattleUser, 0),
+		Plans:                make([]*model.Plan, 0),
 		VotingLocked:         true,
 		ActivePlanID:         "",
 		PointValuesAllowed:   PointValuesAllowed,
@@ -40,7 +42,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 	}
 
 	for _, plan := range Plans {
-		plan.Votes = make([]*Vote, 0)
+		plan.Votes = make([]*model.Vote, 0)
 
 		e := d.db.QueryRow(
 			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
@@ -80,12 +82,12 @@ func (d *Database) ReviseBattle(BattleID string, UserID string, BattleName strin
 }
 
 // GetBattle gets a battle by ID
-func (d *Database) GetBattle(BattleID string, UserID string) (*Battle, error) {
-	var b = &Battle{
+func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, error) {
+	var b = &model.Battle{
 		BattleID:             BattleID,
 		BattleName:           "",
-		Users:                make([]*BattleUser, 0),
-		Plans:                make([]*Plan, 0),
+		Users:                make([]*model.BattleUser, 0),
+		Plans:                make([]*model.Plan, 0),
 		VotingLocked:         true,
 		ActivePlanID:         "",
 		PointValuesAllowed:   make([]string, 0),
@@ -132,8 +134,8 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*Battle, error) {
 }
 
 // GetBattlesByUser gets a list of battles by UserID
-func (d *Database) GetBattlesByUser(UserID string) ([]*Battle, error) {
-	var battles = make([]*Battle, 0)
+func (d *Database) GetBattlesByUser(UserID string) ([]*model.Battle, error) {
+	var battles = make([]*model.Battle, 0)
 	battleRows, battlesErr := d.db.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding,
 		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans,
@@ -154,11 +156,11 @@ func (d *Database) GetBattlesByUser(UserID string) ([]*Battle, error) {
 		var pv string
 		var leaders string
 		var ActivePlanID sql.NullString
-		var b = &Battle{
+		var b = &model.Battle{
 			BattleID:             "",
 			BattleName:           "",
-			Users:                make([]*BattleUser, 0),
-			Plans:                make([]*Plan, 0),
+			Users:                make([]*model.BattleUser, 0),
+			Plans:                make([]*model.Plan, 0),
 			VotingLocked:         true,
 			ActivePlanID:         "",
 			PointValuesAllowed:   make([]string, 0),
@@ -203,9 +205,9 @@ func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 }
 
 // GetBattleUser gets a user from db by ID and checks battle active status
-func (d *Database) GetBattleUser(BattleID string, UserID string) (*BattleUser, error) {
+func (d *Database) GetBattleUser(BattleID string, UserID string) (*model.BattleUser, error) {
 	var active bool
-	var w BattleUser
+	var w model.BattleUser
 
 	e := d.db.QueryRow(
 		`SELECT
@@ -236,8 +238,8 @@ func (d *Database) GetBattleUser(BattleID string, UserID string) (*BattleUser, e
 }
 
 // GetBattleUsers retrieves the users for a given battle from db
-func (d *Database) GetBattleUsers(BattleID string) []*BattleUser {
-	var users = make([]*BattleUser, 0)
+func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
+	var users = make([]*model.BattleUser, 0)
 	rows, err := d.db.Query(
 		`SELECT
 			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator
@@ -250,7 +252,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*BattleUser {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w BattleUser
+			var w model.BattleUser
 			if err := rows.Scan(&w.UserID, &w.UserName, &w.UserType, &w.UserAvatar, &w.Active, &w.Spectator); err != nil {
 				log.Println(err)
 			} else {
@@ -263,8 +265,8 @@ func (d *Database) GetBattleUsers(BattleID string) []*BattleUser {
 }
 
 // GetBattleActiveUsers retrieves the active users for a given battle from db
-func (d *Database) GetBattleActiveUsers(BattleID string) []*BattleUser {
-	var users = make([]*BattleUser, 0)
+func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
+	var users = make([]*model.BattleUser, 0)
 	rows, err := d.db.Query(
 		`SELECT
 			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator
@@ -277,7 +279,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*BattleUser {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w BattleUser
+			var w model.BattleUser
 			if err := rows.Scan(&w.UserID, &w.UserName, &w.UserType, &w.UserAvatar, &w.Active, &w.Spectator); err != nil {
 				log.Println(err)
 			} else {
@@ -290,7 +292,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*BattleUser {
 }
 
 // AddUserToBattle adds a user by ID to the battle by ID
-func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*BattleUser, error) {
+func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*model.BattleUser, error) {
 	if _, err := d.db.Exec(
 		`INSERT INTO battles_users (battle_id, user_id, active)
 		VALUES ($1, $2, true)
@@ -307,7 +309,7 @@ func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*BattleUse
 }
 
 // RetreatUser removes a user from the current battle by ID
-func (d *Database) RetreatUser(BattleID string, UserID string) []*BattleUser {
+func (d *Database) RetreatUser(BattleID string, UserID string) []*model.BattleUser {
 	if _, err := d.db.Exec(
 		`UPDATE battles_users SET active = false WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
 		log.Println(err)
@@ -324,7 +326,7 @@ func (d *Database) RetreatUser(BattleID string, UserID string) []*BattleUser {
 }
 
 // AbandonBattle removes a user from the current battle by ID and sets abandoned true
-func (d *Database) AbandonBattle(BattleID string, UserID string) ([]*BattleUser, error) {
+func (d *Database) AbandonBattle(BattleID string, UserID string) ([]*model.BattleUser, error) {
 	if _, err := d.db.Exec(
 		`UPDATE battles_users SET active = false, abandoned = true WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
 		log.Println(err)
@@ -418,7 +420,7 @@ func (d *Database) DemoteBattleLeader(BattleID string, UserID string, LeaderID s
 	return leaders, nil
 }
 
-func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*BattleUser, error) {
+func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*model.BattleUser, error) {
 	if _, err := d.db.Exec(
 		`UPDATE battles_users SET spectator = $3 WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
 		log.Println(err)

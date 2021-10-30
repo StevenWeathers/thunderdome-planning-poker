@@ -3,6 +3,8 @@ package database
 import (
 	"errors"
 	"log"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
 // TeamUserRole gets a users role in team
@@ -25,8 +27,8 @@ func (d *Database) TeamUserRole(UserID string, TeamID string) (string, error) {
 }
 
 // TeamGet gets an team
-func (d *Database) TeamGet(TeamID string) (*Team, error) {
-	var team = &Team{
+func (d *Database) TeamGet(TeamID string) (*model.Team, error) {
+	var team = &model.Team{
 		TeamID:      "",
 		Name:        "",
 		CreatedDate: "",
@@ -51,8 +53,8 @@ func (d *Database) TeamGet(TeamID string) (*Team, error) {
 }
 
 // TeamListByUser gets a list of teams the user is on
-func (d *Database) TeamListByUser(UserID string, Limit int, Offset int) []*Team {
-	var teams = make([]*Team, 0)
+func (d *Database) TeamListByUser(UserID string, Limit int, Offset int) []*model.Team {
+	var teams = make([]*model.Team, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, created_date, updated_date FROM team_list_by_user($1, $2, $3);`,
 		UserID,
@@ -63,7 +65,7 @@ func (d *Database) TeamListByUser(UserID string, Limit int, Offset int) []*Team 
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var team Team
+			var team model.Team
 
 			if err := rows.Scan(
 				&team.TeamID,
@@ -118,8 +120,8 @@ func (d *Database) TeamAddUser(TeamID string, UserID string, Role string) (strin
 }
 
 // TeamUserList gets a list of team users
-func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*OrganizationUser {
-	var users = make([]*OrganizationUser, 0)
+func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*model.OrganizationUser {
+	var users = make([]*model.OrganizationUser, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, email, role FROM team_user_list($1, $2, $3);`,
 		TeamID,
@@ -130,7 +132,7 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*Organiz
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr OrganizationUser
+			var usr model.OrganizationUser
 
 			if err := rows.Scan(
 				&usr.UserID,
@@ -167,8 +169,8 @@ func (d *Database) TeamRemoveUser(TeamID string, UserID string) error {
 }
 
 // TeamBattleList gets a list of team battles
-func (d *Database) TeamBattleList(TeamID string, Limit int, Offset int) []*Battle {
-	var battles = make([]*Battle, 0)
+func (d *Database) TeamBattleList(TeamID string, Limit int, Offset int) []*model.Battle {
+	var battles = make([]*model.Battle, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name FROM team_battle_list($1, $2, $3);`,
 		TeamID,
@@ -179,7 +181,7 @@ func (d *Database) TeamBattleList(TeamID string, Limit int, Offset int) []*Battl
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var tb Battle
+			var tb model.Battle
 
 			if err := rows.Scan(
 				&tb.BattleID,

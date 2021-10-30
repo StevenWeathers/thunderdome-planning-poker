@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
@@ -40,8 +40,8 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 // handleGetOrganizationByUser gets an organization with user role
 func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 	type OrganizationResponse struct {
-		Organization *database.Organization `json:"organization"`
-		Role         string                 `json:"role"`
+		Organization *model.Organization `json:"organization"`
+		Role         string              `json:"role"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
@@ -193,10 +193,10 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 // handleGetOrganizationTeamByUser gets a team with users roles
 func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 	type TeamResponse struct {
-		Organization     *database.Organization `json:"organization"`
-		Team             *database.Team         `json:"team"`
-		OrganizationRole string                 `json:"organizationRole"`
-		TeamRole         string                 `json:"teamRole"`
+		Organization     *model.Organization `json:"organization"`
+		Team             *model.Team         `json:"team"`
+		OrganizationRole string              `json:"organizationRole"`
+		TeamRole         string              `json:"teamRole"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)

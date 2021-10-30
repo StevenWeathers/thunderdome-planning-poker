@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
@@ -24,10 +24,10 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 // handleGetDepartmentByUser gets an department with user role
 func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 	type DepartmentResponse struct {
-		Organization     *database.Organization `json:"organization"`
-		Department       *database.Department   `json:"department"`
-		OrganizationRole string                 `json:"organizationRole"`
-		DepartmentRole   string                 `json:"departmentRole"`
+		Organization     *model.Organization `json:"organization"`
+		Department       *model.Department   `json:"department"`
+		OrganizationRole string              `json:"organizationRole"`
+		DepartmentRole   string              `json:"departmentRole"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
@@ -217,12 +217,12 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 // handleDepartmentTeamByUser gets a team with users roles
 func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 	type TeamResponse struct {
-		Organization     *database.Organization `json:"organization"`
-		Department       *database.Department   `json:"department"`
-		Team             *database.Team         `json:"team"`
-		OrganizationRole string                 `json:"organizationRole"`
-		DepartmentRole   string                 `json:"departmentRole"`
-		TeamRole         string                 `json:"teamRole"`
+		Organization     *model.Organization `json:"organization"`
+		Department       *model.Department   `json:"department"`
+		Team             *model.Team         `json:"team"`
+		OrganizationRole string              `json:"organizationRole"`
+		DepartmentRole   string              `json:"departmentRole"`
+		TeamRole         string              `json:"teamRole"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)

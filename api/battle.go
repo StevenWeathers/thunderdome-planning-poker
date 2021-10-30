@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
@@ -70,12 +70,12 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		}
 
 		var keyVal struct {
-			BattleName           string           `json:"battleName"`
-			PointValuesAllowed   []string         `json:"pointValuesAllowed"`
-			AutoFinishVoting     bool             `json:"autoFinishVoting"`
-			Plans                []*database.Plan `json:"plans"`
-			PointAverageRounding string           `json:"pointAverageRounding"`
-			BattleLeaders        []string         `json:"battleLeaders"`
+			BattleName           string        `json:"battleName"`
+			PointValuesAllowed   []string      `json:"pointValuesAllowed"`
+			AutoFinishVoting     bool          `json:"autoFinishVoting"`
+			Plans                []*model.Plan `json:"plans"`
+			PointAverageRounding string        `json:"pointAverageRounding"`
+			BattleLeaders        []string      `json:"battleLeaders"`
 		}
 		json.Unmarshal(body, &keyVal) // check for errors
 

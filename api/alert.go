@@ -21,7 +21,11 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
-		Alerts := a.db.AlertsList(Limit, Offset)
+		Alerts, err := a.db.AlertsList(Limit, Offset)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
 		a.respondWithJSON(w, http.StatusOK, Alerts)
 	}

@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
 // GetRegisteredUsers retrieves the registered users from db
-func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*User {
-	var users = make([]*User, 0)
+func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*model.User {
+	var users = make([]*model.User, 0)
 	rows, err := d.db.Query(
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title
@@ -24,7 +26,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*User {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w User
+			var w model.User
 			var UserEmail sql.NullString
 			var UserCountry sql.NullString
 			var UserCompany sql.NullString
@@ -58,8 +60,8 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*User {
 }
 
 // GetUser gets a user from db by ID
-func (d *Database) GetUser(UserID string) (*User, error) {
-	var w User
+func (d *Database) GetUser(UserID string) (*model.User, error) {
+	var w model.User
 	var UserEmail sql.NullString
 	var UserCountry sql.NullString
 	var UserLocale sql.NullString
@@ -97,8 +99,8 @@ func (d *Database) GetUser(UserID string) (*User, error) {
 }
 
 // GetUserByEmail gets the user by email
-func (d *Database) GetUserByEmail(UserEmail string) (*User, error) {
-	var w User
+func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
+	var w model.User
 	e := d.db.QueryRow(
 		"SELECT id, name, email, type, verified FROM users WHERE email = $1",
 		UserEmail,
@@ -118,8 +120,8 @@ func (d *Database) GetUserByEmail(UserEmail string) (*User, error) {
 }
 
 // AuthUser attempts to authenticate the user
-func (d *Database) AuthUser(UserEmail string, UserPassword string) (*User, error) {
-	var w User
+func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User, error) {
+	var w model.User
 	var passHash string
 	var UserLocale sql.NullString
 
@@ -152,7 +154,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*User, error
 }
 
 // CreateUserGuest adds a new guest user to the db
-func (d *Database) CreateUserGuest(UserName string) (*User, error) {
+func (d *Database) CreateUserGuest(UserName string) (*model.User, error) {
 	var UserID string
 	e := d.db.QueryRow(`INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
 	if e != nil {
@@ -160,11 +162,11 @@ func (d *Database) CreateUserGuest(UserName string) (*User, error) {
 		return nil, errors.New("unable to create new user")
 	}
 
-	return &User{UserID: UserID, UserName: UserName, UserAvatar: "identicon", NotificationsEnabled: true, Locale: "en"}, nil
+	return &model.User{UserID: UserID, UserName: UserName, UserAvatar: "identicon", NotificationsEnabled: true, Locale: "en"}, nil
 }
 
 // CreateUserRegistered adds a new registered user to the db
-func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *User, VerifyID string, RegisterErr error) {
+func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *model.User, VerifyID string, RegisterErr error) {
 	hashedPassword, hashErr := HashAndSalt([]byte(UserPassword))
 	if hashErr != nil {
 		return nil, "", hashErr
@@ -202,7 +204,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 		}
 	}
 
-	return &User{UserID: UserID, UserName: UserName, UserEmail: UserEmail, UserType: UserType, UserAvatar: UserAvatar}, verifyID, nil
+	return &model.User{UserID: UserID, UserName: UserName, UserEmail: UserEmail, UserType: UserType, UserAvatar: UserAvatar}, verifyID, nil
 }
 
 // UpdateUserProfile attempts to update the users profile

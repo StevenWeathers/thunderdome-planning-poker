@@ -3,11 +3,13 @@ package database
 import (
 	"errors"
 	"log"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
 // OrganizationGet gets an organization
-func (d *Database) OrganizationGet(OrgID string) (*Organization, error) {
-	var org = &Organization{
+func (d *Database) OrganizationGet(OrgID string) (*model.Organization, error) {
+	var org = &model.Organization{
 		OrganizationID: "",
 		Name:           "",
 		CreatedDate:    "",
@@ -51,8 +53,8 @@ func (d *Database) OrganizationUserRole(UserID string, OrgID string) (string, er
 }
 
 // OrganizationList gets a list of organizations the user is apart of
-func (d *Database) OrganizationListByUser(UserID string, Limit int, Offset int) []*Organization {
-	var organizations = make([]*Organization, 0)
+func (d *Database) OrganizationListByUser(UserID string, Limit int, Offset int) []*model.Organization {
+	var organizations = make([]*model.Organization, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, created_date, updated_date FROM organization_list_by_user($1, $2, $3);`,
 		UserID,
@@ -63,7 +65,7 @@ func (d *Database) OrganizationListByUser(UserID string, Limit int, Offset int) 
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var org Organization
+			var org model.Organization
 
 			if err := rows.Scan(
 				&org.OrganizationID,
@@ -101,8 +103,8 @@ func (d *Database) OrganizationCreate(UserID string, OrgName string) (string, er
 }
 
 // OrganizationUserList gets a list of organization users
-func (d *Database) OrganizationUserList(OrgID string, Limit int, Offset int) []*OrganizationUser {
-	var users = make([]*OrganizationUser, 0)
+func (d *Database) OrganizationUserList(OrgID string, Limit int, Offset int) []*model.OrganizationUser {
+	var users = make([]*model.OrganizationUser, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, email, role FROM organization_user_list($1, $2, $3);`,
 		OrgID,
@@ -113,7 +115,7 @@ func (d *Database) OrganizationUserList(OrgID string, Limit int, Offset int) []*
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr OrganizationUser
+			var usr model.OrganizationUser
 
 			if err := rows.Scan(
 				&usr.UserID,
@@ -167,8 +169,8 @@ func (d *Database) OrganizationRemoveUser(OrganizationID string, UserID string) 
 }
 
 // OrganizationTeamList gets a list of organization teams
-func (d *Database) OrganizationTeamList(OrgID string, Limit int, Offset int) []*Team {
-	var teams = make([]*Team, 0)
+func (d *Database) OrganizationTeamList(OrgID string, Limit int, Offset int) []*model.Team {
+	var teams = make([]*model.Team, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, created_date, updated_date FROM organization_team_list($1, $2, $3);`,
 		OrgID,
@@ -179,7 +181,7 @@ func (d *Database) OrganizationTeamList(OrgID string, Limit int, Offset int) []*
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var team Team
+			var team model.Team
 
 			if err := rows.Scan(
 				&team.TeamID,

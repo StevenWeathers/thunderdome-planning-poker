@@ -4,6 +4,8 @@ import (
 	"errors"
 	"log"
 	"strings"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
 // ConfirmAdmin confirms whether the users is infact an admin
@@ -23,8 +25,8 @@ func (d *Database) ConfirmAdmin(UserID string) error {
 }
 
 // GetAppStats gets counts of users (registered and unregistered), battles, and plans
-func (d *Database) GetAppStats() (*ApplicationStats, error) {
-	var Appstats ApplicationStats
+func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
+	var Appstats model.ApplicationStats
 
 	err := d.db.QueryRow(`
 		SELECT
@@ -110,8 +112,8 @@ func (d *Database) CleanGuests(DaysOld int) error {
 
 // LowercaseUserEmails goes through and lowercases any user email that has any uppercase letters
 // returning the list of updated users
-func (d *Database) LowercaseUserEmails() ([]*User, error) {
-	var users = make([]*User, 0)
+func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
+	var users = make([]*model.User, 0)
 	rows, err := d.db.Query(
 		`SELECT name, email FROM lowercase_unique_user_emails();`,
 	)
@@ -119,7 +121,7 @@ func (d *Database) LowercaseUserEmails() ([]*User, error) {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr User
+			var usr model.User
 
 			if err := rows.Scan(
 				&usr.UserName,
@@ -141,8 +143,8 @@ func (d *Database) LowercaseUserEmails() ([]*User, error) {
 
 // MergeDuplicateAccounts goes through and merges any user accounts with duplicate emails that has any uppercase letters
 // returning the list of merged users
-func (d *Database) MergeDuplicateAccounts() ([]*User, error) {
-	var users = make([]*User, 0)
+func (d *Database) MergeDuplicateAccounts() ([]*model.User, error) {
+	var users = make([]*model.User, 0)
 	rows, err := d.db.Query(
 		`SELECT name, email FROM merge_nonunique_user_accounts();`,
 	)
@@ -150,7 +152,7 @@ func (d *Database) MergeDuplicateAccounts() ([]*User, error) {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr User
+			var usr model.User
 
 			if err := rows.Scan(
 				&usr.UserName,
@@ -171,8 +173,8 @@ func (d *Database) MergeDuplicateAccounts() ([]*User, error) {
 }
 
 // OrganizationList gets a list of organizations
-func (d *Database) OrganizationList(Limit int, Offset int) []*Organization {
-	var organizations = make([]*Organization, 0)
+func (d *Database) OrganizationList(Limit int, Offset int) []*model.Organization {
+	var organizations = make([]*model.Organization, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, created_date, updated_date FROM organization_list($1, $2);`,
 		Limit,
@@ -182,7 +184,7 @@ func (d *Database) OrganizationList(Limit int, Offset int) []*Organization {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var org Organization
+			var org model.Organization
 
 			if err := rows.Scan(
 				&org.OrganizationID,
@@ -203,8 +205,8 @@ func (d *Database) OrganizationList(Limit int, Offset int) []*Organization {
 }
 
 // TeamList gets a list of teams
-func (d *Database) TeamList(Limit int, Offset int) []*Team {
-	var teams = make([]*Team, 0)
+func (d *Database) TeamList(Limit int, Offset int) []*model.Team {
+	var teams = make([]*model.Team, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
 		Limit,
@@ -214,7 +216,7 @@ func (d *Database) TeamList(Limit int, Offset int) []*Team {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var team Team
+			var team model.Team
 
 			if err := rows.Scan(
 				&team.TeamID,
@@ -235,8 +237,8 @@ func (d *Database) TeamList(Limit int, Offset int) []*Team {
 }
 
 // GetAPIKeys gets a list of api keys
-func (d *Database) GetAPIKeys(Limit int, Offset int) []*APIKey {
-	var APIKeys = make([]*APIKey, 0)
+func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
+	var APIKeys = make([]*model.APIKey, 0)
 	rows, err := d.db.Query(
 		`SELECT apk.id, apk.name, u.email, apk.active, apk.created_date, apk.updated_date
 		FROM api_keys apk
@@ -250,7 +252,7 @@ func (d *Database) GetAPIKeys(Limit int, Offset int) []*APIKey {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var ak APIKey
+			var ak model.APIKey
 			var key string
 
 			if err := rows.Scan(

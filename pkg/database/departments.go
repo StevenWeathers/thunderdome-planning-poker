@@ -3,6 +3,8 @@ package database
 import (
 	"errors"
 	"log"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
 // DepartmentUserRole gets a users role in department (and organization)
@@ -28,8 +30,8 @@ func (d *Database) DepartmentUserRole(UserID string, OrgID string, DepartmentID 
 }
 
 // DepartmentGet gets a department
-func (d *Database) DepartmentGet(DepartmentID string) (*Department, error) {
-	var org = &Department{
+func (d *Database) DepartmentGet(DepartmentID string) (*model.Department, error) {
+	var org = &model.Department{
 		DepartmentID: "",
 		Name:         "",
 		CreatedDate:  "",
@@ -54,8 +56,8 @@ func (d *Database) DepartmentGet(DepartmentID string) (*Department, error) {
 }
 
 // OrganizationDepartmentList gets a list of organization departments
-func (d *Database) OrganizationDepartmentList(OrgID string, Limit int, Offset int) []*Department {
-	var departments = make([]*Department, 0)
+func (d *Database) OrganizationDepartmentList(OrgID string, Limit int, Offset int) []*model.Department {
+	var departments = make([]*model.Department, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, created_date, updated_date FROM department_list($1, $2, $3);`,
 		OrgID,
@@ -66,7 +68,7 @@ func (d *Database) OrganizationDepartmentList(OrgID string, Limit int, Offset in
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var department Department
+			var department model.Department
 
 			if err := rows.Scan(
 				&department.DepartmentID,
@@ -104,8 +106,8 @@ func (d *Database) DepartmentCreate(OrgID string, OrgName string) (string, error
 }
 
 // DepartmentTeamList gets a list of department teams
-func (d *Database) DepartmentTeamList(DepartmentID string, Limit int, Offset int) []*Team {
-	var teams = make([]*Team, 0)
+func (d *Database) DepartmentTeamList(DepartmentID string, Limit int, Offset int) []*model.Team {
+	var teams = make([]*model.Team, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, created_date, updated_date FROM department_team_list($1, $2, $3);`,
 		DepartmentID,
@@ -116,7 +118,7 @@ func (d *Database) DepartmentTeamList(DepartmentID string, Limit int, Offset int
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var team Team
+			var team model.Team
 
 			if err := rows.Scan(
 				&team.TeamID,
@@ -154,8 +156,8 @@ func (d *Database) DepartmentTeamCreate(DepartmentID string, TeamName string) (s
 }
 
 // DepartmentUserList gets a list of department users
-func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int) []*DepartmentUser {
-	var users = make([]*DepartmentUser, 0)
+func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int) []*model.DepartmentUser {
+	var users = make([]*model.DepartmentUser, 0)
 	rows, err := d.db.Query(
 		`SELECT id, name, email, role FROM department_user_list($1, $2, $3);`,
 		DepartmentID,
@@ -166,7 +168,7 @@ func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr DepartmentUser
+			var usr model.DepartmentUser
 
 			if err := rows.Scan(
 				&usr.UserID,

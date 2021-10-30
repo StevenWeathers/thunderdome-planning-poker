@@ -3,6 +3,8 @@ package database
 import (
 	"errors"
 	"log"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
 // GetActiveAlerts gets alerts from db for UI display
@@ -16,7 +18,7 @@ func (d *Database) GetActiveAlerts() []interface{} {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var a Alert
+			var a model.Alert
 
 			if err := rows.Scan(
 				&a.AlertID,
@@ -38,7 +40,7 @@ func (d *Database) GetActiveAlerts() []interface{} {
 }
 
 // AlertsList gets alerts from db for admin listing
-func (d *Database) AlertsList(Limit int, Offset int) []interface{} {
+func (d *Database) AlertsList(Limit int, Offset int) ([]interface{}, error) {
 	Alerts := make([]interface{}, 0)
 
 	rows, err := d.db.Query(
@@ -54,7 +56,7 @@ func (d *Database) AlertsList(Limit int, Offset int) []interface{} {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var a Alert
+			var a model.Alert
 
 			if err := rows.Scan(
 				&a.AlertID,
@@ -68,13 +70,14 @@ func (d *Database) AlertsList(Limit int, Offset int) []interface{} {
 				&a.UpdatedDate,
 			); err != nil {
 				log.Println(err)
+				return nil, err
 			} else {
 				Alerts = append(Alerts, &a)
 			}
 		}
 	}
 
-	return Alerts
+	return Alerts, err
 }
 
 // AlertsCreate creates

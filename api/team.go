@@ -4,15 +4,15 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
 // handleGetTeamByUser gets an team with user role
 func (a *api) handleGetTeamByUser() http.HandlerFunc {
 	type TeamResponse struct {
-		Team     *database.Team `json:"team"`
-		TeamRole string         `json:"teamRole"`
+		Team     *model.Team `json:"team"`
+		TeamRole string      `json:"teamRole"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

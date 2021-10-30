@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	ldap "github.com/go-ldap/ldap/v3"
 	"github.com/spf13/viper"
 	"gopkg.in/go-playground/validator.v9"
@@ -144,7 +144,7 @@ func (a *api) createCookie(UserID string) *http.Cookie {
 	return NewCookie
 }
 
-func (a *api) authUserDatabase(UserEmail string, UserPassword string) (*database.User, error) {
+func (a *api) authUserDatabase(UserEmail string, UserPassword string) (*model.User, error) {
 	AuthedUser, err := a.db.AuthUser(UserEmail, UserPassword)
 	if err != nil {
 		log.Println("Failed authenticating user", UserEmail)
@@ -155,8 +155,8 @@ func (a *api) authUserDatabase(UserEmail string, UserPassword string) (*database
 }
 
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user
-func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*database.User, error) {
-	var AuthedUser *database.User
+func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*model.User, error) {
+	var AuthedUser *model.User
 	l, err := ldap.DialURL(viper.GetString("auth.ldap.url"))
 	if err != nil {
 		log.Println("Failed connecting to ldap server at", viper.GetString("auth.ldap.url"))
