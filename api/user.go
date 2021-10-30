@@ -7,35 +7,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// handleUpdatePassword attempts to update a users password
-func (a *api) handleUpdatePassword() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-
-		UserPassword, passwordErr := ValidateUserPassword(
-			keyVal["warriorPassword1"].(string),
-			keyVal["warriorPassword2"].(string),
-		)
-
-		if passwordErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(UserID, UserPassword)
-		if updateErr != nil {
-			log.Println("error attempting to update user password : " + updateErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		a.email.SendPasswordUpdate(UserName, UserEmail)
-
-		return
-	}
-}
-
 // handleUserProfile returns the users profile if it matches their session
 func (a *api) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -94,23 +65,6 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		}
 
 		a.respondWithJSON(w, http.StatusOK, user)
-	}
-}
-
-// handleAccountVerification attempts to verify a users account
-func (a *api) handleAccountVerification() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
-		VerifyID := keyVal["verifyId"].(string)
-
-		verifyErr := a.db.VerifyUserAccount(VerifyID)
-		if verifyErr != nil {
-			log.Println("error attempting to verify user account : " + verifyErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		return
 	}
 }
 

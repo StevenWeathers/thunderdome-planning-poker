@@ -55,7 +55,7 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 // @Tags maintenance
 // @Produce  json
 // @Success 200
-// @Router /maintenance/lowercase-emails [put]
+// @Router /maintenance/lowercase-emails [patch]
 func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lowercasedUsers, err := a.db.LowercaseUserEmails()

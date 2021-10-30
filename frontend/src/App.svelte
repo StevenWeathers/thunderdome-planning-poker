@@ -193,7 +193,7 @@
     }
 
     function logoutWarrior() {
-        xfetch('/api/auth/logout', { method: 'POST' })
+        xfetch('/api/auth/logout', { method: 'DELETE' })
             .then(function() {
                 eventTag('logout', 'engagement', 'success', () => {
                     warrior.delete()

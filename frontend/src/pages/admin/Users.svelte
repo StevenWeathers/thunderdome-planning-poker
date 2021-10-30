@@ -94,7 +94,7 @@
 
     function promoteWarrior(warriorId) {
         return function() {
-            xfetch(`/api/admin/users/${warriorId}/promote`, { method: 'PUT' })
+            xfetch(`/api/admin/users/${warriorId}/promote`, { method: 'PATCH' })
                 .then(function() {
                     eventTag('admin_promote_warrior', 'engagement', 'success')
 
@@ -109,7 +109,7 @@
 
     function demoteWarrior(warriorId) {
         return function() {
-            xfetch(`/api/admin/users/${warriorId}/demote`, { method: 'PUT' })
+            xfetch(`/api/admin/users/${warriorId}/demote`, { method: 'PATCH' })
                 .then(function() {
                     eventTag('admin_demote_warrior', 'engagement', 'success')
 

@@ -29,7 +29,7 @@
     let warriorPassword1 = ''
     let warriorPassword2 = ''
 
-    const { ExternalAPIEnabled, AvatarService, AuthMethod } = appConfig
+    const { ExternalAPIEnabled, AvatarService, LdapEnabled } = appConfig
     const configurableAvatarServices = [
         'dicebear',
         'gravatar',
@@ -152,7 +152,7 @@
         }
 
         if (noFormErrors) {
-            xfetch('/api/auth/update-password', { body, method: 'PUT' })
+            xfetch('/api/auth/update-password', { body, method: 'PATCH' })
                 .then(function() {
                     notifications.success(
                         $_('pages.warriorProfile.passwordUpdated'),
@@ -265,7 +265,7 @@
     $: updatePasswordDisabled =
         warriorPassword1 === '' ||
         warriorPassword2 === '' ||
-        AuthMethod === 'ldap'
+        LdapEnabled
 </script>
 
 <svelte:head>

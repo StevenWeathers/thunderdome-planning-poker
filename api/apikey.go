@@ -74,7 +74,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 // @Description Updates the API key of the authenticated user
 // @Tags apikey
 // @Produce  json
-// @Param id path int false "the user ID to update API key"
+// @Param id path int false "the user ID"
 // @Param keyID path int false "the API Key ID to update"
 // @Success 200
 // @Router /users/{id}/apikeys/{keyID} [put]
@@ -108,7 +108,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 // @Description Deletes the API key
 // @Tags apikey
 // @Produce  json
-// @Param id path int false "the user ID to update API key"
+// @Param id path int false "the user ID"
 // @Param keyID path int false "the API Key ID to update"
 // @Success 200
 // @Router /users/{id}/apikeys/{keyID} [delete]

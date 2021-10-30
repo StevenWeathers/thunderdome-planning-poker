@@ -13,14 +13,14 @@ import (
 // @Description get application stats such as count of registered warriors
 // @Tags admin
 // @Produce  json
-// @Success 200
+// @Success 200 {object} model.ApplicationStats
+// @Failure 500
 // @Router /admin/stats [get]
 func (a *api) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AppStats, err := a.db.GetAppStats()
-
 		if err != nil {
-			http.NotFound(w, r)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
@@ -131,7 +131,7 @@ func (a *api) handleAdminUserDelete() http.HandlerFunc {
 // @Produce  json
 // @Param id path int false "the user ID to promote"
 // @Success 200
-// @Router /admin/users/{id}/promote/ [put]
+// @Router /admin/users/{id}/promote/ [patch]
 func (a *api) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -154,7 +154,7 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 // @Produce  json
 // @Param id path int false "the user ID to demote"
 // @Success 200
-// @Router /admin/users/{id}/demote [put]
+// @Router /admin/users/{id}/demote [patch]
 func (a *api) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

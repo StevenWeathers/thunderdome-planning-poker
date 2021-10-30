@@ -48,7 +48,7 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 // @Description Create a battle associated to authenticated user
 // @Tags battle
 // @Produce  json
-// @Param id path int false "the user ID to create battle for"
+// @Param id path int false "the user ID"
 // @Success 200
 // @Router /users/{id}/battles [post]
 func (a *api) handleBattleCreate() http.HandlerFunc {

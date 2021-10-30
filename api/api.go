@@ -29,6 +29,8 @@ type ApiConfig struct {
 	SecureCookieName string
 	// controls whether or not the cookie is set to secure, only works over HTTPS
 	SecureCookieFlag bool
+	// Whether or not LDAP is enabled for authentication
+	LdapEnabled bool
 }
 
 type api struct {
@@ -86,19 +88,19 @@ func Init(config *ApiConfig, router *mux.Router, database *database.Database, em
 	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
 
 	// user authentication, profile
-	if viper.GetString("auth.method") == "ldap" {
-		apiRouter.HandleFunc("/auth", a.handleLdapLogin()).Methods("POST")
+	if a.config.LdapEnabled == true {
+		apiRouter.HandleFunc("/auth/ldap", a.handleLdapLogin()).Methods("POST")
 	} else {
 		apiRouter.HandleFunc("/auth", a.handleLogin()).Methods("POST")
 		apiRouter.HandleFunc("/auth/forgot-password", a.handleForgotPassword()).Methods("POST")
-		apiRouter.HandleFunc("/auth/reset-password", a.handleResetPassword()).Methods("PUT")
-		apiRouter.HandleFunc("/auth/update-password", a.userOnly(a.handleUpdatePassword())).Methods("PUT")
-		apiRouter.HandleFunc("/auth/verify", a.handleAccountVerification()).Methods("POST")
+		apiRouter.HandleFunc("/auth/reset-password", a.handleResetPassword()).Methods("PATCH")
+		apiRouter.HandleFunc("/auth/update-password", a.userOnly(a.handleUpdatePassword())).Methods("PATCH")
+		apiRouter.HandleFunc("/auth/verify", a.handleAccountVerification()).Methods("PATCH")
 		apiRouter.HandleFunc("/auth/register", a.handleUserRegistration()).Methods("POST")
 	}
-	apiRouter.HandleFunc("/auth/logout", a.handleLogout()).Methods("POST")
+	apiRouter.HandleFunc("/auth/guest", a.handleCreateGuestUser()).Methods("POST")
+	apiRouter.HandleFunc("/auth/logout", a.handleLogout()).Methods("DELETE")
 	// user(s)
-	userRouter.HandleFunc("", a.handleCreateGuestUser()).Methods("POST")
 	userRouter.HandleFunc("/{id}", a.userOnly(a.handleUserProfile())).Methods("GET")
 	userRouter.HandleFunc("/{id}", a.userOnly(a.handleUserProfileUpdate())).Methods("PUT")
 	userRouter.HandleFunc("/{id}", a.userOnly(a.handleUserDelete())).Methods("DELETE")
@@ -165,8 +167,8 @@ func Init(config *ApiConfig, router *mux.Router, database *database.Database, em
 	adminRouter.HandleFunc("/users", a.adminOnly(a.handleGetRegisteredUsers())).Methods("GET")
 	adminRouter.HandleFunc("/users", a.adminOnly(a.handleUserCreate())).Methods("POST")
 	adminRouter.HandleFunc("/users/{id}", a.adminOnly(a.handleAdminUserDelete())).Methods("DELETE")
-	adminRouter.HandleFunc("/users/{id}/promote", a.adminOnly(a.handleUserPromote())).Methods("PUT")
-	adminRouter.HandleFunc("/users/{id}/demote", a.adminOnly(a.handleUserDemote())).Methods("PUT")
+	adminRouter.HandleFunc("/users/{id}/promote", a.adminOnly(a.handleUserPromote())).Methods("PATCH")
+	adminRouter.HandleFunc("/users/{id}/demote", a.adminOnly(a.handleUserDemote())).Methods("PATCH")
 	adminRouter.HandleFunc("/organizations", a.adminOnly(a.handleGetOrganizations())).Methods("GET")
 	adminRouter.HandleFunc("/teams", a.adminOnly(a.handleGetTeams())).Methods("GET")
 	adminRouter.HandleFunc("/apikeys", a.adminOnly(a.handleGetAPIKeys())).Methods("GET")
@@ -178,7 +180,7 @@ func Init(config *ApiConfig, router *mux.Router, database *database.Database, em
 	// maintenance
 	apiRouter.HandleFunc("/maintenance/clean-battles", a.adminOnly(a.handleCleanBattles())).Methods("DELETE")
 	apiRouter.HandleFunc("/maintenance/clean-guests", a.adminOnly(a.handleCleanGuests())).Methods("DELETE")
-	apiRouter.HandleFunc("/maintenance/lowercase-emails", a.adminOnly(a.handleLowercaseUserEmails())).Methods("PUT")
+	apiRouter.HandleFunc("/maintenance/lowercase-emails", a.adminOnly(a.handleLowercaseUserEmails())).Methods("PATCH")
 	// websocket for battle
 	apiRouter.HandleFunc("/arena/{id}", a.serveWs())
 

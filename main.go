@@ -45,6 +45,8 @@ type ServerConfig struct {
 	PathPrefix string
 	// Whether or not the external API is enabled
 	ExternalAPIEnabled bool
+	// Whether or not LDAP is enabled for authentication
+	LdapEnabled bool
 }
 
 type server struct {
@@ -81,6 +83,7 @@ func main() {
 			AvatarService:      viper.GetString(("config.avatar_service")),
 			PathPrefix:         pathPrefix,
 			ExternalAPIEnabled: viper.GetBool("config.allow_external_api"),
+			LdapEnabled:        viper.GetString("auth.method") == "ldap",
 		},
 		router: router,
 		cookie: securecookie.New([]byte(cookieHashkey), nil),

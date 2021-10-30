@@ -5,15 +5,14 @@
     import { _, setupI18n } from '../i18n'
     import { appRoutes } from '../config'
 
-    const { AllowRegistration } = appConfig
-
     export let router
     export let xfetch
     export let notifications
     export let eventTag
     export let battleId
 
-    const authMethod = appConfig.AuthMethod
+    const { AllowRegistration, LdapEnabled } = appConfig
+    const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth'
 
     let warriorEmail = ''
     let warriorPassword = ''
@@ -32,7 +31,7 @@
             warriorPassword,
         }
 
-        xfetch('/api/auth', { body })
+        xfetch(authEndpoint, { body })
             .then(res => res.json())
             .then(function(newWarrior) {
                 warrior.create({
@@ -161,7 +160,7 @@
                     </div>
 
                     <div class="text-right">
-                        {#if authMethod === 'normal'}
+                        {#if !LdapEnabled}
                             <button
                                 type="button"
                                 class="inline-block align-baseline font-bold

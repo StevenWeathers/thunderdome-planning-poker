@@ -35,7 +35,7 @@
         }
 
         if (noFormErrors) {
-            xfetch('/api/auth/reset-password', { body, method: 'PUT' })
+            xfetch('/api/auth/reset-password', { body, method: 'PATCH' })
                 .then(function() {
                     eventTag('reset_password', 'engagement', 'success', () => {
                         router.route(appRoutes.login, true)

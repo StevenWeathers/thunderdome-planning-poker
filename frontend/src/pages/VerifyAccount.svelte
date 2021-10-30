@@ -11,7 +11,7 @@
     let accountVerified = false
     let verficationError = false
 
-    xfetch('/api/auth/verify', { body: { verifyId } })
+    xfetch('/api/auth/verify', { body: { verifyId }, method: 'PATCH' })
         .then(function() {
             accountVerified = true
             eventTag('account_verify', 'engagement', 'success')

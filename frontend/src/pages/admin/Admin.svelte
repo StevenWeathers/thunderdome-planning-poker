@@ -69,7 +69,7 @@
     }
 
     function lowercaseEmails() {
-        xfetch('/api/maintenance/lowercase-emails', { method: 'PUT' })
+        xfetch('/api/maintenance/lowercase-emails', { method: 'PATCH' })
             .then(function() {
                 eventTag('admin_lowercase_emails', 'engagement', 'success')
                 notifications.success('Lowercased user emails successfully')

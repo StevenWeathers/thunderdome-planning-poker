@@ -49,6 +49,7 @@ func (s *server) routes() {
 		SecureCookieFlag:   viper.GetBool("http.secure_cookie"),
 		PathPrefix:         s.config.PathPrefix,
 		ExternalAPIEnabled: s.config.ExternalAPIEnabled,
+		LdapEnabled:        s.config.LdapEnabled,
 	}
 	api.Init(apiConfig, s.router, s.database, s.email, s.cookie)
 
@@ -106,7 +107,6 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AllowJiraImport       bool
 		DefaultLocale         string
 		FriendlyUIVerbs       bool
-		AuthMethod            string
 		AppVersion            string
 		CookieName            string
 		PathPrefix            string
@@ -114,6 +114,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		CleanupGuestsDaysOld  int
 		CleanupBattlesDaysOld int
 		ShowActiveCountries   bool
+		LdapEnabled           bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -135,7 +136,6 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AllowJiraImport:       viper.GetBool("config.allow_jira_import"),
 		DefaultLocale:         viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:       viper.GetBool("config.friendly_ui_verbs"),
-		AuthMethod:            viper.GetString("auth.method"),
 		ExternalAPIEnabled:    s.config.ExternalAPIEnabled,
 		AppVersion:            s.config.Version,
 		CookieName:            s.config.FrontendCookieName,
@@ -143,6 +143,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		CleanupGuestsDaysOld:  viper.GetInt("config.cleanup_guests_days_old"),
 		CleanupBattlesDaysOld: viper.GetInt("config.cleanup_battles_days_old"),
 		ShowActiveCountries:   viper.GetBool("config.show_active_countries"),
+		LdapEnabled:           s.config.LdapEnabled,
 	}
 
 	data := UIConfig{

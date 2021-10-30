@@ -40,7 +40,7 @@
         }
 
         if (noFormErrors) {
-            xfetch('/api/users', { body })
+            xfetch('/api/auth/guest', { body })
                 .then(res => res.json())
                 .then(function(newWarrior) {
                     warrior.create({

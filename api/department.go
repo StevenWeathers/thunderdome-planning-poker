@@ -9,6 +9,13 @@ import (
 )
 
 // handleGetOrganizationDepartments gets a list of departments associated to the organization
+// @Summary Get Departments
+// @Description get list of organizations departments
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID to get departments for"
+// @Success 200
+// @Router /organizations/{orgId}/departments [get]
 func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -22,6 +29,14 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 }
 
 // handleGetDepartmentByUser gets an department with user role
+// @Summary Get Department
+// @Description get an organization department with users role
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID"
+// @Param departmentId path int false "the department ID to get"
+// @Success 200
+// @Router /organizations/{orgId}/departments/{departmentId} [get]
 func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 	type DepartmentResponse struct {
 		Organization     *model.Organization `json:"organization"`
@@ -58,6 +73,13 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 }
 
 // handleCreateDepartment handles creating an organization department
+// @Summary Create Department
+// @Description Create an organization department
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID to create department for"
+// @Success 200
+// @Router /organizations/{orgId}/departments [post]
 func (a *api) handleCreateDepartment() http.HandlerFunc {
 	type CreateDepartmentResponse struct {
 		DepartmentID string `json:"id"`
@@ -85,6 +107,14 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 }
 
 // handleGetDepartmentTeams gets a list of teams associated to the department
+// @Summary Get Department Teams
+// @Description get a list of organization department teams
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID"
+// @Param departmentId path int false "the department ID to get teams for"
+// @Success 200
+// @Router /organizations/{orgId}/departments/{departmentId}/teams [get]
 func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -98,6 +128,14 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 }
 
 // handleGetDepartmentUsers gets a list of users associated to the department
+// @Summary Get Department Users
+// @Description get a list of organization department users
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID"
+// @Param departmentId path int false "the department ID"
+// @Success 200
+// @Router /organizations/{orgId}/departments/{departmentId}/users [get]
 func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -111,6 +149,14 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 }
 
 // handleCreateDepartmentTeam handles creating an department team
+// @Summary Create Department Team
+// @Description Create a department team
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID"
+// @Param departmentId path int false "the department ID"
+// @Success 200
+// @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
 func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 	type CreateTeamResponse struct {
 		TeamID string `json:"id"`
@@ -138,6 +184,14 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 }
 
 // handleDepartmentAddUser handles adding user to an organization department
+// @Summary Add Department User
+// @Description Add a department User
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID"
+// @Param departmentId path int false "the department ID"
+// @Success 200
+// @Router /organizations/{orgId}/departments/{departmentId}/users [post]
 func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := a.getJSONRequestBody(r, w)
@@ -164,6 +218,15 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 }
 
 // handleDepartmentRemoveUser handles removing user from a department (and department teams)
+// @Summary Remove Department User
+// @Description Remove a department User
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID"
+// @Param departmentId path int false "the department ID"
+// @Param userId path int false "the user ID"
+// @Success 200
+// @Router /organizations/{orgId}/departments/{departmentId}/users/{userId} [delete]
 func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -181,6 +244,15 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 }
 
 // handleDepartmentTeamAddUser handles adding user to a team so long as they are in the department
+// @Summary Add Department Team User
+// @Description Add a User to Department Team
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID"
+// @Param departmentId path int false "the department ID"
+// @Param teamId path int false "the team ID"
+// @Success 200
+// @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users [post]
 func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := a.getJSONRequestBody(r, w)
@@ -215,6 +287,15 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 }
 
 // handleDepartmentTeamByUser gets a team with users roles
+// @Summary Get Department Team
+// @Description Get a department team with users role
+// @Tags organization
+// @Produce  json
+// @Param orgId path int false "the organization ID"
+// @Param departmentId path int false "the department ID"
+// @Param teamId path int false "the team ID"
+// @Success 200
+// @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId} [get]
 func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 	type TeamResponse struct {
 		Organization     *model.Organization `json:"organization"`
