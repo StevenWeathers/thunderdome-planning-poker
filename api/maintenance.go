@@ -12,7 +12,8 @@ import (
 // @Description Deletes battles older than {config.cleanup_battles_days_old} based on last activity date
 // @Tags maintenance
 // @Produce  json
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /maintenance/clean-battles [delete]
 func (a *api) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -20,11 +21,12 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 
 		err := a.db.CleanBattles(DaysOld)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -33,7 +35,8 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 // @Description Deletes guest users older than {config.cleanup_guests_days_old} based on last activity date
 // @Tags maintenance
 // @Produce  json
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /maintenance/clean-guests [delete]
 func (a *api) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -41,11 +44,12 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 
 		err := a.db.CleanGuests(DaysOld)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -54,14 +58,16 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 // @Description Lowercases any user emails that have uppercase letters to prevent duplicate email registration
 // @Tags maintenance
 // @Produce  json
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /maintenance/lowercase-emails [patch]
 func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lowercasedUsers, err := a.db.LowercaseUserEmails()
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		log.Println("Lowercased", len(lowercasedUsers), "user emails")
@@ -71,8 +77,9 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 
 		mergedUsers, err := a.db.MergeDuplicateAccounts()
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		log.Println("Merged", len(mergedUsers), "user accounts")
@@ -80,6 +87,6 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 			a.email.SendMergedUpdate(u.UserName, u.UserEmail)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
