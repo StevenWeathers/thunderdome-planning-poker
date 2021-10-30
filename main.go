@@ -45,6 +45,8 @@ type ServerConfig struct {
 	PathPrefix string
 	// Whether or not the external API is enabled
 	ExternalAPIEnabled bool
+	// Number of API keys a user can create
+	UserAPIKeyLimit int
 	// Whether or not LDAP is enabled for authentication
 	LdapEnabled bool
 }
@@ -83,6 +85,7 @@ func main() {
 			AvatarService:      viper.GetString(("config.avatar_service")),
 			PathPrefix:         pathPrefix,
 			ExternalAPIEnabled: viper.GetBool("config.allow_external_api"),
+			UserAPIKeyLimit:    viper.GetInt("config.user_apikey_limit"),
 			LdapEnabled:        viper.GetString("auth.method") == "ldap",
 		},
 		router: router,

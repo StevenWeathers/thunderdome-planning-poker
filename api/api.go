@@ -24,6 +24,8 @@ type ApiConfig struct {
 	PathPrefix string
 	// Whether or not the external API is enabled
 	ExternalAPIEnabled bool
+	// Number of API keys a user can create
+	UserAPIKeyLimit int
 	// name of the cookie used exclusively by the UI
 	FrontendCookieName string
 	// name of the user cookie

@@ -64,6 +64,22 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
+		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
+		if keysErr != nil {
+			log.Println("error retrieving api keys : " + keysErr.Error() + "\n")
+			errors := make([]string, 0)
+			errors = append(errors, keysErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
+		}
+
+		if len(APIKeys) == a.config.UserAPIKeyLimit {
+			errors := make([]string, 0)
+			errors = append(errors, "USER_APIKEY_LIMIT_REACHED")
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, errors, nil, nil)
+			return
+		}
+
 		APIKey, keyErr := a.db.GenerateAPIKey(UserID, APIKeyName)
 		if keyErr != nil {
 			log.Println("error attempting to generate api key : " + keyErr.Error() + "\n")

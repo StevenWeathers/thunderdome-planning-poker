@@ -49,6 +49,7 @@ func (s *server) routes() {
 		SecureCookieFlag:   viper.GetBool("http.secure_cookie"),
 		PathPrefix:         s.config.PathPrefix,
 		ExternalAPIEnabled: s.config.ExternalAPIEnabled,
+		UserAPIKeyLimit:    s.config.UserAPIKeyLimit,
 		LdapEnabled:        s.config.LdapEnabled,
 	}
 	api.Init(apiConfig, s.router, s.database, s.email, s.cookie)
@@ -111,6 +112,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		CookieName            string
 		PathPrefix            string
 		ExternalAPIEnabled    bool
+		UserAPIKeyLimit       int
 		CleanupGuestsDaysOld  int
 		CleanupBattlesDaysOld int
 		ShowActiveCountries   bool
@@ -137,6 +139,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		DefaultLocale:         viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:       viper.GetBool("config.friendly_ui_verbs"),
 		ExternalAPIEnabled:    s.config.ExternalAPIEnabled,
+		UserAPIKeyLimit:       s.config.UserAPIKeyLimit,
 		AppVersion:            s.config.Version,
 		CookieName:            s.config.FrontendCookieName,
 		PathPrefix:            s.config.PathPrefix,
