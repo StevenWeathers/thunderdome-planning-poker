@@ -21,14 +21,17 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		a.respondWithJSON(w, http.StatusOK, &TeamResponse{
+		result := &TeamResponse{
 			Team:     Team,
 			TeamRole: TeamRole,
-		})
+		}
+
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, result, nil)
 	}
 }
 
@@ -40,15 +43,14 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			w.WriteHeader(http.StatusForbidden)
-			return
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 		}
 
 		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Organizations := a.db.TeamListByUser(UserID, Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Organizations)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Organizations, nil)
 	}
 }
 
@@ -61,7 +63,7 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 
 		Teams := a.db.TeamUserList(TeamID, Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Teams, nil)
 	}
 }
 
@@ -77,8 +79,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			w.WriteHeader(http.StatusForbidden)
-			return
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 		}
 
 		keyVal := a.getJSONRequestBody(r, w)
@@ -86,15 +87,16 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 		TeamName := keyVal["name"].(string)
 		TeamID, err := a.db.TeamCreate(UserID, TeamName)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		var NewTeam = &CreateTeamResponse{
 			TeamID: TeamID,
 		}
 
-		a.respondWithJSON(w, http.StatusOK, NewTeam)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, NewTeam, nil)
 	}
 }
 
@@ -110,17 +112,19 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, UserErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -133,11 +137,12 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 
 		err := a.db.TeamRemoveUser(TeamID, UserID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -150,7 +155,7 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 
 		Battles := a.db.TeamBattleList(TeamID, Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Battles)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Battles, nil)
 	}
 }
 
@@ -163,11 +168,12 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 
 		err := a.db.TeamRemoveBattle(TeamID, BattleID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -179,10 +185,11 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 
 		err := a.db.TeamDelete(TeamID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }

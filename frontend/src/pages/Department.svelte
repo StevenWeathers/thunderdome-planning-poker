@@ -65,10 +65,10 @@
         xfetch(`/api/organizations/${organizationId}/departments/${departmentId}`)
             .then(res => res.json())
             .then(function(result) {
-                department = result.department
-                organization = result.organization
-                organizationRole = result.organizationRole
-                departmentRole = result.departmentRole
+                department = result.data.department
+                organization = result.data.organization
+                organizationRole = result.data.organizationRole
+                departmentRole = result.data.departmentRole
 
                 getTeams()
                 getUsers()
@@ -85,7 +85,7 @@
         )
             .then(res => res.json())
             .then(function(result) {
-                teams = result
+                teams = result.data
             })
             .catch(function(error) {
                 notifications.danger($_('departmentTeamsGetError'))
@@ -99,7 +99,7 @@
         )
             .then(res => res.json())
             .then(function(result) {
-                users = result
+                users = result.data
             })
             .catch(function(error) {
                 notifications.danger($_('departmentUsersGetError'))

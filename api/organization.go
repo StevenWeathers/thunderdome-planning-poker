@@ -16,7 +16,8 @@ import (
 // @Param id path int false "the user ID to get organizations for"
 // @Param limit query int true "Max number of results to return"
 // @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Organization}
+// @Failure 403 object standardJsonResponse{}
 // @Router /users/{id}/organizations [get]
 func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -25,15 +26,14 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			w.WriteHeader(http.StatusForbidden)
-			return
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 		}
 
 		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Organizations := a.db.OrganizationListByUser(UserID, Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Organizations)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Organizations, nil)
 	}
 }
 
@@ -50,14 +50,17 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		a.respondWithJSON(w, http.StatusOK, &OrganizationResponse{
+		result := &OrganizationResponse{
 			Organization: Organization,
 			Role:         OrgRole,
-		})
+		}
+
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, result, nil)
 	}
 }
 
@@ -73,8 +76,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			w.WriteHeader(http.StatusForbidden)
-			return
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 		}
 
 		keyVal := a.getJSONRequestBody(r, w)
@@ -82,15 +84,16 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 		OrgName := keyVal["name"].(string)
 		OrgId, err := a.db.OrganizationCreate(UserID, OrgName)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		var NewOrg = &CreateOrgResponse{
 			OrganizationID: OrgId,
 		}
 
-		a.respondWithJSON(w, http.StatusOK, NewOrg)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, NewOrg, nil)
 	}
 }
 
@@ -103,7 +106,7 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 
 		Teams := a.db.OrganizationTeamList(OrgID, Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Teams, nil)
 	}
 }
 
@@ -116,7 +119,7 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 
 		Teams := a.db.OrganizationUserList(OrgID, Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Teams, nil)
 	}
 }
 
@@ -135,15 +138,16 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		TeamID, err := a.db.OrganizationTeamCreate(OrgID, TeamName)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		var NewTeam = &CreateTeamResponse{
 			TeamID: TeamID,
 		}
 
-		a.respondWithJSON(w, http.StatusOK, NewTeam)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, NewTeam, nil)
 	}
 }
 
@@ -159,17 +163,19 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, UserErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		_, err := a.db.OrganizationAddUser(OrgID, User.UserID, Role)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -182,11 +188,12 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 
 		err := a.db.OrganizationRemoveUser(OrgID, UserID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -207,22 +214,26 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		a.respondWithJSON(w, http.StatusOK, &TeamResponse{
+		result := &TeamResponse{
 			Organization:     Organization,
 			Team:             Team,
 			OrganizationRole: OrgRole,
 			TeamRole:         TeamRole,
-		})
+		}
+
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, result, nil)
 	}
 }
 
@@ -239,22 +250,25 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, UserErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		OrgRole, roleErr := a.db.OrganizationUserRole(User.UserID, OrgID)
 		if OrgRole == "" || roleErr != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, roleErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }

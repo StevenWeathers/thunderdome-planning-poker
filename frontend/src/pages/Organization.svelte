@@ -69,8 +69,8 @@
         xfetch(`/api/organizations/${organizationId}`)
             .then(res => res.json())
             .then(function(result) {
-                organization = result.organization
-                role = result.role
+                organization = result.data.organization
+                role = result.data.role
 
                 getDepartments()
                 getTeams()
@@ -88,7 +88,7 @@
         )
             .then(res => res.json())
             .then(function(result) {
-                departments = result
+                departments = result.data
             })
             .catch(function(error) {
                 notifications.danger($_('organizationGetDepartmentsError'))
@@ -102,7 +102,7 @@
         )
             .then(res => res.json())
             .then(function(result) {
-                teams = result
+                teams = result.data
             })
             .catch(function(error) {
                 notifications.danger($_('organizationGetTeamsError'))
@@ -116,7 +116,7 @@
         )
             .then(res => res.json())
             .then(function(result) {
-                users = result
+                users = result.data
             })
             .catch(function(error) {
                 notifications.danger($_('organizationGetUsersError'))
@@ -130,10 +130,10 @@
 
         xfetch(`/api/organizations/${organizationId}/departments`, { body })
             .then(res => res.json())
-            .then(function(department) {
+            .then(function(result) {
                 eventTag('create_department', 'engagement', 'success', () => {
                     router.route(
-                        `${appRoutes.organization}/${organizationId}/departments/${department.id}`,
+                        `${appRoutes.organization}/${organizationId}/departments/${result.data.id}`,
                     )
                 })
             })
@@ -150,13 +150,13 @@
 
         xfetch(`/api/organizations/${organizationId}/teams`, { body })
             .then(res => res.json())
-            .then(function(organization) {
+            .then(function() {
                 eventTag('create_organization_team', 'engagement', 'success')
                 toggleCreateTeam()
                 notifications.success($_('teamCreateSuccess'))
                 getTeams()
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('teamCreateError'))
                 eventTag('create_organization_team', 'engagement', 'failure')
             })

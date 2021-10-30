@@ -76,8 +76,8 @@
 
     xfetch(`/api/users/${$warrior.id}`)
         .then(res => res.json())
-        .then(function(wp) {
-            warriorProfile = wp
+        .then(function(result) {
+            warriorProfile = result.data
         })
         .catch(function(error) {
             notifications.danger($_('pages.warriorProfile.errorRetreiving'))

@@ -9,8 +9,8 @@
 
     xfetch('/api/active-countries')
         .then(res => res.json())
-        .then(function(acs) {
-            activeCountries = acs.sort()
+        .then(function(result) {
+            activeCountries = result.data.sort()
         })
         .catch(function() {
             eventTag('get_active_countries', 'engagement', 'failure')

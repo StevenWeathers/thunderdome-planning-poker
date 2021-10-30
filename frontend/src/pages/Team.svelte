@@ -75,16 +75,16 @@
         xfetch(teamPrefix)
             .then(res => res.json())
             .then(function(result) {
-                team = result.team
-                teamRole = result.teamRole
+                team = result.data.team
+                teamRole = result.data.teamRole
 
                 if (departmentId) {
-                    department = result.department
-                    departmentRole = result.departmentRole
+                    department = result.data.department
+                    departmentRole = result.data.departmentRole
                 }
                 if (organizationId) {
-                    organization = result.organization
-                    organizationRole = result.organizationRole
+                    organization = result.data.organization
+                    organizationRole = result.data.organizationRole
                 }
 
                 getBattles()
@@ -100,7 +100,7 @@
         xfetch(`${teamPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`)
             .then(res => res.json())
             .then(function(result) {
-                users = result
+                users = result.data
             })
             .catch(function(error) {
                 notifications.danger($_('teamGetUsersError'))
@@ -112,7 +112,7 @@
         xfetch(`${teamPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`)
             .then(res => res.json())
             .then(function(result) {
-                battles = result
+                battles = result.data
             })
             .catch(function(error) {
                 notifications.danger($_('teamGetBattlesError'))

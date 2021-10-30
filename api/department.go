@@ -8,13 +8,26 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type departmentTeamResponse struct {
+	Organization     *model.Organization `json:"organization"`
+	Department       *model.Department   `json:"department"`
+	Team             *model.Team         `json:"team"`
+	OrganizationRole string              `json:"organizationRole"`
+	DepartmentRole   string              `json:"departmentRole"`
+	TeamRole         string              `json:"teamRole"`
+}
+
+type createDepartmentTeamResponse struct {
+	TeamID string `json:"id"`
+}
+
 // handleGetOrganizationDepartments gets a list of departments associated to the organization
 // @Summary Get Departments
 // @Description get list of organizations departments
 // @Tags organization
 // @Produce  json
 // @Param orgId path int false "the organization ID to get departments for"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Department}
 // @Router /organizations/{orgId}/departments [get]
 func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -22,9 +35,9 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
-		Teams := a.db.OrganizationDepartmentList(OrgID, Limit, Offset)
+		Departments := a.db.OrganizationDepartmentList(OrgID, Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Departments, nil)
 	}
 }
 
@@ -35,7 +48,8 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path int false "the organization ID"
 // @Param departmentId path int false "the department ID to get"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=model.Department}
+// @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId} [get]
 func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 	type DepartmentResponse struct {
@@ -53,22 +67,26 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		a.respondWithJSON(w, http.StatusOK, &DepartmentResponse{
+		result := &DepartmentResponse{
 			Organization:     Organization,
 			Department:       Department,
 			OrganizationRole: OrgRole,
 			DepartmentRole:   DepartmentRole,
-		})
+		}
+
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, result, nil)
 	}
 }
 
@@ -78,7 +96,8 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param orgId path int false "the organization ID to create department for"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=model.Department}
+// @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments [post]
 func (a *api) handleCreateDepartment() http.HandlerFunc {
 	type CreateDepartmentResponse struct {
@@ -94,15 +113,16 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		DepartmentID, err := a.db.DepartmentCreate(OrgID, OrgName)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		var NewDepartment = &CreateDepartmentResponse{
 			DepartmentID: DepartmentID,
 		}
 
-		a.respondWithJSON(w, http.StatusOK, NewDepartment)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, NewDepartment, nil)
 	}
 }
 
@@ -113,7 +133,7 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path int false "the organization ID"
 // @Param departmentId path int false "the department ID to get teams for"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [get]
 func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +143,7 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 
 		Teams := a.db.DepartmentTeamList(DepartmentID, Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Teams, nil)
 	}
 }
 
@@ -134,7 +154,7 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path int false "the organization ID"
 // @Param departmentId path int false "the department ID"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.DepartmentUser}
 // @Router /organizations/{orgId}/departments/{departmentId}/users [get]
 func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -142,9 +162,9 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
-		Teams := a.db.DepartmentUserList(DepartmentID, Limit, Offset)
+		Users := a.db.DepartmentUserList(DepartmentID, Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Users, nil)
 	}
 }
 
@@ -155,12 +175,10 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path int false "the organization ID"
 // @Param departmentId path int false "the department ID"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=createDepartmentTeamResponse}
+// @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
 func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
-	type CreateTeamResponse struct {
-		TeamID string `json:"id"`
-	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		// UserID := r.Context().Value(contextKeyUserID).(string)
@@ -171,15 +189,16 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		TeamID, err := a.db.DepartmentTeamCreate(DepartmentID, TeamName)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		var NewTeam = &CreateTeamResponse{
+		var NewTeam = &createDepartmentTeamResponse{
 			TeamID: TeamID,
 		}
 
-		a.respondWithJSON(w, http.StatusOK, NewTeam)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, NewTeam, nil)
 	}
 }
 
@@ -190,7 +209,8 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path int false "the organization ID"
 // @Param departmentId path int false "the department ID"
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/users [post]
 func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -203,17 +223,19 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, UserErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		_, err := a.db.DepartmentAddUser(DepartmentId, User.UserID, Role)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -225,7 +247,8 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 // @Param orgId path int false "the organization ID"
 // @Param departmentId path int false "the department ID"
 // @Param userId path int false "the user ID"
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/users/{userId} [delete]
 func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -235,11 +258,12 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 
 		err := a.db.DepartmentRemoveUser(DepartmentID, UserID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -251,7 +275,8 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 // @Param orgId path int false "the organization ID"
 // @Param departmentId path int false "the department ID"
 // @Param teamId path int false "the team ID"
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users [post]
 func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -266,23 +291,26 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, UserErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		_, DepartmentRole, roleErr := a.db.DepartmentUserRole(User.UserID, OrgID, DepartmentID)
 		if DepartmentRole == "" || roleErr != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, roleErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -294,17 +322,10 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 // @Param orgId path int false "the organization ID"
 // @Param departmentId path int false "the department ID"
 // @Param teamId path int false "the team ID"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=departmentTeamResponse}
+// @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId} [get]
 func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
-	type TeamResponse struct {
-		Organization     *model.Organization `json:"organization"`
-		Department       *model.Department   `json:"department"`
-		Team             *model.Team         `json:"team"`
-		OrganizationRole string              `json:"organizationRole"`
-		DepartmentRole   string              `json:"departmentRole"`
-		TeamRole         string              `json:"teamRole"`
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
 		DepartmentRole := r.Context().Value(contextKeyDepartmentRole).(string)
@@ -316,29 +337,34 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		a.respondWithJSON(w, http.StatusOK, &TeamResponse{
+		result := &departmentTeamResponse{
 			Organization:     Organization,
 			Department:       Department,
 			Team:             Team,
 			OrganizationRole: OrgRole,
 			DepartmentRole:   DepartmentRole,
 			TeamRole:         TeamRole,
-		})
+		}
+
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, result, nil)
 	}
 }

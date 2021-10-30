@@ -37,7 +37,7 @@
         xfetch(`/api/users/${$warrior.id}/organizations?limit=${organizationsPageLimit}&offset=${orgsOffset}`)
             .then(res => res.json())
             .then(function(result) {
-                organizations = result
+                organizations = result.data
             })
             .catch(function(error) {
                 notifications.danger('Error getting organizations')
@@ -49,7 +49,7 @@
         xfetch(`/api/users/${$warrior.id}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`)
             .then(res => res.json())
             .then(function(result) {
-                teams = result
+                teams = result.data
             })
             .catch(function(error) {
                 notifications.danger('Error getting teams')
@@ -63,9 +63,9 @@
 
         xfetch(`/api/users/${$warrior.id}/organizations`, { body })
             .then(res => res.json())
-            .then(function(organization) {
+            .then(function(result) {
                 eventTag('create_organization', 'engagement', 'success', () => {
-                    router.route(`${appRoutes.organization}/${organization.id}`)
+                    router.route(`${appRoutes.organization}/${result.data.id}`)
                 })
             })
             .catch(function(error) {
@@ -81,9 +81,9 @@
 
         xfetch(`/api/users/${$warrior.id}/teams`, { body })
             .then(res => res.json())
-            .then(function(team) {
+            .then(function(result) {
                 eventTag('create_team', 'engagement', 'success', () => {
-                    router.route(`${appRoutes.team}/${team.id}`)
+                    router.route(`${appRoutes.team}/${result.data.id}`)
                 })
             })
             .catch(function(error) {
