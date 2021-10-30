@@ -36,6 +36,15 @@ docker pull stevenweathers/thunderdome-planning-poker
 - [Contributing Guide](docs/CONTRIBUTING.md)
 - [Developing Guide](docs/DEVELOPING.md) for setting up local development
 
+# Upgrading from v1 to v2 major release
+
+If you're currently running a 1.x.x release version of Thunderdome you will need to do the following before running a 2.x.x release version.  If you're creating a fresh instance of Thunderdome you can ignore this section.
+
+- Review the completely rewritten APIs if you're using the API feature to integrate with Thunderdome.
+- Run the latest available 1.x.x release, this will run any SQL migrations that levelset the SQL schema for 2.x.x.
+- Run latest available 2.x.x release, this will run any SQL migrations since 2.0.0, however will not run any 1.x.x migrations.
+- Update any integrations using the APIs as they have been completely rewritten.
+
 # Donations
 
 For those who would like to donate a small amount for my efforts or monthly hosting costs of Thunderdome.dev I accept paypal.
