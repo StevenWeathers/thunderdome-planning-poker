@@ -18,6 +18,8 @@ builds:
     goarch:
       - amd64
       - arm64
+universal_binaries:
+  - replace: true
 dockers:
     - image_templates: 
       - "stevenweathers/{{.ProjectName}}:{{ .Tag }}-amd64"
