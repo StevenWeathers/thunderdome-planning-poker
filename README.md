@@ -196,7 +196,7 @@ DB_NAME=
 
 ### Install dependencies
 ```
-go get
+go mod download
 go install github.com/swaggo/swag/cmd/swag@latest
 npm install
 ```
