@@ -17,9 +17,6 @@
     const registrationAllowed = appConfig.AllowRegistration
 
     let warriorName = $warrior.name || ''
-    let warriorEmail = ''
-    let warriorPassword1 = ''
-    let warriorPassword2 = ''
 
     $: targetPage = battleId
         ? `${appRoutes.battle}/${battleId}`
@@ -42,7 +39,8 @@
         if (noFormErrors) {
             xfetch('/api/auth/guest', { body })
                 .then(res => res.json())
-                .then(function(newWarrior) {
+                .then(function(result) {
+                    const newWarrior = result.data
                     warrior.create({
                         id: newWarrior.id,
                         name: newWarrior.name,
@@ -78,7 +76,8 @@
 
         xfetch('/api/auth/register', { body })
             .then(res => res.json())
-            .then(function(newWarrior) {
+            .then(function(result) {
+                const newWarrior = result.data
                 warrior.create({
                     id: newWarrior.id,
                     name: newWarrior.name,

@@ -217,15 +217,6 @@ func (a *api) getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[str
 	return keyVal
 }
 
-// respondWithJSON takes a payload and writes the response
-func (a *api) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(response)
-}
-
 // respondWithStandardJSON takes a result and writes the response
 func (a *api) respondWithStandardJSON(w http.ResponseWriter, code int, success bool, errors []string, data interface{}, meta interface{}) {
 	result := &standardJsonResponse{

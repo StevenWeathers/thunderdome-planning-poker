@@ -27,6 +27,7 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 
 		if UserID != AuthedUserID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
@@ -53,6 +54,7 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		result := &OrganizationResponse{
@@ -77,6 +79,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 
 		if UserID != AuthedUserID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		keyVal := a.getJSONRequestBody(r, w)
@@ -87,6 +90,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		var NewOrg = &CreateOrgResponse{
@@ -141,6 +145,7 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		var NewTeam = &CreateTeamResponse{
@@ -166,6 +171,7 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, UserErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		_, err := a.db.OrganizationAddUser(OrgID, User.UserID, Role)
@@ -173,6 +179,7 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -191,6 +198,7 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -217,6 +225,7 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		Team, err := a.db.TeamGet(TeamID)
@@ -224,6 +233,7 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		result := &TeamResponse{
@@ -253,6 +263,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, UserErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		OrgRole, roleErr := a.db.OrganizationUserRole(User.UserID, OrgID)
@@ -260,6 +271,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, roleErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
@@ -267,6 +279,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)

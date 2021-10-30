@@ -70,6 +70,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
@@ -77,6 +78,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		result := &DepartmentResponse{
@@ -116,6 +118,7 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		var NewDepartment = &CreateDepartmentResponse{
@@ -192,6 +195,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		var NewTeam = &createDepartmentTeamResponse{
@@ -226,6 +230,7 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, UserErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		_, err := a.db.DepartmentAddUser(DepartmentId, User.UserID, Role)
@@ -233,6 +238,7 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -261,6 +267,7 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -294,6 +301,7 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, UserErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		_, DepartmentRole, roleErr := a.db.DepartmentUserRole(User.UserID, OrgID, DepartmentID)
@@ -301,6 +309,7 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, roleErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
@@ -308,6 +317,7 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -340,6 +350,7 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
@@ -347,6 +358,7 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		Team, err := a.db.TeamGet(TeamID)
@@ -354,6 +366,7 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		result := &departmentTeamResponse{

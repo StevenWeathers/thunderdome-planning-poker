@@ -28,12 +28,14 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 
 		if UserID != AuthedUserID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		battles, err := a.db.GetBattlesByUser(UserID)
 
 		if err != nil {
 			a.respondWithStandardJSON(w, http.StatusNotFound, false, nil, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, battles, nil)
@@ -61,6 +63,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		if UserID != AuthedUserID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
@@ -69,6 +72,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, bodyErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		var keyVal struct {
@@ -86,6 +90,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		// when battleLeaders array is passed add additional leaders to battle
@@ -119,6 +124,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 					errors := make([]string, 0)
 					errors = append(errors, err.Error())
 					a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+					return
 				}
 			}
 		}

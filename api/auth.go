@@ -32,9 +32,9 @@ type UserPassword struct {
 // @Description *Endpoint only available when LDAP is not enabled
 // @Tags auth
 // @Produce  json
-// @Success 200
-// @Failure 401
-// @Failure 500
+// @Success 200 object standardJsonResponse{data=model.User}
+// @Failure 401 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /auth [post]
 func (a *api) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +44,7 @@ func (a *api) handleLogin() http.HandlerFunc {
 
 		authedUser, err := a.authUserDatabase(UserEmail, UserPassword)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
 			return
 		}
 
@@ -52,12 +52,11 @@ func (a *api) handleLogin() http.HandlerFunc {
 		if cookie != nil {
 			http.SetCookie(w, cookie)
 		} else {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, nil, nil, nil)
 			return
 		}
 
-		a.respondWithJSON(w, http.StatusOK, authedUser)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, authedUser, nil)
 	}
 }
 
@@ -68,9 +67,9 @@ func (a *api) handleLogin() http.HandlerFunc {
 // @Description *Endpoint only available when LDAP is enabled
 // @Tags auth
 // @Produce  json
-// @Success 200
-// @Failure 401
-// @Failure 500
+// @Success 200 object standardJsonResponse{data=model.User}
+// @Failure 401 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /auth/ldap [post]
 func (a *api) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +79,7 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 
 		authedUser, err := a.authAndCreateUserLdap(UserEmail, UserPassword)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
 			return
 		}
 
@@ -88,11 +87,10 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 		if cookie != nil {
 			http.SetCookie(w, cookie)
 		} else {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, nil, nil, nil)
 			return
 		}
-		a.respondWithJSON(w, http.StatusOK, authedUser)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, authedUser, nil)
 	}
 }
 
@@ -113,13 +111,15 @@ func (a *api) handleLogout() http.HandlerFunc {
 // @Summary Create Guest User
 // @Description Registers a user as a guest (non authenticated)
 // @Tags auth
-// @Success 200
+// @Success 200 object standardJsonResponse{data=model.User}
+// @Failure 400 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /auth/guest [post]
 func (a *api) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
 		if !AllowGuests {
-			w.WriteHeader(http.StatusBadRequest)
+			a.respondWithStandardJSON(w, http.StatusBadRequest, false, nil, nil, nil)
 			return
 		}
 
@@ -129,13 +129,15 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 
 		newUser, err := a.db.CreateUserGuest(UserName)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 			return
 		}
 
 		a.createUserCookie(w, false, newUser.UserID)
 
-		a.respondWithJSON(w, http.StatusOK, newUser)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, newUser, nil)
 	}
 }
 
@@ -143,14 +145,15 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 // @Summary Create User
 // @Description Registers a user (authenticated)
 // @Tags auth
-// @Success 200
+// @Success 200 object standardJsonResponse{data=model.User}
+// @Failure 400 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /auth/register [post]
 func (a *api) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
 		if !AllowRegistration {
-			w.WriteHeader(http.StatusBadRequest)
-			return
+			a.respondWithStandardJSON(w, http.StatusBadRequest, false, nil, nil, nil)
 		}
 
 		keyVal := a.getJSONRequestBody(r, w)
@@ -165,13 +168,17 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 		)
 
 		if accountErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			errors := make([]string, 0)
+			errors = append(errors, accountErr.Error())
+			a.respondWithStandardJSON(w, http.StatusBadRequest, false, errors, nil, nil)
 			return
 		}
 
 		newUser, VerifyID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 			return
 		}
 
@@ -179,7 +186,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 
 		a.email.SendWelcome(UserName, UserEmail, VerifyID)
 
-		a.respondWithJSON(w, http.StatusOK, newUser)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, newUser, nil)
 	}
 }
 
@@ -187,7 +194,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 // @Summary Forgot Password
 // @Description Sends a forgot password reset email to user
 // @Tags auth
-// @Success 200
+// @Success 200 object standardJsonResponse{}
 // @Router /auth/forgot-password [post]
 func (a *api) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -197,10 +204,10 @@ func (a *api) handleForgotPassword() http.HandlerFunc {
 		ResetID, UserName, resetErr := a.db.UserResetRequest(UserEmail)
 		if resetErr == nil {
 			a.email.SendForgotPassword(UserName, UserEmail, ResetID)
+			return
 		}
 
-		w.WriteHeader(http.StatusOK)
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -208,7 +215,9 @@ func (a *api) handleForgotPassword() http.HandlerFunc {
 // @Summary Reset Password
 // @Description Resets the users password
 // @Tags auth
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Success 400 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
 // @Router /auth/reset-password [patch]
 func (a *api) handleResetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -221,20 +230,22 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 		)
 
 		if passwordErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			a.respondWithStandardJSON(w, http.StatusBadRequest, false, nil, nil, nil)
 			return
 		}
 
 		UserName, UserEmail, resetErr := a.db.UserResetPassword(ResetID, UserPassword)
 		if resetErr != nil {
 			log.Println("error attempting to reset user password : " + resetErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
+			errors := make([]string, 0)
+			errors = append(errors, resetErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 			return
 		}
 
 		a.email.SendPasswordReset(UserName, UserEmail)
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -242,7 +253,9 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 // @Summary Update Password
 // @Description Updates the users password
 // @Tags auth
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Success 400 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
 // @Router /auth/update-password [patch]
 func (a *api) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -255,20 +268,22 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 		)
 
 		if passwordErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			a.respondWithStandardJSON(w, http.StatusBadRequest, false, nil, nil, nil)
 			return
 		}
 
 		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(UserID, UserPassword)
 		if updateErr != nil {
 			log.Println("error attempting to update user password : " + updateErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
+			errors := make([]string, 0)
+			errors = append(errors, updateErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 			return
 		}
 
 		a.email.SendPasswordUpdate(UserName, UserEmail)
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -276,7 +291,8 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 // @Summary Verify User
 // @Description Updates the users verified email status
 // @Tags auth
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
 // @Router /auth/verify [patch]
 func (a *api) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -286,11 +302,13 @@ func (a *api) handleAccountVerification() http.HandlerFunc {
 		verifyErr := a.db.VerifyUserAccount(VerifyID)
 		if verifyErr != nil {
 			log.Println("error attempting to verify user account : " + verifyErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
+			errors := make([]string, 0)
+			errors = append(errors, verifyErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 			return
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 

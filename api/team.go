@@ -24,6 +24,7 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		result := &TeamResponse{
@@ -44,6 +45,7 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 
 		if UserID != AuthedUserID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
@@ -80,6 +82,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 
 		if UserID != AuthedUserID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		keyVal := a.getJSONRequestBody(r, w)
@@ -90,6 +93,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		var NewTeam = &CreateTeamResponse{
@@ -115,6 +119,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, UserErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
@@ -122,6 +127,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -140,6 +146,7 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -171,6 +178,7 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -188,6 +196,7 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)

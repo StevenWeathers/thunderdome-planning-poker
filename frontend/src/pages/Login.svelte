@@ -33,7 +33,8 @@
 
         xfetch(authEndpoint, { body })
             .then(res => res.json())
-            .then(function(newWarrior) {
+            .then(function(result) {
+                const newWarrior = result.data
                 warrior.create({
                     id: newWarrior.id,
                     name: newWarrior.name,

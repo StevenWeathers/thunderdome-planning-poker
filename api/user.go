@@ -25,6 +25,7 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 
 		if UserID != UserCookieID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		User, UserErr := a.db.GetUser(UserID)
@@ -33,6 +34,7 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, UserErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, User, nil)
@@ -65,6 +67,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		updateErr := a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
@@ -73,6 +76,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, updateErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		user, UserErr := a.db.GetUser(UserID)
@@ -81,6 +85,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, UserErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, user, nil)
@@ -105,6 +110,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		User, UserErr := a.db.GetUser(UserID)
@@ -113,6 +119,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, UserErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		updateErr := a.db.DeleteUser(UserID)
@@ -121,6 +128,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, updateErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
@@ -146,6 +154,7 @@ func (a *api) handleGetActiveCountries() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		w.Header().Set("Cache-Control", "max-age=3600") // cache for 1 hour just to decrease load

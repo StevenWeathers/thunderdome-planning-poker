@@ -69,6 +69,7 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		ActiveAlerts = a.db.GetActiveAlerts()
@@ -103,6 +104,7 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		ActiveAlerts = a.db.GetActiveAlerts()
@@ -130,6 +132,7 @@ func (a *api) handleAlertDelete() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		ActiveAlerts = a.db.GetActiveAlerts()

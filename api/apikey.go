@@ -25,6 +25,7 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
@@ -33,6 +34,7 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, keysErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, APIKeys, nil)
@@ -59,6 +61,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 
 		APIKey, keyErr := a.db.GenerateAPIKey(UserID, APIKeyName)
@@ -67,6 +70,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, keyErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, APIKey, nil)
@@ -92,6 +96,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 		APK := vars["keyID"]
 		keyVal := a.getJSONRequestBody(r, w)
@@ -103,6 +108,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, keysErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, APIKeys, nil)
@@ -128,6 +134,7 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
 			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			return
 		}
 		APK := vars["keyID"]
 
@@ -137,6 +144,7 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, keysErr.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, APIKeys, nil)

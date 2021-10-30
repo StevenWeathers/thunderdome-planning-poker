@@ -24,6 +24,7 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -47,6 +48,7 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
@@ -68,6 +70,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		log.Println("Lowercased", len(lowercasedUsers), "user emails")
@@ -80,6 +83,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 			errors := make([]string, 0)
 			errors = append(errors, err.Error())
 			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			return
 		}
 
 		log.Println("Merged", len(mergedUsers), "user accounts")
