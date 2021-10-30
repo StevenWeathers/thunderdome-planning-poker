@@ -15,19 +15,27 @@ var ActiveAlerts []interface{}
 // @Produce  json
 // @Param limit query int true "Max number of results to return"
 // @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Alert}
+// @Failure 500 object standardJsonResponse{}
 // @Router /alerts [get]
 func (a *api) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
-
-		Alerts, err := a.db.AlertsList(Limit, Offset)
+		Alerts, Count, err := a.db.AlertsList(Limit, Offset)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 			return
 		}
 
-		a.respondWithJSON(w, http.StatusOK, Alerts)
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Alerts, Meta)
 	}
 }
 
@@ -42,7 +50,8 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 // @Param active body boolean false "Whether alert should be displayed or not"
 // @Param allowDismiss body boolean false "Whether or not to allow users to dismiss the alert"
 // @Param registeredOnly body boolean false "Whether or not to only show to users with an active session"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
+// @Failure 500 object standardJsonResponse{}
 // @Router /alerts [post]
 func (a *api) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -57,13 +66,14 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 
 		err := a.db.AlertsCreate(Name, Type, Content, Active, AllowDismiss, RegisteredOnly)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		ActiveAlerts = a.db.GetActiveAlerts()
 
-		a.respondWithJSON(w, http.StatusOK, ActiveAlerts)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, ActiveAlerts, nil)
 	}
 }
 
@@ -72,7 +82,8 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Description Updates an Alert
 // @Tags alert
 // @Produce  json
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
+// @Failure 500 object standardJsonResponse{}
 // @Router /alerts/{id} [put]
 func (a *api) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -89,13 +100,14 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 
 		err := a.db.AlertsUpdate(ID, Name, Type, Content, Active, AllowDismiss, RegisteredOnly)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		ActiveAlerts = a.db.GetActiveAlerts()
 
-		a.respondWithJSON(w, http.StatusOK, ActiveAlerts)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, ActiveAlerts, nil)
 	}
 }
 
@@ -105,7 +117,8 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 // @Tags alert
 // @Produce  json
 // @Param id path int false "the alert ID to delete"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
+// @Failure 500 object standardJsonResponse{}
 // @Router /alerts/{id} [delete]
 func (a *api) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -114,12 +127,13 @@ func (a *api) handleAlertDelete() http.HandlerFunc {
 
 		err := a.db.AlertDelete(AlertID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		ActiveAlerts = a.db.GetActiveAlerts()
 
-		a.respondWithJSON(w, http.StatusOK, ActiveAlerts)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, ActiveAlerts, nil)
 	}
 }

@@ -40,8 +40,18 @@ func (d *Database) GetActiveAlerts() []interface{} {
 }
 
 // AlertsList gets alerts from db for admin listing
-func (d *Database) AlertsList(Limit int, Offset int) ([]interface{}, error) {
-	Alerts := make([]interface{}, 0)
+func (d *Database) AlertsList(Limit int, Offset int) ([]*model.Alert, int, error) {
+	Alerts := make([]*model.Alert, 0)
+	var AlertCount int
+
+	e := d.db.QueryRow(
+		"SELECT COUNT(*) FROM alert;",
+	).Scan(
+		&AlertCount,
+	)
+	if e != nil {
+		log.Println(e)
+	}
 
 	rows, err := d.db.Query(
 		`SELECT id, name, type, content, active, allow_dismiss, registered_only, created_date, updated_date
@@ -70,14 +80,14 @@ func (d *Database) AlertsList(Limit int, Offset int) ([]interface{}, error) {
 				&a.UpdatedDate,
 			); err != nil {
 				log.Println(err)
-				return nil, err
+				return nil, AlertCount, err
 			} else {
 				Alerts = append(Alerts, &a)
 			}
 		}
 	}
 
-	return Alerts, err
+	return Alerts, AlertCount, err
 }
 
 // AlertsCreate creates

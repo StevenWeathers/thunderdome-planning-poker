@@ -16,6 +16,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// ApiConfig config values used by the APIs
 type ApiConfig struct {
 	// the domain of the application for cookie securing
 	AppDomain string
@@ -39,6 +40,21 @@ type api struct {
 	email  *email.Email
 	cookie *securecookie.SecureCookie
 	db     *database.Database
+}
+
+// standardJsonResponse structure used for all restful APIs response body
+type standardJsonResponse struct {
+	Success bool        `json:"success"`
+	Errors  []string    `json:"errors" swaggertype:"array,string"`
+	Data    interface{} `json:"data" swaggertype:"object"`
+	Meta    interface{} `json:"meta" swaggertype:"object"`
+}
+
+// pagination meta structure for query result pagination
+type pagination struct {
+	Count  int `json:"count"`
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
 }
 
 type contextKey string
@@ -204,6 +220,34 @@ func (a *api) getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[str
 // respondWithJSON takes a payload and writes the response
 func (a *api) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
+}
+
+// respondWithStandardJSON takes a result and writes the response
+func (a *api) respondWithStandardJSON(w http.ResponseWriter, code int, success bool, errors []string, data interface{}, meta interface{}) {
+	result := &standardJsonResponse{
+		Success: success,
+		Errors:  make([]string, 0),
+		Data:    map[string]interface{}{},
+		Meta:    map[string]interface{}{},
+	}
+
+	if errors != nil {
+		result.Errors = errors
+	}
+
+	if meta != nil {
+		result.Meta = meta
+	}
+
+	if data != nil {
+		result.Data = data
+	}
+
+	response, _ := json.Marshal(result)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)

@@ -16,8 +16,8 @@
     export let notifications
     export let eventTag
 
-    const alertCount = 1 // temporarily disabled
-    const alertsPageLimit = 1000
+    const alertsPageLimit = 25
+    let alertCount = 0
 
     const defaultAlert = {
         id: '',
@@ -67,7 +67,7 @@
             .then(function(result) {
                 eventTag('admin_create_alert', 'engagement', 'success')
 
-                activeAlerts.update(result)
+                activeAlerts.update(result.data)
                 getAlerts()
                 toggleCreateAlert()
                 notifications.success('Alert created successfully.')
@@ -84,7 +84,7 @@
             .then(function(result) {
                 eventTag('admin_update_alert', 'engagement', 'success')
 
-                activeAlerts.update(result)
+                activeAlerts.update(result.data)
                 getAlerts()
                 toggleUpdateAlert({ ...defaultAlert })()
                 notifications.success('Alert updating successfully.')
@@ -100,7 +100,8 @@
         xfetch(`/api/alerts?limit=${alertsPageLimit}&offset=${alertsOffset}`)
             .then(res => res.json())
             .then(function(result) {
-                alerts = result
+                alerts = result.data
+                alertCount = result.meta.count
             })
             .catch(function(error) {
                 notifications.danger('Error getting alerts')
@@ -112,7 +113,7 @@
             .then(res => res.json())
             .then(function(result) {
                 eventTag('admin_delete_alert', 'engagement', 'success')
-                activeAlerts.update(result)
+                activeAlerts.update(result.data)
                 getAlerts()
                 toggleDeleteAlert(null)()
                 notifications.success('Alert deleted successfully.')
