@@ -35,7 +35,7 @@
         xfetch('/api/admin/stats')
             .then(res => res.json())
             .then(function(result) {
-                appStats = result
+                appStats = result.data
             })
             .catch(function(error) {
                 notifications.danger('Error getting application stats')

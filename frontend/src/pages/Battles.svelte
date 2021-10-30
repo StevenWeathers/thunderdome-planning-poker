@@ -20,8 +20,8 @@
 
     xfetch(`/api/users/${$warrior.id}/battles`)
         .then(res => res.json())
-        .then(function(bs) {
-            battles = bs
+        .then(function(result) {
+            battles = result.data
         })
         .catch(function(error) {
             notifications.danger($_('pages.myBattles.battlesError'))

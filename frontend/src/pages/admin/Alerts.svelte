@@ -29,16 +29,6 @@
         allowDismiss: '',
     }
 
-    let appStats = {
-        unregisteredUserCount: 0,
-        registeredUserCount: 0,
-        battleCount: 0,
-        planCount: 0,
-        organizationCount: 0,
-        departmentCount: 0,
-        teamCount: 0,
-        alertCount: 0,
-    }
     let alerts = []
     let alertsPage = 1
     let showAlertCreate = false

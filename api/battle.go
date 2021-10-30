@@ -16,7 +16,9 @@ import (
 // @Tags battle
 // @Produce  json
 // @Param id path int false "the user ID to get battles for"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Battle}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 404 object standardJsonResponse{}
 // @Router /users/{id}/battles [get]
 func (a *api) handleBattlesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -25,18 +27,16 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			w.WriteHeader(http.StatusForbidden)
-			return
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 		}
 
 		battles, err := a.db.GetBattlesByUser(UserID)
 
 		if err != nil {
-			http.NotFound(w, r)
-			return
+			a.respondWithStandardJSON(w, http.StatusNotFound, false, nil, nil, nil)
 		}
 
-		a.respondWithJSON(w, http.StatusOK, battles)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, battles, nil)
 	}
 }
 
@@ -49,7 +49,9 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 // @Tags battle
 // @Produce  json
 // @Param id path int false "the user ID"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=model.Battle}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /users/{id}/battles [post]
 func (a *api) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -58,15 +60,15 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			w.WriteHeader(http.StatusForbidden)
-			return
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
 			log.Println("error in reading request body: " + bodyErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, bodyErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		var keyVal struct {
@@ -81,8 +83,9 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		newBattle, err := a.db.CreateBattle(UserID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting, keyVal.PointAverageRounding)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		// when battleLeaders array is passed add additional leaders to battle
@@ -113,12 +116,13 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 				err := a.db.TeamAddBattle(TeamID, newBattle.BattleID)
 
 				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-					return
+					errors := make([]string, 0)
+					errors = append(errors, err.Error())
+					a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 				}
 			}
 		}
 
-		a.respondWithJSON(w, http.StatusOK, newBattle)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, newBattle, nil)
 	}
 }

@@ -173,8 +173,8 @@
     function getApiKeys() {
         xfetch(`/api/users/${$warrior.id}/apikeys`)
             .then(res => res.json())
-            .then(function(apks) {
-                apiKeys = apks
+            .then(function(result) {
+                apiKeys = result.data
             })
             .catch(function(error) {
                 notifications.danger(
@@ -193,11 +193,11 @@
                 method: 'DELETE',
             })
                 .then(res => res.json())
-                .then(function(apks) {
+                .then(function(result) {
                     notifications.success(
                         $_('pages.warriorProfile.apiKeys.deleteSuccess'),
                     )
-                    apiKeys = apks
+                    apiKeys = result.data
                 })
                 .catch(function(error) {
                     notifications.danger(
@@ -218,11 +218,11 @@
                 method: 'PUT',
             })
                 .then(res => res.json())
-                .then(function(apks) {
+                .then(function(result) {
                     notifications.success(
                         $_('pages.warriorProfile.apiKeys.updateSuccess'),
                     )
-                    apiKeys = apks
+                    apiKeys = result.data
                 })
                 .catch(function(error) {
                     notifications.danger(

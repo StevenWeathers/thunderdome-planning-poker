@@ -29,11 +29,11 @@
             name: keyName,
         }
 
-        xfetch(`/api/users/${$warrior.id}/apikey`, { body })
+        xfetch(`/api/users/${$warrior.id}/apikeys`, { body })
             .then(res => res.json())
-            .then(function(apk) {
+            .then(function(result) {
                 handleApiKeyCreate()
-                apiKey = apk.apiKey
+                apiKey = result.data.apiKey
                 eventTag('create_api_key', 'engagement', 'success')
             })
             .catch(function(error) {

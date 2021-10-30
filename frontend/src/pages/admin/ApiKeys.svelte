@@ -32,7 +32,7 @@
         xfetch('/api/admin/stats')
             .then(res => res.json())
             .then(function(result) {
-                appStats = result
+                appStats = result.data
             })
             .catch(function(error) {
                 notifications.danger('Error getting application stats')
@@ -44,7 +44,7 @@
         xfetch(`/api/admin/apikeys?limit=${apikeysPageLimit}&offset=${apikeysOffset}`)
             .then(res => res.json())
             .then(function(result) {
-                apikeys = result
+                apikeys = result.data
             })
             .catch(function(error) {
                 notifications.danger('Error getting apikeys')

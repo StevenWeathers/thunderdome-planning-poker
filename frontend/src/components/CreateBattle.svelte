@@ -76,7 +76,8 @@
 
         xfetch(`${apiPrefix}/users/${$warrior.id}/battles`, { body })
             .then(res => res.json())
-            .then(function(battle) {
+            .then(function(result) {
+                const battle = result.data
                 eventTag('create_battle', 'engagement', 'success', () => {
                     router.route(`${appRoutes.battle}/${battle.id}`)
                 })

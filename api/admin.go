@@ -13,15 +13,16 @@ import (
 // @Description get application stats such as count of registered warriors
 // @Tags admin
 // @Produce  json
-// @Success 200 {object} model.ApplicationStats
-// @Failure 500
+// @Success 200 object standardJsonResponse{data=[]model.ApplicationStats}
+// @Failure 500 object standardJsonResponse{}
 // @Router /admin/stats [get]
 func (a *api) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AppStats, err := a.db.GetAppStats()
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		ActiveBattleUserCount := 0
@@ -32,7 +33,7 @@ func (a *api) handleAppStats() http.HandlerFunc {
 		AppStats.ActiveBattleCount = len(h.arenas)
 		AppStats.ActiveBattleUserCount = ActiveBattleUserCount
 
-		a.respondWithJSON(w, http.StatusOK, AppStats)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, AppStats, nil)
 	}
 }
 
@@ -43,7 +44,7 @@ func (a *api) handleAppStats() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int true "Max number of results to return"
 // @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.User}
 // @Router /admin/users [get]
 func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +52,7 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 
 		Users := a.db.GetRegisteredUsers(Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Users)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Users, nil)
 	}
 }
 
@@ -60,7 +61,9 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 // @Description Create a registered user
 // @Tags admin
 // @Produce  json
-// @Success 200
+// @Success 200 object standardJsonResponse{data=model.User}
+// @Failure 400 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /admin/users [post]
 func (a *api) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -74,19 +77,21 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 		)
 
 		if accountErr != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, accountErr.Error())
+			a.respondWithStandardJSON(w, http.StatusBadRequest, false, errors, nil, nil)
 		}
 
 		newUser, VerifyID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, "")
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		a.email.SendWelcome(UserName, UserEmail, VerifyID)
 
-		a.respondWithJSON(w, http.StatusOK, newUser)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, newUser, nil)
 	}
 }
 
@@ -96,7 +101,8 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 // @Tags admin
 // @Produce  json
 // @Param id path int false "the user ID to delete"
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /admin/users/{id} [delete]
 func (a *api) handleAdminUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -106,20 +112,22 @@ func (a *api) handleAdminUserDelete() http.HandlerFunc {
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
 			log.Println("error finding user : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, UserErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		updateErr := a.db.DeleteUser(UserID)
 		if updateErr != nil {
 			log.Println("error attempting to delete user : " + updateErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, updateErr.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
 		a.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -130,7 +138,8 @@ func (a *api) handleAdminUserDelete() http.HandlerFunc {
 // @Tags admin
 // @Produce  json
 // @Param id path int false "the user ID to promote"
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /admin/users/{id}/promote/ [patch]
 func (a *api) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -139,11 +148,12 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 
 		err := a.db.PromoteUser(UserID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -153,7 +163,8 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 // @Tags admin
 // @Produce  json
 // @Param id path int false "the user ID to demote"
-// @Success 200
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
 // @Router /admin/users/{id}/demote [patch]
 func (a *api) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -162,11 +173,12 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 
 		err := a.db.DemoteUser(UserID)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+			errors := make([]string, 0)
+			errors = append(errors, err.Error())
+			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
 		}
 
-		return
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
 	}
 }
 
@@ -177,7 +189,8 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int true "Max number of results to return"
 // @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Organization}
+// @Failure 500 object standardJsonResponse{}
 // @Router /admin/organizations [get]
 func (a *api) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -185,7 +198,7 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 
 		Organizations := a.db.OrganizationList(Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Organizations)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Organizations, nil)
 	}
 }
 
@@ -196,7 +209,8 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int true "Max number of results to return"
 // @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Failure 500 object standardJsonResponse{}
 // @Router /admin/teams [get]
 func (a *api) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -204,7 +218,7 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 
 		Teams := a.db.TeamList(Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Teams, nil)
 	}
 }
 
@@ -215,7 +229,8 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int true "Max number of results to return"
 // @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200
+// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Failure 500 object standardJsonResponse{}
 // @Router /admin/apikeys [get]
 func (a *api) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -223,6 +238,6 @@ func (a *api) handleGetAPIKeys() http.HandlerFunc {
 
 		Teams := a.db.GetAPIKeys(Limit, Offset)
 
-		a.respondWithJSON(w, http.StatusOK, Teams)
+		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Teams, nil)
 	}
 }
