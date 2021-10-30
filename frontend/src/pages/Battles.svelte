@@ -18,7 +18,7 @@
 
     let battles = []
 
-    xfetch('/api/battles')
+    xfetch(`/api/users/${$warrior.id}/battles`)
         .then(res => res.json())
         .then(function(bs) {
             battles = bs

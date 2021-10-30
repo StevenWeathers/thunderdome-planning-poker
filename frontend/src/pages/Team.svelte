@@ -51,11 +51,11 @@
 
     const apiPrefix = '/api'
     $: orgPrefix = departmentId
-        ? `${apiPrefix}/organization/${organizationId}/department/${departmentId}`
-        : `${apiPrefix}/organization/${organizationId}`
+        ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
+        : `${apiPrefix}/organizations/${organizationId}`
     $: teamPrefix = organizationId
-        ? `${orgPrefix}/team/${teamId}`
-        : `${apiPrefix}/team/${teamId}`
+        ? `${orgPrefix}/teams/${teamId}`
+        : `${apiPrefix}/teams/${teamId}`
 
     function toggleAddUser() {
         showAddUser = !showAddUser
@@ -97,7 +97,7 @@
 
     function getUsers() {
         const usersOffset = (usersPage - 1) * usersPageLimit
-        xfetch(`${teamPrefix}/users/${usersPageLimit}/${usersOffset}`)
+        xfetch(`${teamPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`)
             .then(res => res.json())
             .then(function(result) {
                 users = result
@@ -109,7 +109,7 @@
 
     function getBattles() {
         const battlesOffset = (battlesPage - 1) * battlesPageLimit
-        xfetch(`${teamPrefix}/battles/${battlesPageLimit}/${battlesOffset}`)
+        xfetch(`${teamPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`)
             .then(res => res.json())
             .then(function(result) {
                 battles = result
@@ -139,11 +139,7 @@
     }
 
     function handleUserRemove() {
-        const body = {
-            id: removeUserId,
-        }
-
-        xfetch(`${teamPrefix}/user`, { body, method: 'DELETE' })
+        xfetch(`${teamPrefix}/users/${removeUserId}`, { method: 'DELETE' })
             .then(function() {
                 eventTag('team_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
@@ -161,7 +157,7 @@
             id: removeBattleId,
         }
 
-        xfetch(`${teamPrefix}/battle`, { body, method: 'DELETE' })
+        xfetch(`${teamPrefix}/battles/${removeBattleId}`, { method: 'DELETE' })
             .then(function() {
                 eventTag('team_remove_battle', 'engagement', 'success')
                 toggleRemoveBattle(null)()

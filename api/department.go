@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
@@ -14,8 +13,7 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.OrganizationDepartmentList(OrgID, Limit, Offset)
 
@@ -91,8 +89,7 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.DepartmentTeamList(DepartmentID, Limit, Offset)
 
@@ -105,8 +102,7 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.DepartmentUserList(DepartmentID, Limit, Offset)
 
@@ -170,11 +166,9 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 // handleDepartmentRemoveUser handles removing user from a department (and department teams)
 func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
-
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
-		UserID := keyVal["id"].(string)
+		UserID := vars["userId"]
 
 		err := a.db.DepartmentRemoveUser(DepartmentID, UserID)
 		if err != nil {

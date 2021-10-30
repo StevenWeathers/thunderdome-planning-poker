@@ -3,7 +3,6 @@ package api
 import (
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -42,15 +41,13 @@ func (a *api) handleAppStats() http.HandlerFunc {
 // @Description get list of registered users
 // @Tags admin
 // @Produce  json
-// @Param limit path int false "Max number of results to return"
-// @Param offset path int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param limit query int true "Max number of results to return"
+// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200
-// @Router /admin/warriors/{limit}/{offset} [get]
+// @Router /admin/users [get]
 func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Users := a.db.GetRegisteredUsers(Limit, Offset)
 
@@ -64,7 +61,7 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 // @Tags admin
 // @Produce  json
 // @Success 200
-// @Router /admin/warrior [post]
+// @Router /admin/users [post]
 func (a *api) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := a.getJSONRequestBody(r, w)
@@ -94,6 +91,13 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 }
 
 // handleAdminUserDelete attempts to delete a users account
+// @Summary Delete User
+// @Description Delete a registered user
+// @Tags admin
+// @Produce  json
+// @Param id path int false "the user ID to delete"
+// @Success 200
+// @Router /admin/users/{id} [delete]
 func (a *api) handleAdminUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -125,13 +129,15 @@ func (a *api) handleAdminUserDelete() http.HandlerFunc {
 // @Description Grants read and write access to administrative information
 // @Tags admin
 // @Produce  json
+// @Param id path int false "the user ID to promote"
 // @Success 200
-// @Router /admin/promote [post]
+// @Router /admin/users/{id}/promote/ [put]
 func (a *api) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		vars := mux.Vars(r)
+		UserID := vars["id"]
 
-		err := a.db.PromoteUser(keyVal["warriorId"].(string))
+		err := a.db.PromoteUser(UserID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -146,13 +152,15 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 // @Description Demotes a user from admin to registered
 // @Tags admin
 // @Produce  json
+// @Param id path int false "the user ID to demote"
 // @Success 200
-// @Router /admin/demote [post]
+// @Router /admin/users/{id}/demote [put]
 func (a *api) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		vars := mux.Vars(r)
+		UserID := vars["id"]
 
-		err := a.db.DemoteUser(keyVal["warriorId"].(string))
+		err := a.db.DemoteUser(UserID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -167,15 +175,13 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 // @Description get a list of organizations
 // @Tags admin
 // @Produce  json
-// @Param limit path int false "Max number of results to return"
-// @Param offset path int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param limit query int true "Max number of results to return"
+// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200
-// @Router /admin/organizations/{limit}/{offset} [get]
+// @Router /admin/organizations [get]
 func (a *api) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Organizations := a.db.OrganizationList(Limit, Offset)
 
@@ -188,15 +194,13 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 // @Description get a list of teams
 // @Tags admin
 // @Produce  json
-// @Param limit path int false "Max number of results to return"
-// @Param offset path int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param limit query int true "Max number of results to return"
+// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200
-// @Router /admin/teams/{limit}/{offset} [get]
+// @Router /admin/teams [get]
 func (a *api) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.TeamList(Limit, Offset)
 
@@ -209,15 +213,13 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Description get a list of users API Keys
 // @Tags admin
 // @Produce  json
-// @Param limit path int false "Max number of results to return"
-// @Param offset path int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param limit query int true "Max number of results to return"
+// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200
-// @Router /admin/apikeys/{limit}/{offset} [get]
+// @Router /admin/apikeys [get]
 func (a *api) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.GetAPIKeys(Limit, Offset)
 

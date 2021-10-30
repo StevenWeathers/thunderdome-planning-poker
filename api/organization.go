@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
@@ -12,18 +11,25 @@ import (
 // handleGetOrganizationsByUser gets a list of organizations the user is apart of
 // @Summary Get Users Organizations
 // @Description get list of organizations for the authenticated user
-// @Tags organizations
+// @Tags organization
 // @Produce  json
-// @Param limit path int false "Max number of results to return"
-// @Param offset path int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param id path int false "the user ID to get organizations for"
+// @Param limit query int true "Max number of results to return"
+// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200
-// @Router /organizations/{limit}/{offset} [get]
+// @Router /users/{id}/organizations [get]
 func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		UserID := vars["id"]
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
+
+		if UserID != AuthedUserID {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Organizations := a.db.OrganizationListByUser(UserID, Limit, Offset)
 
@@ -62,7 +68,15 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		UserID := vars["id"]
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
+
+		if UserID != AuthedUserID {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		keyVal := a.getJSONRequestBody(r, w)
 
 		OrgName := keyVal["name"].(string)
@@ -85,8 +99,7 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.OrganizationTeamList(OrgID, Limit, Offset)
 
@@ -99,8 +112,7 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.OrganizationUserList(OrgID, Limit, Offset)
 
@@ -164,11 +176,9 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 // handleOrganizationRemoveUser handles removing user from an organization (including departments, teams)
 func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
-
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
-		UserID := keyVal["id"].(string)
+		UserID := vars["userId"]
 
 		err := a.db.OrganizationRemoveUser(OrgID, UserID)
 		if err != nil {

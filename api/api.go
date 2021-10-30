@@ -3,7 +3,9 @@ package api
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/email"
@@ -78,6 +80,10 @@ func Init(config *ApiConfig, router *mux.Router, database *database.Database, em
 	go h.run()
 
 	apiRouter := a.router.PathPrefix("/api").Subrouter()
+	userRouter := apiRouter.PathPrefix("/users").Subrouter()
+	orgRouter := apiRouter.PathPrefix("/organizations").Subrouter()
+	teamRouter := apiRouter.PathPrefix("/teams").Subrouter()
+	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
 
 	// user authentication, profile
 	if viper.GetString("auth.method") == "ldap" {
@@ -85,86 +91,85 @@ func Init(config *ApiConfig, router *mux.Router, database *database.Database, em
 	} else {
 		apiRouter.HandleFunc("/auth", a.handleLogin()).Methods("POST")
 		apiRouter.HandleFunc("/auth/forgot-password", a.handleForgotPassword()).Methods("POST")
-		apiRouter.HandleFunc("/auth/reset-password", a.handleResetPassword()).Methods("POST")
-		apiRouter.HandleFunc("/auth/update-password", a.userOnly(a.handleUpdatePassword())).Methods("POST")
+		apiRouter.HandleFunc("/auth/reset-password", a.handleResetPassword()).Methods("PUT")
+		apiRouter.HandleFunc("/auth/update-password", a.userOnly(a.handleUpdatePassword())).Methods("PUT")
 		apiRouter.HandleFunc("/auth/verify", a.handleAccountVerification()).Methods("POST")
-		apiRouter.HandleFunc("/enlist", a.handleUserEnlist()).Methods("POST")
+		apiRouter.HandleFunc("/auth/register", a.handleUserRegistration()).Methods("POST")
 	}
-	apiRouter.HandleFunc("/warrior", a.handleUserRecruit()).Methods("POST")
 	apiRouter.HandleFunc("/auth/logout", a.handleLogout()).Methods("POST")
+	// user(s)
+	userRouter.HandleFunc("", a.handleCreateGuestUser()).Methods("POST")
+	userRouter.HandleFunc("/{id}", a.userOnly(a.handleUserProfile())).Methods("GET")
+	userRouter.HandleFunc("/{id}", a.userOnly(a.handleUserProfileUpdate())).Methods("PUT")
+	userRouter.HandleFunc("/{id}", a.userOnly(a.handleUserDelete())).Methods("DELETE")
+	userRouter.HandleFunc("/{id}/battles", a.userOnly(a.handleBattleCreate())).Methods("POST")
+	userRouter.HandleFunc("/{id}/battles", a.userOnly(a.handleBattlesGet())).Methods("GET")
+	userRouter.HandleFunc("/{id}/organizations", a.userOnly(a.handleGetOrganizationsByUser())).Methods("GET")
+	userRouter.HandleFunc("/{id}/organizations", a.userOnly(a.handleCreateOrganization())).Methods("POST")
+	userRouter.HandleFunc("/{id}/teams", a.userOnly(a.handleGetTeamsByUser())).Methods("GET")
+	userRouter.HandleFunc("/{id}/teams", a.userOnly(a.handleCreateTeam())).Methods("POST")
 	if a.config.ExternalAPIEnabled {
-		apiRouter.HandleFunc("/warrior/{id}/apikey/{keyID}", a.userOnly(a.handleUserAPIKeyUpdate())).Methods("PUT")
-		apiRouter.HandleFunc("/warrior/{id}/apikey/{keyID}", a.userOnly(a.handleUserAPIKeyDelete())).Methods("DELETE")
-		apiRouter.HandleFunc("/warrior/{id}/apikey", a.userOnly(a.handleAPIKeyGenerate())).Methods("POST")
-		apiRouter.HandleFunc("/warrior/{id}/apikeys", a.userOnly(a.handleUserAPIKeys())).Methods("GET")
+		userRouter.HandleFunc("/{id}/apikeys", a.userOnly(a.handleUserAPIKeys())).Methods("GET")
+		userRouter.HandleFunc("/{id}/apikeys", a.userOnly(a.handleAPIKeyGenerate())).Methods("POST")
+		userRouter.HandleFunc("/{id}/apikeys/{keyID}", a.userOnly(a.handleUserAPIKeyUpdate())).Methods("PUT")
+		userRouter.HandleFunc("/{id}/apikeys/{keyID}", a.userOnly(a.handleUserAPIKeyDelete())).Methods("DELETE")
 	}
-	apiRouter.HandleFunc("/warrior/{id}", a.userOnly(a.handleUserProfile())).Methods("GET")
-	apiRouter.HandleFunc("/warrior/{id}", a.userOnly(a.handleUserProfileUpdate())).Methods("POST")
-	apiRouter.HandleFunc("/warrior/{id}", a.userOnly(a.handleUserDelete())).Methods("DELETE")
-	// battle(s)
-	apiRouter.HandleFunc("/battle", a.userOnly(a.handleBattleCreate())).Methods("POST")
-	apiRouter.HandleFunc("/battles", a.userOnly(a.handleBattlesGet())).Methods("GET")
 	// country(s)
 	if viper.GetBool("config.show_active_countries") {
 		apiRouter.HandleFunc("/active-countries", a.handleGetActiveCountries()).Methods("GET")
 	}
-	// organization(s)
-	apiRouter.HandleFunc("/organizations/{limit}/{offset}", a.userOnly(a.handleGetOrganizationsByUser())).Methods("GET")
-	apiRouter.HandleFunc("/organizations", a.userOnly(a.handleCreateOrganization())).Methods("POST")
-	apiRouter.HandleFunc("/organization/{orgId}/departments/{limit}/{offset}", a.userOnly(a.orgUserOnly(a.handleGetOrganizationDepartments()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/departments", a.userOnly(a.orgAdminOnly(a.handleCreateDepartment()))).Methods("POST")
 	// org departments(s)
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/teams/{limit}/{offset}", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentTeams()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/teams", a.userOnly(a.departmentAdminOnly(a.handleCreateDepartmentTeam()))).Methods("POST")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/users/{limit}/{offset}", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentUsers()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/users", a.userOnly(a.departmentAdminOnly(a.handleDepartmentAddUser()))).Methods("POST")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/user", a.userOnly(a.departmentAdminOnly(a.handleDepartmentRemoveUser()))).Methods("DELETE")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/team/{teamId}/battles/{limit}/{offset}", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/team/{teamId}/battle", a.userOnly(a.departmentTeamUserOnly(a.handleBattleCreate()))).Methods("POST")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/team/{teamId}/battle", a.userOnly(a.departmentTeamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/team/{teamId}/users/{limit}/{offset}", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamUsers()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/team/{teamId}/users", a.userOnly(a.departmentTeamAdminOnly(a.handleDepartmentTeamAddUser()))).Methods("POST")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/team/{teamId}/user", a.userOnly(a.departmentTeamAdminOnly(a.handleTeamRemoveUser()))).Methods("DELETE")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/team/{teamId}", a.userOnly(a.departmentTeamUserOnly(a.handleDepartmentTeamByUser()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}/team", a.userOnly(a.departmentAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
-	apiRouter.HandleFunc("/organization/{orgId}/department/{departmentId}", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments", a.userOnly(a.orgUserOnly(a.handleGetOrganizationDepartments()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments", a.userOnly(a.orgAdminOnly(a.handleCreateDepartment()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentUsers()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentAdminOnly(a.handleDepartmentAddUser()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users/{userId}", a.userOnly(a.departmentAdminOnly(a.handleDepartmentRemoveUser()))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentTeams()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams", a.userOnly(a.departmentAdminOnly(a.handleCreateDepartmentTeam()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentTeamUserOnly(a.handleDepartmentTeamByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles", a.userOnly(a.departmentTeamUserOnly(a.handleBattleCreate()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.departmentTeamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamUsers()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users", a.userOnly(a.departmentTeamAdminOnly(a.handleDepartmentTeamAddUser()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}", a.userOnly(a.departmentTeamAdminOnly(a.handleTeamRemoveUser()))).Methods("DELETE")
 	// org teams
-	apiRouter.HandleFunc("/organization/{orgId}/teams/{limit}/{offset}", a.userOnly(a.orgUserOnly(a.handleGetOrganizationTeams()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/teams", a.userOnly(a.orgAdminOnly(a.handleCreateOrganizationTeam()))).Methods("POST")
-	apiRouter.HandleFunc("/organization/{orgId}/team/{teamId}/battles/{limit}/{offset}", a.userOnly(a.orgTeamOnly(a.handleGetTeamBattles()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/team/{teamId}/battle", a.userOnly(a.orgTeamOnly(a.handleBattleCreate()))).Methods("POST")
-	apiRouter.HandleFunc("/organization/{orgId}/team/{teamId}/battle", a.userOnly(a.orgTeamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
-	apiRouter.HandleFunc("/organization/{orgId}/team/{teamId}/users/{limit}/{offset}", a.userOnly(a.orgTeamOnly(a.handleGetTeamUsers()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/team/{teamId}/users", a.userOnly(a.orgTeamAdminOnly(a.handleOrganizationTeamAddUser()))).Methods("POST")
-	apiRouter.HandleFunc("/organization/{orgId}/team/{teamId}/user", a.userOnly(a.orgTeamAdminOnly(a.handleTeamRemoveUser()))).Methods("DELETE")
-	apiRouter.HandleFunc("/organization/{orgId}/team/{teamId}", a.userOnly(a.orgTeamOnly(a.handleGetOrganizationTeamByUser()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/team", a.userOnly(a.orgAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/teams", a.userOnly(a.orgUserOnly(a.handleGetOrganizationTeams()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/teams", a.userOnly(a.orgAdminOnly(a.handleCreateOrganizationTeam()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.orgTeamOnly(a.handleGetOrganizationTeamByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.orgAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles", a.userOnly(a.orgTeamOnly(a.handleGetTeamBattles()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles", a.userOnly(a.orgTeamOnly(a.handleBattleCreate()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.orgTeamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users", a.userOnly(a.orgTeamOnly(a.handleGetTeamUsers()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users", a.userOnly(a.orgTeamAdminOnly(a.handleOrganizationTeamAddUser()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}", a.userOnly(a.orgTeamAdminOnly(a.handleTeamRemoveUser()))).Methods("DELETE")
 	// org users
-	apiRouter.HandleFunc("/organization/{orgId}/users/{limit}/{offset}", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUsers()))).Methods("GET")
-	apiRouter.HandleFunc("/organization/{orgId}/users", a.userOnly(a.orgAdminOnly(a.handleOrganizationAddUser()))).Methods("POST")
-	apiRouter.HandleFunc("/organization/{orgId}/user", a.userOnly(a.orgAdminOnly(a.handleOrganizationRemoveUser()))).Methods("DELETE")
-	apiRouter.HandleFunc("/organization/{orgId}", a.userOnly(a.orgUserOnly(a.handleGetOrganizationByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgUserOnly(a.handleGetOrganizationByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/users", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUsers()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/users", a.userOnly(a.orgAdminOnly(a.handleOrganizationAddUser()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/users/{userId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationRemoveUser()))).Methods("DELETE")
 	// teams(s)
-	apiRouter.HandleFunc("/teams/{limit}/{offset}", a.userOnly(a.handleGetTeamsByUser())).Methods("GET")
-	apiRouter.HandleFunc("/teams", a.userOnly(a.handleCreateTeam())).Methods("POST")
-	apiRouter.HandleFunc("/team/{teamId}/battles/{limit}/{offset}", a.userOnly(a.teamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
-	apiRouter.HandleFunc("/team/{teamId}/battle", a.userOnly(a.teamUserOnly(a.handleBattleCreate()))).Methods("POST")
-	apiRouter.HandleFunc("/team/{teamId}/battle", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
-	apiRouter.HandleFunc("/team/{teamId}/users/{limit}/{offset}", a.userOnly(a.teamUserOnly(a.handleGetTeamUsers()))).Methods("GET")
-	apiRouter.HandleFunc("/team/{teamId}/users", a.userOnly(a.teamAdminOnly(a.handleTeamAddUser()))).Methods("POST")
-	apiRouter.HandleFunc("/team/{teamId}/user", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveUser()))).Methods("DELETE")
-	apiRouter.HandleFunc("/team/{teamId}", a.userOnly(a.teamUserOnly(a.handleGetTeamByUser()))).Methods("GET")
-	apiRouter.HandleFunc("/team", a.userOnly(a.teamAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
+	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamUserOnly(a.handleGetTeamByUser()))).Methods("GET")
+	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
+	teamRouter.HandleFunc("/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
+	teamRouter.HandleFunc("/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleBattleCreate()))).Methods("POST")
+	teamRouter.HandleFunc("/{teamId}/battles/{battleId}", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
+	teamRouter.HandleFunc("/{teamId}/users", a.userOnly(a.teamUserOnly(a.handleGetTeamUsers()))).Methods("GET")
+	teamRouter.HandleFunc("/{teamId}/users", a.userOnly(a.teamAdminOnly(a.handleTeamAddUser()))).Methods("POST")
+	teamRouter.HandleFunc("/{teamId}/users/{userId}", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveUser()))).Methods("DELETE")
 	// admin
-	apiRouter.HandleFunc("/admin/stats", a.adminOnly(a.handleAppStats())).Methods("GET")
-	apiRouter.HandleFunc("/admin/warriors/{limit}/{offset}", a.adminOnly(a.handleGetRegisteredUsers())).Methods("GET")
-	apiRouter.HandleFunc("/admin/warrior", a.adminOnly(a.handleUserCreate())).Methods("POST")
-	apiRouter.HandleFunc("/admin/user/{id}", a.adminOnly(a.handleAdminUserDelete())).Methods("DELETE")
-	apiRouter.HandleFunc("/admin/promote", a.adminOnly(a.handleUserPromote())).Methods("POST")
-	apiRouter.HandleFunc("/admin/demote", a.adminOnly(a.handleUserDemote())).Methods("POST")
-	apiRouter.HandleFunc("/admin/organizations/{limit}/{offset}", a.adminOnly(a.handleGetOrganizations())).Methods("GET")
-	apiRouter.HandleFunc("/admin/teams/{limit}/{offset}", a.adminOnly(a.handleGetTeams())).Methods("GET")
-	apiRouter.HandleFunc("/admin/apikeys/{limit}/{offset}", a.adminOnly(a.handleGetAPIKeys())).Methods("GET")
+	adminRouter.HandleFunc("/stats", a.adminOnly(a.handleAppStats())).Methods("GET")
+	adminRouter.HandleFunc("/users", a.adminOnly(a.handleGetRegisteredUsers())).Methods("GET")
+	adminRouter.HandleFunc("/users", a.adminOnly(a.handleUserCreate())).Methods("POST")
+	adminRouter.HandleFunc("/users/{id}", a.adminOnly(a.handleAdminUserDelete())).Methods("DELETE")
+	adminRouter.HandleFunc("/users/{id}/promote", a.adminOnly(a.handleUserPromote())).Methods("PUT")
+	adminRouter.HandleFunc("/users/{id}/demote", a.adminOnly(a.handleUserDemote())).Methods("PUT")
+	adminRouter.HandleFunc("/organizations", a.adminOnly(a.handleGetOrganizations())).Methods("GET")
+	adminRouter.HandleFunc("/teams", a.adminOnly(a.handleGetTeams())).Methods("GET")
+	adminRouter.HandleFunc("/apikeys", a.adminOnly(a.handleGetAPIKeys())).Methods("GET")
 	// alert
 	apiRouter.HandleFunc("/alerts", a.adminOnly(a.handleGetAlerts())).Methods("GET")
 	apiRouter.HandleFunc("/alerts", a.adminOnly(a.handleAlertCreate())).Methods("POST")
@@ -201,4 +206,27 @@ func (a *api) respondWithJSON(w http.ResponseWriter, code int, payload interface
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+// getLimitOffsetFromRequest gets the limit and offset query parameters from the request
+// defaulting to 20 for limit and 0 for offset
+func (a *api) getLimitOffsetFromRequest(r *http.Request, w http.ResponseWriter) (limit int, offset int) {
+	query := r.URL.Query()
+	Limit, limitErr := strconv.Atoi(query.Get("limit"))
+	if limitErr != nil {
+		log.Println(limitErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	Offset, offsetErr := strconv.Atoi(query.Get("offset"))
+	if offsetErr != nil {
+		log.Println(offsetErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if Limit == 0 {
+		Limit = 20
+	}
+
+	return Limit, Offset
 }

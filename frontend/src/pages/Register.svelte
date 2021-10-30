@@ -40,7 +40,7 @@
         }
 
         if (noFormErrors) {
-            xfetch('/api/warrior', { body })
+            xfetch('/api/users', { body })
                 .then(res => res.json())
                 .then(function(newWarrior) {
                     warrior.create({
@@ -76,7 +76,7 @@
             warriorPassword2,
         }
 
-        xfetch('/api/enlist', { body })
+        xfetch('/api/auth/register', { body })
             .then(res => res.json())
             .then(function(newWarrior) {
                 warrior.create({

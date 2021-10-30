@@ -1,9 +1,7 @@
 package api
 
 import (
-	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -21,22 +19,7 @@ var ActiveAlerts []interface{}
 // @Router /alerts [get]
 func (a *api) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query()
-		Limit, limitErr := strconv.Atoi(query.Get("limit"))
-		if limitErr != nil {
-			log.Println(limitErr)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		Offset, offsetErr := strconv.Atoi(query.Get("offset"))
-		if offsetErr != nil {
-			log.Println(offsetErr)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		if Limit == 0 {
-			Limit = 20
-		}
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Alerts := a.db.AlertsList(Limit, Offset)
 

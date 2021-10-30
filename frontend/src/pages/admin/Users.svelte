@@ -56,7 +56,7 @@
             warriorPassword2,
         }
 
-        xfetch('/api/admin/warrior', { body })
+        xfetch('/api/admin/users', { body })
             .then(function() {
                 eventTag('admin_create_warrior', 'engagement', 'success')
 
@@ -82,7 +82,7 @@
 
     function getWarriors() {
         const warriorsOffset = (warriorsPage - 1) * warriorsPageLimit
-        xfetch(`/api/admin/warriors/${warriorsPageLimit}/${warriorsOffset}`)
+        xfetch(`/api/admin/users?limit=${warriorsPageLimit}&offset=${warriorsOffset}`)
             .then(res => res.json())
             .then(function(result) {
                 warriors = result
@@ -94,11 +94,7 @@
 
     function promoteWarrior(warriorId) {
         return function() {
-            const body = {
-                warriorId,
-            }
-
-            xfetch('/api/admin/promote', { body })
+            xfetch(`/api/admin/users/${warriorId}/promote`, { method: 'PUT' })
                 .then(function() {
                     eventTag('admin_promote_warrior', 'engagement', 'success')
 
@@ -113,11 +109,7 @@
 
     function demoteWarrior(warriorId) {
         return function() {
-            const body = {
-                warriorId,
-            }
-
-            xfetch('/api/admin/demote', { body })
+            xfetch(`/api/admin/users/${warriorId}/demote`, { method: 'PUT' })
                 .then(function() {
                     eventTag('admin_demote_warrior', 'engagement', 'success')
 
@@ -131,7 +123,7 @@
     }
 
     function handleDeleteWarrior() {
-        xfetch(`/api/admin/user/${warriorDeleteId}`, { method: "DELETE" })
+        xfetch(`/api/admin/users/${warriorDeleteId}`, { method: "DELETE" })
             .then(function() {
                 eventTag('admin_demote_warrior', 'engagement', 'success')
 

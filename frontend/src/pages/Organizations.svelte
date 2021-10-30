@@ -34,7 +34,7 @@
 
     function getOrganizations() {
         const orgsOffset = (organizationsPage - 1) * organizationsPageLimit
-        xfetch(`/api/organizations/${organizationsPageLimit}/${orgsOffset}`)
+        xfetch(`/api/users/${$warrior.id}/organizations?limit=${organizationsPageLimit}&offset=${orgsOffset}`)
             .then(res => res.json())
             .then(function(result) {
                 organizations = result
@@ -46,7 +46,7 @@
 
     function getTeams() {
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
-        xfetch(`/api/teams/${teamsPageLimit}/${teamsOffset}`)
+        xfetch(`/api/users/${$warrior.id}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`)
             .then(res => res.json())
             .then(function(result) {
                 teams = result
@@ -61,7 +61,7 @@
             name,
         }
 
-        xfetch('/api/organizations', { body })
+        xfetch(`/api/users/${$warrior.id}/organizations`, { body })
             .then(res => res.json())
             .then(function(organization) {
                 eventTag('create_organization', 'engagement', 'success', () => {
@@ -79,7 +79,7 @@
             name,
         }
 
-        xfetch('/api/teams', { body })
+        xfetch(`/api/users/${$warrior.id}/teams`, { body })
             .then(res => res.json())
             .then(function(team) {
                 eventTag('create_team', 'engagement', 'success', () => {

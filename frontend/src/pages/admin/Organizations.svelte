@@ -42,7 +42,7 @@
         const organizationsOffset =
             (organizationsPage - 1) * organizationsPageLimit
         xfetch(
-            `/api/admin/organizations/${organizationsPageLimit}/${organizationsOffset}`,
+            `/api/admin/organizations?limit=${organizationsPageLimit}&offset=${organizationsOffset}`,
         )
             .then(res => res.json())
             .then(function(result) {

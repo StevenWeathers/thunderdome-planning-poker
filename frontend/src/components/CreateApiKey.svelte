@@ -29,7 +29,7 @@
             name: keyName,
         }
 
-        xfetch(`/api/warrior/${$warrior.id}/apikey`, { body })
+        xfetch(`/api/users/${$warrior.id}/apikey`, { body })
             .then(res => res.json())
             .then(function(apk) {
                 handleApiKeyCreate()

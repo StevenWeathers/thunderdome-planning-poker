@@ -74,7 +74,7 @@
             pointAverageRounding,
         }
 
-        xfetch(`${apiPrefix}/battle`, { body })
+        xfetch(`${apiPrefix}/users/${$warrior.id}/battles`, { body })
             .then(res => res.json())
             .then(function(battle) {
                 eventTag('create_battle', 'engagement', 'success', () => {

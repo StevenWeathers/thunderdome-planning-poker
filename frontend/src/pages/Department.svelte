@@ -62,7 +62,7 @@
     }
 
     function getDepartment() {
-        xfetch(`/api/organization/${organizationId}/department/${departmentId}`)
+        xfetch(`/api/organizations/${organizationId}/departments/${departmentId}`)
             .then(res => res.json())
             .then(function(result) {
                 department = result.department
@@ -81,7 +81,7 @@
     function getTeams() {
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
         xfetch(
-            `/api/organization/${organizationId}/department/${departmentId}/teams/${teamsPageLimit}/${teamsOffset}`,
+            `/api/organizations/${organizationId}/departments/${departmentId}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
         )
             .then(res => res.json())
             .then(function(result) {
@@ -95,7 +95,7 @@
     function getUsers() {
         const usersOffset = (usersPage - 1) * usersPageLimit
         xfetch(
-            `/api/organization/${organizationId}/department/${departmentId}/users/${usersPageLimit}/${usersOffset}`,
+            `/api/organizations/${organizationId}/departments/${departmentId}/users?limit=${usersPageLimit}&offset=${usersOffset}`,
         )
             .then(res => res.json())
             .then(function(result) {
@@ -112,7 +112,7 @@
         }
 
         xfetch(
-            `/api/organization/${organizationId}/department/${departmentId}/teams`,
+            `/api/organizations/${organizationId}/departments/${departmentId}/teams`,
             { body },
         )
             .then(res => res.json())
@@ -135,7 +135,7 @@
         }
 
         xfetch(
-            `/api/organization/${organizationId}/department/${departmentId}/users`,
+            `/api/organizations/${organizationId}/departments/${departmentId}/users`,
             { body },
         )
             .then(function() {
@@ -151,13 +151,9 @@
     }
 
     function handleUserRemove() {
-        const body = {
-            id: removeUserId,
-        }
-
         xfetch(
-            `/api/organization/${organizationId}/department/${departmentId}/user`,
-            { body, method: 'DELETE' },
+            `/api/organizations/${organizationId}/departments/${departmentId}/users/${removeUserId}`,
+            { method: 'DELETE' },
         )
             .then(function() {
                 eventTag('department_remove_user', 'engagement', 'success')
@@ -172,13 +168,9 @@
     }
 
     function handleDeleteTeam() {
-        const body = {
-            id: deleteTeamId,
-        }
-
         xfetch(
-            `/api/organization/${organizationId}/department/${departmentId}/team`,
-            { body, method: 'DELETE' },
+            `/api/organizations/${organizationId}/departments/${departmentId}/teams/${deleteTeamId}`,
+            { method: 'DELETE' },
         )
             .then(function() {
                 eventTag('department_delete_team', 'engagement', 'success')

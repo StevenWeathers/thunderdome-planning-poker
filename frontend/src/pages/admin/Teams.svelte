@@ -38,7 +38,7 @@
 
     function getTeams() {
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
-        xfetch(`/api/admin/teams/${teamsPageLimit}/${teamsOffset}`)
+        xfetch(`/api/admin/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`)
             .then(res => res.json())
             .then(function(result) {
                 teams = result

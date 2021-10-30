@@ -7,6 +7,36 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// handleUserAPIKeys handles getting user API keys
+// @Summary Get API Keys
+// @Description get list of API keys for authenticated user
+// @Tags apikey
+// @Produce  json
+// @Param id path int false "the user ID to get API keys for"
+// @Success 200
+// @Router /users/{id}/apikeys [get]
+func (a *api) handleUserAPIKeys() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		UserID := vars["id"]
+		UserCookieID := r.Context().Value(contextKeyUserID).(string)
+		if UserID != UserCookieID {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
+		if keysErr != nil {
+			log.Println("error retrieving api keys : " + keysErr.Error() + "\n")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		a.respondWithJSON(w, http.StatusOK, APIKeys)
+	}
+}
+
 // handleAPIKeyGenerate handles generating an API key for a user
 // @Summary Generate API Key
 // @Description Generates an API key for the authenticated user
@@ -14,7 +44,7 @@ import (
 // @Produce  json
 // @Param id path int false "the user ID to generate API key for"
 // @Success 200
-// @Router /warrior/{id}/apikey [post]
+// @Router /users/{id}/apikeys [post]
 func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -39,36 +69,6 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 	}
 }
 
-// handleUserAPIKeys handles getting user API keys
-// @Summary Get API Keys
-// @Description get list of API keys for authenticated user
-// @Tags apikey
-// @Produce  json
-// @Param id path int false "the user ID to get API keys for"
-// @Success 200
-// @Router /warrior/{id}/apikeys [get]
-func (a *api) handleUserAPIKeys() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		UserID := vars["id"]
-		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		if UserID != UserCookieID {
-			w.WriteHeader(http.StatusForbidden)
-			return
-		}
-
-		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
-		if keysErr != nil {
-			log.Println("error retrieving api keys : " + keysErr.Error() + "\n")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		a.respondWithJSON(w, http.StatusOK, APIKeys)
-	}
-}
-
 // handleUserAPIKeyUpdate handles updating a users API key
 // @Summary Update API Key
 // @Description Updates the API key of the authenticated user
@@ -77,7 +77,7 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 // @Param id path int false "the user ID to update API key"
 // @Param keyID path int false "the API Key ID to update"
 // @Success 200
-// @Router /warrior/{id}/apikey/{keyID} [put]
+// @Router /users/{id}/apikeys/{keyID} [put]
 func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -111,7 +111,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 // @Param id path int false "the user ID to update API key"
 // @Param keyID path int false "the API Key ID to update"
 // @Success 200
-// @Router /warrior/{id}/apikey/{keyID} [delete]
+// @Router /users/{id}/apikeys/{keyID} [delete]
 func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

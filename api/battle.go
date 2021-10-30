@@ -10,14 +10,58 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// handleBattlesGet looks up battles associated with UserID
+// @Summary Get Battles
+// @Description get list of battles for authenticated user
+// @Tags battle
+// @Produce  json
+// @Param id path int false "the user ID to get battles for"
+// @Success 200
+// @Router /users/{id}/battles [get]
+func (a *api) handleBattlesGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		UserID := vars["id"]
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
+
+		if UserID != AuthedUserID {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		battles, err := a.db.GetBattlesByUser(UserID)
+
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		a.respondWithJSON(w, http.StatusOK, battles)
+	}
+}
+
 /*
 	Battle Handlers
 */
 // handleBattleCreate handles creating a battle (arena)
+// @Summary Create Battle
+// @Description Create a battle associated to authenticated user
+// @Tags battle
+// @Produce  json
+// @Param id path int false "the user ID to create battle for"
+// @Success 200
+// @Router /users/{id}/battles [post]
 func (a *api) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
+		UserID := vars["id"]
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
+
+		if UserID != AuthedUserID {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
 			log.Println("error in reading request body: " + bodyErr.Error() + "\n")
@@ -76,20 +120,5 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		}
 
 		a.respondWithJSON(w, http.StatusOK, newBattle)
-	}
-}
-
-// handleBattlesGet looks up battles associated with UserID
-func (a *api) handleBattlesGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		battles, err := a.db.GetBattlesByUser(UserID)
-
-		if err != nil {
-			http.NotFound(w, r)
-			return
-		}
-
-		a.respondWithJSON(w, http.StatusOK, battles)
 	}
 }

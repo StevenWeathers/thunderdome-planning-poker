@@ -74,7 +74,7 @@
         )
     }
 
-    xfetch(`/api/warrior/${$warrior.id}`)
+    xfetch(`/api/users/${$warrior.id}`)
         .then(res => res.json())
         .then(function(wp) {
             warriorProfile = wp
@@ -105,7 +105,7 @@
         }
 
         if (noFormErrors) {
-            xfetch(`/api/warrior/${$warrior.id}`, { body })
+            xfetch(`/api/users/${$warrior.id}`, { body, method: 'PUT' })
                 .then(res => res.json())
                 .then(function() {
                     warrior.update({
@@ -152,7 +152,7 @@
         }
 
         if (noFormErrors) {
-            xfetch('/api/auth/update-password', { body })
+            xfetch('/api/auth/update-password', { body, method: 'PUT' })
                 .then(function() {
                     notifications.success(
                         $_('pages.warriorProfile.passwordUpdated'),
@@ -171,7 +171,7 @@
     }
 
     function getApiKeys() {
-        xfetch(`/api/warrior/${$warrior.id}/apikeys`)
+        xfetch(`/api/users/${$warrior.id}/apikeys`)
             .then(res => res.json())
             .then(function(apks) {
                 apiKeys = apks
@@ -189,7 +189,7 @@
 
     function deleteApiKey(apk) {
         return function() {
-            xfetch(`/api/warrior/${$warrior.id}/apikey/${apk}`, {
+            xfetch(`/api/users/${$warrior.id}/apikeys/${apk}`, {
                 method: 'DELETE',
             })
                 .then(res => res.json())
@@ -213,7 +213,7 @@
                 active: !active,
             }
 
-            xfetch(`/api/warrior/${$warrior.id}/apikey/${apk}`, {
+            xfetch(`/api/users/${$warrior.id}/apikeys/${apk}`, {
                 body,
                 method: 'PUT',
             })
@@ -237,7 +237,7 @@
     }
 
     function handleDeleteAccount() {
-        xfetch(`/api/warrior/${$warrior.id}`, { method: 'DELETE' })
+        xfetch(`/api/users/${$warrior.id}`, { method: 'DELETE' })
             .then(function() {
                 warrior.delete()
 

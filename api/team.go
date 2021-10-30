@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
@@ -36,10 +35,16 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 // handleGetTeamsByUser gets a list of teams the user is apart of
 func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		UserID := vars["id"]
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
+
+		if UserID != AuthedUserID {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Organizations := a.db.TeamListByUser(UserID, Limit, Offset)
 
@@ -52,8 +57,7 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.TeamUserList(TeamID, Limit, Offset)
 
@@ -68,7 +72,15 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		UserID := vars["id"]
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
+
+		if UserID != AuthedUserID {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		keyVal := a.getJSONRequestBody(r, w)
 
 		TeamName := keyVal["name"].(string)
@@ -115,11 +127,9 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 // handleTeamRemoveUser handles removing user from a team
 func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
-
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		UserID := keyVal["id"].(string)
+		UserID := vars["userId"]
 
 		err := a.db.TeamRemoveUser(TeamID, UserID)
 		if err != nil {
@@ -136,8 +146,7 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		Limit, _ := strconv.Atoi(vars["limit"])
-		Offset, _ := strconv.Atoi(vars["offset"])
+		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
 
 		Battles := a.db.TeamBattleList(TeamID, Limit, Offset)
 
@@ -148,11 +157,9 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 // handleTeamRemoveBattle handles removing battle from a team
 func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
-
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		BattleID := keyVal["id"].(string)
+		BattleID := vars["battleId"]
 
 		err := a.db.TeamRemoveBattle(TeamID, BattleID)
 		if err != nil {
@@ -167,8 +174,8 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 // handleDeleteTeam handles deleting a team
 func (a *api) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
-		TeamID := keyVal["id"].(string)
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
 
 		err := a.db.TeamDelete(TeamID)
 		if err != nil {

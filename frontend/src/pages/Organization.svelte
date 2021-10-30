@@ -66,7 +66,7 @@
     }
 
     function getOrganization() {
-        xfetch(`/api/organization/${organizationId}`)
+        xfetch(`/api/organizations/${organizationId}`)
             .then(res => res.json())
             .then(function(result) {
                 organization = result.organization
@@ -84,7 +84,7 @@
     function getDepartments() {
         const departmentsOffset = (departmentsPage - 1) * departmentsPageLimit
         xfetch(
-            `/api/organization/${organizationId}/departments/${departmentsPageLimit}/${departmentsOffset}`,
+            `/api/organizations/${organizationId}/departments?limit=${departmentsPageLimit}&offset=${departmentsOffset}`,
         )
             .then(res => res.json())
             .then(function(result) {
@@ -98,7 +98,7 @@
     function getTeams() {
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
         xfetch(
-            `/api/organization/${organizationId}/teams/${teamsPageLimit}/${teamsOffset}`,
+            `/api/organizations/${organizationId}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
         )
             .then(res => res.json())
             .then(function(result) {
@@ -112,7 +112,7 @@
     function getUsers() {
         const usersOffset = (usersPage - 1) * usersPageLimit
         xfetch(
-            `/api/organization/${organizationId}/users/${usersPageLimit}/${usersOffset}`,
+            `/api/organizations/${organizationId}/users?limit=${usersPageLimit}&offset=${usersOffset}`,
         )
             .then(res => res.json())
             .then(function(result) {
@@ -128,12 +128,12 @@
             name,
         }
 
-        xfetch(`/api/organization/${organizationId}/departments`, { body })
+        xfetch(`/api/organizations/${organizationId}/departments`, { body })
             .then(res => res.json())
             .then(function(department) {
                 eventTag('create_department', 'engagement', 'success', () => {
                     router.route(
-                        `${appRoutes.organization}/${organizationId}/department/${department.id}`,
+                        `${appRoutes.organization}/${organizationId}/departments/${department.id}`,
                     )
                 })
             })
@@ -148,7 +148,7 @@
             name,
         }
 
-        xfetch(`/api/organization/${organizationId}/teams`, { body })
+        xfetch(`/api/organizations/${organizationId}/teams`, { body })
             .then(res => res.json())
             .then(function(organization) {
                 eventTag('create_organization_team', 'engagement', 'success')
@@ -168,7 +168,7 @@
             role,
         }
 
-        xfetch(`/api/organization/${organizationId}/users`, { body })
+        xfetch(`/api/organizations/${organizationId}/users`, { body })
             .then(function() {
                 eventTag('organization_add_user', 'engagement', 'success')
                 toggleAddUser()
@@ -182,12 +182,7 @@
     }
 
     function handleUserRemove() {
-        const body = {
-            id: removeUserId,
-        }
-
-        xfetch(`/api/organization/${organizationId}/user`, {
-            body,
+        xfetch(`/api/organizations/${organizationId}/users/${removeUserId}`, {
             method: 'DELETE',
         })
             .then(function() {
@@ -203,12 +198,7 @@
     }
 
     function handleDeleteTeam() {
-        const body = {
-            id: deleteTeamId,
-        }
-
-        xfetch(`/api/organization/${organizationId}/team`, {
-            body,
+        xfetch(`/api/organizations/${organizationId}/teams/${deleteTeamId}`, {
             method: 'DELETE',
         })
             .then(function() {

@@ -286,8 +286,8 @@ func (a *api) handleLogout() http.HandlerFunc {
 	}
 }
 
-// handleUserRecruit registers a user as a guest user
-func (a *api) handleUserRecruit() http.HandlerFunc {
+// handleCreateGuestUser registers a user as a guest user
+func (a *api) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
 		if !AllowGuests {
@@ -311,8 +311,8 @@ func (a *api) handleUserRecruit() http.HandlerFunc {
 	}
 }
 
-// handleUserEnlist registers a new authenticated user
-func (a *api) handleUserEnlist() http.HandlerFunc {
+// handleUserRegistration registers a new authenticated user
+func (a *api) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
 		if !AllowRegistration {
