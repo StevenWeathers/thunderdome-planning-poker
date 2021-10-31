@@ -133,7 +133,7 @@
             .then(function(result) {
                 eventTag('create_department', 'engagement', 'success', () => {
                     router.route(
-                        `${appRoutes.organization}/${organizationId}/departments/${result.data.id}`,
+                        `${appRoutes.organization}/${organizationId}/department/${result.data.id}`,
                     )
                 })
             })
