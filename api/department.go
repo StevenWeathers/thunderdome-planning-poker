@@ -67,13 +67,13 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -111,7 +111,7 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		DepartmentID, err := a.db.DepartmentCreate(OrgID, OrgName)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -186,7 +186,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		TeamID, err := a.db.DepartmentTeamCreate(DepartmentID, TeamName)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -219,13 +219,13 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			Error(w, r, http.StatusInternalServerError, "USER_NOT_FOUND")
+			Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
 		_, err := a.db.DepartmentAddUser(DepartmentId, User.UserID, Role)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -252,7 +252,7 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 
 		err := a.db.DepartmentRemoveUser(DepartmentID, UserID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -284,19 +284,19 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			Error(w, r, http.StatusInternalServerError, "USER_NOT_FOUND")
+			Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
 		_, DepartmentRole, roleErr := a.db.DepartmentUserRole(User.UserID, OrgID, DepartmentID)
 		if DepartmentRole == "" || roleErr != nil {
-			Error(w, r, http.StatusInternalServerError, "DEPARTMENT_USER_REQUIRED")
+			Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "DEPARTMENT_USER_REQUIRED"))
 			return
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -327,19 +327,19 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

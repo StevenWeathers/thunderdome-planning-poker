@@ -19,7 +19,7 @@ func (a *api) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AppStats, err := a.db.GetAppStats()
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -75,13 +75,13 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 		)
 
 		if accountErr != nil {
-			Error(w, r, http.StatusBadRequest, accountErr.Error())
+			Failure(w, r, http.StatusBadRequest, accountErr)
 			return
 		}
 
 		newUser, VerifyID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, "")
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -107,13 +107,13 @@ func (a *api) handleAdminUserDelete() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			Error(w, r, http.StatusInternalServerError, UserErr.Error())
+			Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
 		updateErr := a.db.DeleteUser(UserID)
 		if updateErr != nil {
-			Error(w, r, http.StatusInternalServerError, updateErr.Error())
+			Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
@@ -140,7 +140,7 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 
 		err := a.db.PromoteUser(UserID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -164,7 +164,7 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 
 		err := a.db.DemoteUser(UserID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

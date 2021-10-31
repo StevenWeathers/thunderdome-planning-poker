@@ -27,13 +27,13 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != AuthedUserID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		battles, err := a.db.GetBattlesByUser(UserID)
 		if err != nil {
-			Error(w, r, http.StatusNotFound, "")
+			Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
 		}
 
@@ -58,13 +58,13 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != AuthedUserID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
-			Error(w, r, http.StatusInternalServerError, bodyErr.Error())
+			Failure(w, r, http.StatusInternalServerError, bodyErr)
 			return
 		}
 
@@ -80,7 +80,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		newBattle, err := a.db.CreateBattle(UserID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting, keyVal.PointAverageRounding)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -112,7 +112,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 				err := a.db.TeamAddBattle(TeamID, newBattle.BattleID)
 
 				if err != nil {
-					Error(w, r, http.StatusInternalServerError, err.Error())
+					Failure(w, r, http.StatusInternalServerError, err)
 					return
 				}
 			}

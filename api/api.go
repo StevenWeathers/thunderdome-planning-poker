@@ -229,11 +229,18 @@ func Success(w http.ResponseWriter, r *http.Request, code int, data interface{},
 	w.Write(response)
 }
 
-// Error responds with an error and its associated status code header
-func Error(w http.ResponseWriter, r *http.Request, code int, err string) {
+// Failure responds with an error and its associated status code header
+func Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
+	// Extract error message.
+	errCode, errMessage := ErrorCode(err), ErrorMessage(err)
+
+	if errCode == EINTERNAL {
+		LogError(r, err)
+	}
+
 	result := &standardJsonResponse{
 		Success: false,
-		Error:   err,
+		Error:   errMessage,
 		Data:    map[string]interface{}{},
 		Meta:    map[string]interface{}{},
 	}
@@ -243,6 +250,11 @@ func Error(w http.ResponseWriter, r *http.Request, code int, err string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+// LogError logs an error with the HTTP route information.
+func LogError(r *http.Request, err error) {
+	log.Printf("[http] error: %s %s: %s", r.Method, r.URL.Path, err)
 }
 
 // getJSONRequestBody gets a JSON request body broken into a key/value map
@@ -262,21 +274,17 @@ func getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[string]inter
 // getLimitOffsetFromRequest gets the limit and offset query parameters from the request
 // defaulting to 20 for limit and 0 for offset
 func getLimitOffsetFromRequest(r *http.Request, w http.ResponseWriter) (limit int, offset int) {
+	defaultLimit := 20
+	defaultOffset := 0
 	query := r.URL.Query()
 	Limit, limitErr := strconv.Atoi(query.Get("limit"))
-	if limitErr != nil {
-		log.Println(limitErr)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	if limitErr != nil || Limit == 0 {
+		Limit = defaultLimit
 	}
+
 	Offset, offsetErr := strconv.Atoi(query.Get("offset"))
 	if offsetErr != nil {
-		log.Println(offsetErr)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	if Limit == 0 {
-		Limit = 20
+		Offset = defaultOffset
 	}
 
 	return Limit, Offset

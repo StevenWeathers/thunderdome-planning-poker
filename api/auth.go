@@ -44,7 +44,7 @@ func (a *api) handleLogin() http.HandlerFunc {
 
 		authedUser, err := a.db.AuthUser(UserEmail, UserPassword)
 		if err != nil {
-			Error(w, r, http.StatusUnauthorized, "")
+			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
 
@@ -52,7 +52,7 @@ func (a *api) handleLogin() http.HandlerFunc {
 		if cookie != nil {
 			http.SetCookie(w, cookie)
 		} else {
-			Error(w, r, http.StatusInternalServerError, "")
+			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
@@ -79,7 +79,7 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 
 		authedUser, err := a.authAndCreateUserLdap(UserEmail, UserPassword)
 		if err != nil {
-			Error(w, r, http.StatusUnauthorized, "")
+			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
 
@@ -87,7 +87,7 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 		if cookie != nil {
 			http.SetCookie(w, cookie)
 		} else {
-			Error(w, r, http.StatusInternalServerError, "")
+			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
@@ -120,7 +120,7 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
 		if !AllowGuests {
-			Error(w, r, http.StatusBadRequest, "GUESTS_USERS_DISABLED")
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "GUESTS_USERS_DISABLED"))
 			return
 		}
 
@@ -130,7 +130,7 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 
 		newUser, err := a.db.CreateUserGuest(UserName)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -152,7 +152,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
 		if !AllowRegistration {
-			Error(w, r, http.StatusBadRequest, "USER_REGISTRATION_DISABLED")
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "USER_REGISTRATION_DISABLED"))
 		}
 
 		keyVal := getJSONRequestBody(r, w)
@@ -167,13 +167,13 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 		)
 
 		if accountErr != nil {
-			Error(w, r, http.StatusBadRequest, accountErr.Error())
+			Failure(w, r, http.StatusBadRequest, accountErr)
 			return
 		}
 
 		newUser, VerifyID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -224,13 +224,13 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 		)
 
 		if passwordErr != nil {
-			Error(w, r, http.StatusBadRequest, passwordErr.Error())
+			Failure(w, r, http.StatusBadRequest, passwordErr)
 			return
 		}
 
 		UserName, UserEmail, resetErr := a.db.UserResetPassword(ResetID, UserPassword)
 		if resetErr != nil {
-			Error(w, r, http.StatusInternalServerError, resetErr.Error())
+			Failure(w, r, http.StatusInternalServerError, resetErr)
 			return
 		}
 
@@ -259,13 +259,13 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 		)
 
 		if passwordErr != nil {
-			Error(w, r, http.StatusBadRequest, passwordErr.Error())
+			Failure(w, r, http.StatusBadRequest, passwordErr)
 			return
 		}
 
 		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(UserID, UserPassword)
 		if updateErr != nil {
-			Error(w, r, http.StatusInternalServerError, updateErr.Error())
+			Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
@@ -289,7 +289,7 @@ func (a *api) handleAccountVerification() http.HandlerFunc {
 
 		verifyErr := a.db.VerifyUserAccount(VerifyID)
 		if verifyErr != nil {
-			Error(w, r, http.StatusInternalServerError, verifyErr.Error())
+			Failure(w, r, http.StatusInternalServerError, verifyErr)
 			return
 		}
 
@@ -338,7 +338,7 @@ func (a *api) createUserCookie(w http.ResponseWriter, r *http.Request, isRegiste
 
 	encoded, err := a.cookie.Encode(a.config.SecureCookieName, UserID)
 	if err != nil {
-		Error(w, r, http.StatusInternalServerError, "")
+		Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 		return
 
 	}

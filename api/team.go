@@ -33,7 +33,7 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -63,7 +63,7 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
@@ -113,7 +113,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
@@ -122,7 +122,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 		TeamName := keyVal["name"].(string)
 		TeamID, err := a.db.TeamCreate(UserID, TeamName)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -157,13 +157,13 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			Error(w, r, http.StatusInternalServerError, "USER_NOT_FOUND")
+			Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -190,7 +190,7 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 
 		err := a.db.TeamRemoveUser(TeamID, UserID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -237,7 +237,7 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 
 		err := a.db.TeamRemoveBattle(TeamID, BattleID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -262,7 +262,7 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 
 		err := a.db.TeamDelete(TeamID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

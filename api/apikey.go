@@ -23,13 +23,13 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
 		if keysErr != nil {
-			Error(w, r, http.StatusInternalServerError, keysErr.Error())
+			Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
@@ -56,24 +56,24 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
 		if keysErr != nil {
-			Error(w, r, http.StatusInternalServerError, keysErr.Error())
+			Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
 		if len(APIKeys) == a.config.UserAPIKeyLimit {
-			Error(w, r, http.StatusForbidden, "USER_APIKEY_LIMIT_REACHED")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "USER_APIKEY_LIMIT_REACHED"))
 			return
 		}
 
 		APIKey, keyErr := a.db.GenerateAPIKey(UserID, APIKeyName)
 		if keyErr != nil {
-			Error(w, r, http.StatusInternalServerError, keyErr.Error())
+			Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
 		}
 
@@ -99,7 +99,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 		APK := vars["keyID"]
@@ -108,7 +108,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 
 		APIKeys, keysErr := a.db.UpdateUserAPIKey(UserID, APK, active)
 		if keysErr != nil {
-			Error(w, r, http.StatusInternalServerError, keysErr.Error())
+			Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
@@ -134,14 +134,14 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 		APK := vars["keyID"]
 
 		APIKeys, keysErr := a.db.DeleteUserAPIKey(UserID, APK)
 		if keysErr != nil {
-			Error(w, r, http.StatusInternalServerError, keysErr.Error())
+			Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 

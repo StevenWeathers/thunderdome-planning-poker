@@ -37,7 +37,7 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
@@ -71,7 +71,7 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -101,7 +101,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != AuthedUserID {
-			Error(w, r, http.StatusForbidden, "")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
@@ -110,7 +110,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 		OrgName := keyVal["name"].(string)
 		OrgId, err := a.db.OrganizationCreate(UserID, OrgName)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -185,7 +185,7 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		TeamID, err := a.db.OrganizationTeamCreate(OrgID, TeamName)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -220,13 +220,13 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			Error(w, r, http.StatusInternalServerError, "USER_NOT_FOUND")
+			Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
 		_, err := a.db.OrganizationAddUser(OrgID, User.UserID, Role)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -253,7 +253,7 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 
 		err := a.db.OrganizationRemoveUser(OrgID, UserID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -283,13 +283,13 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -329,19 +329,19 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			Error(w, r, http.StatusInternalServerError, "USER_NOT_FOUND")
+			Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
 		OrgRole, roleErr := a.db.OrganizationUserRole(User.UserID, OrgID)
 		if OrgRole == "" || roleErr != nil {
-			Error(w, r, http.StatusInternalServerError, "ORGANIZATION_USER_REQUIRED")
+			Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

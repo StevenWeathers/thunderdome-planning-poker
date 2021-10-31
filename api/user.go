@@ -23,13 +23,13 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != UserCookieID {
-			Error(w, r, http.StatusForbidden, "INVALID_USER")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			Error(w, r, http.StatusInternalServerError, UserErr.Error())
+			Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
@@ -62,19 +62,19 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			Error(w, r, http.StatusForbidden, "INVALID_USER")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		updateErr := a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 		if updateErr != nil {
-			Error(w, r, http.StatusInternalServerError, updateErr.Error())
+			Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
 		user, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			Error(w, r, http.StatusInternalServerError, UserErr.Error())
+			Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
@@ -99,19 +99,19 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			Error(w, r, http.StatusForbidden, "INVALID_USER")
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			Error(w, r, http.StatusInternalServerError, UserErr.Error())
+			Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
 		updateErr := a.db.DeleteUser(UserID)
 		if updateErr != nil {
-			Error(w, r, http.StatusInternalServerError, updateErr.Error())
+			Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
@@ -135,7 +135,7 @@ func (a *api) handleGetActiveCountries() http.HandlerFunc {
 		countries, err := a.db.GetActiveCountries()
 
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

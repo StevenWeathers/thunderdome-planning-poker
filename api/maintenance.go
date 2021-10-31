@@ -21,7 +21,7 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 
 		err := a.db.CleanBattles(DaysOld)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -43,7 +43,7 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 
 		err := a.db.CleanGuests(DaysOld)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -63,7 +63,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lowercasedUsers, err := a.db.LowercaseUserEmails()
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -74,7 +74,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 
 		mergedUsers, err := a.db.MergeDuplicateAccounts()
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

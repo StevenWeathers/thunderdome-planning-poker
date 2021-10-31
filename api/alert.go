@@ -23,7 +23,7 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
 		Alerts, Count, err := a.db.AlertsList(Limit, Offset)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -64,7 +64,7 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 
 		err := a.db.AlertsCreate(Name, Type, Content, Active, AllowDismiss, RegisteredOnly)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -97,7 +97,7 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 
 		err := a.db.AlertsUpdate(ID, Name, Type, Content, Active, AllowDismiss, RegisteredOnly)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -123,7 +123,7 @@ func (a *api) handleAlertDelete() http.HandlerFunc {
 
 		err := a.db.AlertDelete(AlertID)
 		if err != nil {
-			Error(w, r, http.StatusInternalServerError, err.Error())
+			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
