@@ -240,12 +240,8 @@ func (d *Database) TeamList(Limit int, Offset int) []*model.Team {
 func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
 	var APIKeys = make([]*model.APIKey, 0)
 	rows, err := d.db.Query(
-		`SELECT apk.id, apk.name, u.email, apk.active, apk.created_date, apk.updated_date
-		FROM api_keys apk
-		LEFT JOIN users u ON apk.user_id = u.id
-		ORDER BY apk.created_date
-		LIMIT $1
-		OFFSET $2;`,
+		`SELECT id, name, email, active, created_date, updated_date
+		FROM apikeys_list($1, $2);`,
 		Limit,
 		Offset,
 	)

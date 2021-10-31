@@ -14,12 +14,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*model.User {
 	rows, err := d.db.Query(
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title
-		FROM users
-		WHERE email IS NOT NULL
-		ORDER BY created_date
-		LIMIT $1
-		OFFSET $2
-		`,
+		FROM registered_users_list($1, $2);`,
 		Limit,
 		Offset,
 	)
@@ -27,28 +22,20 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*model.User {
 		defer rows.Close()
 		for rows.Next() {
 			var w model.User
-			var UserEmail sql.NullString
-			var UserCountry sql.NullString
-			var UserCompany sql.NullString
-			var UserJobTitle sql.NullString
 
 			if err := rows.Scan(
 				&w.UserID,
 				&w.UserName,
-				&UserEmail,
+				&w.UserEmail,
 				&w.UserType,
 				&w.UserAvatar,
 				&w.Verified,
-				&UserCountry,
-				&UserCompany,
-				&UserJobTitle,
+				&w.Country,
+				&w.Company,
+				&w.JobTitle,
 			); err != nil {
 				log.Println(err)
 			} else {
-				w.UserEmail = UserEmail.String
-				w.Country = UserCountry.String
-				w.Company = UserCompany.String
-				w.JobTitle = UserJobTitle.String
 				users = append(users, &w)
 			}
 		}
