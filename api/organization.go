@@ -8,6 +8,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type createOrgResponse struct {
+	OrganizationID string `json:"id"`
+}
+
+type orgTeamResponse struct {
+	Organization     *model.Organization `json:"organization"`
+	Team             *model.Team         `json:"team"`
+	OrganizationRole string              `json:"organizationRole"`
+	TeamRole         string              `json:"teamRole"`
+}
+
 // handleGetOrganizationsByUser gets a list of organizations the user is apart of
 // @Summary Get Users Organizations
 // @Description get list of organizations for the authenticated user
@@ -39,6 +50,15 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 }
 
 // handleGetOrganizationByUser gets an organization with user role
+// @Summary Get Organization
+// @Description get an organization with user role
+// @Tags organization
+// @Produce  json
+// @Param id path int false "organization id"
+// @Success 200 object standardJsonResponse{data=model.Organization}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /organizations/{id} [get]
 func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 	type OrganizationResponse struct {
 		Organization *model.Organization `json:"organization"`
@@ -67,11 +87,16 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 }
 
 // handleCreateOrganization handles creating an organization with current user as admin
+// @Summary Create Organization
+// @Description Create organization with current user as admin
+// @Tags organization
+// @Produce  json
+// @Param id path int false "user id"
+// @Success 200 object standardJsonResponse{data=createOrgResponse}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /users/{id}/organizations [post]
 func (a *api) handleCreateOrganization() http.HandlerFunc {
-	type CreateOrgResponse struct {
-		OrganizationID string `json:"id"`
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["id"]
@@ -93,7 +118,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 			return
 		}
 
-		var NewOrg = &CreateOrgResponse{
+		var NewOrg = &createOrgResponse{
 			OrganizationID: OrgId,
 		}
 
@@ -102,6 +127,14 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 }
 
 // handleGetOrganizationTeams gets a list of teams associated to the organization
+// @Summary Get Organization Teams
+// @Description get a list of organization teams
+// @Tags organization
+// @Produce  json
+// @Param id path int false "organization id"
+// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Failure 403 object standardJsonResponse{}
+// @Router /organizations/{id}/teams [get]
 func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -115,6 +148,14 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 }
 
 // handleGetOrganizationUsers gets a list of users associated to the organization
+// @Summary Get Organization Users
+// @Description get a list of organization users
+// @Tags organization
+// @Produce  json
+// @Param id path int false "organization id"
+// @Success 200 object standardJsonResponse{data=[]model.User}
+// @Failure 403 object standardJsonResponse{}
+// @Router /organizations/{id}/users [get]
 func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -128,11 +169,17 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 }
 
 // handleCreateOrganizationTeam handles creating an organization team
+// @Summary Create Organization Team
+// @Description Create organization team with current user as admin
+// @Tags organization
+// @Produce  json
+// @Param id path int false "organization id"
+// @Param name body string false "team name"
+// @Success 200 object standardJsonResponse{data=createTeamResponse}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /organizations/{id}/teams [post]
 func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
-	type CreateTeamResponse struct {
-		TeamID string `json:"id"`
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
@@ -148,7 +195,7 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 			return
 		}
 
-		var NewTeam = &CreateTeamResponse{
+		var NewTeam = &createTeamResponse{
 			TeamID: TeamID,
 		}
 
@@ -157,6 +204,17 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 }
 
 // handleOrganizationAddUser handles adding user to an organization
+// @Summary Add Org User
+// @Description Add user to organization
+// @Tags organization
+// @Produce  json
+// @Param id path int false "organization id"
+// @Param email body int false "user email"
+// @Param role body int false "user team role"
+// @Success 200 object standardJsonResponse{data=createTeamResponse}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /organizations/{id}/users [post]
 func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := a.getJSONRequestBody(r, w)
@@ -187,6 +245,16 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 }
 
 // handleOrganizationRemoveUser handles removing user from an organization (including departments, teams)
+// @Summary Remove Org User
+// @Description Remove user from organization including departments and teams
+// @Tags organization
+// @Produce  json
+// @Param id path int false "organization id"
+// @Param userId path int false "user id"
+// @Success 200 object standardJsonResponse{}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /organizations/{id}/users/{userId} [delete]
 func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -206,13 +274,18 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 }
 
 // handleGetOrganizationTeamByUser gets a team with users roles
+// @Summary Get Organization Team
+// @Description Get an organizations team with users roles
+// @Tags organization
+// @Produce  json
+// @Param id path int false "organization id"
+// @Param teamId path int false "team id"
+// @Success 200 object standardJsonResponse{data=orgTeamResponse}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /organizations/{id}/teams/{teamId} [get]
 func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
-	type TeamResponse struct {
-		Organization     *model.Organization `json:"organization"`
-		Team             *model.Team         `json:"team"`
-		OrganizationRole string              `json:"organizationRole"`
-		TeamRole         string              `json:"teamRole"`
-	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
@@ -236,7 +309,7 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			return
 		}
 
-		result := &TeamResponse{
+		result := &orgTeamResponse{
 			Organization:     Organization,
 			Team:             Team,
 			OrganizationRole: OrgRole,
@@ -248,6 +321,17 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 }
 
 // handleOrganizationTeamAddUser handles adding user to a team so long as they are in the organization
+// @Summary Add Org Team User
+// @Description Add user to organization team as long as they are already in the organization
+// @Tags organization
+// @Produce  json
+// @Param id path int false "organization id"
+// @Param email body string false "user email"
+// @Param role body string false "user team role"
+// @Success 200 object standardJsonResponse{}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /organizations/{id}/teams [post]
 func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := a.getJSONRequestBody(r, w)
