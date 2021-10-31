@@ -34,24 +34,28 @@
 
     function getOrganizations() {
         const orgsOffset = (organizationsPage - 1) * organizationsPageLimit
-        xfetch(`/api/users/${$warrior.id}/organizations?limit=${organizationsPageLimit}&offset=${orgsOffset}`)
+        xfetch(
+            `/api/users/${$warrior.id}/organizations?limit=${organizationsPageLimit}&offset=${orgsOffset}`,
+        )
             .then(res => res.json())
             .then(function(result) {
                 organizations = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting organizations')
             })
     }
 
     function getTeams() {
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
-        xfetch(`/api/users/${$warrior.id}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`)
+        xfetch(
+            `/api/users/${$warrior.id}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
+        )
             .then(res => res.json())
             .then(function(result) {
                 teams = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting teams')
             })
     }
@@ -68,7 +72,7 @@
                     router.route(`${appRoutes.organization}/${result.data.id}`)
                 })
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error attempting to create organization')
                 eventTag('create_organization', 'engagement', 'failure')
             })
@@ -86,7 +90,7 @@
                     router.route(`${appRoutes.team}/${result.data.id}`)
                 })
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error attempting to create team')
                 eventTag('create_team', 'engagement', 'failure')
             })
@@ -151,7 +155,9 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">{$_('teams')}</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                        {$_('teams')}
+                    </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">

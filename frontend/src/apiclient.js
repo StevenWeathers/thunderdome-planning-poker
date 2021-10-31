@@ -1,4 +1,5 @@
 import { PathPrefix } from './config'
+
 /**
  * Extends fetch with common inputs e.g. credentials, content-type
  * and checks response status/ok for common errors
@@ -34,7 +35,7 @@ export default function(handle401) {
             }
 
             if (!response.ok) {
-                throw Error(response.statusText)
+                throw [Error(response.statusText), response]
             }
 
             return response

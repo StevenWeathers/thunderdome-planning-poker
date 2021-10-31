@@ -76,7 +76,7 @@
                 getTeams()
                 getUsers()
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('organizationGetError'))
             })
     }
@@ -90,7 +90,7 @@
             .then(function(result) {
                 departments = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('organizationGetDepartmentsError'))
             })
     }
@@ -104,7 +104,7 @@
             .then(function(result) {
                 teams = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('organizationGetTeamsError'))
             })
     }
@@ -118,7 +118,7 @@
             .then(function(result) {
                 users = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('organizationGetUsersError'))
             })
     }
@@ -137,7 +137,7 @@
                     )
                 })
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('departmentCreateError'))
                 eventTag('create_department', 'engagement', 'failure')
             })
@@ -229,7 +229,9 @@
 </svelte:head>
 
 <PageLayout>
-    <h1 class="mb-4 text-3xl font-bold">{$_('organization')}: {organization.name}</h1>
+    <h1 class="mb-4 text-3xl font-bold">
+        {$_('organization')}: {organization.name}
+    </h1>
 
     <div class="w-full mb-4">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">

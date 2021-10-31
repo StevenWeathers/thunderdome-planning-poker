@@ -130,7 +130,7 @@ func Init(config *ApiConfig, router *mux.Router, database *database.Database, em
 	userRouter.HandleFunc("/{id}/teams", a.userOnly(a.handleCreateTeam())).Methods("POST")
 	if a.config.ExternalAPIEnabled {
 		userRouter.HandleFunc("/{id}/apikeys", a.userOnly(a.handleUserAPIKeys())).Methods("GET")
-		userRouter.HandleFunc("/{id}/apikeys", a.userOnly(a.handleAPIKeyGenerate())).Methods("POST")
+		userRouter.HandleFunc("/{id}/apikeys", a.verifiedUserOnly(a.handleAPIKeyGenerate())).Methods("POST")
 		userRouter.HandleFunc("/{id}/apikeys/{keyID}", a.userOnly(a.handleUserAPIKeyUpdate())).Methods("PUT")
 		userRouter.HandleFunc("/{id}/apikeys/{keyID}", a.userOnly(a.handleUserAPIKeyDelete())).Methods("DELETE")
 	}

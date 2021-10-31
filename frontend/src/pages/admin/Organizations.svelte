@@ -33,7 +33,7 @@
             .then(function(result) {
                 appStats = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting application stats')
             })
     }
@@ -48,7 +48,7 @@
             .then(function(result) {
                 organizations = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting organizations')
             })
     }
@@ -72,7 +72,9 @@
 </script>
 
 <svelte:head>
-    <title>{$_('organizations')} {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>
+        {$_('organizations')} {$_('pages.admin.title')} | {$_('appName')}
+    </title>
 </svelte:head>
 
 <AdminPageLayout activePage="organizations">

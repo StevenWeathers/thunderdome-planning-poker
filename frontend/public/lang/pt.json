@@ -185,7 +185,9 @@
                     "closeButton": "Close"
                 },
                 "createSuccess": "New Api Key {keyName} created and {onlyNowOpen}it will be displayed only now{onlyNowClose}",
-                "storeWarning": "Please store it somewhere safe because as soon as you navigate away from this page, we will not be able to retrieve or restore this generated token."
+                "storeWarning": "Please store it somewhere safe because as soon as you navigate away from this page, we will not be able to retrieve or restore this generated token.",
+                "limitReached": "You have the max number of API keys allowd.",
+                "unverifiedUser": "Only verified registered users can create API keys."
             },
             "delete": {
                 "deleteButton": "Delete Account",

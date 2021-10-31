@@ -21,21 +21,21 @@ func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
 			if apiKeyErr != nil {
 				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
-				w.WriteHeader(http.StatusUnauthorized)
+				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
 				return
 			}
 		} else {
 			var cookieErr error
 			UserID, cookieErr = a.validateUserCookie(w, r)
 			if cookieErr != nil {
-				w.WriteHeader(http.StatusUnauthorized)
+				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
 				return
 			}
 		}
 
 		adminErr := a.db.ConfirmAdmin(UserID)
 		if adminErr != nil {
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -57,14 +57,14 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
 			if apiKeyErr != nil {
 				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
-				w.WriteHeader(http.StatusUnauthorized)
+				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
 				return
 			}
 		} else {
 			var cookieErr error
 			UserID, cookieErr = a.validateUserCookie(w, r)
 			if cookieErr != nil {
-				w.WriteHeader(http.StatusUnauthorized)
+				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
 				return
 			}
 		}
@@ -73,7 +73,52 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 		if UserErr != nil {
 			log.Println("error finding user : " + UserErr.Error() + "\n")
 			a.clearUserCookies(w)
-			w.WriteHeader(http.StatusUnauthorized)
+			a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), contextKeyUserID, UserID)
+
+		h(w, r.WithContext(ctx))
+	}
+}
+
+// verifiedUserOnly validates that the request was made by a verified registered user
+func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		apiKey := r.Header.Get(apiKeyHeaderName)
+		apiKey = strings.TrimSpace(apiKey)
+		var UserID string
+
+		if apiKey != "" && a.config.ExternalAPIEnabled == true {
+			var apiKeyErr error
+			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
+			if apiKeyErr != nil {
+				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
+				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+				return
+			}
+		} else {
+			var cookieErr error
+			UserID, cookieErr = a.validateUserCookie(w, r)
+			if cookieErr != nil {
+				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+				return
+			}
+		}
+
+		User, UserErr := a.db.GetUser(UserID)
+		if UserErr != nil {
+			log.Println("error finding user : " + UserErr.Error() + "\n")
+			a.clearUserCookies(w)
+			a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+			return
+		}
+
+		if User.Verified == false {
+			errors := make([]string, 0)
+			errors = append(errors, "USER_NOT_VERIFIED")
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, errors, nil, nil)
 			return
 		}
 
@@ -93,7 +138,7 @@ func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -113,12 +158,12 @@ func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 		if Role != "ADMIN" {
 			log.Println("user is not an ADMIN of organization")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -139,7 +184,7 @@ func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -161,12 +206,12 @@ func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 		if TeamRole != "ADMIN" && OrgRole != "ADMIN" {
 			log.Println("user is not an ADMIN of organization")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -188,7 +233,7 @@ func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -210,12 +255,12 @@ func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserErr != nil {
 			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 		if DepartmentRole != "ADMIN" && OrgRole != "ADMIN" {
 			log.Println("user is not an ADMIN of department or organization")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -238,7 +283,7 @@ func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in department team : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -262,13 +307,13 @@ func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in department team : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
 		if TeamRole != "ADMIN" && DepartmentRole != "ADMIN" && OrgRole != "ADMIN" {
 			log.Println("user is not an ADMIN of organization")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -290,7 +335,7 @@ func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in team : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 
@@ -310,12 +355,12 @@ func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserErr != nil {
 			log.Println("error finding user in team : " + UserErr.Error() + "\n")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 		if Role != "ADMIN" {
 			log.Println("user is not an ADMIN of team")
-			w.WriteHeader(http.StatusForbidden)
+			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
 			return
 		}
 

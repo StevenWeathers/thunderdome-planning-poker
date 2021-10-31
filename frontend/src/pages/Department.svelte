@@ -62,7 +62,9 @@
     }
 
     function getDepartment() {
-        xfetch(`/api/organizations/${organizationId}/departments/${departmentId}`)
+        xfetch(
+            `/api/organizations/${organizationId}/departments/${departmentId}`,
+        )
             .then(res => res.json())
             .then(function(result) {
                 department = result.data.department
@@ -73,7 +75,7 @@
                 getTeams()
                 getUsers()
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('departmentGetError'))
             })
     }
@@ -87,7 +89,7 @@
             .then(function(result) {
                 teams = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('departmentTeamsGetError'))
             })
     }
@@ -101,7 +103,7 @@
             .then(function(result) {
                 users = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('departmentUsersGetError'))
             })
     }
@@ -122,7 +124,7 @@
                 notifications.success($_('teamCreateSuccess'))
                 getTeams()
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('teamCreateError'))
                 eventTag('create_department_team', 'engagement', 'failure')
             })

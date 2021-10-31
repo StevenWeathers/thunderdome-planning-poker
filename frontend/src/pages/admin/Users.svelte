@@ -34,7 +34,7 @@
     let warriorDeleteId = null
     let showWarriorDeletion = false
 
-    const toggleDeleteWarrior = (id) => () => {
+    const toggleDeleteWarrior = id => () => {
         showWarriorDeletion = !showWarriorDeletion
         warriorDeleteId = id
     }
@@ -63,7 +63,7 @@
                 getWarriors()
                 toggleCreateWarrior()
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error encountered creating warrior')
                 eventTag('admin_create_warrior', 'engagement', 'failure')
             })
@@ -75,19 +75,21 @@
             .then(function(result) {
                 appStats = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting application stats')
             })
     }
 
     function getWarriors() {
         const warriorsOffset = (warriorsPage - 1) * warriorsPageLimit
-        xfetch(`/api/admin/users?limit=${warriorsPageLimit}&offset=${warriorsOffset}`)
+        xfetch(
+            `/api/admin/users?limit=${warriorsPageLimit}&offset=${warriorsOffset}`,
+        )
             .then(res => res.json())
             .then(function(result) {
                 warriors = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting warriors')
             })
     }
@@ -100,7 +102,7 @@
 
                     getWarriors()
                 })
-                .catch(function(error) {
+                .catch(function() {
                     notifications.danger('Error encountered promoting warrior')
                     eventTag('admin_promote_warrior', 'engagement', 'failure')
                 })
@@ -115,7 +117,7 @@
 
                     getWarriors()
                 })
-                .catch(function(error) {
+                .catch(function() {
                     notifications.danger('Error encountered demoting warrior')
                     eventTag('admin_demote_warrior', 'engagement', 'failure')
                 })
@@ -123,14 +125,14 @@
     }
 
     function handleDeleteWarrior() {
-        xfetch(`/api/admin/users/${warriorDeleteId}`, { method: "DELETE" })
+        xfetch(`/api/admin/users/${warriorDeleteId}`, { method: 'DELETE' })
             .then(function() {
                 eventTag('admin_demote_warrior', 'engagement', 'success')
 
                 getWarriors()
                 toggleDeleteWarrior(null)()
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error encountered demoting warrior')
                 eventTag('admin_demote_warrior', 'engagement', 'failure')
             })
@@ -246,7 +248,9 @@
                                         {$_('demote')}
                                     </HollowButton>
                                 {/if}
-                                <HollowButton color="red" onClick={toggleDeleteWarrior(warrior.id)}>
+                                <HollowButton
+                                    color="red"
+                                    onClick="{toggleDeleteWarrior(warrior.id)}">
                                     {$_('delete')}
                                 </HollowButton>
                             </td>
@@ -275,6 +279,8 @@
     {/if}
 
     {#if showWarriorDeletion}
-        <DeleteWarrior toggleDeleteAccount={toggleDeleteWarrior(null)} handleDeleteAccount={handleDeleteWarrior} />
+        <DeleteWarrior
+            toggleDeleteAccount="{toggleDeleteWarrior(null)}"
+            handleDeleteAccount="{handleDeleteWarrior}" />
     {/if}
 </AdminPageLayout>

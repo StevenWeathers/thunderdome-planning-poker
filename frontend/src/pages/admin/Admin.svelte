@@ -37,7 +37,7 @@
             .then(function(result) {
                 appStats = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting application stats')
             })
     }
@@ -49,7 +49,7 @@
 
                 getAppStats()
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error encountered cleaning battles')
                 eventTag('admin_clean_battles', 'engagement', 'failure')
             })
@@ -62,7 +62,7 @@
 
                 getAppStats()
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error encountered cleaning guests')
                 eventTag('admin_clean_guests', 'engagement', 'failure')
             })
@@ -76,8 +76,10 @@
 
                 getAppStats()
             })
-            .catch(function(error) {
-                notifications.danger('Error encountered lowercasing user emails')
+            .catch(function() {
+                notifications.danger(
+                    'Error encountered lowercasing user emails',
+                )
                 eventTag('admin_lowercase_emails', 'engagement', 'failure')
             })
     }

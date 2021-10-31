@@ -37,9 +37,36 @@
                 eventTag('create_api_key', 'engagement', 'success')
             })
             .catch(function(error) {
-                notifications.danger(
-                    $_('pages.warriorProfile.apiKeys.createFailed'),
-                )
+                if (Array.isArray(error)) {
+                    const [statusText, response] = error
+
+                    response.json().then(function(result) {
+                        let errMessage
+                        switch (result.errors[0]) {
+                            case 'USER_APIKEY_LIMIT_REACHED':
+                                errMessage = $_(
+                                    'pages.warriorProfile.apiKeys.limitReached',
+                                )
+                                break
+                            case 'USER_NOT_VERIFIED':
+                                errMessage = $_(
+                                    'pages.warriorProfile.apiKeys.unverifiedUser',
+                                )
+                                break
+                            default:
+                                errMessage = $_(
+                                    'pages.warriorProfile.apiKeys.createFailed',
+                                )
+                        }
+
+                        notifications.danger(errMessage)
+                    })
+                } else {
+                    notifications.danger(
+                        $_('pages.warriorProfile.apiKeys.createFailed'),
+                    )
+                }
+
                 eventTag('create_api_key', 'engagement', 'failure')
             })
     }

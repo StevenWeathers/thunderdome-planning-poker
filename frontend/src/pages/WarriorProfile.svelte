@@ -79,7 +79,7 @@
         .then(function(result) {
             warriorProfile = result.data
         })
-        .catch(function(error) {
+        .catch(function() {
             notifications.danger($_('pages.warriorProfile.errorRetreiving'))
             eventTag('fetch_profile', 'engagement', 'failure')
         })
@@ -124,7 +124,7 @@
                     )
                     eventTag('update_profile', 'engagement', 'success')
                 })
-                .catch(function(error) {
+                .catch(function() {
                     notifications.danger(
                         $_('pages.warriorProfile.errorUpdating'),
                     )
@@ -161,7 +161,7 @@
                     updatePassword = false
                     eventTag('update_password', 'engagement', 'success')
                 })
-                .catch(function(error) {
+                .catch(function() {
                     notifications.danger(
                         $_('pages.warriorProfile.passwordUpdateError'),
                     )
@@ -176,7 +176,7 @@
             .then(function(result) {
                 apiKeys = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger(
                     $_('pages.warriorProfile.apiKeys.errorRetreiving'),
                 )
@@ -199,7 +199,7 @@
                     )
                     apiKeys = result.data
                 })
-                .catch(function(error) {
+                .catch(function() {
                     notifications.danger(
                         $_('pages.warriorProfile.apiKeys.deleteFailed'),
                     )
@@ -224,7 +224,7 @@
                     )
                     apiKeys = result.data
                 })
-                .catch(function(error) {
+                .catch(function() {
                     notifications.danger(
                         $_('pages.warriorProfile.apiKeys.updateFailed'),
                     )
@@ -263,9 +263,7 @@
 
     $: updateDisabled = warriorProfile.name === ''
     $: updatePasswordDisabled =
-        warriorPassword1 === '' ||
-        warriorPassword2 === '' ||
-        LdapEnabled
+        warriorPassword1 === '' || warriorPassword2 === '' || LdapEnabled
 </script>
 
 <svelte:head>

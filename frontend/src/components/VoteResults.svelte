@@ -20,7 +20,9 @@
         if (activePlan.votes.length > 0) {
             const votesToAverage = activePlan.votes
                 .filter(v => {
-                    const { spectator = false } = warriors.find(w => w.id === v.warriorId)
+                    const { spectator = false } = warriors.find(
+                        w => w.id === v.warriorId,
+                    )
                     return !spectator && v.vote !== '?'
                 })
                 .map(v => {

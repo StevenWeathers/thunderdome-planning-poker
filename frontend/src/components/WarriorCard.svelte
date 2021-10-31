@@ -37,9 +37,12 @@
     }
 
     function toggleSpectator() {
-        sendSocketEvent('spectator_toggle', JSON.stringify({
-            spectator: !warrior.spectator
-        }))
+        sendSocketEvent(
+            'spectator_toggle',
+            JSON.stringify({
+                spectator: !warrior.spectator,
+            }),
+        )
         eventTag(`spectator_toggle`, 'battle', '')
     }
 </script>
@@ -71,11 +74,13 @@
                         {/if}
                     {/if}
                     {#if autoFinishVoting && warrior.spectator}
-                        <span class="text-gray-600" title="{$_('spectator')}">{warrior.name}</span>
+                        <span class="text-gray-600" title="{$_('spectator')}">
+                            {warrior.name}
+                        </span>
                     {:else}
                         <span>{warrior.name}</span>
                     {/if}
-                    
+
                 </p>
                 {#if leaders.includes(warrior.id)}
                     <p class="text-l text-gray-700 leading-tight">
@@ -100,25 +105,24 @@
                         {$_('promote')}
                     </button>
                     {#if !warrior.spectator}
-                    &nbsp;|&nbsp;
-                    <button
-                        on:click="{jabWarrior}"
-                        class="inline-block align-baseline text-sm text-blue-500
-                        hover:text-blue-800 bg-transparent border-transparent">
-                        {$_('warriorNudge')}
-                    </button>
+                        &nbsp;|&nbsp;
+                        <button
+                            on:click="{jabWarrior}"
+                            class="inline-block align-baseline text-sm
+                            text-blue-500 hover:text-blue-800 bg-transparent
+                            border-transparent">
+                            {$_('warriorNudge')}
+                        </button>
                     {/if}
                 {/if}
-                {#if autoFinishVoting && (warrior.id === $activeWarrior.id)}
+                {#if autoFinishVoting && warrior.id === $activeWarrior.id}
                     <button
-                    on:click="{toggleSpectator}"
-                    class="inline-block align-baseline text-sm text-blue-500
-                    hover:text-blue-800 bg-transparent border-transparent">
-                    {#if !warrior.spectator}
-                        {$_('becomeSpectator')}
-                    {:else}
-                        {$_('becomeParticipant')}
-                    {/if}
+                        on:click="{toggleSpectator}"
+                        class="inline-block align-baseline text-sm text-blue-500
+                        hover:text-blue-800 bg-transparent border-transparent">
+                        {#if !warrior.spectator}
+                            {$_('becomeSpectator')}
+                        {:else}{$_('becomeParticipant')}{/if}
                     </button>
                 {/if}
             </div>
@@ -130,8 +134,8 @@
                         </span>
                     {:else if voted && points !== ''}
                         <span
-                            class="font-bold text-green-600 border-green-500 border
-                            p-2 rounded ml-2"
+                            class="font-bold text-green-600 border-green-500
+                            border p-2 rounded ml-2"
                             data-testId="warriorPoints">
                             {points}
                         </span>

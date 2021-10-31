@@ -93,7 +93,7 @@
                 alerts = result.data
                 alertCount = result.meta.count
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting alerts')
             })
     }

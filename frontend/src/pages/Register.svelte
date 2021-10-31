@@ -52,7 +52,7 @@
                         router.route(targetPage, true)
                     })
                 })
-                .catch(function(error) {
+                .catch(function() {
                     notifications.danger(
                         $_('pages.createAccount.guestForm.createError'),
                     )
@@ -90,7 +90,7 @@
                     router.route(targetPage, true)
                 })
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger(
                     $_('pages.createAccount.createAccountForm.createError'),
                 )

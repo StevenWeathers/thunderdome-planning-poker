@@ -23,7 +23,7 @@
         .then(function(result) {
             battles = result.data
         })
-        .catch(function(error) {
+        .catch(function() {
             notifications.danger($_('pages.myBattles.battlesError'))
             eventTag('fetch_battles', 'engagement', 'failure')
         })

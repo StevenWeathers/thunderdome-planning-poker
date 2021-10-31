@@ -31,7 +31,7 @@
             .then(function(result) {
                 appStats = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting application stats')
             })
     }
@@ -43,7 +43,7 @@
             .then(function(result) {
                 teams = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting teams')
             })
     }

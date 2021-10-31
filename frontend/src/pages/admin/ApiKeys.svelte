@@ -34,19 +34,21 @@
             .then(function(result) {
                 appStats = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting application stats')
             })
     }
 
     function getApiKeys() {
         const apikeysOffset = (apikeysPage - 1) * apikeysPageLimit
-        xfetch(`/api/admin/apikeys?limit=${apikeysPageLimit}&offset=${apikeysOffset}`)
+        xfetch(
+            `/api/admin/apikeys?limit=${apikeysPageLimit}&offset=${apikeysOffset}`,
+        )
             .then(res => res.json())
             .then(function(result) {
                 apikeys = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger('Error getting apikeys')
             })
     }

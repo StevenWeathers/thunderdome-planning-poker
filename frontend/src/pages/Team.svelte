@@ -90,31 +90,35 @@
                 getBattles()
                 getUsers()
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('teamGetError'))
             })
     }
 
     function getUsers() {
         const usersOffset = (usersPage - 1) * usersPageLimit
-        xfetch(`${teamPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`)
+        xfetch(
+            `${teamPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`,
+        )
             .then(res => res.json())
             .then(function(result) {
                 users = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('teamGetUsersError'))
             })
     }
 
     function getBattles() {
         const battlesOffset = (battlesPage - 1) * battlesPageLimit
-        xfetch(`${teamPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`)
+        xfetch(
+            `${teamPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
+        )
             .then(res => res.json())
             .then(function(result) {
                 battles = result.data
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('teamGetBattlesError'))
             })
     }
@@ -276,7 +280,9 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">{$_('users')}</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                        {$_('users')}
+                    </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">

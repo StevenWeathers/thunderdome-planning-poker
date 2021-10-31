@@ -79,9 +79,12 @@
 
     $: pointedPlans = plans.filter(p => p.points !== '')
     $: totalPoints = pointedPlans.reduce((previousValue, currentValue) => {
-                          var currentPoints = currentValue.points === '1/2' ? 0.5 : parseInt(currentValue.points);
-                          return isNaN(currentPoints) ? previousValue : previousValue + currentPoints;
-                      }, 0)
+        var currentPoints =
+            currentValue.points === '1/2' ? 0.5 : parseInt(currentValue.points)
+        return isNaN(currentPoints)
+            ? previousValue
+            : previousValue + currentPoints
+    }, 0)
     $: unpointedPlans = plans.filter(p => p.points === '')
 
     $: plansToShow = showCompleted ? pointedPlans : unpointedPlans

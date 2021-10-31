@@ -16,7 +16,7 @@
             accountVerified = true
             eventTag('account_verify', 'engagement', 'success')
         })
-        .catch(function(error) {
+        .catch(function() {
             verficationError = true
             eventTag('account_verify', 'engagement', 'failure')
         })

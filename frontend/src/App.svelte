@@ -200,7 +200,7 @@
                     router.route(appRoutes.landing, true)
                 })
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('logoutError'))
                 eventTag('logout', 'engagement', 'failure')
             })

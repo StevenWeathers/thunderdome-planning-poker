@@ -82,7 +82,7 @@
                     router.route(`${appRoutes.battle}/${battle.id}`)
                 })
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger(
                     $_('pages.myBattles.createBattle.createError'),
                 )

@@ -51,7 +51,7 @@
                     router.route(targetPage, true)
                 })
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('pages.login.authError'))
                 eventTag('login', 'engagement', 'failure')
             })
@@ -83,7 +83,7 @@
                 forgotPassword = !forgotPassword
                 eventTag('forgot_password', 'engagement', 'success')
             })
-            .catch(function(error) {
+            .catch(function() {
                 notifications.danger($_('pages.login.sendResetError'))
                 eventTag('forgot_password', 'engagement', 'failure')
             })

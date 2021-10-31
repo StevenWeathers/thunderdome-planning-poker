@@ -26,5 +26,7 @@
         src="{PathPrefix}/avatar/{width}/{warriorId}/{avatar}"
         alt="{$_('avatarAltText')}" />
 {:else if avatarService === 'goadorable'}
-    <img src="{PathPrefix}/avatar/{width}/{warriorId}" alt="{$_('avatarAltText')}" />
+    <img
+        src="{PathPrefix}/avatar/{width}/{warriorId}"
+        alt="{$_('avatarAltText')}" />
 {/if}

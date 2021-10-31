@@ -41,7 +41,7 @@
                         router.route(appRoutes.login, true)
                     })
                 })
-                .catch(function(error) {
+                .catch(function() {
                     notifications.danger(
                         $_('pages.login.passwordReset.resetError'),
                     )
