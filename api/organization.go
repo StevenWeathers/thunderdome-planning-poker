@@ -326,12 +326,13 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param id path int false "organization id"
+// @Param teamId path int false "team id"
 // @Param email body string false "user email"
 // @Param role body string false "user team role"
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /organizations/{id}/teams [post]
+// @Router /organizations/{id}/teams/{teamId}/users [post]
 func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := a.getJSONRequestBody(r, w)
