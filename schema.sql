@@ -6,288 +6,220 @@ CREATE extension IF NOT EXISTS "uuid-ossp";
 --
 -- Tables
 --
-CREATE TABLE IF NOT EXISTS battles (
-    id UUID NOT NULL PRIMARY KEY,
-    leader_id UUID,
-    name VARCHAR(256),
-    voting_locked BOOL DEFAULT true,
-    active_plan_id UUID
+CREATE TABLE IF NOT EXISTS "alert" (
+    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+    "name" varchar(256),
+    "type" varchar(128) DEFAULT 'NEW',
+    "content" text,
+    "active" bool DEFAULT true,
+    "allow_dismiss" bool DEFAULT true,
+    "registered_only" bool DEFAULT true,
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("id")
 );
 
-CREATE TABLE IF NOT EXISTS plans (
-    id UUID NOT NULL PRIMARY KEY,
-    name VARCHAR(256),
-    points VARCHAR(3) DEFAULT '',
-    active BOOL DEFAULT false,
-    battle_id UUID REFERENCES battles(id) NOT NULL,
-    votes JSONB DEFAULT '[]'::JSONB
+CREATE TABLE IF NOT EXISTS "api_keys" (
+    "id" text NOT NULL,
+    "user_id" uuid NOT NULL,
+    "name" varchar(256) NOT NULL,
+    "active" bool DEFAULT true,
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "battles" (
+    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+    "owner_id" uuid,
+    "name" varchar(256),
+    "voting_locked" bool DEFAULT true,
+    "active_plan_id" uuid,
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    "point_values_allowed" jsonb DEFAULT '["1/2", "1", "2", "3", "5", "8", "13", "?"]'::jsonb,
+    "auto_finish_voting" bool DEFAULT true,
+    "point_average_rounding" varchar(5) DEFAULT 'ceil',
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "battles_leaders" (
+    "battle_id" uuid NOT NULL,
+    "user_id" uuid NOT NULL,
+    PRIMARY KEY ("battle_id","user_id")
+);
+
+CREATE TABLE IF NOT EXISTS "battles_users" (
+    "battle_id" uuid NOT NULL,
+    "user_id" uuid NOT NULL,
+    "active" bool DEFAULT false,
+    "abandoned" bool DEFAULT false,
+    "spectator" bool DEFAULT false,
+    PRIMARY KEY ("battle_id","user_id")
+);
+
+CREATE TABLE IF NOT EXISTS "department_team" (
+    "department_id" uuid NOT NULL,
+    "team_id" uuid NOT NULL,
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("department_id","team_id")
+);
+
+CREATE TABLE IF NOT EXISTS "department_user" (
+    "department_id" uuid NOT NULL,
+    "user_id" uuid NOT NULL,
+    "role" varchar(16) NOT NULL DEFAULT 'MEMBER',
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("department_id","user_id")
+);
+
+CREATE TABLE IF NOT EXISTS "organization" (
+    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+    "name" varchar(256),
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "organization_department" (
+    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+    "organization_id" uuid,
+    "name" varchar(256),
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "organization_team" (
+    "organization_id" uuid NOT NULL,
+    "team_id" uuid NOT NULL,
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("organization_id","team_id")
+);
+
+CREATE TABLE IF NOT EXISTS "organization_user" (
+    "organization_id" uuid NOT NULL,
+    "user_id" uuid NOT NULL,
+    "role" varchar(16) NOT NULL DEFAULT 'MEMBER',
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("organization_id","user_id")
+);
+
+CREATE TABLE IF NOT EXISTS "plans" (
+    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+    "name" varchar(256),
+    "points" varchar(3) DEFAULT '',
+    "active" bool DEFAULT false,
+    "battle_id" uuid NOT NULL,
+    "votes" jsonb DEFAULT '[]'::jsonb,
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    "skipped" bool DEFAULT false,
+    "votestart_time" timestamp DEFAULT now(),
+    "voteend_time" timestamp DEFAULT now(),
+    "acceptance_criteria" text,
+    "link" text,
+    "description" text,
+    "reference_id" varchar(128),
+    "type" varchar(64) DEFAULT 'story',
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "team" (
+    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+    "name" varchar(256),
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "team_battle" (
+    "team_id" uuid NOT NULL,
+    "battle_id" uuid NOT NULL,
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    PRIMARY KEY ("team_id","battle_id")
+);
+
+CREATE TABLE IF NOT EXISTS "team_user" (
+    "team_id" uuid NOT NULL,
+    "user_id" uuid NOT NULL,
+    "created_date" timestamp DEFAULT now(),
+    "updated_date" timestamp DEFAULT now(),
+    "role" varchar(16) NOT NULL DEFAULT 'MEMBER',
+    PRIMARY KEY ("team_id","user_id")
+);
+
+CREATE TABLE IF NOT EXISTS "user_reset" (
+    "reset_id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+    "user_id" uuid NOT NULL,
+    "created_date" timestamp DEFAULT now(),
+    "expire_date" timestamp DEFAULT (now() + '01:00:00'::interval),
+    PRIMARY KEY ("reset_id")
+);
+
+CREATE TABLE IF NOT EXISTS "user_verify" (
+    "verify_id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+    "user_id" uuid NOT NULL,
+    "created_date" timestamp DEFAULT now(),
+    "expire_date" timestamp DEFAULT (now() + '24:00:00'::interval),
+    PRIMARY KEY ("verify_id")
+);
+
+CREATE TABLE IF NOT EXISTS "users" (
+    "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+    "name" varchar(64),
+    "created_date" timestamp DEFAULT now(),
+    "last_active" timestamp DEFAULT now(),
+    "email" varchar(320),
+    "password" text,
+    "type" varchar(128) DEFAULT 'PRIVATE',
+    "verified" bool DEFAULT false,
+    "avatar" varchar(128) DEFAULT 'identicon',
+    "notifications_enabled" bool DEFAULT true,
+    "jira_rest_api_token" varchar(128) DEFAULT '',
+    "country" varchar(2),
+    "company" varchar(256),
+    "job_title" varchar(128),
+    "updated_date" timestamp DEFAULT now(),
+    "locale" varchar(2),
+    PRIMARY KEY ("id")
 );
 
 --
--- Table Alterations
+-- FOREIGN KEYS
 --
-ALTER TABLE battles ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW();
-ALTER TABLE battles ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW();
-ALTER TABLE battles ADD COLUMN IF NOT EXISTS point_values_allowed JSONB DEFAULT '["1/2", "1", "2", "3", "5", "8", "13", "?"]'::JSONB;
-ALTER TABLE battles ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE battles ADD COLUMN IF NOT EXISTS auto_finish_voting BOOL DEFAULT true;
-ALTER TABLE battles ADD COLUMN IF NOT EXISTS point_average_rounding VARCHAR(5) DEFAULT 'ceil';
 
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW();
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW();
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS skipped BOOL DEFAULT false;
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS votestart_time TIMESTAMP DEFAULT NOW();
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS voteend_time TIMESTAMP DEFAULT NOW();
-ALTER TABLE plans ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS link TEXT;
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS description TEXT;
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS acceptance_criteria TEXT;
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS reference_id VARCHAR(128);
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS type VARCHAR(64) DEFAULT 'story';
-
-DO $$
-BEGIN
-    -- migrate battles leaderId into new association table
-    DECLARE battleLeadersExists TEXT := (SELECT to_regclass('battles_leaders'));
-    DECLARE usersExists TEXT := (SELECT to_regclass('users'));
-    BEGIN
-        IF usersExists IS NULL THEN
-            CREATE TABLE IF NOT EXISTS warriors (
-                id UUID NOT NULL PRIMARY KEY,
-                name VARCHAR(64)
-            );
-
-            CREATE TABLE IF NOT EXISTS battles_warriors (
-                battle_id UUID REFERENCES battles NOT NULL,
-                warrior_id UUID REFERENCES warriors NOT NULL,
-                active BOOL DEFAULT false,
-                PRIMARY KEY (battle_id, warrior_id)
-            );
-
-            CREATE TABLE IF NOT EXISTS warrior_reset (
-                reset_id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-                warrior_id UUID REFERENCES warriors NOT NULL,
-                created_date TIMESTAMP DEFAULT NOW(),
-                expire_date TIMESTAMP DEFAULT NOW() + INTERVAL '1 hour'
-            );
-
-            CREATE TABLE IF NOT EXISTS warrior_verify (
-                verify_id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-                warrior_id UUID REFERENCES warriors NOT NULL,
-                created_date TIMESTAMP DEFAULT NOW(),
-                expire_date TIMESTAMP DEFAULT NOW() + INTERVAL '24 hour'
-            );
-
-            CREATE TABLE IF NOT EXISTS api_keys (
-                id TEXT NOT NULL PRIMARY KEY,
-                warrior_id UUID REFERENCES warriors NOT NULL,
-                name VARCHAR(256) NOT NULL,
-                active BOOL DEFAULT true,
-                created_date TIMESTAMP DEFAULT NOW(),
-                updated_date TIMESTAMP DEFAULT NOW(),
-                UNIQUE(warrior_id, name)
-            );
-
-            ALTER TABLE warriors ADD COLUMN IF NOT EXISTS created_date TIMESTAMP DEFAULT NOW();
-            ALTER TABLE warriors ADD COLUMN IF NOT EXISTS last_active TIMESTAMP DEFAULT NOW();
-            ALTER TABLE warriors ADD COLUMN IF NOT EXISTS email VARCHAR(320) UNIQUE;
-            ALTER TABLE warriors ADD COLUMN IF NOT EXISTS password TEXT;
-            ALTER TABLE warriors ADD COLUMN IF NOT EXISTS rank VARCHAR(128) DEFAULT 'PRIVATE';
-            ALTER TABLE warriors ADD COLUMN IF NOT EXISTS verified BOOL DEFAULT false;
-            ALTER TABLE warriors ADD COLUMN IF NOT EXISTS avatar VARCHAR(128) DEFAULT 'identicon';
-            ALTER TABLE warriors ADD COLUMN IF NOT EXISTS notifications_enabled BOOL DEFAULT true;
-            ALTER TABLE warriors ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-
-            ALTER TABLE battles_warriors ADD COLUMN IF NOT EXISTS abandoned BOOL DEFAULT false;
-
-            --
-            -- Constraints
-            --
-            ALTER TABLE battles_warriors DROP CONSTRAINT IF EXISTS battles_warriors_battle_id_fkey;
-            ALTER TABLE battles_warriors DROP CONSTRAINT IF EXISTS battles_warriors_warrior_id_fkey;
-            ALTER TABLE api_keys DROP CONSTRAINT IF EXISTS api_keys_warrior_id_fkey;
-            ALTER TABLE plans DROP CONSTRAINT IF EXISTS plans_battle_id_fkey;
-            ALTER TABLE warrior_verify DROP CONSTRAINT IF EXISTS warrior_verify_warrior_id_fkey;
-            ALTER TABLE warrior_reset DROP CONSTRAINT IF EXISTS warrior_reset_warrior_id_fkey;
-
-            BEGIN
-                ALTER TABLE battles_warriors ADD CONSTRAINT bw_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
-                EXCEPTION
-                WHEN duplicate_object THEN
-            END;
-
-            BEGIN
-                ALTER TABLE battles_warriors ADD CONSTRAINT bw_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
-                EXCEPTION
-                WHEN duplicate_object THEN
-            END;
-
-            BEGIN
-                ALTER TABLE plans ADD CONSTRAINT p_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
-                EXCEPTION
-                WHEN duplicate_object THEN
-            END;
-
-            BEGIN
-                ALTER TABLE warrior_reset ADD CONSTRAINT wr_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
-                EXCEPTION
-                WHEN duplicate_object THEN
-            END;
-
-            BEGIN
-                ALTER TABLE warrior_verify ADD CONSTRAINT wv_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
-                EXCEPTION
-                WHEN duplicate_object THEN
-            END;
-
-            BEGIN
-                ALTER TABLE api_keys ADD CONSTRAINT apk_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES warriors(id) ON DELETE CASCADE;
-                EXCEPTION
-                WHEN duplicate_object THEN
-            END;
-
-            ALTER TABLE battles_warriors RENAME TO battles_users;
-            ALTER TABLE battles_users RENAME COLUMN warrior_id TO user_id;
-            ALTER TABLE warriors RENAME TO users;
-            ALTER TABLE users RENAME rank TO type;
-            ALTER TABLE warrior_reset RENAME TO user_reset;
-            ALTER TABLE user_reset RENAME COLUMN warrior_id TO user_id;
-            ALTER TABLE warrior_verify RENAME TO user_verify;
-            ALTER TABLE user_verify RENAME COLUMN warrior_id TO user_id;
-            ALTER TABLE api_keys RENAME COLUMN warrior_id to user_id;
-        END IF;
-
-        IF battleLeadersExists IS NULL THEN
-            CREATE TABLE battles_leaders AS SELECT id AS battle_id, leader_id AS warrior_id FROM battles;
-            ALTER TABLE battles_leaders ADD PRIMARY KEY (battle_id, warrior_id);
-            ALTER TABLE battles_leaders ADD CONSTRAINT bl_battle_id_fkey FOREIGN KEY (battle_id) REFERENCES battles(id) ON DELETE CASCADE;
-            ALTER TABLE battles_leaders ADD CONSTRAINT bl_warrior_id_fkey FOREIGN KEY (warrior_id) REFERENCES users(id) ON DELETE CASCADE;
-            ALTER TABLE battles DROP CONSTRAINT IF EXISTS b_leader_id_fkey;
-            ALTER TABLE battles RENAME COLUMN leader_id TO owner_id;
-            ALTER TABLE battles ADD CONSTRAINT b_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE;
-        END IF;
-
-        
-        BEGIN
-            ALTER TABLE battles_leaders RENAME COLUMN warrior_id TO user_id;
-            EXCEPTION
-                WHEN undefined_column THEN
-        END;
-    END;
-END $$;
-
-ALTER TABLE users ADD COLUMN IF NOT EXISTS country VARCHAR(2);
-ALTER TABLE users ADD COLUMN IF NOT EXISTS locale VARCHAR(2);
-ALTER TABLE users ADD COLUMN IF NOT EXISTS company VARCHAR(256);
-ALTER TABLE users ADD COLUMN IF NOT EXISTS job_title VARCHAR(128);
-ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_date TIMESTAMP DEFAULT NOW();
-ALTER TABLE battles_users ADD COLUMN IF NOT EXISTS spectator BOOL DEFAULT false;
-
-CREATE TABLE IF NOT EXISTS organization (
-    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-    name VARCHAR(256),
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS organization_user (
-    organization_id UUID,
-    user_id UUID,
-    role VARCHAR(16) NOT NULL DEFAULT 'MEMBER',
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (organization_id, user_id),
-    CONSTRAINT ou_organization_id FOREIGN KEY(organization_id) REFERENCES organization(id) ON DELETE CASCADE,
-    CONSTRAINT ou_user_id FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS organization_department (
-    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-    organization_id UUID,
-    name VARCHAR(256),
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW(),
-    UNIQUE(organization_id, name),
-    CONSTRAINT od_organization_id FOREIGN KEY(organization_id) REFERENCES organization(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS department_user (
-    department_id UUID,
-    user_id UUID,
-    role VARCHAR(16) NOT NULL DEFAULT 'MEMBER',
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (department_id, user_id),
-    CONSTRAINT du_department_id FOREIGN KEY(department_id) REFERENCES organization_department(id) ON DELETE CASCADE,
-    CONSTRAINT du_user_id FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS team (
-    id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-    name VARCHAR(256),
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS team_user (
-    team_id UUID,
-    user_id UUID,
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW(),
-    role VARCHAR(16) NOT NULL DEFAULT 'MEMBER',
-    PRIMARY KEY (team_id, user_id),
-    CONSTRAINT tu_team_id FOREIGN KEY(team_id) REFERENCES team(id) ON DELETE CASCADE,
-    CONSTRAINT tu_user_id FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS organization_team (
-    organization_id UUID,
-    team_id UUID,
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (organization_id, team_id),
-    UNIQUE(team_id),
-    CONSTRAINT ot_organization_id FOREIGN KEY(organization_id) REFERENCES organization(id) ON DELETE CASCADE,
-    CONSTRAINT ot_team_id FOREIGN KEY(team_id) REFERENCES team(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS department_team (
-    department_id UUID,
-    team_id UUID,
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (department_id, team_id),
-    UNIQUE(team_id),
-    CONSTRAINT dt_department_id FOREIGN KEY(department_id) REFERENCES organization_department(id) ON DELETE CASCADE,
-    CONSTRAINT dt_team_id FOREIGN KEY(team_id) REFERENCES team(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS team_battle (
-    team_id UUID,
-    battle_id UUID,
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (team_id, battle_id),
-    CONSTRAINT tb_team_id FOREIGN KEY(team_id) REFERENCES team(id) ON DELETE CASCADE,
-    CONSTRAINT tb_battle_id FOREIGN KEY(battle_id) REFERENCES battles(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS alert (
-    id UUID  NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
-    name VARCHAR(256) NOT NULL,
-    type VARCHAR(128) DEFAULT 'NEW',
-    content TEXT NOT NULL,
-    active BOOLEAN DEFAULT true,
-    allow_dismiss BOOLEAN DEFAULT true,
-    registered_only BOOLEAN DEFAULT true,
-    created_date TIMESTAMP DEFAULT NOW(),
-    updated_date TIMESTAMP DEFAULT NOW()
-);
+ALTER TABLE "api_keys" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
+ALTER TABLE "battles" ADD FOREIGN KEY ("owner_id") REFERENCES "users"("id") ON DELETE CASCADE;
+ALTER TABLE "battles_leaders" ADD FOREIGN KEY ("battle_id") REFERENCES "battles"("id") ON DELETE CASCADE;
+ALTER TABLE "battles_leaders" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
+ALTER TABLE "battles_users" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
+ALTER TABLE "battles_users" ADD FOREIGN KEY ("battle_id") REFERENCES "battles"("id") ON DELETE CASCADE;
+ALTER TABLE "department_team" ADD FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE CASCADE;
+ALTER TABLE "department_team" ADD FOREIGN KEY ("department_id") REFERENCES "organization_department"("id") ON DELETE CASCADE;
+ALTER TABLE "department_user" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
+ALTER TABLE "department_user" ADD FOREIGN KEY ("department_id") REFERENCES "organization_department"("id") ON DELETE CASCADE;
+ALTER TABLE "organization_department" ADD FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;
+ALTER TABLE "organization_team" ADD FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE CASCADE;
+ALTER TABLE "organization_team" ADD FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;
+ALTER TABLE "organization_user" ADD FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;
+ALTER TABLE "organization_user" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
+ALTER TABLE "plans" ADD FOREIGN KEY ("battle_id") REFERENCES "battles"("id") ON DELETE CASCADE;
+ALTER TABLE "team_battle" ADD FOREIGN KEY ("battle_id") REFERENCES "battles"("id") ON DELETE CASCADE;
+ALTER TABLE "team_battle" ADD FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE CASCADE;
+ALTER TABLE "team_user" ADD FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE CASCADE;
+ALTER TABLE "team_user" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
+ALTER TABLE "user_reset" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
+ALTER TABLE "user_verify" ADD FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE;
 
 --
 -- Types (used in Stored Procedures)
 --
-DROP TYPE IF EXISTS WarriorsVote;
 DROP TYPE IF EXISTS UsersVote;
 CREATE TYPE UsersVote AS
 (
@@ -305,7 +237,6 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS active_countries AS SELECT DISTINCT count
 --
 
 -- Reset All Users to Inactive, used by server restart --
-DROP PROCEDURE IF EXISTS deactivate_all_warriors();
 CREATE OR REPLACE PROCEDURE deactivate_all_users()
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -314,8 +245,6 @@ END;
 $$;
 
 -- Create a Battle Plan --
-DROP PROCEDURE IF EXISTS create_plan(battleid uuid, planid uuid, planname character varying);
-DROP PROCEDURE IF EXISTS create_plan(battleid uuid, planid uuid, planname character varying, referenceid character varying, planlink text, plandescription text, acceptancecriteria text);
 CREATE OR REPLACE PROCEDURE create_plan(battleId UUID, planId UUID, planName VARCHAR(256), planType VARCHAR(64), referenceId VARCHAR(128), planLink TEXT, planDescription TEXT, acceptanceCriteria TEXT)
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -327,7 +256,6 @@ END;
 $$;
 
 -- Revise Plan --
-DROP PROCEDURE IF EXISTS revise_plan(planid uuid, planname character varying, referenceid character varying, planlink text, plandescription text, acceptancecriteria text);
 CREATE OR REPLACE PROCEDURE revise_plan(planId UUID, planName VARCHAR(256), planType VARCHAR(64), referenceId VARCHAR(128), planLink TEXT, planDescription TEXT, acceptanceCriteria TEXT)
 LANGUAGE plpgsql AS $$
 DECLARE battleId UUID;
@@ -397,9 +325,6 @@ BEGIN
 END;
 $$;
 
--- Revise Plan Name (Replaced by revise_plan) --
-DROP PROCEDURE IF EXISTS revise_plan_name(planId UUID, planName VARCHAR(256));
-
 -- Delete a plan --
 CREATE OR REPLACE PROCEDURE delete_plan(battleId UUID, planId UUID)
 LANGUAGE plpgsql AS $$
@@ -445,7 +370,6 @@ END;
 $$;
 
 -- Set User Vote --
-DROP PROCEDURE IF EXISTS set_warrior_vote(planId UUID, warriorsId UUID, warriorVote VARCHAR(3));
 CREATE OR REPLACE PROCEDURE set_user_vote(planId UUID, userId UUID, userVote VARCHAR(3))
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -468,7 +392,6 @@ END;
 $$;
 
 -- Retract User Vote --
-DROP PROCEDURE IF EXISTS retract_warrior_vote(planId UUID, warriorsId UUID);
 CREATE OR REPLACE PROCEDURE retract_user_vote(planId UUID, userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -488,7 +411,6 @@ END;
 $$;
 
 -- Reset User Password --
-DROP PROCEDURE IF EXISTS reset_warrior_password(resetId UUID, warriorPassword TEXT);
 CREATE OR REPLACE PROCEDURE reset_user_password(resetId UUID, userPassword TEXT)
 LANGUAGE plpgsql AS $$
 DECLARE matchedUserId UUID;
@@ -514,7 +436,6 @@ END;
 $$;
 
 -- Update User Password --
-DROP PROCEDURE IF EXISTS update_warrior_password(warriorId UUID, warriorPassword TEXT);
 CREATE OR REPLACE PROCEDURE update_user_password(userId UUID, userPassword TEXT)
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -525,7 +446,6 @@ END;
 $$;
 
 -- Verify a user account email
-DROP PROCEDURE IF EXISTS verify_warrior_account(verifyId UUID);
 CREATE OR REPLACE PROCEDURE verify_user_account(verifyId UUID)
 LANGUAGE plpgsql AS $$
 DECLARE matchedUserId UUID;
@@ -551,7 +471,6 @@ END;
 $$;
 
 -- Promote User to GENERAL type (ADMIN) by ID --
-DROP PROCEDURE IF EXISTS promote_warrior(warriorId UUID);
 CREATE OR REPLACE PROCEDURE promote_user(userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -562,7 +481,6 @@ END;
 $$;
 
 -- Promote User to GENERAL type (ADMIN) by Email --
-DROP PROCEDURE IF EXISTS promote_warrior_by_email(warriorEmail VARCHAR(320));
 CREATE OR REPLACE PROCEDURE promote_user_by_email(userEmail VARCHAR(320))
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -573,7 +491,6 @@ END;
 $$;
 
 -- Demote User to CORPORAL type (Registered) by ID --
-DROP PROCEDURE IF EXISTS demote_warrior(warriorId UUID);
 CREATE OR REPLACE PROCEDURE demote_user(userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -594,7 +511,6 @@ END;
 $$;
 
 -- Clean up Guest Users (and their created battles) older than X Days --
-DROP PROCEDURE IF EXISTS clean_guest_warriors(daysOld INTEGER);
 CREATE OR REPLACE PROCEDURE clean_guest_users(daysOld INTEGER)
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -606,7 +522,6 @@ END;
 $$;
 
 -- Deletes a user and all his battle(s), api keys --
-DROP PROCEDURE IF EXISTS delete_warrior(warriorId UUID);
 CREATE OR REPLACE PROCEDURE delete_user(userId UUID)
 LANGUAGE plpgsql AS $$
 BEGIN
@@ -618,15 +533,6 @@ END;
 $$;
 
 -- Updates a users profile --
-DROP PROCEDURE IF EXISTS user_profile_update(
-    userId UUID,
-    userName VARCHAR(64),
-    userAvatar VARCHAR(128),
-    notificationsEnabled BOOLEAN,
-    userCountry VARCHAR(2),
-    userCompany VARCHAR(256),
-    userJobTitle VARCHAR(128)
-);
 CREATE OR REPLACE PROCEDURE user_profile_update(
     userId UUID,
     userName VARCHAR(64),
@@ -754,22 +660,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Get Application Stats e.g. total user and battle counts
-DROP FUNCTION IF EXISTS get_app_stats();
-DROP FUNCTION IF EXISTS get_app_stats(
-    OUT unregistered_user_count INTEGER,
-    OUT registered_user_count INTEGER,
-    OUT battle_count INTEGER,
-    OUT plan_count INTEGER
-);
-DROP FUNCTION IF EXISTS get_app_stats(
-    OUT unregistered_user_count INTEGER,
-    OUT registered_user_count INTEGER,
-    OUT battle_count INTEGER,
-    OUT plan_count INTEGER,
-    OUT organization_count INTEGER,
-    OUT department_count INTEGER,
-    OUT team_count INTEGER
-);
 CREATE OR REPLACE FUNCTION get_app_stats(
     OUT unregistered_user_count INTEGER,
     OUT registered_user_count INTEGER,
@@ -793,13 +683,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Insert a new user password reset
-DROP FUNCTION IF EXISTS insert_warrior_reset(VARCHAR);
-DROP FUNCTION IF EXISTS insert_warrior_reset(
-    IN warriorEmail VARCHAR(320),
-    OUT resetId UUID,
-    OUT warriorId UUID,
-    OUT warriorName VARCHAR(64)
-);
 CREATE OR REPLACE FUNCTION insert_user_reset(
     IN userEmail VARCHAR(320),
     OUT resetId UUID,
@@ -818,15 +701,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Register a new user
-DROP FUNCTION IF EXISTS register_warrior(VARCHAR, VARCHAR, TEXT, VARCHAR);
-DROP FUNCTION IF EXISTS register_warrior(
-    IN warriorName VARCHAR(64),
-    IN warriorEmail VARCHAR(320),
-    IN hashedPassword TEXT,
-    IN warriorRank VARCHAR(128),
-    OUT warriorId UUID,
-    OUT verifyId UUID
-);
 CREATE OR REPLACE FUNCTION register_user(
     IN userName VARCHAR(64),
     IN userEmail VARCHAR(320),
@@ -846,16 +720,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Register a new user from existing private
-DROP FUNCTION IF EXISTS register_existing_warrior(UUID, VARCHAR, VARCHAR, TEXT, VARCHAR);
-DROP FUNCTION IF EXISTS register_existing_warrior(
-    IN activeWarriorId UUID,
-    IN warriorName VARCHAR(64),
-    IN warriorEmail VARCHAR(320),
-    IN hashedPassword TEXT,
-    IN warriorRank VARCHAR(128),
-    OUT warriorId UUID,
-    OUT verifyId UUID
-);
 CREATE OR REPLACE FUNCTION register_existing_user(
     IN activeUserId UUID,
     IN userName VARCHAR(64),
@@ -883,8 +747,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create Battle --
-DROP FUNCTION IF EXISTS create_battle(UUID, VARCHAR, JSONB, BOOL);
-DROP FUNCTION IF EXISTS create_battle(UUID, VARCHAR, JSONB, BOOL, VARCHAR);
 CREATE OR REPLACE FUNCTION create_battle(
     IN leaderId UUID,
     IN battleName VARCHAR(256),
@@ -900,7 +762,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Add Battle Leaders by Emails --
-DROP FUNCTION IF EXISTS add_battle_leaders_by_email(UUID, TEXT);
 CREATE OR REPLACE FUNCTION add_battle_leaders_by_email(
     IN battleId UUID,
     IN leaderEmails TEXT,
@@ -931,6 +792,7 @@ BEGIN
     RETURN QUERY SELECT ac.country FROM active_countries ac;
 END;
 $$ LANGUAGE plpgsql;
+
 --
 -- ORGANIZATIONS --
 --
@@ -1055,7 +917,7 @@ CREATE OR REPLACE FUNCTION organization_user_list(
 ) AS $$
 BEGIN
     RETURN QUERY
-        SELECT u.id, u.name, u.email, ou.role
+        SELECT u.id, u.name, COALESCE(u.email, ''), ou.role
         FROM organization_user ou
         LEFT JOIN users u ON ou.user_id = u.id
         WHERE ou.organization_id = orgId
@@ -1243,7 +1105,7 @@ CREATE OR REPLACE FUNCTION department_user_list(
 ) AS $$
 BEGIN
     RETURN QUERY
-        SELECT u.id, u.name, u.email, du.role
+        SELECT u.id, u.name, COALESCE(u.email, ''), du.role
         FROM department_user du
         LEFT JOIN users u ON du.user_id = u.id
         WHERE du.department_id = departmentId
@@ -1380,7 +1242,7 @@ CREATE OR REPLACE FUNCTION team_user_list(
 ) AS $$
 BEGIN
     RETURN QUERY
-        SELECT u.id, u.name, u.email, tu.role
+        SELECT u.id, u.name, COALESCE(u.email, ''), tu.role
         FROM team_user tu
         LEFT JOIN users u ON tu.user_id = u.id
         WHERE tu.team_id = teamId
