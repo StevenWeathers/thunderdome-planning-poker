@@ -21,13 +21,11 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 
 		err := a.db.CleanBattles(DaysOld)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -45,13 +43,11 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 
 		err := a.db.CleanGuests(DaysOld)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -67,9 +63,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lowercasedUsers, err := a.db.LowercaseUserEmails()
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -80,9 +74,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 
 		mergedUsers, err := a.db.MergeDuplicateAccounts()
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -91,6 +83,6 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 			a.email.SendMergedUpdate(u.UserName, u.UserEmail)
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }

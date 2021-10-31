@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
@@ -20,9 +19,8 @@ func (a *api) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AppStats, err := a.db.GetAppStats()
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		ActiveBattleUserCount := 0
@@ -33,7 +31,7 @@ func (a *api) handleAppStats() http.HandlerFunc {
 		AppStats.ActiveBattleCount = len(h.arenas)
 		AppStats.ActiveBattleUserCount = ActiveBattleUserCount
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, AppStats, nil)
+		Success(w, r, http.StatusOK, AppStats, nil)
 	}
 }
 
@@ -48,11 +46,11 @@ func (a *api) handleAppStats() http.HandlerFunc {
 // @Router /admin/users [get]
 func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
 		Users := a.db.GetRegisteredUsers(Limit, Offset)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Users, nil)
+		Success(w, r, http.StatusOK, Users, nil)
 	}
 }
 
@@ -67,9 +65,9 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 // @Router /admin/users [post]
 func (a *api) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 
-		UserName, UserEmail, UserPassword, accountErr := ValidateUserAccount(
+		UserName, UserEmail, UserPassword, accountErr := validateUserAccount(
 			keyVal["warriorName"].(string),
 			strings.ToLower(keyVal["warriorEmail"].(string)),
 			keyVal["warriorPassword1"].(string),
@@ -77,21 +75,19 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 		)
 
 		if accountErr != nil {
-			errors := make([]string, 0)
-			errors = append(errors, accountErr.Error())
-			a.respondWithStandardJSON(w, http.StatusBadRequest, false, errors, nil, nil)
+			Error(w, r, http.StatusBadRequest, accountErr.Error())
+			return
 		}
 
 		newUser, VerifyID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, "")
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		a.email.SendWelcome(UserName, UserEmail, VerifyID)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, newUser, nil)
+		Success(w, r, http.StatusOK, newUser, nil)
 	}
 }
 
@@ -111,23 +107,19 @@ func (a *api) handleAdminUserDelete() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			log.Println("error finding user : " + UserErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, UserErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, UserErr.Error())
+			return
 		}
 
 		updateErr := a.db.DeleteUser(UserID)
 		if updateErr != nil {
-			log.Println("error attempting to delete user : " + updateErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, updateErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, updateErr.Error())
+			return
 		}
 
 		a.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -148,12 +140,11 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 
 		err := a.db.PromoteUser(UserID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
+			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -173,13 +164,11 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 
 		err := a.db.DemoteUser(UserID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -195,11 +184,11 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 // @Router /admin/organizations [get]
 func (a *api) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
 		Organizations := a.db.OrganizationList(Limit, Offset)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Organizations, nil)
+		Success(w, r, http.StatusOK, Organizations, nil)
 	}
 }
 
@@ -215,11 +204,11 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 // @Router /admin/teams [get]
 func (a *api) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.TeamList(Limit, Offset)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Teams, nil)
+		Success(w, r, http.StatusOK, Teams, nil)
 	}
 }
 
@@ -235,10 +224,10 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Router /admin/apikeys [get]
 func (a *api) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.GetAPIKeys(Limit, Offset)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Teams, nil)
+		Success(w, r, http.StatusOK, Teams, nil)
 	}
 }

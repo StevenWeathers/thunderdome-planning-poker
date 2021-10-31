@@ -20,12 +20,10 @@ var ActiveAlerts []interface{}
 // @Router /alerts [get]
 func (a *api) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
 		Alerts, Count, err := a.db.AlertsList(Limit, Offset)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -35,7 +33,7 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Alerts, Meta)
+		Success(w, r, http.StatusOK, Alerts, Meta)
 	}
 }
 
@@ -55,7 +53,7 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 // @Router /alerts [post]
 func (a *api) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 
 		Name := keyVal["name"].(string)
 		Type := keyVal["type"].(string)
@@ -66,15 +64,13 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 
 		err := a.db.AlertsCreate(Name, Type, Content, Active, AllowDismiss, RegisteredOnly)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		ActiveAlerts = a.db.GetActiveAlerts()
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, ActiveAlerts, nil)
+		Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
 }
 
@@ -88,7 +84,7 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Router /alerts/{id} [put]
 func (a *api) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		vars := mux.Vars(r)
 
 		ID := vars["id"]
@@ -101,15 +97,13 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 
 		err := a.db.AlertsUpdate(ID, Name, Type, Content, Active, AllowDismiss, RegisteredOnly)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		ActiveAlerts = a.db.GetActiveAlerts()
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, ActiveAlerts, nil)
+		Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
 }
 
@@ -129,14 +123,12 @@ func (a *api) handleAlertDelete() http.HandlerFunc {
 
 		err := a.db.AlertDelete(AlertID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		ActiveAlerts = a.db.GetActiveAlerts()
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, ActiveAlerts, nil)
+		Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
 }

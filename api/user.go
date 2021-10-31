@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -24,20 +23,17 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 
 		if UserID != UserCookieID {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "INVALID_USER")
 			return
 		}
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			log.Println("error finding user : " + UserErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, UserErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, UserErr.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, User, nil)
+		Success(w, r, http.StatusOK, User, nil)
 	}
 }
 
@@ -54,7 +50,7 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		UserName := keyVal["warriorName"].(string)
 		UserAvatar := keyVal["warriorAvatar"].(string)
 		NotificationsEnabled, _ := keyVal["notificationsEnabled"].(bool)
@@ -66,29 +62,23 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "INVALID_USER")
 			return
 		}
 
 		updateErr := a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 		if updateErr != nil {
-			log.Println("error attempting to update user profile : " + updateErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, updateErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, updateErr.Error())
 			return
 		}
 
 		user, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			log.Println("error reloading user after update : " + UserErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, UserErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, UserErr.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, user, nil)
+		Success(w, r, http.StatusOK, user, nil)
 	}
 }
 
@@ -109,25 +99,19 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "INVALID_USER")
 			return
 		}
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			log.Println("error finding user : " + UserErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, UserErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, UserErr.Error())
 			return
 		}
 
 		updateErr := a.db.DeleteUser(UserID)
 		if updateErr != nil {
-			log.Println("error attempting to delete user : " + updateErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, updateErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, updateErr.Error())
 			return
 		}
 
@@ -135,7 +119,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 
 		a.clearUserCookies(w)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -151,13 +135,11 @@ func (a *api) handleGetActiveCountries() http.HandlerFunc {
 		countries, err := a.db.GetActiveCountries()
 
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		w.Header().Set("Cache-Control", "max-age=3600") // cache for 1 hour just to decrease load
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, countries, nil)
+		Success(w, r, http.StatusOK, countries, nil)
 	}
 }

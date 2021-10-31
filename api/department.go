@@ -33,11 +33,11 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
-		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
 		Departments := a.db.OrganizationDepartmentList(OrgID, Limit, Offset)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Departments, nil)
+		Success(w, r, http.StatusOK, Departments, nil)
 	}
 }
 
@@ -67,17 +67,13 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -88,7 +84,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 			DepartmentRole:   DepartmentRole,
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, result, nil)
+		Success(w, r, http.StatusOK, result, nil)
 	}
 }
 
@@ -109,15 +105,13 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 
 		OrgName := keyVal["name"].(string)
 		OrgID := vars["orgId"]
 		DepartmentID, err := a.db.DepartmentCreate(OrgID, OrgName)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -125,7 +119,7 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 			DepartmentID: DepartmentID,
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, NewDepartment, nil)
+		Success(w, r, http.StatusOK, NewDepartment, nil)
 	}
 }
 
@@ -142,11 +136,11 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
-		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
 		Teams := a.db.DepartmentTeamList(DepartmentID, Limit, Offset)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Teams, nil)
+		Success(w, r, http.StatusOK, Teams, nil)
 	}
 }
 
@@ -163,11 +157,11 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
-		Limit, Offset := a.getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
 		Users := a.db.DepartmentUserList(DepartmentID, Limit, Offset)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, Users, nil)
+		Success(w, r, http.StatusOK, Users, nil)
 	}
 }
 
@@ -186,15 +180,13 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 
 		TeamName := keyVal["name"].(string)
 		DepartmentID := vars["departmentId"]
 		TeamID, err := a.db.DepartmentTeamCreate(DepartmentID, TeamName)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -202,7 +194,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 			TeamID: TeamID,
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, NewTeam, nil)
+		Success(w, r, http.StatusOK, NewTeam, nil)
 	}
 }
 
@@ -218,7 +210,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId}/users [post]
 func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		DepartmentId := vars["departmentId"]
@@ -227,21 +219,17 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			errors := make([]string, 0)
-			errors = append(errors, UserErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, "USER_NOT_FOUND")
 			return
 		}
 
 		_, err := a.db.DepartmentAddUser(DepartmentId, User.UserID, Role)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -264,13 +252,11 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 
 		err := a.db.DepartmentRemoveUser(DepartmentID, UserID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -287,7 +273,7 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users [post]
 func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
@@ -298,29 +284,23 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			errors := make([]string, 0)
-			errors = append(errors, UserErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, "USER_NOT_FOUND")
 			return
 		}
 
 		_, DepartmentRole, roleErr := a.db.DepartmentUserRole(User.UserID, OrgID, DepartmentID)
 		if DepartmentRole == "" || roleErr != nil {
-			errors := make([]string, 0)
-			errors = append(errors, roleErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, "DEPARTMENT_USER_REQUIRED")
 			return
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -347,25 +327,19 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -378,6 +352,6 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 			TeamRole:         TeamRole,
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, result, nil)
+		Success(w, r, http.StatusOK, result, nil)
 	}
 }

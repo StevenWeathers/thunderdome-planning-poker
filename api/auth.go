@@ -38,13 +38,13 @@ type UserPassword struct {
 // @Router /auth [post]
 func (a *api) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		UserEmail := strings.ToLower(keyVal["warriorEmail"].(string))
 		UserPassword := keyVal["warriorPassword"].(string)
 
-		authedUser, err := a.authUserDatabase(UserEmail, UserPassword)
+		authedUser, err := a.db.AuthUser(UserEmail, UserPassword)
 		if err != nil {
-			a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+			Error(w, r, http.StatusUnauthorized, "")
 			return
 		}
 
@@ -52,11 +52,11 @@ func (a *api) handleLogin() http.HandlerFunc {
 		if cookie != nil {
 			http.SetCookie(w, cookie)
 		} else {
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, nil, nil, nil)
+			Error(w, r, http.StatusInternalServerError, "")
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, authedUser, nil)
+		Success(w, r, http.StatusOK, authedUser, nil)
 	}
 }
 
@@ -73,13 +73,13 @@ func (a *api) handleLogin() http.HandlerFunc {
 // @Router /auth/ldap [post]
 func (a *api) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		UserEmail := strings.ToLower(keyVal["warriorEmail"].(string))
 		UserPassword := keyVal["warriorPassword"].(string)
 
 		authedUser, err := a.authAndCreateUserLdap(UserEmail, UserPassword)
 		if err != nil {
-			a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+			Error(w, r, http.StatusUnauthorized, "")
 			return
 		}
 
@@ -87,10 +87,11 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 		if cookie != nil {
 			http.SetCookie(w, cookie)
 		} else {
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, nil, nil, nil)
+			Error(w, r, http.StatusInternalServerError, "")
 			return
 		}
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, authedUser, nil)
+
+		Success(w, r, http.StatusOK, authedUser, nil)
 	}
 }
 
@@ -103,7 +104,7 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 func (a *api) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		a.clearUserCookies(w)
-		return
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -119,25 +120,23 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
 		if !AllowGuests {
-			a.respondWithStandardJSON(w, http.StatusBadRequest, false, nil, nil, nil)
+			Error(w, r, http.StatusBadRequest, "GUESTS_USERS_DISABLED")
 			return
 		}
 
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 
 		UserName := keyVal["warriorName"].(string)
 
 		newUser, err := a.db.CreateUserGuest(UserName)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		a.createUserCookie(w, false, newUser.UserID)
+		a.createUserCookie(w, r, false, newUser.UserID)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, newUser, nil)
+		Success(w, r, http.StatusOK, newUser, nil)
 	}
 }
 
@@ -153,14 +152,14 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
 		if !AllowRegistration {
-			a.respondWithStandardJSON(w, http.StatusBadRequest, false, nil, nil, nil)
+			Error(w, r, http.StatusBadRequest, "USER_REGISTRATION_DISABLED")
 		}
 
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 
 		ActiveUserID, _ := a.validateUserCookie(w, r)
 
-		UserName, UserEmail, UserPassword, accountErr := ValidateUserAccount(
+		UserName, UserEmail, UserPassword, accountErr := validateUserAccount(
 			keyVal["warriorName"].(string),
 			strings.ToLower(keyVal["warriorEmail"].(string)),
 			keyVal["warriorPassword1"].(string),
@@ -168,25 +167,21 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 		)
 
 		if accountErr != nil {
-			errors := make([]string, 0)
-			errors = append(errors, accountErr.Error())
-			a.respondWithStandardJSON(w, http.StatusBadRequest, false, errors, nil, nil)
+			Error(w, r, http.StatusBadRequest, accountErr.Error())
 			return
 		}
 
 		newUser, VerifyID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		a.createUserCookie(w, true, newUser.UserID)
+		a.createUserCookie(w, r, true, newUser.UserID)
 
 		a.email.SendWelcome(UserName, UserEmail, VerifyID)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, newUser, nil)
+		Success(w, r, http.StatusOK, newUser, nil)
 	}
 }
 
@@ -198,16 +193,15 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 // @Router /auth/forgot-password [post]
 func (a *api) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		UserEmail := strings.ToLower(keyVal["warriorEmail"].(string))
 
 		ResetID, UserName, resetErr := a.db.UserResetRequest(UserEmail)
 		if resetErr == nil {
 			a.email.SendForgotPassword(UserName, UserEmail, ResetID)
-			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -221,31 +215,28 @@ func (a *api) handleForgotPassword() http.HandlerFunc {
 // @Router /auth/reset-password [patch]
 func (a *api) handleResetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		ResetID := keyVal["resetId"].(string)
 
-		UserPassword, passwordErr := ValidateUserPassword(
+		UserPassword, passwordErr := validateUserPassword(
 			keyVal["warriorPassword1"].(string),
 			keyVal["warriorPassword2"].(string),
 		)
 
 		if passwordErr != nil {
-			a.respondWithStandardJSON(w, http.StatusBadRequest, false, nil, nil, nil)
+			Error(w, r, http.StatusBadRequest, passwordErr.Error())
 			return
 		}
 
 		UserName, UserEmail, resetErr := a.db.UserResetPassword(ResetID, UserPassword)
 		if resetErr != nil {
-			log.Println("error attempting to reset user password : " + resetErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, resetErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, resetErr.Error())
 			return
 		}
 
 		a.email.SendPasswordReset(UserName, UserEmail)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -259,31 +250,28 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 // @Router /auth/update-password [patch]
 func (a *api) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		UserPassword, passwordErr := ValidateUserPassword(
+		UserPassword, passwordErr := validateUserPassword(
 			keyVal["warriorPassword1"].(string),
 			keyVal["warriorPassword2"].(string),
 		)
 
 		if passwordErr != nil {
-			a.respondWithStandardJSON(w, http.StatusBadRequest, false, nil, nil, nil)
+			Error(w, r, http.StatusBadRequest, passwordErr.Error())
 			return
 		}
 
 		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(UserID, UserPassword)
 		if updateErr != nil {
-			log.Println("error attempting to update user password : " + updateErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, updateErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, updateErr.Error())
 			return
 		}
 
 		a.email.SendPasswordUpdate(UserName, UserEmail)
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -296,19 +284,16 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 // @Router /auth/verify [patch]
 func (a *api) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		VerifyID := keyVal["verifyId"].(string)
 
 		verifyErr := a.db.VerifyUserAccount(VerifyID)
 		if verifyErr != nil {
-			log.Println("error attempting to verify user account : " + verifyErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, verifyErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, verifyErr.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, nil, nil)
+		Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -318,8 +303,8 @@ func (a *api) handleAccountVerification() http.HandlerFunc {
 		- cookie should get moved out of the api package
 */
 
-// ValidateUserAccount makes sure user name, email, and password are valid before creating the account
-func ValidateUserAccount(name string, email string, pwd1 string, pwd2 string) (UserName string, UserEmail string, UpdatedPassword string, validateErr error) {
+// validateUserAccount makes sure user name, email, and password are valid before creating the account
+func validateUserAccount(name string, email string, pwd1 string, pwd2 string) (UserName string, UserEmail string, UpdatedPassword string, validateErr error) {
 	v := validator.New()
 	a := UserAccount{
 		Name:      name,
@@ -332,8 +317,8 @@ func ValidateUserAccount(name string, email string, pwd1 string, pwd2 string) (U
 	return name, email, pwd1, err
 }
 
-// ValidateUserPassword makes sure user password is valid before updating the password
-func ValidateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, validateErr error) {
+// validateUserPassword makes sure user password is valid before updating the password
+func validateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, validateErr error) {
 	v := validator.New()
 	a := UserPassword{
 		Password1: pwd1,
@@ -345,7 +330,7 @@ func ValidateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, val
 }
 
 // createUserCookie creates the users cookie
-func (a *api) createUserCookie(w http.ResponseWriter, isRegistered bool, UserID string) {
+func (a *api) createUserCookie(w http.ResponseWriter, r *http.Request, isRegistered bool, UserID string) {
 	var cookiedays = 365 // 356 days
 	if isRegistered {
 		cookiedays = 30 // 30 days
@@ -353,7 +338,7 @@ func (a *api) createUserCookie(w http.ResponseWriter, isRegistered bool, UserID 
 
 	encoded, err := a.cookie.Encode(a.config.SecureCookieName, UserID)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		Error(w, r, http.StatusInternalServerError, "")
 		return
 
 	}
@@ -404,12 +389,10 @@ func (a *api) validateUserCookie(w http.ResponseWriter, r *http.Request) (string
 		if err = a.cookie.Decode(a.config.SecureCookieName, cookie.Value, &value); err == nil {
 			UserID = value
 		} else {
-			log.Println("error in reading user cookie : " + err.Error() + "\n")
 			a.clearUserCookies(w)
 			return "", errors.New("invalid user cookies")
 		}
 	} else {
-		log.Println("error in reading user cookie : " + err.Error() + "\n")
 		a.clearUserCookies(w)
 		return "", errors.New("invalid user cookies")
 	}
@@ -434,17 +417,6 @@ func (a *api) createCookie(UserID string) *http.Cookie {
 		}
 	}
 	return NewCookie
-}
-
-// @todo - update database function to handle these errors instead
-func (a *api) authUserDatabase(UserEmail string, UserPassword string) (*model.User, error) {
-	AuthedUser, err := a.db.AuthUser(UserEmail, UserPassword)
-	if err != nil {
-		log.Println("Failed authenticating user", UserEmail)
-	} else if AuthedUser == nil {
-		log.Println("Unknown user", UserEmail)
-	}
-	return AuthedUser, err
 }
 
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user

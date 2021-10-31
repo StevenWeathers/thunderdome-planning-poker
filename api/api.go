@@ -47,7 +47,7 @@ type api struct {
 // standardJsonResponse structure used for all restful APIs response body
 type standardJsonResponse struct {
 	Success bool        `json:"success"`
-	Errors  []string    `json:"errors" swaggertype:"array,string"`
+	Error   string      `json:"error"`
 	Data    interface{} `json:"data" swaggertype:"object"`
 	Meta    interface{} `json:"meta" swaggertype:"object"`
 }
@@ -205,31 +205,13 @@ func Init(config *ApiConfig, router *mux.Router, database *database.Database, em
 	return a
 }
 
-// getJSONRequestBody gets a JSON request body broken into a key/value map
-func (a *api) getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[string]interface{} {
-	body, _ := ioutil.ReadAll(r.Body) // check for errors
-	keyVal := make(map[string]interface{})
-	jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-
-	if jsonErr != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return nil
-	}
-
-	return keyVal
-}
-
-// respondWithStandardJSON takes a result and writes the response
-func (a *api) respondWithStandardJSON(w http.ResponseWriter, code int, success bool, errors []string, data interface{}, meta interface{}) {
+// Success returns the successful response including any data and meta
+func Success(w http.ResponseWriter, r *http.Request, code int, data interface{}, meta interface{}) {
 	result := &standardJsonResponse{
-		Success: success,
-		Errors:  make([]string, 0),
+		Success: true,
+		Error:   "",
 		Data:    map[string]interface{}{},
 		Meta:    map[string]interface{}{},
-	}
-
-	if errors != nil {
-		result.Errors = errors
 	}
 
 	if meta != nil {
@@ -247,9 +229,39 @@ func (a *api) respondWithStandardJSON(w http.ResponseWriter, code int, success b
 	w.Write(response)
 }
 
+// Error responds with an error and its associated status code header
+func Error(w http.ResponseWriter, r *http.Request, code int, err string) {
+	result := &standardJsonResponse{
+		Success: false,
+		Error:   err,
+		Data:    map[string]interface{}{},
+		Meta:    map[string]interface{}{},
+	}
+
+	response, _ := json.Marshal(result)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
+}
+
+// getJSONRequestBody gets a JSON request body broken into a key/value map
+func getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[string]interface{} {
+	body, _ := ioutil.ReadAll(r.Body) // check for errors
+	keyVal := make(map[string]interface{})
+	jsonErr := json.Unmarshal(body, &keyVal) // check for errors
+
+	if jsonErr != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return nil
+	}
+
+	return keyVal
+}
+
 // getLimitOffsetFromRequest gets the limit and offset query parameters from the request
 // defaulting to 20 for limit and 0 for offset
-func (a *api) getLimitOffsetFromRequest(r *http.Request, w http.ResponseWriter) (limit int, offset int) {
+func getLimitOffsetFromRequest(r *http.Request, w http.ResponseWriter) (limit int, offset int) {
 	query := r.URL.Query()
 	Limit, limitErr := strconv.Atoi(query.Get("limit"))
 	if limitErr != nil {

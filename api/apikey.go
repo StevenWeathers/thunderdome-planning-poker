@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -24,20 +23,17 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "")
 			return
 		}
 
 		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
 		if keysErr != nil {
-			log.Println("error retrieving api keys : " + keysErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, keysErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, keysErr.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, APIKeys, nil)
+		Success(w, r, http.StatusOK, APIKeys, nil)
 	}
 }
 
@@ -54,42 +50,34 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		APIKeyName := keyVal["name"].(string)
 
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "")
 			return
 		}
 
 		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
 		if keysErr != nil {
-			log.Println("error retrieving api keys : " + keysErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, keysErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, keysErr.Error())
 			return
 		}
 
 		if len(APIKeys) == a.config.UserAPIKeyLimit {
-			errors := make([]string, 0)
-			errors = append(errors, "USER_APIKEY_LIMIT_REACHED")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, errors, nil, nil)
+			Error(w, r, http.StatusForbidden, "USER_APIKEY_LIMIT_REACHED")
 			return
 		}
 
 		APIKey, keyErr := a.db.GenerateAPIKey(UserID, APIKeyName)
 		if keyErr != nil {
-			log.Println("error attempting to generate api key : " + keyErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, keyErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, keyErr.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, APIKey, nil)
+		Success(w, r, http.StatusOK, APIKey, nil)
 	}
 }
 
@@ -111,23 +99,20 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "")
 			return
 		}
 		APK := vars["keyID"]
-		keyVal := a.getJSONRequestBody(r, w)
+		keyVal := getJSONRequestBody(r, w)
 		active := keyVal["active"].(bool)
 
 		APIKeys, keysErr := a.db.UpdateUserAPIKey(UserID, APK, active)
 		if keysErr != nil {
-			log.Println("error updating api key : " + keysErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, keysErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, keysErr.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, APIKeys, nil)
+		Success(w, r, http.StatusOK, APIKeys, nil)
 	}
 }
 
@@ -149,20 +134,17 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != UserCookieID {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "")
 			return
 		}
 		APK := vars["keyID"]
 
 		APIKeys, keysErr := a.db.DeleteUserAPIKey(UserID, APK)
 		if keysErr != nil {
-			log.Println("error deleting api key : " + keysErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, keysErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, keysErr.Error())
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, APIKeys, nil)
+		Success(w, r, http.StatusOK, APIKeys, nil)
 	}
 }

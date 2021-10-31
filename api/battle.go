@@ -24,27 +24,23 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["id"]
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != AuthedUserID {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "")
 			return
 		}
 
 		battles, err := a.db.GetBattlesByUser(UserID)
-
 		if err != nil {
-			a.respondWithStandardJSON(w, http.StatusNotFound, false, nil, nil, nil)
+			Error(w, r, http.StatusNotFound, "")
 			return
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, battles, nil)
+		Success(w, r, http.StatusOK, battles, nil)
 	}
 }
 
-/*
-	Battle Handlers
-*/
 // handleBattleCreate handles creating a battle (arena)
 // @Summary Create Battle
 // @Description Create a battle associated to authenticated user
@@ -59,19 +55,16 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["id"]
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 		if UserID != AuthedUserID {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "")
 			return
 		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
-			log.Println("error in reading request body: " + bodyErr.Error() + "\n")
-			errors := make([]string, 0)
-			errors = append(errors, bodyErr.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, bodyErr.Error())
 			return
 		}
 
@@ -87,9 +80,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		newBattle, err := a.db.CreateBattle(UserID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting, keyVal.PointAverageRounding)
 		if err != nil {
-			errors := make([]string, 0)
-			errors = append(errors, err.Error())
-			a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+			Error(w, r, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -121,14 +112,12 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 				err := a.db.TeamAddBattle(TeamID, newBattle.BattleID)
 
 				if err != nil {
-					errors := make([]string, 0)
-					errors = append(errors, err.Error())
-					a.respondWithStandardJSON(w, http.StatusInternalServerError, false, errors, nil, nil)
+					Error(w, r, http.StatusInternalServerError, err.Error())
 					return
 				}
 			}
 		}
 
-		a.respondWithStandardJSON(w, http.StatusOK, true, nil, newBattle, nil)
+		Success(w, r, http.StatusOK, newBattle, nil)
 	}
 }

@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"strings"
 
@@ -20,22 +19,21 @@ func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 			var apiKeyErr error
 			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
 			if apiKeyErr != nil {
-				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
-				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+				Error(w, r, http.StatusUnauthorized, "INVALID_APIKEY")
 				return
 			}
 		} else {
 			var cookieErr error
 			UserID, cookieErr = a.validateUserCookie(w, r)
 			if cookieErr != nil {
-				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+				Error(w, r, http.StatusUnauthorized, "INVALID_USER")
 				return
 			}
 		}
 
 		adminErr := a.db.ConfirmAdmin(UserID)
 		if adminErr != nil {
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_ADMIN")
 			return
 		}
 
@@ -56,24 +54,22 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 			var apiKeyErr error
 			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
 			if apiKeyErr != nil {
-				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
-				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+				Error(w, r, http.StatusUnauthorized, "INVALID_APIKEY")
 				return
 			}
 		} else {
 			var cookieErr error
 			UserID, cookieErr = a.validateUserCookie(w, r)
 			if cookieErr != nil {
-				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+				Error(w, r, http.StatusUnauthorized, "INVALID_USER")
 				return
 			}
 		}
 
 		_, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			log.Println("error finding user : " + UserErr.Error() + "\n")
 			a.clearUserCookies(w)
-			a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+			Error(w, r, http.StatusUnauthorized, "INVALID_USER")
 			return
 		}
 
@@ -94,31 +90,27 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			var apiKeyErr error
 			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
 			if apiKeyErr != nil {
-				log.Println("error validating api key : " + apiKeyErr.Error() + "\n")
-				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+				Error(w, r, http.StatusUnauthorized, "INVALID_APIKEY")
 				return
 			}
 		} else {
 			var cookieErr error
 			UserID, cookieErr = a.validateUserCookie(w, r)
 			if cookieErr != nil {
-				a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+				Error(w, r, http.StatusUnauthorized, "INVALID_USER")
 				return
 			}
 		}
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			log.Println("error finding user : " + UserErr.Error() + "\n")
 			a.clearUserCookies(w)
-			a.respondWithStandardJSON(w, http.StatusUnauthorized, false, nil, nil, nil)
+			Error(w, r, http.StatusUnauthorized, "INVALID_USER")
 			return
 		}
 
 		if User.Verified == false {
-			errors := make([]string, 0)
-			errors = append(errors, "USER_NOT_VERIFIED")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, errors, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_VERIFIED_USER")
 			return
 		}
 
@@ -137,8 +129,7 @@ func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserErr != nil {
-			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "ORGANIZATION_USER_REQUIRED")
 			return
 		}
 
@@ -157,13 +148,11 @@ func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserErr != nil {
-			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "ORGANIZATION_USER_REQUIRED")
 			return
 		}
 		if Role != "ADMIN" {
-			log.Println("user is not an ADMIN of organization")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_ORG_ADMIN")
 			return
 		}
 
@@ -183,8 +172,7 @@ func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserErr != nil {
-			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_TEAM_USER")
 			return
 		}
 
@@ -205,13 +193,11 @@ func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserErr != nil {
-			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_TEAM_USER")
 			return
 		}
 		if TeamRole != "ADMIN" && OrgRole != "ADMIN" {
-			log.Println("user is not an ADMIN of organization")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_TEAM_OR_ORGANIZATION_ADMIN")
 			return
 		}
 
@@ -232,8 +218,7 @@ func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserErr != nil {
-			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_DEPARTMENT_USER")
 			return
 		}
 
@@ -254,13 +239,11 @@ func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserErr != nil {
-			log.Println("error finding user in organization : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_DEPARTMENT_USER")
 			return
 		}
 		if DepartmentRole != "ADMIN" && OrgRole != "ADMIN" {
-			log.Println("user is not an ADMIN of department or organization")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_DEPARTMENT_OR_ORGANIZATION_ADMIN")
 			return
 		}
 
@@ -282,8 +265,7 @@ func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserErr != nil {
-			log.Println("error finding user in department team : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_TEAM_USER")
 			return
 		}
 
@@ -306,14 +288,12 @@ func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserErr != nil {
-			log.Println("error finding user in department team : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_TEAM_USER")
 			return
 		}
 
 		if TeamRole != "ADMIN" && DepartmentRole != "ADMIN" && OrgRole != "ADMIN" {
-			log.Println("user is not an ADMIN of organization")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_TEAM_OR_DEPARTMENT_OR_ORGANIZATION_ADMIN")
 			return
 		}
 
@@ -334,8 +314,7 @@ func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserErr != nil {
-			log.Println("error finding user in team : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_TEAM_USER")
 			return
 		}
 
@@ -354,13 +333,11 @@ func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserErr != nil {
-			log.Println("error finding user in team : " + UserErr.Error() + "\n")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_TEAM_USER")
 			return
 		}
 		if Role != "ADMIN" {
-			log.Println("user is not an ADMIN of team")
-			a.respondWithStandardJSON(w, http.StatusForbidden, false, nil, nil, nil)
+			Error(w, r, http.StatusForbidden, "REQUIRES_TEAM_ADMIN")
 			return
 		}
 

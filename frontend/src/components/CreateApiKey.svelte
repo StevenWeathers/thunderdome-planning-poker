@@ -38,17 +38,15 @@
             })
             .catch(function(error) {
                 if (Array.isArray(error)) {
-                    const [statusText, response] = error
-
-                    response.json().then(function(result) {
+                    error.response.json().then(function(result) {
                         let errMessage
-                        switch (result.errors[0]) {
+                        switch (result.error) {
                             case 'USER_APIKEY_LIMIT_REACHED':
                                 errMessage = $_(
                                     'pages.warriorProfile.apiKeys.limitReached',
                                 )
                                 break
-                            case 'USER_NOT_VERIFIED':
+                            case 'REQUIRES_VERIFIED_USER':
                                 errMessage = $_(
                                     'pages.warriorProfile.apiKeys.unverifiedUser',
                                 )
