@@ -31,10 +31,10 @@
     function getAppStats() {
         xfetch('/api/admin/stats')
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 appStats = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting application stats')
             })
     }
@@ -45,10 +45,10 @@
             `/api/admin/apikeys?limit=${apikeysPageLimit}&offset=${apikeysOffset}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 apikeys = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting apikeys')
             })
     }
@@ -119,7 +119,8 @@
                         bind:current="{apikeysPage}"
                         num_items="{appStats.apikeyCount}"
                         per_page="{apikeysPageLimit}"
-                        on:navigate="{changePage}" />
+                        on:navigate="{changePage}"
+                    />
                 </div>
             {/if}
         </div>

@@ -28,7 +28,7 @@ function quill(node, options) {
         quill.setContents(delta)
     }
 
-    quill.on('text-change', function(delta, oldDelta, source) {
+    quill.on('text-change', function (delta, oldDelta, source) {
         node.dispatchEvent(
             new CustomEvent('text-change', {
                 detail: {

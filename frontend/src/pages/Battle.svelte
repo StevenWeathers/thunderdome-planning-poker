@@ -56,7 +56,7 @@
             ? timeUnitsBetween(voteStartTime, currentTime)
             : {}
 
-    const onSocketMessage = function(evt) {
+    const onSocketMessage = function (evt) {
         const parsedEvent = JSON.parse(evt.data)
 
         switch (parsedEvent.type) {
@@ -465,7 +465,8 @@
                         <a
                             href="{currentPlan.link}"
                             target="_blank"
-                            class="text-blue-800">
+                            class="text-blue-800"
+                        >
                             <ExternalLinkIcon />
                         </a>
                         &nbsp;
@@ -474,7 +475,8 @@
                         <span
                             class="inline-block text-lg text-gray-500
                             border-gray-400 border px-1 rounded"
-                            data-testId="battlePlanType">
+                            data-testId="battlePlanType"
+                        >
                             {currentPlan.type}
                         </span>
                         &nbsp;
@@ -491,12 +493,15 @@
             <div
                 class="w-full md:w-1/3 text-center md:text-right font-semibold
                 text-3xl md:text-4xl text-gray-700"
-                data-testId="votingTimer">
+                data-testId="votingTimer"
+            >
                 {#if countdown.seconds !== undefined}
                     {#if countdown.hours !== 0}
                         {addTimeLeadZero(countdown.hours)}:
                     {/if}
-                    {addTimeLeadZero(countdown.minutes)}:{addTimeLeadZero(countdown.seconds)}
+                    {addTimeLeadZero(countdown.minutes)}:{addTimeLeadZero(
+                        countdown.seconds,
+                    )}
                 {/if}
             </div>
         </div>
@@ -508,19 +513,22 @@
                         warriors="{battle.warriors}"
                         plans="{battle.plans}"
                         activePlanId="{battle.activePlanId}"
-                        {points}
+                        points="{points}"
                         highestVote="{highestVoteCount}"
-                        averageRounding="{battle.pointAverageRounding}" />
+                        averageRounding="{battle.pointAverageRounding}"
+                    />
                 {:else}
                     <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
                         {#each points as point}
                             <div class="w-1/4 md:w-1/6 px-2 mb-4">
                                 <PointCard
-                                    {point}
+                                    point="{point}"
                                     active="{vote === point}"
                                     on:voted="{handleVote}"
                                     on:voteRetraction="{handleUnvote}"
-                                    isLocked="{battle.votingLocked || isSpectator}" />
+                                    isLocked="{battle.votingLocked ||
+                                        isSpectator}"
+                                />
                             </div>
                         {/each}
                     </div>
@@ -528,10 +536,11 @@
 
                 <BattlePlans
                     plans="{battle.plans}"
-                    {isLeader}
-                    {sendSocketEvent}
-                    {eventTag}
-                    {notifications} />
+                    isLeader="{isLeader}"
+                    sendSocketEvent="{sendSocketEvent}"
+                    eventTag="{eventTag}"
+                    notifications="{notifications}"
+                />
             </div>
 
             <div class="w-full lg:w-1/4 px-4">
@@ -547,38 +556,45 @@
                             <WarriorCard
                                 warrior="{war}"
                                 leaders="{battle.leaders}"
-                                {isLeader}
+                                isLeader="{isLeader}"
                                 voted="{didVote(war.id)}"
                                 points="{showVote(war.id)}"
                                 autoFinishVoting="{battle.autoFinishVoting}"
-                                {sendSocketEvent}
-                                {eventTag} />
+                                sendSocketEvent="{sendSocketEvent}"
+                                eventTag="{eventTag}"
+                            />
                         {/if}
                     {/each}
 
                     {#if isLeader}
                         <VotingControls
-                            {points}
+                            points="{points}"
                             planId="{battle.activePlanId}"
-                            {sendSocketEvent}
+                            sendSocketEvent="{sendSocketEvent}"
                             votingLocked="{battle.votingLocked}"
                             highestVote="{highestVoteCount}"
-                            {eventTag} />
+                            eventTag="{eventTag}"
+                        />
                     {/if}
                 </div>
 
                 <div class="bg-white shadow-lg p-4 mb-4 rounded">
-                    <InviteWarrior {hostname} battleId="{battle.id}" />
+                    <InviteWarrior
+                        hostname="{hostname}"
+                        battleId="{battle.id}"
+                    />
                     {#if isLeader}
                         <div class="mt-4 text-right">
                             <HollowButton
                                 color="blue"
-                                onClick="{toggleEditBattle}">
+                                onClick="{toggleEditBattle}"
+                            >
                                 {$_('battleEdit')}
                             </HollowButton>
                             <HollowButton
                                 color="red"
-                                onClick="{toggleDeleteBattle}">
+                                onClick="{toggleDeleteBattle}"
+                            >
                                 {$_('battleDelete')}
                             </HollowButton>
                         </div>
@@ -595,12 +611,13 @@
         {#if showEditBattle}
             <EditBattle
                 battleName="{battle.name}"
-                {points}
+                points="{points}"
                 votingLocked="{battle.votingLocked}"
                 autoFinishVoting="{battle.autoFinishVoting}"
                 pointAverageRounding="{battle.pointAverageRounding}"
-                {handleBattleEdit}
-                {toggleEditBattle} />
+                handleBattleEdit="{handleBattleEdit}"
+                toggleEditBattle="{toggleEditBattle}"
+            />
         {/if}
     {:else if socketReconnecting}
         <div class="flex items-center">
@@ -631,6 +648,7 @@
     {#if showDeleteBattle}
         <DeleteBattle
             toggleDelete="{toggleDeleteBattle}"
-            handleDelete="{concedeBattle}" />
+            handleDelete="{concedeBattle}"
+        />
     {/if}
 </PageLayout>

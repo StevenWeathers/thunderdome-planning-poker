@@ -12,11 +12,8 @@
     export let notifications
     export let eventTag
 
-    const {
-        CleanupGuestsDaysOld,
-        CleanupBattlesDaysOld,
-        ExternalAPIEnabled,
-    } = appConfig
+    const { CleanupGuestsDaysOld, CleanupBattlesDaysOld, ExternalAPIEnabled } =
+        appConfig
 
     let appStats = {
         unregisteredUserCount: 0,
@@ -34,22 +31,22 @@
     function getAppStats() {
         xfetch('/api/admin/stats')
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 appStats = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting application stats')
             })
     }
 
     function cleanBattles() {
         xfetch('/api/maintenance/clean-battles', { method: 'DELETE' })
-            .then(function() {
+            .then(function () {
                 eventTag('admin_clean_battles', 'engagement', 'success')
 
                 getAppStats()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error encountered cleaning battles')
                 eventTag('admin_clean_battles', 'engagement', 'failure')
             })
@@ -57,12 +54,12 @@
 
     function cleanGuests() {
         xfetch('/api/maintenance/clean-guests', { method: 'DELETE' })
-            .then(function() {
+            .then(function () {
                 eventTag('admin_clean_guests', 'engagement', 'success')
 
                 getAppStats()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error encountered cleaning guests')
                 eventTag('admin_clean_guests', 'engagement', 'failure')
             })
@@ -70,13 +67,13 @@
 
     function lowercaseEmails() {
         xfetch('/api/maintenance/lowercase-emails', { method: 'PATCH' })
-            .then(function() {
+            .then(function () {
                 eventTag('admin_lowercase_emails', 'engagement', 'success')
                 notifications.success('Lowercased user emails successfully')
 
                 getAppStats()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger(
                     'Error encountered lowercasing user emails',
                 )
@@ -110,7 +107,8 @@
         <div class="w-full">
             <div
                 class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
-                md:pb-4 bg-white shadow-lg rounded text-xl">
+                md:pb-4 bg-white shadow-lg rounded text-xl"
+            >
                 <div class="w-1/2">
                     <div class="mb-2 font-bold">{$_('battlesActive')}</div>
                     {appStats.activeBattleCount}
@@ -122,7 +120,8 @@
             </div>
             <div
                 class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
-                md:pb-4 bg-white shadow-lg rounded text-xl">
+                md:pb-4 bg-white shadow-lg rounded text-xl"
+            >
                 <div class="w-1/4">
                     <div class="mb-2 font-bold">
                         {$_('pages.admin.counts.unregistered')}
@@ -150,7 +149,8 @@
             </div>
             <div
                 class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
-                md:pb-4 bg-white shadow-lg rounded text-xl">
+                md:pb-4 bg-white shadow-lg rounded text-xl"
+            >
                 <div class="{ExternalAPIEnabled ? 'w-1/4' : 'w-1/3'}">
                     <div class="mb-2 font-bold">{$_('organizations')}</div>
                     {appStats.organizationCount}
@@ -176,7 +176,8 @@
     <div class="flex justify-center mb-4">
         <div class="w-full">
             <div
-                class="text-center p-2 md:p-4 bg-white shadow-lg rounded text-xl">
+                class="text-center p-2 md:p-4 bg-white shadow-lg rounded text-xl"
+            >
                 <div class="text-2xl md:text-3xl font-bold text-center mb-4">
                     {$_('pages.admin.maintenance.title')}
                 </div>

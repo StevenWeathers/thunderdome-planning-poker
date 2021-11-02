@@ -20,10 +20,10 @@
 
     xfetch(`/api/users/${$warrior.id}/battles`)
         .then(res => res.json())
-        .then(function(result) {
+        .then(function (result) {
             battles = result.data
         })
-        .catch(function() {
+        .catch(function () {
             notifications.danger($_('pages.myBattles.battlesError'))
             eventTag('fetch_battles', 'engagement', 'failure')
         })
@@ -48,10 +48,12 @@
                 <div class="bg-white shadow-lg rounded mb-2">
                     <div
                         class="flex flex-wrap items-center p-4 border-gray-400
-                        border-b">
+                        border-b"
+                    >
                         <div
                             class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
-                            md:text-xl leading-tight">
+                            md:text-xl leading-tight"
+                        >
                             {#if battle.leaders.includes($warrior.id)}
                                 <LeaderIcon />
                                 &nbsp;
@@ -83,7 +85,12 @@
                 <h2 class="mb-4 text-2xl font-bold leading-tight">
                     {$_('pages.myBattles.createBattle.title')}
                 </h2>
-                <CreateBattle {notifications} {router} {eventTag} {xfetch} />
+                <CreateBattle
+                    notifications="{notifications}"
+                    router="{router}"
+                    eventTag="{eventTag}"
+                    xfetch="{xfetch}"
+                />
             </div>
         </div>
     </div>

@@ -7,13 +7,14 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 448 512"
     class="fill-current inline-block align-baseline"
-    {width}
-    {height}
+    width="{width}"
+    height="{height}"
     aria-hidden="true"
     focusable="false"
     data-prefix="fas"
     data-icon="user-ninja"
-    role="img">
+    role="img"
+>
     <path
         d="M325.4 289.2L224 390.6 122.6 289.2C54 295.3 0 352.2 0 422.4V464c0
         26.5 21.5 48 48 48h352c26.5 0 48-21.5

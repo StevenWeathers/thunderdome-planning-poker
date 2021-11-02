@@ -31,14 +31,14 @@
 
         xfetch(`/api/users/${$warrior.id}/apikeys`, { body })
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 handleApiKeyCreate()
                 apiKey = result.data.apiKey
                 eventTag('create_api_key', 'engagement', 'success')
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 if (Array.isArray(error)) {
-                    error.response.json().then(function(result) {
+                    error.response.json().then(function (result) {
                         let errMessage
                         switch (result.error) {
                             case 'USER_APIKEY_LIMIT_REACHED':
@@ -91,8 +91,11 @@
                     id="keyName"
                     name="keyName"
                     bind:value="{keyName}"
-                    placeholder="{$_('pages.warriorProfile.apiKeys.fields.name.placeholder')}"
-                    required />
+                    placeholder="{$_(
+                        'pages.warriorProfile.apiKeys.fields.name.placeholder',
+                    )}"
+                    required
+                />
             </div>
             <div class="text-right">
                 <div>
@@ -122,13 +125,15 @@
                     type="text"
                     value="{apiKey}"
                     id="apiKey"
-                    readonly />
+                    readonly
+                />
                 <div class="invisible md:visible md:flex md:-mr-px">
                     <SolidButton
                         color="blue-copy"
                         onClick="{copyKey}"
                         additionalClasses="flex items-center leading-normal
-                        whitespace-no-wrap text-sm">
+                        whitespace-no-wrap text-sm"
+                    >
                         <ClipboardIcon />
                     </SolidButton>
                 </div>

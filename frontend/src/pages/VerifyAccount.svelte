@@ -12,11 +12,11 @@
     let verficationError = false
 
     xfetch('/api/auth/verify', { body: { verifyId }, method: 'PATCH' })
-        .then(function() {
+        .then(function () {
             accountVerified = true
             eventTag('account_verify', 'engagement', 'success')
         })
-        .catch(function() {
+        .catch(function () {
             verficationError = true
             eventTag('account_verify', 'engagement', 'failure')
         })
@@ -33,7 +33,8 @@
                 <div
                     class="bg-green-100 border border-green-400 text-green-700
                     px-4 py-3 rounded relative"
-                    role="alert">
+                    role="alert"
+                >
                     <strong class="font-bold">
                         {$_('pages.verifyAccount.verified.title')}
                     </strong>
@@ -43,7 +44,8 @@
                 <div
                     class="bg-red-100 border border-red-400 text-red-700 px-4
                     py-3 rounded relative"
-                    role="alert">
+                    role="alert"
+                >
                     <strong class="font-bold">
                         {$_('pages.verifyAccount.failed.title')}
                     </strong>

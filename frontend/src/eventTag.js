@@ -11,11 +11,11 @@ function createFunctionWithTimeout(callback, opt_timeout) {
     return fn
 }
 
-export default function(action, category, label, cb = function() {}) {
+export default function (action, category, label, cb = function () {}) {
     // provide fallback should gtag not be available
     const t =
         window.gtag ||
-        function(evt, action, opts) {
+        function (evt, action, opts) {
             cb()
         }
 

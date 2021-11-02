@@ -36,9 +36,8 @@
         'robohash',
         'govatar',
     ]
-    const isAvatarConfigurable = configurableAvatarServices.includes(
-        AvatarService,
-    )
+    const isAvatarConfigurable =
+        configurableAvatarServices.includes(AvatarService)
     const avatarOptions = {
         dicebear: [
             'male',
@@ -76,10 +75,10 @@
 
     xfetch(`/api/users/${$warrior.id}`)
         .then(res => res.json())
-        .then(function(result) {
+        .then(function (result) {
             warriorProfile = result.data
         })
-        .catch(function() {
+        .catch(function () {
             notifications.danger($_('pages.warriorProfile.errorRetreiving'))
             eventTag('fetch_profile', 'engagement', 'failure')
         })
@@ -107,7 +106,7 @@
         if (noFormErrors) {
             xfetch(`/api/users/${$warrior.id}`, { body, method: 'PUT' })
                 .then(res => res.json())
-                .then(function() {
+                .then(function () {
                     warrior.update({
                         id: warriorProfile.id,
                         name: warriorProfile.name,
@@ -124,7 +123,7 @@
                     )
                     eventTag('update_profile', 'engagement', 'success')
                 })
-                .catch(function() {
+                .catch(function () {
                     notifications.danger(
                         $_('pages.warriorProfile.errorUpdating'),
                     )
@@ -153,7 +152,7 @@
 
         if (noFormErrors) {
             xfetch('/api/auth/update-password', { body, method: 'PATCH' })
-                .then(function() {
+                .then(function () {
                     notifications.success(
                         $_('pages.warriorProfile.passwordUpdated'),
                         1500,
@@ -161,7 +160,7 @@
                     updatePassword = false
                     eventTag('update_password', 'engagement', 'success')
                 })
-                .catch(function() {
+                .catch(function () {
                     notifications.danger(
                         $_('pages.warriorProfile.passwordUpdateError'),
                     )
@@ -173,10 +172,10 @@
     function getApiKeys() {
         xfetch(`/api/users/${$warrior.id}/apikeys`)
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 apiKeys = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger(
                     $_('pages.warriorProfile.apiKeys.errorRetreiving'),
                 )
@@ -188,18 +187,18 @@
     }
 
     function deleteApiKey(apk) {
-        return function() {
+        return function () {
             xfetch(`/api/users/${$warrior.id}/apikeys/${apk}`, {
                 method: 'DELETE',
             })
                 .then(res => res.json())
-                .then(function(result) {
+                .then(function (result) {
                     notifications.success(
                         $_('pages.warriorProfile.apiKeys.deleteSuccess'),
                     )
                     apiKeys = result.data
                 })
-                .catch(function() {
+                .catch(function () {
                     notifications.danger(
                         $_('pages.warriorProfile.apiKeys.deleteFailed'),
                     )
@@ -208,7 +207,7 @@
     }
 
     function toggleApiKeyActiveStatus(apk, active) {
-        return function() {
+        return function () {
             const body = {
                 active: !active,
             }
@@ -218,13 +217,13 @@
                 method: 'PUT',
             })
                 .then(res => res.json())
-                .then(function(result) {
+                .then(function (result) {
                     notifications.success(
                         $_('pages.warriorProfile.apiKeys.updateSuccess'),
                     )
                     apiKeys = result.data
                 })
-                .catch(function() {
+                .catch(function () {
                     notifications.danger(
                         $_('pages.warriorProfile.apiKeys.updateFailed'),
                     )
@@ -238,14 +237,14 @@
 
     function handleDeleteAccount() {
         xfetch(`/api/users/${$warrior.id}`, { method: 'DELETE' })
-            .then(function() {
+            .then(function () {
                 warrior.delete()
 
                 eventTag('delete_warrior', 'engagement', 'success')
 
                 router.route(appRoutes.landing)
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('pages.warriorProfile.delete.error'))
                 eventTag('delete_warrior', 'engagement', 'failure')
             })
@@ -277,22 +276,27 @@
                 <form
                     on:submit="{updateWarriorProfile}"
                     class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
-                    name="updateProfile">
+                    name="updateProfile"
+                >
                     <h2
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
-                        md:leading-tight">
+                        md:leading-tight"
+                    >
                         {$_('pages.warriorProfile.title')}
                     </h2>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourName">
+                            for="yourName"
+                        >
                             {$_('pages.warriorProfile.fields.name.label')}
                         </label>
                         <input
                             bind:value="{warriorProfile.name}"
-                            placeholder="{$_('pages.warriorProfile.fields.name.placeholder')}"
+                            placeholder="{$_(
+                                'pages.warriorProfile.fields.name.placeholder',
+                            )}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -300,20 +304,25 @@
                             id="yourName"
                             name="yourName"
                             type="text"
-                            required />
+                            required
+                        />
                     </div>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourEmail">
+                            for="yourEmail"
+                        >
                             {$_('pages.warriorProfile.fields.email.label')}
                             {#if warriorProfile.verified}
                                 <span
                                     class="font-bold text-green-600
                                     border-green-500 border py-1 px-2 rounded
-                                    ml-1">
-                                    {$_('pages.warriorProfile.fields.email.verified')}
+                                    ml-1"
+                                >
+                                    {$_(
+                                        'pages.warriorProfile.fields.email.verified',
+                                    )}
                                 </span>
                             {/if}
                         </label>
@@ -326,13 +335,15 @@
                             id="yourEmail"
                             name="yourEmail"
                             type="email"
-                            disabled />
+                            disabled
+                        />
                     </div>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourCountry">
+                            for="yourCountry"
+                        >
                             {$_('pages.warriorProfile.fields.country.label')}
                         </label>
 
@@ -344,9 +355,12 @@
                                 rounded leading-tight focus:outline-none
                                 focus:border-purple-500"
                                 id="yourCountry"
-                                name="yourCountry">
+                                name="yourCountry"
+                            >
                                 <option value="">
-                                    {$_('pages.warriorProfile.fields.country.placeholder')}
+                                    {$_(
+                                        'pages.warriorProfile.fields.country.placeholder',
+                                    )}
                                 </option>
                                 {#each countryList as item}
                                     <option value="{item.abbrev}">
@@ -356,7 +370,8 @@
                             </select>
                             <div
                                 class="pointer-events-none absolute inset-y-0
-                                right-0 flex items-center px-2 text-gray-700">
+                                right-0 flex items-center px-2 text-gray-700"
+                            >
                                 <DownCarrotIcon />
                             </div>
                         </div>
@@ -365,61 +380,76 @@
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourLocale">
+                            for="yourLocale"
+                        >
                             {$_('pages.warriorProfile.fields.locale.label')}
                         </label>
                         <LocaleSwitcher
                             selectedLocale="{$locale}"
-                            on:locale-changed="{e => setupI18n({
+                            on:locale-changed="{e =>
+                                setupI18n({
                                     withLocale: e.detail,
-                                })}" />
+                                })}"
+                        />
                     </div>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourCompany">
+                            for="yourCompany"
+                        >
                             {$_('pages.warriorProfile.fields.company.label')}
                         </label>
                         <input
                             bind:value="{warriorProfile.company}"
-                            placeholder="{$_('pages.warriorProfile.fields.company.placeholder')}"
+                            placeholder="{$_(
+                                'pages.warriorProfile.fields.company.placeholder',
+                            )}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             focus:bg-white focus:border-purple-500"
                             id="yourCompany"
                             name="yourCompany"
-                            type="text" />
+                            type="text"
+                        />
                     </div>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourJobTitle">
+                            for="yourJobTitle"
+                        >
                             {$_('pages.warriorProfile.fields.jobTitle.label')}
                         </label>
                         <input
                             bind:value="{warriorProfile.jobTitle}"
-                            placeholder="{$_('pages.warriorProfile.fields.jobTitle.placeholder')}"
+                            placeholder="{$_(
+                                'pages.warriorProfile.fields.jobTitle.placeholder',
+                            )}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             focus:bg-white focus:border-purple-500"
                             id="yourJobTitle"
                             name="yourJobTitle"
-                            type="text" />
+                            type="text"
+                        />
                     </div>
 
                     <div class="mb-4">
                         <label
-                            class="block text-gray-700 text-sm font-bold mb-2">
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                        >
                             <input
                                 bind:checked="{warriorProfile.notificationsEnabled}"
                                 type="checkbox"
-                                class="form-checkbox" />
+                                class="form-checkbox"
+                            />
                             <span class="ml-2">
-                                {$_('pages.warriorProfile.fields.enable_notifications.label')}
+                                {$_(
+                                    'pages.warriorProfile.fields.enable_notifications.label',
+                                )}
                             </span>
                         </label>
                     </div>
@@ -429,7 +459,8 @@
                             <label
                                 class="block text-gray-700 text-sm font-bold
                                 mb-2"
-                                for="yourAvatar">
+                                for="yourAvatar"
+                            >
                                 {$_('pages.warriorProfile.fields.avatar.label')}
                             </label>
                             <div class="flex">
@@ -443,7 +474,8 @@
                                             leading-tight focus:outline-none
                                             focus:border-purple-500"
                                             id="yourAvatar"
-                                            name="yourAvatar">
+                                            name="yourAvatar"
+                                        >
                                             {#each avatars as item}
                                                 <option value="{item}">
                                                     {item}
@@ -453,7 +485,8 @@
                                         <div
                                             class="pointer-events-none absolute
                                             inset-y-0 right-0 flex items-center
-                                            px-2 text-gray-700">
+                                            px-2 text-gray-700"
+                                        >
                                             <DownCarrotIcon />
                                         </div>
                                     </div>
@@ -464,7 +497,8 @@
                                             warriorId="{warriorProfile.id}"
                                             avatar="{warriorProfile.avatar}"
                                             avatarService="{AvatarService}"
-                                            width="40" />
+                                            width="40"
+                                        />
                                     </span>
                                 </div>
                             </div>
@@ -477,12 +511,16 @@
                                 type="button"
                                 class="inline-block align-baseline font-bold
                                 text-sm text-blue-500 hover:text-blue-800 mr-4"
-                                on:click="{toggleUpdatePassword}">
-                                {$_('pages.warriorProfile.updatePasswordButton')}
+                                on:click="{toggleUpdatePassword}"
+                            >
+                                {$_(
+                                    'pages.warriorProfile.updatePasswordButton',
+                                )}
                             </button>
                             <SolidButton
                                 type="submit"
-                                disabled="{updateDisabled}">
+                                disabled="{updateDisabled}"
+                            >
                                 {$_('pages.warriorProfile.saveProfileButton')}
                             </SolidButton>
                         </div>
@@ -494,22 +532,29 @@
                 <form
                     on:submit="{updateWarriorPassword}"
                     class="bg-white shadow-lg rounded p-6 mb-4"
-                    name="updateWarriorPassword">
+                    name="updateWarriorPassword"
+                >
                     <div
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
-                        md:leading-tight text-center">
+                        md:leading-tight text-center"
+                    >
                         {$_('pages.warriorProfile.updatePasswordForm.title')}
                     </div>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourPassword1">
-                            {$_('pages.warriorProfile.updatePasswordForm.fields.password.label')}
+                            for="yourPassword1"
+                        >
+                            {$_(
+                                'pages.warriorProfile.updatePasswordForm.fields.password.label',
+                            )}
                         </label>
                         <input
                             bind:value="{warriorPassword1}"
-                            placeholder="{$_('pages.warriorProfile.updatePasswordForm.fields.password.placeholder')}"
+                            placeholder="{$_(
+                                'pages.warriorProfile.updatePasswordForm.fields.password.placeholder',
+                            )}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -517,18 +562,24 @@
                             id="yourPassword1"
                             name="yourPassword1"
                             type="password"
-                            required />
+                            required
+                        />
                     </div>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourPassword2">
-                            {$_('pages.warriorProfile.updatePasswordForm.fields.confirmPassword.label')}
+                            for="yourPassword2"
+                        >
+                            {$_(
+                                'pages.warriorProfile.updatePasswordForm.fields.confirmPassword.label',
+                            )}
                         </label>
                         <input
                             bind:value="{warriorPassword2}"
-                            placeholder="{$_('pages.warriorProfile.updatePasswordForm.fields.confirmPassword.placeholder')}"
+                            placeholder="{$_(
+                                'pages.warriorProfile.updatePasswordForm.fields.confirmPassword.placeholder',
+                            )}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -536,7 +587,8 @@
                             id="yourPassword2"
                             name="yourPassword2"
                             type="password"
-                            required />
+                            required
+                        />
                     </div>
 
                     <div class="text-right">
@@ -544,13 +596,19 @@
                             type="button"
                             class="inline-block align-baseline font-bold text-sm
                             text-blue-500 hover:text-blue-800 mr-4"
-                            on:click="{toggleUpdatePassword}">
-                            {$_('pages.warriorProfile.updatePasswordForm.cancelButton')}
+                            on:click="{toggleUpdatePassword}"
+                        >
+                            {$_(
+                                'pages.warriorProfile.updatePasswordForm.cancelButton',
+                            )}
                         </button>
                         <SolidButton
                             type="submit"
-                            disabled="{updatePasswordDisabled}">
-                            {$_('pages.warriorProfile.updatePasswordForm.saveButton')}
+                            disabled="{updatePasswordDisabled}"
+                        >
+                            {$_(
+                                'pages.warriorProfile.updatePasswordForm.saveButton',
+                            )}
                         </SolidButton>
                     </div>
                 </form>
@@ -563,14 +621,17 @@
                         <div class="w-4/5">
                             <h2
                                 class="text-2xl md:text-3xl font-bold
-                                text-center mb-4">
+                                text-center mb-4"
+                            >
                                 {$_('pages.warriorProfile.apiKeys.title')}
                             </h2>
                         </div>
                         <div class="w-1/5">
                             <div class="text-right">
                                 <HollowButton onClick="{toggleCreateApiKey}">
-                                    {$_('pages.warriorProfile.apiKeys.createButton')}
+                                    {$_(
+                                        'pages.warriorProfile.apiKeys.createButton',
+                                    )}
                                 </HollowButton>
                             </div>
                         </div>
@@ -607,21 +668,34 @@
                                         {apk.active}
                                     </td>
                                     <td class="border px-4 py-2">
-                                        {new Date(apk.updatedDate).toLocaleString()}
+                                        {new Date(
+                                            apk.updatedDate,
+                                        ).toLocaleString()}
                                     </td>
                                     <td class="border px-4 py-2">
                                         <HollowButton
-                                            onClick="{toggleApiKeyActiveStatus(apk.id, apk.active)}">
+                                            onClick="{toggleApiKeyActiveStatus(
+                                                apk.id,
+                                                apk.active,
+                                            )}"
+                                        >
                                             {#if !apk.active}
-                                                {$_('pages.warriorProfile.apiKeys.activateButton')}
+                                                {$_(
+                                                    'pages.warriorProfile.apiKeys.activateButton',
+                                                )}
                                             {:else}
-                                                {$_('pages.warriorProfile.apiKeys.deactivateButton')}
+                                                {$_(
+                                                    'pages.warriorProfile.apiKeys.deactivateButton',
+                                                )}
                                             {/if}
                                         </HollowButton>
                                         <HollowButton
                                             color="red"
-                                            onClick="{deleteApiKey(apk.id)}">
-                                            {$_('pages.warriorProfile.apiKeys.deleteButton')}
+                                            onClick="{deleteApiKey(apk.id)}"
+                                        >
+                                            {$_(
+                                                'pages.warriorProfile.apiKeys.deleteButton',
+                                            )}
                                         </HollowButton>
                                     </td>
                                 </tr>
@@ -640,14 +714,18 @@
     </div>
     {#if showApiKeyCreate}
         <CreateApiKey
-            {toggleCreateApiKey}
+            toggleCreateApiKey="{toggleCreateApiKey}"
             handleApiKeyCreate="{getApiKeys}"
-            {notifications}
-            {xfetch}
-            {eventTag} />
+            notifications="{notifications}"
+            xfetch="{xfetch}"
+            eventTag="{eventTag}"
+        />
     {/if}
 
     {#if showAccountDeletion}
-        <DeleteWarrior {toggleDeleteAccount} {handleDeleteAccount} />
+        <DeleteWarrior
+            toggleDeleteAccount="{toggleDeleteAccount}"
+            handleDeleteAccount="{handleDeleteAccount}"
+        />
     {/if}
 </PageLayout>

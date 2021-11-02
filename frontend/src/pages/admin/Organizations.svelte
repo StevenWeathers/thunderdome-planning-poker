@@ -30,10 +30,10 @@
     function getAppStats() {
         xfetch('/api/admin/stats')
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 appStats = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting application stats')
             })
     }
@@ -45,10 +45,10 @@
             `/api/admin/organizations?limit=${organizationsPageLimit}&offset=${organizationsOffset}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 organizations = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting organizations')
             })
     }
@@ -73,7 +73,8 @@
 
 <svelte:head>
     <title>
-        {$_('organizations')} {$_('pages.admin.title')} | {$_('appName')}
+        {$_('organizations')}
+        {$_('pages.admin.title')} | {$_('appName')}
     </title>
 </svelte:head>
 
@@ -107,7 +108,8 @@
                         bind:current="{organizationsPage}"
                         num_items="{appStats.organizationCount}"
                         per_page="{organizationsPageLimit}"
-                        on:navigate="{changePage}" />
+                        on:navigate="{changePage}"
+                    />
                 </div>
             {/if}
         </div>

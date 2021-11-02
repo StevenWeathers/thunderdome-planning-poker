@@ -38,10 +38,10 @@
             `/api/users/${$warrior.id}/organizations?limit=${organizationsPageLimit}&offset=${orgsOffset}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 organizations = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting organizations')
             })
     }
@@ -52,10 +52,10 @@
             `/api/users/${$warrior.id}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 teams = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting teams')
             })
     }
@@ -67,12 +67,12 @@
 
         xfetch(`/api/users/${$warrior.id}/organizations`, { body })
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 eventTag('create_organization', 'engagement', 'success', () => {
                     router.route(`${appRoutes.organization}/${result.data.id}`)
                 })
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error attempting to create organization')
                 eventTag('create_organization', 'engagement', 'failure')
             })
@@ -85,12 +85,12 @@
 
         xfetch(`/api/users/${$warrior.id}/teams`, { body })
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 eventTag('create_team', 'engagement', 'success', () => {
                     router.route(`${appRoutes.team}/${result.data.id}`)
                 })
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error attempting to create team')
                 eventTag('create_team', 'engagement', 'failure')
             })
@@ -140,7 +140,8 @@
                             <td class="border px-4 py-2">
                                 <a
                                     href="{appRoutes.organization}/{org.id}"
-                                    class="text-blue-500 hover:text-blue-800">
+                                    class="text-blue-500 hover:text-blue-800"
+                                >
                                     {org.name}
                                 </a>
                             </td>
@@ -180,7 +181,8 @@
                             <td class="border px-4 py-2">
                                 <a
                                     href="/team/{team.id}"
-                                    class="text-blue-500 hover:text-blue-800">
+                                    class="text-blue-500 hover:text-blue-800"
+                                >
                                     {team.name}
                                 </a>
                             </td>
@@ -194,12 +196,14 @@
     {#if showCreateOrganization}
         <CreateOrganization
             toggleCreate="{toggleCreateOrganization}"
-            handleCreate="{createOrganizationHandler}" />
+            handleCreate="{createOrganizationHandler}"
+        />
     {/if}
 
     {#if showCreateTeam}
         <CreateTeam
             toggleCreate="{toggleCreateTeam}"
-            handleCreate="{createTeamHandler}" />
+            handleCreate="{createTeamHandler}"
+        />
     {/if}
 </PageLayout>

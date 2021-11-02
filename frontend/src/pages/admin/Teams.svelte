@@ -28,10 +28,10 @@
     function getAppStats() {
         xfetch('/api/admin/stats')
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 appStats = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting application stats')
             })
     }
@@ -40,10 +40,10 @@
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
         xfetch(`/api/admin/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`)
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 teams = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting teams')
             })
     }
@@ -100,7 +100,8 @@
                         bind:current="{teamsPage}"
                         num_items="{appStats.teamCount}"
                         per_page="{teamsPageLimit}"
-                        on:navigate="{changePage}" />
+                        on:navigate="{changePage}"
+                    />
                 </div>
             {/if}
         </div>

@@ -57,13 +57,13 @@
         }
 
         xfetch('/api/admin/users', { body })
-            .then(function() {
+            .then(function () {
                 eventTag('admin_create_warrior', 'engagement', 'success')
 
                 getWarriors()
                 toggleCreateWarrior()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error encountered creating warrior')
                 eventTag('admin_create_warrior', 'engagement', 'failure')
             })
@@ -72,10 +72,10 @@
     function getAppStats() {
         xfetch('/api/admin/stats')
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 appStats = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting application stats')
             })
     }
@@ -86,23 +86,23 @@
             `/api/admin/users?limit=${warriorsPageLimit}&offset=${warriorsOffset}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 warriors = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting warriors')
             })
     }
 
     function promoteWarrior(warriorId) {
-        return function() {
+        return function () {
             xfetch(`/api/admin/users/${warriorId}/promote`, { method: 'PATCH' })
-                .then(function() {
+                .then(function () {
                     eventTag('admin_promote_warrior', 'engagement', 'success')
 
                     getWarriors()
                 })
-                .catch(function() {
+                .catch(function () {
                     notifications.danger('Error encountered promoting warrior')
                     eventTag('admin_promote_warrior', 'engagement', 'failure')
                 })
@@ -110,14 +110,14 @@
     }
 
     function demoteWarrior(warriorId) {
-        return function() {
+        return function () {
             xfetch(`/api/admin/users/${warriorId}/demote`, { method: 'PATCH' })
-                .then(function() {
+                .then(function () {
                     eventTag('admin_demote_warrior', 'engagement', 'success')
 
                     getWarriors()
                 })
-                .catch(function() {
+                .catch(function () {
                     notifications.danger('Error encountered demoting warrior')
                     eventTag('admin_demote_warrior', 'engagement', 'failure')
                 })
@@ -126,13 +126,13 @@
 
     function handleDeleteWarrior() {
         xfetch(`/api/admin/users/${warriorDeleteId}`, { method: 'DELETE' })
-            .then(function() {
+            .then(function () {
                 eventTag('admin_demote_warrior', 'engagement', 'success')
 
                 getWarriors()
                 toggleDeleteWarrior(null)()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error encountered demoting warrior')
                 eventTag('admin_demote_warrior', 'engagement', 'failure')
             })
@@ -210,7 +210,8 @@
                                     <CountryFlag
                                         country="{warrior.country}"
                                         size="{16}"
-                                        additionalClass="inline-block" />
+                                        additionalClass="inline-block"
+                                    />
                                 {/if}
                             </td>
                             <td class="border p-2">
@@ -219,7 +220,10 @@
                                     &nbsp;
                                     <span
                                         class="text-green-600"
-                                        title="{$_('pages.admin.registeredWarriors.verified')}">
+                                        title="{$_(
+                                            'pages.admin.registeredWarriors.verified',
+                                        )}"
+                                    >
                                         <CheckIcon />
                                     </span>
                                 {/if}
@@ -228,7 +232,9 @@
                                 <div>{warrior.company}</div>
                                 {#if warrior.jobTitle}
                                     <div class="text-gray-700 text-sm">
-                                        {$_('pages.admin.registeredWarriors.jobTitle')}:
+                                        {$_(
+                                            'pages.admin.registeredWarriors.jobTitle',
+                                        )}:
                                         {warrior.jobTitle}
                                     </div>
                                 {/if}
@@ -238,19 +244,22 @@
                                 {#if warrior.rank !== 'GENERAL'}
                                     <HollowButton
                                         onClick="{promoteWarrior(warrior.id)}"
-                                        color="blue">
+                                        color="blue"
+                                    >
                                         {$_('promote')}
                                     </HollowButton>
                                 {:else}
                                     <HollowButton
                                         onClick="{demoteWarrior(warrior.id)}"
-                                        color="blue">
+                                        color="blue"
+                                    >
                                         {$_('demote')}
                                     </HollowButton>
                                 {/if}
                                 <HollowButton
                                     color="red"
-                                    onClick="{toggleDeleteWarrior(warrior.id)}">
+                                    onClick="{toggleDeleteWarrior(warrior.id)}"
+                                >
                                     {$_('delete')}
                                 </HollowButton>
                             </td>
@@ -265,7 +274,8 @@
                         bind:current="{warriorsPage}"
                         num_items="{appStats.registeredUserCount}"
                         per_page="{warriorsPageLimit}"
-                        on:navigate="{changePage}" />
+                        on:navigate="{changePage}"
+                    />
                 </div>
             {/if}
         </div>
@@ -275,12 +285,14 @@
         <CreateWarrior
             toggleCreate="{toggleCreateWarrior}"
             handleCreate="{createWarrior}"
-            notifications />
+            notifications
+        />
     {/if}
 
     {#if showWarriorDeletion}
         <DeleteWarrior
             toggleDeleteAccount="{toggleDeleteWarrior(null)}"
-            handleDeleteAccount="{handleDeleteWarrior}" />
+            handleDeleteAccount="{handleDeleteWarrior}"
+        />
     {/if}
 </AdminPageLayout>

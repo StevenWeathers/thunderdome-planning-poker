@@ -74,7 +74,7 @@
     function getTeam() {
         xfetch(teamPrefix)
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 team = result.data.team
                 teamRole = result.data.teamRole
 
@@ -90,7 +90,7 @@
                 getBattles()
                 getUsers()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('teamGetError'))
             })
     }
@@ -101,10 +101,10 @@
             `${teamPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 users = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('teamGetUsersError'))
             })
     }
@@ -115,10 +115,10 @@
             `${teamPrefix}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 battles = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('teamGetBattlesError'))
             })
     }
@@ -130,13 +130,13 @@
         }
 
         xfetch(`${teamPrefix}/users`, { body })
-            .then(function() {
+            .then(function () {
                 eventTag('team_add_user', 'engagement', 'success')
                 toggleAddUser()
                 notifications.success($_('userAddSuccess'))
                 getUsers()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('userAddError'))
                 eventTag('team_add_user', 'engagement', 'failure')
             })
@@ -144,13 +144,13 @@
 
     function handleUserRemove() {
         xfetch(`${teamPrefix}/users/${removeUserId}`, { method: 'DELETE' })
-            .then(function() {
+            .then(function () {
                 eventTag('team_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
                 notifications.success($_('userRemoveSuccess'))
                 getUsers()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('userRemoveError'))
                 eventTag('team_remove_user', 'engagement', 'failure')
             })
@@ -162,13 +162,13 @@
         }
 
         xfetch(`${teamPrefix}/battles/${removeBattleId}`, { method: 'DELETE' })
-            .then(function() {
+            .then(function () {
                 eventTag('team_remove_battle', 'engagement', 'success')
                 toggleRemoveBattle(null)()
                 notifications.success($_('battleRemoveSuccess'))
                 getBattles()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('battleRemoveError'))
                 eventTag('team_remove_battle', 'engagement', 'failure')
             })
@@ -204,7 +204,8 @@
             <ChevronRight class="inline-block" />
             <a
                 class="text-blue-500 hover:text-blue-800"
-                href="{appRoutes.organization}/{organization.id}">
+                href="{appRoutes.organization}/{organization.id}"
+            >
                 {organization.name}
             </a>
             {#if departmentId}
@@ -214,7 +215,8 @@
                 <ChevronRight class="inline-block" />
                 <a
                     class="text-blue-500 hover:text-blue-800"
-                    href="{appRoutes.organization}/{organization.id}/department/{department.id}">
+                    href="{appRoutes.organization}/{organization.id}/department/{department.id}"
+                >
                     {department.name}
                 </a>
             {/if}
@@ -244,13 +246,17 @@
                                 <td class="border px-4 py-2 text-right">
                                     {#if isAdmin}
                                         <HollowButton
-                                            onClick="{toggleRemoveBattle(battle.id)}"
-                                            color="red">
+                                            onClick="{toggleRemoveBattle(
+                                                battle.id,
+                                            )}"
+                                            color="red"
+                                        >
                                             {$_('remove')}
                                         </HollowButton>
                                     {/if}
                                     <HollowButton
-                                        href="{appRoutes.battle}/{battle.id}">
+                                        href="{appRoutes.battle}/{battle.id}"
+                                    >
                                         {$_('battleJoin')}
                                     </HollowButton>
                                 </td>
@@ -267,10 +273,11 @@
                     </h2>
                     <CreateBattle
                         apiPrefix="{teamPrefix}"
-                        {notifications}
-                        {router}
-                        {eventTag}
-                        {xfetch} />
+                        notifications="{notifications}"
+                        router="{router}"
+                        eventTag="{eventTag}"
+                        xfetch="{xfetch}"
+                    />
                 {/if}
             </div>
         </div>
@@ -314,7 +321,8 @@
                                 {#if isAdmin}
                                     <HollowButton
                                         onClick="{toggleRemoveUser(usr.id)}"
-                                        color="red">
+                                        color="red"
+                                    >
                                         {$_('remove')}
                                     </HollowButton>
                                 {/if}
@@ -333,12 +341,14 @@
     {#if showRemoveUser}
         <RemoveUser
             toggleRemove="{toggleRemoveUser(null)}"
-            handleRemove="{handleUserRemove}" />
+            handleRemove="{handleUserRemove}"
+        />
     {/if}
 
     {#if showRemoveBattle}
         <RemoveBattle
             toggleRemove="{toggleRemoveBattle(null)}"
-            handleRemove="{handleBattleRemove}" />
+            handleRemove="{handleBattleRemove}"
+        />
     {/if}
 </PageLayout>

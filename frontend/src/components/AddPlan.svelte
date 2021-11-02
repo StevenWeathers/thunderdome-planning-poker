@@ -76,7 +76,8 @@
                     required
                     class="block appearance-none w-full border-2 border-gray-400
                     text-gray-700 py-3 px-4 pr-8 rounded leading-tight
-                    focus:outline-none focus:border-purple-500">
+                    focus:outline-none focus:border-purple-500"
+                >
                     <option value="" disabled>
                         {$_('planTypePlaceholder')}
                     </option>
@@ -86,7 +87,8 @@
                 </select>
                 <div
                     class="pointer-events-none absolute inset-y-0 right-0 flex
-                    items-center px-2 text-gray-700">
+                    items-center px-2 text-gray-700"
+                >
                     <DownCarrotIcon />
                 </div>
             </div>
@@ -103,7 +105,8 @@
                 id="planName"
                 name="planName"
                 bind:value="{planName}"
-                placeholder="{$_('planNamePlaceholder')}" />
+                placeholder="{$_('planNamePlaceholder')}"
+            />
         </div>
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2" for="referenceId">
@@ -117,7 +120,8 @@
                 id="referenceId"
                 name="referenceId"
                 bind:value="{referenceId}"
-                placeholder="{$_('planReferenceIdPlaceholder')}" />
+                placeholder="{$_('planReferenceIdPlaceholder')}"
+            />
         </div>
         <div class="mb-4">
             <label class="block text-sm font-bold mb-2" for="planLink">
@@ -131,16 +135,21 @@
                 id="planLink"
                 name="planLink"
                 bind:value="{planLink}"
-                placeholder="{$_('planLinkPlaceholder')}" />
+                placeholder="{$_('planLinkPlaceholder')}"
+            />
         </div>
         <div class="mb-16">
             <div class="text-sm font-bold mb-2">{$_('planDescription')}</div>
             <div class="h-48">
                 <div
                     class="w-full"
-                    use:quill="{{ placeholder: $_('planDescriptionPlaceholder'), content: description }}"
+                    use:quill="{{
+                        placeholder: $_('planDescriptionPlaceholder'),
+                        content: description,
+                    }}"
                     on:text-change="{e => (description = e.detail.html)}"
-                    id="description"></div>
+                    id="description"
+                ></div>
             </div>
         </div>
         <div class="mb-16">
@@ -150,9 +159,13 @@
             <div class="h-48">
                 <div
                     class="w-full"
-                    use:quill="{{ placeholder: $_('planAcceptanceCriteriaPlaceholder'), content: acceptanceCriteria }}"
+                    use:quill="{{
+                        placeholder: $_('planAcceptanceCriteriaPlaceholder'),
+                        content: acceptanceCriteria,
+                    }}"
                     on:text-change="{e => (acceptanceCriteria = e.detail.html)}"
-                    id="acceptanceCriteria"></div>
+                    id="acceptanceCriteria"
+                ></div>
             </div>
         </div>
         <div class="text-right">

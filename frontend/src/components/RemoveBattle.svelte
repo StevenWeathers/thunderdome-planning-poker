@@ -18,7 +18,8 @@
             type="button"
             class="inline-block align-baseline font-bold text-sm text-blue-500
             hover:text-blue-800 mr-4"
-            on:click="{toggleRemove}">
+            on:click="{toggleRemove}"
+        >
             {$_('cancel')}
         </button>
         <SolidButton onClick="{handleRemove}" color="red">

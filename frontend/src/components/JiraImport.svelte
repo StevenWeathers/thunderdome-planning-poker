@@ -48,12 +48,14 @@
 
                         if (customFields) {
                             for (let j = 0; j < customFields.length; j++) {
-                                const cfName = customFields[j].querySelector(
-                                    'customfieldname',
-                                ).innerHTML
-                                const cfValues = customFields[j].querySelector(
-                                    'customfieldvalues',
-                                ).innerHTML
+                                const cfName =
+                                    customFields[j].querySelector(
+                                        'customfieldname',
+                                    ).innerHTML
+                                const cfValues =
+                                    customFields[j].querySelector(
+                                        'customfieldvalues',
+                                    ).innerHTML
 
                                 if (
                                     cfName.toLowerCase() ===

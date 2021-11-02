@@ -5,13 +5,13 @@ import { PathPrefix } from './config'
  * and checks response status/ok for common errors
  * @param {function} handle401 401 handler, e.g. redirect to login
  */
-export default function(handle401) {
+export default function (handle401) {
     /**
      * Wrapper around fetch
      * @param {string} endpoint the endpoint to fetch
      * @param {object} config the optional fetch config e.g. body for post
      */
-    return function(endpoint, customConfig = {}) {
+    return function (endpoint, customConfig = {}) {
         const headers = { 'content-type': 'application/json' }
         const customHeaders = customConfig.headers || {}
 

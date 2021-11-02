@@ -71,7 +71,10 @@
                         hover:bg-transparent hover:text-gray-800 font-semibold
                         text-yellow-thunder py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded"
-                        href="{$warrior.id ? appRoutes.battles : appRoutes.register}">
+                        href="{$warrior.id
+                            ? appRoutes.battles
+                            : appRoutes.register}"
+                    >
                         {$_('battleCreate')}
                     </a>
                 </div>
@@ -81,7 +84,8 @@
                     class="w-full"
                     src="https://user-images.githubusercontent.com/846933/118144911-fdf70980-b3da-11eb-92b6-63de3990a8b8.png"
                     alt="Preview of Thunderdome, Agile Planning Poker UI
-                    Experience" />
+                    Experience"
+                />
             </div>
         </div>
     </div>
@@ -100,14 +104,16 @@
                     <GithubIcon />
                     <a
                         href="https://github.com/StevenWeathers/thunderdome-planning-poker"
-                        class="feature-link">
+                        class="feature-link"
+                    >
                         repository
                     </a>
-                    to request or contribute enhancements, locale translations,
-                    and bug fixes or to
+                    to request or contribute enhancements, locale translations, and
+                    bug fixes or to
                     <a
                         href="https://github.com/StevenWeathers/thunderdome-planning-poker#donations"
-                        class="feature-link">
+                        class="feature-link"
+                    >
                         Donate
                     </a>
                 </p>
@@ -120,11 +126,12 @@
                     <a href="https://thunderdome.dev" class="feature-link">
                         Thunderdome.dev
                     </a>
-                    is a free hosted service (SaaS) without Ads, alternatively
-                    you can
+                    is a free hosted service (SaaS) without Ads, alternatively you
+                    can
                     <a
                         href="https://github.com/StevenWeathers/thunderdome-planning-poker#running-in-production"
-                        class="feature-link">
+                        class="feature-link"
+                    >
                         run it on your own server
                     </a>
                 </p>
@@ -166,12 +173,13 @@
                     To expedite setting up a grooming session importing
                     <a
                         href="https://www.atlassian.com/software/jira"
-                        class="feature-link">
+                        class="feature-link"
+                    >
                         Jira
                     </a>
-                    XML to quickly add stories to a battle with links back to
-                    Jira. Don't use Jira?, self-hosted instances can enable API
-                    access for easier integrations with other systems.
+                    XML to quickly add stories to a battle with links back to Jira.
+                    Don't use Jira?, self-hosted instances can enable API access
+                    for easier integrations with other systems.
                 </p>
             </div>
         </div>
@@ -201,8 +209,8 @@
                     which keeps strangers from joining your battle without the
                     share link.
                     <br />
-                    HTTPS, backend only cookie, and salted/hashed password
-                    storage keep your authenticated sessions secure.
+                    HTTPS, backend only cookie, and salted/hashed password storage
+                    keep your authenticated sessions secure.
                 </p>
             </div>
         </div>
@@ -210,7 +218,7 @@
 </section>
 
 {#if ShowActiveCountries}
-    <Countries {xfetch} {eventTag} />
+    <Countries xfetch="{xfetch}" eventTag="{eventTag}" />
 {/if}
 
 <section class="mb-8">
@@ -226,7 +234,8 @@
                                 alt="Exothermic logo"
                                 title="Exothermic - Open Source Agile Story
                                 Mapping tool"
-                                class="inline-block mx-2 mb-1" />
+                                class="inline-block mx-2 mb-1"
+                            />
                         </a>
                         <br />
                         {$_('exothermicDescription')}
@@ -238,7 +247,8 @@
                                 alt="Wakita logo"
                                 title="Wakita - Open Source Agile Retrospective
                                 tool"
-                                class="inline-block mx-2 mb-1" />
+                                class="inline-block mx-2 mb-1"
+                            />
                             <br />
                             {$_('wakitaDescription')}
                         </a>

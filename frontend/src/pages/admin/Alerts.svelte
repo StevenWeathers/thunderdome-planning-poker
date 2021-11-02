@@ -54,7 +54,7 @@
     function createAlert(body) {
         xfetch('/api/alerts', { body })
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 eventTag('admin_create_alert', 'engagement', 'success')
 
                 activeAlerts.update(result.data)
@@ -62,7 +62,7 @@
                 toggleCreateAlert()
                 notifications.success('Alert created successfully.')
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error encountered creating alert')
                 eventTag('admin_create_alert', 'engagement', 'failure')
             })
@@ -71,7 +71,7 @@
     function updateAlert(id, body) {
         xfetch(`/api/alerts/${id}`, { body, method: 'PUT' })
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 eventTag('admin_update_alert', 'engagement', 'success')
 
                 activeAlerts.update(result.data)
@@ -79,7 +79,7 @@
                 toggleUpdateAlert({ ...defaultAlert })()
                 notifications.success('Alert updating successfully.')
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error encountered updating alert')
                 eventTag('admin_update_alert', 'engagement', 'failure')
             })
@@ -89,11 +89,11 @@
         const alertsOffset = (alertsPage - 1) * alertsPageLimit
         xfetch(`/api/alerts?limit=${alertsPageLimit}&offset=${alertsOffset}`)
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 alerts = result.data
                 alertCount = result.meta.count
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error getting alerts')
             })
     }
@@ -101,14 +101,14 @@
     function handleDeleteAlert() {
         xfetch(`/api/alerts/${deleteAlertId}`, { method: 'DELETE' })
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 eventTag('admin_delete_alert', 'engagement', 'success')
                 activeAlerts.update(result.data)
                 getAlerts()
                 toggleDeleteAlert(null)()
                 notifications.success('Alert deleted successfully.')
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger('Error attempting to delete alert')
                 eventTag('admin_delete_alert', 'engagement', 'failure')
             })
@@ -195,12 +195,14 @@
                             <td class="border px-4 py-2">
                                 <HollowButton
                                     onClick="{toggleUpdateAlert(alert)}"
-                                    color="blue">
+                                    color="blue"
+                                >
                                     {$_('edit')}
                                 </HollowButton>
                                 <HollowButton
                                     onClick="{toggleDeleteAlert(alert.id)}"
-                                    color="red">
+                                    color="red"
+                                >
                                     {$_('delete')}
                                 </HollowButton>
                             </td>
@@ -215,7 +217,8 @@
                         bind:current="{alertsPage}"
                         num_items="{alertCount}"
                         per_page="{alertsPageLimit}"
-                        on:navigate="{changePage}" />
+                        on:navigate="{changePage}"
+                    />
                 </div>
             {/if}
         </div>
@@ -225,7 +228,8 @@
         <CreateAlert
             toggleCreate="{toggleCreateAlert}"
             handleCreate="{createAlert}"
-            {alerts} />
+            alerts="{alerts}"
+        />
     {/if}
     {#if showAlertUpdate}
         <CreateAlert
@@ -237,12 +241,14 @@
             content="{selectedAlert.content}"
             active="{selectedAlert.active}"
             registeredOnly="{selectedAlert.registeredOnly}"
-            allowDismiss="{selectedAlert.allowDismiss}" />
+            allowDismiss="{selectedAlert.allowDismiss}"
+        />
     {/if}
 
     {#if showDeleteAlert}
         <DeleteAlert
             toggleDelete="{toggleDeleteAlert(null)}"
-            handleDelete="{handleDeleteAlert}" />
+            handleDelete="{handleDeleteAlert}"
+        />
     {/if}
 </AdminPageLayout>

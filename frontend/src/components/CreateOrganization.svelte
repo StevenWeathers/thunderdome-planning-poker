@@ -22,7 +22,8 @@
         <div class="mb-4">
             <label
                 class="block text-gray-700 text-sm font-bold mb-2"
-                for="organizationName">
+                for="organizationName"
+            >
                 {$_('organizationName')}
             </label>
             <input
@@ -33,7 +34,8 @@
                 focus:outline-none focus:bg-white focus:border-purple-500"
                 id="organizationName"
                 name="organizationName"
-                required />
+                required
+            />
         </div>
 
         <div>

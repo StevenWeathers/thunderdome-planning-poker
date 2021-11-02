@@ -50,12 +50,14 @@
 <div
     class="border-b border-gray-500 p-4 flex items-center"
     data-testId="warriorCard"
-    data-warriorName="{warrior.name}">
+    data-warriorName="{warrior.name}"
+>
     <div class="w-1/4 mr-1">
         <WarriorAvatar
             warriorId="{warrior.id}"
             avatar="{warrior.avatar}"
-            {avatarService} />
+            avatarService="{avatarService}"
+        />
     </div>
     <div class="w-3/4">
         <div class="flex items-center">
@@ -63,7 +65,8 @@
                 <p
                     class="{nameStyleClass} font-bold leading-tight truncate"
                     data-testId="warriorName"
-                    title="{warrior.name}">
+                    title="{warrior.name}"
+                >
                     {#if showRank}
                         {#if warrior.rank == 'GENERAL'}
                             <WarriorRankGeneral />
@@ -80,7 +83,6 @@
                     {:else}
                         <span>{warrior.name}</span>
                     {/if}
-
                 </p>
                 {#if leaders.includes(warrior.id)}
                     <p class="text-l text-gray-700 leading-tight">
@@ -91,7 +93,8 @@
                                 on:click="{demoteLeader}"
                                 class="inline text-sm text-red-500
                                 hover:text-red-800 bg-transparent
-                                border-transparent">
+                                border-transparent"
+                            >
                                 {$_('demote')}
                             </button>
                         {:else}&nbsp;{$_('pages.battle.warriorLeader')}{/if}
@@ -101,7 +104,8 @@
                         on:click="{promoteLeader}"
                         class="inline-block align-baseline text-sm
                         text-green-500 hover:text-green-800 bg-transparent
-                        border-transparent">
+                        border-transparent"
+                    >
                         {$_('promote')}
                     </button>
                     {#if !warrior.spectator}
@@ -110,7 +114,8 @@
                             on:click="{jabWarrior}"
                             class="inline-block align-baseline text-sm
                             text-blue-500 hover:text-blue-800 bg-transparent
-                            border-transparent">
+                            border-transparent"
+                        >
                             {$_('warriorNudge')}
                         </button>
                     {/if}
@@ -119,7 +124,8 @@
                     <button
                         on:click="{toggleSpectator}"
                         class="inline-block align-baseline text-sm text-blue-500
-                        hover:text-blue-800 bg-transparent border-transparent">
+                        hover:text-blue-800 bg-transparent border-transparent"
+                    >
                         {#if !warrior.spectator}
                             {$_('becomeSpectator')}
                         {:else}{$_('becomeParticipant')}{/if}
@@ -136,7 +142,8 @@
                         <span
                             class="font-bold text-green-600 border-green-500
                             border p-2 rounded ml-2"
-                            data-testId="warriorPoints">
+                            data-testId="warriorPoints"
+                        >
                             {points}
                         </span>
                     {/if}

@@ -3,7 +3,8 @@
     width="20"
     height="20"
     viewBox="0 0 1792 1792"
-    xmlns="http://www.w3.org/2000/svg">
+    xmlns="http://www.w3.org/2000/svg"
+>
     <path
         d="M768 1664h896v-640h-416q-40
         0-68-28t-28-68v-416h-384v1152zm256-1440v-64q0-13-9.5-22.5t-22.5-9.5h-704q-13

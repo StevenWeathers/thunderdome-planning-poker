@@ -54,76 +54,93 @@
 </script>
 
 <form on:submit="{onSubmit}" name="createAccount">
-
     <div class="mb-4">
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="yourName2">
+            for="yourName2"
+        >
             {$_('pages.createAccount.createAccountForm.fields.name.label')}
         </label>
         <input
             bind:value="{warriorName}"
-            placeholder="{$_('pages.createAccount.createAccountForm.fields.name.placeholder')}"
+            placeholder="{$_(
+                'pages.createAccount.createAccountForm.fields.name.placeholder',
+            )}"
             class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
             id="yourName2"
             name="yourName2"
-            required />
+            required
+        />
     </div>
 
     <div class="mb-4">
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="yourEmail">
+            for="yourEmail"
+        >
             {$_('pages.createAccount.createAccountForm.fields.email.label')}
         </label>
         <input
             bind:value="{warriorEmail}"
-            placeholder="{$_('pages.createAccount.createAccountForm.fields.email.placeholder')}"
+            placeholder="{$_(
+                'pages.createAccount.createAccountForm.fields.email.placeholder',
+            )}"
             class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
             id="yourEmail"
             name="yourEmail"
             type="email"
-            required />
+            required
+        />
     </div>
 
     <div class="mb-4">
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="yourPassword1">
+            for="yourPassword1"
+        >
             {$_('pages.createAccount.createAccountForm.fields.password.label')}
         </label>
         <input
             bind:value="{warriorPassword1}"
-            placeholder="{$_('pages.createAccount.createAccountForm.fields.password.placeholder')}"
+            placeholder="{$_(
+                'pages.createAccount.createAccountForm.fields.password.placeholder',
+            )}"
             class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
             id="yourPassword1"
             name="yourPassword1"
             type="password"
-            required />
+            required
+        />
     </div>
 
     <div class="mb-4">
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="yourPassword2">
-            {$_('pages.createAccount.createAccountForm.fields.confirmPassword.label')}
+            for="yourPassword2"
+        >
+            {$_(
+                'pages.createAccount.createAccountForm.fields.confirmPassword.label',
+            )}
         </label>
         <input
             bind:value="{warriorPassword2}"
-            placeholder="{$_('pages.createAccount.createAccountForm.fields.confirmPassword.placeholder')}"
+            placeholder="{$_(
+                'pages.createAccount.createAccountForm.fields.confirmPassword.placeholder',
+            )}"
             class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
             id="yourPassword2"
             name="yourPassword2"
             type="password"
-            required />
+            required
+        />
     </div>
 
     <div>

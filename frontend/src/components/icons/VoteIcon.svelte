@@ -5,15 +5,16 @@
 
 <svg
     class="fill-current inline"
-    {width}
-    {height}
+    width="{width}"
+    height="{height}"
     aria-hidden="true"
     focusable="false"
     data-prefix="fas"
     data-icon="vote-yea"
     role="img"
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 640 512">
+    viewBox="0 0 640 512"
+>
     <path
         fill="currentColor"
         d="M608 320h-64v64h22.4c5.3 0 9.6 3.6 9.6 8v16c0 4.4-4.3 8-9.6

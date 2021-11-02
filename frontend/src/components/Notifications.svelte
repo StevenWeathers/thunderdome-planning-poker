@@ -25,10 +25,11 @@
             delay,
             duration,
             css: t =>
-                `opacity: ${(t - 0.5) *
-                    1}; transform-origin: top right; transform: scaleX(${(t -
-                    0.5) *
-                    1});`,
+                `opacity: ${
+                    (t - 0.5) * 1
+                }; transform-origin: top right; transform: scaleX(${
+                    (t - 0.5) * 1
+                });`,
         }
     }
 
@@ -163,12 +164,14 @@
         <li
             class="toast"
             style="background: {toast.background};"
-            out:animateOut>
+            out:animateOut
+        >
             <div class="content">{toast.msg}</div>
             <div
                 class="progress"
                 style="animation-duration: {toast.timeout}ms;"
-                on:animationend="{() => removeToast(toast.id)}"></div>
+                on:animationend="{() => removeToast(toast.id)}"
+            ></div>
         </li>
     {/each}
 </ul>

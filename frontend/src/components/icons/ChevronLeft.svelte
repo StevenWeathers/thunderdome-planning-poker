@@ -14,12 +14,14 @@
     style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg);
     transform: rotate(360deg);"
     preserveAspectRatio="xMidYMid meet"
-    viewBox="0 0 24 24">
+    viewBox="0 0 24 24"
+>
     <g
         fill="none"
         stroke-width="2"
         stroke-linecap="round"
-        stroke-linejoin="round">
+        stroke-linejoin="round"
+    >
         <path d="M15 18l-6-6l6-6"></path>
     </g>
 </svg>

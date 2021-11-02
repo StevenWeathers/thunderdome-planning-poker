@@ -97,7 +97,11 @@
         </div>
         <div class="w-1/2 text-right">
             {#if isLeader}
-                <JiraImport {handlePlanAdd} {notifications} {eventTag} />
+                <JiraImport
+                    handlePlanAdd="{handlePlanAdd}"
+                    notifications="{notifications}"
+                    eventTag="{eventTag}"
+                />
                 <HollowButton onClick="{toggleAddPlan()}">
                     {$_('planAdd')}
                 </HollowButton>
@@ -108,17 +112,23 @@
     <ul class="flex border-b border-gray-400">
         <li class="-mb-px {showCompleted ? '' : 'mr-1'}">
             <button
-                class="{showCompleted ? 'hover:text-blue-600 text-blue-400' : 'border-b border-blue-500 text-blue-600 hover:text-blue-800'}
+                class="{showCompleted
+                    ? 'hover:text-blue-600 text-blue-400'
+                    : 'border-b border-blue-500 text-blue-600 hover:text-blue-800'}
                 bg-white inline-block py-4 px-4 font-semibold"
-                on:click="{toggleShowCompleted(false)}">
+                on:click="{toggleShowCompleted(false)}"
+            >
                 {$_('unpointed', { values: { count: unpointedPlans.length } })}
             </button>
         </li>
         <li class="mr-1 {showCompleted ? 'mr-1' : ''}">
             <button
-                class="{showCompleted ? 'border-b border-blue-500 text-blue-600 hover:text-blue-800' : 'hover:text-blue-600 text-blue-400'}
+                class="{showCompleted
+                    ? 'border-b border-blue-500 text-blue-600 hover:text-blue-800'
+                    : 'hover:text-blue-600 text-blue-400'}
                 bg-white inline-block py-4 px-4 font-semibold"
-                on:click="{toggleShowCompleted(true)}">
+                on:click="{toggleShowCompleted(true)}"
+            >
                 {$_('pointed', { values: { count: pointedPlans.length } })}
             </button>
         </li>
@@ -128,16 +138,19 @@
         <div
             class="flex flex-wrap items-center border-b border-gray-400 p-4"
             data-testId="battlePlan"
-            data-planName="{plan.name}">
+            data-planName="{plan.name}"
+        >
             <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
                 <div
                     class="inline-block font-bold align-middle"
-                    data-testId="battlePlanName">
+                    data-testId="battlePlanName"
+                >
                     {#if plan.link !== ''}
                         <a
                             href="{plan.link}"
                             target="_blank"
-                            class="text-blue-800">
+                            class="text-blue-800"
+                        >
                             <ExternalLinkIcon />
                         </a>
                         &nbsp;
@@ -145,7 +158,8 @@
                     <div
                         class="inline-block text-sm text-gray-500
                         border-gray-400 border px-1 rounded"
-                        data-testId="battlePlanType">
+                        data-testId="battlePlanType"
+                    >
                         {plan.type}
                     </div>
                     &nbsp;
@@ -157,7 +171,8 @@
                     <div
                         class="inline-block font-bold text-green-600
                         border-green-500 border px-2 py-1 rounded ml-2"
-                        data-testId="battlePlanPoints">
+                        data-testId="battlePlanPoints"
+                    >
                         {plan.points}
                     </div>
                 {/if}
@@ -170,13 +185,15 @@
                     {#if !plan.active}
                         <HollowButton
                             color="red"
-                            onClick="{handlePlanDeletion(plan.id)}">
+                            onClick="{handlePlanDeletion(plan.id)}"
+                        >
                             {$_('delete')}
                         </HollowButton>
                     {/if}
                     <HollowButton
                         color="purple"
-                        onClick="{toggleAddPlan(plan.id)}">
+                        onClick="{toggleAddPlan(plan.id)}"
+                    >
                         {$_('edit')}
                     </HollowButton>
                     {#if !plan.active}
@@ -197,7 +214,8 @@
                 &nbsp;
                 <div
                     class="inline-block font-bold text-green-600
-                    border-green-500 border px-2 py-1 rounded ml-2">
+                    border-green-500 border px-2 py-1 rounded ml-2"
+                >
                     {totalPoints}
                 </div>
             </div>
@@ -207,9 +225,9 @@
 
 {#if showAddPlan}
     <AddPlan
-        {handlePlanAdd}
+        handlePlanAdd="{handlePlanAdd}"
         toggleAddPlan="{toggleAddPlan()}"
-        {handlePlanRevision}
+        handlePlanRevision="{handlePlanRevision}"
         planId="{selectedPlan.id}"
         planName="{selectedPlan.name}"
         planType="{selectedPlan.type}"
@@ -217,8 +235,9 @@
         planLink="{selectedPlan.link}"
         description="{selectedPlan.description}"
         acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
-        {notifications}
-        {eventTag} />
+        notifications="{notifications}"
+        eventTag="{eventTag}"
+    />
 {/if}
 
 {#if showViewPlan}
@@ -229,5 +248,6 @@
         referenceId="{selectedPlan.referenceId}"
         planLink="{selectedPlan.link}"
         description="{selectedPlan.description}"
-        acceptanceCriteria="{selectedPlan.acceptanceCriteria}" />
+        acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
+    />
 {/if}

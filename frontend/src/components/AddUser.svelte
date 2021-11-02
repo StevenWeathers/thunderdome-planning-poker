@@ -25,7 +25,8 @@
         <div class="mb-4">
             <label
                 class="block text-gray-700 text-sm font-bold mb-2"
-                for="userEmail">
+                for="userEmail"
+            >
                 {$_('userEmail')}
             </label>
             <input
@@ -36,7 +37,8 @@
                 focus:outline-none focus:bg-white focus:border-purple-500"
                 id="userEmail"
                 name="userEmail"
-                required />
+                required
+            />
         </div>
 
         <div class="mb-4">
@@ -50,7 +52,8 @@
                     text-gray-700 py-3 px-4 pr-8 rounded leading-tight
                     focus:outline-none focus:border-purple-500"
                     id="userRole"
-                    name="userRole">
+                    name="userRole"
+                >
                     <option value="">{$_('rolePlaceholder')}</option>
                     {#each roles as userRole}
                         <option value="{userRole}">{userRole}</option>
@@ -58,7 +61,8 @@
                 </select>
                 <div
                     class="pointer-events-none absolute inset-y-0 right-0 flex
-                    items-center px-2 text-gray-700">
+                    items-center px-2 text-gray-700"
+                >
                     <DownCarrotIcon />
                 </div>
             </div>

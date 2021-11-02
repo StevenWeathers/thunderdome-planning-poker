@@ -8,5 +8,8 @@
 </script>
 
 <Modal closeModal="{toggleCreate}">
-    <WarriorRegisterForm handleSubmit="{handleCreate}" {notifications} />
+    <WarriorRegisterForm
+        handleSubmit="{handleCreate}"
+        notifications="{notifications}"
+    />
 </Modal>

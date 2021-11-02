@@ -27,13 +27,15 @@
         type="text"
         value="{hostname}{appRoutes.battle}/{battleId}"
         id="BattleLink"
-        readonly />
+        readonly
+    />
     <div class="flex -mr-px">
         <SolidButton
             color="blue-copy"
             onClick="{copyBattleLink}"
             additionalClasses="flex items-center leading-normal
-            whitespace-no-wrap text-sm">
+            whitespace-no-wrap text-sm"
+        >
             <ClipboardIcon />
         </SolidButton>
     </div>

@@ -39,7 +39,7 @@
         if (noFormErrors) {
             xfetch('/api/auth/guest', { body })
                 .then(res => res.json())
-                .then(function(result) {
+                .then(function (result) {
                     const newWarrior = result.data
                     warrior.create({
                         id: newWarrior.id,
@@ -52,7 +52,7 @@
                         router.route(targetPage, true)
                     })
                 })
-                .catch(function() {
+                .catch(function () {
                     notifications.danger(
                         $_('pages.createAccount.guestForm.createError'),
                     )
@@ -76,7 +76,7 @@
 
         xfetch('/api/auth/register', { body })
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 const newWarrior = result.data
                 warrior.create({
                     id: newWarrior.id,
@@ -90,7 +90,7 @@
                     router.route(targetPage, true)
                 })
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger(
                     $_('pages.createAccount.createAccountForm.createError'),
                 )
@@ -113,7 +113,8 @@
         {#if battleId}
             <div
                 class="font-bold text-m md:text-l mb-2 md:mb-6 md:leading-tight
-                text-center">
+                text-center"
+            >
                 {@html $_('pages.createAccount.loginForBattle', {
                     values: {
                         loginOpen: `<a href="${appRoutes.login}/${battleId}" class="font-bold text-blue-500 hover:text-blue-800">`,
@@ -129,35 +130,44 @@
                 <form
                     on:submit="{createWarriorPrivate}"
                     class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
-                    name="registerGuest">
+                    name="registerGuest"
+                >
                     <h2
                         class="font-bold text-xl md:text-2xl b-4 mb-2 md:mb-6
-                        md:leading-tight text-center">
+                        md:leading-tight text-center"
+                    >
                         {$_('pages.createAccount.guestForm.title')}
                     </h2>
 
                     <div class="mb-6">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourName1">
-                            {$_('pages.createAccount.guestForm.fields.name.label')}
+                            for="yourName1"
+                        >
+                            {$_(
+                                'pages.createAccount.guestForm.fields.name.label',
+                            )}
                         </label>
                         <input
                             bind:value="{warriorName}"
-                            placeholder="{$_('pages.createAccount.guestForm.fields.name.placeholder')}"
+                            placeholder="{$_(
+                                'pages.createAccount.guestForm.fields.name.placeholder',
+                            )}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             focus:bg-white focus:border-purple-500"
                             id="yourName1"
                             name="yourName1"
-                            required />
+                            required
+                        />
                     </div>
                     <div>
                         <div class="text-right">
                             <SolidButton
                                 type="submit"
-                                disabled="{registerDisabled}">
+                                disabled="{registerDisabled}"
+                            >
                                 {$_('pages.createAccount.guestForm.saveButton')}
                             </SolidButton>
                         </div>
@@ -171,7 +181,8 @@
                 <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
                     <h2
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
-                        md:leading-tight text-center">
+                        md:leading-tight text-center"
+                    >
                         {@html $_(
                             'pages.createAccount.createAccountForm.title',
                             {
@@ -186,14 +197,16 @@
                     <WarriorRegisterForm
                         guestWarriorsName="{warriorName}"
                         handleSubmit="{createWarriorCorporal}"
-                        {notifications} />
+                        notifications="{notifications}"
+                    />
                 </div>
             </div>
         {:else}
             <div class="w-full md:w-1/2 px-4">
                 <h2
                     class="font-bold text-2xl md:text-3xl md:leading-tight
-                    text-center">
+                    text-center"
+                >
                     {$_('pages.createAccount.registrationDisabled')}
                 </h2>
             </div>

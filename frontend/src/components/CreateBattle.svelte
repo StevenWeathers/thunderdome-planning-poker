@@ -76,13 +76,13 @@
 
         xfetch(`${apiPrefix}/users/${$warrior.id}/battles`, { body })
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 const battle = result.data
                 eventTag('create_battle', 'engagement', 'success', () => {
                     router.route(`${appRoutes.battle}/${battle.id}`)
                 })
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger(
                     $_('pages.myBattles.createBattle.createError'),
                 )
@@ -101,19 +101,23 @@
     <div class="mb-4">
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="battleName">
+            for="battleName"
+        >
             {$_('pages.myBattles.createBattle.fields.name.label')}
         </label>
         <div class="control">
             <input
                 name="battleName"
                 bind:value="{battleName}"
-                placeholder="{$_('pages.myBattles.createBattle.fields.name.placeholder')}"
+                placeholder="{$_(
+                    'pages.myBattles.createBattle.fields.name.placeholder',
+                )}"
                 class="bg-gray-200 border-gray-200 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 leading-tight
                 focus:outline-none focus:bg-white focus:border-purple-500"
                 id="battleName"
-                required />
+                required
+            />
         </div>
     </div>
 
@@ -124,14 +128,18 @@
         <div class="control relative -mr-2 md:-mr-1">
             {#each allowedPointValues as point, pi}
                 <label
-                    class="{points.includes(point) ? checkedPointColor : uncheckedPointColor}
+                    class="{points.includes(point)
+                        ? checkedPointColor
+                        : uncheckedPointColor}
                     cursor-pointer font-bold border p-2 mr-2 xl:mr-1 mb-2
-                    xl:mb-0 rounded inline-block">
+                    xl:mb-0 rounded inline-block"
+                >
                     <input
                         type="checkbox"
                         bind:group="{points}"
                         value="{point}"
-                        class="hidden" />
+                        class="hidden"
+                    />
                     {point}
                 </label>
             {/each}
@@ -145,8 +153,9 @@
         <div class="control mb-4">
             <JiraImport
                 handlePlanAdd="{handlePlanImport}"
-                {notifications}
-                {eventTag} />
+                notifications="{notifications}"
+                eventTag="{eventTag}"
+            />
             <HollowButton onClick="{addPlan}">
                 {$_('pages.myBattles.createBattle.fields.plans.addButton')}
             </HollowButton>
@@ -157,17 +166,22 @@
                     <input
                         type="text"
                         bind:value="{plan.name}"
-                        placeholder="{$_('pages.myBattles.createBattle.fields.plans.fields.name.placeholder')}"
+                        placeholder="{$_(
+                            'pages.myBattles.createBattle.fields.plans.fields.name.placeholder',
+                        )}"
                         class="bg-gray-200 border-gray-200 border-2
                         appearance-none rounded w-full py-2 px-3 text-gray-700
                         leading-tight focus:outline-none focus:bg-white
                         focus:border-purple-500"
-                        required />
+                        required
+                    />
                 </div>
                 <div class="w-1/4">
                     <div class="pl-2">
                         <HollowButton onClick="{removePlan(i)}" color="red">
-                            {$_('pages.myBattles.createBattle.fields.plans.removeButton')}
+                            {$_(
+                                'pages.myBattles.createBattle.fields.plans.removeButton',
+                            )}
                         </HollowButton>
                     </div>
                 </div>
@@ -178,7 +192,8 @@
     <div class="mb-4">
         <label
             class="text-gray-700 text-sm font-bold mb-2"
-            for="averageRounding">
+            for="averageRounding"
+        >
             {$_('pages.myBattles.createBattle.fields.averageRounding.label')}
         </label>
         <div class="relative">
@@ -188,16 +203,21 @@
                 text-gray-700 py-3 px-4 pr-8 rounded leading-tight
                 focus:outline-none focus:border-purple-500"
                 id="averageRounding"
-                name="averageRounding">
+                name="averageRounding"
+            >
                 {#each allowedPointAverages as item}
                     <option value="{item}">
-                        {$_('pages.myBattles.createBattle.fields.averageRounding.' + item)}
+                        {$_(
+                            'pages.myBattles.createBattle.fields.averageRounding.' +
+                                item,
+                        )}
                     </option>
                 {/each}
             </select>
             <div
                 class="pointer-events-none absolute inset-y-0 right-0 flex
-                items-center px-2 text-gray-700">
+                items-center px-2 text-gray-700"
+            >
                 <DownCarrotIcon />
             </div>
         </div>
@@ -209,7 +229,8 @@
                 type="checkbox"
                 bind:checked="{autoFinishVoting}"
                 id="autoFinishVoting"
-                name="autoFinishVoting" />
+                name="autoFinishVoting"
+            />
             {$_('pages.myBattles.createBattle.fields.autoFinishVoting.label')}
         </label>
     </div>

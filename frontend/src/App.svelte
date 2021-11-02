@@ -194,13 +194,13 @@
 
     function logoutWarrior() {
         xfetch('/api/auth/logout', { method: 'DELETE' })
-            .then(function() {
+            .then(function () {
                 eventTag('logout', 'engagement', 'success', () => {
                     warrior.delete()
                     router.route(appRoutes.landing, true)
                 })
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('logoutError'))
                 eventTag('logout', 'engagement', 'failure')
             })
@@ -229,13 +229,15 @@
     <nav
         class="flex items-center justify-between flex-wrap bg-white p-6"
         role="navigation"
-        aria-label="main navigation">
+        aria-label="main navigation"
+    >
         <div class="flex items-center flex-shrink-0 mr-6">
             <a href="{appRoutes.landing}">
                 <img
                     src="{PathPrefix}/img/logo.svg"
                     alt="Thunderdome"
-                    class="nav-logo" />
+                    class="nav-logo"
+                />
             </a>
         </div>
         <div class="text-right mt-4 md:mt-0">
@@ -247,14 +249,16 @@
                 <HollowButton
                     color="teal"
                     href="{appRoutes.battles}"
-                    additionalClasses="mr-2">
+                    additionalClasses="mr-2"
+                >
                     {$_('pages.myBattles.nav')}
                 </HollowButton>
                 {#if activeWarrior.rank !== 'PRIVATE'}
                     <HollowButton
                         color="blue"
                         href="{appRoutes.organizations}"
-                        additionalClasses="mr-2">
+                        additionalClasses="mr-2"
+                    >
                         {$_('organizations')} &amp; {$_('teams')}
                     </HollowButton>
                 {/if}
@@ -263,7 +267,8 @@
                         <HollowButton
                             color="teal"
                             href="{appRoutes.register}"
-                            additionalClasses="mr-2">
+                            additionalClasses="mr-2"
+                        >
                             {$_('pages.createAccount.nav')}
                         </HollowButton>
                     {/if}
@@ -275,7 +280,8 @@
                         <HollowButton
                             color="purple"
                             href="{appRoutes.admin}"
-                            additionalClasses="mr-2">
+                            additionalClasses="mr-2"
+                        >
                             {$_('pages.admin.nav')}
                         </HollowButton>
                     {/if}
@@ -288,7 +294,8 @@
                     <HollowButton
                         color="teal"
                         href="{appRoutes.register}"
-                        additionalClasses="mr-2">
+                        additionalClasses="mr-2"
+                    >
                         {$_('pages.createAccount.nav')}
                     </HollowButton>
                 {/if}
@@ -299,26 +306,30 @@
             <LocaleSwitcher
                 class="ml-2"
                 selectedLocale="{$locale}"
-                on:locale-changed="{e => setupI18n({
+                on:locale-changed="{e =>
+                    setupI18n({
                         withLocale: e.detail,
-                    })}" />
+                    })}"
+            />
         </div>
     </nav>
 
     <svelte:component
         this="{currentPage.route}"
         {...currentPage.params}
-        {notifications}
-        {router}
-        {eventTag}
-        {xfetch} />
+        notifications="{notifications}"
+        router="{router}"
+        eventTag="{eventTag}"
+        xfetch="{xfetch}"
+    />
 
     <footer class="p-6 text-center">
         <GithubIcon />
         &nbsp;
         <a
             href="https://github.com/StevenWeathers/thunderdome-planning-poker"
-            class="{footerLinkClasses}">
+            class="{footerLinkClasses}"
+        >
             {$_('appName')}
         </a>
         {@html $_('footer.authoredBy', {

@@ -63,8 +63,12 @@
             {#each pages as page}
                 <li class="ml-3">
                     <a
-                        class="admin-nav-pill {activePage === page.name.toLowerCase() ? activePillClasses : nonActivePillClasses}"
-                        href="{appRoutes.admin}{page.path}">
+                        class="admin-nav-pill {activePage ===
+                        page.name.toLowerCase()
+                            ? activePillClasses
+                            : nonActivePillClasses}"
+                        href="{appRoutes.admin}{page.path}"
+                    >
                         {page.label}
                     </a>
                 </li>

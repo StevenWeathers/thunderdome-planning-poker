@@ -66,7 +66,7 @@
             `/api/organizations/${organizationId}/departments/${departmentId}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 department = result.data.department
                 organization = result.data.organization
                 organizationRole = result.data.organizationRole
@@ -75,7 +75,7 @@
                 getTeams()
                 getUsers()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('departmentGetError'))
             })
     }
@@ -86,10 +86,10 @@
             `/api/organizations/${organizationId}/departments/${departmentId}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 teams = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('departmentTeamsGetError'))
             })
     }
@@ -100,10 +100,10 @@
             `/api/organizations/${organizationId}/departments/${departmentId}/users?limit=${usersPageLimit}&offset=${usersOffset}`,
         )
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 users = result.data
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('departmentUsersGetError'))
             })
     }
@@ -118,13 +118,13 @@
             { body },
         )
             .then(res => res.json())
-            .then(function(organization) {
+            .then(function (organization) {
                 eventTag('create_department_team', 'engagement', 'success')
                 toggleCreateTeam()
                 notifications.success($_('teamCreateSuccess'))
                 getTeams()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('teamCreateError'))
                 eventTag('create_department_team', 'engagement', 'failure')
             })
@@ -140,13 +140,13 @@
             `/api/organizations/${organizationId}/departments/${departmentId}/users`,
             { body },
         )
-            .then(function() {
+            .then(function () {
                 eventTag('department_add_user', 'engagement', 'success')
                 toggleAddUser()
                 notifications.success($_('userAddSuccess'))
                 getUsers()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('userAddError'))
                 eventTag('department_add_user', 'engagement', 'failure')
             })
@@ -157,13 +157,13 @@
             `/api/organizations/${organizationId}/departments/${departmentId}/users/${removeUserId}`,
             { method: 'DELETE' },
         )
-            .then(function() {
+            .then(function () {
                 eventTag('department_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
                 notifications.success($_('userRemoveSuccess'))
                 getUsers()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('userRemoveError'))
                 eventTag('department_remove_user', 'engagement', 'failure')
             })
@@ -174,13 +174,13 @@
             `/api/organizations/${organizationId}/departments/${departmentId}/teams/${deleteTeamId}`,
             { method: 'DELETE' },
         )
-            .then(function() {
+            .then(function () {
                 eventTag('department_delete_team', 'engagement', 'success')
                 toggleDeleteTeam(null)()
                 notifications.success($_('teamDeleteSuccess'))
                 getTeams()
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('teamDeleteError'))
                 eventTag('department_delete_team', 'engagement', 'failure')
             })
@@ -208,7 +208,8 @@
         <ChevronRight class="inline-block" />
         <a
             class="text-blue-500 hover:text-blue-800"
-            href="{appRoutes.organization}/{organization.id}">
+            href="{appRoutes.organization}/{organization.id}"
+        >
             {organization.name}
         </a>
     </div>
@@ -245,7 +246,8 @@
                             <td class="border px-4 py-2">
                                 <a
                                     href="{appRoutes.organization}/{organizationId}/department/{departmentId}/team/{team.id}"
-                                    class="text-blue-500 hover:text-blue-800">
+                                    class="text-blue-500 hover:text-blue-800"
+                                >
                                     {team.name}
                                 </a>
                             </td>
@@ -253,7 +255,8 @@
                                 {#if isAdmin}
                                     <HollowButton
                                         onClick="{toggleDeleteTeam(team.id)}"
-                                        color="red">
+                                        color="red"
+                                    >
                                         {$_('delete')}
                                     </HollowButton>
                                 {/if}
@@ -303,7 +306,8 @@
                                 {#if isAdmin}
                                     <HollowButton
                                         onClick="{toggleRemoveUser(usr.id)}"
-                                        color="red">
+                                        color="red"
+                                    >
                                         {$_('remove')}
                                     </HollowButton>
                                 {/if}
@@ -318,7 +322,8 @@
     {#if showCreateTeam}
         <CreateTeam
             toggleCreate="{toggleCreateTeam}"
-            handleCreate="{createTeamHandler}" />
+            handleCreate="{createTeamHandler}"
+        />
     {/if}
 
     {#if showAddUser}
@@ -328,12 +333,14 @@
     {#if showRemoveUser}
         <RemoveUser
             toggleRemove="{toggleRemoveUser(null)}"
-            handleRemove="{handleUserRemove}" />
+            handleRemove="{handleUserRemove}"
+        />
     {/if}
 
     {#if showDeleteTeam}
         <DeleteTeam
             toggleDelete="{toggleDeleteTeam(null)}"
-            handleDelete="{handleDeleteTeam}" />
+            handleDelete="{handleDeleteTeam}"
+        />
     {/if}
 </PageLayout>

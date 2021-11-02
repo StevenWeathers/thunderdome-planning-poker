@@ -33,7 +33,7 @@
 
         xfetch(authEndpoint, { body })
             .then(res => res.json())
-            .then(function(result) {
+            .then(function (result) {
                 const newWarrior = result.data
                 warrior.create({
                     id: newWarrior.id,
@@ -51,7 +51,7 @@
                     router.route(targetPage, true)
                 })
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('pages.login.authError'))
                 eventTag('login', 'engagement', 'failure')
             })
@@ -73,7 +73,7 @@
         }
 
         xfetch('/api/auth/forgot-password', { body })
-            .then(function() {
+            .then(function () {
                 notifications.success(
                     $_('pages.login.sendResetSuccess', {
                         values: { email: warriorResetEmail },
@@ -83,7 +83,7 @@
                 forgotPassword = !forgotPassword
                 eventTag('forgot_password', 'engagement', 'success')
             })
-            .catch(function() {
+            .catch(function () {
                 notifications.danger($_('pages.login.sendResetError'))
                 eventTag('forgot_password', 'engagement', 'failure')
             })
@@ -104,16 +104,19 @@
                 <form
                     on:submit="{authWarrior}"
                     class="bg-white shadow-lg rounded p-6 mb-4"
-                    name="authWarrior">
+                    name="authWarrior"
+                >
                     <div
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
-                        md:leading-tight text-center">
+                        md:leading-tight text-center"
+                    >
                         {$_('pages.login.title')}
                     </div>
                     {#if battleId && AllowRegistration}
                         <div
                             class="font-bold text-m md:text-l mb-2 md:mb-6
-                            md:leading-tight text-center">
+                            md:leading-tight text-center"
+                        >
                             {@html $_('pages.login.registerForBattle', {
                                 values: {
                                     registerOpen: `<a href="${appRoutes.register}/${battleId}" class="font-bold text-blue-500 hover:text-blue-800">`,
@@ -125,12 +128,15 @@
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourEmail">
+                            for="yourEmail"
+                        >
                             {$_('pages.login.fields.email.label')}
                         </label>
                         <input
                             bind:value="{warriorEmail}"
-                            placeholder="{$_('pages.login.fields.email.placeholder')}"
+                            placeholder="{$_(
+                                'pages.login.fields.email.placeholder',
+                            )}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -138,18 +144,22 @@
                             id="yourEmail"
                             name="yourEmail"
                             type="email"
-                            required />
+                            required
+                        />
                     </div>
 
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourPassword">
+                            for="yourPassword"
+                        >
                             {$_('pages.login.fields.password.label')}
                         </label>
                         <input
                             bind:value="{warriorPassword}"
-                            placeholder="{$_('pages.login.fields.password.placeholder')}"
+                            placeholder="{$_(
+                                'pages.login.fields.password.placeholder',
+                            )}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -157,7 +167,8 @@
                             id="yourPassword"
                             name="yourPassword"
                             type="password"
-                            required />
+                            required
+                        />
                     </div>
 
                     <div class="text-right">
@@ -166,7 +177,8 @@
                                 type="button"
                                 class="inline-block align-baseline font-bold
                                 text-sm text-blue-500 hover:text-blue-800 mr-4"
-                                on:click="{toggleForgotPassword}">
+                                on:click="{toggleForgotPassword}"
+                            >
                                 {$_('pages.login.fields.password.forgotLabel')}
                             </button>
                         {/if}
@@ -181,16 +193,19 @@
                 <form
                     on:submit="{sendPasswordReset}"
                     class="bg-white shadow-lg rounded p-6 mb-4"
-                    name="resetPassword">
+                    name="resetPassword"
+                >
                     <div
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
-                        md:leading-tight text-center">
+                        md:leading-tight text-center"
+                    >
                         Forgot Password
                     </div>
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourResetEmail">
+                            for="yourResetEmail"
+                        >
                             Email
                         </label>
                         <input
@@ -203,7 +218,8 @@
                             id="yourResetEmail"
                             name="yourResetEmail"
                             type="email"
-                            required />
+                            required
+                        />
                     </div>
 
                     <div class="text-right">
@@ -211,7 +227,8 @@
                             type="button"
                             class="inline-block align-baseline font-bold text-sm
                             text-blue-500 hover:text-blue-800 mr-4"
-                            on:click="{toggleForgotPassword}">
+                            on:click="{toggleForgotPassword}"
+                        >
                             Cancel
                         </button>
                         <SolidButton type="submit" disabled="{resetDisabled}">

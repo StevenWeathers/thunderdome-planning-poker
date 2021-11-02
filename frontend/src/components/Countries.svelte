@@ -9,10 +9,10 @@
 
     xfetch('/api/active-countries')
         .then(res => res.json())
-        .then(function(result) {
+        .then(function (result) {
             activeCountries = result.data.sort()
         })
-        .catch(function() {
+        .catch(function () {
             eventTag('get_active_countries', 'engagement', 'failure')
         })
 </script>
@@ -30,7 +30,10 @@
         <ul class="grid grid-cols-8 lg:grid-cols-12 gap-x-4">
             {#each activeCountries as country}
                 <li>
-                    <CountryFlag {country} additionalClass="mx-auto" />
+                    <CountryFlag
+                        country="{country}"
+                        additionalClass="mx-auto"
+                    />
                 </li>
             {/each}
         </ul>

@@ -15,4 +15,5 @@
     alt="{countryMap[country]}
     {$_('flag')}"
     title="{countryMap[country]}"
-    class="{additionalClass}" />
+    class="{additionalClass}"
+/>

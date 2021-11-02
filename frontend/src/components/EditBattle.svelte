@@ -38,30 +38,37 @@
 
 <Modal
     closeModal="{toggleEditBattle}"
-    widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
+    widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2"
+>
     <form on:submit="{saveBattle}" name="createBattle">
         <div class="mb-4">
             <label
                 class="block text-gray-700 text-sm font-bold mb-2"
-                for="battleName">
+                for="battleName"
+            >
                 {$_('pages.myBattles.createBattle.fields.name.label')}
             </label>
             <div class="control">
                 <input
                     name="battleName"
                     bind:value="{battleName}"
-                    placeholder="{$_('pages.myBattles.createBattle.fields.name.placeholder')}"
+                    placeholder="{$_(
+                        'pages.myBattles.createBattle.fields.name.placeholder',
+                    )}"
                     class="bg-gray-200 border-gray-200 border-2 appearance-none
                     rounded w-full py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"
                     id="battleName"
-                    required />
+                    required
+                />
             </div>
         </div>
 
         <div class="mb-4">
             <h3 class="block text-gray-700 text-sm font-bold mb-2">
-                {$_('pages.myBattles.createBattle.fields.allowedPointValues.label')}
+                {$_(
+                    'pages.myBattles.createBattle.fields.allowedPointValues.label',
+                )}
             </h3>
             <div class="control relative -mr-2 md:-mr-1">
                 {#if !votingLocked}
@@ -72,15 +79,21 @@
                 {#each allowedPointValues as point}
                     <label
                         class="
-                        {points.includes(point) ? checkedPointColor : uncheckedPointColor}
+                        {points.includes(point)
+                            ? checkedPointColor
+                            : uncheckedPointColor}
                         cursor-pointer font-bold border p-2 mr-2 xl:mr-1 mb-2
-                        xl:mb-0 rounded inline-block {!votingLocked ? 'opacity-25 cursor-not-allowed' : 'cursor-pointer'}">
+                        xl:mb-0 rounded inline-block {!votingLocked
+                            ? 'opacity-25 cursor-not-allowed'
+                            : 'cursor-pointer'}"
+                    >
                         <input
                             type="checkbox"
                             bind:group="{points}"
                             value="{point}"
                             class="hidden"
-                            disabled="{!votingLocked}" />
+                            disabled="{!votingLocked}"
+                        />
                         {point}
                     </label>
                 {/each}
@@ -90,8 +103,11 @@
         <div class="mb-4">
             <label
                 class="text-gray-700 text-sm font-bold mb-2"
-                for="averageRounding">
-                {$_('pages.myBattles.createBattle.fields.averageRounding.label')}
+                for="averageRounding"
+            >
+                {$_(
+                    'pages.myBattles.createBattle.fields.averageRounding.label',
+                )}
             </label>
             <div class="relative">
                 <select
@@ -100,16 +116,21 @@
                     text-gray-700 py-3 px-4 pr-8 rounded leading-tight
                     focus:outline-none focus:border-purple-500"
                     id="averageRounding"
-                    name="averageRounding">
+                    name="averageRounding"
+                >
                     {#each allowedPointAverages as item}
                         <option value="{item}">
-                            {$_('pages.myBattles.createBattle.fields.averageRounding.' + item)}
+                            {$_(
+                                'pages.myBattles.createBattle.fields.averageRounding.' +
+                                    item,
+                            )}
                         </option>
                     {/each}
                 </select>
                 <div
                     class="pointer-events-none absolute inset-y-0 right-0 flex
-                    items-center px-2 text-gray-700">
+                    items-center px-2 text-gray-700"
+                >
                     <DownCarrotIcon />
                 </div>
             </div>
@@ -122,8 +143,11 @@
                     bind:checked="{autoFinishVoting}"
                     id="autoFinishVoting"
                     name="autoFinishVoting"
-                    disabled="{!votingLocked}" />
-                {$_('pages.myBattles.createBattle.fields.autoFinishVoting.label')}
+                    disabled="{!votingLocked}"
+                />
+                {$_(
+                    'pages.myBattles.createBattle.fields.autoFinishVoting.label',
+                )}
             </label>
         </div>
 

@@ -41,23 +41,27 @@
     data-active="{active}"
     data-locked="{isLocked}"
     data-point="{point}"
-    class="relative select-none">
+    class="relative select-none"
+>
     {#if results.count}
         <div
             class="text-green-500 font-semibold inline-block absolute right-0
             top-0 p-2 text-4xl text-right {showVoters ? 'z-20' : 'z-10'}"
-            data-testId="pointCardCount">
+            data-testId="pointCardCount"
+        >
             {results.count}
             <button
                 on:mouseenter="{() => (showVoters = true)}"
                 on:mouseleave="{() => (showVoters = false)}"
                 title="{$_('pages.battle.voteResults.showVoters')}"
-                class="text-green-500 relative leading-none">
+                class="text-green-500 relative leading-none"
+            >
                 <WarriorIcon height="24" width="24" />
                 <span
                     class="text-right text-sm text-gray-900 font-normal w-48
                     absolute left-0 top-0 mt-0 ml-6 bg-white p-2 rounded
-                    shadow-lg {showVoters ? '' : 'hidden'}">
+                    shadow-lg {showVoters ? '' : 'hidden'}"
+                >
                     {#each results.voters as voter}
                         {voter}
                         <br />
@@ -69,7 +73,8 @@
     <div
         class="w-full rounded overflow-hidden shadow-lg border {activeColor}
         {lockedClass} relative text-3xl lg:text-5xl relative z-0"
-        on:click="{voteAction}">
+        on:click="{voteAction}"
+    >
         <div class="py-12 md:py-16 text-center">{point}</div>
     </div>
 </div>

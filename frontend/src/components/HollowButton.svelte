@@ -64,7 +64,8 @@
 
 {#if type === 'label'}
     <label
-        class="btn-hollow btn-hollow-{color} cursor-pointer {additionalClasses}">
+        class="btn-hollow btn-hollow-{color} cursor-pointer {additionalClasses}"
+    >
         <slot />
     </label>
 {:else if href === ''}
@@ -73,14 +74,16 @@
         {disabled ? 'disabled' : ''}
         {additionalClasses}"
         on:click="{onClick}"
-        {type}
-        {disabled}>
+        type="{type}"
+        disabled="{disabled}"
+    >
         <slot />
     </button>
 {:else}
     <a
-        {href}
-        class="btn-hollow btn-hollow-{color} inline-block no-underline {additionalClasses}">
+        href="{href}"
+        class="btn-hollow btn-hollow-{color} inline-block no-underline {additionalClasses}"
+    >
         <slot />
     </a>
 {/if}

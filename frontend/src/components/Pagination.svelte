@@ -52,8 +52,11 @@
 
 <div class="flex text-gray-700 text-lg">
     <div
-        class="h-12 w-12 mr-1 flex justify-center items-center {current > 1 ? 'cursor-pointer' : 'text-gray-400'}"
-        on:click="{() => current > 1 && setCurrent(current - 1)}">
+        class="h-12 w-12 mr-1 flex justify-center items-center {current > 1
+            ? 'cursor-pointer'
+            : 'text-gray-400'}"
+        on:click="{() => current > 1 && setCurrent(current - 1)}"
+    >
         <ChevronLeftIcon class="w-6 h-6" />
     </div>
     <div class="flex h-12 font-medium">
@@ -61,22 +64,30 @@
             <div
                 class="w-12 sm:flex justify-center items-center hidden
                 select-none cursor-pointer leading-5 transition duration-150
-                ease-in {i == current ? `border-t-2 border-indigo-600 ` : 'border-t-2 border-white'}
+                ease-in {i == current
+                    ? `border-t-2 border-indigo-600 `
+                    : 'border-t-2 border-white'}
                 "
-                on:click="{() => setCurrent(i)}">
+                on:click="{() => setCurrent(i)}"
+            >
                 {i}
             </div>
         {/each}
         <div
             class="w-12 h-12 sm:hidden flex justify-center select-none
             items-center cursor-pointer leading-5 transition duration-150
-            ease-in border-t-2 border-indigo-600">
+            ease-in border-t-2 border-indigo-600"
+        >
             {current}
         </div>
     </div>
     <div
-        class="h-12 w-12 ml-1 flex justify-center items-center {current < num_pages ? 'cursor-pointer' : 'text-gray-400'}"
-        on:click="{() => current < num_pages && setCurrent(current + 1)}">
+        class="h-12 w-12 ml-1 flex justify-center items-center {current <
+        num_pages
+            ? 'cursor-pointer'
+            : 'text-gray-400'}"
+        on:click="{() => current < num_pages && setCurrent(current + 1)}"
+    >
         <ChevronRightIcon class="w-6 h-6" />
     </div>
 </div>

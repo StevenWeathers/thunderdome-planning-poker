@@ -18,7 +18,8 @@
             type="button"
             class="inline-block align-baseline font-bold text-sm text-blue-500
             hover:text-blue-800 mr-4"
-            on:click="{toggleDeleteAccount}">
+            on:click="{toggleDeleteAccount}"
+        >
             {$_('pages.warriorProfile.delete.cancelButton')}
         </button>
         <SolidButton onClick="{handleDeleteAccount}" color="red">

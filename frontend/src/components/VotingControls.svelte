@@ -48,7 +48,8 @@
         <SolidButton
             color="blue"
             additionalClasses="mb-2 w-full"
-            onClick="{skipPlan}">
+            onClick="{skipPlan}"
+        >
             {$_('planSkip')}
         </SolidButton>
         {#if !votingLocked}
@@ -59,7 +60,8 @@
             <SolidButton
                 color="blue"
                 additionalClasses="mb-2 w-full"
-                onClick="{restartVoting}">
+                onClick="{restartVoting}"
+            >
                 {$_('votingRestart')}
             </SolidButton>
             <form on:submit="{handleSubmit}" name="savePlanPoints">
@@ -76,7 +78,8 @@
                                 class="block appearance-none w-full border-2
                                 border-gray-400 text-gray-700 py-3 px-4 pr-8
                                 rounded leading-tight focus:outline-none
-                                focus:border-purple-500">
+                                focus:border-purple-500"
+                            >
                                 <option value="" disabled>
                                     {$_('pages.battle.points')}
                                 </option>
@@ -86,7 +89,8 @@
                             </select>
                             <div
                                 class="pointer-events-none absolute inset-y-0
-                                right-0 flex items-center px-2 text-gray-700">
+                                right-0 flex items-center px-2 text-gray-700"
+                            >
                                 <DownCarrotIcon />
                             </div>
                         </div>
@@ -94,7 +98,8 @@
                     <div class="w-1/2 text-right px-2">
                         <SolidButton
                             additionalClasses="w-full h-full"
-                            type="submit">
+                            type="submit"
+                        >
                             {$_('save')}
                         </SolidButton>
                     </div>

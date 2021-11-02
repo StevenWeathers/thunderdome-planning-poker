@@ -53,7 +53,8 @@
         <div class="mb-4">
             <label
                 class="block text-gray-700 text-sm font-bold mb-2"
-                for="alertName">
+                for="alertName"
+            >
                 {$_('name')}
             </label>
             <input
@@ -64,7 +65,8 @@
                 focus:outline-none focus:bg-white focus:border-purple-500"
                 id="alertName"
                 name="alertName"
-                required />
+                required
+            />
         </div>
 
         <div class="mb-4">
@@ -78,7 +80,8 @@
                     required
                     class="block appearance-none w-full border-2 border-gray-400
                     text-gray-700 py-3 px-4 pr-8 rounded leading-tight
-                    focus:outline-none focus:border-purple-500">
+                    focus:outline-none focus:border-purple-500"
+                >
                     <option value="" disabled>
                         {$_('alertTypePlaceholder')}
                     </option>
@@ -88,7 +91,8 @@
                 </select>
                 <div
                     class="pointer-events-none absolute inset-y-0 right-0 flex
-                    items-center px-2 text-gray-700">
+                    items-center px-2 text-gray-700"
+                >
                     <DownCarrotIcon />
                 </div>
             </div>
@@ -97,7 +101,8 @@
         <div class="mb-4">
             <label
                 class="block text-gray-700 text-sm font-bold mb-2"
-                for="alertContent">
+                for="alertContent"
+            >
                 {$_('alertContent')}
             </label>
             <input
@@ -108,7 +113,8 @@
                 focus:outline-none focus:bg-white focus:border-purple-500"
                 id="alertContent"
                 name="alertContent"
-                required />
+                required
+            />
         </div>
 
         <div class="mb-4">
@@ -117,7 +123,8 @@
                     type="checkbox"
                     bind:checked="{active}"
                     id="active"
-                    name="active" />
+                    name="active"
+                />
                 {$_('active')}
             </label>
         </div>
@@ -127,7 +134,8 @@
                     type="checkbox"
                     bind:checked="{registeredOnly}"
                     id="registeredOnly"
-                    name="registeredOnly" />
+                    name="registeredOnly"
+                />
                 {$_('alertRegisteredOnly')}
             </label>
         </div>
@@ -137,7 +145,8 @@
                     type="checkbox"
                     bind:checked="{allowDismiss}"
                     id="allowDismiss"
-                    name="allowDismiss" />
+                    name="allowDismiss"
+                />
                 {$_('alertAllowDismiss')}
             </label>
         </div>
