@@ -8,43 +8,56 @@
 </script>
 
 <style>
-    .btn-hollow {
-        @apply leading-tight font-semibold bg-transparent py-2 px-3 border rounded;
+    :global(.btn-hollow) {
+        @apply leading-tight;
+        @apply font-semibold;
+        @apply bg-transparent;
+        @apply py-2;
+        @apply px-3;
+        @apply border;
+        @apply rounded;
     }
-    .btn-hollow.disabled {
-        @apply opacity-50 cursor-not-allowed;
+    :global(.btn-hollow.disabled) {
+        @apply opacity-50;
+        @apply cursor-not-allowed;
     }
-    .btn-hollow:hover {
-        @apply border-transparent text-white;
+    :global(.btn-hollow:hover) {
+        @apply border-transparent;
+        @apply text-white;
     }
-    .btn-hollow-green {
-        @apply border-green-500 text-green-500;
+    :global(.btn-hollow-green) {
+        @apply border-green-500;
+        @apply text-green-500;
     }
-    .btn-hollow-green:hover {
+    :global(.btn-hollow-green:hover) {
         @apply bg-green-600;
     }
-    .btn-hollow-blue {
-        @apply border-blue-500 text-blue-500;
+    :global(.btn-hollow-blue) {
+        @apply border-blue-500;
+        @apply text-blue-500;
     }
-    .btn-hollow-blue:hover {
+    :global(.btn-hollow-blue:hover) {
         @apply bg-blue-600;
     }
-    .btn-hollow-red {
-        @apply border-red-500 text-red-500;
+    :global(.btn-hollow-red) {
+        @apply border-red-500;
+        @apply text-red-500;
     }
-    .btn-hollow-red:hover {
+    :global(.btn-hollow-red:hover) {
         @apply bg-red-600;
     }
-    .btn-hollow-purple {
-        @apply border-purple-500 text-purple-500;
+    :global(.btn-hollow-purple) {
+        @apply border-purple-500;
+        @apply text-purple-500;
     }
-    .btn-hollow-purple:hover {
+    :global(.btn-hollow-purple:hover) {
         @apply bg-purple-600;
     }
-    .btn-hollow-teal {
-        @apply border-teal-500 text-teal-500;
+    :global(.btn-hollow-teal) {
+        @apply border-teal-500;
+        @apply text-teal-500;
     }
-    .btn-hollow-teal:hover {
+    :global(.btn-hollow-teal:hover) {
         @apply bg-teal-600;
     }
 </style>

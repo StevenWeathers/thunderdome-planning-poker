@@ -48,7 +48,7 @@
 </script>
 
 <style>
-    .admin-nav-pill {
+    :global(.admin-nav-pill) {
         @apply inline-block;
         @apply border;
         @apply rounded;

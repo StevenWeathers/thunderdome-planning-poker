@@ -91,7 +91,7 @@
         z-index: 9999;
     }
 
-    :global(.toasts) > .toast {
+    :global(.toasts > .toast) {
         position: relative;
         margin: 10px;
         min-width: 40vw;
@@ -100,13 +100,13 @@
         color: #fff;
     }
 
-    :global(.toasts) > .toast > .content {
+    :global(.toasts > .toast > .content) {
         padding: 10px;
         display: block;
         font-weight: 500;
     }
 
-    :global(.toasts) > .toast > .progress {
+    :global(.toasts > .toast > .progress) {
         position: absolute;
         bottom: 0;
         background-color: rgb(0, 0, 0, 0.3);
@@ -117,8 +117,8 @@
         animation-fill-mode: forwards;
     }
 
-    :global(.toasts) > .toast:before,
-    :global(.toasts) > .toast:after {
+    :global(.toasts > .toast:before),
+    :global(.toasts > .toast:after) {
         content: '';
         position: absolute;
         z-index: -1;
@@ -129,7 +129,7 @@
         border-radius: 100px / 10px;
     }
 
-    :global(.toasts) > .toast:after {
+    :global(.toasts > .toast:after) {
         right: 10px;
         left: auto;
         transform: skew(8deg) rotate(3deg);

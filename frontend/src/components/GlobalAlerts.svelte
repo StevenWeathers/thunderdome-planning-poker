@@ -28,85 +28,85 @@
 </script>
 
 <style>
-    .NEWAlert {
+    :global(.NEWAlert) {
         @apply bg-indigo-900;
     }
-    .NEWAlert-body {
+    :global(.NEWAlert-body) {
         @apply bg-indigo-800;
         @apply text-indigo-100;
     }
-    .NEWAlert-type {
+    :global(.NEWAlert-type) {
         @apply bg-indigo-500;
     }
-    .NEWAlert-dismiss {
+    :global(.NEWAlert-dismiss) {
         @apply text-indigo-300;
     }
 
-    .ERRORAlert {
+    :global(.ERRORAlert) {
         @apply bg-red-100;
         @apply border-b;
         @apply border-red-200;
     }
-    .ERRORAlert-body {
+    :global(.ERRORAlert-body) {
         @apply bg-red-200;
         @apply text-red-800;
     }
-    .ERRORAlert-type {
+    :global(.ERRORAlert-type) {
         @apply bg-red-700;
         @apply text-red-100;
     }
-    .ERRORAlert-dismiss {
+    :global(.ERRORAlert-dismiss) {
         @apply text-red-700;
     }
 
-    .INFOAlert {
+    :global(.INFOAlert) {
         @apply bg-blue-100;
         @apply border-b;
         @apply border-blue-200;
     }
-    .INFOAlert-body {
+    :global(.INFOAlert-body) {
         @apply bg-blue-200;
         @apply text-blue-800;
     }
-    .INFOAlert-type {
+    :global(.INFOAlert-type) {
         @apply bg-blue-700;
         @apply text-blue-100;
     }
-    .INFOAlert-dismiss {
+    :global(.INFOAlert-dismiss) {
         @apply text-blue-700;
     }
 
-    .SUCCESSAlert {
+    :global(.SUCCESSAlert) {
         @apply bg-green-100;
         @apply border-b;
         @apply border-green-200;
     }
-    .sSUCCESSAlert-body {
+    :global(.sSUCCESSAlert-body) {
         @apply bg-green-200;
         @apply text-green-800;
     }
-    .SUCCESSAlert-type {
+    :global(.SUCCESSAlert-type) {
         @apply bg-green-700;
         @apply text-green-100;
     }
-    .SUCCESSAlert-dismiss {
+    :global(.SUCCESSAlert-dismiss) {
         @apply text-green-700;
     }
 
-    .WARNINGAlert {
+    :global(.WARNINGAlert) {
         @apply bg-yellow-100;
         @apply border-b;
         @apply border-yellow-200;
     }
-    .WARNINGAlert-body {
+    :global(.WARNINGAlert-body) {
         @apply bg-yellow-200;
         @apply text-yellow-800;
     }
-    .WARNINGAlert-type {
+    :global(.WARNINGAlert-type) {
         @apply bg-yellow-700;
         @apply text-yellow-100;
     }
-    .WARNINGAlert-dismiss {
+    :global(.WARNINGAlert-dismiss) {
         @apply text-yellow-700;
     }
 </style>

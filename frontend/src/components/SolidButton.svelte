@@ -7,46 +7,54 @@
 </script>
 
 <style>
-    .btn {
-        @apply leading-tight py-2 px-3 rounded font-bold text-white;
+    :global(.btn) {
+        @apply leading-tight;
+        @apply py-2;
+        @apply px-3;
+        @apply rounded;
+        @apply font-bold;
+        @apply text-white;
     }
-    .btn.disabled {
-        @apply opacity-50 cursor-not-allowed;
+    :global(.btn.disabled) {
+        @apply opacity-50;
+        @apply cursor-not-allowed;
     }
-    .btn-green {
+    :global(.btn-green) {
         @apply bg-green-500;
     }
-    .btn-green:hover {
+    :global(.btn-green:hover) {
         @apply bg-green-600;
     }
-    .btn-blue {
+    :global(.btn-blue) {
         @apply bg-blue-500;
     }
-    .btn-blue:hover {
+    :global(.btn-blue:hover) {
         @apply bg-blue-600;
     }
-    .btn-red {
+    :global(.btn-red) {
         @apply bg-red-500;
     }
-    .btn-red:hover {
+    :global(.btn-red:hover) {
         @apply bg-red-600;
     }
-    .btn-purple {
+    :global(.btn-purple) {
         @apply bg-purple-500;
     }
-    .btn-purple:hover {
+    :global(.btn-purple:hover) {
         @apply bg-purple-600;
     }
-    .btn-teal {
+    :global(.btn-teal) {
         @apply bg-teal-500;
     }
-    .btn-teal:hover {
+    :global(.btn-teal:hover) {
         @apply bg-teal-600;
     }
-    .btn-blue-copy {
-        @apply bg-blue-500 rounded-l-none border-blue-800;
+    :global(.btn-blue-copy) {
+        @apply bg-blue-500;
+        @apply rounded-l-none;
+        @apply border-blue-800;
     }
-    .btn-blue-copy:hover {
+    :global(.btn-blue-copy:hover) {
         @apply bg-blue-600;
     }
 </style>
