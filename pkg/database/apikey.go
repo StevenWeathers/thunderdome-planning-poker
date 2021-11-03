@@ -21,13 +21,13 @@ func (d *Database) HashAPIKey(apikey string) string {
 	return result
 }
 
-// generate random secure string of X length
+// random generates a random secure string of X length
 func random(length int) (string, error) {
 	chars := "-_+=!$0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	bytes := make([]byte, length)
 
 	if _, err := rand.Read(bytes); err != nil {
-		return "", err
+		return "", err // out of randomness, should never happen
 	}
 
 	for i, b := range bytes {
