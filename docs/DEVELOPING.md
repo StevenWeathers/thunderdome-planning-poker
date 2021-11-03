@@ -1,5 +1,15 @@
 # Development
 
+## Code Standards
+
+### Frontend
+
+- Prettier formats all frontend code on commit, always adhere to this
+
+### Go
+
+- [Code Review Comments guide](https://github.com/golang/go/wiki/CodeReviewComments) from the Go project should be followed
+
 ## Building and running with Docker (preferred solution)
 
 ### Using Docker Compose
