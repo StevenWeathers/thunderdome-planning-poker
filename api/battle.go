@@ -47,6 +47,12 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 // @Tags battle
 // @Produce  json
 // @Param id path int false "the user ID"
+// @Param name body string false "the battle name"
+// @Param pointValuesAllowed body []string false "the allowed point values e.g. 1,2,3,5,8"
+// @Param autoFinishVoting body string false "whether or not to automatically complete voting when all users have voted"
+// @Param plans body []model.Plan false "the battle plans"
+// @Param pointAverageRounding body string false "which javascript math method to use for rounding point average"
+// @Param battleLeaders body []string true "additional battle leaders beyond the user creating the battle"
 // @Success 200 object standardJsonResponse{data=model.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -69,7 +75,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		}
 
 		var keyVal struct {
-			BattleName           string        `json:"battleName"`
+			BattleName           string        `json:"name"`
 			PointValuesAllowed   []string      `json:"pointValuesAllowed"`
 			AutoFinishVoting     bool          `json:"autoFinishVoting"`
 			Plans                []*model.Plan `json:"plans"`

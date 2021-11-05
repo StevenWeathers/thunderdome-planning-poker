@@ -43,6 +43,7 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 // @Tags apikey
 // @Produce  json
 // @Param id path int false "the user ID to generate API key for"
+// @Param name body string false "Name the API Key to distinguish its use"
 // @Success 200 object standardJsonResponse{data=model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -88,6 +89,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 // @Produce  json
 // @Param id path int false "the user ID"
 // @Param keyID path int false "the API Key ID to update"
+// @Param active body boolean false "Whether or not the API Key is enabled for use"
 // @Success 200 object standardJsonResponse{data=[]model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}

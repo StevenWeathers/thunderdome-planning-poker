@@ -61,7 +61,7 @@ type pagination struct {
 
 type contextKey string
 
-var (
+const (
 	contextKeyUserID         contextKey = "userId"
 	apiKeyHeaderName         string     = "X-API-Key"
 	contextKeyOrgRole        contextKey = "orgRole"

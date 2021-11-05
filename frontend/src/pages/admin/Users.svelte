@@ -50,10 +50,10 @@
         warriorPassword2,
     ) {
         const body = {
-            warriorName,
-            warriorEmail,
-            warriorPassword1,
-            warriorPassword2,
+            name: warriorName,
+            email: warriorEmail,
+            password1: warriorPassword1,
+            password2: warriorPassword2,
         }
 
         xfetch('/api/admin/users', { body })

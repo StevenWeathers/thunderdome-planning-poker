@@ -67,7 +67,7 @@
         })
 
         const body = {
-            battleName,
+            name: battleName,
             pointValuesAllowed,
             plans,
             autoFinishVoting,

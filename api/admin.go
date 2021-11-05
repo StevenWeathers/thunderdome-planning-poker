@@ -59,6 +59,10 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 // @Description Create a registered user
 // @Tags admin
 // @Produce  json
+// @Param name body string false "the new users name"
+// @Param email body string false "the new users email"
+// @Param password1 body string false "the new users password"
+// @Param password2 body string false "the new users password repeated"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -68,10 +72,10 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 		keyVal := getJSONRequestBody(r, w)
 
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccount(
-			keyVal["warriorName"].(string),
-			strings.ToLower(keyVal["warriorEmail"].(string)),
-			keyVal["warriorPassword1"].(string),
-			keyVal["warriorPassword2"].(string),
+			keyVal["name"].(string),
+			strings.ToLower(keyVal["email"].(string)),
+			keyVal["password1"].(string),
+			keyVal["password2"].(string),
 		)
 
 		if accountErr != nil {

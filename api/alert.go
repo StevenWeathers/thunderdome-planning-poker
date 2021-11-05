@@ -79,6 +79,13 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Description Updates an Alert
 // @Tags alert
 // @Produce  json
+// @Param id path int false "the alert ID to update"
+// @Param name body string false "Name of the alert"
+// @Param type body string false "Type of alert" Enums(ERROR, INFO, NEW, SUCCESS, WARNING)
+// @Param content body string false "Alert content"
+// @Param active body boolean false "Whether alert should be displayed or not"
+// @Param allowDismiss body boolean false "Whether or not to allow users to dismiss the alert"
+// @Param registeredOnly body boolean false "Whether or not to only show to users with an active session"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Router /alerts/{id} [put]
