@@ -7,41 +7,7 @@ import (
 
 	_ "github.com/lib/pq" // necessary for postgres
 	"github.com/spf13/viper"
-	"golang.org/x/crypto/bcrypt"
 )
-
-// HashAndSalt takes a password byte and salt + hashes it
-// returning a hash string to store in db
-func HashAndSalt(pwd []byte) (string, error) {
-	// Use GenerateFromPassword to hash & salt pwd.
-	// MinCost is just an integer constant provided by the bcrypt
-	// package along with DefaultCost & MaxCost.
-	// The cost can be any value you want provided it isn't lower
-	// than the MinCost (4)
-	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
-	if err != nil {
-		log.Println(err)
-		return "", err
-	}
-	// GenerateFromPassword returns a byte slice so we need to
-	// convert the bytes to a string and return it
-	return string(hash), nil
-}
-
-// ComparePasswords takes a password hash and compares it to entered password bytes
-// returning true if matches false if not
-func ComparePasswords(hashedPwd string, plainPwd []byte) bool {
-	// Since we'll be getting the hashed password from the DB it
-	// will be a string so we'll need to convert it to a byte slice
-	byteHash := []byte(hashedPwd)
-	err := bcrypt.CompareHashAndPassword(byteHash, plainPwd)
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-
-	return true
-}
 
 // New runs db migrations, sets up a db connection pool
 // and sets previously active users to false during startup
