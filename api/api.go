@@ -63,10 +63,12 @@ type contextKey string
 
 const (
 	contextKeyUserID         contextKey = "userId"
+	contextKeyUserType       contextKey = "userType"
 	apiKeyHeaderName         string     = "X-API-Key"
 	contextKeyOrgRole        contextKey = "orgRole"
 	contextKeyDepartmentRole contextKey = "departmentRole"
 	contextKeyTeamRole       contextKey = "teamRole"
+	adminUserType            string     = "GENERAL"
 )
 
 // @title Thunderdome API

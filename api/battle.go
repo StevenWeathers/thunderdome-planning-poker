@@ -26,7 +26,8 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 		UserID := vars["id"]
 
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
-		if UserID != AuthedUserID {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != AuthedUserID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -63,7 +64,8 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		UserID := vars["id"]
 
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
-		if UserID != AuthedUserID {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != AuthedUserID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}

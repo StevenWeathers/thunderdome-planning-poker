@@ -60,9 +60,10 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["id"]
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
-		if UserID != AuthedUserID {
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != AuthedUserID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -110,9 +111,10 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["id"]
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 
-		if UserID != AuthedUserID {
+		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != AuthedUserID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}

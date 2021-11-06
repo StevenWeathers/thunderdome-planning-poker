@@ -22,7 +22,8 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		if UserID != UserCookieID {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != UserCookieID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -56,7 +57,8 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		if UserID != UserCookieID {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != UserCookieID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -100,7 +102,8 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		if UserID != UserCookieID {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != UserCookieID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -135,7 +138,8 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		if UserID != UserCookieID {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != UserCookieID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}

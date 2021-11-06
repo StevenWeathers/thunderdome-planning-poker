@@ -20,9 +20,10 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["id"]
-		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 
-		if UserID != UserCookieID {
+		UserCookieID := r.Context().Value(contextKeyUserID).(string)
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != UserCookieID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -61,7 +62,8 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		if UserID != UserCookieID {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != UserCookieID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -98,7 +100,8 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		if UserID != UserCookieID {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+		if UserID != UserCookieID && UserType != "adminUserType" {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
