@@ -39,8 +39,8 @@ type UserPassword struct {
 func (a *api) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := getJSONRequestBody(r, w)
-		UserEmail := strings.ToLower(keyVal["warriorEmail"].(string))
-		UserPassword := keyVal["warriorPassword"].(string)
+		UserEmail := strings.ToLower(keyVal["email"].(string))
+		UserPassword := keyVal["password"].(string)
 
 		authedUser, err := a.db.AuthUser(UserEmail, UserPassword)
 		if err != nil {
@@ -74,8 +74,8 @@ func (a *api) handleLogin() http.HandlerFunc {
 func (a *api) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := getJSONRequestBody(r, w)
-		UserEmail := strings.ToLower(keyVal["warriorEmail"].(string))
-		UserPassword := keyVal["warriorPassword"].(string)
+		UserEmail := strings.ToLower(keyVal["email"].(string))
+		UserPassword := keyVal["password"].(string)
 
 		authedUser, err := a.authAndCreateUserLdap(UserEmail, UserPassword)
 		if err != nil {
@@ -126,7 +126,7 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 
 		keyVal := getJSONRequestBody(r, w)
 
-		UserName := keyVal["warriorName"].(string)
+		UserName := keyVal["name"].(string)
 
 		newUser, err := a.db.CreateUserGuest(UserName)
 		if err != nil {
@@ -160,10 +160,10 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 		ActiveUserID, _ := a.validateUserCookie(w, r)
 
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccount(
-			keyVal["warriorName"].(string),
-			strings.ToLower(keyVal["warriorEmail"].(string)),
-			keyVal["warriorPassword1"].(string),
-			keyVal["warriorPassword2"].(string),
+			keyVal["name"].(string),
+			strings.ToLower(keyVal["email"].(string)),
+			keyVal["password1"].(string),
+			keyVal["password2"].(string),
 		)
 
 		if accountErr != nil {
@@ -194,7 +194,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 func (a *api) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := getJSONRequestBody(r, w)
-		UserEmail := strings.ToLower(keyVal["warriorEmail"].(string))
+		UserEmail := strings.ToLower(keyVal["email"].(string))
 
 		ResetID, UserName, resetErr := a.db.UserResetRequest(UserEmail)
 		if resetErr == nil {
@@ -219,8 +219,8 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 		ResetID := keyVal["resetId"].(string)
 
 		UserPassword, passwordErr := validateUserPassword(
-			keyVal["warriorPassword1"].(string),
-			keyVal["warriorPassword2"].(string),
+			keyVal["password1"].(string),
+			keyVal["password2"].(string),
 		)
 
 		if passwordErr != nil {
@@ -254,8 +254,8 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		UserPassword, passwordErr := validateUserPassword(
-			keyVal["warriorPassword1"].(string),
-			keyVal["warriorPassword2"].(string),
+			keyVal["password1"].(string),
+			keyVal["password2"].(string),
 		)
 
 		if passwordErr != nil {

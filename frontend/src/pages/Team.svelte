@@ -157,10 +157,6 @@
     }
 
     function handleBattleRemove() {
-        const body = {
-            id: removeBattleId,
-        }
-
         xfetch(`${teamPrefix}/battles/${removeBattleId}`, { method: 'DELETE' })
             .then(function () {
                 eventTag('team_remove_battle', 'engagement', 'success')

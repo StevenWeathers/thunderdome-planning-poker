@@ -86,15 +86,15 @@
     function updateWarriorProfile(e) {
         e.preventDefault()
         const body = {
-            warriorName: warriorProfile.name,
-            warriorAvatar: warriorProfile.avatar,
+            name: warriorProfile.name,
+            avatar: warriorProfile.avatar,
             notificationsEnabled: warriorProfile.notificationsEnabled,
             country: warriorProfile.country,
             locale: $locale,
             company: warriorProfile.company,
             jobTitle: warriorProfile.jobTitle,
         }
-        const validName = validateName(body.warriorName)
+        const validName = validateName(body.name)
 
         let noFormErrors = true
 
@@ -135,8 +135,8 @@
     function updateWarriorPassword(e) {
         e.preventDefault()
         const body = {
-            warriorPassword1,
-            warriorPassword2,
+            password1: warriorPassword1,
+            password2: warriorPassword2,
         }
         const validPasswords = validatePasswords(
             warriorPassword1,

@@ -19,8 +19,8 @@
         e.preventDefault()
         const body = {
             resetId,
-            warriorPassword1,
-            warriorPassword2,
+            password1: warriorPassword1,
+            password2: warriorPassword2,
         }
         const validPasswords = validatePasswords(
             warriorPassword1,

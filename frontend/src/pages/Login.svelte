@@ -27,8 +27,8 @@
     function authWarrior(e) {
         e.preventDefault()
         const body = {
-            warriorEmail,
-            warriorPassword,
+            email: warriorEmail,
+            password: warriorPassword,
         }
 
         xfetch(authEndpoint, { body })
@@ -69,7 +69,7 @@
     function sendPasswordReset(e) {
         e.preventDefault()
         const body = {
-            warriorEmail: warriorResetEmail,
+            email: warriorResetEmail,
         }
 
         xfetch('/api/auth/forgot-password', { body })

@@ -51,8 +51,8 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)
-		UserName := keyVal["warriorName"].(string)
-		UserAvatar := keyVal["warriorAvatar"].(string)
+		UserName := keyVal["name"].(string)
+		UserAvatar := keyVal["avatar"].(string)
 		NotificationsEnabled, _ := keyVal["notificationsEnabled"].(bool)
 		Country := keyVal["country"].(string)
 		Locale := keyVal["locale"].(string)

@@ -25,7 +25,7 @@
     function createWarriorPrivate(e) {
         e.preventDefault()
         const body = {
-            warriorName,
+            name: warriorName,
         }
         const validName = validateName(warriorName)
 
@@ -68,10 +68,10 @@
         warriorPassword2,
     ) {
         const body = {
-            warriorName,
-            warriorEmail,
-            warriorPassword1,
-            warriorPassword2,
+            name: warriorName,
+            email: warriorEmail,
+            password1: warriorPassword1,
+            password2: warriorPassword2,
         }
 
         xfetch('/api/auth/register', { body })
