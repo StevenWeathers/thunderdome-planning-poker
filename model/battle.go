@@ -17,7 +17,7 @@ type BattleUser struct {
 type Battle struct {
 	BattleID             string        `json:"id"`
 	BattleName           string        `json:"name"`
-	Users                []*BattleUser `json:"warriors"`
+	Users                []*BattleUser `json:"users"`
 	Plans                []*Plan       `json:"plans"`
 	VotingLocked         bool          `json:"votingLocked"`
 	ActivePlanID         string        `json:"activePlanId"`

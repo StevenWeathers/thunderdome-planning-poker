@@ -63,7 +63,7 @@
             case 'init': {
                 battle = JSON.parse(parsedEvent.value)
                 points = battle.pointValuesAllowed
-                const { spectator = false } = battle.warriors.find(
+                const { spectator = false } = battle.users.find(
                     w => w.id === $warrior.id,
                 )
                 isSpectator = spectator
@@ -84,8 +84,8 @@
                 break
             }
             case 'warrior_joined': {
-                battle.warriors = JSON.parse(parsedEvent.value)
-                const joinedWarrior = battle.warriors.find(
+                battle.users = JSON.parse(parsedEvent.value)
+                const joinedWarrior = battle.users.find(
                     w => w.id === parsedEvent.warriorId,
                 )
                 if (joinedWarrior.id === $warrior.id) {
@@ -101,10 +101,10 @@
                 break
             }
             case 'warrior_retreated':
-                const leftWarrior = battle.warriors.find(
+                const leftWarrior = battle.users.find(
                     w => w.id === parsedEvent.warriorId,
                 )
-                battle.warriors = JSON.parse(parsedEvent.value)
+                battle.users = JSON.parse(parsedEvent.value)
 
                 if ($warrior.notificationsEnabled) {
                     notifications.danger(
@@ -115,8 +115,8 @@
                 }
                 break
             case 'users_updated':
-                battle.warriors = JSON.parse(parsedEvent.value)
-                const updatedWarrior = battle.warriors.find(
+                battle.users = JSON.parse(parsedEvent.value)
+                const updatedWarrior = battle.users.find(
                     w => w.id === $warrior.id,
                 )
                 isSpectator = updatedWarrior.spectator
@@ -147,7 +147,7 @@
                 }
                 break
             case 'vote_activity':
-                const votedWarrior = battle.warriors.find(
+                const votedWarrior = battle.users.find(
                     w => w.id === parsedEvent.warriorId,
                 )
                 if ($warrior.notificationsEnabled) {
@@ -161,7 +161,7 @@
                 battle.plans = JSON.parse(parsedEvent.value)
                 break
             case 'vote_retracted':
-                const devotedWarrior = battle.warriors.find(
+                const devotedWarrior = battle.users.find(
                     w => w.id === parsedEvent.warriorId,
                 )
                 if ($warrior.notificationsEnabled) {
@@ -224,7 +224,7 @@
                 router.route(appRoutes.battles)
                 break
             case 'jab_warrior':
-                const warriorToJab = battle.warriors.find(
+                const warriorToJab = battle.users.find(
                     w => w.id === parsedEvent.value,
                 )
                 notifications.info(
@@ -362,7 +362,7 @@
 
             // build a count of each vote
             activePlan.votes.forEach(v => {
-                const { spectator = false } = battle.warriors.find(
+                const { spectator = false } = battle.users.find(
                     w => w.id === v.warriorId,
                 )
                 if (typeof voteCounts[v.vote] !== 'undefined' && !spectator) {
@@ -510,7 +510,7 @@
             <div class="w-full lg:w-3/4 px-4">
                 {#if showVotingResults}
                     <VoteResults
-                        warriors="{battle.warriors}"
+                        warriors="{battle.users}"
                         plans="{battle.plans}"
                         activePlanId="{battle.activePlanId}"
                         points="{points}"
@@ -551,7 +551,7 @@
                         </h3>
                     </div>
 
-                    {#each battle.warriors as war (war.id)}
+                    {#each battle.users as war (war.id)}
                         {#if war.active}
                             <WarriorCard
                                 warrior="{war}"

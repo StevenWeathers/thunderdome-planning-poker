@@ -99,7 +99,7 @@
                         <tr>
                             <td class="border px-4 py-2">{apikey.name}</td>
                             <td class="border px-4 py-2">{apikey.prefix}</td>
-                            <td class="border px-4 py-2">{apikey.warriorId}</td>
+                            <td class="border px-4 py-2">{apikey.userId}</td>
                             <td class="border px-4 py-2">{apikey.active}</td>
                             <td class="border px-4 py-2">
                                 {new Date(apikey.createdDate).toLocaleString()}

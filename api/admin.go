@@ -9,7 +9,7 @@ import (
 
 // handleAppStats gets the applications stats
 // @Summary Get Application Stats
-// @Description get application stats such as count of registered warriors
+// @Description get application stats such as count of registered users
 // @Tags admin
 // @Produce  json
 // @Success 200 object standardJsonResponse{data=[]model.ApplicationStats}
