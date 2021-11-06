@@ -332,7 +332,7 @@ func (sub *subscription) writePump() {
 func (a *api) serveWs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		battleID := vars["id"]
+		battleID := vars["battleId"]
 
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)

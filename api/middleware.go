@@ -81,12 +81,14 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// verifiedUserOnly validates that the request was made by a verified registered user
-func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
+// entityUserOnly validates that the request was made by the session user matching the {userId} of the entity (or ADMIN)
+func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
 		var UserID string
+		EntityUserID := vars["userId"]
 
 		if apiKey != "" && a.config.ExternalAPIEnabled == true {
 			var apiKeyErr error
@@ -111,7 +113,51 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if User.UserType != adminUserType && User.Verified == false {
+		if User.UserType != adminUserType && EntityUserID != UserID {
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), contextKeyUserID, UserID)
+		ctx = context.WithValue(ctx, contextKeyUserType, User.UserType)
+
+		h(w, r.WithContext(ctx))
+	}
+}
+
+// verifiedUserOnly validates that the request was made by a verified registered user
+func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		apiKey := r.Header.Get(apiKeyHeaderName)
+		apiKey = strings.TrimSpace(apiKey)
+		var UserID string
+		EntityUserID := vars["userId"]
+
+		if apiKey != "" && a.config.ExternalAPIEnabled == true {
+			var apiKeyErr error
+			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
+			if apiKeyErr != nil {
+				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
+				return
+			}
+		} else {
+			var cookieErr error
+			UserID, cookieErr = a.validateUserCookie(w, r)
+			if cookieErr != nil {
+				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+				return
+			}
+		}
+
+		User, UserErr := a.db.GetUser(UserID)
+		if UserErr != nil {
+			a.clearUserCookies(w)
+			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+			return
+		}
+
+		if User.UserType != adminUserType && EntityUserID != UserID && User.Verified == false {
 			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
 			return
 		}

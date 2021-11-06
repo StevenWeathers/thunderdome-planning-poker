@@ -79,7 +79,7 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Description Updates an Alert
 // @Tags alert
 // @Produce  json
-// @Param id path int false "the alert ID to update"
+// @Param alertId path int false "the alert ID to update"
 // @Param name body string false "Name of the alert"
 // @Param type body string false "Type of alert" Enums(ERROR, INFO, NEW, SUCCESS, WARNING)
 // @Param content body string false "Alert content"
@@ -88,13 +88,13 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Param registeredOnly body boolean false "Whether or not to only show to users with an active session"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
-// @Router /alerts/{id} [put]
+// @Router /alerts/{alertId} [put]
 func (a *api) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := getJSONRequestBody(r, w)
 		vars := mux.Vars(r)
 
-		ID := vars["id"]
+		ID := vars["alertId"]
 		Name := keyVal["name"].(string)
 		Type := keyVal["type"].(string)
 		Content := keyVal["content"].(string)
@@ -119,14 +119,14 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 // @Description Deletes an Alert
 // @Tags alert
 // @Produce  json
-// @Param id path int false "the alert ID to delete"
+// @Param alertId path int false "the alert ID to delete"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
-// @Router /alerts/{id} [delete]
+// @Router /alerts/{alertId} [delete]
 func (a *api) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		AlertID := vars["id"]
+		AlertID := vars["alertId"]
 
 		err := a.db.AlertDelete(AlertID)
 		if err != nil {

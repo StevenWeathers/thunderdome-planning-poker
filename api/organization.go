@@ -24,22 +24,16 @@ type orgTeamResponse struct {
 // @Description get list of organizations for the authenticated user
 // @Tags organization
 // @Produce  json
-// @Param id path int false "the user ID to get organizations for"
+// @Param userId path int false "the user ID to get organizations for"
 // @Param limit query int true "Max number of results to return"
 // @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Organization}
 // @Failure 403 object standardJsonResponse{}
-// @Router /users/{id}/organizations [get]
+// @Router /users/{userId}/organizations [get]
 func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["id"]
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
-
-		if UserID != AuthedUserID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
+		UserID := vars["userId"]
 
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
@@ -54,11 +48,11 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 // @Description get an organization with user role
 // @Tags organization
 // @Produce  json
-// @Param id path int false "organization id"
+// @Param orgId path int false "organization id"
 // @Success 200 object standardJsonResponse{data=model.Organization}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /organizations/{id} [get]
+// @Router /organizations/{orgId} [get]
 func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 	type OrganizationResponse struct {
 		Organization *model.Organization `json:"organization"`
@@ -89,21 +83,15 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 // @Description Create organization with current user as admin
 // @Tags organization
 // @Produce  json
-// @Param id path int false "user id"
+// @Param userId path int false "user id"
 // @Success 200 object standardJsonResponse{data=createOrgResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /users/{id}/organizations [post]
+// @Router /users/{userId}/organizations [post]
 func (a *api) handleCreateOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["id"]
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
-
-		if UserID != AuthedUserID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
+		UserID := vars["userId"]
 
 		keyVal := getJSONRequestBody(r, w)
 
@@ -127,10 +115,10 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 // @Description get a list of organization teams
 // @Tags organization
 // @Produce  json
-// @Param id path int false "organization id"
+// @Param orgId path int false "organization id"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Failure 403 object standardJsonResponse{}
-// @Router /organizations/{id}/teams [get]
+// @Router /organizations/{orgId}/teams [get]
 func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -148,10 +136,10 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 // @Description get a list of organization users
 // @Tags organization
 // @Produce  json
-// @Param id path int false "organization id"
+// @Param orgId path int false "organization id"
 // @Success 200 object standardJsonResponse{data=[]model.User}
 // @Failure 403 object standardJsonResponse{}
-// @Router /organizations/{id}/users [get]
+// @Router /organizations/{orgId}/users [get]
 func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -169,12 +157,12 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 // @Description Create organization team with current user as admin
 // @Tags organization
 // @Produce  json
-// @Param id path int false "organization id"
+// @Param orgId path int false "organization id"
 // @Param name body string false "team name"
 // @Success 200 object standardJsonResponse{data=createTeamResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /organizations/{id}/teams [post]
+// @Router /organizations/{orgId}/teams [post]
 func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// UserID := r.Context().Value(contextKeyUserID).(string)
@@ -202,13 +190,13 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 // @Description Add user to organization
 // @Tags organization
 // @Produce  json
-// @Param id path int false "organization id"
+// @Param orgId path int false "organization id"
 // @Param email body int false "user email"
 // @Param role body int false "user team role"
 // @Success 200 object standardJsonResponse{data=createTeamResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /organizations/{id}/users [post]
+// @Router /organizations/{orgId}/users [post]
 func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := getJSONRequestBody(r, w)
@@ -239,12 +227,12 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 // @Description Remove user from organization including departments and teams
 // @Tags organization
 // @Produce  json
-// @Param id path int false "organization id"
+// @Param orgId path int false "organization id"
 // @Param userId path int false "user id"
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /organizations/{id}/users/{userId} [delete]
+// @Router /organizations/{orgId}/users/{userId} [delete]
 func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -266,12 +254,12 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 // @Description Get an organizations team with users roles
 // @Tags organization
 // @Produce  json
-// @Param id path int false "organization id"
+// @Param orgId path int false "organization id"
 // @Param teamId path int false "team id"
 // @Success 200 object standardJsonResponse{data=orgTeamResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /organizations/{id}/teams/{teamId} [get]
+// @Router /organizations/{orgId}/teams/{teamId} [get]
 func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -309,14 +297,14 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Description Add user to organization team as long as they are already in the organization
 // @Tags organization
 // @Produce  json
-// @Param id path int false "organization id"
+// @Param orgId path int false "organization id"
 // @Param teamId path int false "team id"
 // @Param email body string false "user email"
 // @Param role body string false "user team role"
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /organizations/{id}/teams/{teamId}/users [post]
+// @Router /organizations/{orgId}/teams/{teamId}/users [post]
 func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := getJSONRequestBody(r, w)

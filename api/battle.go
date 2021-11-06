@@ -12,25 +12,18 @@ import (
 
 // handleBattlesGet looks up battles associated with UserID
 // @Summary Get Battles
-// @Description get list of battles for authenticated user
+// @Description get list of battles for the user
 // @Tags battle
 // @Produce  json
-// @Param id path int false "the user ID to get battles for"
+// @Param userId path int false "the user ID to get battles for"
 // @Success 200 object standardJsonResponse{data=[]model.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
-// @Router /users/{id}/battles [get]
+// @Router /users/{userId}/battles [get]
 func (a *api) handleBattlesGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["id"]
-
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserType != adminUserType && UserID != AuthedUserID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
+		UserID := vars["userId"]
 
 		battles, err := a.db.GetBattlesByUser(UserID)
 		if err != nil {
@@ -44,10 +37,10 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 
 // handleBattleCreate handles creating a battle (arena)
 // @Summary Create Battle
-// @Description Create a battle associated to authenticated user
+// @Description Create a battle associated to the user
 // @Tags battle
 // @Produce  json
-// @Param id path int false "the user ID"
+// @Param userId path int false "the user ID"
 // @Param name body string false "the battle name"
 // @Param pointValuesAllowed body []string false "the allowed point values e.g. 1,2,3,5,8"
 // @Param autoFinishVoting body string false "whether or not to automatically complete voting when all users have voted"
@@ -57,18 +50,12 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=model.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /users/{id}/battles [post]
+// @Router /users/{userId}/battles [post]
 func (a *api) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["id"]
-
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
+		UserID := vars["userId"]
 		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserType != adminUserType && UserID != AuthedUserID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {

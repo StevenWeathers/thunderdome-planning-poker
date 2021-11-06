@@ -11,22 +11,15 @@ import (
 // @Description get a users profile
 // @Tags user
 // @Produce  json
-// @Param id path int false "the user ID"
+// @Param userId path int false "the user ID"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /users/{id} [get]
+// @Router /users/{userId} [get]
 func (a *api) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["id"]
-
-		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserType != adminUserType && UserID != UserCookieID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
+		UserID := vars["userId"]
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
@@ -43,11 +36,11 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 // @Description Update a users profile
 // @Tags user
 // @Produce  json
-// @Param id path int false "the user ID"
+// @Param userId path int false "the user ID"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /users/{id} [put]
+// @Router /users/{userId} [put]
 func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -59,14 +52,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		Locale := keyVal["locale"].(string)
 		Company := keyVal["company"].(string)
 		JobTitle := keyVal["jobTitle"].(string)
-
-		UserID := vars["id"]
-		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserType != adminUserType && UserID != UserCookieID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
+		UserID := vars["userId"]
 
 		updateErr := a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 		if updateErr != nil {
@@ -89,22 +75,17 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 // @Description Deletes a user
 // @Tags user
 // @Produce  json
-// @Param id path int false "the user ID"
+// @Param userId path int false "the user ID"
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /users/{id} [delete]
+// @Router /users/{userId} [delete]
 func (a *api) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		UserID := vars["id"]
+		UserID := vars["userId"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserType != adminUserType && UserID != UserCookieID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {

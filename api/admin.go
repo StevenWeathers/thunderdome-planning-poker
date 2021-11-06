@@ -101,14 +101,14 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 // @Description Grants read and write access to administrative information
 // @Tags admin
 // @Produce  json
-// @Param id path int false "the user ID to promote"
+// @Param userId path int false "the user ID to promote"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /admin/users/{id}/promote/ [patch]
+// @Router /admin/users/{userId}/promote/ [patch]
 func (a *api) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["id"]
+		UserID := vars["userId"]
 
 		err := a.db.PromoteUser(UserID)
 		if err != nil {
@@ -125,14 +125,14 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 // @Description Demotes a user from admin to registered
 // @Tags admin
 // @Produce  json
-// @Param id path int false "the user ID to demote"
+// @Param userId path int false "the user ID to demote"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
-// @Router /admin/users/{id}/demote [patch]
+// @Router /admin/users/{userId}/demote [patch]
 func (a *api) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["id"]
+		UserID := vars["userId"]
 
 		err := a.db.DemoteUser(UserID)
 		if err != nil {

@@ -51,22 +51,15 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 // @Description Get a list of teams the user is apart of
 // @Tags team
 // @Produce  json
-// @Param id path int false "the user ID"
+// @Param userId path int false "the user ID"
 // @Param teamId path int false "the team ID"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Success 403 object standardJsonResponse{}
-// @Router /users/{id}/teams/{teamId} [get]
+// @Router /users/{userId}/teams/{teamId} [get]
 func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["id"]
-
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserType != adminUserType && UserID != AuthedUserID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
+		UserID := vars["userId"]
 
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
@@ -101,23 +94,16 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 // @Description Creates a team with the current user as the team admin
 // @Tags team
 // @Produce  json
-// @Param id path int false "the user ID"
+// @Param userId path int false "the user ID"
 // @Param name body string false "the team name"
 // @Success 200 object standardJsonResponse{data=createTeamResponse}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
-// @Router /users/{id}/teams [post]
+// @Router /users/{userId}/teams [post]
 func (a *api) handleCreateTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := vars["id"]
-
-		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserType != adminUserType && UserID != AuthedUserID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
+		UserID := vars["userId"]
 
 		keyVal := getJSONRequestBody(r, w)
 
