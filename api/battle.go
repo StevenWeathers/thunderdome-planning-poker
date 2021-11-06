@@ -27,7 +27,7 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserID != AuthedUserID && UserType != "adminUserType" {
+		if UserType != adminUserType && UserID != AuthedUserID {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -65,7 +65,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserID != AuthedUserID && UserType != "adminUserType" {
+		if UserType != adminUserType && UserID != AuthedUserID {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -109,10 +109,10 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
 			TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 			var isAdmin bool
-			if DepartmentRole != nil && DepartmentRole.(string) == "ADMIN" {
+			if UserType != adminUserType || (DepartmentRole != nil && DepartmentRole.(string) == "ADMIN") {
 				isAdmin = true
 			}
-			if OrgRole != nil && OrgRole.(string) == "ADMIN" {
+			if UserType != adminUserType || (OrgRole != nil && OrgRole.(string) == "ADMIN") {
 				isAdmin = true
 			}
 

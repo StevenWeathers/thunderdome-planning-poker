@@ -63,7 +63,7 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserID != AuthedUserID && UserType != "adminUserType" {
+		if UserType != adminUserType && UserID != AuthedUserID {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -114,7 +114,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 
 		AuthedUserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserID != AuthedUserID && UserType != "adminUserType" {
+		if UserType != adminUserType && UserID != AuthedUserID {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}

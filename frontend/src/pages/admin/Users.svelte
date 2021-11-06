@@ -125,7 +125,7 @@
     }
 
     function handleDeleteWarrior() {
-        xfetch(`/api/admin/users/${warriorDeleteId}`, { method: 'DELETE' })
+        xfetch(`/api/users/${warriorDeleteId}`, { method: 'DELETE' })
             .then(function () {
                 eventTag('admin_demote_warrior', 'engagement', 'success')
 

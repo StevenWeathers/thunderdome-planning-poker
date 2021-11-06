@@ -95,38 +95,6 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 	}
 }
 
-// handleAdminUserDelete attempts to delete a users account
-// @Summary Delete User
-// @Description Delete a registered user
-// @Tags admin
-// @Produce  json
-// @Param id path int false "the user ID to delete"
-// @Success 200 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Router /admin/users/{id} [delete]
-func (a *api) handleAdminUserDelete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		UserID := vars["id"]
-
-		User, UserErr := a.db.GetUser(UserID)
-		if UserErr != nil {
-			Failure(w, r, http.StatusInternalServerError, UserErr)
-			return
-		}
-
-		updateErr := a.db.DeleteUser(UserID)
-		if updateErr != nil {
-			Failure(w, r, http.StatusInternalServerError, updateErr)
-			return
-		}
-
-		a.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
-
-		Success(w, r, http.StatusOK, nil, nil)
-	}
-}
-
 // handleUserPromote handles promoting a user to admin
 // @Summary Promotes User
 // @Description Promotes a user to admin

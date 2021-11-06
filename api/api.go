@@ -186,7 +186,6 @@ func Init(config *ApiConfig, router *mux.Router, database *database.Database, em
 	adminRouter.HandleFunc("/stats", a.adminOnly(a.handleAppStats())).Methods("GET")
 	adminRouter.HandleFunc("/users", a.adminOnly(a.handleGetRegisteredUsers())).Methods("GET")
 	adminRouter.HandleFunc("/users", a.adminOnly(a.handleUserCreate())).Methods("POST")
-	adminRouter.HandleFunc("/users/{id}", a.adminOnly(a.handleAdminUserDelete())).Methods("DELETE")
 	adminRouter.HandleFunc("/users/{id}/promote", a.adminOnly(a.handleUserPromote())).Methods("PATCH")
 	adminRouter.HandleFunc("/users/{id}/demote", a.adminOnly(a.handleUserDemote())).Methods("PATCH")
 	adminRouter.HandleFunc("/organizations", a.adminOnly(a.handleGetOrganizations())).Methods("GET")

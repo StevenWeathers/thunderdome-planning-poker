@@ -23,7 +23,7 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserID != UserCookieID && UserType != "adminUserType" {
+		if UserType != adminUserType && UserID != UserCookieID {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -63,7 +63,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserID != UserCookieID && UserType != "adminUserType" {
+		if UserType != adminUserType && UserID != UserCookieID {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -101,7 +101,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 		UserID := vars["id"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
-		if UserID != UserCookieID && UserType != "adminUserType" {
+		if UserType != adminUserType && UserID != UserCookieID {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -120,7 +120,10 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 
 		a.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
 
-		a.clearUserCookies(w)
+		// don't clear admin's user cookies when deleting other users
+		if UserID == UserCookieID {
+			a.clearUserCookies(w)
+		}
 
 		Success(w, r, http.StatusOK, nil, nil)
 	}
