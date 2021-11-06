@@ -128,8 +128,8 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path int false "the team ID"
-// @Param email body string false "user email"
-// @Param role body string false "user team role"
+// @Param email body string false "the users email"
+// @Param role body string false "the users team role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}

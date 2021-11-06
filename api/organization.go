@@ -84,6 +84,7 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param userId path int false "user id"
+// @Param name body string false "the organization name"
 // @Success 200 object standardJsonResponse{data=createOrgResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -191,8 +192,8 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param orgId path int false "organization id"
-// @Param email body int false "user email"
-// @Param role body int false "user team role"
+// @Param email body string false "the users email"
+// @Param role body string false "the users organization role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{data=createTeamResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -299,8 +300,8 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path int false "organization id"
 // @Param teamId path int false "team id"
-// @Param email body string false "user email"
-// @Param role body string false "user team role"
+// @Param email body string false "the users email"
+// @Param role body string false "the users team role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}

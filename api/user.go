@@ -37,6 +37,13 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 // @Tags user
 // @Produce  json
 // @Param userId path int false "the user ID"
+// @Param name body string false "the users name"
+// @Param avatar body string false "avatar"
+// @Param notificationsEnabled body boolean false "whether or not battle notifications are enabled"
+// @Param country body string false "users country code e.g. US"
+// @Param locale body string false "the users locale e.g. en"
+// @Param company body string false "the users company name"
+// @Param jobTitle body string false "the users job title"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}

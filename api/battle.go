@@ -41,6 +41,9 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 // @Tags battle
 // @Produce  json
 // @Param userId path int false "the user ID"
+// @Param orgId path int false "the organization ID"
+// @Param departmentId path int false "the department ID"
+// @Param teamId path int false "the team ID"
 // @Param name body string false "the battle name"
 // @Param pointValuesAllowed body []string false "the allowed point values e.g. 1,2,3,5,8"
 // @Param autoFinishVoting body string false "whether or not to automatically complete voting when all users have voted"
@@ -51,6 +54,9 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /users/{userId}/battles [post]
+// @Router /teams/{teamId}/users/{userId}/battles [post]
+// @Router /{orgId}/teams/{teamId}/users/{userId}/battles [post]
+// @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles [post]
 func (a *api) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
