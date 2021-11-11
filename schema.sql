@@ -181,7 +181,6 @@ CREATE TABLE IF NOT EXISTS "users" (
     "verified" bool DEFAULT false,
     "avatar" varchar(128) DEFAULT 'identicon',
     "notifications_enabled" bool DEFAULT true,
-    "jira_rest_api_token" varchar(128) DEFAULT '',
     "country" varchar(2),
     "company" varchar(256),
     "job_title" varchar(128),
