@@ -22,8 +22,8 @@ var (
 	version = "dev"
 )
 
-// ServerConfig holds server global config values
-type ServerConfig struct {
+// Config holds server global config values
+type Config struct {
 	// port the application server will listen on
 	ListenPort string
 	// the domain of the application for cookie securing
@@ -33,9 +33,9 @@ type ServerConfig struct {
 	// email to promote a user to Admin type on app startup
 	// the user should already be registered for this to work
 	AdminEmail string
-	// Whether or not to enable google analytics tracking
+	// Whether to enable Google Analytics tracking
 	AnalyticsEnabled bool
-	// ID used for google analytics
+	// ID used for Google Analytics
 	AnalyticsID string
 	// the app version
 	Version string
@@ -43,16 +43,16 @@ type ServerConfig struct {
 	AvatarService string
 	// PathPrefix allows the application to be run on a shared domain
 	PathPrefix string
-	// Whether or not the external API is enabled
+	// Whether the external API is enabled
 	ExternalAPIEnabled bool
 	// Number of API keys a user can create
 	UserAPIKeyLimit int
-	// Whether or not LDAP is enabled for authentication
+	// Whether LDAP is enabled for authentication
 	LdapEnabled bool
 }
 
 type server struct {
-	config   *ServerConfig
+	config   *Config
 	router   *mux.Router
 	email    *email.Email
 	cookie   *securecookie.SecureCookie
@@ -74,7 +74,7 @@ func main() {
 	}
 
 	s := &server{
-		config: &ServerConfig{
+		config: &Config{
 			ListenPort:         viper.GetString("http.port"),
 			AppDomain:          viper.GetString("http.domain"),
 			AdminEmail:         viper.GetString("admin.email"),

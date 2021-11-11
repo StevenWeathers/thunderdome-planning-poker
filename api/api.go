@@ -1,12 +1,6 @@
 package api
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"strconv"
-
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
 	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/email"
 	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
@@ -16,13 +10,13 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// ApiConfig config values used by the APIs
-type ApiConfig struct {
+// Config contains configuration values used by the APIs
+type Config struct {
 	// the domain of the application for cookie securing
 	AppDomain string
 	// PathPrefix allows the application to be run on a shared domain
 	PathPrefix string
-	// Whether or not the external API is enabled
+	// Whether the external API is enabled
 	ExternalAPIEnabled bool
 	// Number of API keys a user can create
 	UserAPIKeyLimit int
@@ -30,14 +24,14 @@ type ApiConfig struct {
 	FrontendCookieName string
 	// name of the user cookie
 	SecureCookieName string
-	// controls whether or not the cookie is set to secure, only works over HTTPS
+	// controls whether the cookie is set to secure, only works over HTTPS
 	SecureCookieFlag bool
-	// Whether or not LDAP is enabled for authentication
+	// Whether LDAP is enabled for authentication
 	LdapEnabled bool
 }
 
 type api struct {
-	config *ApiConfig
+	config *Config
 	router *mux.Router
 	email  *email.Email
 	cookie *securecookie.SecureCookie
@@ -83,7 +77,7 @@ const (
 // @in header
 // @name X-API-Key
 // @version BETA
-func Init(config *ApiConfig, router *mux.Router, database *database.Database, email *email.Email, cookie *securecookie.SecureCookie) *api {
+func Init(config *Config, router *mux.Router, database *database.Database, email *email.Email, cookie *securecookie.SecureCookie) *api {
 	var a = &api{
 		config: config,
 		router: router,
@@ -204,89 +198,4 @@ func Init(config *ApiConfig, router *mux.Router, database *database.Database, em
 	apiRouter.HandleFunc("/arena/{battleId}", a.serveWs())
 
 	return a
-}
-
-// Success returns the successful response including any data and meta
-func Success(w http.ResponseWriter, r *http.Request, code int, data interface{}, meta interface{}) {
-	result := &standardJsonResponse{
-		Success: true,
-		Error:   "",
-		Data:    map[string]interface{}{},
-		Meta:    map[string]interface{}{},
-	}
-
-	if meta != nil {
-		result.Meta = meta
-	}
-
-	if data != nil {
-		result.Data = data
-	}
-
-	response, _ := json.Marshal(result)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(response)
-}
-
-// Failure responds with an error and its associated status code header
-func Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
-	// Extract error message.
-	errCode, errMessage := ErrorCode(err), ErrorMessage(err)
-
-	if errCode == EINTERNAL {
-		LogError(r, err)
-	}
-
-	result := &standardJsonResponse{
-		Success: false,
-		Error:   errMessage,
-		Data:    map[string]interface{}{},
-		Meta:    map[string]interface{}{},
-	}
-
-	response, _ := json.Marshal(result)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(response)
-}
-
-// LogError logs an error with the HTTP route information.
-func LogError(r *http.Request, err error) {
-	log.Printf("[http] error: %s %s: %s", r.Method, r.URL.Path, err)
-}
-
-// getJSONRequestBody gets a JSON request body broken into a key/value map
-func getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[string]interface{} {
-	body, _ := ioutil.ReadAll(r.Body) // check for errors
-	keyVal := make(map[string]interface{})
-	jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-
-	if jsonErr != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return nil
-	}
-
-	return keyVal
-}
-
-// getLimitOffsetFromRequest gets the limit and offset query parameters from the request
-// defaulting to 20 for limit and 0 for offset
-func getLimitOffsetFromRequest(r *http.Request, w http.ResponseWriter) (limit int, offset int) {
-	defaultLimit := 20
-	defaultOffset := 0
-	query := r.URL.Query()
-	Limit, limitErr := strconv.Atoi(query.Get("limit"))
-	if limitErr != nil || Limit == 0 {
-		Limit = defaultLimit
-	}
-
-	Offset, offsetErr := strconv.Atoi(query.Get("offset"))
-	if offsetErr != nil {
-		Offset = defaultOffset
-	}
-
-	return Limit, Offset
 }

@@ -42,7 +42,7 @@ func (s *server) routes() {
 	staticHandler := http.FileServer(HFS)
 
 	// api (used by the webapp but can be enabled for external use)
-	apiConfig := &api.ApiConfig{
+	apiConfig := &api.Config{
 		AppDomain:          s.config.AppDomain,
 		FrontendCookieName: s.config.FrontendCookieName,
 		SecureCookieName:   viper.GetString("http.backend_cookie_name"),
