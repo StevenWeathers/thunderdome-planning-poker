@@ -9,8 +9,19 @@ import (
 )
 
 // GetRegisteredUsers retrieves the registered users from db
-func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*model.User {
+func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int, error) {
 	var users = make([]*model.User, 0)
+	var Count int
+
+	e := d.db.QueryRow(
+		"SELECT COUNT(*) FROM users WHERE email IS NOT NULL;",
+	).Scan(
+		&Count,
+	)
+	if e != nil {
+		log.Println(e)
+	}
+
 	rows, err := d.db.Query(
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title
@@ -18,32 +29,32 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) []*model.User {
 		Limit,
 		Offset,
 	)
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var w model.User
-
-			if err := rows.Scan(
-				&w.UserID,
-				&w.UserName,
-				&w.UserEmail,
-				&w.UserType,
-				&w.UserAvatar,
-				&w.Verified,
-				&w.Country,
-				&w.Company,
-				&w.JobTitle,
-			); err != nil {
-				log.Println(err)
-			} else {
-				users = append(users, &w)
-			}
-		}
-	} else {
-		log.Println(err)
+	if err != nil {
+		return nil, Count, err
 	}
 
-	return users
+	defer rows.Close()
+	for rows.Next() {
+		var w model.User
+
+		if err := rows.Scan(
+			&w.UserID,
+			&w.UserName,
+			&w.UserEmail,
+			&w.UserType,
+			&w.UserAvatar,
+			&w.Verified,
+			&w.Country,
+			&w.Company,
+			&w.JobTitle,
+		); err != nil {
+			log.Println(err)
+		} else {
+			users = append(users, &w)
+		}
+	}
+
+	return users, Count, nil
 }
 
 // GetUser gets a user from db by ID
@@ -221,4 +232,46 @@ func (d *Database) GetActiveCountries() ([]string, error) {
 	}
 
 	return countries, nil
+}
+
+// SearchRegisteredUsersByEmail retrieves the registered users filtered by email likeness
+func (d *Database) SearchRegisteredUsersByEmail(Email string, Limit int, Offset int) ([]*model.User, int, error) {
+	var users = make([]*model.User, 0)
+	var count int
+
+	rows, err := d.db.Query(
+		`
+		SELECT id, name, email, type, avatar, verified, country, company, job_title, count
+		FROM registered_users_email_search($1, $2, $3);`,
+		Email,
+		Limit,
+		Offset,
+	)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var w model.User
+
+		if err := rows.Scan(
+			&w.UserID,
+			&w.UserName,
+			&w.UserEmail,
+			&w.UserType,
+			&w.UserAvatar,
+			&w.Verified,
+			&w.Country,
+			&w.Company,
+			&w.JobTitle,
+			&count,
+		); err != nil {
+			log.Println(err)
+		} else {
+			users = append(users, &w)
+		}
+	}
+
+	return users, count, nil
 }

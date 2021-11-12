@@ -40,6 +40,7 @@
 
     $: if (num_items) {
         num_pages = Math.round(num_items / per_page)
+        setArrPages()
         current = current || 1
     }
 

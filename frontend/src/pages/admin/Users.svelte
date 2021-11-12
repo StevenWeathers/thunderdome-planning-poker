@@ -8,6 +8,7 @@
     import CountryFlag from '../../components/CountryFlag.svelte'
     import CheckIcon from '../../components/icons/CheckIcon.svelte'
     import DeleteWarrior from '../../components/DeleteWarrior.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
     import { appRoutes } from '../../config'
@@ -17,33 +18,26 @@
     export let notifications
     export let eventTag
 
-    const warriorsPageLimit = 100
+    const usersPageLimit = 100
 
-    let appStats = {
-        unregisteredUserCount: 0,
-        registeredUserCount: 0,
-        battleCount: 0,
-        planCount: 0,
-        organizationCount: 0,
-        departmentCount: 0,
-        teamCount: 0,
-    }
-    let warriors = []
-    let showCreateWarrior = false
-    let warriorsPage = 1
-    let warriorDeleteId = null
-    let showWarriorDeletion = false
+    let totalUsers = 0
+    let users = []
+    let showCreateUser = false
+    let usersPage = 1
+    let userDeleteId = null
+    let showUserDeletion = false
+    let searchEmail = ''
 
-    const toggleDeleteWarrior = id => () => {
-        showWarriorDeletion = !showWarriorDeletion
-        warriorDeleteId = id
+    const toggleDeleteUser = id => () => {
+        showUserDeletion = !showUserDeletion
+        userDeleteId = id
     }
 
-    function toggleCreateWarrior() {
-        showCreateWarrior = !showCreateWarrior
+    function toggleCreateUser() {
+        showCreateUser = !showCreateUser
     }
 
-    function createWarrior(
+    function createUser(
         warriorName,
         warriorEmail,
         warriorPassword1,
@@ -60,8 +54,8 @@
             .then(function () {
                 eventTag('admin_create_warrior', 'engagement', 'success')
 
-                getWarriors()
-                toggleCreateWarrior()
+                getUsers()
+                toggleCreateUser()
             })
             .catch(function () {
                 notifications.danger('Error encountered creating warrior')
@@ -69,38 +63,36 @@
             })
     }
 
-    function getAppStats() {
-        xfetch('/api/admin/stats')
-            .then(res => res.json())
-            .then(function (result) {
-                appStats = result.data
-            })
-            .catch(function () {
-                notifications.danger('Error getting application stats')
-            })
-    }
+    function getUsers() {
+        const offset = (usersPage - 1) * usersPageLimit
+        const isSearch = searchEmail !== ''
+        const apiPrefix = isSearch ? `/api/admin/search/users/email?search=${searchEmail}&` : '/api/admin/users?'
 
-    function getWarriors() {
-        const warriorsOffset = (warriorsPage - 1) * warriorsPageLimit
+        if (isSearch && searchEmail.length < 3) {
+            notifications.danger('Search value must be at least 3 characters')
+            return
+        }
+
         xfetch(
-            `/api/admin/users?limit=${warriorsPageLimit}&offset=${warriorsOffset}`,
+            `${apiPrefix}limit=${usersPageLimit}&offset=${offset}`,
         )
             .then(res => res.json())
             .then(function (result) {
-                warriors = result.data
+                users = result.data
+                totalUsers = result.meta.count
             })
             .catch(function () {
                 notifications.danger('Error getting warriors')
             })
     }
 
-    function promoteWarrior(warriorId) {
+    function promoteUser(userId) {
         return function () {
-            xfetch(`/api/admin/users/${warriorId}/promote`, { method: 'PATCH' })
+            xfetch(`/api/admin/users/${userId}/promote`, { method: 'PATCH' })
                 .then(function () {
                     eventTag('admin_promote_warrior', 'engagement', 'success')
 
-                    getWarriors()
+                    getUsers()
                 })
                 .catch(function () {
                     notifications.danger('Error encountered promoting warrior')
@@ -109,13 +101,13 @@
         }
     }
 
-    function demoteWarrior(warriorId) {
+    function demoteUser(userId) {
         return function () {
-            xfetch(`/api/admin/users/${warriorId}/demote`, { method: 'PATCH' })
+            xfetch(`/api/admin/users/${userId}/demote`, { method: 'PATCH' })
                 .then(function () {
                     eventTag('admin_demote_warrior', 'engagement', 'success')
 
-                    getWarriors()
+                    getUsers()
                 })
                 .catch(function () {
                     notifications.danger('Error encountered demoting warrior')
@@ -124,13 +116,13 @@
         }
     }
 
-    function handleDeleteWarrior() {
-        xfetch(`/api/users/${warriorDeleteId}`, { method: 'DELETE' })
+    function handleDeleteUser() {
+        xfetch(`/api/users/${userDeleteId}`, { method: 'DELETE' })
             .then(function () {
                 eventTag('admin_demote_warrior', 'engagement', 'success')
 
-                getWarriors()
-                toggleDeleteWarrior(null)()
+                getUsers()
+                toggleDeleteUser(null)()
             })
             .catch(function () {
                 notifications.danger('Error encountered demoting warrior')
@@ -138,9 +130,16 @@
             })
     }
 
+    function onSearchSubmit(evt) {
+      evt.preventDefault()
+
+      usersPage = 1
+      getUsers()
+    }
+
     const changePage = evt => {
-        warriorsPage = evt.detail
-        getWarriors()
+        usersPage = evt.detail
+        getUsers()
     }
 
     onMount(() => {
@@ -151,8 +150,7 @@
             router.route(appRoutes.landing)
         }
 
-        getAppStats()
-        getWarriors()
+        getUsers()
     })
 </script>
 
@@ -168,16 +166,41 @@
     <div class="w-full">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
-                <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">
+                <div class="w-2/5">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
                         {$_('pages.admin.registeredWarriors.title')}
                     </h2>
                 </div>
-                <div class="w-1/5">
-                    <div class="text-right">
-                        <HollowButton onClick="{toggleCreateWarrior}">
-                            {$_('warriorCreate')}
-                        </HollowButton>
+                <div class="w-3/5">
+                    <div class="text-right flex w-full">
+                        <div class="w-3/4">
+                            <form on:submit="{onSearchSubmit}" name="searchUsers">
+                                <div class="mb-4">
+                                    <label
+                                            class="mb-2"
+                                            for="searchEmail"
+                                    >
+                                        <input
+                                                bind:value="{searchEmail}"
+                                                placeholder="Email"
+                                                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                    rounded py-2 px-3 text-gray-700 leading-tight
+                    focus:outline-none focus:bg-white focus:border-purple-500"
+                                                id="searchEmail"
+                                                name="searchEmail"
+                                        />
+                                    </label>
+                                    <SolidButton type="submit">
+                                        Search
+                                    </SolidButton>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="w-1/4">
+                            <HollowButton onClick="{toggleCreateUser}">
+                                {$_('warriorCreate')}
+                            </HollowButton>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -201,22 +224,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {#each warriors as warrior}
+                    {#each users as user}
                         <tr>
                             <td class="border p-2">
-                                {warrior.name}
-                                {#if warrior.country}
+                                {user.name}
+                                {#if user.country}
                                     &nbsp;
                                     <CountryFlag
-                                        country="{warrior.country}"
+                                        country="{user.country}"
                                         size="{16}"
                                         additionalClass="inline-block"
                                     />
                                 {/if}
                             </td>
                             <td class="border p-2">
-                                {warrior.email}
-                                {#if warrior.verified}
+                                {user.email}
+                                {#if user.verified}
                                     &nbsp;
                                     <span
                                         class="text-green-600"
@@ -229,28 +252,28 @@
                                 {/if}
                             </td>
                             <td class="border p-2">
-                                <div>{warrior.company}</div>
-                                {#if warrior.jobTitle}
+                                <div>{user.company}</div>
+                                {#if user.jobTitle}
                                     <div class="text-gray-700 text-sm">
                                         {$_(
                                             'pages.admin.registeredWarriors.jobTitle',
                                         )}:
-                                        {warrior.jobTitle}
+                                        {user.jobTitle}
                                     </div>
                                 {/if}
                             </td>
-                            <td class="border p-2">{warrior.rank}</td>
+                            <td class="border p-2">{user.rank}</td>
                             <td class="border p-2">
-                                {#if warrior.rank !== 'GENERAL'}
+                                {#if user.rank !== 'GENERAL'}
                                     <HollowButton
-                                        onClick="{promoteWarrior(warrior.id)}"
+                                        onClick="{promoteUser(user.id)}"
                                         color="blue"
                                     >
                                         {$_('promote')}
                                     </HollowButton>
                                 {:else}
                                     <HollowButton
-                                        onClick="{demoteWarrior(warrior.id)}"
+                                        onClick="{demoteUser(user.id)}"
                                         color="blue"
                                     >
                                         {$_('demote')}
@@ -258,7 +281,7 @@
                                 {/if}
                                 <HollowButton
                                     color="red"
-                                    onClick="{toggleDeleteWarrior(warrior.id)}"
+                                    onClick="{toggleDeleteUser(user.id)}"
                                 >
                                     {$_('delete')}
                                 </HollowButton>
@@ -268,12 +291,12 @@
                 </tbody>
             </table>
 
-            {#if appStats.registeredUserCount > warriorsPageLimit}
+            {#if totalUsers > usersPageLimit}
                 <div class="pt-6 flex justify-center">
                     <Pagination
-                        bind:current="{warriorsPage}"
-                        num_items="{appStats.registeredUserCount}"
-                        per_page="{warriorsPageLimit}"
+                        bind:current="{usersPage}"
+                        num_items="{totalUsers}"
+                        per_page="{usersPageLimit}"
                         on:navigate="{changePage}"
                     />
                 </div>
@@ -281,18 +304,18 @@
         </div>
     </div>
 
-    {#if showCreateWarrior}
+    {#if showCreateUser}
         <CreateWarrior
-            toggleCreate="{toggleCreateWarrior}"
-            handleCreate="{createWarrior}"
+            toggleCreate="{toggleCreateUser}"
+            handleCreate="{createUser}"
             notifications
         />
     {/if}
 
-    {#if showWarriorDeletion}
+    {#if showUserDeletion}
         <DeleteWarrior
-            toggleDeleteAccount="{toggleDeleteWarrior(null)}"
-            handleDeleteAccount="{handleDeleteWarrior}"
+            toggleDeleteAccount="{toggleDeleteUser(null)}"
+            handleDeleteAccount="{handleDeleteUser}"
         />
     {/if}
 </AdminPageLayout>

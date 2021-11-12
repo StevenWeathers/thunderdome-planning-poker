@@ -40,17 +40,28 @@ func (a *api) handleAppStats() http.HandlerFunc {
 // @Description get list of registered users
 // @Tags admin
 // @Produce  json
-// @Param limit query int true "Max number of results to return"
-// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.User}
+// @Failure 500 object standardJsonResponse{}
 // @Router /admin/users [get]
 func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
-		Users := a.db.GetRegisteredUsers(Limit, Offset)
+		Users, Count, err := a.db.GetRegisteredUsers(Limit, Offset)
+		if err != nil {
+			Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
 
-		Success(w, r, http.StatusOK, Users, nil)
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		Success(w, r, http.StatusOK, Users, Meta)
 	}
 }
 
@@ -59,10 +70,10 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 // @Description Create a registered user
 // @Tags admin
 // @Produce  json
-// @Param name body string false "the new users name"
-// @Param email body string false "the new users email"
-// @Param password1 body string false "the new users password"
-// @Param password2 body string false "the new users password repeated"
+// @Param name body string true "the new users name"
+// @Param email body string true "the new users email"
+// @Param password1 body string true "the new user's password"
+// @Param password2 body string true "the new user's password repeated"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -101,7 +112,7 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 // @Description Grants read and write access to administrative information
 // @Tags admin
 // @Produce  json
-// @Param userId path int false "the user ID to promote"
+// @Param userId path string true "the user ID to promote"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /admin/users/{userId}/promote/ [patch]
@@ -125,7 +136,7 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 // @Description Demotes a user from admin to registered
 // @Tags admin
 // @Produce  json
-// @Param userId path int false "the user ID to demote"
+// @Param userId path string true "the user ID to demote"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /admin/users/{userId}/demote [patch]
@@ -149,8 +160,8 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 // @Description get a list of organizations
 // @Tags admin
 // @Produce  json
-// @Param limit query int true "Max number of results to return"
-// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Organization}
 // @Failure 500 object standardJsonResponse{}
 // @Router /admin/organizations [get]
@@ -169,8 +180,8 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 // @Description get a list of teams
 // @Tags admin
 // @Produce  json
-// @Param limit query int true "Max number of results to return"
-// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Failure 500 object standardJsonResponse{}
 // @Router /admin/teams [get]
@@ -189,8 +200,8 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Description get a list of users API Keys
 // @Tags admin
 // @Produce  json
-// @Param limit query int true "Max number of results to return"
-// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Failure 500 object standardJsonResponse{}
 // @Router /admin/apikeys [get]
@@ -201,5 +212,42 @@ func (a *api) handleGetAPIKeys() http.HandlerFunc {
 		Teams := a.db.GetAPIKeys(Limit, Offset)
 
 		Success(w, r, http.StatusOK, Teams, nil)
+	}
+}
+
+// handleSearchRegisteredUsersByEmail gets a list of registered users filtered by email likeness
+// @Summary Search Registered Users by Email
+// @Description get list of registered users filtered by email likeness
+// @Tags admin
+// @Produce  json
+// @Param search query string true "The user email to search for"
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Success 200 object standardJsonResponse{data=[]model.User}
+// @Failure 400 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /admin/search/users/email [get]
+func (a *api) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Search, err := getSearchFromRequest(r, w)
+		if err != nil {
+			Failure(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		Users, Count, err := a.db.SearchRegisteredUsersByEmail(Search, Limit, Offset)
+		if err != nil {
+			Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		Success(w, r, http.StatusOK, Users, Meta)
 	}
 }

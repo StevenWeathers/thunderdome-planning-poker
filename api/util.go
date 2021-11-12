@@ -228,6 +228,19 @@ func getLimitOffsetFromRequest(r *http.Request, w http.ResponseWriter) (limit in
 	return Limit, Offset
 }
 
+// getSearchFromRequest gets the search query parameter from the request
+func getSearchFromRequest(r *http.Request, w http.ResponseWriter) (search string, err error) {
+	v := validator.New()
+	query := r.URL.Query()
+	Search := query.Get("search")
+	searchErr := v.Var(Search, "required,min=3")
+	if searchErr != nil {
+		return "", searchErr
+	}
+
+	return Search, nil
+}
+
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user
 func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*model.User, error) {
 	var AuthedUser *model.User

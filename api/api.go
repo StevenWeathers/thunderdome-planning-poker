@@ -185,6 +185,7 @@ func Init(config *Config, router *mux.Router, database *database.Database, email
 	adminRouter.HandleFunc("/organizations", a.adminOnly(a.handleGetOrganizations())).Methods("GET")
 	adminRouter.HandleFunc("/teams", a.adminOnly(a.handleGetTeams())).Methods("GET")
 	adminRouter.HandleFunc("/apikeys", a.adminOnly(a.handleGetAPIKeys())).Methods("GET")
+	adminRouter.HandleFunc("/search/users/email", a.adminOnly(a.handleSearchRegisteredUsersByEmail())).Methods("GET")
 	// alert
 	apiRouter.HandleFunc("/alerts", a.adminOnly(a.handleGetAlerts())).Methods("GET")
 	apiRouter.HandleFunc("/alerts", a.adminOnly(a.handleAlertCreate())).Methods("POST")
