@@ -94,6 +94,8 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 		AutoFinishVoting:     true,
 		Leaders:              make([]string, 0),
 		PointAverageRounding: "",
+		CreatedDate: "",
+		UpdatedDate: "",
 	}
 
 	// get battle
@@ -102,7 +104,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 	var leaders string
 	e := d.db.QueryRow(
 		`
-		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding,
+		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM battles b
 		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
@@ -117,6 +119,8 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 		&pv,
 		&b.AutoFinishVoting,
 		&b.PointAverageRounding,
+		&b.CreatedDate,
+		&b.UpdatedDate,
 		&leaders,
 	)
 	if e != nil {
@@ -475,4 +479,73 @@ func (d *Database) AddBattleLeadersByEmail(BattleID string, UserID string, Leade
 	_ = json.Unmarshal([]byte(leaders), &newLeaders)
 
 	return newLeaders, nil
+}
+
+// GetBattles gets a list of battles
+func (d *Database) GetBattles(Limit int, Offset int) ([]*model.Battle, int, error) {
+	var battles = make([]*model.Battle, 0)
+	var Count int
+
+	e := d.db.QueryRow(
+		"SELECT COUNT(*) FROM battles;",
+	).Scan(
+		&Count,
+	)
+	if e != nil {
+		return nil, Count, e
+	}
+
+	battleRows, battlesErr := d.db.Query(`
+		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
+		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
+		FROM battles b
+		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
+		GROUP BY b.id ORDER BY b.created_date DESC
+		LIMIT $1 OFFSET $2;
+	`, Limit, Offset)
+	if battlesErr != nil {
+		return nil, Count, battlesErr
+	}
+
+	defer battleRows.Close()
+	for battleRows.Next() {
+		var pv string
+		var leaders string
+		var ActivePlanID sql.NullString
+		var b = &model.Battle{
+			BattleID:             "",
+			BattleName:           "",
+			Users:                make([]*model.BattleUser, 0),
+			Plans:                make([]*model.Plan, 0),
+			VotingLocked:         true,
+			ActivePlanID:         "",
+			PointValuesAllowed:   make([]string, 0),
+			AutoFinishVoting:     true,
+			Leaders:              make([]string, 0),
+			PointAverageRounding: "",
+			CreatedDate: "",
+			UpdatedDate: "",
+		}
+		if err := battleRows.Scan(
+			&b.BattleID,
+			&b.BattleName,
+			&b.VotingLocked,
+			&ActivePlanID,
+			&pv,
+			&b.AutoFinishVoting,
+			&b.PointAverageRounding,
+			&b.CreatedDate,
+			&b.UpdatedDate,
+			&leaders,
+		); err != nil {
+			log.Println(err)
+		} else {
+			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
+			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
+			b.ActivePlanID = ActivePlanID.String
+			battles = append(battles, b)
+		}
+	}
+
+	return battles, Count, nil
 }

@@ -10,17 +10,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// handleBattlesGet looks up battles associated with UserID
+// handleGetUserBattles looks up battles associated with UserID
 // @Summary Get Battles
 // @Description get list of battles for the user
 // @Tags battle
 // @Produce  json
-// @Param userId path int false "the user ID to get battles for"
+// @Param userId path string true "the user ID to get battles for"
 // @Success 200 object standardJsonResponse{data=[]model.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Router /users/{userId}/battles [get]
-func (a *api) handleBattlesGet() http.HandlerFunc {
+func (a *api) handleGetUserBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -40,10 +40,10 @@ func (a *api) handleBattlesGet() http.HandlerFunc {
 // @Description Create a battle associated to the user
 // @Tags battle
 // @Produce  json
-// @Param userId path int false "the user ID"
-// @Param orgId path int false "the organization ID"
-// @Param departmentId path int false "the department ID"
-// @Param teamId path int false "the team ID"
+// @Param userId path string true "the user ID"
+// @Param orgId path string false "the organization ID"
+// @Param departmentId path string false "the department ID"
+// @Param teamId path string false "the team ID"
 // @Param name body string false "the battle name"
 // @Param pointValuesAllowed body []string false "the allowed point values e.g. 1,2,3,5,8"
 // @Param autoFinishVoting body string false "whether or not to automatically complete voting when all users have voted"
@@ -120,5 +120,60 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		}
 
 		Success(w, r, http.StatusOK, newBattle, nil)
+	}
+}
+
+// handleGetBattles gets a list of battles
+// @Summary Get Battles
+// @Description get list of battles
+// @Tags battle
+// @Produce  json
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Success 200 object standardJsonResponse{data=[]model.Battle}
+// @Failure 500 object standardJsonResponse{}
+// @Router /battles [get]
+func (a *api) handleGetBattles() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Battles, Count, err := a.db.GetBattles(Limit, Offset)
+		if err != nil {
+			Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		Success(w, r, http.StatusOK, Battles, Meta)
+	}
+}
+
+// handleGetBattle gets the battle by ID
+// @Summary Get Battle
+// @Description get battle by ID
+// @Tags battle
+// @Produce  json
+// @Param battleId path string true "the battle ID to get"
+// @Success 200 object standardJsonResponse{data=model.Battle}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 404 object standardJsonResponse{}
+// @Router /battles/{battleId} [get]
+func (a *api) handleGetBattle() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		BattleId := vars["battleId"]
+		UserId := r.Context().Value(contextKeyUserID).(string)
+
+		battle, err := a.db.GetBattle(BattleId, UserId)
+		if err != nil {
+			Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
+			return
+		}
+
+		Success(w, r, http.StatusOK, battle, nil)
 	}
 }

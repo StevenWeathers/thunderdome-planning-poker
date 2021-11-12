@@ -28,6 +28,7 @@
     import AdminTeams from './pages/admin/Teams.svelte'
     import AdminApikeys from './pages/admin/ApiKeys.svelte'
     import AdminAlerts from './pages/admin/Alerts.svelte'
+    import AdminBattles from './pages/admin/Battles.svelte'
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
     import apiclient from './apiclient.js'
@@ -179,6 +180,12 @@
             currentPage = {
                 route: AdminAlerts,
                 params: {},
+            }
+        })
+        .on(`${appRoutes.admin}/battles`, () => {
+            currentPage = {
+              route: AdminBattles,
+              params: {},
             }
         })
         .listen()

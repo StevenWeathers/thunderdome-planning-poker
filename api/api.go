@@ -119,7 +119,7 @@ func Init(config *Config, router *mux.Router, database *database.Database, email
 	userRouter.HandleFunc("/{userId}", a.entityUserOnly(a.handleUserProfileUpdate())).Methods("PUT")
 	userRouter.HandleFunc("/{userId}", a.entityUserOnly(a.handleUserDelete())).Methods("DELETE")
 	userRouter.HandleFunc("/{userId}/battles", a.entityUserOnly(a.handleBattleCreate())).Methods("POST")
-	userRouter.HandleFunc("/{userId}/battles", a.entityUserOnly(a.handleBattlesGet())).Methods("GET")
+	userRouter.HandleFunc("/{userId}/battles", a.entityUserOnly(a.handleGetUserBattles())).Methods("GET")
 	userRouter.HandleFunc("/{userId}/organizations", a.entityUserOnly(a.handleGetOrganizationsByUser())).Methods("GET")
 	userRouter.HandleFunc("/{userId}/organizations", a.entityUserOnly(a.handleCreateOrganization())).Methods("POST")
 	userRouter.HandleFunc("/{userId}/teams", a.entityUserOnly(a.handleGetTeamsByUser())).Methods("GET")
@@ -195,6 +195,9 @@ func Init(config *Config, router *mux.Router, database *database.Database, email
 	apiRouter.HandleFunc("/maintenance/clean-battles", a.adminOnly(a.handleCleanBattles())).Methods("DELETE")
 	apiRouter.HandleFunc("/maintenance/clean-guests", a.adminOnly(a.handleCleanGuests())).Methods("DELETE")
 	apiRouter.HandleFunc("/maintenance/lowercase-emails", a.adminOnly(a.handleLowercaseUserEmails())).Methods("PATCH")
+	// battle
+	apiRouter.HandleFunc("/battles", a.adminOnly(a.handleGetBattles())).Methods("GET")
+	apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetBattle())).Methods("GET")
 	// websocket for battle
 	apiRouter.HandleFunc("/arena/{battleId}", a.serveWs())
 

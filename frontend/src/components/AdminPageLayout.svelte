@@ -18,6 +18,11 @@
             path: '/alerts',
         },
         {
+            name: 'Battles',
+            label: $_('battles'),
+            path: '/battles',
+        },
+        {
             name: 'Organizations',
             label: $_('adminPageOrganizations'),
             path: '/organizations',
