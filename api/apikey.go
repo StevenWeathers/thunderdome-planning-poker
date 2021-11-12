@@ -11,7 +11,7 @@ import (
 // @Description get list of API keys for the user
 // @Tags apikey
 // @Produce  json
-// @Param userId path int false "the user ID to get API keys for"
+// @Param userId path string true "the user ID to get API keys for"
 // @Success 200 object standardJsonResponse{data=[]model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -36,8 +36,8 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 // @Description Generates an API key for the user
 // @Tags apikey
 // @Produce  json
-// @Param userId path int false "the user ID to generate API key for"
-// @Param name body string false "Name the API Key to distinguish its use"
+// @Param userId path string true "the user ID to generate API key for"
+// @Param name body string true "Name the API Key to distinguish its use"
 // @Success 200 object standardJsonResponse{data=model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -75,9 +75,9 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 // @Description Updates the API key of the user
 // @Tags apikey
 // @Produce  json
-// @Param userId path int false "the user ID"
-// @Param keyID path int false "the API Key ID to update"
-// @Param active body boolean false "Whether or not the API Key is enabled for use"
+// @Param userId path string true "the user ID"
+// @Param keyID path string true "the API Key ID to update"
+// @Param active body boolean true "Whether the API Key is enabled for use"
 // @Success 200 object standardJsonResponse{data=[]model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}

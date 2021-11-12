@@ -24,9 +24,9 @@ type orgTeamResponse struct {
 // @Description get list of organizations for the authenticated user
 // @Tags organization
 // @Produce  json
-// @Param userId path int false "the user ID to get organizations for"
-// @Param limit query int true "Max number of results to return"
-// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param userId path string true "the user ID to get organizations for"
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Organization}
 // @Failure 403 object standardJsonResponse{}
 // @Router /users/{userId}/organizations [get]
@@ -48,7 +48,7 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 // @Description get an organization with user role
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "organization id"
+// @Param orgId path string true "organization id"
 // @Success 200 object standardJsonResponse{data=model.Organization}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -83,8 +83,8 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 // @Description Create organization with current user as admin
 // @Tags organization
 // @Produce  json
-// @Param userId path int false "user id"
-// @Param name body string false "the organization name"
+// @Param userId path string true "user id"
+// @Param name body string true "the organization name"
 // @Success 200 object standardJsonResponse{data=createOrgResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -116,7 +116,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 // @Description get a list of organization teams
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "organization id"
+// @Param orgId path string true "organization id"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Failure 403 object standardJsonResponse{}
 // @Router /organizations/{orgId}/teams [get]
@@ -137,7 +137,7 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 // @Description get a list of organization users
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "organization id"
+// @Param orgId path string true "organization id"
 // @Success 200 object standardJsonResponse{data=[]model.User}
 // @Failure 403 object standardJsonResponse{}
 // @Router /organizations/{orgId}/users [get]
@@ -158,8 +158,8 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 // @Description Create organization team with current user as admin
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "organization id"
-// @Param name body string false "team name"
+// @Param orgId path string true "organization id"
+// @Param name body string true "team name"
 // @Success 200 object standardJsonResponse{data=createTeamResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -191,9 +191,9 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 // @Description Add user to organization
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "organization id"
-// @Param email body string false "the users email"
-// @Param role body string false "the users organization role" Enums(MEMBER, ADMIN)
+// @Param orgId path string true "organization id"
+// @Param email body string true "the users email"
+// @Param role body string true "the user's organization role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{data=createTeamResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -228,8 +228,8 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 // @Description Remove user from organization including departments and teams
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "organization id"
-// @Param userId path int false "user id"
+// @Param orgId path string true "organization id"
+// @Param userId path string true "user id"
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -255,8 +255,8 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 // @Description Get an organizations team with users roles
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "organization id"
-// @Param teamId path int false "team id"
+// @Param orgId path string true "organization id"
+// @Param teamId path string true "team id"
 // @Success 200 object standardJsonResponse{data=orgTeamResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -298,10 +298,10 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Description Add user to organization team as long as they are already in the organization
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "organization id"
-// @Param teamId path int false "team id"
-// @Param email body string false "the users email"
-// @Param role body string false "the users team role" Enums(MEMBER, ADMIN)
+// @Param orgId path string true "organization id"
+// @Param teamId path string true "team id"
+// @Param email body string true "the users email"
+// @Param role body string true "the users team role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}

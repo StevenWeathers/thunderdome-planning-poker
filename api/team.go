@@ -17,7 +17,7 @@ type createTeamResponse struct {
 // @Description Get a team with user role
 // @Tags team
 // @Produce  json
-// @Param teamId path int false "the team ID"
+// @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=model.Team}
 // @Success 500 object standardJsonResponse{}
 // @Router /teams/{teamId} [get]
@@ -51,8 +51,8 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 // @Description Get a list of teams the user is apart of
 // @Tags team
 // @Produce  json
-// @Param userId path int false "the user ID"
-// @Param teamId path int false "the team ID"
+// @Param userId path string true "the user ID"
+// @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Success 403 object standardJsonResponse{}
 // @Router /users/{userId}/teams/{teamId} [get]
@@ -74,7 +74,7 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 // @Description Get a list of users associated to the team
 // @Tags team
 // @Produce  json
-// @Param teamId path int false "the team ID"
+// @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=[]model.User}
 // @Router /teams/{teamId}/users [get]
 func (a *api) handleGetTeamUsers() http.HandlerFunc {
@@ -94,8 +94,8 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 // @Description Creates a team with the current user as the team admin
 // @Tags team
 // @Produce  json
-// @Param userId path int false "the user ID"
-// @Param name body string false "the team name"
+// @Param userId path string true "the user ID"
+// @Param name body string true "the team name"
 // @Success 200 object standardJsonResponse{data=createTeamResponse}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
@@ -127,9 +127,9 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 // @Description Adds a user to the team
 // @Tags team
 // @Produce  json
-// @Param teamId path int false "the team ID"
-// @Param email body string false "the users email"
-// @Param role body string false "the users team role" Enums(MEMBER, ADMIN)
+// @Param teamId path string true "the team ID"
+// @Param email body string true "the users email"
+// @Param role body string true "the users team role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
@@ -164,8 +164,8 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 // @Description Remove a user from the team
 // @Tags team
 // @Produce  json
-// @Param teamId path int false "the team ID"
-// @Param userId path int false "the user ID"
+// @Param teamId path string true "the team ID"
+// @Param userId path string true "the user ID"
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
@@ -191,7 +191,7 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 // @Description Get a list of battles associated to the team
 // @Tags team
 // @Produce  json
-// @Param teamId path int false "the team ID"
+// @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=[]model.Battle}
 // @Router /teams/{teamId}/battles [get]
 func (a *api) handleGetTeamBattles() http.HandlerFunc {
@@ -211,8 +211,8 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 // @Description Remove a battle from the team
 // @Tags team
 // @Produce  json
-// @Param teamId path int false "the team ID"
-// @Param battleId path int false "the battle ID"
+// @Param teamId path string true "the team ID"
+// @Param battleId path string true "the battle ID"
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
@@ -238,7 +238,7 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 // @Description Delete a Team
 // @Tags team
 // @Produce  json
-// @Param teamId path int false "the team ID"
+// @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}

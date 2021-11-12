@@ -13,8 +13,8 @@ var ActiveAlerts []interface{}
 // @Description get list of alerts (global notices)
 // @Tags alert
 // @Produce  json
-// @Param limit query int true "Max number of results to return"
-// @Param offset query int true "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Alert}
 // @Failure 500 object standardJsonResponse{}
 // @Router /alerts [get]
@@ -42,12 +42,12 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 // @Description Creates an alert (global notice)
 // @Tags alert
 // @Produce  json
-// @Param name body string false "Name of the alert"
-// @Param type body string false "Type of alert" Enums(ERROR, INFO, NEW, SUCCESS, WARNING)
-// @Param content body string false "Alert content"
-// @Param active body boolean false "Whether alert should be displayed or not"
-// @Param allowDismiss body boolean false "Whether or not to allow users to dismiss the alert"
-// @Param registeredOnly body boolean false "Whether or not to only show to users with an active session"
+// @Param name body string true "Name of the alert"
+// @Param type body string true "Type of alert" Enums(ERROR, INFO, NEW, SUCCESS, WARNING)
+// @Param content body string true "Alert content"
+// @Param active body boolean true "Whether alert should be displayed or not"
+// @Param allowDismiss body boolean true "Whether or not to allow users to dismiss the alert"
+// @Param registeredOnly body boolean true "Whether or not to only show to users with an active session"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Router /alerts [post]
@@ -79,13 +79,13 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Description Updates an Alert
 // @Tags alert
 // @Produce  json
-// @Param alertId path int false "the alert ID to update"
-// @Param name body string false "Name of the alert"
-// @Param type body string false "Type of alert" Enums(ERROR, INFO, NEW, SUCCESS, WARNING)
-// @Param content body string false "Alert content"
-// @Param active body boolean false "Whether alert should be displayed or not"
-// @Param allowDismiss body boolean false "Whether or not to allow users to dismiss the alert"
-// @Param registeredOnly body boolean false "Whether or not to only show to users with an active session"
+// @Param alertId path string true "the alert ID to update"
+// @Param name body string true "Name of the alert"
+// @Param type body string true "Type of alert" Enums(ERROR, INFO, NEW, SUCCESS, WARNING)
+// @Param content body string true "Alert content"
+// @Param active body boolean true "Whether alert should be displayed or not"
+// @Param allowDismiss body boolean true "Whether or not to allow users to dismiss the alert"
+// @Param registeredOnly body boolean true "Whether or not to only show to users with an active session"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Router /alerts/{alertId} [put]
@@ -119,7 +119,7 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 // @Description Deletes an Alert
 // @Tags alert
 // @Produce  json
-// @Param alertId path int false "the alert ID to delete"
+// @Param alertId path string true "the alert ID to delete"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Router /alerts/{alertId} [delete]

@@ -26,7 +26,7 @@ type createDepartmentTeamResponse struct {
 // @Description get list of organizations departments
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID to get departments for"
+// @Param orgId path string true "the organization ID to get departments for"
 // @Success 200 object standardJsonResponse{data=[]model.Department}
 // @Router /organizations/{orgId}/departments [get]
 func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
@@ -41,13 +41,13 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 	}
 }
 
-// handleGetDepartmentByUser gets an department with user role
+// handleGetDepartmentByUser gets a department with user role
 // @Summary Get Department
-// @Description get an organization department with users role
+// @Description Gets an organization department with users role
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID"
-// @Param departmentId path int false "the department ID to get"
+// @Param orgId path string true "the organization ID"
+// @Param departmentId path string true "the department ID to get"
 // @Success 200 object standardJsonResponse{data=model.Department}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId} [get]
@@ -93,8 +93,8 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 // @Description Create an organization department
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID to create department for"
-// @Param name body string false "the deparmtent name"
+// @Param orgId path string true "the organization ID to create department for"
+// @Param name body string true "the department name"
 // @Success 200 object standardJsonResponse{data=model.Department}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments [post]
@@ -126,11 +126,11 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 
 // handleGetDepartmentTeams gets a list of teams associated to the department
 // @Summary Get Department Teams
-// @Description get a list of organization department teams
+// @Description Gets a list of organization department teams
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID"
-// @Param departmentId path int false "the department ID to get teams for"
+// @Param orgId path string true "the organization ID"
+// @Param departmentId path string true "the department ID to get teams for"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [get]
 func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
@@ -150,8 +150,8 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 // @Description get a list of organization department users
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID"
-// @Param departmentId path int false "the department ID"
+// @Param orgId path string true "the organization ID"
+// @Param departmentId path string true "the department ID"
 // @Success 200 object standardJsonResponse{data=[]model.DepartmentUser}
 // @Router /organizations/{orgId}/departments/{departmentId}/users [get]
 func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
@@ -171,9 +171,9 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 // @Description Create a department team
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID"
-// @Param departmentId path int false "the department ID"
-// @Param name body string false "the team name"
+// @Param orgId path string true "the organization ID"
+// @Param departmentId path string true "the department ID"
+// @Param name body string true "the team name"
 // @Success 200 object standardJsonResponse{data=createDepartmentTeamResponse}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
@@ -205,10 +205,10 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 // @Description Add a department User
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID"
-// @Param departmentId path int false "the department ID"
-// @Param email body string false "the users email"
-// @Param role body string false "the users department role" Enums(MEMBER, ADMIN)
+// @Param orgId path string true "the organization ID"
+// @Param departmentId path string true "the department ID"
+// @Param email body string true "the users email"
+// @Param role body string true "the users department role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/users [post]
@@ -242,9 +242,9 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 // @Description Remove a department User
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID"
-// @Param departmentId path int false "the department ID"
-// @Param userId path int false "the user ID"
+// @Param orgId path string true "the organization ID"
+// @Param departmentId path string true "the department ID"
+// @Param userId path string true "the user ID"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/users/{userId} [delete]
@@ -269,11 +269,11 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 // @Description Add a User to Department Team
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID"
-// @Param departmentId path int false "the department ID"
-// @Param teamId path int false "the team ID"
-// @Param email body string false "the users email"
-// @Param role body string false "the users team role" Enums(MEMBER, ADMIN)
+// @Param orgId path string true "the organization ID"
+// @Param departmentId path string true "the department ID"
+// @Param teamId path string true "the team ID"
+// @Param email body string true "the users email"
+// @Param role body string true "the users team role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users [post]
@@ -315,9 +315,9 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 // @Description Get a department team with users role
 // @Tags organization
 // @Produce  json
-// @Param orgId path int false "the organization ID"
-// @Param departmentId path int false "the department ID"
-// @Param teamId path int false "the team ID"
+// @Param orgId path string true "the organization ID"
+// @Param departmentId path string true "the department ID"
+// @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=departmentTeamResponse}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId} [get]

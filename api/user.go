@@ -11,7 +11,7 @@ import (
 // @Description get a users profile
 // @Tags user
 // @Produce  json
-// @Param userId path int false "the user ID"
+// @Param userId path string true "the user ID"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -36,12 +36,12 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 // @Description Update a users profile
 // @Tags user
 // @Produce  json
-// @Param userId path int false "the user ID"
-// @Param name body string false "the users name"
-// @Param avatar body string false "avatar"
-// @Param notificationsEnabled body boolean false "whether or not battle notifications are enabled"
+// @Param userId path string true "the user ID"
+// @Param name body string true "the users name"
+// @Param avatar body string true "avatar"
+// @Param notificationsEnabled body boolean true "whether battle notifications are enabled"
 // @Param country body string false "users country code e.g. US"
-// @Param locale body string false "the users locale e.g. en"
+// @Param locale body string false "the user's locale e.g. en"
 // @Param company body string false "the users company name"
 // @Param jobTitle body string false "the users job title"
 // @Success 200 object standardJsonResponse{data=model.User}
@@ -82,7 +82,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 // @Description Deletes a user
 // @Tags user
 // @Produce  json
-// @Param userId path int false "the user ID"
+// @Param userId path string true "the user ID"
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
