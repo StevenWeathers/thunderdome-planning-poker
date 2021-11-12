@@ -50,7 +50,7 @@ func InitConfig() {
 	viper.SetDefault("config.allow_jira_import", true)
 	viper.SetDefault("config.default_locale", "en")
 	viper.SetDefault("config.friendly_ui_verbs", false)
-	viper.SetDefault("config.allow_external_api", false)
+	viper.SetDefault("config.allow_external_api", true)
 	viper.SetDefault("config.user_apikey_limit", 5)
 	viper.SetDefault("config.show_active_countries", false)
 	viper.SetDefault("config.cleanup_battles_days_old", 180)
