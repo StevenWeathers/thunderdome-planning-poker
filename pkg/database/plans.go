@@ -32,7 +32,7 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 			var p = &model.Plan{Id: "",
 				Name:               "",
 				Type:               "",
-				ReferenceID:        "",
+				ReferenceId:        "",
 				Link:               "",
 				Description:        "",
 				AcceptanceCriteria: "",
@@ -48,7 +48,7 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 			); err != nil {
 				log.Println(err)
 			} else {
-				p.ReferenceID = ReferenceID.String
+				p.ReferenceId = ReferenceID.String
 				p.Link = Link.String
 				p.Description = Description.String
 				p.AcceptanceCriteria = AcceptanceCriteria.String
@@ -60,7 +60,7 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 				// don't send others vote values to client, prevent sneaky devs from peaking at votes
 				for i := range p.Votes {
 					vote := p.Votes[i]
-					if p.Active && p.Votes[i].UserID != UserID {
+					if p.Active && p.Votes[i].UserId != UserID {
 						vote.VoteValue = ""
 					}
 				}
@@ -130,7 +130,7 @@ func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteVa
 			activePlanVoters := make(map[string]bool)
 
 			for _, vote := range plan.Votes {
-				var UserID string = vote.UserID
+				var UserID string = vote.UserId
 				activePlanVoters[UserID] = true
 			}
 			for _, war := range ActiveUsers {

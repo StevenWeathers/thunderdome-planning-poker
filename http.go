@@ -52,7 +52,7 @@ func (s *server) routes() {
 		UserAPIKeyLimit:    s.config.UserAPIKeyLimit,
 		LdapEnabled:        s.config.LdapEnabled,
 	}
-	api.Init(apiConfig, s.router, s.database, s.email, s.cookie)
+	api.Init(apiConfig, s.router, s.db, s.email, s.cookie)
 
 	// static assets
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
@@ -155,7 +155,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AppConfig:        appConfig,
 	}
 
-	api.ActiveAlerts = s.database.GetActiveAlerts() // prime the active alerts cache
+	api.ActiveAlerts = s.db.GetActiveAlerts() // prime the active alerts cache
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		data.ActiveAlerts = api.ActiveAlerts // get latest alerts from memory

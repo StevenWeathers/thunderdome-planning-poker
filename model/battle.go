@@ -31,7 +31,7 @@ type Battle struct {
 
 // Vote structure
 type Vote struct {
-	UserID    string `json:"warriorId"`
+	UserId    string `json:"warriorId"`
 	VoteValue string `json:"vote"`
 }
 
@@ -40,7 +40,7 @@ type Plan struct {
 	Id                 string    `json:"id"`
 	Name               string    `json:"name"`
 	Type               string    `json:"type"`
-	ReferenceID        string    `json:"referenceId"`
+	ReferenceId        string    `json:"referenceId"`
 	Link               string    `json:"link"`
 	Description        string    `json:"description"`
 	AcceptanceCriteria string    `json:"acceptanceCriteria"`

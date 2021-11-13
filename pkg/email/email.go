@@ -30,7 +30,7 @@ var tlsConfig = &tls.Config{}
 var smtpFrom = mail.Address{}
 var smtpAuth smtp.Auth
 
-// Config contains all the mailserver values
+// Config contains all the mail server values
 type Config struct {
 	AppURL       string
 	SenderName   string

@@ -55,8 +55,8 @@ type server struct {
 	config   *Config
 	router   *mux.Router
 	email    *email.Email
-	cookie   *securecookie.SecureCookie
-	database *database.Database
+	cookie *securecookie.SecureCookie
+	db     *database.Database
 }
 
 func main() {
@@ -93,7 +93,7 @@ func main() {
 	}
 
 	s.email = email.New(s.config.AppDomain, s.config.PathPrefix)
-	s.database = database.New(s.config.AdminEmail, schemaSQL)
+	s.db = database.New(s.config.AdminEmail, schemaSQL)
 
 	s.routes()
 

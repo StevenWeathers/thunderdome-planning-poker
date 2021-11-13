@@ -58,7 +58,7 @@ func (d *Database) GenerateAPIKey(UserID string, KeyName string) (*model.APIKey,
 	APIKEY := &model.APIKey{
 		Name:        KeyName,
 		Key:         apiPrefix + "." + apiSecret,
-		UserID:      UserID,
+		UserId:      UserID,
 		Prefix:      apiPrefix,
 		Active:      true,
 		CreatedDate: time.Now(),
@@ -96,7 +96,7 @@ func (d *Database) GetUserAPIKeys(UserID string) ([]*model.APIKey, error) {
 			if err := rows.Scan(
 				&key,
 				&ak.Name,
-				&ak.UserID,
+				&ak.UserId,
 				&ak.Active,
 				&ak.CreatedDate,
 				&ak.UpdatedDate,
@@ -105,7 +105,7 @@ func (d *Database) GetUserAPIKeys(UserID string) ([]*model.APIKey, error) {
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
-				ak.ID = key
+				ak.Id = key
 				APIKeys = append(APIKeys, &ak)
 			}
 		}

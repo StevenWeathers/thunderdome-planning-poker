@@ -21,9 +21,9 @@ type User struct {
 
 // APIKey structure
 type APIKey struct {
-	ID          string    `json:"id"`
+	Id          string    `json:"id"`
 	Prefix      string    `json:"prefix"`
-	UserID      string    `json:"userId"`
+	UserId      string    `json:"userId"`
 	Name        string    `json:"name"`
 	Key         string    `json:"apiKey"`
 	Active      bool      `json:"active"`

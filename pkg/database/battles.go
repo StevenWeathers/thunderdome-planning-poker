@@ -49,7 +49,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 			b.Id,
 			plan.Name,
 			plan.Type,
-			plan.ReferenceID,
+			plan.ReferenceId,
 			plan.Link,
 			plan.Description,
 			plan.AcceptanceCriteria,

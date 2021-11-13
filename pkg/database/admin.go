@@ -254,7 +254,7 @@ func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
 			if err := rows.Scan(
 				&key,
 				&ak.Name,
-				&ak.UserID,
+				&ak.UserId,
 				&ak.Active,
 				&ak.CreatedDate,
 				&ak.UpdatedDate,
@@ -263,7 +263,7 @@ func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
-				ak.ID = key
+				ak.Id = key
 				APIKeys = append(APIKeys, &ak)
 			}
 		}
