@@ -2,6 +2,7 @@
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
+    import CheckIcon from '../../components/icons/CheckIcon.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
     import { appRoutes } from '../../config'
@@ -81,7 +82,12 @@
                     <tr>
                         <td class="border p-2">{user.email}</td>
                         <td class="border p-2">{user.rank}</td>
-                        <td class="border p-2">{user.verified}</td>
+                        <td class="border p-2">
+                            {#if user.verified}
+                                <span class="text-green-600"><CheckIcon /></span
+                                >
+                            {/if}
+                        </td>
                         <td class="border p-2"
                             >{new Date(user.createdDate).toLocaleString()}</td
                         >

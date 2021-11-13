@@ -2,7 +2,6 @@
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
-    import HollowButton from '../../components/HollowButton.svelte'
     import Pagination from '../../components/Pagination.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
@@ -88,15 +87,21 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
-                        <th class="w-1/6 px-4 py-2"></th>
+                        <th class="flex-1 p-2">{$_('name')}</th>
+                        <th class="flex-1 p-2">{$_('dateCreated')}</th>
+                        <th class="flex-1 p-2">{$_('dateUpdated')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {#each organizations as org}
                         <tr>
-                            <td class="border px-4 py-2">{org.name}</td>
-                            <td class="border px-4 py-2"></td>
+                            <td class="border p-2">{org.name}</td>
+                            <td class="border p-2">
+                                {new Date(org.createdDate).toLocaleString()}
+                            </td>
+                            <td class="border p-2">
+                                {new Date(org.updatedDate).toLocaleString()}
+                            </td>
                         </tr>
                     {/each}
                 </tbody>

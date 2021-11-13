@@ -80,15 +80,21 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
-                        <th class="w-1/6 px-4 py-2"></th>
+                        <th class="flex-1 p-2">{$_('name')}</th>
+                        <th class="flex-1 p-2">{$_('dateCreated')}</th>
+                        <th class="flex-1 p-2">{$_('dateUpdated')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {#each teams as team}
                         <tr>
-                            <td class="border px-4 py-2">{team.name}</td>
-                            <td class="border px-4 py-2"></td>
+                            <td class="border p-2">{team.name}</td>
+                            <td class="border p-2">
+                                {new Date(team.createdDate).toLocaleString()}
+                            </td>
+                            <td class="border p-2">
+                                {new Date(team.updatedDate).toLocaleString()}
+                            </td>
                         </tr>
                     {/each}
                 </tbody>

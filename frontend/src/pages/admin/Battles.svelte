@@ -62,33 +62,33 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-3/12 px-4 py-2">{$_('name')}</th>
-                        <th class="w-3/12 px-4 py-2">{$_('dateCreated')}</th>
-                        <th class="w-3/12 px-4 py-2">{$_('dateUpdated')}</th>
-                        <th class="w-3/12 px-4 py-2"></th>
+                        <th class="flex-1 p-2">{$_('name')}</th>
+                        <th class="flex-1 p-2">{$_('dateCreated')}</th>
+                        <th class="flex-1 p-2">{$_('dateUpdated')}</th>
+                        <th class="flex-1 p-2"></th>
                     </tr>
                 </thead>
                 <tbody>
                     {#each battles as battle}
                         <tr>
-                            <td class="border px-4 py-2">
+                            <td class="border p-2">
                                 <a
                                     href="{appRoutes.admin}/battles/{battle.id}"
                                     class="no-underline text-blue-500 hover:text-blue-800"
                                     >{battle.name}</a
                                 >
                             </td>
-                            <td class="border px-4 py-2"
+                            <td class="border p-2"
                                 >{new Date(
                                     battle.createdDate,
                                 ).toLocaleString()}</td
                             >
-                            <td class="border px-4 py-2"
+                            <td class="border p-2"
                                 >{new Date(
                                     battle.updatedDate,
                                 ).toLocaleString()}</td
                             >
-                            <td class="border px-4 py-2 text-right">
+                            <td class="border p-2 text-right">
                                 <HollowButton
                                     href="{appRoutes.battle}/{battle.id}"
                                 >

@@ -7,7 +7,7 @@
     import Pagination from '../../components/Pagination.svelte'
     import CreateAlert from '../../components/CreateAlert.svelte'
     import DeleteAlert from '../../components/DeleteAlert.svelte'
-    import { warrior, activeAlerts } from '../../stores.js'
+    import { activeAlerts, warrior } from '../../stores.js'
     import { _ } from '../../i18n'
     import { appRoutes } from '../../config'
 
@@ -150,49 +150,49 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-3/12 px-4 py-2">{$_('name')}</th>
-                        <th class="w-2/12 px-4 py-2">{$_('type')}</th>
-                        <th class="w-1/12 px-4 py-2">{$_('active')}</th>
-                        <th class="w-1/12 px-4 py-2">
+                        <th class="flex-1 p-2">{$_('name')}</th>
+                        <th class="flex-1 p-2">{$_('type')}</th>
+                        <th class="flex-1 p-2">{$_('active')}</th>
+                        <th class="flex-1 p-2">
                             {$_('alertRegisteredOnly')}
                         </th>
-                        <th class="w-1/12 px-4 py-2">
+                        <th class="flex-1 p-2">
                             {$_('alertAllowDismiss')}
                         </th>
-                        <th class="w-2/12 px-4 py-2">{$_('dateUpdated')}</th>
-                        <th class="w-2/12 px-4 py-2"></th>
+                        <th class="flex-1 p-2">{$_('dateUpdated')}</th>
+                        <th class="flex-1 p-2"></th>
                     </tr>
                 </thead>
                 <tbody>
                     {#each alerts as alert}
                         <tr>
-                            <td class="border px-4 py-2">{alert.name}</td>
-                            <td class="border px-4 py-2">{alert.type}</td>
-                            <td class="border px-4 py-2">
+                            <td class="border p-2">{alert.name}</td>
+                            <td class="border p-2">{alert.type}</td>
+                            <td class="border p-2">
                                 {#if alert.active}
                                     <span class="text-green-600">
                                         <CheckIcon />
                                     </span>
                                 {/if}
                             </td>
-                            <td class="border px-4 py-2">
+                            <td class="border p-2">
                                 {#if alert.registeredOnly}
                                     <span class="text-green-600">
                                         <CheckIcon />
                                     </span>
                                 {/if}
                             </td>
-                            <td class="border px-4 py-2">
+                            <td class="border p-2">
                                 {#if alert.allowDismiss}
                                     <span class="text-green-600">
                                         <CheckIcon />
                                     </span>
                                 {/if}
                             </td>
-                            <td class="border px-4 py-2">
+                            <td class="border p-2">
                                 {new Date(alert.updatedDate).toLocaleString()}
                             </td>
-                            <td class="border px-4 py-2">
+                            <td class="border p-2 text-right">
                                 <HollowButton
                                     onClick="{toggleUpdateAlert(alert)}"
                                     color="blue"

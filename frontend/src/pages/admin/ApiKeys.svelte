@@ -2,8 +2,8 @@
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
-    import HollowButton from '../../components/HollowButton.svelte'
     import Pagination from '../../components/Pagination.svelte'
+    import CheckIcon from '../../components/icons/CheckIcon.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
     import { appRoutes } from '../../config'
@@ -85,29 +85,33 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="w-3/12 px-4 py-2">{$_('name')}</th>
-                        <th class="w-1/12 px-4 py-2">{$_('prefix')}</th>
-                        <th class="w-2/12 px-4 py-2">{$_('email')}</th>
-                        <th class="w-1/12 px-4 py-2">{$_('active')}</th>
-                        <th class="w-2/12 px-4 py-2">{$_('dateCreated')}</th>
-                        <th class="w-2/12 px-4 py-2">{$_('dateUpdated')}</th>
-                        <th class="w-1/12 px-4 py-2"></th>
+                        <th class="flex-1 p-2">{$_('name')}</th>
+                        <th class="flex-1 p-2">{$_('prefix')}</th>
+                        <th class="flex-1 p-2">{$_('email')}</th>
+                        <th class="flex-1 p-2">{$_('active')}</th>
+                        <th class="flex-1 p-2">{$_('dateCreated')}</th>
+                        <th class="flex-1 p-2">{$_('dateUpdated')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {#each apikeys as apikey}
                         <tr>
-                            <td class="border px-4 py-2">{apikey.name}</td>
-                            <td class="border px-4 py-2">{apikey.prefix}</td>
-                            <td class="border px-4 py-2">{apikey.userId}</td>
-                            <td class="border px-4 py-2">{apikey.active}</td>
-                            <td class="border px-4 py-2">
+                            <td class="border p-2">{apikey.name}</td>
+                            <td class="border p-2">{apikey.prefix}</td>
+                            <td class="border p-2">{apikey.userId}</td>
+                            <td class="border p-2">
+                                {#if apikey.active}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </td>
+                            <td class="border p-2">
                                 {new Date(apikey.createdDate).toLocaleString()}
                             </td>
-                            <td class="border px-4 py-2">
+                            <td class="border p-2">
                                 {new Date(apikey.updatedDate).toLocaleString()}
                             </td>
-                            <td class="border px-4 py-2"></td>
                         </tr>
                     {/each}
                 </tbody>

@@ -2,6 +2,7 @@
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
+    import CheckIcon from '../../components/icons/CheckIcon.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
     import { appRoutes } from '../../config'
@@ -75,8 +76,18 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="border p-2">{battle.votingLocked}</td>
-                        <td class="border p-2">{battle.autoFinishVoting}</td>
+                        <td class="border p-2">
+                            {#if battle.votingLocked}
+                                <span class="text-green-600"><CheckIcon /></span
+                                >
+                            {/if}
+                        </td>
+                        <td class="border p-2">
+                            {#if battle.autoFinishVoting}
+                                <span class="text-green-600"><CheckIcon /></span
+                                >
+                            {/if}
+                        </td>
                         <td class="border p-2"
                             >{battle.pointValuesAllowed.join(', ')}</td
                         >
@@ -101,11 +112,11 @@
                         <th class="flex-1 p-2">
                             {$_('name')}
                         </th>
-                        <th class="flex-1 p-2"> Type </th>
-                        <th class="flex-1 p-2"> Active </th>
-                        <th class="flex-1 p-2"> Abandoned </th>
-                        <th class="flex-1 p-2"> Spectator </th>
-                        <th class="flex-1 p-2"> Leader </th>
+                        <th class="flex-1 p-2">Type</th>
+                        <th class="flex-1 p-2">Active</th>
+                        <th class="flex-1 p-2">Abandoned</th>
+                        <th class="flex-1 p-2">Spectator</th>
+                        <th class="flex-1 p-2">Leader</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -119,12 +130,34 @@
                                 >
                             </td>
                             <td class="border p-2">{user.rank}</td>
-                            <td class="border p-2">{user.active}</td>
-                            <td class="border p-2">{user.abandoned}</td>
-                            <td class="border p-2">{user.spectator}</td>
-                            <td class="border p-2"
-                                >{battle.leaders.includes(user.id)}</td
-                            >
+                            <td class="border p-2">
+                                {#if user.active}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </td>
+                            <td class="border p-2">
+                                {#if user.abandoned}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </td>
+                            <td class="border p-2">
+                                {#if user.spectator}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </td>
+                            <td class="border p-2">
+                                {#if battle.leaders.includes(user.id)}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </td>
                         </tr>
                     {/each}
                 </tbody>
@@ -153,8 +186,20 @@
                             <td class="border p-2">{plan.referenceId}</td>
                             <td class="border p-2">{plan.votes.length}</td>
                             <td class="border p-2">{plan.points}</td>
-                            <td class="border p-2">{plan.active}</td>
-                            <td class="border p-2">{plan.skipped}</td>
+                            <td class="border p-2">
+                                {#if plan.active}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </td>
+                            <td class="border p-2">
+                                {#if plan.skipped}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </td>
                         </tr>
                     {/each}
                 </tbody>
