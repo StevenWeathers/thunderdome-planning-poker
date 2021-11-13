@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-// GetPlans retrieves plans for given battle from db
+// GetPlans retrieves plans for given battle
 func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 	var plans = make([]*model.Plan, 0)
 	planRows, plansErr := d.db.Query(

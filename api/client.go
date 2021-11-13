@@ -30,7 +30,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-// connection is an middleman between the websocket connection and the hub.
+// connection is a middleman between the websocket connection and the hub.
 type connection struct {
 	// The websocket connection.
 	ws *websocket.Conn
@@ -41,17 +41,17 @@ type connection struct {
 
 // SocketEvent is the event structure used for socket messages
 type SocketEvent struct {
-	EventType  string `json:"type"`
-	EventValue string `json:"value"`
-	EventUser  string `json:"warriorId"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
+	User  string `json:"warriorId"`
 }
 
 // CreateSocketEvent makes a SocketEvent struct and turns it into json []byte
-func CreateSocketEvent(EventType string, EventValue string, EventUser string) []byte {
+func CreateSocketEvent(Type string, Value string, User string) []byte {
 	newEvent := &SocketEvent{
-		EventType:  EventType,
-		EventValue: EventValue,
-		EventUser:  EventUser,
+		Type:  Type,
+		Value: Value,
+		User:  User,
 	}
 
 	event, _ := json.Marshal(newEvent)
@@ -296,7 +296,7 @@ func (sub subscription) readPump(api *api) {
 	}
 }
 
-// write writes a message with the given message type and payload.
+// write a message with the given message type and payload.
 func (c *connection) write(mt int, payload []byte) error {
 	c.ws.SetWriteDeadline(time.Now().Add(writeWait))
 	return c.ws.WriteMessage(mt, payload)

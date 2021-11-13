@@ -8,7 +8,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
-// ConfirmAdmin confirms whether the users is infact an admin
+// ConfirmAdmin confirms whether the user is an admin
 func (d *Database) ConfirmAdmin(UserID string) error {
 	var UserType string
 	e := d.db.QueryRow("SELECT coalesce(type, '') FROM users WHERE id = $1;", UserID).Scan(&UserType)
@@ -24,7 +24,7 @@ func (d *Database) ConfirmAdmin(UserID string) error {
 	return nil
 }
 
-// GetAppStats gets counts of users (registered and unregistered), battles, and plans
+// GetAppStats gets counts of common application metrics such as users and battles
 func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 	var Appstats model.ApplicationStats
 
@@ -84,7 +84,7 @@ func (d *Database) DemoteUser(UserID string) error {
 	return nil
 }
 
-// CleanBattles deletes battles older than X days
+// CleanBattles deletes battles older than {DaysOld} days
 func (d *Database) CleanBattles(DaysOld int) error {
 	if _, err := d.db.Exec(
 		`call clean_battles($1);`,
@@ -97,7 +97,7 @@ func (d *Database) CleanBattles(DaysOld int) error {
 	return nil
 }
 
-// CleanGuests deletes guest users older than X days
+// CleanGuests deletes guest users older than {DaysOld} days
 func (d *Database) CleanGuests(DaysOld int) error {
 	if _, err := d.db.Exec(
 		`call clean_guest_users($1);`,
@@ -110,7 +110,7 @@ func (d *Database) CleanGuests(DaysOld int) error {
 	return nil
 }
 
-// LowercaseUserEmails goes through and lowercases any user email that has any uppercase letters
+// LowercaseUserEmails goes through and lower cases any user email that has uppercase letters
 // returning the list of updated users
 func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
 	var users = make([]*model.User, 0)
@@ -141,7 +141,7 @@ func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
 	return users, nil
 }
 
-// MergeDuplicateAccounts goes through and merges any user accounts with duplicate emails that has any uppercase letters
+// MergeDuplicateAccounts goes through and merges user accounts with duplicate emails that has uppercase letters
 // returning the list of merged users
 func (d *Database) MergeDuplicateAccounts() ([]*model.User, error) {
 	var users = make([]*model.User, 0)

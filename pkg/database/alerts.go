@@ -7,7 +7,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
-// GetActiveAlerts gets alerts from db for UI display
+// GetActiveAlerts gets a list of active global alerts
 func (d *Database) GetActiveAlerts() []interface{} {
 	Alerts := make([]interface{}, 0)
 
@@ -39,7 +39,7 @@ func (d *Database) GetActiveAlerts() []interface{} {
 	return Alerts
 }
 
-// AlertsList gets alerts from db for admin listing
+// AlertsList gets a list of global alerts
 func (d *Database) AlertsList(Limit int, Offset int) ([]*model.Alert, int, error) {
 	Alerts := make([]*model.Alert, 0)
 	var AlertCount int
@@ -90,7 +90,7 @@ func (d *Database) AlertsList(Limit int, Offset int) ([]*model.Alert, int, error
 	return Alerts, AlertCount, err
 }
 
-// AlertsCreate creates
+// AlertsCreate creates a global alert
 func (d *Database) AlertsCreate(Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
 	if _, err := d.db.Exec(
 		`INSERT INTO alert (name, type, content, active, allow_dismiss, registered_only)
@@ -110,7 +110,7 @@ func (d *Database) AlertsCreate(Name string, Type string, Content string, Active
 	return nil
 }
 
-// AlertsUpdate updates an alert
+// AlertsUpdate updates a global alert
 func (d *Database) AlertsUpdate(ID string, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
 	if _, err := d.db.Exec(
 		`
@@ -133,7 +133,7 @@ func (d *Database) AlertsUpdate(ID string, Name string, Type string, Content str
 	return nil
 }
 
-// AlertDelete deletes an alert
+// AlertDelete deletes a global alert
 func (d *Database) AlertDelete(AlertID string) error {
 	_, err := d.db.Exec(
 		`DELETE FROM alert WHERE id = $1;`,

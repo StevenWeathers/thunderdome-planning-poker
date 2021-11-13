@@ -8,7 +8,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
-// GetRegisteredUsers retrieves the registered users from db
+// GetRegisteredUsers gets a list of registered users
 func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int, error) {
 	var users = make([]*model.User, 0)
 	var Count int
@@ -57,7 +57,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int
 	return users, Count, nil
 }
 
-// GetUser gets a user from db by ID
+// GetUser gets a user by ID
 func (d *Database) GetUser(UserID string) (*model.User, error) {
 	var w model.User
 	var UserEmail sql.NullString
@@ -117,7 +117,7 @@ func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 	return &w, nil
 }
 
-// CreateUserGuest adds a new guest user to the db
+// CreateUserGuest adds a new guest user
 func (d *Database) CreateUserGuest(UserName string) (*model.User, error) {
 	var UserID string
 	e := d.db.QueryRow(`INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
@@ -129,7 +129,7 @@ func (d *Database) CreateUserGuest(UserName string) (*model.User, error) {
 	return &model.User{Id: UserID, Name: UserName, Avatar: "identicon", NotificationsEnabled: true, Locale: "en"}, nil
 }
 
-// CreateUserRegistered adds a new registered user to the db
+// CreateUserRegistered adds a new registered user
 func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *model.User, VerifyID string, RegisterErr error) {
 	hashedPassword, hashErr := hashSaltPassword(UserPassword)
 	if hashErr != nil {
@@ -171,7 +171,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 	return &model.User{Id: UserID, Name: UserName, Email: UserEmail, Type: UserType, Avatar: UserAvatar}, verifyID, nil
 }
 
-// UpdateUserProfile attempts to update the users profile
+// UpdateUserProfile updates the users profile
 func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "identicon"
@@ -194,7 +194,7 @@ func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar 
 	return nil
 }
 
-// UpdateUserProfile attempts to delete a user
+// DeleteUser deletes a user
 func (d *Database) DeleteUser(UserID string) error {
 	if _, err := d.db.Exec(
 		`call delete_user($1);`,

@@ -21,7 +21,7 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
+		APIKeys, keysErr := a.db.GetUserApiKeys(UserID)
 		if keysErr != nil {
 			Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -49,7 +49,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 		APIKeyName := keyVal["name"].(string)
 		UserID := vars["userId"]
 
-		APIKeys, keysErr := a.db.GetUserAPIKeys(UserID)
+		APIKeys, keysErr := a.db.GetUserApiKeys(UserID)
 		if keysErr != nil {
 			Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -60,7 +60,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		APIKey, keyErr := a.db.GenerateAPIKey(UserID, APIKeyName)
+		APIKey, keyErr := a.db.GenerateApiKey(UserID, APIKeyName)
 		if keyErr != nil {
 			Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
@@ -90,7 +90,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 		keyVal := getJSONRequestBody(r, w)
 		active := keyVal["active"].(bool)
 
-		APIKeys, keysErr := a.db.UpdateUserAPIKey(UserID, APK, active)
+		APIKeys, keysErr := a.db.UpdateUserApiKey(UserID, APK, active)
 		if keysErr != nil {
 			Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -117,7 +117,7 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 		UserID := vars["userId"]
 		APK := vars["keyID"]
 
-		APIKeys, keysErr := a.db.DeleteUserAPIKey(UserID, APK)
+		APIKeys, keysErr := a.db.DeleteUserApiKey(UserID, APK)
 		if keysErr != nil {
 			Failure(w, r, http.StatusInternalServerError, keysErr)
 			return

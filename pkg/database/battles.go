@@ -10,7 +10,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
-//CreateBattle adds a new battle to the db
+//CreateBattle creates a new story pointing session (battle)
 func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string) (*model.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 
@@ -184,7 +184,7 @@ func (d *Database) GetBattlesByUser(UserID string) ([]*model.Battle, error) {
 	return battles, nil
 }
 
-// ConfirmLeader confirms the user is infact leader of the battle
+// ConfirmLeader confirms the user is a leader of the battle
 func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 	var leaderID string
 	e := d.db.QueryRow("SELECT user_id FROM battles_leaders WHERE battle_id = $1 AND user_id = $2", BattleID, UserID).Scan(&leaderID)
@@ -196,7 +196,7 @@ func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 	return nil
 }
 
-// GetBattleUser gets a user from db by ID and checks battle active status
+// GetBattleUser gets a user by ID and checks battle active status
 func (d *Database) GetBattleUser(BattleID string, UserID string) (*model.BattleUser, error) {
 	var active bool
 	var w model.BattleUser
@@ -229,7 +229,7 @@ func (d *Database) GetBattleUser(BattleID string, UserID string) (*model.BattleU
 	return &w, nil
 }
 
-// GetBattleUsers retrieves the users for a given battle from db
+// GetBattleUsers retrieves the users for a given battle
 func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
 	var users = make([]*model.BattleUser, 0)
 	rows, err := d.db.Query(
@@ -256,7 +256,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
 	return users
 }
 
-// GetBattleActiveUsers retrieves the active users for a given battle from db
+// GetBattleActiveUsers retrieves the active users for a given battle
 func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
 	var users = make([]*model.BattleUser, 0)
 	rows, err := d.db.Query(
@@ -412,6 +412,7 @@ func (d *Database) DemoteBattleLeader(BattleID string, UserID string, LeaderID s
 	return leaders, nil
 }
 
+// ToggleSpectator changes a battle users spectator status
 func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*model.BattleUser, error) {
 	if _, err := d.db.Exec(
 		`UPDATE battles_users SET spectator = $3 WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
@@ -429,7 +430,7 @@ func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator boo
 	return users, nil
 }
 
-// DeleteBattle removes all battle associations and the battle itself from DB by BattleID
+// DeleteBattle removes all battle associations and the battle itself by BattleID
 func (d *Database) DeleteBattle(BattleID string, UserID string) error {
 	err := d.ConfirmLeader(BattleID, UserID)
 	if err != nil {

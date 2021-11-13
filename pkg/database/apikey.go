@@ -12,8 +12,8 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
-// HashAPIKey hashes the API key using SHA256 (not reversible)
-func (d *Database) HashAPIKey(apikey string) string {
+// hashApiKey hashes the API key using SHA256 (not reversible)
+func hashApiKey(apikey string) string {
 	data := []byte(apikey)
 	hash := sha256.Sum256(data)
 	result := hex.EncodeToString(hash[:])
@@ -37,8 +37,8 @@ func random(length int) (string, error) {
 	return string(bytes), nil
 }
 
-// GenerateAPIKey generates a new API key for a User
-func (d *Database) GenerateAPIKey(UserID string, KeyName string) (*model.APIKey, error) {
+// GenerateApiKey generates a new API key for a User
+func (d *Database) GenerateApiKey(UserID string, KeyName string) (*model.APIKey, error) {
 	apiPrefix, prefixErr := random(8)
 	if prefixErr != nil {
 		err := errors.New("error generating api prefix")
@@ -63,7 +63,7 @@ func (d *Database) GenerateAPIKey(UserID string, KeyName string) (*model.APIKey,
 		Active:      true,
 		CreatedDate: time.Now(),
 	}
-	hashedKey := d.HashAPIKey(APIKEY.Key)
+	hashedKey := hashApiKey(APIKEY.Key)
 	keyID := apiPrefix + "." + hashedKey
 
 	e := d.db.QueryRow(
@@ -80,8 +80,8 @@ func (d *Database) GenerateAPIKey(UserID string, KeyName string) (*model.APIKey,
 	return APIKEY, nil
 }
 
-// GetUserAPIKeys gets a list of api keys for a user
-func (d *Database) GetUserAPIKeys(UserID string) ([]*model.APIKey, error) {
+// GetUserApiKeys gets a list of api keys for a user
+func (d *Database) GetUserApiKeys(UserID string) ([]*model.APIKey, error) {
 	var APIKeys = make([]*model.APIKey, 0)
 	rows, err := d.db.Query(
 		"SELECT id, name, user_id, active, created_date, updated_date FROM api_keys WHERE user_id = $1 ORDER BY created_date",
@@ -114,15 +114,15 @@ func (d *Database) GetUserAPIKeys(UserID string) ([]*model.APIKey, error) {
 	return APIKeys, err
 }
 
-// UpdateUserAPIKey updates a user api key (active column only)
-func (d *Database) UpdateUserAPIKey(UserID string, KeyID string, Active bool) ([]*model.APIKey, error) {
+// UpdateUserApiKey updates a user api key (active column only)
+func (d *Database) UpdateUserApiKey(UserID string, KeyID string, Active bool) ([]*model.APIKey, error) {
 	if _, err := d.db.Exec(
 		`UPDATE api_keys SET active = $3, updated_date = NOW() WHERE id = $1 AND user_id = $2;`, KeyID, UserID, Active); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	keys, keysErr := d.GetUserAPIKeys(UserID)
+	keys, keysErr := d.GetUserApiKeys(UserID)
 	if keysErr != nil {
 		log.Println(keysErr)
 		return nil, keysErr
@@ -131,15 +131,15 @@ func (d *Database) UpdateUserAPIKey(UserID string, KeyID string, Active bool) ([
 	return keys, nil
 }
 
-// DeleteUserAPIKey removes a users api key
-func (d *Database) DeleteUserAPIKey(UserID string, KeyID string) ([]*model.APIKey, error) {
+// DeleteUserApiKey removes a users api key
+func (d *Database) DeleteUserApiKey(UserID string, KeyID string) ([]*model.APIKey, error) {
 	if _, err := d.db.Exec(
 		`DELETE FROM api_keys WHERE id = $1 AND user_id = $2;`, KeyID, UserID); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	keys, keysErr := d.GetUserAPIKeys(UserID)
+	keys, keysErr := d.GetUserApiKeys(UserID)
 	if keysErr != nil {
 		log.Println(keysErr)
 		return nil, keysErr
@@ -148,12 +148,12 @@ func (d *Database) DeleteUserAPIKey(UserID string, KeyID string) ([]*model.APIKe
 	return keys, nil
 }
 
-// ValidateAPIKey checks to see if the API key exists in the database and if so returns UserID
-func (d *Database) ValidateAPIKey(APK string) (UserID string, ValidatationErr error) {
+// ValidateApiKey checks to see if the API key exists in the database and if so returns UserID
+func (d *Database) ValidateApiKey(APK string) (UserID string, ValidatationErr error) {
 	var usrID string = ""
 
 	splitKey := strings.Split(APK, ".")
-	hashedKey := d.HashAPIKey(APK)
+	hashedKey := hashApiKey(APK)
 	keyID := splitKey[0] + "." + hashedKey
 
 	e := d.db.QueryRow(

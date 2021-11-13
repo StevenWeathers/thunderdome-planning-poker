@@ -17,7 +17,7 @@ func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		if apiKey != "" {
 			var apiKeyErr error
-			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
+			UserID, apiKeyErr = a.db.ValidateApiKey(apiKey)
 			if apiKeyErr != nil {
 				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
@@ -53,7 +53,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		if apiKey != "" && a.config.ExternalAPIEnabled == true {
 			var apiKeyErr error
-			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
+			UserID, apiKeyErr = a.db.ValidateApiKey(apiKey)
 			if apiKeyErr != nil {
 				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
@@ -92,7 +92,7 @@ func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		if apiKey != "" && a.config.ExternalAPIEnabled == true {
 			var apiKeyErr error
-			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
+			UserID, apiKeyErr = a.db.ValidateApiKey(apiKey)
 			if apiKeyErr != nil {
 				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
@@ -136,7 +136,7 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		if apiKey != "" && a.config.ExternalAPIEnabled == true {
 			var apiKeyErr error
-			UserID, apiKeyErr = a.db.ValidateAPIKey(apiKey)
+			UserID, apiKeyErr = a.db.ValidateApiKey(apiKey)
 			if apiKeyErr != nil {
 				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return

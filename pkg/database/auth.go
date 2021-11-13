@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// AuthUser attempts to authenticate the user
+// AuthUser authenticate the user
 func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User, error) {
 	var w model.User
 	var passHash string
@@ -70,7 +70,7 @@ func (d *Database) UserResetRequest(UserEmail string) (resetID string, UserName 
 	return ResetID.String, name.String, nil
 }
 
-// UserResetPassword attempts to reset a users password
+// UserResetPassword resets the user's password to a new password
 func (d *Database) UserResetPassword(ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error) {
 	var name sql.NullString
 	var email sql.NullString
@@ -102,7 +102,7 @@ func (d *Database) UserResetPassword(ResetID string, UserPassword string) (UserN
 	return name.String, email.String, nil
 }
 
-// UserUpdatePassword attempts to update a users password
+// UserUpdatePassword updates a users password
 func (d *Database) UserUpdatePassword(UserID string, UserPassword string) (Name string, Email string, resetErr error) {
 	var UserName sql.NullString
 	var UserEmail sql.NullString
@@ -133,7 +133,7 @@ func (d *Database) UserUpdatePassword(UserID string, UserPassword string) (Name 
 	return UserName.String, UserEmail.String, nil
 }
 
-// VerifyUserAccount attempts to verify a users account email
+// VerifyUserAccount updates a user account verified status
 func (d *Database) VerifyUserAccount(VerifyID string) error {
 	if _, err := d.db.Exec(
 		`call verify_user_account($1)`, VerifyID); err != nil {
@@ -157,13 +157,12 @@ func hashSaltPassword(UserPassword string) (string, error) {
 		log.Println(err)
 		return "", err
 	}
-	// GenerateFromPassword returns a byte slice so we need to
+	// GenerateFromPassword returns a byte slice, so we need to
 	// convert the bytes to a string and return it
 	return string(hash), nil
 }
 
 // comparePasswords takes a password hash and compares it to entered password
-// returning true if matches false if not
 func comparePasswords(hashedPwd string, password string) bool {
 	// Since we'll be getting the hashed password from the DB it
 	// will be a string so we'll need to convert it to a byte slice
