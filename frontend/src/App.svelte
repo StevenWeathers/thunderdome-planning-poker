@@ -2,7 +2,7 @@
     import Navaid from 'navaid'
     import { onDestroy } from 'svelte'
 
-    import { _, locale, setupI18n, isLocaleLoaded } from './i18n'
+    import { _, isLocaleLoaded, locale, setupI18n } from './i18n'
     import { appRoutes } from './config'
     import Notifications from './components/Notifications.svelte'
     import WarriorIcon from './components/icons/WarriorIcon.svelte'
@@ -29,6 +29,7 @@
     import AdminApikeys from './pages/admin/ApiKeys.svelte'
     import AdminAlerts from './pages/admin/Alerts.svelte'
     import AdminBattles from './pages/admin/Battles.svelte'
+    import AdminBattle from './pages/admin/Battle.svelte'
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
     import apiclient from './apiclient.js'
@@ -182,10 +183,16 @@
                 params: {},
             }
         })
+        .on(`${appRoutes.admin}/battles/:battleId`, params => {
+            currentPage = {
+                route: AdminBattle,
+                params: params,
+            }
+        })
         .on(`${appRoutes.admin}/battles`, () => {
             currentPage = {
-              route: AdminBattles,
-              params: {},
+                route: AdminBattles,
+                params: {},
             }
         })
         .listen()
@@ -220,9 +227,11 @@
     :global(.nav-logo) {
         max-height: 3.75rem;
     }
+
     :global(.text-yellow-thunder) {
         color: #ffdd57;
     }
+
     :global(.bg-yellow-thunder) {
         background-color: #ffdd57;
     }

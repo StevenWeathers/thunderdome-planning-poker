@@ -66,16 +66,16 @@
     function getUsers() {
         const offset = (usersPage - 1) * usersPageLimit
         const isSearch = searchEmail !== ''
-        const apiPrefix = isSearch ? `/api/admin/search/users/email?search=${searchEmail}&` : '/api/admin/users?'
+        const apiPrefix = isSearch
+            ? `/api/admin/search/users/email?search=${searchEmail}&`
+            : '/api/admin/users?'
 
         if (isSearch && searchEmail.length < 3) {
             notifications.danger('Search value must be at least 3 characters')
             return
         }
 
-        xfetch(
-            `${apiPrefix}limit=${usersPageLimit}&offset=${offset}`,
-        )
+        xfetch(`${apiPrefix}limit=${usersPageLimit}&offset=${offset}`)
             .then(res => res.json())
             .then(function (result) {
                 users = result.data
@@ -131,10 +131,10 @@
     }
 
     function onSearchSubmit(evt) {
-      evt.preventDefault()
+        evt.preventDefault()
 
-      usersPage = 1
-      getUsers()
+        usersPage = 1
+        getUsers()
     }
 
     const changePage = evt => {
@@ -174,20 +174,20 @@
                 <div class="w-3/5">
                     <div class="text-right flex w-full">
                         <div class="w-3/4">
-                            <form on:submit="{onSearchSubmit}" name="searchUsers">
+                            <form
+                                on:submit="{onSearchSubmit}"
+                                name="searchUsers"
+                            >
                                 <div class="mb-4">
-                                    <label
-                                            class="mb-2"
-                                            for="searchEmail"
-                                    >
+                                    <label class="mb-2" for="searchEmail">
                                         <input
-                                                bind:value="{searchEmail}"
-                                                placeholder="Email"
-                                                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                                            bind:value="{searchEmail}"
+                                            placeholder="Email"
+                                            class="bg-gray-200 border-gray-200 border-2 appearance-none
                     rounded py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"
-                                                id="searchEmail"
-                                                name="searchEmail"
+                                            id="searchEmail"
+                                            name="searchEmail"
                                         />
                                     </label>
                                     <SolidButton type="submit">
