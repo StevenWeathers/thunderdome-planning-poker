@@ -28,12 +28,7 @@ func (d *Database) TeamUserRole(UserID string, TeamID string) (string, error) {
 
 // TeamGet gets an team
 func (d *Database) TeamGet(TeamID string) (*model.Team, error) {
-	var team = &model.Team{
-		Id:          "",
-		Name:        "",
-		CreatedDate: "",
-		UpdatedDate: "",
-	}
+	var team = &model.Team{}
 
 	e := d.db.QueryRow(
 		`SELECT id, name, created_date, updated_date FROM team_get_by_id($1)`,
@@ -85,7 +80,7 @@ func (d *Database) TeamListByUser(UserID string, Limit int, Offset int) []*model
 	return teams
 }
 
-// TTeamCreate creates a team with current user as an ADMIN
+// TeamCreate creates a team with current user as an ADMIN
 func (d *Database) TeamCreate(UserID string, TeamName string) (string, error) {
 	var TeamID string
 	err := d.db.QueryRow(`

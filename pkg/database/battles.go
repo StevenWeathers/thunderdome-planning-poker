@@ -15,16 +15,13 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 
 	var b = &model.Battle{
-		Id:                   "",
 		Name:                 BattleName,
 		Users:                make([]*model.BattleUser, 0),
 		Plans:                make([]*model.Plan, 0),
 		VotingLocked:         true,
-		ActivePlanID:         "",
 		PointValuesAllowed:   PointValuesAllowed,
 		AutoFinishVoting:     AutoFinishVoting,
 		Leaders:              make([]string, 0),
-		PointAverageRounding: "",
 	}
 	b.Leaders = append(b.Leaders, LeaderID)
 
@@ -85,17 +82,12 @@ func (d *Database) ReviseBattle(BattleID string, UserID string, BattleName strin
 func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, error) {
 	var b = &model.Battle{
 		Id:                   BattleID,
-		Name:                 "",
 		Users:                make([]*model.BattleUser, 0),
 		Plans:                make([]*model.Plan, 0),
 		VotingLocked:         true,
-		ActivePlanID:         "",
 		PointValuesAllowed:   make([]string, 0),
 		AutoFinishVoting:     true,
 		Leaders:              make([]string, 0),
-		PointAverageRounding: "",
-		CreatedDate:          "",
-		UpdatedDate:          "",
 	}
 
 	// get battle
@@ -161,16 +153,12 @@ func (d *Database) GetBattlesByUser(UserID string) ([]*model.Battle, error) {
 		var leaders string
 		var ActivePlanID sql.NullString
 		var b = &model.Battle{
-			Id:                   "",
-			Name:                 "",
 			Users:                make([]*model.BattleUser, 0),
 			Plans:                make([]*model.Plan, 0),
 			VotingLocked:         true,
-			ActivePlanID:         "",
 			PointValuesAllowed:   make([]string, 0),
 			AutoFinishVoting:     true,
 			Leaders:              make([]string, 0),
-			PointAverageRounding: "",
 		}
 		if err := battleRows.Scan(
 			&b.Id,
@@ -513,18 +501,12 @@ func (d *Database) GetBattles(Limit int, Offset int) ([]*model.Battle, int, erro
 		var leaders string
 		var ActivePlanID sql.NullString
 		var b = &model.Battle{
-			Id:                   "",
-			Name:                 "",
 			Users:                make([]*model.BattleUser, 0),
 			Plans:                make([]*model.Plan, 0),
 			VotingLocked:         true,
-			ActivePlanID:         "",
 			PointValuesAllowed:   make([]string, 0),
 			AutoFinishVoting:     true,
 			Leaders:              make([]string, 0),
-			PointAverageRounding: "",
-			CreatedDate:          "",
-			UpdatedDate:          "",
 		}
 		if err := battleRows.Scan(
 			&b.Id,

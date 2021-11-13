@@ -1,11 +1,13 @@
 package model
 
+import "time"
+
 // Organization can be a company
 type Organization struct {
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	CreatedDate string `json:"createdDate"`
-	UpdatedDate string `json:"updatedDate"`
+	Id          string    `json:"id"`
+	Name        string    `json:"name"`
+	CreatedDate time.Time `json:"createdDate"`
+	UpdatedDate time.Time `json:"updatedDate"`
 }
 
 type OrganizationUser struct {
@@ -16,10 +18,10 @@ type OrganizationUser struct {
 }
 
 type Department struct {
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	CreatedDate string `json:"createdDate"`
-	UpdatedDate string `json:"updatedDate"`
+	Id          string    `json:"id"`
+	Name        string    `json:"name"`
+	CreatedDate time.Time `json:"createdDate"`
+	UpdatedDate time.Time `json:"updatedDate"`
 }
 
 type DepartmentUser struct {

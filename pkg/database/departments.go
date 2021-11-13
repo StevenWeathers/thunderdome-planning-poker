@@ -31,12 +31,7 @@ func (d *Database) DepartmentUserRole(UserID string, OrgID string, DepartmentID 
 
 // DepartmentGet gets a department
 func (d *Database) DepartmentGet(DepartmentID string) (*model.Department, error) {
-	var org = &model.Department{
-		Id:          "",
-		Name:        "",
-		CreatedDate: "",
-		UpdatedDate: "",
-	}
+	var org = &model.Department{}
 
 	e := d.db.QueryRow(
 		`SELECT id, name, created_date, updated_date FROM department_get_by_id($1)`,

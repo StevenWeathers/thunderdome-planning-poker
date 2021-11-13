@@ -9,12 +9,7 @@ import (
 
 // OrganizationGet gets an organization
 func (d *Database) OrganizationGet(OrgID string) (*model.Organization, error) {
-	var org = &model.Organization{
-		Id:          "",
-		Name:        "",
-		CreatedDate: "",
-		UpdatedDate: "",
-	}
+	var org = &model.Organization{}
 
 	e := d.db.QueryRow(
 		`SELECT id, name, created_date, updated_date FROM organization_get_by_id($1)`,

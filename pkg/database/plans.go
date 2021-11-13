@@ -4,11 +4,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"log"
-	"time"
-
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/google/uuid"
+	"log"
 )
 
 // GetPlans retrieves plans for given battle from db
@@ -29,19 +27,10 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 			var Link sql.NullString
 			var Description sql.NullString
 			var AcceptanceCriteria sql.NullString
-			var p = &model.Plan{Id: "",
-				Name:               "",
-				Type:               "",
-				ReferenceId:        "",
-				Link:               "",
-				Description:        "",
-				AcceptanceCriteria: "",
+			var p = &model.Plan{
 				Votes:              make([]*model.Vote, 0),
-				Points:             "",
 				Active:             false,
 				Skipped:            false,
-				VoteStartTime:      time.Now(),
-				VoteEndTime:        time.Now(),
 			}
 			if err := planRows.Scan(
 				&p.Id, &p.Name, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Points, &p.Active, &p.Skipped, &p.VoteStartTime, &p.VoteEndTime, &v,
