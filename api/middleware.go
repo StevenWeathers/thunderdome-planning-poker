@@ -75,7 +75,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		ctx := context.WithValue(r.Context(), contextKeyUserID, UserID)
-		ctx = context.WithValue(ctx, contextKeyUserType, User.UserType)
+		ctx = context.WithValue(ctx, contextKeyUserType, User.Type)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -113,13 +113,13 @@ func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if User.UserType != adminUserType && EntityUserID != UserID {
+		if User.Type != adminUserType && EntityUserID != UserID {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		ctx := context.WithValue(r.Context(), contextKeyUserID, UserID)
-		ctx = context.WithValue(ctx, contextKeyUserType, User.UserType)
+		ctx = context.WithValue(ctx, contextKeyUserType, User.Type)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -157,13 +157,13 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if User.UserType != adminUserType && EntityUserID != UserID && User.Verified == false {
+		if User.Type != adminUserType && EntityUserID != UserID && User.Verified == false {
 			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
 			return
 		}
 
 		ctx := context.WithValue(r.Context(), contextKeyUserID, UserID)
-		ctx = context.WithValue(ctx, contextKeyUserType, User.UserType)
+		ctx = context.WithValue(ctx, contextKeyUserType, User.Type)
 
 		h(w, r.WithContext(ctx))
 	}

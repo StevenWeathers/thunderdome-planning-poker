@@ -19,12 +19,12 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, locale FROM users WHERE email = $1`,
 		UserEmail,
 	).Scan(
-		&w.UserID,
-		&w.UserName,
-		&w.UserEmail,
-		&w.UserType,
+		&w.Id,
+		&w.Name,
+		&w.Email,
+		&w.Type,
 		&passHash,
-		&w.UserAvatar,
+		&w.Avatar,
 		&w.Verified,
 		&w.NotificationsEnabled,
 		&UserLocale,
@@ -42,7 +42,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 	if checkPasswordCost(passHash) == true {
 		hashedPassword, hashErr := hashSaltPassword(UserPassword)
 		if hashErr == nil {
-			d.db.Exec(`call update_user_password($1, $2)`, w.UserID, hashedPassword)
+			d.db.Exec(`call update_user_password($1, $2)`, w.Id, hashedPassword)
 		}
 	}
 

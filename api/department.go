@@ -104,7 +104,6 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)
 
@@ -180,7 +179,6 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)
 
@@ -227,7 +225,7 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.db.DepartmentAddUser(DepartmentId, User.UserID, Role)
+		_, err := a.db.DepartmentAddUser(DepartmentId, User.Id, Role)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -294,13 +292,13 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, DepartmentRole, roleErr := a.db.DepartmentUserRole(User.UserID, OrgID, DepartmentID)
+		_, DepartmentRole, roleErr := a.db.DepartmentUserRole(User.Id, OrgID, DepartmentID)
 		if DepartmentRole == "" || roleErr != nil {
 			Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "DEPARTMENT_USER_REQUIRED"))
 			return
 		}
 
-		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
+		_, err := a.db.TeamAddUser(TeamID, User.Id, Role)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return

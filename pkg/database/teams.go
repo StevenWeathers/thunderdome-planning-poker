@@ -29,7 +29,7 @@ func (d *Database) TeamUserRole(UserID string, TeamID string) (string, error) {
 // TeamGet gets an team
 func (d *Database) TeamGet(TeamID string) (*model.Team, error) {
 	var team = &model.Team{
-		TeamID:      "",
+		Id:          "",
 		Name:        "",
 		CreatedDate: "",
 		UpdatedDate: "",
@@ -39,7 +39,7 @@ func (d *Database) TeamGet(TeamID string) (*model.Team, error) {
 		`SELECT id, name, created_date, updated_date FROM team_get_by_id($1)`,
 		TeamID,
 	).Scan(
-		&team.TeamID,
+		&team.Id,
 		&team.Name,
 		&team.CreatedDate,
 		&team.UpdatedDate,
@@ -68,7 +68,7 @@ func (d *Database) TeamListByUser(UserID string, Limit int, Offset int) []*model
 			var team model.Team
 
 			if err := rows.Scan(
-				&team.TeamID,
+				&team.Id,
 				&team.Name,
 				&team.CreatedDate,
 				&team.UpdatedDate,
@@ -135,7 +135,7 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*model.O
 			var usr model.OrganizationUser
 
 			if err := rows.Scan(
-				&usr.UserID,
+				&usr.Id,
 				&usr.Name,
 				&usr.Email,
 				&usr.Role,
@@ -184,8 +184,8 @@ func (d *Database) TeamBattleList(TeamID string, Limit int, Offset int) []*model
 			var tb model.Battle
 
 			if err := rows.Scan(
-				&tb.BattleID,
-				&tb.BattleName,
+				&tb.Id,
+				&tb.Name,
 			); err != nil {
 				log.Println(err)
 			} else {

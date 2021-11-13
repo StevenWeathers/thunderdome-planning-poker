@@ -1,3 +1,4 @@
+// Package database provides access to Thunderdome application data in postgres
 package database
 
 import (

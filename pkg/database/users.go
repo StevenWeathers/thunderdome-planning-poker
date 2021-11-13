@@ -38,11 +38,11 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int
 		var w model.User
 
 		if err := rows.Scan(
-			&w.UserID,
-			&w.UserName,
-			&w.UserEmail,
-			&w.UserType,
-			&w.UserAvatar,
+			&w.Id,
+			&w.Name,
+			&w.Email,
+			&w.Type,
+			&w.Avatar,
 			&w.Verified,
 			&w.Country,
 			&w.Company,
@@ -70,11 +70,11 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title FROM users WHERE id = $1",
 		UserID,
 	).Scan(
-		&w.UserID,
-		&w.UserName,
+		&w.Id,
+		&w.Name,
 		&UserEmail,
-		&w.UserType,
-		&w.UserAvatar,
+		&w.Type,
+		&w.Avatar,
 		&w.Verified,
 		&w.NotificationsEnabled,
 		&UserCountry,
@@ -87,7 +87,7 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 		return nil, errors.New("user not found")
 	}
 
-	w.UserEmail = UserEmail.String
+	w.Email = UserEmail.String
 	w.Country = UserCountry.String
 	w.Locale = UserLocale.String
 	w.Company = UserCompany.String
@@ -103,10 +103,10 @@ func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 		"SELECT id, name, email, type, verified FROM users WHERE email = $1",
 		UserEmail,
 	).Scan(
-		&w.UserID,
-		&w.UserName,
-		&w.UserEmail,
-		&w.UserType,
+		&w.Id,
+		&w.Name,
+		&w.Email,
+		&w.Type,
 		&w.Verified,
 	)
 	if e != nil {
@@ -126,7 +126,7 @@ func (d *Database) CreateUserGuest(UserName string) (*model.User, error) {
 		return nil, errors.New("unable to create new user")
 	}
 
-	return &model.User{UserID: UserID, UserName: UserName, UserAvatar: "identicon", NotificationsEnabled: true, Locale: "en"}, nil
+	return &model.User{Id: UserID, Name: UserName, Avatar: "identicon", NotificationsEnabled: true, Locale: "en"}, nil
 }
 
 // CreateUserRegistered adds a new registered user to the db
@@ -168,7 +168,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 		}
 	}
 
-	return &model.User{UserID: UserID, UserName: UserName, UserEmail: UserEmail, UserType: UserType, UserAvatar: UserAvatar}, verifyID, nil
+	return &model.User{Id: UserID, Name: UserName, Email: UserEmail, Type: UserType, Avatar: UserAvatar}, verifyID, nil
 }
 
 // UpdateUserProfile attempts to update the users profile
@@ -256,11 +256,11 @@ func (d *Database) SearchRegisteredUsersByEmail(Email string, Limit int, Offset 
 		var w model.User
 
 		if err := rows.Scan(
-			&w.UserID,
-			&w.UserName,
-			&w.UserEmail,
-			&w.UserType,
-			&w.UserAvatar,
+			&w.Id,
+			&w.Name,
+			&w.Email,
+			&w.Type,
+			&w.Avatar,
 			&w.Verified,
 			&w.Country,
 			&w.Company,

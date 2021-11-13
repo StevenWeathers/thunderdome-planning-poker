@@ -4,17 +4,19 @@ import "time"
 
 // User aka user
 type User struct {
-	UserID               string `json:"id"`
-	UserName             string `json:"name"`
-	UserEmail            string `json:"email"`
-	UserType             string `json:"rank"`
-	UserAvatar           string `json:"avatar"`
-	Verified             bool   `json:"verified"`
-	NotificationsEnabled bool   `json:"notificationsEnabled"`
-	Country              string `json:"country"`
-	Locale               string `json:"locale"`
-	Company              string `json:"company"`
-	JobTitle             string `json:"jobTitle"`
+	Id                   string    `json:"id"`
+	Name                 string    `json:"name"`
+	Email                string    `json:"email"`
+	Type                 string    `json:"rank"`
+	Avatar               string    `json:"avatar"`
+	Verified             bool      `json:"verified"`
+	NotificationsEnabled bool      `json:"notificationsEnabled"`
+	Country              string    `json:"country"`
+	Locale               string    `json:"locale"`
+	Company              string    `json:"company"`
+	JobTitle             string    `json:"jobTitle"`
+	CreatedDate          time.Time `json:"createdDate"`
+	UpdatedDate          time.Time `json:"updatedDate"`
 }
 
 // APIKey structure

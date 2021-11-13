@@ -166,7 +166,6 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 // @Router /organizations/{orgId}/teams [post]
 func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// UserID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)
 
@@ -213,7 +212,7 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.db.OrganizationAddUser(OrgID, User.UserID, Role)
+		_, err := a.db.OrganizationAddUser(OrgID, User.Id, Role)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -322,13 +321,13 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		OrgRole, roleErr := a.db.OrganizationUserRole(User.UserID, OrgID)
+		OrgRole, roleErr := a.db.OrganizationUserRole(User.Id, OrgID)
 		if OrgRole == "" || roleErr != nil {
 			Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 
-		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
+		_, err := a.db.TeamAddUser(TeamID, User.Id, Role)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return

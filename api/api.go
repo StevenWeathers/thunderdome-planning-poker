@@ -1,3 +1,4 @@
+// Package api provides restful API endpoints for Thunderdome webapp
 package api
 
 import (

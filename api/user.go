@@ -8,7 +8,7 @@ import (
 
 // handleUserProfile returns the users profile if it matches their session
 // @Summary Get Profile
-// @Description get a users profile
+// @Description Gets a users profile
 // @Tags user
 // @Produce  json
 // @Param userId path string true "the user ID"
@@ -106,7 +106,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 			return
 		}
 
-		a.email.SendDeleteConfirmation(User.UserName, User.UserEmail)
+		a.email.SendDeleteConfirmation(User.Name, User.Email)
 
 		// don't clear admin's user cookies when deleting other users
 		if UserID == UserCookieID {
@@ -119,7 +119,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 
 // handleGetActiveCountries gets a list of registered users countries
 // @Summary Get Active Countries
-// @Description get a list of users countries
+// @Description Gets a list of users countries
 // @Produce  json
 // @Success 200 object standardJsonResponse{[]string}
 // @Failure 500 object standardJsonResponse{}

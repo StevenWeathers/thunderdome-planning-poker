@@ -149,7 +149,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.db.TeamAddUser(TeamID, User.UserID, Role)
+		_, err := a.db.TeamAddUser(TeamID, User.Id, Role)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return

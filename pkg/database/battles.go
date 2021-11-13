@@ -15,8 +15,8 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 
 	var b = &model.Battle{
-		BattleID:             "",
-		BattleName:           BattleName,
+		Id:                   "",
+		Name:                 BattleName,
 		Users:                make([]*model.BattleUser, 0),
 		Plans:                make([]*model.Plan, 0),
 		VotingLocked:         true,
@@ -35,7 +35,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 		string(pointValuesJSON),
 		AutoFinishVoting,
 		PointAverageRounding,
-	).Scan(&b.BattleID)
+	).Scan(&b.Id)
 	if e != nil {
 		log.Println(e)
 		return nil, errors.New("error creating battle")
@@ -46,14 +46,14 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 
 		e := d.db.QueryRow(
 			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-			b.BattleID,
-			plan.PlanName,
+			b.Id,
+			plan.Name,
 			plan.Type,
 			plan.ReferenceID,
 			plan.Link,
 			plan.Description,
 			plan.AcceptanceCriteria,
-		).Scan(&plan.PlanID)
+		).Scan(&plan.Id)
 		if e != nil {
 			log.Println(e)
 		}
@@ -84,8 +84,8 @@ func (d *Database) ReviseBattle(BattleID string, UserID string, BattleName strin
 // GetBattle gets a battle by ID
 func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, error) {
 	var b = &model.Battle{
-		BattleID:             BattleID,
-		BattleName:           "",
+		Id:                   BattleID,
+		Name:                 "",
 		Users:                make([]*model.BattleUser, 0),
 		Plans:                make([]*model.Plan, 0),
 		VotingLocked:         true,
@@ -94,8 +94,8 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 		AutoFinishVoting:     true,
 		Leaders:              make([]string, 0),
 		PointAverageRounding: "",
-		CreatedDate: "",
-		UpdatedDate: "",
+		CreatedDate:          "",
+		UpdatedDate:          "",
 	}
 
 	// get battle
@@ -112,8 +112,8 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 		GROUP BY b.id`,
 		BattleID,
 	).Scan(
-		&b.BattleID,
-		&b.BattleName,
+		&b.Id,
+		&b.Name,
 		&b.VotingLocked,
 		&ActivePlanID,
 		&pv,
@@ -161,8 +161,8 @@ func (d *Database) GetBattlesByUser(UserID string) ([]*model.Battle, error) {
 		var leaders string
 		var ActivePlanID sql.NullString
 		var b = &model.Battle{
-			BattleID:             "",
-			BattleName:           "",
+			Id:                   "",
+			Name:                 "",
 			Users:                make([]*model.BattleUser, 0),
 			Plans:                make([]*model.Plan, 0),
 			VotingLocked:         true,
@@ -173,8 +173,8 @@ func (d *Database) GetBattlesByUser(UserID string) ([]*model.Battle, error) {
 			PointAverageRounding: "",
 		}
 		if err := battleRows.Scan(
-			&b.BattleID,
-			&b.BattleName,
+			&b.Id,
+			&b.Name,
 			&b.VotingLocked,
 			&ActivePlanID,
 			&pv,
@@ -222,10 +222,10 @@ func (d *Database) GetBattleUser(BattleID string, UserID string) (*model.BattleU
 		BattleID,
 		UserID,
 	).Scan(
-		&w.UserID,
-		&w.UserName,
-		&w.UserType,
-		&w.UserAvatar,
+		&w.Id,
+		&w.Name,
+		&w.Type,
+		&w.Avatar,
 		&active,
 		&w.Spectator,
 	)
@@ -257,7 +257,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w model.BattleUser
-			if err := rows.Scan(&w.UserID, &w.UserName, &w.UserType, &w.UserAvatar, &w.Active, &w.Spectator); err != nil {
+			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator); err != nil {
 				log.Println(err)
 			} else {
 				users = append(users, &w)
@@ -284,7 +284,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w model.BattleUser
-			if err := rows.Scan(&w.UserID, &w.UserName, &w.UserType, &w.UserAvatar, &w.Active, &w.Spectator); err != nil {
+			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator); err != nil {
 				log.Println(err)
 			} else {
 				users = append(users, &w)
@@ -513,8 +513,8 @@ func (d *Database) GetBattles(Limit int, Offset int) ([]*model.Battle, int, erro
 		var leaders string
 		var ActivePlanID sql.NullString
 		var b = &model.Battle{
-			BattleID:             "",
-			BattleName:           "",
+			Id:                   "",
+			Name:                 "",
 			Users:                make([]*model.BattleUser, 0),
 			Plans:                make([]*model.Plan, 0),
 			VotingLocked:         true,
@@ -523,12 +523,12 @@ func (d *Database) GetBattles(Limit int, Offset int) ([]*model.Battle, int, erro
 			AutoFinishVoting:     true,
 			Leaders:              make([]string, 0),
 			PointAverageRounding: "",
-			CreatedDate: "",
-			UpdatedDate: "",
+			CreatedDate:          "",
+			UpdatedDate:          "",
 		}
 		if err := battleRows.Scan(
-			&b.BattleID,
-			&b.BattleName,
+			&b.Id,
+			&b.Name,
 			&b.VotingLocked,
 			&ActivePlanID,
 			&pv,

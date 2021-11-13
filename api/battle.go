@@ -87,7 +87,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		// when battleLeaders array is passed add additional leaders to battle
 		if len(keyVal.BattleLeaders) > 0 {
-			updatedLeaders, err := a.db.AddBattleLeadersByEmail(newBattle.BattleID, UserID, keyVal.BattleLeaders)
+			updatedLeaders, err := a.db.AddBattleLeadersByEmail(newBattle.Id, UserID, keyVal.BattleLeaders)
 			if err != nil {
 				log.Println("error adding additional battle leaders")
 			} else {
@@ -110,7 +110,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			}
 
 			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddBattle(TeamID, newBattle.BattleID)
+				err := a.db.TeamAddBattle(TeamID, newBattle.Id)
 
 				if err != nil {
 					Failure(w, r, http.StatusInternalServerError, err)

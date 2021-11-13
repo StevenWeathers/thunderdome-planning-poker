@@ -15,7 +15,7 @@ type ApplicationStats struct {
 }
 
 type Alert struct {
-	AlertID        string `json:"id" db:"id"`
+	Id             string `json:"id" db:"id"`
 	Name           string `json:"name" db:"name"`
 	Type           string `json:"type" db:"type"`
 	Content        string `json:"content" db:"content"`

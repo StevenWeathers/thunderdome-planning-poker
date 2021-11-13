@@ -124,8 +124,8 @@ func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
 			var usr model.User
 
 			if err := rows.Scan(
-				&usr.UserName,
-				&usr.UserEmail,
+				&usr.Name,
+				&usr.Email,
 			); err != nil {
 				log.Println(err)
 				return nil, err
@@ -155,8 +155,8 @@ func (d *Database) MergeDuplicateAccounts() ([]*model.User, error) {
 			var usr model.User
 
 			if err := rows.Scan(
-				&usr.UserName,
-				&usr.UserEmail,
+				&usr.Name,
+				&usr.Email,
 			); err != nil {
 				log.Println(err)
 				return nil, err
@@ -187,7 +187,7 @@ func (d *Database) OrganizationList(Limit int, Offset int) []*model.Organization
 			var org model.Organization
 
 			if err := rows.Scan(
-				&org.OrganizationID,
+				&org.Id,
 				&org.Name,
 				&org.CreatedDate,
 				&org.UpdatedDate,
@@ -219,7 +219,7 @@ func (d *Database) TeamList(Limit int, Offset int) []*model.Team {
 			var team model.Team
 
 			if err := rows.Scan(
-				&team.TeamID,
+				&team.Id,
 				&team.Name,
 				&team.CreatedDate,
 				&team.UpdatedDate,

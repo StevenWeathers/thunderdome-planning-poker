@@ -29,8 +29,8 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 			var Link sql.NullString
 			var Description sql.NullString
 			var AcceptanceCriteria sql.NullString
-			var p = &model.Plan{PlanID: "",
-				PlanName:           "",
+			var p = &model.Plan{Id: "",
+				Name:               "",
 				Type:               "",
 				ReferenceID:        "",
 				Link:               "",
@@ -38,13 +38,13 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 				AcceptanceCriteria: "",
 				Votes:              make([]*model.Vote, 0),
 				Points:             "",
-				PlanActive:         false,
-				PlanSkipped:        false,
+				Active:             false,
+				Skipped:            false,
 				VoteStartTime:      time.Now(),
 				VoteEndTime:        time.Now(),
 			}
 			if err := planRows.Scan(
-				&p.PlanID, &p.PlanName, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Points, &p.PlanActive, &p.PlanSkipped, &p.VoteStartTime, &p.VoteEndTime, &v,
+				&p.Id, &p.Name, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Points, &p.Active, &p.Skipped, &p.VoteStartTime, &p.VoteEndTime, &v,
 			); err != nil {
 				log.Println(err)
 			} else {
@@ -60,7 +60,7 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 				// don't send others vote values to client, prevent sneaky devs from peaking at votes
 				for i := range p.Votes {
 					vote := p.Votes[i]
-					if p.PlanActive && p.Votes[i].UserID != UserID {
+					if p.Active && p.Votes[i].UserID != UserID {
 						vote.VoteValue = ""
 					}
 				}
@@ -126,7 +126,7 @@ func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteVa
 	// determine if all active users have voted
 	AllVoted := true
 	for _, plan := range Plans {
-		if plan.PlanID == PlanID {
+		if plan.Id == PlanID {
 			activePlanVoters := make(map[string]bool)
 
 			for _, vote := range plan.Votes {
@@ -134,7 +134,7 @@ func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteVa
 				activePlanVoters[UserID] = true
 			}
 			for _, war := range ActiveUsers {
-				if _, UserVoted := activePlanVoters[war.UserID]; !UserVoted && !war.Spectator {
+				if _, UserVoted := activePlanVoters[war.Id]; !UserVoted && !war.Spectator {
 					AllVoted = false
 					break
 				}

@@ -32,17 +32,17 @@ func (d *Database) DepartmentUserRole(UserID string, OrgID string, DepartmentID 
 // DepartmentGet gets a department
 func (d *Database) DepartmentGet(DepartmentID string) (*model.Department, error) {
 	var org = &model.Department{
-		DepartmentID: "",
-		Name:         "",
-		CreatedDate:  "",
-		UpdatedDate:  "",
+		Id:          "",
+		Name:        "",
+		CreatedDate: "",
+		UpdatedDate: "",
 	}
 
 	e := d.db.QueryRow(
 		`SELECT id, name, created_date, updated_date FROM department_get_by_id($1)`,
 		DepartmentID,
 	).Scan(
-		&org.DepartmentID,
+		&org.Id,
 		&org.Name,
 		&org.CreatedDate,
 		&org.UpdatedDate,
@@ -71,7 +71,7 @@ func (d *Database) OrganizationDepartmentList(OrgID string, Limit int, Offset in
 			var department model.Department
 
 			if err := rows.Scan(
-				&department.DepartmentID,
+				&department.Id,
 				&department.Name,
 				&department.CreatedDate,
 				&department.UpdatedDate,
@@ -121,7 +121,7 @@ func (d *Database) DepartmentTeamList(DepartmentID string, Limit int, Offset int
 			var team model.Team
 
 			if err := rows.Scan(
-				&team.TeamID,
+				&team.Id,
 				&team.Name,
 				&team.CreatedDate,
 				&team.UpdatedDate,
@@ -171,7 +171,7 @@ func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int
 			var usr model.DepartmentUser
 
 			if err := rows.Scan(
-				&usr.UserID,
+				&usr.Id,
 				&usr.Name,
 				&usr.Email,
 				&usr.Role,

@@ -10,17 +10,17 @@ import (
 // OrganizationGet gets an organization
 func (d *Database) OrganizationGet(OrgID string) (*model.Organization, error) {
 	var org = &model.Organization{
-		OrganizationID: "",
-		Name:           "",
-		CreatedDate:    "",
-		UpdatedDate:    "",
+		Id:          "",
+		Name:        "",
+		CreatedDate: "",
+		UpdatedDate: "",
 	}
 
 	e := d.db.QueryRow(
 		`SELECT id, name, created_date, updated_date FROM organization_get_by_id($1)`,
 		OrgID,
 	).Scan(
-		&org.OrganizationID,
+		&org.Id,
 		&org.Name,
 		&org.CreatedDate,
 		&org.UpdatedDate,
@@ -68,7 +68,7 @@ func (d *Database) OrganizationListByUser(UserID string, Limit int, Offset int) 
 			var org model.Organization
 
 			if err := rows.Scan(
-				&org.OrganizationID,
+				&org.Id,
 				&org.Name,
 				&org.CreatedDate,
 				&org.UpdatedDate,
@@ -118,7 +118,7 @@ func (d *Database) OrganizationUserList(OrgID string, Limit int, Offset int) []*
 			var usr model.OrganizationUser
 
 			if err := rows.Scan(
-				&usr.UserID,
+				&usr.Id,
 				&usr.Name,
 				&usr.Email,
 				&usr.Role,
@@ -184,7 +184,7 @@ func (d *Database) OrganizationTeamList(OrgID string, Limit int, Offset int) []*
 			var team model.Team
 
 			if err := rows.Scan(
-				&team.TeamID,
+				&team.Id,
 				&team.Name,
 				&team.CreatedDate,
 				&team.UpdatedDate,

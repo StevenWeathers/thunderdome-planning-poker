@@ -21,7 +21,7 @@ func (d *Database) GetActiveAlerts() []interface{} {
 			var a model.Alert
 
 			if err := rows.Scan(
-				&a.AlertID,
+				&a.Id,
 				&a.Name,
 				&a.Type,
 				&a.Content,
@@ -69,7 +69,7 @@ func (d *Database) AlertsList(Limit int, Offset int) ([]*model.Alert, int, error
 			var a model.Alert
 
 			if err := rows.Scan(
-				&a.AlertID,
+				&a.Id,
 				&a.Name,
 				&a.Type,
 				&a.Content,

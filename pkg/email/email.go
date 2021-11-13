@@ -1,3 +1,4 @@
+// Package email provides email sending for Thunderdome
 package email
 
 import (

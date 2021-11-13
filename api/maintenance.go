@@ -69,7 +69,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 
 		log.Println("Lowercased", len(lowercasedUsers), "user emails")
 		for _, u := range lowercasedUsers {
-			a.email.SendEmailUpdate(u.UserName, u.UserEmail)
+			a.email.SendEmailUpdate(u.Name, u.Email)
 		}
 
 		mergedUsers, err := a.db.MergeDuplicateAccounts()
@@ -80,7 +80,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 
 		log.Println("Merged", len(mergedUsers), "user accounts")
 		for _, u := range mergedUsers {
-			a.email.SendMergedUpdate(u.UserName, u.UserEmail)
+			a.email.SendMergedUpdate(u.Name, u.Email)
 		}
 
 		Success(w, r, http.StatusOK, nil, nil)

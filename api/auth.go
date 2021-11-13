@@ -29,7 +29,7 @@ func (a *api) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		cookie := a.createCookie(authedUser.UserID)
+		cookie := a.createCookie(authedUser.Id)
 		if cookie != nil {
 			http.SetCookie(w, cookie)
 		} else {
@@ -64,7 +64,7 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 			return
 		}
 
-		cookie := a.createCookie(authedUser.UserID)
+		cookie := a.createCookie(authedUser.Id)
 		if cookie != nil {
 			http.SetCookie(w, cookie)
 		} else {
@@ -115,7 +115,7 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 			return
 		}
 
-		a.createUserCookie(w, r, false, newUser.UserID)
+		a.createUserCookie(w, r, false, newUser.Id)
 
 		Success(w, r, http.StatusOK, newUser, nil)
 	}
@@ -158,7 +158,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 			return
 		}
 
-		a.createUserCookie(w, r, true, newUser.UserID)
+		a.createUserCookie(w, r, true, newUser.Id)
 
 		a.email.SendWelcome(UserName, UserEmail, VerifyID)
 
