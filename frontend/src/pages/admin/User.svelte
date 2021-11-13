@@ -72,7 +72,6 @@
                     <tr>
                         <th class="flex-1 p-2">Email</th>
                         <th class="flex-1 p-2">Type</th>
-                        <th class="flex-1 p-2">Verified</th>
                         <th class="flex-1 p-2">Created</th>
                         <th class="flex-1 p-2">Updated</th>
                         <th class="flex-1 p-2">Last Active</th>
@@ -80,14 +79,21 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="border p-2">{user.email}</td>
-                        <td class="border p-2">{user.rank}</td>
-                        <td class="border p-2">
+                        <td class="border p-2"
+                            >{user.email}
                             {#if user.verified}
-                                <span class="text-green-600"><CheckIcon /></span
+                                &nbsp;
+                                <span
+                                    class="text-green-600"
+                                    title="{$_(
+                                        'pages.admin.registeredWarriors.verified',
+                                    )}"
                                 >
+                                    <CheckIcon />
+                                </span>
                             {/if}
                         </td>
+                        <td class="border p-2">{user.rank}</td>
                         <td class="border p-2"
                             >{new Date(user.createdDate).toLocaleString()}</td
                         >
