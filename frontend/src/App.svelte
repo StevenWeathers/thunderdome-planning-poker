@@ -24,6 +24,7 @@
     import WarriorProfile from './pages/WarriorProfile.svelte'
     import Admin from './pages/admin/Admin.svelte'
     import AdminUsers from './pages/admin/Users.svelte'
+    import AdminUser from './pages/admin/User.svelte'
     import AdminOrganizations from './pages/admin/Organizations.svelte'
     import AdminTeams from './pages/admin/Teams.svelte'
     import AdminApikeys from './pages/admin/ApiKeys.svelte'
@@ -151,6 +152,12 @@
             currentPage = {
                 route: Admin,
                 params: {},
+            }
+        })
+        .on(`${appRoutes.admin}/users/:userId`, params => {
+            currentPage = {
+                route: AdminUser,
+                params: params,
             }
         })
         .on(`${appRoutes.admin}/users`, () => {

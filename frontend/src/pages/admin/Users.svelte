@@ -227,7 +227,11 @@
                     {#each users as user}
                         <tr>
                             <td class="border p-2">
-                                {user.name}
+                                <a
+                                    href="{appRoutes.admin}/users/{user.id}"
+                                    class="no-underline text-blue-500 hover:text-blue-800"
+                                    >{user.name}</a
+                                >
                                 {#if user.country}
                                     &nbsp;
                                     <CountryFlag

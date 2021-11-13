@@ -71,7 +71,13 @@
                 <tbody>
                     {#each battles as battle}
                         <tr>
-                            <td class="border px-4 py-2">{battle.name}</td>
+                            <td class="border px-4 py-2">
+                                <a
+                                    href="{appRoutes.admin}/battles/{battle.id}"
+                                    class="no-underline text-blue-500 hover:text-blue-800"
+                                    >{battle.name}</a
+                                >
+                            </td>
                             <td class="border px-4 py-2"
                                 >{new Date(
                                     battle.createdDate,
@@ -83,12 +89,6 @@
                                 ).toLocaleString()}</td
                             >
                             <td class="border px-4 py-2 text-right">
-                                <HollowButton
-                                    color="blue"
-                                    href="{appRoutes.admin}/battles/{battle.id}"
-                                >
-                                    Details
-                                </HollowButton>
                                 <HollowButton
                                     href="{appRoutes.battle}/{battle.id}"
                                 >

@@ -67,7 +67,7 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 	var UserJobTitle sql.NullString
 
 	e := d.db.QueryRow(
-		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title FROM users WHERE id = $1",
+		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active FROM users WHERE id = $1",
 		UserID,
 	).Scan(
 		&w.Id,
@@ -81,6 +81,9 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 		&UserLocale,
 		&UserCompany,
 		&UserJobTitle,
+		&w.CreatedDate,
+		&w.UpdatedDate,
+		&w.LastActive,
 	)
 	if e != nil {
 		log.Println(e)

@@ -17,6 +17,7 @@ type User struct {
 	JobTitle             string    `json:"jobTitle"`
 	CreatedDate          time.Time `json:"createdDate"`
 	UpdatedDate          time.Time `json:"updatedDate"`
+	LastActive           time.Time `json:"lastActive"`
 }
 
 // APIKey structure
