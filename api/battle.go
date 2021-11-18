@@ -2,12 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"github.com/gorilla/mux"
+	"strconv"
 )
 
 // handleGetUserBattles looks up battles associated with UserID
@@ -130,13 +130,25 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param active query boolean true "Only active battles"
 // @Success 200 object standardJsonResponse{data=[]model.Battle}
 // @Failure 500 object standardJsonResponse{}
 // @Router /battles [get]
 func (a *api) handleGetBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
-		Battles, Count, err := a.db.GetBattles(Limit, Offset)
+		query := r.URL.Query()
+		var err error
+		var Count int
+		var Battles []*model.Battle
+		Active, _ := strconv.ParseBool(query.Get("active"))
+
+		if Active {
+			Battles, Count, err = a.db.GetActiveBattles(Limit, Offset)
+		} else {
+			Battles, Count, err = a.db.GetBattles(Limit, Offset)
+		}
+
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return

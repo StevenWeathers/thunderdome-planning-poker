@@ -17,10 +17,13 @@
     let battleCount = 0
     let battles = []
     let battlesPage = 1
+    let activeBattles = false
 
     function getBattles() {
         const battlesOffset = (battlesPage - 1) * battlesPageLimit
-        xfetch(`/api/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`)
+        xfetch(
+            `/api/battles?limit=${battlesPageLimit}&offset=${battlesOffset}&active=${activeBattles}`,
+        )
             .then(res => res.json())
             .then(function (result) {
                 battles = result.data
@@ -48,6 +51,19 @@
     })
 </script>
 
+<style>
+    :global(.toggle-checkbox:checked) {
+        @apply right-0;
+        @apply border-green-400;
+        border-color: #68d391;
+    }
+
+    :global(.toggle-checkbox:checked + .toggle-label) {
+        @apply bg-green-400;
+        background-color: #68d391;
+    }
+</style>
+
 <svelte:head>
     <title>{$_('battles')} {$_('pages.admin.title')} | {$_('appName')}</title>
 </svelte:head>
@@ -59,6 +75,26 @@
 
     <div class="w-full">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
+            <div class="text-right">
+                <div
+                    class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+                >
+                    <input
+                        type="checkbox"
+                        name="activeBattles"
+                        id="activeBattles"
+                        bind:checked="{activeBattles}"
+                        on:change="{getBattles}"
+                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                    />
+                    <label
+                        for="activeBattles"
+                        class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
+                    >
+                    </label>
+                </div>
+                <label for="activeBattles">Show Active Battles</label>
+            </div>
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
