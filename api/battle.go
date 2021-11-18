@@ -130,7 +130,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Param active query boolean true "Only active battles"
+// @Param active query boolean false "Only active battles"
 // @Success 200 object standardJsonResponse{data=[]model.Battle}
 // @Failure 500 object standardJsonResponse{}
 // @Router /battles [get]
