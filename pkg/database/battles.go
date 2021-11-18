@@ -539,7 +539,7 @@ func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*model.Battle, int
 	var Count int
 
 	e := d.db.QueryRow(
-		"SELECT COUNT(*) FROM battles;",
+		"SELECT COUNT(DISTINCT bu.battle_id) FROM battles_users bu WHERE bu.active IS TRUE;",
 	).Scan(
 		&Count,
 	)
