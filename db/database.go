@@ -18,9 +18,6 @@ import (
 //go:embed migrations/*.sql
 var fs embed.FS
 
-//go:embed procs_functions.sql
-var procsFuncsSQL string
-
 // New runs db migrations, sets up a db connection pool
 // and sets previously active users to false during startup
 func New(AdminEmail string) *Database {
@@ -63,10 +60,6 @@ func New(AdminEmail string) *Database {
 		"postgres",
 		driver)
 	if err := m.Up(); err != nil && err.Error() != "no change" {
-		log.Fatal(err)
-	}
-
-	if _, err := d.db.Exec(procsFuncsSQL); err != nil {
 		log.Fatal(err)
 	}
 

@@ -1,1 +1,0 @@
-DROP TABLE "department_team";
