@@ -70,7 +70,7 @@ func (d *Database) ReviseBattle(BattleID string, UserID string, BattleName strin
 
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	if _, err := d.db.Exec(
-		`UPDATE battles SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5 WHERE id = $1`, BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding); err != nil {
+		`UPDATE battles SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, updated_date = NOW() WHERE id = $1`, BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding); err != nil {
 		log.Println(err)
 		return errors.New("unable to revise battle")
 	}
