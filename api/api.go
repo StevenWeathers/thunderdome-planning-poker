@@ -2,8 +2,8 @@
 package api
 
 import (
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/email"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
+	"github.com/StevenWeathers/thunderdome-planning-poker/email"
 	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
@@ -36,7 +36,7 @@ type api struct {
 	router *mux.Router
 	email  *email.Email
 	cookie *securecookie.SecureCookie
-	db     *database.Database
+	db     *db.Database
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -78,7 +78,7 @@ const (
 // @in header
 // @name X-API-Key
 // @version BETA
-func Init(config *Config, router *mux.Router, database *database.Database, email *email.Email, cookie *securecookie.SecureCookie) *api {
+func Init(config *Config, router *mux.Router, database *db.Database, email *email.Email, cookie *securecookie.SecureCookie) *api {
 	var a = &api{
 		config: config,
 		router: router,

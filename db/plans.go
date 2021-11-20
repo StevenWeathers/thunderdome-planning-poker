@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"database/sql"
@@ -28,9 +28,9 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 			var Description sql.NullString
 			var AcceptanceCriteria sql.NullString
 			var p = &model.Plan{
-				Votes:              make([]*model.Vote, 0),
-				Active:             false,
-				Skipped:            false,
+				Votes:   make([]*model.Vote, 0),
+				Active:  false,
+				Skipped: false,
 			}
 			if err := planRows.Scan(
 				&p.Id, &p.Name, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Points, &p.Active, &p.Skipped, &p.VoteStartTime, &p.VoteEndTime, &v,

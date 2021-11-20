@@ -3,20 +3,18 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
+	"github.com/StevenWeathers/thunderdome-planning-poker/email"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/database"
-	"github.com/StevenWeathers/thunderdome-planning-poker/pkg/email"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"github.com/spf13/viper"
 )
 
-//go:embed schema.sql
-var schemaSQL string
 var embedUseOS bool
 var (
 	version = "dev"
@@ -52,11 +50,11 @@ type Config struct {
 }
 
 type server struct {
-	config   *Config
-	router   *mux.Router
-	email    *email.Email
+	config *Config
+	router *mux.Router
+	email  *email.Email
 	cookie *securecookie.SecureCookie
-	db     *database.Database
+	db     *db.Database
 }
 
 func main() {
@@ -93,7 +91,7 @@ func main() {
 	}
 
 	s.email = email.New(s.config.AppDomain, s.config.PathPrefix)
-	s.db = database.New(s.config.AdminEmail, schemaSQL)
+	s.db = db.New(s.config.AdminEmail)
 
 	s.routes()
 
