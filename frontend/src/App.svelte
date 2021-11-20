@@ -268,7 +268,9 @@
             {#if activeWarrior.name}
                 <span class="font-bold mr-2 text-xl">
                     <WarriorIcon />
-                    <a href="{appRoutes.profile}">{activeWarrior.name}</a>
+                    <a href="{appRoutes.profile}" data-testid="userprofile-link"
+                        >{activeWarrior.name}</a
+                    >
                 </span>
                 <HollowButton
                     color="teal"
