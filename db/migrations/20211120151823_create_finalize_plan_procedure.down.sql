@@ -1,1 +1,0 @@
-DROP PROCEDURE finalize_plan(battleId UUID, planId UUID, planPoints VARCHAR(3));

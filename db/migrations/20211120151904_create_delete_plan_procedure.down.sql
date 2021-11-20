@@ -1,1 +1,0 @@
-DROP PROCEDURE delete_plan(battleId UUID, planId UUID);

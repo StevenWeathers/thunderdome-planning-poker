@@ -1,1 +1,0 @@
-DROP PROCEDURE activate_plan_voting(battleId UUID, planId UUID);
