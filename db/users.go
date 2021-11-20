@@ -141,7 +141,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 
 	var UserID string
 	var verifyID string
-	UserType := "CORPORAL"
+	UserType := "REGISTERED"
 	UserAvatar := "identicon"
 
 	if ActiveUserID != "" {

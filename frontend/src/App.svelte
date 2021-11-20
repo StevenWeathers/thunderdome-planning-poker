@@ -34,6 +34,7 @@
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
     import apiclient from './apiclient.js'
+    import { validateUserIsAdmin } from './validationUtils'
 
     const { AllowRegistration, AppVersion, PathPrefix } = appConfig
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
@@ -276,7 +277,7 @@
                 >
                     {$_('pages.myBattles.nav')}
                 </HollowButton>
-                {#if activeWarrior.rank !== 'PRIVATE'}
+                {#if activeWarrior.rank !== 'GUEST' && activeWarrior.rank !== 'PRIVATE'}
                     <HollowButton
                         color="blue"
                         href="{appRoutes.organizations}"
@@ -285,7 +286,7 @@
                         {$_('organizations')} &amp; {$_('teams')}
                     </HollowButton>
                 {/if}
-                {#if !activeWarrior.rank || activeWarrior.rank === 'PRIVATE'}
+                {#if !activeWarrior.rank || activeWarrior.rank === 'GUEST' || activeWarrior.rank === 'PRIVATE'}
                     {#if AllowRegistration}
                         <HollowButton
                             color="teal"
@@ -299,7 +300,7 @@
                         {$_('pages.login.nav')}
                     </HollowButton>
                 {:else}
-                    {#if activeWarrior.rank === 'GENERAL'}
+                    {#if validateUserIsAdmin(activeWarrior)}
                         <HollowButton
                             color="purple"
                             href="{appRoutes.admin}"

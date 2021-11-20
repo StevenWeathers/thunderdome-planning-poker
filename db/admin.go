@@ -17,7 +17,7 @@ func (d *Database) ConfirmAdmin(UserID string) error {
 		return errors.New("could not find users type")
 	}
 
-	if UserType != "GENERAL" {
+	if UserType != "ADMIN" {
 		return errors.New(("user is not an admin"))
 	}
 

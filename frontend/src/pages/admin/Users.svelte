@@ -12,6 +12,7 @@
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
     import { appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
 
     export let xfetch
     export let router
@@ -146,7 +147,7 @@
         if (!$warrior.id) {
             router.route(appRoutes.login)
         }
-        if ($warrior.rank !== 'GENERAL') {
+        if (!validateUserIsAdmin($warrior)) {
             router.route(appRoutes.landing)
         }
 
@@ -268,7 +269,7 @@
                             </td>
                             <td class="border p-2">{user.rank}</td>
                             <td class="border p-2">
-                                {#if user.rank !== 'GENERAL'}
+                                {#if user.rank !== 'ADMIN'}
                                     <HollowButton
                                         onClick="{promoteUser(user.id)}"
                                         color="blue"

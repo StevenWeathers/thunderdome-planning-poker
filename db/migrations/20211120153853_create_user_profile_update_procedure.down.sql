@@ -1,0 +1,10 @@
+DROP PROCEDURE user_profile_update(
+    userId UUID,
+    userName VARCHAR(64),
+    userAvatar VARCHAR(128),
+    notificationsEnabled BOOLEAN,
+    userCountry VARCHAR(2),
+    userLocale VARCHAR(2),
+    userCompany VARCHAR(256),
+    userJobTitle VARCHAR(128)
+);

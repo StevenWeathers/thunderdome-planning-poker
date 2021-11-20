@@ -1,0 +1,1 @@
+DROP PROCEDURE verify_user_account(verifyId UUID);

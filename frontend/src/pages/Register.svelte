@@ -3,7 +3,7 @@
     import SolidButton from '../components/SolidButton.svelte'
     import WarriorRegisterForm from '../components/WarriorRegisterForm.svelte'
     import { warrior } from '../stores.js'
-    import { validateName, validatePasswords } from '../validationUtils.js'
+    import { validateName } from '../validationUtils.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
 
@@ -22,7 +22,7 @@
         ? `${appRoutes.battle}/${battleId}`
         : appRoutes.battles
 
-    function createWarriorPrivate(e) {
+    function createUserGuest(e) {
         e.preventDefault()
         const body = {
             name: warriorName,
@@ -61,7 +61,7 @@
         }
     }
 
-    function createWarriorCorporal(
+    function createUserRegistered(
         warriorName,
         warriorEmail,
         warriorPassword1,
@@ -128,7 +128,7 @@
         {#if !$warrior.id && guestsAllowed && registrationAllowed}
             <div class="w-full md:w-1/2 px-4">
                 <form
-                    on:submit="{createWarriorPrivate}"
+                    on:submit="{createUserGuest}"
                     class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
                     name="registerGuest"
                 >
@@ -196,7 +196,7 @@
 
                     <WarriorRegisterForm
                         guestWarriorsName="{warriorName}"
-                        handleSubmit="{createWarriorCorporal}"
+                        handleSubmit="{createUserRegistered}"
                         notifications="{notifications}"
                     />
                 </div>

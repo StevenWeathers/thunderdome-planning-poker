@@ -1,0 +1,1 @@
+DROP PROCEDURE deactivate_all_users();

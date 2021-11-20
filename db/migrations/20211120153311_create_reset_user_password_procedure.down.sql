@@ -1,0 +1,1 @@
+DROP PROCEDURE reset_user_password(resetId UUID, userPassword TEXT);

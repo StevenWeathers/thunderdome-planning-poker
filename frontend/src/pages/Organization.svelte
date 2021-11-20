@@ -11,6 +11,7 @@
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
+    import { validateUserIsRegistered } from '../validationUtils.js'
 
     export let xfetch
     export let router
@@ -214,7 +215,7 @@
     }
 
     onMount(() => {
-        if (!$warrior.id || $warrior.rank === 'PRIVATE') {
+        if (!$warrior.id || !validateUserIsRegistered($warrior)) {
             router.route(appRoutes.login)
         }
 

@@ -37,3 +37,11 @@ export const validateName = warriorName => {
         error,
     }
 }
+
+export const validateUserIsAdmin = user => {
+    return user.rank === 'ADMIN' || user.rank === 'GENERAL'
+}
+
+export const validateUserIsRegistered = user => {
+    return user.rank !== 'GUEST' && user.rank !== 'PRIVATE'
+}

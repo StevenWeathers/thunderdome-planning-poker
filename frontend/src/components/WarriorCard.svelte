@@ -68,9 +68,9 @@
                     title="{warrior.name}"
                 >
                     {#if showRank}
-                        {#if warrior.rank == 'GENERAL'}
+                        {#if warrior.rank == 'ADMIN'}
                             <WarriorRankGeneral />
-                        {:else if warrior.rank == 'CORPORAL'}
+                        {:else if warrior.rank == 'REGISTERED'}
                             <WarriorRankCorporal />
                         {:else}
                             <WarriorRankPrivate />

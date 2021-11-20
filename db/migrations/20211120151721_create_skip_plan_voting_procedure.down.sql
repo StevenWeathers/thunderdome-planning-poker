@@ -1,0 +1,1 @@
+DROP PROCEDURE skip_plan_voting(battleId UUID, planId UUID);

@@ -63,7 +63,7 @@ const (
 	contextKeyOrgRole        contextKey = "orgRole"
 	contextKeyDepartmentRole contextKey = "departmentRole"
 	contextKeyTeamRole       contextKey = "teamRole"
-	adminUserType            string     = "GENERAL"
+	adminUserType            string     = "ADMIN"
 )
 
 // @title Thunderdome API

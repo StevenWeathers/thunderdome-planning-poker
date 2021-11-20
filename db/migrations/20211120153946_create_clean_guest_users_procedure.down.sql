@@ -1,0 +1,1 @@
+DROP PROCEDURE clean_guest_users(daysOld INTEGER);
