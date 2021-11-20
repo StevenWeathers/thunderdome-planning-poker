@@ -108,7 +108,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 
 		a.email.SendDeleteConfirmation(User.Name, User.Email)
 
-		// don't clear admin's user cookies when deleting other users
+		// don't clear admins user cookies when deleting other users
 		if UserID == UserCookieID {
 			a.clearUserCookies(w)
 		}

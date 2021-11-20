@@ -3,10 +3,9 @@
 
     import PageLayout from '../components/PageLayout.svelte'
     import CreateBattle from '../components/CreateBattle.svelte'
-    import DownCarrotIcon from '../components/icons/DownCarrotIcon.svelte'
     import LeaderIcon from '../components/icons/LeaderIcon.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
     import HollowButton from '../components/HollowButton.svelte'
+    import Pagination from '../components/Pagination.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -16,22 +15,38 @@
     export let eventTag
     export let router
 
+    const battlesPageLimit = 10
+    let battleCount = 0
+    let battlesPage = 1
     let battles = []
 
-    xfetch(`/api/users/${$warrior.id}/battles`)
-        .then(res => res.json())
-        .then(function (result) {
-            battles = result.data
-        })
-        .catch(function () {
-            notifications.danger($_('pages.myBattles.battlesError'))
-            eventTag('fetch_battles', 'engagement', 'failure')
-        })
+    function getBattles() {
+        const battlesOffset = (battlesPage - 1) * battlesPageLimit
+
+        xfetch(
+            `/api/users/${$warrior.id}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
+        )
+            .then(res => res.json())
+            .then(function (result) {
+                battles = result.data
+                battleCount = result.meta.count
+            })
+            .catch(function () {
+                notifications.danger($_('pages.myBattles.battlesError'))
+                eventTag('fetch_battles', 'engagement', 'failure')
+            })
+    }
+
+    const changePage = evt => {
+        battlesPage = evt.detail
+        getBattles()
+    }
 
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.login)
         }
+        getBattles()
     })
 </script>
 
@@ -78,6 +93,16 @@
                     </div>
                 </div>
             {/each}
+            {#if battleCount > battlesPageLimit}
+                <div class="mt-6 pt-1 flex justify-center bg-white">
+                    <Pagination
+                        bind:current="{battlesPage}"
+                        num_items="{battleCount}"
+                        per_page="{battlesPageLimit}"
+                        on:navigate="{changePage}"
+                    />
+                </div>
+            {/if}
         </div>
 
         <div class="w-full md:w-1/2 lg:w-2/5 md:pl-2 xl:pl-4">

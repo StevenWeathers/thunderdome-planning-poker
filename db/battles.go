@@ -130,8 +130,21 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 }
 
 // GetBattlesByUser gets a list of battles by UserID
-func (d *Database) GetBattlesByUser(UserID string) ([]*model.Battle, error) {
+func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*model.Battle, int, error) {
+	var Count int
 	var battles = make([]*model.Battle, 0)
+
+	e := d.db.QueryRow(`
+		SELECT COUNT(*) FROM battles b
+		LEFT JOIN battles_users bw ON b.id = bw.battle_id
+		WHERE bw.user_id = $1 AND bw.abandoned = false;
+	`, UserID).Scan(
+		&Count,
+	)
+	if e != nil {
+		return nil, Count, e
+	}
+
 	battleRows, battlesErr := d.db.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding,
 		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans,
@@ -139,11 +152,13 @@ func (d *Database) GetBattlesByUser(UserID string) ([]*model.Battle, error) {
 		FROM battles b
 		LEFT JOIN plans p ON b.id = p.battle_id
 		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
-		LEFT JOIN battles_users bw ON b.id = bw.battle_id WHERE bw.user_id = $1 AND bw.abandoned = false
+		LEFT JOIN battles_users bw ON b.id = bw.battle_id
+		WHERE bw.user_id = $1 AND bw.abandoned = false
 		GROUP BY b.id ORDER BY b.created_date DESC
-	`, UserID)
+		LIMIT $2 OFFSET $3
+	`, UserID, Limit, Offset)
 	if battlesErr != nil {
-		return nil, errors.New("not found")
+		return nil, Count, errors.New("not found")
 	}
 
 	defer battleRows.Close()
@@ -181,7 +196,7 @@ func (d *Database) GetBattlesByUser(UserID string) ([]*model.Battle, error) {
 		}
 	}
 
-	return battles, nil
+	return battles, Count, nil
 }
 
 // ConfirmLeader confirms the user is a leader of the battle

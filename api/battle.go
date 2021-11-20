@@ -16,22 +16,31 @@ import (
 // @Tags battle
 // @Produce  json
 // @Param userId path string true "the user ID to get battles for"
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Router /users/{userId}/battles [get]
 func (a *api) handleGetUserBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		battles, err := a.db.GetBattlesByUser(UserID)
+		battles, Count, err := a.db.GetBattlesByUser(UserID, Limit, Offset)
 		if err != nil {
 			Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
 		}
 
-		Success(w, r, http.StatusOK, battles, nil)
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		Success(w, r, http.StatusOK, battles, Meta)
 	}
 }
 
@@ -46,7 +55,7 @@ func (a *api) handleGetUserBattles() http.HandlerFunc {
 // @Param teamId path string false "the team ID"
 // @Param name body string false "the battle name"
 // @Param pointValuesAllowed body []string false "the allowed point values e.g. 1,2,3,5,8"
-// @Param autoFinishVoting body string false "whether or not to automatically complete voting when all users have voted"
+// @Param autoFinishVoting body string false "whether to automatically complete voting when all users have voted"
 // @Param plans body []model.Plan false "the battle plans"
 // @Param pointAverageRounding body string false "which javascript math method to use for rounding point average"
 // @Param battleLeaders body []string true "additional battle leaders beyond the user creating the battle"
