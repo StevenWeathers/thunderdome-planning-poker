@@ -67,7 +67,7 @@ func (d *Database) GenerateApiKey(UserID string, KeyName string) (*model.APIKey,
 	keyID := apiPrefix + "." + hashedKey
 
 	e := d.db.QueryRow(
-		`INSERT INTO api_keys (id, name, user_id ) VALUES ($1, $2, $3) RETURNING created_date`,
+		`SELECT createdDate FROM user_apikey_add($1, $2, $3);`,
 		keyID,
 		KeyName,
 		UserID,
@@ -117,7 +117,7 @@ func (d *Database) GetUserApiKeys(UserID string) ([]*model.APIKey, error) {
 // UpdateUserApiKey updates a user api key (active column only)
 func (d *Database) UpdateUserApiKey(UserID string, KeyID string, Active bool) ([]*model.APIKey, error) {
 	if _, err := d.db.Exec(
-		`UPDATE api_keys SET active = $3, updated_date = NOW() WHERE id = $1 AND user_id = $2;`, KeyID, UserID, Active); err != nil {
+		`CALL user_apikey_update($1, $2, $3);`, KeyID, UserID, Active); err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func (d *Database) UpdateUserApiKey(UserID string, KeyID string, Active bool) ([
 // DeleteUserApiKey removes a users api key
 func (d *Database) DeleteUserApiKey(UserID string, KeyID string) ([]*model.APIKey, error) {
 	if _, err := d.db.Exec(
-		`DELETE FROM api_keys WHERE id = $1 AND user_id = $2;`, KeyID, UserID); err != nil {
+		`CALL user_apikey_delete($1, $2);`, KeyID, UserID); err != nil {
 		log.Println(err)
 		return nil, err
 	}

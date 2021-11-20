@@ -13,6 +13,8 @@ BEGIN
     )
     WHERE p1.id = planId;
 
+    UPDATE users SET last_active = NOW() WHERE id = userId;
+
     COMMIT;
 END;
 $$;
