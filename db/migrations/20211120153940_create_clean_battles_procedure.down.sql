@@ -1,1 +1,0 @@
-DROP PROCEDURE clean_battles(daysOld INTEGER);

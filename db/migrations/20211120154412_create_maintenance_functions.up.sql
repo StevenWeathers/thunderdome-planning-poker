@@ -1,3 +1,21 @@
+-- Find and update all user emails that include an uppercase character and dont have a duplicate account to lowercase email --
+CREATE OR REPLACE FUNCTION lowercase_unique_user_emails() RETURNS table (
+    name VARCHAR(256), email VARCHAR(320)
+) AS $$
+BEGIN
+    RETURN QUERY
+        UPDATE users u
+        SET email = lower(u.email), updated_date = NOW()
+        FROM (
+            SELECT lower(su.email) AS email
+            FROM users su
+            WHERE su.email IS NOT NULL
+            GROUP BY lower(su.email) HAVING count(su.*) = 1
+        ) AS subquery
+        WHERE lower(u.email) = subquery.email AND u.email ~ '[A-Z]' RETURNING u.name, u.email;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Find and merge duplicate email user accounts caused by case sensitive bug --
 CREATE OR REPLACE FUNCTION merge_nonunique_user_accounts() RETURNS table (
     name VARCHAR(256), email VARCHAR(320)
@@ -73,3 +91,24 @@ BEGIN
     REFRESH MATERIALIZED VIEW active_countries;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Clean up Guest Users (and their created battles) older than X Days --
+CREATE OR REPLACE PROCEDURE clean_guest_users(daysOld INTEGER)
+LANGUAGE plpgsql AS $$
+BEGIN
+    DELETE FROM users WHERE last_active < (NOW() - daysOld * interval '1 day') AND type = 'GUEST';
+    REFRESH MATERIALIZED VIEW active_countries;
+
+    COMMIT;
+END;
+$$;
+
+-- Clean up Battles older than X Days --
+CREATE OR REPLACE PROCEDURE clean_battles(daysOld INTEGER)
+LANGUAGE plpgsql AS $$
+BEGIN
+    DELETE FROM battles WHERE updated_date < (NOW() - daysOld * interval '1 day');
+
+    COMMIT;
+END;
+$$;

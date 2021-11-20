@@ -1,1 +1,0 @@
-DROP FUNCTION lowercase_unique_user_emails();

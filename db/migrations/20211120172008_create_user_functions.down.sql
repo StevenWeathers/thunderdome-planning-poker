@@ -39,3 +39,21 @@ DROP FUNCTION registered_users_email_search(
     IN l_limit INTEGER,
     IN l_offset INTEGER
 );
+
+DROP FUNCTION user_apikey_add(
+    IN apikeyId text,
+    IN keyName VARCHAR(256),
+    IN userId uuid,
+    OUT createdDate timestamp
+);
+
+DROP PROCEDURE user_apikey_delete(
+    apikeyId text,
+    userId uuid
+);
+
+DROP PROCEDURE user_apikey_update(
+    apikeyId text,
+    userId uuid,
+    keyActive boolean
+);

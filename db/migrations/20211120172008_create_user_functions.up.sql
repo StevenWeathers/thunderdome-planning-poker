@@ -130,3 +130,46 @@ BEGIN
         OFFSET l_offset;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Insert a new user apikey
+CREATE OR REPLACE FUNCTION user_apikey_add(
+    IN apikeyId text,
+    IN keyName VARCHAR(256),
+    IN userId uuid,
+    OUT createdDate timestamp
+)
+AS $$
+BEGIN
+    INSERT INTO api_keys (id, name, user_id) VALUES (apikeyId, keyName, userId) RETURNING created_date INTO createdDate;
+    UPDATE users SET last_active = NOW() WHERE id = userId;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Deletes a user apikey
+CREATE OR REPLACE PROCEDURE user_apikey_delete(
+    apikeyId text,
+    userId uuid
+)
+LANGUAGE plpgsql AS $$
+BEGIN
+    DELETE FROM api_keys WHERE id = apikeyId AND user_id = userId;
+    UPDATE users SET last_active = NOW() WHERE id = userId;
+
+    COMMIT;
+END;
+$$;
+
+-- Updates a user apikey
+CREATE OR REPLACE PROCEDURE user_apikey_update(
+    apikeyId text,
+    userId uuid,
+    keyActive boolean
+)
+LANGUAGE plpgsql AS $$
+BEGIN
+    UPDATE api_keys SET active = keyActive, updated_date = NOW() WHERE id = apikeyId AND user_id = userId;
+    UPDATE users SET last_active = NOW() WHERE id = userId;
+
+    COMMIT;
+END;
+$$;
