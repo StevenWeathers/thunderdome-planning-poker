@@ -1,6 +1,6 @@
 <script>
     import Sockette from 'sockette'
-    import { onMount, onDestroy } from 'svelte'
+    import { onDestroy, onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
     import PointCard from '../components/PointCard.svelte'
@@ -63,9 +63,8 @@
             case 'init': {
                 battle = JSON.parse(parsedEvent.value)
                 points = battle.pointValuesAllowed
-                const { spectator = false } = battle.users.find(
-                    w => w.id === $warrior.id,
-                )
+                const { spectator = false } =
+                    battle.users.find(w => w.id === $warrior.id) || {}
                 isSpectator = spectator
 
                 if (battle.activePlanId !== '') {
