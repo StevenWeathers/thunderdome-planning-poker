@@ -1,1 +1,0 @@
-DROP PROCEDURE set_battle_leader(battleId UUID, leaderId UUID);

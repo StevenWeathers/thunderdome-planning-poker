@@ -1,1 +1,0 @@
-DROP PROCEDURE delete_battle(battleId UUID);

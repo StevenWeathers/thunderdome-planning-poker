@@ -1,1 +1,0 @@
-DROP PROCEDURE retract_user_vote(planId UUID, userId UUID);

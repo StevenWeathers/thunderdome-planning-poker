@@ -1,1 +1,0 @@
-DROP PROCEDURE demote_battle_leader(battleId UUID, leaderId UUID);
