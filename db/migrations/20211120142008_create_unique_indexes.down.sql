@@ -1,0 +1,5 @@
+DROP INDEX email_unique_idx;
+DROP INDEX api_keys_warrior_id_name_key;
+DROP INDEX organization_team_team_id_key;
+DROP INDEX organization_department_organization_id_name_key;
+DROP INDEX department_team_team_id_key;
