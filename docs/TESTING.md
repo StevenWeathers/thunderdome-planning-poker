@@ -7,7 +7,7 @@ In effort to maintain a stable application Thunderdome is supported by automated
 [Cypress](https://www.cypress.io/) is used for End to End testing of Thunderdome, keep tests atomic!
 
 ```
-cd test
+cd e2e
 npm install
 npm run cypress:open
 ```
