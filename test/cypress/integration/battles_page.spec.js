@@ -15,6 +15,18 @@ describe('The Battles Page', () => {
     cy.logout(this.currentUser)
   })
 
+  it('displays users battles', function () {
+    cy.login(this.currentUser)
+    cy.createUserBattle(this.currentUser)
+    cy.visit('/battles')
+
+    // we should be in battle
+    cy.get('[data-testid="battle-name"]').should('contain', 'Test Battle')
+
+    // cleanup our user (for some reason can't access this context in after utility
+    cy.logout(this.currentUser)
+  })
+
   describe('Create Battle Form', () => {
     it('submitts successfully', function () {
       cy.login(this.currentUser)

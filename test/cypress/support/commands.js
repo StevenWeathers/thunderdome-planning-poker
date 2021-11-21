@@ -14,12 +14,14 @@
 const genericPassword = 'kentRules!'
 
 function generateEmail (length) {
-  var result = ''
-  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  var charactersLength = characters.length
-  for (var i = 0; i < length; i++) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const charactersLength = characters.length
+  let result = ''
+
+  for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength))
   }
+
   return result
 }
 
@@ -46,6 +48,16 @@ Cypress.Commands.add('login', (user) => {
 Cypress.Commands.add('logout', (user) => {
   cy.request('DELETE', `/api/user/${user.id}`)
   cy.clearCookie('warrior')
+})
+
+Cypress.Commands.add('createUserBattle', (user, battle = {
+  name: 'Test Battle',
+  pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
+  autoFinishVoting: false,
+  plans: [],
+  pointAverageRounding: 'ceil'
+}) => {
+  cy.request('POST', `/api/users/${user.id}/battles`, battle)
 })
 //
 //

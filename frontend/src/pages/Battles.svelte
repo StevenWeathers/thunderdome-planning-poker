@@ -73,7 +73,7 @@
                                 <LeaderIcon />
                                 &nbsp;
                             {/if}
-                            {battle.name}
+                            <span data-testid="battle-name">{battle.name}</span>
                             <div class="font-semibold md:text-sm text-gray-600">
                                 {$_('pages.myBattles.countPlansPointed', {
                                     values: {
