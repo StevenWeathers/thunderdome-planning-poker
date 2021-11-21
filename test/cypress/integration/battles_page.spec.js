@@ -4,7 +4,16 @@ describe('The Battles Page', () => {
     cy.createUser()
   })
 
-  it('successfully loads', function () {
+  it('redirects to login for unauthenticated user', function () {
+    cy.visit('/battles')
+
+    cy.url().should('include', '/login')
+
+    // cleanup our user (for some reason can't access this context in after utility
+    cy.logout(this.currentUser)
+  })
+
+  it('successfully loads for authenticated registered user', function () {
     cy.login(this.currentUser)
 
     cy.visit('/battles')

@@ -4,7 +4,16 @@ describe('The User Profile Page', () => {
     cy.createUser()
   })
 
-  it('successfully loads', function () {
+  it('redirects to register for unauthenticated user', function () {
+    cy.visit('/profile')
+
+    cy.url().should('include', '/register')
+
+    // cleanup our user (for some reason can't access this context in after utility
+    cy.logout(this.currentUser)
+  })
+
+  it('successfully loads for authenticated registered user', function () {
     cy.login(this.currentUser)
 
     cy.visit('/profile')
