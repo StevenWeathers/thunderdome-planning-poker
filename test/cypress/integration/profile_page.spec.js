@@ -3,7 +3,7 @@ describe('The User Profile Page', () => {
     it('redirects to register', function () {
       cy.visit('/profile')
 
-      cy.url().should('include', '/register')
+      cy.location('pathname').should('equal', '/register')
     })
   })
 
@@ -35,7 +35,7 @@ describe('The User Profile Page', () => {
         cy.get('button').contains('Delete Account').click()
 
         // should have delete confirmation button
-        cy.get('button').contains('Confirm Delete').click()
+        cy.get('[data-testid="confirm-actions"] button').contains('Confirm Delete').click()
 
         // we should be redirected to landing
         cy.location('pathname').should('equal', '/')
@@ -45,6 +45,29 @@ describe('The User Profile Page', () => {
 
         // UI should reflect this user being logged out
         cy.get('a[data-testid="userprofile-link"]').should('not.exist')
+      })
+
+      it('cancel does not delete the user and remains on profile page', function () {
+        cy.login(this.currentUser)
+
+        cy.visit('/profile')
+
+        cy.get('button').contains('Delete Account').click()
+
+        // should have delete confirmation button
+        cy.get('[data-testid="confirm-actions"] button').contains('Cancel').click()
+
+        // we should be redirected to landing
+        cy.location('pathname').should('equal', '/profile')
+
+        // our user cookie should not be present
+        cy.getCookie('warrior').should('exist')
+
+        // UI should reflect this user being logged out
+        cy.get('a[data-testid="userprofile-link"]').should('contain', this.currentUser.name)
+
+        // cleanup our user (for some reason can't access this context in after utility
+        cy.logout(this.currentUser)
       })
     })
   })

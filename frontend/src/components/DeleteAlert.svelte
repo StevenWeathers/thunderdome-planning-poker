@@ -15,7 +15,7 @@
             {$_('cannotBeUndone')}
         </p>
     </div>
-    <div class="text-right">
+    <div class="text-right" data-testid="confirm-actions">
         <button
             type="button"
             class="inline-block align-baseline font-bold text-sm text-blue-500

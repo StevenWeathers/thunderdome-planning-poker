@@ -3,6 +3,7 @@
     export let color = 'green'
     export let additionalClasses = ''
     export let type = 'button'
+    export let testid = ''
     export let onClick = () => {}
 </script>
 
@@ -15,45 +16,58 @@
         @apply font-bold;
         @apply text-white;
     }
+
     :global(.btn.disabled) {
         @apply opacity-50;
         @apply cursor-not-allowed;
     }
+
     :global(.btn-green) {
         @apply bg-green-500;
     }
+
     :global(.btn-green:hover) {
         @apply bg-green-600;
     }
+
     :global(.btn-blue) {
         @apply bg-blue-500;
     }
+
     :global(.btn-blue:hover) {
         @apply bg-blue-600;
     }
+
     :global(.btn-red) {
         @apply bg-red-500;
     }
+
     :global(.btn-red:hover) {
         @apply bg-red-600;
     }
+
     :global(.btn-purple) {
         @apply bg-purple-500;
     }
+
     :global(.btn-purple:hover) {
         @apply bg-purple-600;
     }
+
     :global(.btn-teal) {
         @apply bg-teal-500;
     }
+
     :global(.btn-teal:hover) {
         @apply bg-teal-600;
     }
+
     :global(.btn-blue-copy) {
         @apply bg-blue-500;
         @apply rounded-l-none;
         @apply border-blue-800;
     }
+
     :global(.btn-blue-copy:hover) {
         @apply bg-blue-600;
     }
@@ -66,6 +80,7 @@
     on:click="{onClick}"
     type="{type}"
     disabled="{disabled}"
+    data-testid="{testid}"
 >
     <slot />
 </button>

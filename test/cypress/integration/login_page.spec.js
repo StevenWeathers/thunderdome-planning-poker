@@ -16,7 +16,7 @@ describe('The Login Page', () => {
     cy.get('input[name=yourPassword]').type(`kentRules!{enter}`)
 
     // we should be redirected to /battles
-    cy.url().should('include', '/battles')
+    cy.location('pathname').should('equal', '/battles')
 
     // our user cookie should be present
     cy.getCookie('warrior').should('exist')

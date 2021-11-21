@@ -588,19 +588,25 @@
                             <HollowButton
                                 color="blue"
                                 onClick="{toggleEditBattle}"
+                                testid="battle-edit"
                             >
                                 {$_('battleEdit')}
                             </HollowButton>
                             <HollowButton
                                 color="red"
                                 onClick="{toggleDeleteBattle}"
+                                testid="battle-delete"
                             >
                                 {$_('battleDelete')}
                             </HollowButton>
                         </div>
                     {:else}
                         <div class="mt-4 text-right">
-                            <HollowButton color="red" onClick="{abandonBattle}">
+                            <HollowButton
+                                color="red"
+                                onClick="{abandonBattle}"
+                                testid="battle-abandon"
+                            >
                                 {$_('battleAbandon')}
                             </HollowButton>
                         </div>
