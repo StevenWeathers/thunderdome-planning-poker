@@ -58,6 +58,32 @@ Cypress.Commands.add('createUserBattle', (user, battle = {
   pointAverageRounding: 'ceil'
 }) => {
   cy.request('POST', `/api/users/${user.id}/battles`, battle)
+    .its('body.data')
+    .as('currentBattle')
+})
+
+Cypress.Commands.add('createUserTeam', (user, team = {
+  name: 'Test Team',
+}) => {
+  cy.request('POST', `/api/users/${user.id}/teams`, team)
+    .its('body.data')
+    .as('currentTeam')
+})
+
+Cypress.Commands.add('createUserOrganization', (user, org = {
+  name: 'Test Organization',
+}) => {
+  cy.request('POST', `/api/users/${user.id}/organizations`, org)
+    .its('body.data')
+    .as('currentOrganization')
+})
+
+Cypress.Commands.add('createUserDepartment', (user, organizationId, department = {
+  name: 'Test Department',
+}) => {
+  cy.request('POST', `/api/organizations/${organizationId}/departments`, department)
+    .its('body.data')
+    .as('currentDepartment')
 })
 //
 //
