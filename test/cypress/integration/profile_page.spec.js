@@ -1,48 +1,51 @@
 describe('The User Profile Page', () => {
-  beforeEach(() => {
-    // seed a user in the DB that we can control from our tests
-    cy.createUser()
+  describe('Unauthenticated User', () => {
+    it('redirects to register', function () {
+      cy.visit('/profile')
+
+      cy.url().should('include', '/register')
+    })
   })
 
-  it('redirects to register for unauthenticated user', function () {
-    cy.visit('/profile')
+  describe('Guest User', () => {})
 
-    cy.url().should('include', '/register')
+  describe('Registered User', () => {
+    beforeEach(() => {
+      // seed a user in the DB that we can control from our tests
+      cy.createUser()
+    })
 
-    // cleanup our user (for some reason can't access this context in after utility
-    cy.logout(this.currentUser)
-  })
-
-  it('successfully loads for authenticated registered user', function () {
-    cy.login(this.currentUser)
-
-    cy.visit('/profile')
-
-    cy.get('h2').should('contain', 'Your Profile')
-
-    // cleanup our user (for some reason can't access this context in after utility
-    cy.logout(this.currentUser)
-  })
-
-  describe('Delete Account', function () {
-    it('successfully deletes the user', function () {
+    it('successfully loads', function () {
       cy.login(this.currentUser)
 
       cy.visit('/profile')
 
-      cy.get('button').contains('Delete Account').click()
+      cy.get('h2').should('contain', 'Your Profile')
 
-      // should have delete confirmation button
-      cy.get('button').contains('Confirm Delete').click()
+      // cleanup our user (for some reason can't access this context in after utility
+      cy.logout(this.currentUser)
+    })
 
-      // we should be redirected to landing
-      cy.location('pathname').should('equal', '/')
+    describe('Delete Account', function () {
+      it('successfully deletes the user', function () {
+        cy.login(this.currentUser)
 
-      // our user cookie should not be present
-      cy.getCookie('warrior').should('not.exist')
+        cy.visit('/profile')
 
-      // UI should reflect this user being logged out
-      cy.get('a[data-testid="userprofile-link"]').should('not.exist')
+        cy.get('button').contains('Delete Account').click()
+
+        // should have delete confirmation button
+        cy.get('button').contains('Confirm Delete').click()
+
+        // we should be redirected to landing
+        cy.location('pathname').should('equal', '/')
+
+        // our user cookie should not be present
+        cy.getCookie('warrior').should('not.exist')
+
+        // UI should reflect this user being logged out
+        cy.get('a[data-testid="userprofile-link"]').should('not.exist')
+      })
     })
   })
 })
