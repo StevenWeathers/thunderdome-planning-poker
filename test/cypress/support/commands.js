@@ -46,7 +46,7 @@ Cypress.Commands.add('login', (user) => {
 })
 
 Cypress.Commands.add('logout', (user) => {
-  cy.request('DELETE', `/api/user/${user.id}`)
+  cy.request('DELETE', `/api/users/${user.id}`)
   cy.clearCookie('warrior')
 })
 
