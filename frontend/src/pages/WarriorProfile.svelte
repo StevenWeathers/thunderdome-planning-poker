@@ -73,15 +73,17 @@
         )
     }
 
-    xfetch(`/api/users/${$warrior.id}`)
-        .then(res => res.json())
-        .then(function (result) {
-            warriorProfile = result.data
-        })
-        .catch(function () {
-            notifications.danger($_('pages.warriorProfile.errorRetreiving'))
-            eventTag('fetch_profile', 'engagement', 'failure')
-        })
+    function getProfile() {
+        xfetch(`/api/users/${$warrior.id}`)
+            .then(res => res.json())
+            .then(function (result) {
+                warriorProfile = result.data
+            })
+            .catch(function () {
+                notifications.danger($_('pages.warriorProfile.errorRetreiving'))
+                eventTag('fetch_profile', 'engagement', 'failure')
+            })
+    }
 
     function updateWarriorProfile(e) {
         e.preventDefault()
@@ -182,9 +184,6 @@
                 eventTag('fetch_profile_apikeys', 'engagement', 'failure')
             })
     }
-    if (ExternalAPIEnabled) {
-        getApiKeys()
-    }
 
     function deleteApiKey(apk) {
         return function () {
@@ -257,6 +256,12 @@
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.register)
+            return
+        }
+
+        getProfile()
+        if (ExternalAPIEnabled) {
+            getApiKeys()
         }
     })
 

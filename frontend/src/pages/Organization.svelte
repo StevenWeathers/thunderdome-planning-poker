@@ -217,6 +217,7 @@
     onMount(() => {
         if (!$warrior.id || !validateUserIsRegistered($warrior)) {
             router.route(appRoutes.login)
+            return
         }
 
         getOrganization()

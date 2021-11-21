@@ -440,6 +440,7 @@
     onMount(() => {
         if (!$warrior.id) {
             router.route(`${loginOrRegister}/${battleId}`)
+            return
         }
         const voteCounter = setInterval(() => {
             currentTime = new Date()

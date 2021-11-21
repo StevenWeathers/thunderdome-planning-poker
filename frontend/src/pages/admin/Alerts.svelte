@@ -123,9 +123,11 @@
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.login)
+            return
         }
         if (!validateUserIsAdmin($warrior)) {
             router.route(appRoutes.landing)
+            return
         }
 
         getAlerts()
