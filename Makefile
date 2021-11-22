@@ -32,6 +32,8 @@ clean:
 format:
 	$(GOFMT) -s -w */*.go
 
+testgo:
+	go test `go list ./... | grep -v swaggerdocs`
 # Cross compilation
 build-linux:
 	$(SWAGGERGEN)
