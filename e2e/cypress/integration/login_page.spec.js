@@ -22,7 +22,7 @@ describe('The Login Page', () => {
     cy.getCookie('warrior').should('exist')
 
     // UI should reflect this user being logged in
-    cy.get('a[data-testid="userprofile-link"]').should('contain', name)
+    cy.getByTestId('userprofile-link').should('contain', name)
 
     // cleanup our user (for some reason can't access this context in after utility
     cy.logout(this.currentUser)

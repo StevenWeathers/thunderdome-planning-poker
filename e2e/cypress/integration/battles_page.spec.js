@@ -8,7 +8,7 @@ describe('The Battles Page', () => {
   })
 
   describe('Guest User', () => {})
-  
+
   describe('Registered User', () => {
     beforeEach(() => {
       // seed a user in the DB that we can control from our tests
@@ -32,7 +32,7 @@ describe('The Battles Page', () => {
       cy.visit('/battles')
 
       // we should be in battle
-      cy.get('[data-testid="battle-name"]').should('contain', 'Test Battle')
+      cy.getByTestId('battle-name').should('contain', 'Test Battle')
 
       // cleanup our user (for some reason can't access this context in after utility
       cy.logout(this.currentUser)

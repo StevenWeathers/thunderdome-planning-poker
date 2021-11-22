@@ -44,7 +44,7 @@ describe('The User Profile Page', () => {
         cy.getCookie('warrior').should('not.exist')
 
         // UI should reflect this user being logged out
-        cy.get('a[data-testid="userprofile-link"]').should('not.exist')
+        cy.getByTestId('userprofile-link').should('not.exist')
       })
 
       it('cancel does not delete the user and remains on profile page', function () {
@@ -64,7 +64,7 @@ describe('The User Profile Page', () => {
         cy.getCookie('warrior').should('exist')
 
         // UI should reflect this user being logged out
-        cy.get('a[data-testid="userprofile-link"]').should('contain', this.currentUser.name)
+        cy.getByTestId('userprofile-link').should('contain', this.currentUser.name)
 
         // cleanup our user (for some reason can't access this context in after utility
         cy.logout(this.currentUser)

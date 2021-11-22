@@ -33,7 +33,7 @@ describe('The Battle Page', () => {
         cy.createUserBattle(this.currentUser).then(() => {
           cy.visit(`/battle/${this.currentBattle.id}`)
 
-          cy.get('button[data-testid="battle-delete"]').click()
+          cy.getByTestId('battle-delete').click()
 
           // should have delete confirmation button
           cy.get('[data-testid="confirm-actions"] button').contains('Delete Battle').click()
@@ -52,7 +52,7 @@ describe('The Battle Page', () => {
           const battleUrl = `/battle/${this.currentBattle.id}`
           cy.visit(battleUrl)
 
-          cy.get('button[data-testid="battle-delete"]').click()
+          cy.getByTestId('battle-delete').click()
 
           // should have confirmation cancel button
           cy.get('[data-testid="confirm-actions"] button').contains('Cancel').click()
