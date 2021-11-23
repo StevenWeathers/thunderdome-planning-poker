@@ -1,6 +1,8 @@
 <script>
+    import { AppConfig } from '../config'
+
     let count = 0
-    let defaultTimeout = appConfig.ToastTimeout
+    let defaultTimeout = AppConfig.ToastTimeout
     let toasts = []
     let themes = {
         danger: '#bb2124',

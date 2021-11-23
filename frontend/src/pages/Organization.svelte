@@ -3,11 +3,10 @@
 
     import PageLayout from '../components/PageLayout.svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import CreateDepartment from '../components/CreateDepartment.svelte'
-    import CreateTeam from '../components/CreateTeam.svelte'
-    import AddUser from '../components/AddUser.svelte'
-    import RemoveUser from '../components/RemoveUser.svelte'
-    import DeleteTeam from '../components/DeleteTeam.svelte'
+    import CreateDepartment from '../components/user/CreateDepartment.svelte'
+    import CreateTeam from '../components/user/CreateTeam.svelte'
+    import AddUser from '../components/user/AddUser.svelte'
+    import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -402,16 +401,21 @@
     {/if}
 
     {#if showRemoveUser}
-        <RemoveUser
-            toggleRemove="{toggleRemoveUser(null)}"
-            handleRemove="{handleUserRemove}"
+        <DeleteConfirmation
+            toggleDelete="{toggleRemoveUser(null)}"
+            handleDelete="{handleUserRemove}"
+            permanent="{false}"
+            confirmText="Are you sure you want to remove this user?"
+            confirmBtnText="Remove User"
         />
     {/if}
 
     {#if showDeleteTeam}
-        <DeleteTeam
+        <DeleteConfirmation
             toggleDelete="{toggleDeleteTeam(null)}"
             handleDelete="{handleDeleteTeam}"
+            confirmText="Are you sure you want to delete this team?"
+            confirmBtnText="Delete Team"
         />
     {/if}
 </PageLayout>

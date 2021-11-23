@@ -10,9 +10,9 @@ import {
     getLocaleFromNavigator,
 } from 'svelte-i18n'
 
-import { locales, fallbackLocale, PathPrefix } from './config'
+import { locales, fallbackLocale, PathPrefix, AppConfig } from './config'
 
-const { AppVersion, FriendlyUIVerbs } = appConfig
+const { AppVersion, FriendlyUIVerbs } = AppConfig
 const verbsType = FriendlyUIVerbs ? 'friendly' : 'default'
 const MESSAGE_FILE_URL_BASE = `${PathPrefix}/lang/{locale}.json?v=${AppVersion}`
 const MESSAGE_FILE_URL_ADD = `${PathPrefix}/lang/${verbsType}/{locale}.json?v=${AppVersion}`

@@ -5,7 +5,7 @@
     import HollowButton from '../../components/HollowButton.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
-    import { appRoutes } from '../../config'
+    import { appRoutes, AppConfig } from '../../config'
     import { validateUserIsAdmin } from '../../validationUtils.js'
 
     export let xfetch
@@ -14,7 +14,7 @@
     export let eventTag
 
     const { CleanupGuestsDaysOld, CleanupBattlesDaysOld, ExternalAPIEnabled } =
-        appConfig
+        AppConfig
 
     let appStats = {
         unregisteredUserCount: 0,

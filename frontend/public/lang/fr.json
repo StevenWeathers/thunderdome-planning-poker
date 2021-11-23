@@ -193,8 +193,7 @@
                 "deleteButton": "Supprimer le compte",
                 "error": "Erreur lors de la suppression de votre compte.",
                 "warningStatement": "Etes-vous sûr de vouloir supprimer votre compte, cette action ne peut pas être annulée.",
-                "confirmButton": "Confirmer la suppression",
-                "cancelButton": "Annuler"
+                "confirmButton": "Confirmer la suppression"
             }
         },
         "admin": {

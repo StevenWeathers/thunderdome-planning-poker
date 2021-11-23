@@ -35,7 +35,7 @@ describe('The User Profile Page', () => {
         cy.get('button').contains('Delete Account').click()
 
         // should have delete confirmation button
-        cy.get('[data-testid="confirm-actions"] button').contains('Confirm Delete').click()
+        cy.getByTestId('confirm-confirm').click()
 
         // we should be redirected to landing
         cy.location('pathname').should('equal', '/')
@@ -54,8 +54,7 @@ describe('The User Profile Page', () => {
 
         cy.get('button').contains('Delete Account').click()
 
-        // should have delete confirmation button
-        cy.get('[data-testid="confirm-actions"] button').contains('Cancel').click()
+        cy.getByTestId('confirm-cancel').click()
 
         // we should be redirected to landing
         cy.location('pathname').should('equal', '/profile')

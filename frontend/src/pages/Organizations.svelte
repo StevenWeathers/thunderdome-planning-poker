@@ -3,8 +3,8 @@
 
     import PageLayout from '../components/PageLayout.svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import CreateOrganization from '../components/CreateOrganization.svelte'
-    import CreateTeam from '../components/CreateTeam.svelte'
+    import CreateOrganization from '../components/user/CreateOrganization.svelte'
+    import CreateTeam from '../components/user/CreateTeam.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'

@@ -192,9 +192,8 @@
             "delete": {
                 "deleteButton": "Delete Account",
                 "error": "Error encountered attempting to delete your account.",
-                "warningStatement": "Are you sure you want to delete your account, this cannot be undone.",
-                "confirmButton": "Confirm Delete",
-                "cancelButton": "Cancel"
+                "warningStatement": "Are you sure you want to delete your account?",
+                "confirmButton": "Confirm Delete"
             }
         },
         "admin": {

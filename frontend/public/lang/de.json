@@ -211,8 +211,7 @@
                 "deleteButton": "Konto l\u00F6schen",
                 "error": "Es ist ein Fehler beim L\u00F6schen des Kontos aufgetreten.",
                 "warningStatement": "Konto wirklich l\u00F6schen? Dies kann nicht R\u00FCckg\u00E4ngig gemacht werden.",
-                "confirmButton": "L\u00F6schen best\u00E4tigen",
-                "cancelButton": "Abbruch"
+                "confirmButton": "L\u00F6schen best\u00E4tigen"
             }
         },
         "admin": {

@@ -7,7 +7,14 @@ const locales = {
     ru: 'Русский',
 }
 
-const { PathPrefix, DefaultLocale: fallbackLocale } = appConfig
+const AppConfig =
+    typeof appConfig != 'undefined'
+        ? appConfig
+        : {
+              PathPrefix: '',
+              DefaultLocale: 'en',
+          }
+const { PathPrefix, DefaultLocale: fallbackLocale, FriendlyUIVerbs } = AppConfig
 
 const defaultAppRoutes = {
     landing: `${PathPrefix}/`,
@@ -28,8 +35,6 @@ const friendlyAppRoutes = {
     battles: `${PathPrefix}/games`,
     battle: `${PathPrefix}/game`,
 }
-const appRoutes = appConfig.FriendlyUIVerbs
-    ? friendlyAppRoutes
-    : defaultAppRoutes
+const appRoutes = FriendlyUIVerbs ? friendlyAppRoutes : defaultAppRoutes
 
-export { locales, fallbackLocale, appRoutes, PathPrefix }
+export { locales, fallbackLocale, appRoutes, PathPrefix, AppConfig }

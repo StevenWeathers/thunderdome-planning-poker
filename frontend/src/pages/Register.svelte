@@ -1,11 +1,11 @@
 <script>
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
-    import WarriorRegisterForm from '../components/WarriorRegisterForm.svelte'
+    import WarriorRegisterForm from '../components/user/UserRegisterForm.svelte'
     import { warrior } from '../stores.js'
     import { validateName } from '../validationUtils.js'
     import { _ } from '../i18n'
-    import { appRoutes } from '../config'
+    import { appRoutes, AppConfig } from '../config'
 
     export let router
     export let xfetch
@@ -13,8 +13,8 @@
     export let eventTag
     export let battleId
 
-    const guestsAllowed = appConfig.AllowGuests
-    const registrationAllowed = appConfig.AllowRegistration
+    const guestsAllowed = AppConfig.AllowGuests
+    const registrationAllowed = AppConfig.AllowRegistration
 
     let warriorName = $warrior.name || ''
 

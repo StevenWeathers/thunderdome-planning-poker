@@ -1,16 +1,16 @@
 <script>
-    import Countries from '../components/Countries.svelte'
+    import Countries from '../components/user/Countries.svelte'
     import CheckIcon from '../components/icons/CheckIcon.svelte'
     import GithubIcon from '../components/icons/Github.svelte'
 
     import { _ } from '../i18n'
-    import { appRoutes } from '../config'
+    import { appRoutes, AppConfig } from '../config'
     import { warrior } from '../stores'
 
     export let xfetch
     export let eventTag
 
-    const { ShowActiveCountries, PathPrefix } = appConfig
+    const { ShowActiveCountries, PathPrefix } = AppConfig
 </script>
 
 <style>

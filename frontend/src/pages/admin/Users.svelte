@@ -3,11 +3,11 @@
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
-    import CreateWarrior from '../../components/CreateWarrior.svelte'
+    import CreateWarrior from '../../components/user/CreateUser.svelte'
     import Pagination from '../../components/Pagination.svelte'
-    import CountryFlag from '../../components/CountryFlag.svelte'
+    import CountryFlag from '../../components/user/CountryFlag.svelte'
     import CheckIcon from '../../components/icons/CheckIcon.svelte'
-    import DeleteWarrior from '../../components/DeleteWarrior.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import SolidButton from '../../components/SolidButton.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
@@ -320,9 +320,11 @@
     {/if}
 
     {#if showUserDeletion}
-        <DeleteWarrior
-            toggleDeleteAccount="{toggleDeleteUser(null)}"
-            handleDeleteAccount="{handleDeleteUser}"
+        <DeleteConfirmation
+            toggleDelete="{toggleDeleteUser(null)}"
+            handleDelete="{handleDeleteUser}"
+            confirmText="{$_('pages.warriorProfile.delete.warningStatement')}"
+            confirmBtnText="{$_('pages.warriorProfile.delete.confirmButton')}"
         />
     {/if}
 </AdminPageLayout>

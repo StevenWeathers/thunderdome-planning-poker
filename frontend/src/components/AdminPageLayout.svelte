@@ -1,10 +1,10 @@
 <script>
-    import { appRoutes } from '../config'
+    import { appRoutes, AppConfig } from '../config'
     import { _ } from '../i18n'
 
     export let activePage = 'admin'
 
-    const { ExternalAPIEnabled } = appConfig
+    const { ExternalAPIEnabled } = AppConfig
 
     const pages = [
         {

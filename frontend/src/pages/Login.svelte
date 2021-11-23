@@ -3,7 +3,7 @@
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
     import { _, setupI18n } from '../i18n'
-    import { appRoutes } from '../config'
+    import { appRoutes, AppConfig } from '../config'
 
     export let router
     export let xfetch
@@ -11,7 +11,7 @@
     export let eventTag
     export let battleId
 
-    const { AllowRegistration, LdapEnabled } = appConfig
+    const { AllowRegistration, LdapEnabled } = AppConfig
     const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth'
 
     let warriorEmail = ''

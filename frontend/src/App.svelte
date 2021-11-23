@@ -3,13 +3,13 @@
     import { onDestroy } from 'svelte'
 
     import { _, isLocaleLoaded, locale, setupI18n } from './i18n'
-    import { appRoutes } from './config'
+    import { appRoutes, AppConfig } from './config'
     import Notifications from './components/Notifications.svelte'
-    import WarriorIcon from './components/icons/WarriorIcon.svelte'
+    import WarriorIcon from './components/icons/UserIcon.svelte'
     import GithubIcon from './components/icons/Github.svelte'
     import HollowButton from './components/HollowButton.svelte'
     import LocaleSwitcher from './components/LocaleSwitcher.svelte'
-    import GlobalAlerts from './components/GlobalAlerts.svelte'
+    import GlobalAlerts from './components/alert/GlobalAlerts.svelte'
     import Landing from './pages/Landing.svelte'
     import Battles from './pages/Battles.svelte'
     import Battle from './pages/Battle.svelte'
@@ -21,7 +21,7 @@
     import Login from './pages/Login.svelte'
     import ResetPassword from './pages/ResetPassword.svelte'
     import VerifyAccount from './pages/VerifyAccount.svelte'
-    import WarriorProfile from './pages/WarriorProfile.svelte'
+    import WarriorProfile from './pages/UserProfile.svelte'
     import Admin from './pages/admin/Admin.svelte'
     import AdminUsers from './pages/admin/Users.svelte'
     import AdminUser from './pages/admin/User.svelte'
@@ -36,7 +36,7 @@
     import apiclient from './apiclient.js'
     import { validateUserIsAdmin } from './validationUtils'
 
-    const { AllowRegistration, AppVersion, PathPrefix } = appConfig
+    const { AllowRegistration, AppVersion, PathPrefix } = AppConfig
     const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
 
     let notifications

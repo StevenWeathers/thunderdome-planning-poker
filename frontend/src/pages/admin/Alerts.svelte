@@ -5,8 +5,8 @@
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
     import Pagination from '../../components/Pagination.svelte'
-    import CreateAlert from '../../components/CreateAlert.svelte'
-    import DeleteAlert from '../../components/DeleteAlert.svelte'
+    import CreateAlert from '../../components/alert/CreateAlert.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import { activeAlerts, warrior } from '../../stores.js'
     import { _ } from '../../i18n'
     import { appRoutes } from '../../config'
@@ -249,9 +249,11 @@
     {/if}
 
     {#if showDeleteAlert}
-        <DeleteAlert
+        <DeleteConfirmation
             toggleDelete="{toggleDeleteAlert(null)}"
             handleDelete="{handleDeleteAlert}"
+            confirmText="{$_('alertDeleteConfirmation')}"
+            confirmBtnText="{$_('alertDelete')}"
         />
     {/if}
 </AdminPageLayout>

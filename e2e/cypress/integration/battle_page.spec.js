@@ -36,7 +36,7 @@ describe('The Battle Page', () => {
           cy.getByTestId('battle-delete').click()
 
           // should have delete confirmation button
-          cy.get('[data-testid="confirm-actions"] button').contains('Delete Battle').click()
+          cy.getByTestId('confirm-confirm').click()
 
           // we should be redirected to landing
           cy.location('pathname').should('equal', '/battles')
@@ -55,7 +55,7 @@ describe('The Battle Page', () => {
           cy.getByTestId('battle-delete').click()
 
           // should have confirmation cancel button
-          cy.get('[data-testid="confirm-actions"] button').contains('Cancel').click()
+          cy.getByTestId('confirm-cancel').click()
 
           // we should remain on battle
           cy.get('h2').should('contain', 'Test Battle')

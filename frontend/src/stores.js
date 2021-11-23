@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store'
 import Cookies from 'js-cookie'
+import { AppConfig } from './config'
 
-const { PathPrefix, CookieName } = appConfig
+const { PathPrefix, CookieName } = AppConfig
 const cookiePath = `${PathPrefix}/`
 
 function initWarrior() {
@@ -37,7 +38,8 @@ function initWarrior() {
 export const warrior = initWarrior()
 
 function initActiveAlerts() {
-    const { subscribe, update } = writable(ActiveAlerts)
+    const activeAlerts = typeof ActiveAlerts != 'undefined' ? ActiveAlerts : []
+    const { subscribe, update } = writable(activeAlerts)
 
     return {
         subscribe,

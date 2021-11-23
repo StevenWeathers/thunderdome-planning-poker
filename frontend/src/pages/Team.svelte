@@ -3,11 +3,10 @@
 
     import PageLayout from '../components/PageLayout.svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import AddUser from '../components/AddUser.svelte'
-    import RemoveUser from '../components/RemoveUser.svelte'
-    import RemoveBattle from '../components/RemoveBattle.svelte'
+    import AddUser from '../components/user/AddUser.svelte'
+    import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
-    import CreateBattle from '../components/CreateBattle.svelte'
+    import CreateBattle from '../components/battle/CreateBattle.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -337,16 +336,22 @@
     {/if}
 
     {#if showRemoveUser}
-        <RemoveUser
-            toggleRemove="{toggleRemoveUser(null)}"
-            handleRemove="{handleUserRemove}"
+        <DeleteConfirmation
+            toggleDelete="{toggleRemoveUser(null)}"
+            handleDelete="{handleUserRemove}"
+            permanent="{false}"
+            confirmText="Are you sure you want to remove this user?"
+            confirmBtnText="Remove User"
         />
     {/if}
 
     {#if showRemoveBattle}
-        <RemoveBattle
-            toggleRemove="{toggleRemoveBattle(null)}"
-            handleRemove="{handleBattleRemove}"
+        <DeleteConfirmation
+            toggleDelete="{toggleRemoveBattle(null)}"
+            handleDelete="{handleBattleRemove}"
+            permanent="{false}"
+            confirmText="Are you sure you want to remove this battle?"
+            confirmBtnText="Remove Battle"
         />
     {/if}
 </PageLayout>

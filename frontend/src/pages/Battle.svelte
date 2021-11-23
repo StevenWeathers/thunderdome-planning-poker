@@ -3,26 +3,26 @@
     import { onDestroy, onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
-    import PointCard from '../components/PointCard.svelte'
-    import WarriorCard from '../components/WarriorCard.svelte'
-    import BattlePlans from '../components/BattlePlans.svelte'
-    import VotingControls from '../components/VotingControls.svelte'
-    import InviteWarrior from '../components/InviteWarrior.svelte'
-    import VoteResults from '../components/VoteResults.svelte'
+    import PointCard from '../components/battle/PointCard.svelte'
+    import WarriorCard from '../components/battle/UserCard.svelte'
+    import BattlePlans from '../components/battle/BattlePlans.svelte'
+    import VotingControls from '../components/battle/VotingControls.svelte'
+    import InviteWarrior from '../components/battle/InviteUser.svelte'
+    import VoteResults from '../components/battle/VoteResults.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
-    import EditBattle from '../components/EditBattle.svelte'
-    import DeleteBattle from '../components/DeleteBattle.svelte'
+    import EditBattle from '../components/battle/EditBattle.svelte'
+    import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
-    import { appRoutes, PathPrefix } from '../config'
+    import { appRoutes, PathPrefix, AppConfig } from '../config'
 
     export let battleId
     export let notifications
     export let eventTag
     export let router
 
-    const { AllowRegistration } = appConfig
+    const { AllowRegistration } = AppConfig
     const loginOrRegister = AllowRegistration
         ? appRoutes.register
         : appRoutes.login
@@ -652,9 +652,11 @@
     {/if}
 
     {#if showDeleteBattle}
-        <DeleteBattle
+        <DeleteConfirmation
             toggleDelete="{toggleDeleteBattle}"
             handleDelete="{concedeBattle}"
+            confirmText="Are you sure you want to delete this battle?"
+            confirmBtnText="Delete Battle"
         />
     {/if}
 </PageLayout>

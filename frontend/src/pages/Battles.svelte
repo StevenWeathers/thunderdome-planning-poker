@@ -2,7 +2,7 @@
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
-    import CreateBattle from '../components/CreateBattle.svelte'
+    import CreateBattle from '../components/battle/CreateBattle.svelte'
     import LeaderIcon from '../components/icons/LeaderIcon.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import Pagination from '../components/Pagination.svelte'
