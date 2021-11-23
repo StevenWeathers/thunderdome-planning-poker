@@ -143,11 +143,46 @@ describe('The Battle Page', () => {
         }).then(() => {
           cy.visit(`/battle/${this.currentBattle.id}`)
 
+          cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
+
           cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
 
           cy.getByTestId('plan-activate').click()
 
           cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
+        })
+
+        // cleanup our user (for some reason can't access this context in after utility
+        cy.logout(this.currentUser)
+      })
+
+      it('should allow skipping plan voting', function () {
+        cy.login(this.currentUser)
+        cy.createUserBattle(this.currentUser, {
+          name: 'Test Battle',
+          pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
+          autoFinishVoting: false,
+          plans: [
+            {
+              name: 'Defeat Loki',
+              type: 'Story'
+            }
+          ],
+          pointAverageRounding: 'ceil'
+        }).then(() => {
+          cy.visit(`/battle/${this.currentBattle.id}`)
+
+          cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
+
+          cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
+
+          cy.getByTestId('plan-activate').click()
+
+          cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
+
+          cy.getByTestId('voting-skip').click()
+
+          cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
         })
 
         // cleanup our user (for some reason can't access this context in after utility

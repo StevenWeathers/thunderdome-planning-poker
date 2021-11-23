@@ -49,11 +49,16 @@
             color="blue"
             additionalClasses="mb-2 w-full"
             onClick="{skipPlan}"
+            testid="voting-skip"
         >
             {$_('planSkip')}
         </SolidButton>
         {#if !votingLocked}
-            <SolidButton additionalClasses="w-full" onClick="{endPlanVoting}">
+            <SolidButton
+                additionalClasses="w-full"
+                onClick="{endPlanVoting}"
+                testid="voting-finish"
+            >
                 {$_('votingFinish')}
             </SolidButton>
         {:else}
@@ -61,6 +66,7 @@
                 color="blue"
                 additionalClasses="mb-2 w-full"
                 onClick="{restartVoting}"
+                testid="voting-restart"
             >
                 {$_('votingRestart')}
             </SolidButton>
@@ -99,6 +105,7 @@
                         <SolidButton
                             additionalClasses="w-full h-full"
                             type="submit"
+                            testid="voting-save"
                         >
                             {$_('save')}
                         </SolidButton>
