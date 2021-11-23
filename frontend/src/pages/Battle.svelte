@@ -65,7 +65,7 @@
                 points = battle.pointValuesAllowed
                 const { spectator = false } = battle.warriors.find(
                     w => w.id === $warrior.id,
-                )
+                ) || {}
                 isSpectator = spectator
 
                 if (battle.activePlanId !== '') {

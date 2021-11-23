@@ -9,7 +9,7 @@
     export let num_items = 120
     export let per_page = 5
 
-    $: num_pages = Math.floor(num_items / per_page)
+    $: num_pages = Math.ceil(num_items / per_page)
 
     let arr_pages = []
 
@@ -39,7 +39,7 @@
     }
 
     $: if (num_items) {
-        num_pages = Math.round(num_items / per_page)
+        num_pages = Math.ceil(num_items / per_page)
         current = current || 1
     }
 
