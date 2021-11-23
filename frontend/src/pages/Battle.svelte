@@ -15,7 +15,7 @@
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n'
-    import { appRoutes, PathPrefix, AppConfig } from '../config'
+    import { AppConfig, appRoutes, PathPrefix } from '../config'
 
     export let battleId
     export let notifications
@@ -466,6 +466,7 @@
                             href="{currentPlan.link}"
                             target="_blank"
                             class="text-blue-800"
+                            data-testid="currentplan-link"
                         >
                             <ExternalLinkIcon />
                         </a>
@@ -475,25 +476,32 @@
                         <span
                             class="inline-block text-lg text-gray-500
                             border-gray-400 border px-1 rounded"
-                            data-testId="battlePlanType"
+                            data-testid="currentplan-type"
                         >
                             {currentPlan.type}
                         </span>
                         &nbsp;
                     {/if}
                     {#if currentPlan.referenceId}
-                        [{currentPlan.referenceId}]&nbsp;
+                        <span data-testid="currentplan-refid"
+                            >[{currentPlan.referenceId}]&nbsp;</span
+                        >
                     {/if}
-                    {currentPlan.name}
+                    <span data-testid="currentplan-name"
+                        >{currentPlan.name}</span
+                    >
                 </h1>
-                <h2 class="text-gray-700 text-2xl font-bold leading-tight">
+                <h2
+                    class="text-gray-700 text-2xl font-bold leading-tight"
+                    data-testid="battle-name"
+                >
                     {battle.name}
                 </h2>
             </div>
             <div
                 class="w-full md:w-1/3 text-center md:text-right font-semibold
                 text-3xl md:text-4xl text-gray-700"
-                data-testId="votingTimer"
+                data-testid="vote-timer"
             >
                 {#if countdown.seconds !== undefined}
                     {#if countdown.hours !== 0}

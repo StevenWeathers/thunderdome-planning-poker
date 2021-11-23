@@ -170,7 +170,9 @@
         </div>
         <div class="text-right">
             <div>
-                <SolidButton type="submit">{$_('save')}</SolidButton>
+                <SolidButton type="submit" testid="plan-save"
+                    >{$_('save')}</SolidButton
+                >
             </div>
         </div>
     </form>

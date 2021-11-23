@@ -101,8 +101,9 @@
                     handlePlanAdd="{handlePlanAdd}"
                     notifications="{notifications}"
                     eventTag="{eventTag}"
+                    testid="plans-importjira"
                 />
-                <HollowButton onClick="{toggleAddPlan()}">
+                <HollowButton onClick="{toggleAddPlan()}" testid="plans-add">
                     {$_('planAdd')}
                 </HollowButton>
             {/if}
@@ -117,6 +118,7 @@
                     : 'border-b border-blue-500 text-blue-600 hover:text-blue-800'}
                 bg-white inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(false)}"
+                data-testid="plans-unpointed"
             >
                 {$_('unpointed', { values: { count: unpointedPlans.length } })}
             </button>
@@ -128,6 +130,7 @@
                     : 'hover:text-blue-600 text-blue-400'}
                 bg-white inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(true)}"
+                data-testid="plans-pointed"
             >
                 {$_('pointed', { values: { count: pointedPlans.length } })}
             </button>
@@ -137,14 +140,10 @@
     {#each plansToShow as plan (plan.id)}
         <div
             class="flex flex-wrap items-center border-b border-gray-400 p-4"
-            data-testId="battlePlan"
-            data-planName="{plan.name}"
+            data-testid="plan"
         >
             <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
-                <div
-                    class="inline-block font-bold align-middle"
-                    data-testId="battlePlanName"
-                >
+                <div class="inline-block font-bold align-middle">
                     {#if plan.link !== ''}
                         <a
                             href="{plan.link}"
@@ -158,27 +157,31 @@
                     <div
                         class="inline-block text-sm text-gray-500
                         border-gray-400 border px-1 rounded"
-                        data-testId="battlePlanType"
+                        data-testid="plan-type"
                     >
                         {plan.type}
                     </div>
                     &nbsp;
                     {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-                    {plan.name}
+                    <span data-testid="plan-name">{plan.name}</span>
                 </div>
                 &nbsp;
                 {#if plan.points !== ''}
                     <div
                         class="inline-block font-bold text-green-600
                         border-green-500 border px-2 py-1 rounded ml-2"
-                        data-testId="battlePlanPoints"
+                        data-testid="plan-points"
                     >
                         {plan.points}
                     </div>
                 {/if}
             </div>
             <div class="w-full lg:w-1/3 text-right">
-                <HollowButton color="blue" onClick="{togglePlanView(plan.id)}">
+                <HollowButton
+                    color="blue"
+                    onClick="{togglePlanView(plan.id)}"
+                    testid="plan-view"
+                >
                     {$_('view')}
                 </HollowButton>
                 {#if isLeader}
@@ -186,6 +189,7 @@
                         <HollowButton
                             color="red"
                             onClick="{handlePlanDeletion(plan.id)}"
+                            testid="plan-delete"
                         >
                             {$_('delete')}
                         </HollowButton>
@@ -193,11 +197,15 @@
                     <HollowButton
                         color="purple"
                         onClick="{toggleAddPlan(plan.id)}"
+                        testid="plan-edit"
                     >
                         {$_('edit')}
                     </HollowButton>
                     {#if !plan.active}
-                        <HollowButton onClick="{activatePlan(plan.id)}">
+                        <HollowButton
+                            onClick="{activatePlan(plan.id)}"
+                            testid="plan-activate"
+                        >
                             {$_('activate')}
                         </HollowButton>
                     {/if}
