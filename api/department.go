@@ -28,10 +28,6 @@ type departmentTeamResponse struct {
 	TeamRole         string              `json:"teamRole"`
 }
 
-type createDepartmentTeamResponse struct {
-	TeamID string `json:"id"`
-}
-
 // handleGetOrganizationDepartments gets a list of departments associated to the organization
 // @Summary Get Departments
 // @Description get list of organizations departments
@@ -174,7 +170,7 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID"
 // @Param name body string true "the team name"
-// @Success 200 object standardJsonResponse{data=createDepartmentTeamResponse}
+// @Success 200 object standardJsonResponse{data=createTeamResponse}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
 func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
@@ -190,7 +186,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 			return
 		}
 
-		var NewTeam = &createDepartmentTeamResponse{
+		var NewTeam = &createTeamResponse{
 			TeamID: TeamID,
 		}
 
