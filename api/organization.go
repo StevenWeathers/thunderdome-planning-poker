@@ -12,6 +12,11 @@ type createOrgResponse struct {
 	OrganizationID string `json:"id"`
 }
 
+type organizationResponse struct {
+	Organization *model.Organization `json:"organization"`
+	Role         string              `json:"role"`
+}
+
 type orgTeamResponse struct {
 	Organization     *model.Organization `json:"organization"`
 	Team             *model.Team         `json:"team"`
@@ -19,7 +24,7 @@ type orgTeamResponse struct {
 	TeamRole         string              `json:"teamRole"`
 }
 
-// handleGetOrganizationsByUser gets a list of organizations the user is apart of
+// handleGetOrganizationsByUser gets a list of organizations the user is a part of
 // @Summary Get Users Organizations
 // @Description get list of organizations for the authenticated user
 // @Tags organization
@@ -49,15 +54,11 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param orgId path string true "organization id"
-// @Success 200 object standardJsonResponse{data=model.Organization}
+// @Success 200 object standardJsonResponse{data=organizationResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId} [get]
 func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
-	type OrganizationResponse struct {
-		Organization *model.Organization `json:"organization"`
-		Role         string              `json:"role"`
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
 		vars := mux.Vars(r)
@@ -69,7 +70,7 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 			return
 		}
 
-		result := &OrganizationResponse{
+		result := &organizationResponse{
 			Organization: Organization,
 			Role:         OrgRole,
 		}
@@ -193,7 +194,7 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 // @Param orgId path string true "organization id"
 // @Param email body string true "the users email"
 // @Param role body string true "the user's organization role" Enums(MEMBER, ADMIN)
-// @Success 200 object standardJsonResponse{data=createTeamResponse}
+// @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/users [post]

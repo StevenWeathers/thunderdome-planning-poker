@@ -8,6 +8,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type createDepartmentResponse struct {
+	DepartmentID string `json:"id"`
+}
+
+type departmentResponse struct {
+	Organization     *model.Organization `json:"organization"`
+	Department       *model.Department   `json:"department"`
+	OrganizationRole string              `json:"organizationRole"`
+	DepartmentRole   string              `json:"departmentRole"`
+}
+
 type departmentTeamResponse struct {
 	Organization     *model.Organization `json:"organization"`
 	Department       *model.Department   `json:"department"`
@@ -48,16 +59,10 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID to get"
-// @Success 200 object standardJsonResponse{data=model.Department}
+// @Success 200 object standardJsonResponse{data=departmentResponse}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId} [get]
 func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
-	type DepartmentResponse struct {
-		Organization     *model.Organization `json:"organization"`
-		Department       *model.Department   `json:"department"`
-		OrganizationRole string              `json:"organizationRole"`
-		DepartmentRole   string              `json:"departmentRole"`
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
 		DepartmentRole := r.Context().Value(contextKeyDepartmentRole).(string)
@@ -77,7 +82,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 			return
 		}
 
-		result := &DepartmentResponse{
+		result := &departmentResponse{
 			Organization:     Organization,
 			Department:       Department,
 			OrganizationRole: OrgRole,
@@ -95,14 +100,10 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "the organization ID to create department for"
 // @Param name body string true "the department name"
-// @Success 200 object standardJsonResponse{data=model.Department}
+// @Success 200 object standardJsonResponse{data=createDepartmentResponse}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments [post]
 func (a *api) handleCreateDepartment() http.HandlerFunc {
-	type CreateDepartmentResponse struct {
-		DepartmentID string `json:"id"`
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)
@@ -115,7 +116,7 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 			return
 		}
 
-		var NewDepartment = &CreateDepartmentResponse{
+		var NewDepartment = &createDepartmentResponse{
 			DepartmentID: DepartmentID,
 		}
 
@@ -177,7 +178,6 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
 func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)

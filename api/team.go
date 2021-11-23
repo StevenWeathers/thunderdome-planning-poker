@@ -12,20 +12,21 @@ type createTeamResponse struct {
 	TeamID string `json:"id"`
 }
 
+type teamResponse struct {
+	Team     *model.Team `json:"team"`
+	TeamRole string      `json:"teamRole"`
+}
+
 // handleGetTeamByUser gets an team with user role
 // @Summary Get Team
 // @Description Get a team with user role
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=model.Team}
+// @Success 200 object standardJsonResponse{data=teamResponse}
 // @Success 500 object standardJsonResponse{}
 // @Router /teams/{teamId} [get]
 func (a *api) handleGetTeamByUser() http.HandlerFunc {
-	type TeamResponse struct {
-		Team     *model.Team `json:"team"`
-		TeamRole string      `json:"teamRole"`
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
@@ -37,7 +38,7 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 			return
 		}
 
-		result := &TeamResponse{
+		result := &teamResponse{
 			Team:     Team,
 			TeamRole: TeamRole,
 		}
@@ -46,9 +47,9 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 	}
 }
 
-// handleGetTeamsByUser gets a list of teams the user is apart of
+// handleGetTeamsByUser gets a list of teams the user is a part of
 // @Summary Get User Teams
-// @Description Get a list of teams the user is apart of
+// @Description Get a list of teams the user is a part of
 // @Tags team
 // @Produce  json
 // @Param userId path string true "the user ID"
