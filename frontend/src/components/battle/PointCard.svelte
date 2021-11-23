@@ -37,7 +37,7 @@
 </script>
 
 <div
-    data-testId="pointCard"
+    data-testid="pointCard"
     data-active="{active}"
     data-locked="{isLocked}"
     data-point="{point}"
@@ -47,7 +47,7 @@
         <div
             class="text-green-500 font-semibold inline-block absolute right-0
             top-0 p-2 text-4xl text-right {showVoters ? 'z-20' : 'z-10'}"
-            data-testId="pointCardCount"
+            data-testid="pointCardCount"
         >
             {results.count}
             <button

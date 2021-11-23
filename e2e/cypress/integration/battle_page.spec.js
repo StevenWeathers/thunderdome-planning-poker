@@ -145,11 +145,15 @@ describe('The Battle Page', () => {
 
           cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
 
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
+
           cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
 
           cy.getByTestId('plan-activate').click()
 
           cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
+
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'false')
         })
 
         // cleanup our user (for some reason can't access this context in after utility
@@ -174,15 +178,21 @@ describe('The Battle Page', () => {
 
           cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
 
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
+
           cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
 
           cy.getByTestId('plan-activate').click()
 
           cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
 
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'false')
+
           cy.getByTestId('voting-skip').click()
 
           cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
+
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
         })
 
         // cleanup our user (for some reason can't access this context in after utility
