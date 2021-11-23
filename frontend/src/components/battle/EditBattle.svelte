@@ -74,7 +74,7 @@
             <div class="control relative -mr-2 md:-mr-1">
                 {#if !votingLocked}
                     <div class="font-bold text-red-500">
-                        {$_('actions.battle.editPointsDisabled')}
+                        {$_('battleEditPointsDisabled')}
                     </div>
                 {/if}
                 {#each allowedPointValues as point}
