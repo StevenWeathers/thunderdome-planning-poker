@@ -1,62 +1,66 @@
 {
-    "battleDelete": "Удалить игру",
-    "battleAbandon": "Покинуть игру",
-    "battleCreate": "Создать игру",
-    "battleEdit": "Редактировать игру",
-    "warriorNudge": "Пнуть",
-    "promote": "Сделать боссом",
-    "view": "Посмотреть",
-    "landingTitle": "Thunderdome is an Open Source Agile Planning Poker app",
-    "landingBullet2": "Simple Player Experience",
-    "landingCountries": "Users in over {count} countries",
-    "pages": {
-        "myBattles": {
-            "nav": "Мои игры",
-            "title": "Мои игры",
-            "battlesError": "Ошибка поиска ваших игр",
-            "createBattle": {
-                "title": "Создать игру",
-                "createError": "Ошибка создания игры",
-                "fields": {
-                    "name": {
-                        "label": "Название игры",
-                        "placeholder": "Введите название игры"
-                    }
-                }
-            }
-        },
-        "createAccount": {
-            "title": "Зайти в игру",
-            "loginForBattle": "or {loginOpen}Login{loginClose} to join the Game"
-        },
-        "admin": {
-            "counts": {
-                "battles": "Игры"
-            },
-            "maintenance": {
-                "cleanBattles": "Clean Games older than {daysOld} days"
-            }
-        },
-        "login": {
-            "registerForBattle": "or {registerOpen}Войти{registerClose} to join the Game"
-        },
-        "battle": {
-            "title": "Игра",
-            "warriorJoined": "{name} присоединился к игре",
-            "warriorRetreated": "{name} покинул игру",
-            "warriorLeader": "Создатель",
-            "battleDeleted": "Game deleted"
+  "battleDelete": "Удалить игру",
+  "battleAbandon": "Покинуть игру",
+  "battleCreate": "Создать игру",
+  "battleEdit": "Редактировать игру",
+  "warriorNudge": "Пнуть",
+  "promote": "Сделать боссом",
+  "view": "Посмотреть",
+  "landingTitle": "Thunderdome is an Open Source Agile Planning Poker app",
+  "landingBullet2": "Simple Player Experience",
+  "landingCountries": "Users in over {count} countries",
+  "pages": {
+    "myBattles": {
+      "nav": "Мои игры",
+      "title": "Мои игры",
+      "battlesError": "Ошибка поиска ваших игр",
+      "createBattle": {
+        "title": "Создать игру",
+        "createError": "Ошибка создания игры",
+        "fields": {
+          "name": {
+            "label": "Название игры",
+            "placeholder": "Введите название игры"
+          }
         }
+      }
     },
-    "plans": "Stories",
-    "edit": "Редактировать",
-    "battle": "Game",
-    "battles": "Games",
-    "battlesActive": "Active Games",
-    "battlesActiveUsers": "Active Game Users",
-    "battleJoin": "Join Game",
-    "battleRemoveSuccess": "Game removed successfully.",
-    "battleRemoveError": "Error attempting to remove game.",
-    "teamGetBattlesError": "Error getting team games",
-    "sessionDuplicate": "Duplicate game session exists for your ID"
+    "createAccount": {
+      "title": "Зайти в игру",
+      "loginForBattle": "or {loginOpen}Login{loginClose} to join the Game"
+    },
+    "admin": {
+      "counts": {
+        "battles": "Игры"
+      },
+      "maintenance": {
+        "cleanBattles": "Clean Games older than {daysOld} days"
+      }
+    },
+    "login": {
+      "registerForBattle": "or {registerOpen}Войти{registerClose} to join the Game"
+    },
+    "battle": {
+      "title": "Игра",
+      "warriorJoined": "{name} присоединился к игре",
+      "warriorRetreated": "{name} покинул игру",
+      "warriorLeader": "Создатель",
+      "battleDeleted": "Game deleted"
+    }
+  },
+  "plans": "Stories",
+  "edit": "Редактировать",
+  "battle": "Game",
+  "battles": "Games",
+  "battlesActive": "Active Games",
+  "battlesActiveUsers": "Active Game Users",
+  "battleJoin": "Join Game",
+  "battleRemoveSuccess": "Game removed successfully.",
+  "battleRemoveError": "Error attempting to remove game.",
+  "teamGetBattlesError": "Error getting team games",
+  "sessionDuplicate": "Duplicate game session exists for your ID",
+  "removeBattleConfirmText": "Are you sure you want to remove this game?",
+  "removeBattle": "Remove Game",
+  "deleteBattleConfirmText": "Are you sure you want to delete this game?",
+  "deleteBattle": "Delete Game"
 }

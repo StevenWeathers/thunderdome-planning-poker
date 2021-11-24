@@ -1,62 +1,66 @@
 {
-    "battleDelete": "Удалить битву",
-    "battleAbandon": "Покинуть битву",
-    "battleCreate": "Создать битву",
-    "battleEdit": "Редактировать битву",
-    "warriorNudge": "Напомнить",
-    "promote": "Сделать лидером",
-    "view": "Просмотр",
-    "landingTitle": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
-    "landingBullet2": "Simple {crossoutOpen}User{crossoutClose}Warrior Experience",
-    "landingCountries": "Warriors in over {count} countries",
-    "pages": {
-        "myBattles": {
-            "nav": "Мои битвы",
-            "title": "Мои битвы",
-            "battlesError": "Ошибка поиска ваших битв",
-            "createBattle": {
-                "title": "Создать битву",
-                "createError": "Ошибка создания битвы",
-                "fields": {
-                    "name": {
-                        "label": "Название битвы",
-                        "placeholder": "Введите название битвы"
-                    }
-                }
-            }
-        },
-        "createAccount": {
-            "title": "Войти в битву",
-            "loginForBattle": "or {loginOpen}Login{loginClose} to join the Battle"
-        },
-        "admin": {
-            "counts": {
-                "battles": "Битвы"
-            },
-            "maintenance": {
-                "cleanBattles": "Clean Battles older than {daysOld} days"
-            }
-        },
-        "login": {
-            "registerForBattle": "or {registerOpen}Войти{registerClose} to join the Battle"
-        },
-        "battle": {
-            "title": "Битва",
-            "warriorJoined": "{name} присоединился к битве",
-            "warriorRetreated": "{name} ушел с поля боя",
-            "warriorLeader": "Лидер",
-            "battleDeleted": "Battle deleted"
+  "battleDelete": "Удалить битву",
+  "battleAbandon": "Покинуть битву",
+  "battleCreate": "Создать битву",
+  "battleEdit": "Редактировать битву",
+  "warriorNudge": "Напомнить",
+  "promote": "Сделать лидером",
+  "view": "Просмотр",
+  "landingTitle": "Thunderdome is an Open Source Agile Planning Poker app with a fun theme",
+  "landingBullet2": "Simple {crossoutOpen}User{crossoutClose}Warrior Experience",
+  "landingCountries": "Warriors in over {count} countries",
+  "pages": {
+    "myBattles": {
+      "nav": "Мои битвы",
+      "title": "Мои битвы",
+      "battlesError": "Ошибка поиска ваших битв",
+      "createBattle": {
+        "title": "Создать битву",
+        "createError": "Ошибка создания битвы",
+        "fields": {
+          "name": {
+            "label": "Название битвы",
+            "placeholder": "Введите название битвы"
+          }
         }
+      }
     },
-    "plans": "Plans",
-    "edit": "Изменить",
-    "battle": "Battle",
-    "battles": "Battles",
-    "battlesActive": "Active Battles",
-    "battlesActiveUsers": "Active Battle Users",
-    "battleJoin": "Join Battle",
-    "battleRemoveSuccess": "Battle removed successfully.",
-    "battleRemoveError": "Error attempting to remove battle.",
-    "teamGetBattlesError": "Error getting team battles",
-    "sessionDuplicate": "Duplicate battle session exists for your ID"
+    "createAccount": {
+      "title": "Войти в битву",
+      "loginForBattle": "or {loginOpen}Login{loginClose} to join the Battle"
+    },
+    "admin": {
+      "counts": {
+        "battles": "Битвы"
+      },
+      "maintenance": {
+        "cleanBattles": "Clean Battles older than {daysOld} days"
+      }
+    },
+    "login": {
+      "registerForBattle": "or {registerOpen}Войти{registerClose} to join the Battle"
+    },
+    "battle": {
+      "title": "Битва",
+      "warriorJoined": "{name} присоединился к битве",
+      "warriorRetreated": "{name} ушел с поля боя",
+      "warriorLeader": "Лидер",
+      "battleDeleted": "Battle deleted"
+    }
+  },
+  "plans": "Plans",
+  "edit": "Изменить",
+  "battle": "Battle",
+  "battles": "Battles",
+  "battlesActive": "Active Battles",
+  "battlesActiveUsers": "Active Battle Users",
+  "battleJoin": "Join Battle",
+  "battleRemoveSuccess": "Battle removed successfully.",
+  "battleRemoveError": "Error attempting to remove battle.",
+  "teamGetBattlesError": "Error getting team battles",
+  "sessionDuplicate": "Duplicate battle session exists for your ID",
+  "removeBattleConfirmText": "Are you sure you want to remove this battle?",
+  "removeBattle": "Remove Battle",
+  "deleteBattleConfirmText": "Are you sure you want to delete this battle?",
+  "deleteBattle": "Delete Battle"
 }

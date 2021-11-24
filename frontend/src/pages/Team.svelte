@@ -340,8 +340,8 @@
             toggleDelete="{toggleRemoveUser(null)}"
             handleDelete="{handleUserRemove}"
             permanent="{false}"
-            confirmText="Are you sure you want to remove this user?"
-            confirmBtnText="Remove User"
+            confirmText="{$_('removeUserConfirmText')}"
+            confirmBtnText="{$_('removeUser')}"
         />
     {/if}
 
@@ -350,8 +350,8 @@
             toggleDelete="{toggleRemoveBattle(null)}"
             handleDelete="{handleBattleRemove}"
             permanent="{false}"
-            confirmText="Are you sure you want to remove this battle?"
-            confirmBtnText="Remove Battle"
+            confirmText="{$_('removeBattleConfirmText')}"
+            confirmBtnText="{$_('removeBattle')}"
         />
     {/if}
 </PageLayout>

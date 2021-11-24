@@ -663,8 +663,8 @@
         <DeleteConfirmation
             toggleDelete="{toggleDeleteBattle}"
             handleDelete="{concedeBattle}"
-            confirmText="Are you sure you want to delete this battle?"
-            confirmBtnText="Delete Battle"
+            confirmText="{$_('deleteBattleConfirmText')}"
+            confirmBtnText="{$_('deleteBattle')}"
         />
     {/if}
 </PageLayout>

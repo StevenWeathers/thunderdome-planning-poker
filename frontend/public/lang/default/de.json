@@ -1,80 +1,84 @@
 {
-    "logoutError": "Fehler beim Abmelden des Kriegers",
-    "battleDelete": "Schlacht l\u00F6schen",
-    "battleAbandon": "Schlacht verlassen",
-    "battleCreate": "Schlacht erstellen",
-    "battleEdit": "Schlacht bearbeiten",
-    "warriorCreate": "Krieger erstellen",
-    "landingBullet2": "Einfache {crossoutOpen}Benutzer{crossoutClose}Krieger-Erfahrung",
-    "landingCountries": "Krieger in \u00FCber {count} L\u00E4ndern",
-    "pages": {
-        "myBattles": {
-            "nav": "Meine Schlachten",
-            "title": "Meine Schlachten",
-            "battlesError": "Fehler: Keine Schlacht gefunden",
-            "createBattle": {
-                "title": "Schlacht erstellen",
-                "createError": "Fehler beim Erstellen einer Schlacht",
-                "fields": {
-                    "name": {
-                        "label": "Name der Schlacht",
-                        "placeholder": "Name der Schlacht eingeben"
-                    },
-                    "autoFinishVoting": {
-                        "label": "Sch\u00E4tzung automatisch beenden, wenn alle Krieger gesch\u00E4tzt haben"
-                    }
-                }
-            }
-        },
-        "createAccount": {
-            "title": "Der Schlacht beitreten",
-            "loginForBattle": "or {loginOpen}Login{loginClose} to join the Battle",
-            "guestForm": {
-                "createError": "Beim Registrieren als Gast-Krieger ist ein Fehler aufgetreten"
-            },
-            "createAccountForm": {
-                "createError": "Beim Erstellen des Kriegers ist ein Fehler aufgetreten"
-            }
-        },
-        "admin": {
-            "counts": {
-                "registered": "Registrierte Krieger",
-                "unregistered": "Nicht registrierte Krieger",
-                "battles": "Schlachten"
-            },
-            "registeredWarriors": {
-                "title": "Registrierte Krieger"
-            },
-            "maintenance": {
-                "cleanBattles": "Entferne Schlachten \u00E4lter als {daysOld} Tage"
-            }
-        },
-        "login": {
-            "registerForBattle": "oder {registerOpen}Anmeldung{registerClose}, um der Schlacht beizutreten",
-            "authError": "Beim Versuch, den Krieger zu authentifizieren, ist ein Fehler aufgetreten"
-        },
-        "battle": {
-            "title": "Schlacht",
-            "warriors": "Krieger",
-            "socketReconnecting": "Ooops, Schlachtpl\u00E4ne werden neu geladen...",
-            "socketError": "Fehler beim Eintritt in die Schlacht, bitte aktualisieren und nochmals versuchen.",
-            "loading": "Lade Schlachtpl\u00E4ne...",
-            "warriorJoined": "{name} hat das Schlachtfeld betreten",
-            "warriorRetreated": "{name} hat das Schlachtfeld verlassen",
-            "warriorInvite": "Krieger einladen",
-            "voteResults": {
-                "unknownWarrior": "Unbekannter Krieger"
-            },
-            "battleDeleted": "Schlacht gel\u00F6scht"
+  "logoutError": "Fehler beim Abmelden des Kriegers",
+  "battleDelete": "Schlacht l\u00F6schen",
+  "battleAbandon": "Schlacht verlassen",
+  "battleCreate": "Schlacht erstellen",
+  "battleEdit": "Schlacht bearbeiten",
+  "warriorCreate": "Krieger erstellen",
+  "landingBullet2": "Einfache {crossoutOpen}Benutzer{crossoutClose}Krieger-Erfahrung",
+  "landingCountries": "Krieger in \u00FCber {count} L\u00E4ndern",
+  "pages": {
+    "myBattles": {
+      "nav": "Meine Schlachten",
+      "title": "Meine Schlachten",
+      "battlesError": "Fehler: Keine Schlacht gefunden",
+      "createBattle": {
+        "title": "Schlacht erstellen",
+        "createError": "Fehler beim Erstellen einer Schlacht",
+        "fields": {
+          "name": {
+            "label": "Name der Schlacht",
+            "placeholder": "Name der Schlacht eingeben"
+          },
+          "autoFinishVoting": {
+            "label": "Sch\u00E4tzung automatisch beenden, wenn alle Krieger gesch\u00E4tzt haben"
+          }
         }
+      }
     },
-    "battle": "Schlacht",
-    "battles": "Schlachten",
-    "battlesActive": "Aktive Schlachten",
-    "battlesActiveUsers": "Aktive Benutzer in der Schlacht",
-    "battleJoin": "Schlacht beitreten",
-    "battleRemoveSuccess": "Schlacht erfolgreich entfernt.",
-    "battleRemoveError": "Fehler beim Entfernen der Schlacht aufgetreten.",
-    "teamGetBattlesError": "Fehler beim Ermitteln der Schlachten des Teams",
-    "sessionDuplicate": "Es existiert bereits eine Schlacht-Sitzung f\u00FCr Ihre ID"
+    "createAccount": {
+      "title": "Der Schlacht beitreten",
+      "loginForBattle": "or {loginOpen}Login{loginClose} to join the Battle",
+      "guestForm": {
+        "createError": "Beim Registrieren als Gast-Krieger ist ein Fehler aufgetreten"
+      },
+      "createAccountForm": {
+        "createError": "Beim Erstellen des Kriegers ist ein Fehler aufgetreten"
+      }
+    },
+    "admin": {
+      "counts": {
+        "registered": "Registrierte Krieger",
+        "unregistered": "Nicht registrierte Krieger",
+        "battles": "Schlachten"
+      },
+      "registeredWarriors": {
+        "title": "Registrierte Krieger"
+      },
+      "maintenance": {
+        "cleanBattles": "Entferne Schlachten \u00E4lter als {daysOld} Tage"
+      }
+    },
+    "login": {
+      "registerForBattle": "oder {registerOpen}Anmeldung{registerClose}, um der Schlacht beizutreten",
+      "authError": "Beim Versuch, den Krieger zu authentifizieren, ist ein Fehler aufgetreten"
+    },
+    "battle": {
+      "title": "Schlacht",
+      "warriors": "Krieger",
+      "socketReconnecting": "Ooops, Schlachtpl\u00E4ne werden neu geladen...",
+      "socketError": "Fehler beim Eintritt in die Schlacht, bitte aktualisieren und nochmals versuchen.",
+      "loading": "Lade Schlachtpl\u00E4ne...",
+      "warriorJoined": "{name} hat das Schlachtfeld betreten",
+      "warriorRetreated": "{name} hat das Schlachtfeld verlassen",
+      "warriorInvite": "Krieger einladen",
+      "voteResults": {
+        "unknownWarrior": "Unbekannter Krieger"
+      },
+      "battleDeleted": "Schlacht gel\u00F6scht"
+    }
+  },
+  "battle": "Schlacht",
+  "battles": "Schlachten",
+  "battlesActive": "Aktive Schlachten",
+  "battlesActiveUsers": "Aktive Benutzer in der Schlacht",
+  "battleJoin": "Schlacht beitreten",
+  "battleRemoveSuccess": "Schlacht erfolgreich entfernt.",
+  "battleRemoveError": "Fehler beim Entfernen der Schlacht aufgetreten.",
+  "teamGetBattlesError": "Fehler beim Ermitteln der Schlachten des Teams",
+  "sessionDuplicate": "Es existiert bereits eine Schlacht-Sitzung f\u00FCr Ihre ID",
+  "removeBattleConfirmText": "Are you sure you want to remove this battle?",
+  "removeBattle": "Remove Battle",
+  "deleteBattleConfirmText": "Are you sure you want to delete this battle?",
+  "deleteBattle": "Delete Battle"
 }
