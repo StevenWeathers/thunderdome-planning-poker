@@ -49,14 +49,18 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create Organization Department --
+DROP FUNCTION IF EXISTS department_create(IN orgId UUID, IN departmentName VARCHAR(256), OUT departmentId UUID);
 CREATE OR REPLACE FUNCTION department_create(
     IN orgId UUID,
-    IN departmentName VARCHAR(256),
-    OUT departmentId UUID
+    IN departmentName VARCHAR(256)
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
 ) AS $$
+    DECLARE departmentId uuid;
 BEGIN
-    INSERT INTO organization_department (name, organization_id) VALUES (departmentName, orgId) RETURNING id INTO departmentId;
-    UPDATE organization SET updated_date = NOW() WHERE id = orgId;
+    INSERT INTO organization_department (name, organization_id) VALUES (departmentName, orgId) RETURNING organization_department.id INTO departmentId;
+    UPDATE organization SET updated_date = NOW() WHERE organization.id = orgId;
+    RETURN QUERY SELECT d.id, d.name, d.created_date, d.updated_date FROM organization_department d WHERE d.id = departmentId;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -81,15 +85,20 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create Department Team --
+DROP FUNCTION IF EXISTS department_team_create(IN departmentId UUID, IN teamName VARCHAR(256), OUT teamId UUID);
 CREATE OR REPLACE FUNCTION department_team_create(
     IN departmentId UUID,
-    IN teamName VARCHAR(256),
-    OUT teamId UUID
+    IN teamName VARCHAR(256)
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
 ) AS $$
+    DECLARE teamId uuid;
 BEGIN
-    INSERT INTO team (name) VALUES (teamName) RETURNING id INTO teamId;
+    INSERT INTO team (name) VALUES (teamName) RETURNING team.id INTO teamId;
     INSERT INTO department_team (department_id, team_id) VALUES (departmentId, teamId);
-    UPDATE organization_department SET updated_date = NOW() WHERE id = departmentId;
+    UPDATE organization_department SET updated_date = NOW() WHERE organization_department.id = departmentId;
+    RETURN QUERY
+        SELECT t.id, t.name, t.created_date, t.updated_date FROM team t WHERE t.id = teamId;
 END;
 $$ LANGUAGE plpgsql;
 

@@ -8,10 +8,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type createOrgResponse struct {
-	OrganizationID string `json:"id"`
-}
-
 type organizationResponse struct {
 	Organization *model.Organization `json:"organization"`
 	Role         string              `json:"role"`
@@ -86,7 +82,7 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 // @Produce  json
 // @Param userId path string true "user id"
 // @Param name body string true "the organization name"
-// @Success 200 object standardJsonResponse{data=createOrgResponse}
+// @Success 200 object standardJsonResponse{data=model.Organization}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /users/{userId}/organizations [post]
@@ -98,17 +94,13 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 		keyVal := getJSONRequestBody(r, w)
 
 		OrgName := keyVal["name"].(string)
-		OrgId, err := a.db.OrganizationCreate(UserID, OrgName)
+		Organization, err := a.db.OrganizationCreate(UserID, OrgName)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		var NewOrg = &createOrgResponse{
-			OrganizationID: OrgId,
-		}
-
-		Success(w, r, http.StatusOK, NewOrg, nil)
+		Success(w, r, http.StatusOK, Organization, nil)
 	}
 }
 
@@ -161,7 +153,7 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "organization id"
 // @Param name body string true "team name"
-// @Success 200 object standardJsonResponse{data=createTeamResponse}
+// @Success 200 object standardJsonResponse{data=model.Team}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/teams [post]
@@ -172,14 +164,10 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 
 		TeamName := keyVal["name"].(string)
 		OrgID := vars["orgId"]
-		TeamID, err := a.db.OrganizationTeamCreate(OrgID, TeamName)
+		NewTeam, err := a.db.OrganizationTeamCreate(OrgID, TeamName)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
-		}
-
-		var NewTeam = &createTeamResponse{
-			TeamID: TeamID,
 		}
 
 		Success(w, r, http.StatusOK, NewTeam, nil)

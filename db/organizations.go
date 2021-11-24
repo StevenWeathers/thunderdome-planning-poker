@@ -81,20 +81,21 @@ func (d *Database) OrganizationListByUser(UserID string, Limit int, Offset int) 
 }
 
 // OrganizationCreate creates an organization
-func (d *Database) OrganizationCreate(UserID string, OrgName string) (string, error) {
-	var OrgID string
+func (d *Database) OrganizationCreate(UserID string, OrgName string) (*model.Organization, error) {
+	o := &model.Organization{}
+
 	err := d.db.QueryRow(`
-		SELECT organizationId FROM organization_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM organization_create($1, $2);`,
 		UserID,
 		OrgName,
-	).Scan(&OrgID)
+	).Scan(&o.Id, &o.Name, &o.CreatedDate, &o.UpdatedDate)
 
 	if err != nil {
 		log.Println("Unable to create organization: ", err)
-		return "", err
+		return nil, err
 	}
 
-	return OrgID, nil
+	return o, nil
 }
 
 // OrganizationUserList gets a list of organization users
@@ -197,20 +198,21 @@ func (d *Database) OrganizationTeamList(OrgID string, Limit int, Offset int) []*
 }
 
 // OrganizationTeamCreate creates an organization team
-func (d *Database) OrganizationTeamCreate(OrgID string, TeamName string) (string, error) {
-	var TeamID string
+func (d *Database) OrganizationTeamCreate(OrgID string, TeamName string) (*model.Team, error) {
+	t := &model.Team{}
+
 	err := d.db.QueryRow(`
-		SELECT teamId FROM organization_team_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM organization_team_create($1, $2);`,
 		OrgID,
 		TeamName,
-	).Scan(&TeamID)
+	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
 		log.Println("Unable to create organization team: ", err)
-		return "", err
+		return nil, err
 	}
 
-	return TeamID, nil
+	return t, nil
 }
 
 // OrganizationTeamUserRole gets a users role in organization team

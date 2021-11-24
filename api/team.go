@@ -8,10 +8,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type createTeamResponse struct {
-	TeamID string `json:"id"`
-}
-
 type teamResponse struct {
 	Team     *model.Team `json:"team"`
 	TeamRole string      `json:"teamRole"`
@@ -97,7 +93,7 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 // @Produce  json
 // @Param userId path string true "the user ID"
 // @Param name body string true "the team name"
-// @Success 200 object standardJsonResponse{data=createTeamResponse}
+// @Success 200 object standardJsonResponse{data=model.Team}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /users/{userId}/teams [post]
@@ -109,14 +105,10 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 		keyVal := getJSONRequestBody(r, w)
 
 		TeamName := keyVal["name"].(string)
-		TeamID, err := a.db.TeamCreate(UserID, TeamName)
+		NewTeam, err := a.db.TeamCreate(UserID, TeamName)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
-		}
-
-		var NewTeam = &createTeamResponse{
-			TeamID: TeamID,
 		}
 
 		Success(w, r, http.StatusOK, NewTeam, nil)

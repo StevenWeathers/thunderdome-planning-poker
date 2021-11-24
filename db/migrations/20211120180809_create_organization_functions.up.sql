@@ -63,14 +63,18 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create Organization --
+DROP FUNCTION IF EXISTS organization_create(IN userId UUID, IN orgName VARCHAR(256), OUT organizationId UUID);
 CREATE OR REPLACE FUNCTION organization_create(
     IN userId UUID,
-    IN orgName VARCHAR(256),
-    OUT organizationId UUID
+    IN orgName VARCHAR(256)
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
 ) AS $$
+    DECLARE organizationId uuid;
 BEGIN
-    INSERT INTO organization (name) VALUES (orgName) RETURNING id INTO organizationId;
+    INSERT INTO organization (name) VALUES (orgName) RETURNING organization.id INTO organizationId;
     INSERT INTO organization_user (organization_id, user_id, role) VALUES (organizationId, userId, 'ADMIN');
+    RETURN QUERY SELECT o.id, o.name, o.created_date, o.updated_date FROM organization o WHERE o.id = organizationID;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -149,15 +153,20 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create Organization Team --
+DROP FUNCTION IF EXISTS organization_team_create(IN orgId UUID, IN teamName VARCHAR(256), OUT teamId UUID);
 CREATE OR REPLACE FUNCTION organization_team_create(
     IN orgId UUID,
-    IN teamName VARCHAR(256),
-    OUT teamId UUID
+    IN teamName VARCHAR(256)
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
 ) AS $$
+    DECLARE teamId uuid;
 BEGIN
-    INSERT INTO team (name) VALUES (teamName) RETURNING id INTO teamId;
+    INSERT INTO team (name) VALUES (teamName) RETURNING team.id INTO teamId;
     INSERT INTO organization_team (organization_id, team_id) VALUES (orgId, teamId);
-    UPDATE organization SET updated_date = NOW() WHERE id = orgId;
+    UPDATE organization SET updated_date = NOW() WHERE organization.id = orgId;
+    RETURN QUERY
+        SELECT t.id, t.name, t.created_date, t.updated_date FROM team t WHERE t.id = teamId;
 END;
 $$ LANGUAGE plpgsql;
 

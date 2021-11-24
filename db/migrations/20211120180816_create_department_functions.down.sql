@@ -1,9 +1,9 @@
 DROP FUNCTION department_get_by_id(IN departmentId UUID);
 DROP FUNCTION department_get_user_role(IN userId UUID, IN orgId UUID, IN departmentId UUID);
 DROP FUNCTION department_list(IN orgId UUID, IN l_limit INTEGER, IN l_offset INTEGER);
-DROP FUNCTION department_create(IN orgId UUID, IN departmentName VARCHAR(256), OUT departmentId UUID);
+DROP FUNCTION department_create(IN orgId UUID, IN departmentName VARCHAR(256));
 DROP FUNCTION department_team_list(IN departmentId UUID, IN l_limit INTEGER, IN l_offset INTEGER);
-DROP FUNCTION department_team_create(IN departmentId UUID, IN teamName VARCHAR(256), OUT teamId UUID);
+DROP FUNCTION department_team_create(IN departmentId UUID, IN teamName VARCHAR(256));
 DROP FUNCTION department_team_user_role(IN userId UUID, IN orgId UUID, IN departmentId UUID, IN teamId UUID);
 DROP FUNCTION department_user_list(IN departmentId UUID, IN l_limit INTEGER, IN l_offset INTEGER);
 DROP FUNCTION department_user_add(IN departmentId UUID, IN userId UUID, IN userRole VARCHAR(16));

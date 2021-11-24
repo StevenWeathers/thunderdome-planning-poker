@@ -84,20 +84,21 @@ func (d *Database) OrganizationDepartmentList(OrgID string, Limit int, Offset in
 }
 
 // DepartmentCreate creates an organization department
-func (d *Database) DepartmentCreate(OrgID string, OrgName string) (string, error) {
-	var DepartmentID string
+func (d *Database) DepartmentCreate(OrgID string, OrgName string) (*model.Department, error) {
+	od := &model.Department{}
+
 	err := d.db.QueryRow(`
-		SELECT departmentId FROM department_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM department_create($1, $2);`,
 		OrgID,
 		OrgName,
-	).Scan(&DepartmentID)
+	).Scan(&od.Id, &od.Name, &od.CreatedDate, &od.UpdatedDate)
 
 	if err != nil {
 		log.Println("Unable to create organization department: ", err)
-		return "", err
+		return nil, err
 	}
 
-	return DepartmentID, nil
+	return od, nil
 }
 
 // DepartmentTeamList gets a list of department teams
@@ -134,20 +135,21 @@ func (d *Database) DepartmentTeamList(DepartmentID string, Limit int, Offset int
 }
 
 // DepartmentTeamCreate creates a department team
-func (d *Database) DepartmentTeamCreate(DepartmentID string, TeamName string) (string, error) {
-	var TeamID string
+func (d *Database) DepartmentTeamCreate(DepartmentID string, TeamName string) (*model.Team, error) {
+	t := &model.Team{}
+
 	err := d.db.QueryRow(`
-		SELECT teamId FROM department_team_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM department_team_create($1, $2);`,
 		DepartmentID,
 		TeamName,
-	).Scan(&TeamID)
+	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
 		log.Println("Unable to create department team: ", err)
-		return "", err
+		return nil, err
 	}
 
-	return TeamID, nil
+	return t, nil
 }
 
 // DepartmentUserList gets a list of department users

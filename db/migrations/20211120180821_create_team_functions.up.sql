@@ -65,14 +65,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create Team --
+DROP FUNCTION team_create(IN userId UUID, IN teamName VARCHAR(256), OUT teamId UUID);
 CREATE OR REPLACE FUNCTION team_create(
     IN userId UUID,
-    IN teamName VARCHAR(256),
-    OUT teamId UUID
+    IN teamName VARCHAR(256)
+) RETURNS table (
+    id UUID, name VARCHAR(256), created_date TIMESTAMP, updated_date TIMESTAMP
 ) AS $$
+    DECLARE teamId uuid;
 BEGIN
-    INSERT INTO team (name) VALUES (teamName) RETURNING id INTO teamId;
+    INSERT INTO team (name) VALUES (teamName) RETURNING team.id INTO teamId;
     INSERT INTO team_user (team_id, user_id, role) VALUES (teamId, userId, 'ADMIN');
+    RETURN QUERY
+        SELECT t.id, t.name, t.created_date, t.updated_date FROM team t WHERE t.id = teamId;
 END;
 $$ LANGUAGE plpgsql;
 

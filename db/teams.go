@@ -81,20 +81,20 @@ func (d *Database) TeamListByUser(UserID string, Limit int, Offset int) []*model
 }
 
 // TeamCreate creates a team with current user as an ADMIN
-func (d *Database) TeamCreate(UserID string, TeamName string) (string, error) {
-	var TeamID string
+func (d *Database) TeamCreate(UserID string, TeamName string) (*model.Team, error) {
+	t := &model.Team{}
 	err := d.db.QueryRow(`
-		SELECT teamId FROM team_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM team_create($1, $2);`,
 		UserID,
 		TeamName,
-	).Scan(&TeamID)
+	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
 		log.Println("Unable to create team: ", err)
-		return "", err
+		return nil, err
 	}
 
-	return TeamID, nil
+	return t, nil
 }
 
 // TeamAddUser adds a user to a team

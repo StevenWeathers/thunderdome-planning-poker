@@ -8,10 +8,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type createDepartmentResponse struct {
-	DepartmentID string `json:"id"`
-}
-
 type departmentResponse struct {
 	Organization     *model.Organization `json:"organization"`
 	Department       *model.Department   `json:"department"`
@@ -96,7 +92,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "the organization ID to create department for"
 // @Param name body string true "the department name"
-// @Success 200 object standardJsonResponse{data=createDepartmentResponse}
+// @Success 200 object standardJsonResponse{data=model.Department}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments [post]
 func (a *api) handleCreateDepartment() http.HandlerFunc {
@@ -106,14 +102,10 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 
 		OrgName := keyVal["name"].(string)
 		OrgID := vars["orgId"]
-		DepartmentID, err := a.db.DepartmentCreate(OrgID, OrgName)
+		NewDepartment, err := a.db.DepartmentCreate(OrgID, OrgName)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
-		}
-
-		var NewDepartment = &createDepartmentResponse{
-			DepartmentID: DepartmentID,
 		}
 
 		Success(w, r, http.StatusOK, NewDepartment, nil)
@@ -170,7 +162,7 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID"
 // @Param name body string true "the team name"
-// @Success 200 object standardJsonResponse{data=createTeamResponse}
+// @Success 200 object standardJsonResponse{data=model.Team}
 // @Failure 500 object standardJsonResponse{}
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
 func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
@@ -180,14 +172,10 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 
 		TeamName := keyVal["name"].(string)
 		DepartmentID := vars["departmentId"]
-		TeamID, err := a.db.DepartmentTeamCreate(DepartmentID, TeamName)
+		NewTeam, err := a.db.DepartmentTeamCreate(DepartmentID, TeamName)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
-		}
-
-		var NewTeam = &createTeamResponse{
-			TeamID: TeamID,
 		}
 
 		Success(w, r, http.StatusOK, NewTeam, nil)
