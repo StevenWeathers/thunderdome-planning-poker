@@ -4,7 +4,7 @@
     import GithubIcon from '../components/icons/Github.svelte'
 
     import { _ } from '../i18n'
-    import { appRoutes, AppConfig } from '../config'
+    import { AppConfig, appRoutes } from '../config'
     import { warrior } from '../stores'
 
     export let xfetch
@@ -18,8 +18,17 @@
         @apply no-underline;
         @apply text-blue-600;
     }
+
     .feature-link:hover {
         @apply text-blue-900;
+    }
+
+    :global(.text-yellow-thunder) {
+        color: #ffdd57;
+    }
+
+    :global(.bg-yellow-thunder) {
+        background-color: #ffdd57;
     }
 </style>
 
