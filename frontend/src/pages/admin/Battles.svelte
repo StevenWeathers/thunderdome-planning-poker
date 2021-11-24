@@ -31,7 +31,7 @@
                 battleCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger('Error getting battles')
+                notifications.danger($_('getBattlesError'))
             })
     }
 
@@ -96,7 +96,7 @@
                     >
                     </label>
                 </div>
-                <label for="activeBattles">Show Active Battles</label>
+                <label for="activeBattles">{$_('showActiveBattles')}</label>
             </div>
             <table class="table-fixed w-full">
                 <thead>
@@ -131,7 +131,7 @@
                                 <HollowButton
                                     href="{appRoutes.battle}/{battle.id}"
                                 >
-                                    Join
+                                    {$_('battleJoin')}
                                 </HollowButton>
                             </td>
                         </tr>

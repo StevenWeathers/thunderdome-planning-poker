@@ -343,7 +343,7 @@
         return voted !== undefined ? voted.vote : ''
     }
 
-    // get hightest vote from active plan
+    // get highest vote from active plan
     function getHighestVote() {
         const voteCounts = {}
         points.forEach(p => {

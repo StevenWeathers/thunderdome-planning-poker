@@ -59,7 +59,7 @@
                 toggleCreateUser()
             })
             .catch(function () {
-                notifications.danger('Error encountered creating warrior')
+                notifications.danger($_('createUserError'))
                 eventTag('admin_create_warrior', 'engagement', 'failure')
             })
     }
@@ -72,7 +72,7 @@
             : '/api/admin/users?'
 
         if (isSearch && searchEmail.length < 3) {
-            notifications.danger('Search value must be at least 3 characters')
+            notifications.danger($_('searchLengthError'))
             return
         }
 
@@ -83,7 +83,7 @@
                 totalUsers = result.meta.count
             })
             .catch(function () {
-                notifications.danger('Error getting warriors')
+                notifications.danger($_('getUsersError'))
             })
     }
 
@@ -96,7 +96,7 @@
                     getUsers()
                 })
                 .catch(function () {
-                    notifications.danger('Error encountered promoting warrior')
+                    notifications.danger($_('promoteUserError'))
                     eventTag('admin_promote_warrior', 'engagement', 'failure')
                 })
         }
@@ -111,7 +111,7 @@
                     getUsers()
                 })
                 .catch(function () {
-                    notifications.danger('Error encountered demoting warrior')
+                    notifications.danger($_('demoteUserError'))
                     eventTag('admin_demote_warrior', 'engagement', 'failure')
                 })
         }
@@ -120,14 +120,14 @@
     function handleDeleteUser() {
         xfetch(`/api/users/${userDeleteId}`, { method: 'DELETE' })
             .then(function () {
-                eventTag('admin_demote_warrior', 'engagement', 'success')
+                eventTag('admin_delete_warrior', 'engagement', 'success')
 
                 getUsers()
                 toggleDeleteUser(null)()
             })
             .catch(function () {
-                notifications.danger('Error encountered demoting warrior')
-                eventTag('admin_demote_warrior', 'engagement', 'failure')
+                notifications.danger('deleteUserError')
+                eventTag('admin_delete_warrior', 'engagement', 'failure')
             })
     }
 
@@ -185,7 +185,7 @@
                                     <label class="mb-2" for="searchEmail">
                                         <input
                                             bind:value="{searchEmail}"
-                                            placeholder="Email"
+                                            placeholder="{$_('email')}"
                                             class="bg-gray-200 border-gray-200 border-2 appearance-none
                     rounded py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"
@@ -194,7 +194,7 @@
                                         />
                                     </label>
                                     <SolidButton type="submit">
-                                        Search
+                                        {$_('search')}
                                     </SolidButton>
                                 </div>
                             </form>
@@ -239,7 +239,6 @@
                                     &nbsp;
                                     <CountryFlag
                                         country="{user.country}"
-                                        size="{16}"
                                         additionalClass="inline-block"
                                     />
                                 {/if}

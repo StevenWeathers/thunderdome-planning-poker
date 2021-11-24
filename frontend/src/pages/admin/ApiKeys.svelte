@@ -36,7 +36,7 @@
                 appStats = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting application stats')
+                notifications.danger($_('applicationStatsError'))
             })
     }
 
@@ -50,7 +50,7 @@
                 apikeys = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting apikeys')
+                notifications.danger($_('getApikeysError'))
             })
     }
 

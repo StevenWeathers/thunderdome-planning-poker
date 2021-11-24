@@ -33,7 +33,7 @@
                 appStats = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting application stats')
+                notifications.danger($_('applicationStatsError'))
             })
     }
 
@@ -45,7 +45,7 @@
                 teams = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting teams')
+                notifications.danger($_('getTeamsError'))
             })
     }
 

@@ -34,7 +34,7 @@
                 appStats = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting application stats')
+                notifications.danger($_('applicationStatsError'))
             })
     }
 
@@ -49,7 +49,7 @@
                 organizations = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting organizations')
+                notifications.danger($_('getOrganizationsError'))
             })
     }
 

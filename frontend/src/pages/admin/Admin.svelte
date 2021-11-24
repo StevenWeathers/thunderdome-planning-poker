@@ -5,7 +5,7 @@
     import HollowButton from '../../components/HollowButton.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
-    import { appRoutes, AppConfig } from '../../config'
+    import { AppConfig, appRoutes } from '../../config'
     import { validateUserIsAdmin } from '../../validationUtils.js'
 
     export let xfetch
@@ -36,7 +36,7 @@
                 appStats = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting application stats')
+                notifications.danger($_('applicationStatsError'))
             })
     }
 
@@ -48,7 +48,7 @@
                 getAppStats()
             })
             .catch(function () {
-                notifications.danger('Error encountered cleaning battles')
+                notifications.danger($_('oldBattleCleanError'))
                 eventTag('admin_clean_battles', 'engagement', 'failure')
             })
     }
@@ -61,7 +61,7 @@
                 getAppStats()
             })
             .catch(function () {
-                notifications.danger('Error encountered cleaning guests')
+                notifications.danger($_('oldGuestsCleanError'))
                 eventTag('admin_clean_guests', 'engagement', 'failure')
             })
     }
@@ -70,14 +70,12 @@
         xfetch('/api/maintenance/lowercase-emails', { method: 'PATCH' })
             .then(function () {
                 eventTag('admin_lowercase_emails', 'engagement', 'success')
-                notifications.success('Lowercased user emails successfully')
+                notifications.success($_('lowercaseEmailsSuccess'))
 
                 getAppStats()
             })
             .catch(function () {
-                notifications.danger(
-                    'Error encountered lowercasing user emails',
-                )
+                notifications.danger($_('lowercaseEmailsError'))
                 eventTag('admin_lowercase_emails', 'engagement', 'failure')
             })
     }

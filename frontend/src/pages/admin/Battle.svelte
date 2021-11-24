@@ -34,7 +34,7 @@
                 battle = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting battle')
+                notifications.danger($_('getBattleError'))
             })
     }
 
@@ -69,12 +69,12 @@
             <table class="table-fixed w-full mb-4">
                 <thead>
                     <tr>
-                        <th class="flex-1 p-2">Voting Locked</th>
-                        <th class="flex-1 p-2">Auto Finish Voting</th>
-                        <th class="flex-1 p-2">Point Values Allowed</th>
-                        <th class="flex-1 p-2">Point Average Rounding</th>
-                        <th class="flex-1 p-2">Created</th>
-                        <th class="flex-1 p-2">Updated</th>
+                        <th class="flex-1 p-2">{$_('votingLocked')}</th>
+                        <th class="flex-1 p-2">{$_('autoFinishVoting')}</th>
+                        <th class="flex-1 p-2">{$_('pointValuesAllowed')}</th>
+                        <th class="flex-1 p-2">{$_('pointAverageRounding')}</th>
+                        <th class="flex-1 p-2">{$_('dateCreated')}</th>
+                        <th class="flex-1 p-2">{$_('dateUpdated')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -107,7 +107,7 @@
             </table>
 
             <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center">
-                Users
+                {$_('users')}
             </h3>
             <table class="table-fixed w-full mb-4">
                 <thead>
@@ -115,11 +115,11 @@
                         <th class="flex-1 p-2">
                             {$_('name')}
                         </th>
-                        <th class="flex-1 p-2">Type</th>
-                        <th class="flex-1 p-2">Active</th>
-                        <th class="flex-1 p-2">Abandoned</th>
-                        <th class="flex-1 p-2">Spectator</th>
-                        <th class="flex-1 p-2">Leader</th>
+                        <th class="flex-1 p-2">{$_('type')}</th>
+                        <th class="flex-1 p-2">{$_('active')}</th>
+                        <th class="flex-1 p-2">{$_('abandoned')}</th>
+                        <th class="flex-1 p-2">{$_('spectator')}</th>
+                        <th class="flex-1 p-2">{$_('leader')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -172,13 +172,13 @@
             <table class="table-fixed w-full">
                 <thead>
                     <tr>
-                        <th class="flex-1 p-2">Name</th>
-                        <th class="flex-1 p-2">Type</th>
-                        <th class="flex-1 p-2">Reference Id</th>
-                        <th class="flex-1 p-2">Vote Count</th>
-                        <th class="flex-1 p-2">Points</th>
-                        <th class="flex-1 p-2">Active</th>
-                        <th class="flex-1 p-2">Skipped</th>
+                        <th class="flex-1 p-2">{$_('name')}</th>
+                        <th class="flex-1 p-2">{$_('type')}</th>
+                        <th class="flex-1 p-2">{$_('planReferenceId')}</th>
+                        <th class="flex-1 p-2">{$_('voteCount')}</th>
+                        <th class="flex-1 p-2">{$_('points')}</th>
+                        <th class="flex-1 p-2">{$_('active')}</th>
+                        <th class="flex-1 p-2">{$_('skipped')}</th>
                     </tr>
                 </thead>
                 <tbody>

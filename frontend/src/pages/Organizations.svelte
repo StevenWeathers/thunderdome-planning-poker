@@ -43,7 +43,7 @@
                 organizations = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting organizations')
+                notifications.danger($_('getOrganizationsError'))
             })
     }
 
@@ -57,7 +57,7 @@
                 teams = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting teams')
+                notifications.danger($_('getTeamsError'))
             })
     }
 
@@ -74,7 +74,7 @@
                 })
             })
             .catch(function () {
-                notifications.danger('Error attempting to create organization')
+                notifications.danger($_('createOrgError'))
                 eventTag('create_organization', 'engagement', 'failure')
             })
     }
@@ -92,7 +92,7 @@
                 })
             })
             .catch(function () {
-                notifications.danger('Error attempting to create team')
+                notifications.danger($_('teamCreateError'))
                 eventTag('create_team', 'engagement', 'failure')
             })
     }

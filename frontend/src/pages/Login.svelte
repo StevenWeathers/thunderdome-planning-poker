@@ -3,7 +3,7 @@
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
     import { _, setupI18n } from '../i18n'
-    import { appRoutes, AppConfig } from '../config'
+    import { AppConfig, appRoutes } from '../config'
 
     export let router
     export let xfetch
@@ -199,18 +199,18 @@
                         class="font-bold text-xl md:text-2xl mb-2 md:mb-6
                         md:leading-tight text-center"
                     >
-                        Forgot Password
+                        {$_('forgotPassword')}
                     </div>
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 text-sm font-bold mb-2"
                             for="yourResetEmail"
                         >
-                            Email
+                            {$_('email')}
                         </label>
                         <input
                             bind:value="{warriorResetEmail}"
-                            placeholder="Enter your email"
+                            placeholder="{$_('enterYourEmail')}"
                             class="bg-gray-200 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
@@ -229,10 +229,10 @@
                             text-blue-500 hover:text-blue-800 mr-4"
                             on:click="{toggleForgotPassword}"
                         >
-                            Cancel
+                            {$_('cancel')}
                         </button>
                         <SolidButton type="submit" disabled="{resetDisabled}">
-                            Send Reset Email
+                            {$_('sendResetEmail')}
                         </SolidButton>
                     </div>
                 </form>

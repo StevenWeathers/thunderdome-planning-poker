@@ -61,10 +61,10 @@
                 activeAlerts.update(result.data)
                 getAlerts()
                 toggleCreateAlert()
-                notifications.success('Alert created successfully.')
+                notifications.success($_('createAlertSuccess'))
             })
             .catch(function () {
-                notifications.danger('Error encountered creating alert')
+                notifications.danger('createAlertError')
                 eventTag('admin_create_alert', 'engagement', 'failure')
             })
     }
@@ -78,10 +78,10 @@
                 activeAlerts.update(result.data)
                 getAlerts()
                 toggleUpdateAlert({ ...defaultAlert })()
-                notifications.success('Alert updating successfully.')
+                notifications.success($_('updateAlertSuccess'))
             })
             .catch(function () {
-                notifications.danger('Error encountered updating alert')
+                notifications.danger($_('updateAlertError'))
                 eventTag('admin_update_alert', 'engagement', 'failure')
             })
     }
@@ -95,7 +95,7 @@
                 alertCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger('Error getting alerts')
+                notifications.danger($_('getAlertsError'))
             })
     }
 
@@ -107,10 +107,10 @@
                 activeAlerts.update(result.data)
                 getAlerts()
                 toggleDeleteAlert(null)()
-                notifications.success('Alert deleted successfully.')
+                notifications.success($_('deleteAlertSuccess'))
             })
             .catch(function () {
-                notifications.danger('Error attempting to delete alert')
+                notifications.danger($_('deleteAlertError'))
                 eventTag('admin_delete_alert', 'engagement', 'failure')
             })
     }

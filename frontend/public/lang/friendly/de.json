@@ -80,5 +80,14 @@
   "removeBattleConfirmText": "Are you sure you want to remove this game?",
   "removeBattle": "Remove Game",
   "deleteBattleConfirmText": "Are you sure you want to delete this game?",
-  "deleteBattle": "Delete Game"
+  "deleteBattle": "Delete Game",
+  "oldBattleCleanError": "Error encountered cleaning games",
+  "getBattleError": "Error getting games",
+  "getBattlesError": "Error getting games",
+  "showActiveBattles": "Show Active Games",
+  "organizationsAndTeamsDescription": "Create organizations with departments and teams at each level to associate game's to a team for quick access. Just a small team?, no problem! Stand alone teams can be created without the need for organizations.",
+  "customizableBattleOptions": "Customizable Game Options",
+  "customizableBattleOptionsDescription": "Each game can set the allowed point values from the configured (default 0-100 scale) set as well as whether or not to automatically finish voting when all votes have been cast.",
+  "conciseVotingResultsDescription": "Voting results show how many and whom voted for each point value. A tally of total votes, highest vote, and a rounded (customizable per game) average vote helps quickly come to a consensus.",
+  "secureDescription": "Every game has a randomly generated, not incremental ID which keeps strangers from joining your game without the share link.<br/>HTTPS, backend only cookie, and salted/hashed password storage keep your authenticated sessions secure."
 }

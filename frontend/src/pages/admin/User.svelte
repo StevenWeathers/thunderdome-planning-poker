@@ -38,7 +38,7 @@
                 user = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting user')
+                notifications.danger($_('getUserError'))
             })
     }
 
@@ -73,11 +73,11 @@
             <table class="table-fixed w-full mb-4">
                 <thead>
                     <tr>
-                        <th class="flex-1 p-2">Email</th>
-                        <th class="flex-1 p-2">Type</th>
-                        <th class="flex-1 p-2">Created</th>
-                        <th class="flex-1 p-2">Updated</th>
-                        <th class="flex-1 p-2">Last Active</th>
+                        <th class="flex-1 p-2">{$_('email')}</th>
+                        <th class="flex-1 p-2">{$_('type')}</th>
+                        <th class="flex-1 p-2">{$_('createdDate')}</th>
+                        <th class="flex-1 p-2">{$_('updatedDate')}</th>
+                        <th class="flex-1 p-2">{$_('lastActive')}</th>
                     </tr>
                 </thead>
                 <tbody>

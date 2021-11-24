@@ -33,7 +33,7 @@
 </style>
 
 <svelte:head>
-    <title>{$_('appName')} - Open Source Agile Planning Poker app</title>
+    <title>{$_('appName')} - {$_('appSubtitle')}</title>
 </svelte:head>
 
 <section class="bg-yellow-thunder text-gray-800">
@@ -92,8 +92,7 @@
                 <img
                     class="w-full"
                     src="https://user-images.githubusercontent.com/846933/118144911-fdf70980-b3da-11eb-92b6-63de3990a8b8.png"
-                    alt="Preview of Thunderdome, Agile Planning Poker UI
-                    Experience"
+                    alt="{$_('appPreviewAlt')}"
                 />
             </div>
         </div>
@@ -107,7 +106,7 @@
         </div>
         <div class="flex text-center mb-8">
             <div class="w-1/2">
-                <h3 class="text-2xl font-bold">Open Source</h3>
+                <h3 class="text-2xl font-bold">{$_('openSource')}</h3>
                 <p class="px-2">
                     Check out the
                     <GithubIcon />
@@ -129,7 +128,7 @@
             </div>
             <div class="w-1/2">
                 <h3 class="text-2xl font-bold">
-                    Hosted service or self-hosted
+                    {$_('hostedOrSelfHosted')}
                 </h3>
                 <p class="px-2">
                     <a href="https://thunderdome.dev" class="feature-link">
@@ -148,36 +147,31 @@
         </div>
         <div class="flex text-center mb-8">
             <div class="w-1/2">
-                <h3 class="text-2xl font-bold">Organizations and Teams</h3>
+                <h3 class="text-2xl font-bold">
+                    {$_('organizationsAndTeams')}
+                </h3>
                 <p class="px-2">
-                    Create organizations with departments and teams at each
-                    level to associate battle's to a team for quick access. Just
-                    a small team?, no problem! Stand alone teams can be created
-                    without the need for organizations.
+                    {$_('organizationsAndTeamsDescription')}
                 </p>
             </div>
             <div class="w-1/2">
-                <h3 class="text-2xl font-bold">Customizable Battle Options</h3>
+                <h3 class="text-2xl font-bold">
+                    {$_('customizableBattleOptions')}
+                </h3>
                 <p class="px-2">
-                    Each battle can set the allowed point values from the
-                    configured (default 0-100 scale) set as well as whether or
-                    not to automatically finish voting when all votes have been
-                    cast.
+                    {$_('customizableBattleOptionsDescription')}
                 </p>
             </div>
         </div>
         <div class="flex text-center mb-8">
             <div class="w-1/2">
-                <h3 class="text-2xl font-bold">Concise Voting Results</h3>
+                <h3 class="text-2xl font-bold">{$_('conciseVotingResults')}</h3>
                 <p class="px-2">
-                    Voting results show how many and whom voted for each point
-                    value. A tally of total votes, highest vote, and a rounded
-                    (customizable per battle) average vote helps quickly come to
-                    a consensus.
+                    {$_('conciseVotingResultsDescription')}
                 </p>
             </div>
             <div class="w-1/2">
-                <h3 class="text-2xl font-bold">Jira XML Import</h3>
+                <h3 class="text-2xl font-bold">{$_('jiraXmlImport')}</h3>
                 <p class="px-2">
                     To expedite setting up a grooming session importing
                     <a
@@ -194,10 +188,9 @@
         </div>
         <div class="flex text-center mb-8">
             <div class="w-1/2">
-                <h3 class="text-2xl font-bold">Fast</h3>
+                <h3 class="text-2xl font-bold">{$_('fast')}</h3>
                 <p class="px-2">
-                    Thunderdome is fast and small (under 20mb single executable)
-                    thanks to
+                    Thunderdome is fast and small (single executable) thanks to
                     <a href="https://golang.org/" class="feature-link">Go</a>
                     .
                     <br />
@@ -212,14 +205,9 @@
                 </p>
             </div>
             <div class="w-1/2">
-                <h3 class="text-2xl font-bold">Secure</h3>
+                <h3 class="text-2xl font-bold">{$_('secure')}</h3>
                 <p class="px-2">
-                    Every battle has a randomly generated, not incremetal ID
-                    which keeps strangers from joining your battle without the
-                    share link.
-                    <br />
-                    HTTPS, backend only cookie, and salted/hashed password storage
-                    keep your authenticated sessions secure.
+                    {@html $_('secureDescription')}
                 </p>
             </div>
         </div>
