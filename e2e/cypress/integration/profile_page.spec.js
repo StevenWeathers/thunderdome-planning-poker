@@ -27,7 +27,7 @@ describe('The User Profile Page', () => {
     })
 
     describe('API Keys', () => {
-      it('displays users API keys', function () {
+      it.skip('displays users API keys', function () {
         cy.login(this.currentUser)
 
         cy.createUserApikey(this.currentUser).then(() => {
@@ -44,7 +44,7 @@ describe('The User Profile Page', () => {
         cy.logout(this.currentUser)
       })
 
-      it('can create API key', function () {
+      it.skip('can create API key', function () {
         cy.login(this.currentUser)
 
         cy.visit('/profile')
@@ -66,7 +66,7 @@ describe('The User Profile Page', () => {
         cy.logout(this.currentUser)
       })
 
-      it('can toggle api key active status', function () {
+      it.skip('can toggle api key active status', function () {
         cy.login(this.currentUser)
 
         cy.createUserApikey(this.currentUser).then(() => {
@@ -85,7 +85,7 @@ describe('The User Profile Page', () => {
         cy.logout(this.currentUser)
       })
 
-      it('can delete api key', function () {
+      it.skip('can delete api key', function () {
         cy.login(this.currentUser)
 
         cy.createUserApikey(this.currentUser).then(() => {
@@ -104,7 +104,7 @@ describe('The User Profile Page', () => {
         cy.logout(this.currentUser)
       })
 
-      it.only('can create no more than 5 API keys (default for config)', function () {
+      it.skip('can create no more than 5 API keys (default for config)', function () {
         cy.login(this.currentUser)
 
         cy.createUserApikey(this.currentUser, { name: 'testkey1' })
