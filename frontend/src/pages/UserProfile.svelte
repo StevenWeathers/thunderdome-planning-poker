@@ -11,7 +11,7 @@
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
     import { _, locale, setupI18n } from '../i18n'
-    import { appRoutes, AppConfig } from '../config'
+    import { AppConfig, appRoutes } from '../config'
     import { countryList } from '../country'
     import CreateApiKey from '../components/user/CreateApiKey.svelte'
 
@@ -633,7 +633,10 @@
                         </div>
                         <div class="w-1/5">
                             <div class="text-right">
-                                <HollowButton onClick="{toggleCreateApiKey}">
+                                <HollowButton
+                                    onClick="{toggleCreateApiKey}"
+                                    testid="apikey-create"
+                                >
                                     {$_(
                                         'pages.warriorProfile.apiKeys.createButton',
                                     )}
@@ -665,11 +668,20 @@
                         <tbody>
                             {#each apiKeys as apk}
                                 <tr>
-                                    <td class="border px-4 py-2">{apk.name}</td>
-                                    <td class="border px-4 py-2">
+                                    <td
+                                        class="border px-4 py-2"
+                                        data-testid="apikey-name">{apk.name}</td
+                                    >
+                                    <td
+                                        class="border px-4 py-2"
+                                        data-testid="apikey-prefix"
+                                    >
                                         {apk.prefix}
                                     </td>
-                                    <td class="border px-4 py-2">
+                                    <td
+                                        class="border px-4 py-2"
+                                        data-testid="apikey-active"
+                                    >
                                         {apk.active}
                                     </td>
                                     <td class="border px-4 py-2">
@@ -683,6 +695,7 @@
                                                 apk.id,
                                                 apk.active,
                                             )}"
+                                            testid="apikey-activetoggle"
                                         >
                                             {#if !apk.active}
                                                 {$_(
@@ -697,6 +710,7 @@
                                         <HollowButton
                                             color="red"
                                             onClick="{deleteApiKey(apk.id)}"
+                                            testid="apikey-delete"
                                         >
                                             {$_(
                                                 'pages.warriorProfile.apiKeys.deleteButton',

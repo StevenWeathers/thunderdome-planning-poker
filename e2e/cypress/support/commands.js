@@ -85,6 +85,15 @@ Cypress.Commands.add('createUserDepartment', (user, organizationId, department =
     .its('body.data')
     .as('currentDepartment')
 })
+
+Cypress.Commands.add('createUserApikey', (user, apikey = {
+  name: 'Test API Key',
+}) => {
+  cy.request('POST', `/api/users/${user.id}/apikeys`, apikey)
+    .its('body.data')
+    .as('currentAPIKey')
+})
+
 //
 //
 // -- This is a child command --

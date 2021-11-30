@@ -204,7 +204,7 @@
         },
         "createSuccess": "Neuer Api Key {keyName} erstellt und {onlyNowOpen}dieser wird nur jetzt angezeigt{onlyNowClose}",
         "storeWarning": "Bitte den Api Key an einem sicheren Ort aufbewahren, da dieses generierte Token nicht mehr abgerufen oder wiederhergestellt werden kann, sobald diese Seite verlassen wurde.",
-        "limitReached": "You have the max number of API keys allowd.",
+        "limitReached": "You have the max number of API keys allowed.",
         "unverifiedUser": "Only verified registered users can create API keys."
       },
       "delete": {

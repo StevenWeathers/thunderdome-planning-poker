@@ -36,9 +36,9 @@
                 apiKey = result.data.apiKey
                 eventTag('create_api_key', 'engagement', 'success')
             })
-            .catch(function (error) {
+            .catch(function (error, response) {
                 if (Array.isArray(error)) {
-                    error.response.json().then(function (result) {
+                    error[1].json().then(function (result) {
                         let errMessage
                         switch (result.error) {
                             case 'USER_APIKEY_LIMIT_REACHED':
@@ -142,7 +142,10 @@
         </div>
         <div class="text-right">
             <div>
-                <SolidButton onClick="{toggleCreateApiKey}">
+                <SolidButton
+                    onClick="{toggleCreateApiKey}"
+                    testid="apikey-close"
+                >
                     {$_('pages.warriorProfile.apiKeys.fields.closeButton')}
                 </SolidButton>
             </div>

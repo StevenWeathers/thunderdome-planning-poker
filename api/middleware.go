@@ -157,7 +157,13 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if User.Type != adminUserType && EntityUserID != UserID && User.Verified == false {
+		EntityUser, EntityUserErr := a.db.GetUser(EntityUserID)
+		if EntityUserErr != nil || (User.Type != adminUserType && (EntityUserID != UserID)) {
+			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+			return
+		}
+
+		if EntityUser.Verified == false {
 			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
 			return
 		}

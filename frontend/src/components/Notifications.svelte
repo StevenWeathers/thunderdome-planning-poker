@@ -168,7 +168,9 @@
             style="background: {toast.background};"
             out:animateOut
         >
-            <div class="content">{toast.msg}</div>
+            <div class="content" data-testid="notification-msg">
+                {toast.msg}
+            </div>
             <div
                 class="progress"
                 style="animation-duration: {toast.timeout}ms;"

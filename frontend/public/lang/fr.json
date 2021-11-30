@@ -186,7 +186,7 @@
         },
         "createSuccess": "La nouvelle clé API {keyName} est créée et {onlyNowOpen}sera affichée uniquement maintenant{onlyNowClose}",
         "storeWarning": "Merci de l'enregistrer dans un endroit sûr car dès que vous quitterez cette page, nous ne pourrons plus retrouver ou restaurer ce token généré.",
-        "limitReached": "You have the max number of API keys allowd.",
+        "limitReached": "You have the max number of API keys allowed.",
         "unverifiedUser": "Only verified registered users can create API keys."
       },
       "delete": {
