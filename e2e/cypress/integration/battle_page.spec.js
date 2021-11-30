@@ -11,8 +11,8 @@ describe('The Battle Page', () => {
 
   describe('Registered User', () => {
     beforeEach(() => {
-      // seed a user in the DB that we can control from our tests
-      cy.createUser()
+      cy.task('db:teardown:registeredUser')
+      cy.task('db:seed:registeredUser').as('currentUser')
     })
 
     it('successfully loads for authenticated registered user', function () {
@@ -22,9 +22,6 @@ describe('The Battle Page', () => {
 
         cy.get('h2').should('contain', 'Test Battle')
       })
-
-      // cleanup our user (for some reason can't access this context in after utility
-      cy.logout(this.currentUser)
     })
 
     describe('Plans', () => {
@@ -46,9 +43,6 @@ describe('The Battle Page', () => {
 
           cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
         })
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
 
       it('should allow adding', function () {
@@ -64,9 +58,6 @@ describe('The Battle Page', () => {
 
           cy.getByTestId('plan-name').should('contain', 'Test Plan')
         })
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
 
       it('should allow editing plans', function () {
@@ -95,9 +86,6 @@ describe('The Battle Page', () => {
 
           cy.getByTestId('plan-type').should('contain', 'Story')
         })
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
 
       it('should allow deleting plans', function () {
@@ -122,9 +110,6 @@ describe('The Battle Page', () => {
 
           cy.getByTestId('plan-name').should('not.exist')
         })
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
 
       it('should allow activating plans', function () {
@@ -155,9 +140,6 @@ describe('The Battle Page', () => {
 
           cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'false')
         })
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
 
       it('should allow skipping plan voting', function () {
@@ -194,9 +176,6 @@ describe('The Battle Page', () => {
 
           cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
         })
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
     })
 
@@ -214,9 +193,6 @@ describe('The Battle Page', () => {
           // we should be redirected to landing
           cy.location('pathname').should('equal', '/battles')
         })
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
 
       it('cancel does not delete battle', function () {
@@ -234,9 +210,6 @@ describe('The Battle Page', () => {
           cy.get('h2').should('contain', 'Test Battle')
           cy.location('pathname').should('equal', battleUrl)
         })
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
     })
   })

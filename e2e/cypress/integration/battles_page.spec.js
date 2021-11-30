@@ -11,8 +11,8 @@ describe('The Battles Page', () => {
 
   describe('Registered User', () => {
     beforeEach(() => {
-      // seed a user in the DB that we can control from our tests
-      cy.createUser()
+      cy.task('db:teardown:registeredUser')
+      cy.task('db:seed:registeredUser').as('currentUser')
     })
 
     it('successfully loads for authenticated registered user', function () {
@@ -21,9 +21,6 @@ describe('The Battles Page', () => {
       cy.visit('/battles')
 
       cy.get('h1').should('contain', 'My Battles')
-
-      // cleanup our user (for some reason can't access this context in after utility
-      cy.logout(this.currentUser)
     })
 
     it('displays users battles', function () {
@@ -33,9 +30,6 @@ describe('The Battles Page', () => {
 
       // we should be in battle
       cy.getByTestId('battle-name').should('contain', 'Test Battle')
-
-      // cleanup our user (for some reason can't access this context in after utility
-      cy.logout(this.currentUser)
     })
 
     describe('Create Battle Form', () => {
@@ -48,9 +42,6 @@ describe('The Battles Page', () => {
 
         // we should be in battle
         cy.get('h2').should('contain', 'Test Battle')
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
     })
   })

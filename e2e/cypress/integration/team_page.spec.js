@@ -11,8 +11,8 @@ describe('The Team Page', () => {
 
   describe('Registered User', () => {
     beforeEach(() => {
-      // seed a user in the DB that we can control from our tests
-      cy.createUser()
+      cy.task('db:teardown:registeredUser')
+      cy.task('db:seed:registeredUser').as('currentUser')
     })
 
     it('successfully loads for authenticated registered user', function () {
@@ -23,9 +23,6 @@ describe('The Team Page', () => {
 
         cy.get('h1').should('contain', `Team: Test Team`)
       })
-
-      // cleanup our user (for some reason can't access this context in after utility
-      cy.logout(this.currentUser)
     })
   })
 })

@@ -8,11 +8,11 @@ describe('The Organizations Page', () => {
   })
 
   describe('Guest User', () => {})
-  
+
   describe('Registered User', () => {
     beforeEach(() => {
-      // seed a user in the DB that we can control from our tests
-      cy.createUser()
+      cy.task('db:teardown:registeredUser')
+      cy.task('db:seed:registeredUser').as('currentUser')
     })
 
     it('successfully loads for authenticated registered user', function () {
@@ -22,9 +22,6 @@ describe('The Organizations Page', () => {
 
       cy.get('h2').should('contain', 'Organizations')
       cy.get('h2').should('contain', 'Teams')
-
-      // cleanup our user (for some reason can't access this context in after utility
-      cy.logout(this.currentUser)
     })
 
     describe('Create Organization', () => {
@@ -40,9 +37,6 @@ describe('The Organizations Page', () => {
         cy.get('h2').should('contain', 'Departments')
         cy.get('h2').should('contain', 'Teams')
         cy.get('h2').should('contain', 'Users')
-
-        // cleanup our user (for some reason can't access this context in after utility
-        cy.logout(this.currentUser)
       })
     })
   })

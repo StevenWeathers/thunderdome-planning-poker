@@ -1,4 +1,11 @@
 {
   "baseUrl": "http://localhost:8080",
-  "blockHosts": "*.google-analytics.com"
+  "blockHosts": "*.google-analytics.com",
+  "db": {
+    "name": "thunderdome",
+    "user": "thor",
+    "pass": "odinson",
+    "port": "5432",
+    "host": "localhost"
+  }
 }
