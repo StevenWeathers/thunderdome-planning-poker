@@ -89,7 +89,7 @@
 >
     <div class="w-1/3 ">
         <div class="mb-2">{$_('pages.battle.voteResults.totalVotes')}</div>
-        {totalVotes}
+        <span data-testid="voteresult-total">{totalVotes}</span>
         <WarriorIcon />
     </div>
     <div class="w-1/3">
@@ -97,6 +97,7 @@
         <span
             class="font-bold text-green-600 border-green-500 border p-2 rounded
             ml-2 inline-block"
+            data-testid="voteresult-average"
         >
             {average}
         </span>
@@ -107,10 +108,14 @@
             <span
                 class="font-bold text-green-600 border-green-500 border p-2
                 rounded ml-2 inline-block"
+                data-testid="voteresult-high"
             >
                 {highestVote || 0}
             </span>
-            - {counts[highestVote] ? counts[highestVote].count : 0}
+            -
+            <span data-testid="voteresult-highcount"
+                >{counts[highestVote] ? counts[highestVote].count : 0}</span
+            >
             <span class="relative">
                 <button
                     on:mouseenter="{() => (showHighestVoters = true)}"

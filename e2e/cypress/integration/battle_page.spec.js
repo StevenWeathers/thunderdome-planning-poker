@@ -266,6 +266,97 @@ describe('The Battle Page', () => {
           cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
         })
       })
+
+      it('should allow finishing plan voting', function () {
+        cy.login(this.currentUser)
+        cy.createUserBattle(this.currentUser, {
+          name: 'Test Battle',
+          pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
+          autoFinishVoting: false,
+          plans: [
+            {
+              name: 'Defeat Loki',
+              type: 'Story'
+            }
+          ],
+          pointAverageRounding: 'ceil'
+        }).then(() => {
+          cy.visit(`/battle/${this.currentBattle.id}`)
+
+          cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
+
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
+
+          cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
+
+          cy.getByTestId('plan-activate').click()
+
+          cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
+
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'false')
+
+          cy.getByTestId('voting-finish').click()
+
+          cy.getByTestId('voteresult-total').should('exist')
+          cy.getByTestId('voteresult-average').should('exist')
+          cy.getByTestId('voteresult-high').should('exist')
+          cy.getByTestId('voteresult-highcount').should('exist')
+
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
+
+          cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
+        })
+      })
+
+      it('should allow saving plan voting final points', function () {
+        cy.login(this.currentUser)
+        cy.createUserBattle(this.currentUser, {
+          name: 'Test Battle',
+          pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
+          autoFinishVoting: false,
+          plans: [
+            {
+              name: 'Defeat Loki',
+              type: 'Story'
+            }
+          ],
+          pointAverageRounding: 'ceil'
+        }).then(() => {
+          cy.visit(`/battle/${this.currentBattle.id}`)
+
+          cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
+
+          cy.getByTestId('plans-unpointed').should('contain', 'Unpointed (1)')
+          cy.getByTestId('plans-pointed').should('contain', 'Pointed (0)')
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
+          cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
+          cy.getByTestId('plan-points').should('not.exist')
+
+          cy.getByTestId('plan-activate').click()
+
+          cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
+
+          cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'false')
+
+          cy.getByTestId('voting-finish').click()
+
+          cy.getByTestId('voteresult-total').should('exist')
+
+          cy.get('[name="planPoints"]').select('1')
+
+          cy.getByTestId('voting-save').click()
+
+          cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
+
+          cy.getByTestId('plan-name').should('not.exist')
+
+          cy.getByTestId('plans-unpointed').should('contain', 'Unpointed (0)')
+          cy.getByTestId('plans-pointed').should('contain', 'Pointed (1)')
+          cy.getByTestId('plans-pointed').click()
+          cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
+          cy.getByTestId('plan-points').should('contain', '1')
+        })
+      })
     })
 
     describe('Delete Battle', () => {
