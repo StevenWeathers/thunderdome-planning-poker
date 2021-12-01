@@ -5,6 +5,7 @@
     export let type = 'button'
     export let testid = ''
     export let onClick = () => {}
+    export let options = {}
 </script>
 
 <style>
@@ -81,6 +82,7 @@
     type="{type}"
     disabled="{disabled}"
     data-testid="{testid}"
+    {...options}
 >
     <slot />
 </button>

@@ -6,6 +6,7 @@
     export let onClick = () => {}
     export let href = ''
     export let testid = ''
+    export let options = {}
 </script>
 
 <style>
@@ -79,6 +80,7 @@
     <label
         class="btn-hollow btn-hollow-{color} cursor-pointer {additionalClasses}"
         data-testid="{testid}"
+        {...options}
     >
         <slot />
     </label>
@@ -91,6 +93,7 @@
         type="{type}"
         disabled="{disabled}"
         data-testid="{testid}"
+        {...options}
     >
         <slot />
     </button>
@@ -99,6 +102,7 @@
         href="{href}"
         class="btn-hollow btn-hollow-{color} inline-block no-underline {additionalClasses}"
         data-testid="{testid}"
+        {...options}
     >
         <slot />
     </a>

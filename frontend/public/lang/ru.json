@@ -426,5 +426,6 @@
   "conciseVotingResults": "Concise Voting Results",
   "jiraXmlImport": "Jira XML Import",
   "fast": "Fast",
-  "secure": "Secure"
+  "secure": "Secure",
+  "apiDocumentation": "API Documentation"
 }

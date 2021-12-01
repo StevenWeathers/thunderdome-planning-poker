@@ -623,16 +623,22 @@
             {#if ExternalAPIEnabled}
                 <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
                     <div class="flex w-full">
-                        <div class="w-4/5">
-                            <h2
-                                class="text-2xl md:text-3xl font-bold
-                                text-center mb-4"
-                            >
+                        <div class="flex-1">
+                            <h2 class="text-2xl md:text-3xl font-bold mb-4">
                                 {$_('pages.warriorProfile.apiKeys.title')}
                             </h2>
                         </div>
-                        <div class="w-1/5">
+                        <div class="flex-1">
                             <div class="text-right">
+                                <HollowButton
+                                    onClick="{toggleCreateApiKey}"
+                                    testid="apikey-create"
+                                    href="/swagger/index.html"
+                                    options="{{ target: '_blank' }}"
+                                    color="blue"
+                                >
+                                    {$_('apiDocumentation')}
+                                </HollowButton>
                                 <HollowButton
                                     onClick="{toggleCreateApiKey}"
                                     testid="apikey-create"
