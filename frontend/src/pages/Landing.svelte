@@ -14,12 +14,12 @@
 </script>
 
 <style>
-    .feature-link {
+    :global(.feature-link) {
         @apply no-underline;
         @apply text-blue-600;
     }
 
-    .feature-link:hover {
+    :global(.feature-link:hover) {
         @apply text-blue-900;
     }
 
