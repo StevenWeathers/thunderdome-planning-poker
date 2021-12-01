@@ -7,7 +7,20 @@ describe('The Battle Page', () => {
     })
   })
 
-  describe('Guest User', () => {})
+  describe('Guest User', () => {
+    beforeEach(() => {
+      cy.task('db:teardown:guestUser')
+      cy.createGuestUser()
+    })
+
+    it('successfully loads', function () {
+      cy.createUserBattle(this.currentUser).then(() => {
+        cy.visit(`/battle/${this.currentBattle.id}`)
+
+        cy.get('h2').should('contain', 'Test Battle')
+      })
+    })
+  })
 
   describe('Registered User', () => {
     beforeEach(() => {
