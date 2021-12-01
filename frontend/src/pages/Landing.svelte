@@ -181,8 +181,8 @@
                         Jira
                     </a>
                     XML to quickly add stories to a battle with links back to Jira.
-                    Don't use Jira?, self-hosted instances can enable API access
-                    for easier integrations with other systems.
+                    Don't use Jira?, create an API Key and integrate your system
+                    of choice.
                 </p>
             </div>
         </div>
