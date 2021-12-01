@@ -50,8 +50,8 @@
 
 <div
     class="border-b border-gray-500 p-4 flex items-center"
-    data-testId="warriorCard"
-    data-warriorName="{warrior.name}"
+    data-testid="user-card"
+    data-username="{warrior.name}"
 >
     <div class="w-1/4 mr-1">
         <WarriorAvatar
@@ -65,7 +65,6 @@
             <div class="w-3/4">
                 <p
                     class="{nameStyleClass} font-bold leading-tight truncate"
-                    data-testId="warriorName"
                     title="{warrior.name}"
                 >
                     {#if showRank}
@@ -78,11 +77,15 @@
                         {/if}
                     {/if}
                     {#if autoFinishVoting && warrior.spectator}
-                        <span class="text-gray-600" title="{$_('spectator')}">
+                        <span
+                            class="text-gray-600"
+                            title="{$_('spectator')}"
+                            data-testid="user-name"
+                        >
                             {warrior.name}
                         </span>
                     {:else}
-                        <span>{warrior.name}</span>
+                        <span data-testid="user-name">{warrior.name}</span>
                     {/if}
                 </p>
                 {#if leaders.includes(warrior.id)}
@@ -95,6 +98,7 @@
                                 class="inline text-sm text-red-500
                                 hover:text-red-800 bg-transparent
                                 border-transparent"
+                                data-testid="user-demote"
                             >
                                 {$_('demote')}
                             </button>
@@ -106,6 +110,7 @@
                         class="inline-block align-baseline text-sm
                         text-green-500 hover:text-green-800 bg-transparent
                         border-transparent"
+                        data-testid="user-promote"
                     >
                         {$_('promote')}
                     </button>
@@ -116,6 +121,7 @@
                             class="inline-block align-baseline text-sm
                             text-blue-500 hover:text-blue-800 bg-transparent
                             border-transparent"
+                            data-testid="user-nudge"
                         >
                             {$_('warriorNudge')}
                         </button>
@@ -126,6 +132,7 @@
                         on:click="{toggleSpectator}"
                         class="inline-block align-baseline text-sm text-blue-500
                         hover:text-blue-800 bg-transparent border-transparent"
+                        data-testid="user-togglespectator"
                     >
                         {#if !warrior.spectator}
                             {$_('becomeSpectator')}
@@ -143,7 +150,7 @@
                         <span
                             class="font-bold text-green-600 border-green-500
                             border p-2 rounded ml-2"
-                            data-testId="warriorPoints"
+                            data-testid="user-points"
                         >
                             {points}
                         </span>

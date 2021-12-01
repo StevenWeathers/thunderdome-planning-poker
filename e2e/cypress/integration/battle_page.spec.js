@@ -37,6 +37,82 @@ describe('The Battle Page', () => {
       })
     })
 
+    describe('User', () => {
+      it('can become spectator (when autoFinishVoting is true)', function () {
+        cy.login(this.currentUser)
+        cy.createUserBattle(this.currentUser, {
+          name: 'Test Battle',
+          pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
+          autoFinishVoting: true,
+          plans: [],
+          pointAverageRounding: 'ceil'
+        }).then(() => {
+          cy.visit(`/battle/${this.currentBattle.id}`)
+
+          cy.getByTestId('user-togglespectator').click()
+
+          cy.getByTestId('user-togglespectator').should('contain', 'Become Participant')
+        })
+      })
+
+      it('cannot become spectator (when autoFinishVoting is false)', function () {
+        cy.login(this.currentUser)
+        cy.createUserBattle(this.currentUser).then(() => {
+          cy.visit(`/battle/${this.currentBattle.id}`)
+
+          cy.getByTestId('user-togglespectator').should('not.exist')
+        })
+      })
+
+      it('can demote leader (when is a leader)', function () {
+        cy.login(this.currentUser)
+        cy.createUserBattle(this.currentUser, {
+          name: 'Test Battle',
+          pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
+          autoFinishVoting: false,
+          plans: [
+            {
+              name: 'Defeat Loki',
+              type: 'Story'
+            }
+          ],
+          pointAverageRounding: 'ceil'
+        }).then(() => {
+          cy.visit(`/battle/${this.currentBattle.id}`)
+
+          // yes you can demote yourself even
+          cy.getByTestId('user-demote').click()
+
+          cy.getByTestId('user-demote').should('not.exist')
+          cy.getByTestId('battle-delete').should('not.exist')
+          cy.getByTestId('plans-add').should('not.exist')
+          cy.getByTestId('plan-edit').should('not.exist')
+          cy.getByTestId('plan-delete').should('not.exist')
+          cy.getByTestId('plan-activate').should('not.exist')
+
+          cy.getByTestId('battle-abandon').should('exist')
+          cy.getByTestId('plan-view').should('exist')
+        })
+      })
+
+      it('can abandon battle', function () {
+        cy.login(this.currentUser)
+        cy.createUserBattle(this.currentUser).then(() => {
+          cy.visit(`/battle/${this.currentBattle.id}`)
+
+          // can't abandon battle if a leader
+          cy.getByTestId('user-demote').click()
+
+          cy.getByTestId('battle-abandon').click()
+
+          // we should be redirected to battles page
+          cy.location('pathname').should('equal', '/battles')
+
+          cy.getByTestId('battle-name').should('not.exist')
+        })
+      })
+    })
+
     describe('Plans', () => {
       it('should display existing plans', function () {
         cy.login(this.currentUser)
@@ -203,7 +279,7 @@ describe('The Battle Page', () => {
           // should have delete confirmation button
           cy.getByTestId('confirm-confirm').click()
 
-          // we should be redirected to landing
+          // we should be redirected to battles page
           cy.location('pathname').should('equal', '/battles')
         })
       })
