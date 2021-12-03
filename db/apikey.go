@@ -1,9 +1,6 @@
 package db
 
 import (
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"log"
 	"strings"
@@ -12,34 +9,9 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
-// hashApiKey hashes the API key using SHA256 (not reversible)
-func hashApiKey(apikey string) string {
-	data := []byte(apikey)
-	hash := sha256.Sum256(data)
-	result := hex.EncodeToString(hash[:])
-
-	return result
-}
-
-// random generates a random secure string of X length
-func random(length int) (string, error) {
-	chars := "-_+=!$0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	bytes := make([]byte, length)
-
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err // out of randomness, should never happen
-	}
-
-	for i, b := range bytes {
-		bytes[i] = chars[b%byte(len(chars))]
-	}
-
-	return string(bytes), nil
-}
-
 // GenerateApiKey generates a new API key for a User
 func (d *Database) GenerateApiKey(UserID string, KeyName string) (*model.APIKey, error) {
-	apiPrefix, prefixErr := random(8)
+	apiPrefix, prefixErr := randomString(8)
 	if prefixErr != nil {
 		err := errors.New("error generating api prefix")
 		log.Println(err)
@@ -47,7 +19,7 @@ func (d *Database) GenerateApiKey(UserID string, KeyName string) (*model.APIKey,
 		return nil, err
 	}
 
-	apiSecret, secretErr := random(32)
+	apiSecret, secretErr := randomString(32)
 	if secretErr != nil {
 		err := errors.New("error generating api secret")
 		log.Println(err)
@@ -63,7 +35,7 @@ func (d *Database) GenerateApiKey(UserID string, KeyName string) (*model.APIKey,
 		Active:      true,
 		CreatedDate: time.Now(),
 	}
-	hashedKey := hashApiKey(APIKEY.Key)
+	hashedKey := hashString(APIKEY.Key)
 	keyID := apiPrefix + "." + hashedKey
 
 	e := d.db.QueryRow(
@@ -153,7 +125,7 @@ func (d *Database) ValidateApiKey(APK string) (UserID string, ValidatationErr er
 	var usrID string = ""
 
 	splitKey := strings.Split(APK, ".")
-	hashedKey := hashApiKey(APK)
+	hashedKey := hashString(APK)
 	keyID := splitKey[0] + "." + hashedKey
 
 	e := d.db.QueryRow(

@@ -6,12 +6,11 @@ import (
 	"log"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // AuthUser authenticate the user
 func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User, error) {
-	var w model.User
+	var user model.User
 	var passHash string
 	var UserLocale sql.NullString
 
@@ -19,14 +18,14 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, locale FROM users WHERE email = $1`,
 		UserEmail,
 	).Scan(
-		&w.Id,
-		&w.Name,
-		&w.Email,
-		&w.Type,
+		&user.Id,
+		&user.Name,
+		&user.Email,
+		&user.Type,
 		&passHash,
-		&w.Avatar,
-		&w.Verified,
-		&w.NotificationsEnabled,
+		&user.Avatar,
+		&user.Verified,
+		&user.NotificationsEnabled,
 		&UserLocale,
 	)
 	if e != nil {
@@ -42,13 +41,13 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 	if checkPasswordCost(passHash) == true {
 		hashedPassword, hashErr := hashSaltPassword(UserPassword)
 		if hashErr == nil {
-			d.db.Exec(`call update_user_password($1, $2)`, w.Id, hashedPassword)
+			d.db.Exec(`call update_user_password($1, $2)`, user.Id, hashedPassword)
 		}
 	}
 
-	w.Locale = UserLocale.String
+	user.Locale = UserLocale.String
 
-	return &w, nil
+	return &user, nil
 }
 
 // UserResetRequest inserts a new user reset request
@@ -141,51 +140,4 @@ func (d *Database) VerifyUserAccount(VerifyID string) error {
 	}
 
 	return nil
-}
-
-// hashSaltPassword takes a password byte and salt + hashes it
-// returning a hash string to store in db
-func hashSaltPassword(UserPassword string) (string, error) {
-	pwd := []byte(UserPassword)
-	// Use GenerateFromPassword to hash & salt pwd.
-	// MinCost is just an integer constant provided by the bcrypt
-	// package along with DefaultCost & MaxCost.
-	// The cost can be any value you want provided it isn't lower
-	// than the MinCost (4)
-	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.DefaultCost)
-	if err != nil {
-		log.Println(err)
-		return "", err
-	}
-	// GenerateFromPassword returns a byte slice, so we need to
-	// convert the bytes to a string and return it
-	return string(hash), nil
-}
-
-// comparePasswords takes a password hash and compares it to entered password
-func comparePasswords(hashedPwd string, password string) bool {
-	// Since we'll be getting the hashed password from the DB it
-	// will be a string so we'll need to convert it to a byte slice
-	byteHash := []byte(hashedPwd)
-	SubmittedPassword := []byte(password)
-	err := bcrypt.CompareHashAndPassword(byteHash, SubmittedPassword)
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-
-	return true
-}
-
-// checkPasswordCost checks the passwords stored hash for bcrypt cost
-// if it does not match current cost then return true and let auth update the hash
-func checkPasswordCost(hashedPwd string) bool {
-	byteHash := []byte(hashedPwd)
-
-	hashCost, costErr := bcrypt.Cost(byteHash)
-	if costErr == nil && hashCost != bcrypt.DefaultCost {
-		return true
-	}
-
-	return false
 }
