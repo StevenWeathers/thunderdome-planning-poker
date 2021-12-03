@@ -15,6 +15,7 @@ import (
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId} [get]
 func (a *api) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -47,6 +48,7 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId} [put]
 func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -86,6 +88,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId} [delete]
 func (a *api) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

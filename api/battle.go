@@ -21,6 +21,7 @@ import (
 // @Success 200 object standardJsonResponse{data=[]model.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/battles [get]
 func (a *api) handleGetUserBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -62,6 +63,7 @@ func (a *api) handleGetUserBattles() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=model.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/battles [post]
 // @Router /teams/{teamId}/users/{userId}/battles [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/battles [post]
@@ -142,6 +144,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 // @Param active query boolean false "Only active battles"
 // @Success 200 object standardJsonResponse{data=[]model.Battle}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /battles [get]
 func (a *api) handleGetBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -182,6 +185,7 @@ func (a *api) handleGetBattles() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=model.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /battles/{battleId} [get]
 func (a *api) handleGetBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

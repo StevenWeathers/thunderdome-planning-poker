@@ -30,6 +30,7 @@ type orgTeamResponse struct {
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Organization}
 // @Failure 403 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/organizations [get]
 func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +54,7 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=organizationResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId} [get]
 func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -85,6 +87,7 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=model.Organization}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/organizations [post]
 func (a *api) handleCreateOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -112,6 +115,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 // @Param orgId path string true "organization id"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Failure 403 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams [get]
 func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -133,6 +137,7 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 // @Param orgId path string true "organization id"
 // @Success 200 object standardJsonResponse{data=[]model.User}
 // @Failure 403 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users [get]
 func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -156,6 +161,7 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=model.Team}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams [post]
 func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -185,6 +191,7 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users [post]
 func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -221,6 +228,7 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users/{userId} [delete]
 func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -248,6 +256,7 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=orgTeamResponse}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams/{teamId} [get]
 func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 
@@ -293,6 +302,7 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams/{teamId}/users [post]
 func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

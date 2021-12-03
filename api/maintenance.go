@@ -14,6 +14,7 @@ import (
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /maintenance/clean-battles [delete]
 func (a *api) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -36,6 +37,7 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /maintenance/clean-guests [delete]
 func (a *api) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +60,7 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /maintenance/lowercase-emails [patch]
 func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

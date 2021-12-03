@@ -15,6 +15,7 @@ import (
 // @Success 200 object standardJsonResponse{data=[]model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys [get]
 func (a *api) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +42,7 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys [post]
 func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -81,6 +83,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=[]model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys/{keyID} [put]
 func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -110,6 +113,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=[]model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys/{keyID} [delete]
 func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

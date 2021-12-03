@@ -14,6 +14,7 @@ import (
 // @Produce  json
 // @Success 200 object standardJsonResponse{data=[]model.ApplicationStats}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /admin/stats [get]
 func (a *api) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +45,7 @@ func (a *api) handleAppStats() http.HandlerFunc {
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.User}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /admin/users [get]
 func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -77,6 +79,7 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /admin/users [post]
 func (a *api) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -115,6 +118,7 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 // @Param userId path string true "the user ID to promote"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /admin/users/{userId}/promote/ [patch]
 func (a *api) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -139,6 +143,7 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 // @Param userId path string true "the user ID to demote"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /admin/users/{userId}/demote [patch]
 func (a *api) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -164,6 +169,7 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Organization}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /admin/organizations [get]
 func (a *api) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -184,6 +190,7 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /admin/teams [get]
 func (a *api) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -204,6 +211,7 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /admin/apikeys [get]
 func (a *api) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -226,6 +234,7 @@ func (a *api) handleGetAPIKeys() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=[]model.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /admin/search/users/email [get]
 func (a *api) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

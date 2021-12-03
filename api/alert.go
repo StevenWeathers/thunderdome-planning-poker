@@ -17,6 +17,7 @@ var ActiveAlerts []interface{}
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]model.Alert}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /alerts [get]
 func (a *api) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -50,6 +51,7 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 // @Param registeredOnly body boolean true "Whether or not to only show to users with an active session"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /alerts [post]
 func (a *api) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -88,6 +90,7 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Param registeredOnly body boolean true "Whether or not to only show to users with an active session"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /alerts/{alertId} [put]
 func (a *api) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -122,6 +125,7 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 // @Param alertId path string true "the alert ID to delete"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /alerts/{alertId} [delete]
 func (a *api) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

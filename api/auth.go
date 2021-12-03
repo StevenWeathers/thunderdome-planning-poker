@@ -228,6 +228,7 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{}
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /auth/update-password [patch]
 func (a *api) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

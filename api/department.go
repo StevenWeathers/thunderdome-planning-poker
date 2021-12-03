@@ -31,6 +31,7 @@ type departmentTeamResponse struct {
 // @Produce  json
 // @Param orgId path string true "the organization ID to get departments for"
 // @Success 200 object standardJsonResponse{data=[]model.Department}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments [get]
 func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +54,7 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 // @Param departmentId path string true "the department ID to get"
 // @Success 200 object standardJsonResponse{data=departmentResponse}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId} [get]
 func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -94,6 +96,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 // @Param name body string true "the department name"
 // @Success 200 object standardJsonResponse{data=model.Department}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments [post]
 func (a *api) handleCreateDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -120,6 +123,7 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID to get teams for"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [get]
 func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -141,6 +145,7 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID"
 // @Success 200 object standardJsonResponse{data=[]model.DepartmentUser}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users [get]
 func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -164,6 +169,7 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 // @Param name body string true "the team name"
 // @Success 200 object standardJsonResponse{data=model.Team}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
 func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -193,6 +199,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 // @Param role body string true "the users department role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users [post]
 func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -229,6 +236,7 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 // @Param userId path string true "the user ID"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users/{userId} [delete]
 func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -258,6 +266,7 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 // @Param role body string true "the users team role" Enums(MEMBER, ADMIN)
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users [post]
 func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -302,6 +311,7 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 // @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=departmentTeamResponse}
 // @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId} [get]
 func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

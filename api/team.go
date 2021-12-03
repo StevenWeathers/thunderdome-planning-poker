@@ -21,6 +21,7 @@ type teamResponse struct {
 // @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=teamResponse}
 // @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /teams/{teamId} [get]
 func (a *api) handleGetTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -52,6 +53,7 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 // @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Success 403 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/teams/{teamId} [get]
 func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -73,6 +75,7 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 // @Produce  json
 // @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=[]model.User}
+// @Security ApiKeyAuth
 // @Router /teams/{teamId}/users [get]
 func (a *api) handleGetTeamUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -96,6 +99,7 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=model.Team}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /users/{userId}/teams [post]
 func (a *api) handleCreateTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -126,6 +130,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /{teamId}/users [post]
 func (a *api) handleTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -162,6 +167,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /{teamId}/users/{userId} [delete]
 func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -186,6 +192,7 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 // @Produce  json
 // @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=[]model.Battle}
+// @Security ApiKeyAuth
 // @Router /teams/{teamId}/battles [get]
 func (a *api) handleGetTeamBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -209,6 +216,7 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /{teamId}/battles/{battleId} [delete]
 func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -235,6 +243,7 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
 // @Router /{teamId} [delete]
 func (a *api) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -631,8 +631,6 @@
                         <div class="flex-1">
                             <div class="text-right">
                                 <HollowButton
-                                    onClick="{toggleCreateApiKey}"
-                                    testid="apikey-create"
                                     href="/swagger/index.html"
                                     options="{{ target: '_blank' }}"
                                     color="blue"
