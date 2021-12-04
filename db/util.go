@@ -39,7 +39,7 @@ func randomString(l int) (string, error) {
 	return string(s), nil
 }
 
-// randomBase64String returns a random secure base64 string of X length
+// randomBase64String returns a random secure string of X length base64 encoded
 func randomBase64String(l int) (string, error) {
 	s, err := random(l)
 	if err != nil {

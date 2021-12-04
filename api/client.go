@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"log"
 	"net/http"
 	"time"
@@ -328,11 +328,23 @@ func (sub *subscription) writePump() {
 	}
 }
 
+// handleSocketUnauthorized sets the format close message and closes the websocket
+func handleSocketClose(ws *websocket.Conn, closeCode int, text string) {
+	cm := websocket.FormatCloseMessage(closeCode, text)
+	if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
+		log.Printf("unauthorized close error: %v", err)
+	}
+	if err := ws.Close(); err != nil {
+		log.Printf("close error: %v", err)
+	}
+}
+
 // serveWs handles websocket requests from the peer.
 func (a *api) serveWs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		battleID := vars["battleId"]
+		var User *model.User
 
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
@@ -341,65 +353,66 @@ func (a *api) serveWs() http.HandlerFunc {
 			return
 		}
 
-		// make sure user cookies are valid
-		UserID, cookieErr := a.validateUserCookie(w, r)
-		if cookieErr != nil {
-			cm := websocket.FormatCloseMessage(4001, "unauthorized")
-			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
-				log.Printf("unauthorized close error: %v", err)
-			}
-			if err := ws.Close(); err != nil {
-				log.Printf("close error: %v", err)
-			}
+		SessionId, cookieErr := a.validateSessionCookie(w, r)
+		if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
+			handleSocketClose(ws, 4001, "unauthorized")
 			return
 		}
 
+		if SessionId != "" {
+			var userErr error
+			User, userErr = a.db.GetSessionUser(SessionId)
+			if userErr != nil {
+				handleSocketClose(ws, 4001, "unauthorized")
+				return
+			}
+		} else {
+			UserID, err := a.validateUserCookie(w, r)
+			if err != nil {
+				handleSocketClose(ws, 4001, "unauthorized")
+				return
+			}
+
+			var userErr error
+			User, userErr = a.db.GetGuestUser(UserID)
+			if userErr != nil {
+				handleSocketClose(ws, 4001, "unauthorized")
+				return
+			}
+		}
+
 		// make sure battle is legit
-		b, battleErr := a.db.GetBattle(battleID, UserID)
+		b, battleErr := a.db.GetBattle(battleID, User.Id)
 		if battleErr != nil {
-			cm := websocket.FormatCloseMessage(4004, "battle not found")
-			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
-				log.Printf("not found close error: %v", err)
-			}
-			if err := ws.Close(); err != nil {
-				log.Printf("close error: %v", err)
-			}
+			handleSocketClose(ws, 4004, "battle not found")
 			return
 		}
 		battle, _ := json.Marshal(b)
 
-		// make sure user exists
-		_, UserErr := a.db.GetBattleUser(battleID, UserID)
-
+		// check users battle active status
+		UserErr := a.db.GetBattleUserActiveStatus(battleID, User.Id)
 		if UserErr != nil {
-			log.Println("error finding user : " + UserErr.Error() + "\n")
-			cm := websocket.FormatCloseMessage(4003, "duplicate session")
-
-			if fmt.Sprint(UserErr) == "user not found" {
-				a.clearUserCookies(w)
-				cm = websocket.FormatCloseMessage(4001, "unauthorized")
-			}
-
-			if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
-				log.Printf("unauthorized close error: %v", err)
-			}
-			if err := ws.Close(); err != nil {
-				log.Printf("close error: %v", err)
+			usrErrMsg := UserErr.Error()
+			log.Println("error finding user : " + usrErrMsg + "\n")
+			if usrErrMsg == "DUPLICATE_BATTLE_USER" {
+				handleSocketClose(ws, 4003, "duplicate session")
+			} else {
+				handleSocketClose(ws, 4005, "internal error")
 			}
 			return
 		}
 
 		c := &connection{send: make(chan []byte, 256), ws: ws}
-		ss := subscription{c, battleID, UserID}
+		ss := subscription{c, battleID, User.Id}
 		h.register <- ss
 
-		Users, _ := a.db.AddUserToBattle(ss.arena, UserID)
+		Users, _ := a.db.AddUserToBattle(ss.arena, User.Id)
 		UpdatedUsers, _ := json.Marshal(Users)
 
-		initEvent := CreateSocketEvent("init", string(battle), UserID)
+		initEvent := CreateSocketEvent("init", string(battle), User.Id)
 		_ = c.write(websocket.TextMessage, initEvent)
 
-		joinedEvent := CreateSocketEvent("warrior_joined", string(UpdatedUsers), UserID)
+		joinedEvent := CreateSocketEvent("warrior_joined", string(UpdatedUsers), User.Id)
 		m := message{joinedEvent, ss.arena}
 		h.broadcast <- m
 

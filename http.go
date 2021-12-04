@@ -47,6 +47,7 @@ func (s *server) routes() {
 		FrontendCookieName: s.config.FrontendCookieName,
 		SecureCookieName:   viper.GetString("http.backend_cookie_name"),
 		SecureCookieFlag:   viper.GetBool("http.secure_cookie"),
+		SessionCookieName:  viper.GetString("http.session_cookie_name"),
 		PathPrefix:         s.config.PathPrefix,
 		ExternalAPIEnabled: s.config.ExternalAPIEnabled,
 		UserAPIKeyLimit:    s.config.UserAPIKeyLimit,

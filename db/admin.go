@@ -8,22 +8,6 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
-// ConfirmAdmin confirms whether the user is an admin
-func (d *Database) ConfirmAdmin(UserID string) error {
-	var UserType string
-	e := d.db.QueryRow("SELECT coalesce(type, '') FROM users WHERE id = $1;", UserID).Scan(&UserType)
-	if e != nil {
-		log.Println(e)
-		return errors.New("could not find users type")
-	}
-
-	if UserType != "ADMIN" {
-		return errors.New(("user is not an admin"))
-	}
-
-	return nil
-}
-
 // GetAppStats gets counts of common application metrics such as users and battles
 func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 	var Appstats model.ApplicationStats

@@ -211,37 +211,29 @@ func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 	return nil
 }
 
-// GetBattleUser gets a user by ID and checks battle active status
-func (d *Database) GetBattleUser(BattleID string, UserID string) (*model.BattleUser, error) {
+// GetBattleUserActiveStatus checks battle active status of User for given battle
+func (d *Database) GetBattleUserActiveStatus(BattleID string, UserID string) error {
 	var active bool
-	var w model.BattleUser
 
-	e := d.db.QueryRow(
-		`SELECT
-			w.id, w.name, w.type, w.avatar, coalesce(bw.active, FALSE), coalesce(bw.spectator, FALSE)
-		FROM users w
-		LEFT JOIN battles_users bw ON bw.user_id = w.id AND bw.battle_id = $1
-		WHERE id = $2`,
+	e := d.db.QueryRow(`
+		SELECT coalesce(active, FALSE)
+		FROM battles_users
+		WHERE user_id = $2 AND battle_id = $1;`,
 		BattleID,
 		UserID,
 	).Scan(
-		&w.Id,
-		&w.Name,
-		&w.Type,
-		&w.Avatar,
 		&active,
-		&w.Spectator,
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("user not found")
+		return errors.New("error getting battle user")
 	}
 
 	if active {
-		return nil, errors.New("user already active in battle")
+		return errors.New("DUPLICATE_BATTLE_USER")
 	}
 
-	return &w, nil
+	return nil
 }
 
 // GetBattleUsers retrieves the users for a given battle

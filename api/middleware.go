@@ -2,79 +2,58 @@ package api
 
 import (
 	"context"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"net/http"
 	"strings"
 
 	"github.com/gorilla/mux"
 )
 
-// adminOnly middleware checks if the user is an admin, otherwise reject their request
-func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		apiKey := r.Header.Get(apiKeyHeaderName)
-		apiKey = strings.TrimSpace(apiKey)
-		var UserID string
-
-		if apiKey != "" {
-			var apiKeyErr error
-			UserID, apiKeyErr = a.db.ValidateApiKey(apiKey)
-			if apiKeyErr != nil {
-				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
-				return
-			}
-		} else {
-			var cookieErr error
-			UserID, cookieErr = a.validateUserCookie(w, r)
-			if cookieErr != nil {
-				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
-				return
-			}
-		}
-
-		adminErr := a.db.ConfirmAdmin(UserID)
-		if adminErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ADMIN"))
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), contextKeyUserID, UserID)
-		ctx = context.WithValue(ctx, contextKeyUserType, adminUserType)
-
-		h(w, r.WithContext(ctx))
-	}
-}
-
 // userOnly validates that the request was made by a valid user
 func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
-		var UserID string
+		var User *model.User
 
 		if apiKey != "" && a.config.ExternalAPIEnabled == true {
 			var apiKeyErr error
-			UserID, apiKeyErr = a.db.ValidateApiKey(apiKey)
+			User, apiKeyErr = a.db.GetApiKeyUser(apiKey)
 			if apiKeyErr != nil {
 				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
 			}
 		} else {
-			var cookieErr error
-			UserID, cookieErr = a.validateUserCookie(w, r)
-			if cookieErr != nil {
+			SessionId, cookieErr := a.validateSessionCookie(w, r)
+			if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
 				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 				return
 			}
+
+			if SessionId != "" {
+				var userErr error
+				User, userErr = a.db.GetSessionUser(SessionId)
+				if userErr != nil {
+					Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					return
+				}
+			} else {
+				UserID, err := a.validateUserCookie(w, r)
+				if err != nil {
+					Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					return
+				}
+
+				var userErr error
+				User, userErr = a.db.GetGuestUser(UserID)
+				if userErr != nil {
+					Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					return
+				}
+			}
 		}
 
-		User, UserErr := a.db.GetUser(UserID)
-		if UserErr != nil {
-			a.clearUserCookies(w)
-			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), contextKeyUserID, UserID)
+		ctx := context.WithValue(r.Context(), contextKeyUserID, User.Id)
 		ctx = context.WithValue(ctx, contextKeyUserType, User.Type)
 
 		h(w, r.WithContext(ctx))
@@ -85,43 +64,30 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		apiKey := r.Header.Get(apiKeyHeaderName)
-		apiKey = strings.TrimSpace(apiKey)
-		var UserID string
+		UserID := r.Context().Value(contextKeyUserID).(string)
+		UserType := r.Context().Value(contextKeyUserType).(string)
 		EntityUserID := vars["userId"]
 
-		if apiKey != "" && a.config.ExternalAPIEnabled == true {
-			var apiKeyErr error
-			UserID, apiKeyErr = a.db.ValidateApiKey(apiKey)
-			if apiKeyErr != nil {
-				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
-				return
-			}
-		} else {
-			var cookieErr error
-			UserID, cookieErr = a.validateUserCookie(w, r)
-			if cookieErr != nil {
-				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
-				return
-			}
-		}
-
-		User, UserErr := a.db.GetUser(UserID)
-		if UserErr != nil {
-			a.clearUserCookies(w)
-			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
-			return
-		}
-
-		if User.Type != adminUserType && EntityUserID != UserID {
+		if UserType != adminUserType && EntityUserID != UserID {
 			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyUserID, UserID)
-		ctx = context.WithValue(ctx, contextKeyUserType, User.Type)
+		h(w, r)
+	}
+}
 
-		h(w, r.WithContext(ctx))
+// adminOnly middleware checks if the user is an admin, otherwise reject their request
+func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+
+		if UserType != adminUserType {
+			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ADMIN"))
+			return
+		}
+
+		h(w, r)
 	}
 }
 
@@ -129,37 +95,18 @@ func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		apiKey := r.Header.Get(apiKeyHeaderName)
-		apiKey = strings.TrimSpace(apiKey)
-		var UserID string
+		UserID := r.Context().Value(contextKeyUserID).(string)
+		UserType := r.Context().Value(contextKeyUserType).(string)
 		EntityUserID := vars["userId"]
 
-		if apiKey != "" && a.config.ExternalAPIEnabled == true {
-			var apiKeyErr error
-			UserID, apiKeyErr = a.db.ValidateApiKey(apiKey)
-			if apiKeyErr != nil {
-				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
-				return
-			}
-		} else {
-			var cookieErr error
-			UserID, cookieErr = a.validateUserCookie(w, r)
-			if cookieErr != nil {
-				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
-				return
-			}
-		}
-
-		User, UserErr := a.db.GetUser(UserID)
-		if UserErr != nil {
-			a.clearUserCookies(w)
-			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+		if UserType != adminUserType && (EntityUserID != UserID) {
+			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		EntityUser, EntityUserErr := a.db.GetUser(EntityUserID)
-		if EntityUserErr != nil || (User.Type != adminUserType && (EntityUserID != UserID)) {
-			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+		if EntityUserErr != nil {
+			Failure(w, r, http.StatusInternalServerError, EntityUserErr)
 			return
 		}
 
@@ -168,10 +115,7 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyUserID, UserID)
-		ctx = context.WithValue(ctx, contextKeyUserType, User.Type)
-
-		h(w, r.WithContext(ctx))
+		h(w, r)
 	}
 }
 

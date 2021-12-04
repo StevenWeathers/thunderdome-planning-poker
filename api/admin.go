@@ -97,7 +97,7 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, "")
+		newUser, VerifyID, err := a.db.CreateUser(UserName, UserEmail, UserPassword)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return

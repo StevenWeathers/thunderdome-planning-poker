@@ -9,13 +9,12 @@ import (
 )
 
 // AuthUser authenticate the user
-func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User, error) {
+func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User, string, error) {
 	var user model.User
 	var passHash string
-	var UserLocale sql.NullString
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, locale FROM users WHERE email = $1`,
+		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, '') FROM users WHERE email = $1`,
 		UserEmail,
 	).Scan(
 		&user.Id,
@@ -26,15 +25,15 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		&user.Avatar,
 		&user.Verified,
 		&user.NotificationsEnabled,
-		&UserLocale,
+		&user.Locale,
 	)
 	if e != nil {
 		log.Println(e)
-		return nil, errors.New("user not found")
+		return nil, "", errors.New("user not found")
 	}
 
 	if !comparePasswords(passHash, UserPassword) {
-		return nil, errors.New("password invalid")
+		return nil, "", errors.New("password invalid")
 	}
 
 	// check to see if the bcrypt cost has been updated, if not do so
@@ -45,9 +44,12 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		}
 	}
 
-	user.Locale = UserLocale.String
+	SessionId, sessErr := d.CreateSession(user.Id)
+	if sessErr != nil {
+		return nil, "", sessErr
+	}
 
-	return &user, nil
+	return &user, SessionId, nil
 }
 
 // UserResetRequest inserts a new user reset request

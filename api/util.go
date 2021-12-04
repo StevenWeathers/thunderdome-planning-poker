@@ -54,16 +54,10 @@ func validateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, val
 }
 
 // createUserCookie creates the users cookie
-func (a *api) createUserCookie(w http.ResponseWriter, r *http.Request, isRegistered bool, UserID string) {
-	var cookiedays = 365 // 356 days
-	if isRegistered {
-		cookiedays = 30 // 30 days
-	}
-
+func (a *api) createUserCookie(w http.ResponseWriter, UserID string) error {
 	encoded, err := a.cookie.Encode(a.config.SecureCookieName, UserID)
 	if err != nil {
-		Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
-		return
+		return err
 
 	}
 
@@ -73,11 +67,36 @@ func (a *api) createUserCookie(w http.ResponseWriter, r *http.Request, isRegiste
 		Path:     a.config.PathPrefix + "/",
 		HttpOnly: true,
 		Domain:   a.config.AppDomain,
-		MaxAge:   86400 * cookiedays,
+		MaxAge:   86400 * 365,
 		Secure:   a.config.SecureCookieFlag,
 		SameSite: http.SameSiteStrictMode,
 	}
 	http.SetCookie(w, cookie)
+
+	return nil
+}
+
+// createSessionCookie creates the user's session cookie
+func (a *api) createSessionCookie(w http.ResponseWriter, SessionID string) error {
+	encoded, err := a.cookie.Encode(a.config.SessionCookieName, SessionID)
+	if err != nil {
+		return err
+	}
+
+	cookie := &http.Cookie{
+		Name:     a.config.SessionCookieName,
+		Value:    encoded,
+		Path:     a.config.PathPrefix + "/",
+		HttpOnly: true,
+		Domain:   a.config.AppDomain,
+		MaxAge:   86400 * 30,
+		Secure:   a.config.SecureCookieFlag,
+		SameSite: http.SameSiteStrictMode,
+	}
+
+	http.SetCookie(w, cookie)
+
+	return nil
 }
 
 // clearUserCookies wipes the frontend and backend cookies
@@ -99,9 +118,20 @@ func (a *api) clearUserCookies(w http.ResponseWriter) {
 		MaxAge:   -1,
 		HttpOnly: true,
 	}
+	seCookie := &http.Cookie{
+		Name:     a.config.SessionCookieName,
+		Value:    "",
+		Path:     a.config.PathPrefix + "/",
+		Domain:   a.config.AppDomain,
+		Secure:   a.config.SecureCookieFlag,
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   -1,
+		HttpOnly: true,
+	}
 
 	http.SetCookie(w, feCookie)
 	http.SetCookie(w, beCookie)
+	http.SetCookie(w, seCookie)
 }
 
 // validateUserCookie returns the UserID from secure cookies or errors if failures getting it
@@ -114,33 +144,32 @@ func (a *api) validateUserCookie(w http.ResponseWriter, r *http.Request) (string
 			UserID = value
 		} else {
 			a.clearUserCookies(w)
-			return "", errors.New("invalid user cookies")
+			return "", errors.New("INVALID_USER_COOKIE")
 		}
 	} else {
-		a.clearUserCookies(w)
-		return "", errors.New("invalid user cookies")
+		return "", errors.New("NO_USER_COOKIE")
 	}
 
 	return UserID, nil
 }
 
-func (a *api) createCookie(UserID string) *http.Cookie {
-	encoded, err := a.cookie.Encode(a.config.SecureCookieName, UserID)
-	var NewCookie *http.Cookie
+// validateSessionCookie returns the SessionID from secure cookies or errors if failures getting it
+func (a *api) validateSessionCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+	var SessionID string
 
-	if err == nil {
-		NewCookie = &http.Cookie{
-			Name:     a.config.SecureCookieName,
-			Value:    encoded,
-			Path:     a.config.PathPrefix + "/",
-			HttpOnly: true,
-			Domain:   a.config.AppDomain,
-			MaxAge:   86400 * 30, // 30 days
-			Secure:   a.config.SecureCookieFlag,
-			SameSite: http.SameSiteStrictMode,
+	if cookie, err := r.Cookie(a.config.SessionCookieName); err == nil {
+		var value string
+		if err = a.cookie.Decode(a.config.SessionCookieName, cookie.Value, &value); err == nil {
+			SessionID = value
+		} else {
+			a.clearUserCookies(w)
+			return "", errors.New("INVALID_SESSION_COOKIE")
 		}
+	} else {
+		return "", errors.New("NO_SESSION_COOKIE")
 	}
-	return NewCookie
+
+	return SessionID, nil
 }
 
 // Success returns the successful response including any data and meta
@@ -242,19 +271,22 @@ func getSearchFromRequest(r *http.Request, w http.ResponseWriter) (search string
 }
 
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user
-func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*model.User, error) {
+func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*model.User, string, error) {
 	var AuthedUser *model.User
+	var SessionId string
+	var sessErr error
+
 	l, err := ldap.DialURL(viper.GetString("auth.ldap.url"))
 	if err != nil {
 		log.Println("Failed connecting to ldap server at", viper.GetString("auth.ldap.url"))
-		return AuthedUser, err
+		return AuthedUser, SessionId, err
 	}
 	defer l.Close()
 	if viper.GetBool("auth.ldap.use_tls") {
 		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 		if err != nil {
 			log.Println("Failed securing ldap connection", err)
-			return AuthedUser, err
+			return AuthedUser, SessionId, err
 		}
 	}
 
@@ -262,7 +294,7 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 		err = l.Bind(viper.GetString("auth.ldap.bindname"), viper.GetString("auth.ldap.bindpass"))
 		if err != nil {
 			log.Println("Failed binding for authentication:", err)
-			return AuthedUser, err
+			return AuthedUser, SessionId, err
 		}
 	}
 
@@ -276,12 +308,12 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 	sr, err := l.Search(searchRequest)
 	if err != nil {
 		log.Println("Failed performing ldap search query for", UserName, ":", err)
-		return AuthedUser, err
+		return AuthedUser, SessionId, err
 	}
 
 	if len(sr.Entries) != 1 {
 		log.Println("User", UserName, "does not exist or too many entries returned")
-		return AuthedUser, errors.New("user not found")
+		return AuthedUser, SessionId, errors.New("user not found")
 	}
 
 	userdn := sr.Entries[0].DN
@@ -291,24 +323,31 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 	err = l.Bind(userdn, UserPassword)
 	if err != nil {
 		log.Println("Failed authenticating user ", UserName)
-		return AuthedUser, err
+		return AuthedUser, SessionId, err
 	}
 
 	AuthedUser, err = a.db.GetUserByEmail(useremail)
 	if AuthedUser == nil {
 		log.Println("User", useremail, "does not exist in database, auto-recruit")
-		newUser, verifyID, err := a.db.CreateUserRegistered(usercn, useremail, "", "")
+		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(usercn, useremail, "", "")
 		if err != nil {
 			log.Println("Failed auto-creating new user", err)
-			return AuthedUser, err
+			return AuthedUser, SessionId, err
 		}
 		err = a.db.VerifyUserAccount(verifyID)
 		if err != nil {
 			log.Println("Failed verifying new user", err)
-			return AuthedUser, err
+			return AuthedUser, SessionId, err
 		}
 		AuthedUser = newUser
+		SessionId = sessionId
+	} else {
+		SessionId, sessErr = a.db.CreateSession(AuthedUser.Id)
+		if sessErr != nil {
+			log.Println("Failed creating user session", err)
+			return nil, "", err
+		}
 	}
 
-	return AuthedUser, nil
+	return AuthedUser, SessionId, nil
 }

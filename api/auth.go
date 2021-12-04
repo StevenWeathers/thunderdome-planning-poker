@@ -23,16 +23,14 @@ func (a *api) handleLogin() http.HandlerFunc {
 		UserEmail := strings.ToLower(keyVal["email"].(string))
 		UserPassword := keyVal["password"].(string)
 
-		authedUser, err := a.db.AuthUser(UserEmail, UserPassword)
+		authedUser, sessionId, err := a.db.AuthUser(UserEmail, UserPassword)
 		if err != nil {
 			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
 
-		cookie := a.createCookie(authedUser.Id)
-		if cookie != nil {
-			http.SetCookie(w, cookie)
-		} else {
+		cookieErr := a.createSessionCookie(w, sessionId)
+		if cookieErr != nil {
 			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
@@ -58,16 +56,14 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 		UserEmail := strings.ToLower(keyVal["email"].(string))
 		UserPassword := keyVal["password"].(string)
 
-		authedUser, err := a.authAndCreateUserLdap(UserEmail, UserPassword)
+		authedUser, sessionId, err := a.authAndCreateUserLdap(UserEmail, UserPassword)
 		if err != nil {
 			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
 
-		cookie := a.createCookie(authedUser.Id)
-		if cookie != nil {
-			http.SetCookie(w, cookie)
-		} else {
+		cookieErr := a.createSessionCookie(w, sessionId)
+		if cookieErr != nil {
 			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
@@ -84,6 +80,18 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 // @Router /auth/logout [delete]
 func (a *api) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		SessionId, cookieErr := a.validateSessionCookie(w, r)
+		if cookieErr != nil {
+			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+			return
+		}
+
+		err := a.db.DeleteSession(SessionId)
+		if err != nil {
+			Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
 		a.clearUserCookies(w)
 		Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -91,7 +99,7 @@ func (a *api) handleLogout() http.HandlerFunc {
 
 // handleCreateGuestUser registers a user as a guest user
 // @Summary Create Guest User
-// @Description Registers a user as a guest (non authenticated)
+// @Description Registers a user as a guest (non-authenticated)
 // @Tags auth
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 400 object standardJsonResponse{}
@@ -115,7 +123,11 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 			return
 		}
 
-		a.createUserCookie(w, r, false, newUser.Id)
+		cookieErr := a.createUserCookie(w, newUser.Id)
+		if cookieErr != nil {
+			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			return
+		}
 
 		Success(w, r, http.StatusOK, newUser, nil)
 	}
@@ -152,15 +164,23 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, ActiveUserID)
+		newUser, VerifyID, SessionID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.createUserCookie(w, r, true, newUser.Id)
-
 		a.email.SendWelcome(UserName, UserEmail, VerifyID)
+
+		if ActiveUserID != "" {
+			a.clearUserCookies(w)
+		}
+
+		cookieErr := a.createSessionCookie(w, SessionID)
+		if cookieErr != nil {
+			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			return
+		}
 
 		Success(w, r, http.StatusOK, newUser, nil)
 	}

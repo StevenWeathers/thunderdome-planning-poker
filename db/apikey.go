@@ -120,22 +120,40 @@ func (d *Database) DeleteUserApiKey(UserID string, KeyID string) ([]*model.APIKe
 	return keys, nil
 }
 
-// ValidateApiKey checks to see if the API key exists in the database and if so returns UserID
-func (d *Database) ValidateApiKey(APK string) (UserID string, ValidatationErr error) {
-	var usrID string = ""
+// GetApiKeyUser checks to see if the API key exists and returns the User
+func (d *Database) GetApiKeyUser(APK string) (*model.User, error) {
+	User := &model.User{}
 
 	splitKey := strings.Split(APK, ".")
 	hashedKey := hashString(APK)
 	keyID := splitKey[0] + "." + hashedKey
 
-	e := d.db.QueryRow(
-		`SELECT user_id FROM api_keys WHERE id = $1 AND active = true`,
+	e := d.db.QueryRow(`
+		SELECT u.id, u.name, u.email, u.type, u.avatar, u.verified, u.notifications_enabled, COALESCE(u.country, ''), COALESCE(u.locale, ''), COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.created_date, u.updated_date, u.last_active 
+		FROM api_keys ak
+		LEFT JOIN users u ON u.id = ak.user_id
+		WHERE ak.id = $1 AND ak.active = true
+`,
 		keyID,
-	).Scan(&usrID)
+	).Scan(
+		&User.Id,
+		&User.Name,
+		&User.Email,
+		&User.Type,
+		&User.Avatar,
+		&User.Verified,
+		&User.NotificationsEnabled,
+		&User.Country,
+		&User.Locale,
+		&User.Company,
+		&User.JobTitle,
+		&User.CreatedDate,
+		&User.UpdatedDate,
+		&User.LastActive)
 	if e != nil {
 		log.Println(e)
-		return "", errors.New("active API Key match not found")
+		return nil, errors.New("active API Key match not found")
 	}
 
-	return usrID, nil
+	return User, nil
 }

@@ -99,6 +99,51 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 	return &w, nil
 }
 
+// GetGuestUser gets a guest user by ID
+func (d *Database) GetGuestUser(UserID string) (*model.User, error) {
+	var w model.User
+	var UserEmail sql.NullString
+	var UserCountry sql.NullString
+	var UserLocale sql.NullString
+	var UserCompany sql.NullString
+	var UserJobTitle sql.NullString
+
+	e := d.db.QueryRow(`
+SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active
+FROM users
+WHERE id = $1 AND type = 'GUEST';
+`,
+		UserID,
+	).Scan(
+		&w.Id,
+		&w.Name,
+		&UserEmail,
+		&w.Type,
+		&w.Avatar,
+		&w.Verified,
+		&w.NotificationsEnabled,
+		&UserCountry,
+		&UserLocale,
+		&UserCompany,
+		&UserJobTitle,
+		&w.CreatedDate,
+		&w.UpdatedDate,
+		&w.LastActive,
+	)
+	if e != nil {
+		log.Println(e)
+		return nil, errors.New("user not found")
+	}
+
+	w.Email = UserEmail.String
+	w.Country = UserCountry.String
+	w.Locale = UserLocale.String
+	w.Company = UserCompany.String
+	w.JobTitle = UserJobTitle.String
+
+	return &w, nil
+}
+
 // GetUserByEmail gets the user by email
 func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 	var w model.User
@@ -133,16 +178,21 @@ func (d *Database) CreateUserGuest(UserName string) (*model.User, error) {
 }
 
 // CreateUserRegistered adds a new registered user
-func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *model.User, VerifyID string, RegisterErr error) {
+func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *model.User, VerifyID string, SessionID string, RegisterErr error) {
 	hashedPassword, hashErr := hashSaltPassword(UserPassword)
 	if hashErr != nil {
-		return nil, "", hashErr
+		return nil, "", "", hashErr
 	}
 
-	var UserID string
 	var verifyID string
 	UserType := "REGISTERED"
 	UserAvatar := "identicon"
+	User := &model.User{
+		Name:   UserName,
+		Email:  UserEmail,
+		Type:   UserType,
+		Avatar: UserAvatar,
+	}
 
 	if ActiveUserID != "" {
 		e := d.db.QueryRow(
@@ -152,10 +202,10 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 			UserEmail,
 			hashedPassword,
 			UserType,
-		).Scan(&UserID, &verifyID)
+		).Scan(&User.Id, &verifyID)
 		if e != nil {
 			log.Println(e)
-			return nil, "", errors.New("a user with that email already exists")
+			return nil, "", "", errors.New("a user with that email already exists")
 		}
 	} else {
 		e := d.db.QueryRow(
@@ -164,14 +214,51 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 			UserEmail,
 			hashedPassword,
 			UserType,
-		).Scan(&UserID, &verifyID)
+		).Scan(&User.Id, &verifyID)
 		if e != nil {
 			log.Println(e)
-			return nil, "", errors.New("a user with that email already exists")
+			return nil, "", "", errors.New("a user with that email already exists")
 		}
 	}
 
-	return &model.User{Id: UserID, Name: UserName, Email: UserEmail, Type: UserType, Avatar: UserAvatar}, verifyID, nil
+	sessionId, sessErr := d.CreateSession(User.Id)
+	if sessErr != nil {
+		return nil, "", "", sessErr
+	}
+
+	return User, verifyID, sessionId, nil
+}
+
+// CreateUser adds a new registered user
+func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword string) (NewUser *model.User, VerifyID string, RegisterErr error) {
+	hashedPassword, hashErr := hashSaltPassword(UserPassword)
+	if hashErr != nil {
+		return nil, "", hashErr
+	}
+
+	var verifyID string
+	UserType := "REGISTERED"
+	UserAvatar := "identicon"
+	User := &model.User{
+		Name:   UserName,
+		Email:  UserEmail,
+		Type:   UserType,
+		Avatar: UserAvatar,
+	}
+
+	e := d.db.QueryRow(
+		`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
+		UserName,
+		UserEmail,
+		hashedPassword,
+		UserType,
+	).Scan(&User.Id, &verifyID)
+	if e != nil {
+		log.Println(e)
+		return nil, "", errors.New("a user with that email already exists")
+	}
+
+	return User, verifyID, nil
 }
 
 // UpdateUserProfile updates the users profile
