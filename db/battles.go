@@ -146,7 +146,7 @@ func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*mo
 	}
 
 	battleRows, battlesErr := d.db.Query(`
-		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding,
+		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM battles b
@@ -183,6 +183,8 @@ func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*mo
 			&pv,
 			&b.AutoFinishVoting,
 			&b.PointAverageRounding,
+			&b.CreatedDate,
+			&b.UpdatedDate,
 			&plans,
 			&leaders,
 		); err != nil {

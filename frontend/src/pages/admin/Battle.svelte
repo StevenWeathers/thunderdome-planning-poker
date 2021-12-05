@@ -62,7 +62,7 @@
     </div>
 
     <div class="w-full">
-        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
+        <div class="p-4 md:p-6 mb-4 md:mb-6 bg-white shadow-lg rounded">
             <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center">
                 {battle.name}
             </h3>
@@ -105,7 +105,8 @@
                     </tr>
                 </tbody>
             </table>
-
+        </div>
+        <div class="p-4 md:p-6 mb-4 md:mb-6 bg-white shadow-lg rounded">
             <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center">
                 {$_('users')}
             </h3>
@@ -165,7 +166,8 @@
                     {/each}
                 </tbody>
             </table>
-
+        </div>
+        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center">
                 Plans
             </h3>

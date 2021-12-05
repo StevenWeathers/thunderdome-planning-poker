@@ -3,6 +3,8 @@
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import CheckIcon from '../../components/icons/CheckIcon.svelte'
+    import Pagination from '../../components/Pagination.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n'
     import { appRoutes } from '../../config'
@@ -42,6 +44,32 @@
             })
     }
 
+    const battlesPageLimit = 100
+    let battleCount = 0
+    let battles = []
+    let battlesPage = 1
+    let activeBattles = false
+
+    function getBattles() {
+        const battlesOffset = (battlesPage - 1) * battlesPageLimit
+        xfetch(
+            `/api/users/${userId}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}&active=${activeBattles}`,
+        )
+            .then(res => res.json())
+            .then(function (result) {
+                battles = result.data
+                battleCount = result.meta.count
+            })
+            .catch(function () {
+                notifications.danger($_('getBattlesError'))
+            })
+    }
+
+    const changeBattlesPage = evt => {
+        battlesPage = evt.detail
+        getBattles()
+    }
+
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.login)
@@ -53,6 +81,7 @@
         }
 
         getUser()
+        getBattles()
     })
 </script>
 
@@ -66,7 +95,7 @@
     </div>
 
     <div class="w-full">
-        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
+        <div class="p-4 md:p-6 mb-4 md:mb-6 bg-white shadow-lg rounded">
             <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center">
                 {user.name}
             </h3>
@@ -85,7 +114,6 @@
                         <td class="border p-2"
                             >{user.email}
                             {#if user.verified}
-                                &nbsp;
                                 <span
                                     class="text-green-600"
                                     title="{$_(
@@ -109,6 +137,62 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
+            <h4 class="text-2xl md:text-3xl font-bold mb-4 text-center">
+                {$_('battles')}
+            </h4>
+            <table class="table-fixed w-full">
+                <thead>
+                    <tr>
+                        <th class="flex-1 p-2">{$_('name')}</th>
+                        <th class="flex-1 p-2">{$_('dateCreated')}</th>
+                        <th class="flex-1 p-2">{$_('dateUpdated')}</th>
+                        <th class="flex-1 p-2"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each battles as battle}
+                        <tr>
+                            <td class="border p-2">
+                                <a
+                                    href="{appRoutes.admin}/battles/{battle.id}"
+                                    class="no-underline text-blue-500 hover:text-blue-800"
+                                    >{battle.name}</a
+                                >
+                            </td>
+                            <td class="border p-2"
+                                >{new Date(
+                                    battle.createdDate,
+                                ).toLocaleString()}</td
+                            >
+                            <td class="border p-2"
+                                >{new Date(
+                                    battle.updatedDate,
+                                ).toLocaleString()}</td
+                            >
+                            <td class="border p-2 text-right">
+                                <HollowButton
+                                    href="{appRoutes.battle}/{battle.id}"
+                                >
+                                    {$_('battleJoin')}
+                                </HollowButton>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+
+            {#if battleCount > battlesPageLimit}
+                <div class="pt-6 flex justify-center">
+                    <Pagination
+                        bind:current="{battlesPage}"
+                        num_items="{battleCount}"
+                        per_page="{battlesPageLimit}"
+                        on:navigate="{changeBattlesPage}"
+                    />
+                </div>
+            {/if}
         </div>
     </div>
 </AdminPageLayout>
