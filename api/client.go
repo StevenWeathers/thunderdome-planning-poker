@@ -365,6 +365,7 @@ func (a *api) serveWs() http.HandlerFunc {
 		vars := mux.Vars(r)
 		battleID := vars["battleId"]
 		var User *model.User
+		var UserAuthed bool
 
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
@@ -372,6 +373,7 @@ func (a *api) serveWs() http.HandlerFunc {
 			log.Println(err)
 			return
 		}
+		c := &connection{send: make(chan []byte, 256), ws: ws}
 
 		SessionId, cookieErr := a.validateSessionCookie(w, r)
 		if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
@@ -407,7 +409,6 @@ func (a *api) serveWs() http.HandlerFunc {
 			handleSocketClose(ws, 4004, "battle not found")
 			return
 		}
-		battle, _ := json.Marshal(b)
 
 		// check users battle active status
 		UserErr := a.db.GetBattleUserActiveStatus(battleID, User.Id)
@@ -422,21 +423,55 @@ func (a *api) serveWs() http.HandlerFunc {
 			return
 		}
 
-		c := &connection{send: make(chan []byte, 256), ws: ws}
-		ss := subscription{c, battleID, User.Id}
-		h.register <- ss
+		if b.JoinCode != "" && (UserErr != nil && UserErr.Error() == "sql: no rows in result set") {
+			jcrEvent := CreateSocketEvent("join_code_required", "", User.Id)
+			_ = c.write(websocket.TextMessage, jcrEvent)
 
-		Users, _ := a.db.AddUserToBattle(ss.arena, User.Id)
-		UpdatedUsers, _ := json.Marshal(Users)
+			for {
+				_, msg, err := c.ws.ReadMessage()
+				if err != nil {
+					if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
+						log.Printf("error: %v", err)
+					}
+					break
+				}
 
-		initEvent := CreateSocketEvent("init", string(battle), User.Id)
-		_ = c.write(websocket.TextMessage, initEvent)
+				keyVal := make(map[string]string)
+				json.Unmarshal(msg, &keyVal)
 
-		joinedEvent := CreateSocketEvent("warrior_joined", string(UpdatedUsers), User.Id)
-		m := message{joinedEvent, ss.arena}
-		h.broadcast <- m
+				if keyVal["type"] == "auth_battle" && keyVal["value"] == b.JoinCode {
+					UserAuthed = true
+					break
+				} else if keyVal["type"] == "auth_battle" {
+					authIncorrect := CreateSocketEvent("join_code_incorrect", "", User.Id)
+					_ = c.write(websocket.TextMessage, authIncorrect)
+				}
+			}
+		} else {
+			UserAuthed = true
+		}
 
-		go ss.writePump()
-		go ss.readPump(a)
+		for {
+			if UserAuthed == true {
+				ss := subscription{c, battleID, User.Id}
+				h.register <- ss
+
+				Users, _ := a.db.AddUserToBattle(ss.arena, User.Id)
+				UpdatedUsers, _ := json.Marshal(Users)
+
+				battle, _ := json.Marshal(b)
+				initEvent := CreateSocketEvent("init", string(battle), User.Id)
+				_ = c.write(websocket.TextMessage, initEvent)
+
+				joinedEvent := CreateSocketEvent("warrior_joined", string(UpdatedUsers), User.Id)
+				m := message{joinedEvent, ss.arena}
+				h.broadcast <- m
+
+				go ss.writePump()
+				go ss.readPump(a)
+
+				break
+			}
+		}
 	}
 }

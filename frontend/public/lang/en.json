@@ -401,5 +401,12 @@
   "apiDocumentation": "API Documentation",
   "requestVerifyEmail": "Request Verification Email",
   "requestVerifyEmailSuccess": "Verification Email requested, watch your inbox",
-  "requestVerifyEmailFailure": "Error attempting to send Verification Email"
+  "requestVerifyEmailFailure": "Error attempting to send Verification Email",
+  "incorrectPassCode": "Incorrect passcode",
+  "passCodeRequired": "Passcode required to join",
+  "enterPasscode": "Enter passcode...",
+  "passCode": "Passcode",
+  "optionalPasscodePlaceholder": "Optional passcode to join",
+  "leaderPasscode": "Leader code",
+  "optionalLeadercodePlaceholder": "Optional leader code to become a leader"
 }

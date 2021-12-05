@@ -161,13 +161,13 @@
                 class="block text-gray-700 text-sm font-bold mb-2"
                 for="joinCode"
             >
-                Join Passcode
+                {$_('passCode')}
             </label>
             <div class="control">
                 <input
                     name="joinCode"
                     bind:value="{joinCode}"
-                    placeholder="Optional passcode to join battle"
+                    placeholder="{$_('optionalPasscodePlaceholder')}"
                     class="bg-gray-200 border-gray-200 border-2 appearance-none
                     rounded w-full py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"
@@ -181,13 +181,13 @@
                 class="block text-gray-700 text-sm font-bold mb-2"
                 for="leaderCode"
             >
-                Leader Passcode
+                {$_('leaderPasscode')}
             </label>
             <div class="control">
                 <input
-                    name="joinCode"
+                    name="leaderCode"
                     bind:value="{leaderCode}"
-                    placeholder="Optional leader passcode to become a battle leader"
+                    placeholder="{$_('optionalLeadercodePlaceholder')}"
                     class="bg-gray-200 border-gray-200 border-2 appearance-none
                     rounded w-full py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"

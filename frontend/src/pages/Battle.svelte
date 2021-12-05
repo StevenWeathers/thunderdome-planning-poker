@@ -10,6 +10,7 @@
     import InviteWarrior from '../components/battle/InviteUser.svelte'
     import VoteResults from '../components/battle/VoteResults.svelte'
     import HollowButton from '../components/HollowButton.svelte'
+    import SolidButton from '../components/SolidButton.svelte'
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
     import EditBattle from '../components/battle/EditBattle.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
@@ -39,6 +40,7 @@
         acceptanceCriteria: '',
     }
 
+    let JoinPassRequired = false
     let socketError = false
     let socketReconnecting = false
     let points = []
@@ -50,6 +52,7 @@
     let showEditBattle = false
     let showDeleteBattle = false
     let isSpectator = false
+    let joinPasscode = ''
 
     $: countdown =
         battle.currentPlanId !== '' && battle.votingLocked === false
@@ -60,7 +63,14 @@
         const parsedEvent = JSON.parse(evt.data)
 
         switch (parsedEvent.type) {
+            case 'join_code_required':
+                JoinPassRequired = true
+                break
+            case 'join_code_incorrect':
+                notifications.danger($_('passCodeIncorrect'))
+                break
             case 'init': {
+                JoinPassRequired = false
                 battle = JSON.parse(parsedEvent.value)
                 points = battle.pointValuesAllowed
                 const { spectator = false } =
@@ -418,6 +428,13 @@
         battle.leaderCode = revisedBattle.leaderCode
     }
 
+    function authBattle(e) {
+        e.preventDefault()
+
+        sendSocketEvent('auth_battle', joinPasscode)
+        eventTag('auth_battle', 'battle', '')
+    }
+
     function timeUnitsBetween(startDate, endDate) {
         let delta = Math.abs(endDate - startDate) / 1000
         return [
@@ -638,6 +655,43 @@
                 leaderCode="{battle.leaderCode}"
             />
         {/if}
+    {:else if JoinPassRequired}
+        <div class="flex justify-center">
+            <div class="w-full md:w-1/2 lg:w-1/3">
+                <form
+                    on:submit="{authBattle}"
+                    class="bg-white shadow-lg rounded p-6 mb-4"
+                    name="authBattle"
+                >
+                    <div class="mb-4">
+                        <label
+                            class="block text-gray-700 text-sm font-bold mb-2"
+                            for="battleJoinCode"
+                        >
+                            {$_('passCodeRequired')}
+                        </label>
+                        <input
+                            bind:value="{joinPasscode}"
+                            placeholder="{$_('enterPasscode')}"
+                            class="bg-gray-200 border-gray-200 border-2
+                            appearance-none rounded w-full py-2 px-3
+                            text-gray-700 leading-tight focus:outline-none
+                            focus:bg-white focus:border-purple-500"
+                            id="battleJoinCode"
+                            name="battleJoinCode"
+                            type="password"
+                            required
+                        />
+                    </div>
+
+                    <div class="text-right">
+                        <SolidButton type="submit"
+                            >{$_('battleJoin')}</SolidButton
+                        >
+                    </div>
+                </form>
+            </div>
+        </div>
     {:else if socketReconnecting}
         <div class="flex items-center">
             <div class="flex-1 text-center">

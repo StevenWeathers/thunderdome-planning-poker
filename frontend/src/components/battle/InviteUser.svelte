@@ -76,7 +76,7 @@
     </div>
     {#if joinCode !== ''}
         <div class="mt-4">
-            <label for="JoinCode" class="font-bold"> Join Passcode </label>
+            <label for="JoinCode" class="font-bold">{$_('passCode')}</label>
             <div class="flex flex-wrap items-stretch w-full">
                 <input
                     class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1
