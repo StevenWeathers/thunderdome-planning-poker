@@ -5,6 +5,7 @@
     import WarriorRankCorporal from '../icons/UserRankRegistered.svelte'
     import WarriorRankGeneral from '../icons/UserRankAdmin.svelte'
     import WarriorAvatar from './UserAvatar.svelte'
+    import BecomeLeader from './BecomeLeader.svelte'
     import { AppConfig } from '../../config'
     import { _ } from '../../i18n'
     import { warrior as activeWarrior } from '../../stores.js'
@@ -21,6 +22,7 @@
     const showRank = AppConfig.ShowWarriorRank
     const avatarService = AppConfig.AvatarService
     let nameStyleClass = showRank ? 'text-lg' : 'text-xl'
+    let showBecomeLeader = false
 
     function promoteLeader() {
         sendSocketEvent('promote_leader', warrior.id)
@@ -35,6 +37,17 @@
     function jabWarrior() {
         sendSocketEvent('jab_warrior', warrior.id)
         eventTag('jab_warrior', 'battle', '')
+    }
+
+    function becomeLeader(leaderCode) {
+        sendSocketEvent('become_leader', leaderCode)
+        eventTag('become_leader', 'battle', '')
+        toggleBecomeLeader()
+    }
+
+    function toggleBecomeLeader() {
+        showBecomeLeader = !showBecomeLeader
+        eventTag('toggle_become_leader', 'battle', '')
     }
 
     function toggleSpectator() {
@@ -126,6 +139,16 @@
                             {$_('warriorNudge')}
                         </button>
                     {/if}
+                {:else if warrior.id === $activeWarrior.id}
+                    <button
+                        on:click="{toggleBecomeLeader}"
+                        class="inline-block align-baseline text-sm
+                        text-green-500 hover:text-green-800 bg-transparent
+                        border-transparent"
+                        data-testid="user-becomeleader"
+                    >
+                        {$_('becomeLeader')}
+                    </button>
                 {/if}
                 {#if autoFinishVoting && warrior.id === $activeWarrior.id}
                     <button
@@ -159,4 +182,11 @@
             </div>
         </div>
     </div>
+
+    {#if showBecomeLeader}
+        <BecomeLeader
+            handleBecomeLeader="{becomeLeader}"
+            toggleBecomeLeader="{toggleBecomeLeader}"
+        />
+    {/if}
 </div>

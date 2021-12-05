@@ -82,6 +82,27 @@ func (d *Database) ReviseBattle(BattleID string, UserID string, BattleName strin
 	return nil
 }
 
+// GetBattleLeaderCode retrieve the battle leader_code
+func (d *Database) GetBattleLeaderCode(BattleID string, passphrase string) (string, error) {
+	var EncryptedLeaderCode string
+
+	if err := d.db.QueryRow(`
+		SELECT leader_code FROM battles
+		WHERE id = $1`,
+		BattleID,
+	).Scan(&EncryptedLeaderCode); err != nil {
+		log.Println(err)
+		return "", errors.New("unable to revise battle leader_code")
+	}
+
+	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, passphrase)
+	if codeErr != nil {
+		return "", errors.New("unable to retrieve battle leader_code")
+	}
+
+	return DecryptedCode, nil
+}
+
 // ReviseBattleLeaderCode updates the battle leader_code
 func (d *Database) ReviseBattleLeaderCode(BattleID string, UserID string, LeaderCode string, passphrase string) error {
 	err := d.ConfirmLeader(BattleID, UserID)
@@ -422,12 +443,7 @@ func (d *Database) AbandonBattle(BattleID string, UserID string) ([]*model.Battl
 }
 
 // SetBattleLeader sets the leaderId for the battle
-func (d *Database) SetBattleLeader(BattleID string, UserID string, LeaderID string) ([]string, error) {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
-	}
-
+func (d *Database) SetBattleLeader(BattleID string, LeaderID string) ([]string, error) {
 	leaders := make([]string, 0)
 
 	// set battle leader

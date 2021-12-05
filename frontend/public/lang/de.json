@@ -430,5 +430,6 @@
   "passCode": "Passcode",
   "optionalPasscodePlaceholder": "Optional passcode to join",
   "leaderPasscode": "Leader code",
-  "optionalLeadercodePlaceholder": "Optional leader code to become a leader"
+  "optionalLeadercodePlaceholder": "Optional leader code to become a leader",
+  "becomeLeader": "Become Leader"
 }

@@ -214,7 +214,13 @@ func (sub subscription) readPump(api *api) {
 			updatedPlans, _ := json.Marshal(plans)
 			msg = CreateSocketEvent("plan_burned", string(updatedPlans), "")
 		case "promote_leader":
-			leaders, err := api.db.SetBattleLeader(battleID, UserID, keyVal["value"])
+			err := api.db.ConfirmLeader(battleID, UserID)
+			if err != nil {
+				badEvent = true
+				break
+			}
+
+			leaders, err := api.db.SetBattleLeader(battleID, keyVal["value"])
 			if err != nil {
 				badEvent = true
 				break
@@ -231,6 +237,26 @@ func (sub subscription) readPump(api *api) {
 			leadersJson, _ := json.Marshal(leaders)
 
 			msg = CreateSocketEvent("leaders_updated", string(leadersJson), "")
+		case "become_leader":
+			leaderCode, err := api.db.GetBattleLeaderCode(battleID, api.config.AESHashkey)
+			if err != nil {
+				badEvent = true
+				break
+			}
+
+			if keyVal["value"] == leaderCode {
+				leaders, err := api.db.SetBattleLeader(battleID, UserID)
+				if err != nil {
+					badEvent = true
+					break
+				}
+				leadersJson, _ := json.Marshal(leaders)
+
+				msg = CreateSocketEvent("leaders_updated", string(leadersJson), "")
+			} else {
+				badEvent = true
+				break
+			}
 		case "spectator_toggle":
 			var st struct {
 				Spectator bool `json:"spectator"`
