@@ -192,11 +192,21 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 		vars := mux.Vars(r)
 		BattleId := vars["battleId"]
 		UserId := r.Context().Value(contextKeyUserID).(string)
+		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		battle, err := a.db.GetBattle(BattleId, UserId)
+		battle, err := a.db.GetBattle(BattleId, UserId, a.config.AESHashkey)
 		if err != nil {
 			Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
+		}
+
+		// don't allow retrieving battle details if battle has JoinCode and user hasn't joined yet
+		if battle.JoinCode != "" {
+			UserErr := a.db.GetBattleUserActiveStatus(BattleId, UserId)
+			if UserErr != nil && UserType != adminUserType {
+				Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
+				return
+			}
 		}
 
 		Success(w, r, http.StatusOK, battle, nil)

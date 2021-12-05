@@ -1,4 +1,5 @@
 # Configuration
+
 Thunderdome may be configured through environment variables or via a yaml file `config.yaml`
 located in one of:
 
@@ -23,14 +24,15 @@ db:
 
 For Thunderdome to work correctly the following configuration items are required:
 
-| Option                     | Environment Variable | Description                                | Default Value           |
-| -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
-| `http.domain`              | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome.  Used for creating URLs in emails. | thunderdome.dev |
-| `http.cookie_hashkey`      | COOKIE_HASHKEY       | Secret used to make secure cookies secure. | strongest-avenger |
+| Option                | Environment Variable | Description                                                                              | Default Value     |
+|-----------------------|----------------------|------------------------------------------------------------------------------------------|-------------------|
+| `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for creating URLs in emails. | thunderdome.dev   |
+| `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                               | strongest-avenger |
+| `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Battle JoinCode, LeaderCode).               | therevengers      |
 
 ### Database configuration
 
-Thunderdome uses a Postgres database to store all data, the following configuration options exist: 
+Thunderdome uses a Postgres database to store all data, the following configuration options exist:
 
 | Option                     | Environment Variable | Description                                | Default Value           |
 | -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
@@ -52,7 +54,7 @@ Thunderdome sends emails for user registration related activities, the following
 | `smtp.user`                | SMTP_USER            | Smtp server user.                          | |
 | `smtp.pass`                | SMTP_PASS            | Smtp server password.                      | |
 | `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  | true |
-| `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity.  Usually unset. | |
+| `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity. Usually unset. | |
 | `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome. | no-reply@thunderdome.dev |
 
 ## Optional configuration items
@@ -80,12 +82,15 @@ Thunderdome sends emails for user registration related activities, the following
 | `config.user_apikey_limit`    | CONFIG_USER_APIKEY_LIMIT | Limit users number of API keys | 5 |
 | `config.show_active_countries`    | CONFIG_SHOW_ACTIVE_COUNTRIES | Whether or not to show active countries on landing page | false |
 | `config.cleanup_battles_days_old` | CONFIG_CLEANUP_BATTLES_DAYS_OLD | How many days back to clean up old battles, e.g. battles older than 180 days. Triggered manually by Admins . | 180 |
-| `config.cleanup_guests_days_old` | CONFIG_CLEANUP_GUESTS_DAYS_OLD | How many days back to clean up old guests, e.g. guests older than 180 days.  Triggered manually by Admins. | 180 |
-| `auth.method`              |  AUTH_METHOD   | Choose `normal` or `ldap` as authentication method.  See separate section on LDAP configuration. | normal |
+| `config.cleanup_guests_days_old` | CONFIG_CLEANUP_GUESTS_DAYS_OLD | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins. | 180 |
+| `auth.method`              |  AUTH_METHOD   | Choose `normal` or `ldap` as authentication method. See separate section on LDAP configuration. | normal |
 
 ### Avatar Service configuration
 
-Use the name from table below to configure a service - if not set, `goadorable` is used. Each service provides further options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the different sprites become available. The table shows all supported services and their sprites. In all cases the same ID (`ead26688-5148-4f3c-a35d-1b0117b4f2a9`) has been used creating the avatars.
+Use the name from table below to configure a service - if not set, `goadorable` is used. Each service provides further
+options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the
+different sprites become available. The table shows all supported services and their sprites. In all cases the same
+ID (`ead26688-5148-4f3c-a35d-1b0117b4f2a9`) has been used creating the avatars.
 
 | Name |           |           |           |           |           |           |           |           |           |
 | ---------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
@@ -102,9 +107,8 @@ Use the name from table below to configure a service - if not set, `goadorable` 
 
 ### LDAP Configuration
 
-If `auth.method` is set to `ldap`, then the Create Account function is disabled and authentication
-is done using LDAP.  If the LDAP server authenticates a new user successfully, the Thunderdome user 
-profile is automatically generated.
+If `auth.method` is set to `ldap`, then the Create Account function is disabled and authentication is done using LDAP.
+If the LDAP server authenticates a new user successfully, the Thunderdome user profile is automatically generated.
 
 The following configuration options are specific to the LDAP authentication method:
 
@@ -112,16 +116,17 @@ The following configuration options are specific to the LDAP authentication meth
 | --------------------------- | -------------------- | ------------------------------------------------------------------ |
 | `auth.ldap.url`             | AUTH_LDAP_URL        | URL to LDAP server, typically `ldap://host:port`                   |
 | `auth.ldap.use_tls`         | AUTH_LDAP_USE_TLS    | Create a TLS connection after establishing the initial connection. |
-| `auth.ldap.bindname`        | AUTH_LDAP_BINDNAME   | Bind name / bind DN for connecting to LDAP.  Leave empty for no authentication. |
+| `auth.ldap.bindname`        | AUTH_LDAP_BINDNAME   | Bind name / bind DN for connecting to LDAP. Leave empty for no authentication. |
 | `auth.ldap.bindpass`        | AUTH_LDAP_BINDPASS   | Password for the bind.                                             |
 | `auth.ldap.basedn`          | AUTH_LDAP_BASEDN     | Base DN for the search for the user.                               |
-| `auth.ldap.filter`          | AUTH_LDAP_FILTER     | Filter for searching for the user's login id.  See below.          |
+| `auth.ldap.filter`          | AUTH_LDAP_FILTER     | Filter for searching for the user's login id. See below.          |
 | `auth.ldap.mail_attr`       | AUTH_LDAP_MAIL_ATTR  | The LDAP property containing the user's emil address.              |
 | `auth.ldap.cn_attr`         | AUTH_LDAP_CN_ATTR    | The LDAP property containing the user's name.                      |
 
-The default `filter` is `(&(objectClass=posixAccount)(mail=%s))`.  The filter must include a `%s` that will be replaced by the user's login id.
-The `mail_attr` configuration option must point to the LDAP attribute containing the user's email address.  The default is `mail`. 
-The `cn_attr` configuration option must point to the LDAP attribute containing the user's full name.  The default is `cn`.
+The default `filter` is `(&(objectClass=posixAccount)(mail=%s))`. The filter must include a `%s` that will be replaced
+by the user's login id. The `mail_attr` configuration option must point to the LDAP attribute containing the user's
+email address. The default is `mail`. The `cn_attr` configuration option must point to the LDAP attribute containing the
+user's full name. The default is `cn`.
 
 On Linux, the parameters may be tested on the command line:
 
@@ -129,4 +134,5 @@ On Linux, the parameters may be tested on the command line:
 ldapsearch -H auth.ldap.url [-Z] -x [-D auth.ldap.bindname -W] -b auth.ldap.basedn 'auth.ldap.filter' dn auth.ldap.mail auth.ldap.cn
 ```
 
-The `-Z` is only used if `auth.ldap.use_tls` is set, the `-D` and `-W` parameter is only used if `auth.ldap.bindname` is set.
+The `-Z` is only used if `auth.ldap.use_tls` is set, the `-D` and `-W` parameter is only used if `auth.ldap.bindname` is
+set.

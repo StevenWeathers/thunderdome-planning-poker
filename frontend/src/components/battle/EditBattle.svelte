@@ -15,6 +15,8 @@
     export let votingLocked = false
     export let autoFinishVoting = true
     export let pointAverageRounding = 'ceil'
+    export let joinCode = ''
+    export let leaderCode = ''
 
     let checkedPointColor = 'border-green-500 bg-green-100 text-green-600'
     let uncheckedPointColor = 'border-gray-300 bg-white'
@@ -31,6 +33,8 @@
             pointValuesAllowed,
             autoFinishVoting,
             pointAverageRounding,
+            joinCode,
+            leaderCode,
         }
 
         handleBattleEdit(battle)
@@ -150,6 +154,46 @@
                     'pages.myBattles.createBattle.fields.autoFinishVoting.label',
                 )}
             </label>
+        </div>
+
+        <div class="mb-4">
+            <label
+                class="block text-gray-700 text-sm font-bold mb-2"
+                for="joinCode"
+            >
+                Join Passcode
+            </label>
+            <div class="control">
+                <input
+                    name="joinCode"
+                    bind:value="{joinCode}"
+                    placeholder="Optional passcode to join battle"
+                    class="bg-gray-200 border-gray-200 border-2 appearance-none
+                    rounded w-full py-2 px-3 text-gray-700 leading-tight
+                    focus:outline-none focus:bg-white focus:border-purple-500"
+                    id="joinCode"
+                />
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label
+                class="block text-gray-700 text-sm font-bold mb-2"
+                for="leaderCode"
+            >
+                Leader Passcode
+            </label>
+            <div class="control">
+                <input
+                    name="joinCode"
+                    bind:value="{leaderCode}"
+                    placeholder="Optional leader passcode to become a battle leader"
+                    class="bg-gray-200 border-gray-200 border-2 appearance-none
+                    rounded w-full py-2 px-3 text-gray-700 leading-tight
+                    focus:outline-none focus:bg-white focus:border-purple-500"
+                    id="leaderCode"
+                />
+            </div>
         </div>
 
         <div class="text-right">

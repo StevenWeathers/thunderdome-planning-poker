@@ -1,14 +1,29 @@
 package db
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/md5"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
 	"golang.org/x/crypto/bcrypt"
+	"io"
 	"log"
 	"math/big"
 )
+
+// contains checks if a string is present in a slice
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
 
 // random generates a random secure byte of X length
 func random(length int) ([]byte, error) {
@@ -101,4 +116,50 @@ func checkPasswordCost(hashedPwd string) bool {
 	}
 
 	return false
+}
+
+// createHash creates a md5 hashed string from string
+func createHash(key string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(key))
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
+// encrypt data for storing securely
+func encrypt(data string, passphrase string) (string, error) {
+	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		return "", err
+	}
+	ciphertext := gcm.Seal(nonce, nonce, []byte(data), nil)
+	return base64.StdEncoding.EncodeToString(ciphertext), nil
+}
+
+// decrypt data for sending to client
+func decrypt(data string, passphrase string) (string, error) {
+	dataByte, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return "", err
+	}
+	key := []byte(createHash(passphrase))
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+	nonceSize := gcm.NonceSize()
+	nonce, ciphertext := dataByte[:nonceSize], dataByte[nonceSize:]
+	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return "", err
+	}
+	return string(plaintext), nil
 }

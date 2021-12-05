@@ -39,6 +39,7 @@ func InitConfig() {
 	viper.SetDefault("smtp.secure", true)
 	viper.SetDefault("smtp.sender", "no-reply@thunderdome.dev")
 
+	viper.SetDefault("config.aes_hashkey", "therevengers")
 	viper.SetDefault("config.allowedPointValues",
 		[]string{"0", "1/2", "1", "2", "3", "5", "8", "13", "20", "40", "100", "?"})
 	viper.SetDefault("config.defaultPointValues",
@@ -95,6 +96,7 @@ func InitConfig() {
 	viper.BindEnv("smtp.pass", "SMTP_PASS")
 	viper.BindEnv("smtp.sender", "SMTP_SENDER")
 
+	viper.BindEnv("config.aes_hashkey", "CONFIG_AES_HASHKEY")
 	viper.BindEnv("config.allowedPointValues", "CONFIG_POINTS_ALLOWED")
 	viper.BindEnv("config.defaultPointValues", "CONFIG_POINTS_DEFAULT")
 	viper.BindEnv("config.show_warrior_rank", "CONFIG_SHOW_RANK")

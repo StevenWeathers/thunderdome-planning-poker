@@ -216,6 +216,7 @@
                 points = revisedBattle.pointValuesAllowed
                 battle.autoFinishVoting = revisedBattle.autoFinishVoting
                 battle.pointAverageRounding = revisedBattle.pointAverageRounding
+                battle.joinCode = revisedBattle.joinCode
                 break
             case 'battle_conceded':
                 // battle over, goodbye.
@@ -414,6 +415,7 @@
         sendSocketEvent('revise_battle', JSON.stringify(revisedBattle))
         eventTag('revise_battle', 'battle', '')
         toggleEditBattle()
+        battle.leaderCode = revisedBattle.leaderCode
     }
 
     function timeUnitsBetween(startDate, endDate) {
@@ -590,6 +592,7 @@
                     <InviteWarrior
                         hostname="{hostname}"
                         battleId="{battle.id}"
+                        joinCode="{battle.joinCode}"
                     />
                     {#if isLeader}
                         <div class="mt-4 text-right">
@@ -631,6 +634,8 @@
                 pointAverageRounding="{battle.pointAverageRounding}"
                 handleBattleEdit="{handleBattleEdit}"
                 toggleEditBattle="{toggleEditBattle}"
+                joinCode="{battle.joinCode}"
+                leaderCode="{battle.leaderCode}"
             />
         {/if}
     {:else if socketReconnecting}

@@ -250,6 +250,8 @@ func (sub subscription) readPump(api *api) {
 				PointValuesAllowed   []string `json:"pointValuesAllowed"`
 				AutoFinishVoting     bool     `json:"autoFinishVoting"`
 				PointAverageRounding string   `json:"pointAverageRounding"`
+				JoinCode             string   `json:"joinCode"`
+				LeaderCode           string   `json:"leaderCode"`
 			}
 			json.Unmarshal([]byte(keyVal["value"]), &revisedBattle)
 
@@ -257,6 +259,24 @@ func (sub subscription) readPump(api *api) {
 			if err != nil {
 				badEvent = true
 				break
+			}
+
+			if revisedBattle.JoinCode != "" {
+				err = api.db.ReviseBattleJoinCode(battleID, UserID, revisedBattle.JoinCode, api.config.AESHashkey)
+				if err != nil {
+					badEvent = true
+					break
+				}
+			}
+
+			if revisedBattle.LeaderCode != "" {
+				err = api.db.ReviseBattleLeaderCode(battleID, UserID, revisedBattle.LeaderCode, api.config.AESHashkey)
+				if err != nil {
+					badEvent = true
+					break
+				}
+
+				revisedBattle.LeaderCode = ""
 			}
 
 			updatedBattle, _ := json.Marshal(revisedBattle)
@@ -382,7 +402,7 @@ func (a *api) serveWs() http.HandlerFunc {
 		}
 
 		// make sure battle is legit
-		b, battleErr := a.db.GetBattle(battleID, User.Id)
+		b, battleErr := a.db.GetBattle(battleID, User.Id, a.config.AESHashkey)
 		if battleErr != nil {
 			handleSocketClose(ws, 4004, "battle not found")
 			return
@@ -391,7 +411,7 @@ func (a *api) serveWs() http.HandlerFunc {
 
 		// check users battle active status
 		UserErr := a.db.GetBattleUserActiveStatus(battleID, User.Id)
-		if UserErr != nil {
+		if UserErr != nil && UserErr.Error() != "sql: no rows in result set" {
 			usrErrMsg := UserErr.Error()
 			log.Println("error finding user : " + usrErrMsg + "\n")
 			if usrErrMsg == "DUPLICATE_BATTLE_USER" {

@@ -48,9 +48,8 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 
 				// don't send others vote values to client, prevent sneaky devs from peaking at votes
 				for i := range p.Votes {
-					vote := p.Votes[i]
 					if p.Active && p.Votes[i].UserId != UserID {
-						vote.VoteValue = ""
+						p.Votes[i].VoteValue = ""
 					}
 				}
 

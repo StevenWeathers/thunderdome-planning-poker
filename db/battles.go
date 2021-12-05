@@ -69,8 +69,12 @@ func (d *Database) ReviseBattle(BattleID string, UserID string, BattleName strin
 	}
 
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
-	if _, err := d.db.Exec(
-		`UPDATE battles SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, updated_date = NOW() WHERE id = $1`, BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding); err != nil {
+	if _, err := d.db.Exec(`
+		UPDATE battles
+		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, updated_date = NOW()
+		WHERE id = $1`,
+		BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding,
+	); err != nil {
 		log.Println(err)
 		return errors.New("unable to revise battle")
 	}
@@ -78,8 +82,58 @@ func (d *Database) ReviseBattle(BattleID string, UserID string, BattleName strin
 	return nil
 }
 
+// ReviseBattleLeaderCode updates the battle leader_code
+func (d *Database) ReviseBattleLeaderCode(BattleID string, UserID string, LeaderCode string, passphrase string) error {
+	err := d.ConfirmLeader(BattleID, UserID)
+	if err != nil {
+		return errors.New("incorrect permissions")
+	}
+
+	EncryptedCode, codeErr := encrypt(LeaderCode, passphrase)
+	if codeErr != nil {
+		return errors.New("unable to revise battle leadercode")
+	}
+
+	if _, err := d.db.Exec(`
+		UPDATE battles
+		SET leader_code = $2, updated_date = NOW()
+		WHERE id = $1`,
+		BattleID, EncryptedCode,
+	); err != nil {
+		log.Println(err)
+		return errors.New("unable to revise battle leadercode")
+	}
+
+	return nil
+}
+
+// ReviseBattleJoinCode updates the battle join_code
+func (d *Database) ReviseBattleJoinCode(BattleID string, UserID string, JoinCode string, passphrase string) error {
+	err := d.ConfirmLeader(BattleID, UserID)
+	if err != nil {
+		return errors.New("incorrect permissions")
+	}
+
+	EncryptedCode, codeErr := encrypt(JoinCode, passphrase)
+	if codeErr != nil {
+		return errors.New("unable to revise battle join_code")
+	}
+
+	if _, err := d.db.Exec(`
+		UPDATE battles
+		SET join_code = $2, updated_date = NOW()
+		WHERE id = $1`,
+		BattleID, EncryptedCode,
+	); err != nil {
+		log.Println(err)
+		return errors.New("unable to revise battle join_code")
+	}
+
+	return nil
+}
+
 // GetBattle gets a battle by ID
-func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, error) {
+func (d *Database) GetBattle(BattleID string, UserID string, passphrase string) (*model.Battle, error) {
 	var b = &model.Battle{
 		Id:                 BattleID,
 		Users:              make([]*model.BattleUser, 0),
@@ -94,9 +148,11 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 	var ActivePlanID sql.NullString
 	var pv string
 	var leaders string
+	var JoinCode string
+	var LeaderCode string
 	e := d.db.QueryRow(
 		`
-		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
+		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''), b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM battles b
 		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
@@ -111,18 +167,39 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 		&pv,
 		&b.AutoFinishVoting,
 		&b.PointAverageRounding,
+		&JoinCode,
+		&LeaderCode,
 		&b.CreatedDate,
 		&b.UpdatedDate,
 		&leaders,
 	)
 	if e != nil {
-		log.Println(e)
+		log.Println("error getting battle: ", e)
 		return nil, errors.New("not found")
 	}
 
-	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 	_ = json.Unmarshal([]byte(leaders), &b.Leaders)
+	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 	b.ActivePlanID = ActivePlanID.String
+
+	isBattleLeader := contains(b.Leaders, UserID)
+
+	if JoinCode != "" {
+		DecryptedCode, codeErr := decrypt(JoinCode, passphrase)
+		if codeErr != nil {
+			return nil, errors.New("unable to decode join_code")
+		}
+		b.JoinCode = DecryptedCode
+	}
+
+	if LeaderCode != "" && isBattleLeader {
+		DecryptedCode, codeErr := decrypt(LeaderCode, passphrase)
+		if codeErr != nil {
+			return nil, errors.New("unable to decode leader_code")
+		}
+		b.LeaderCode = DecryptedCode
+	}
+
 	b.Users = d.GetBattleUsers(BattleID)
 	b.Plans = d.GetPlans(BattleID, UserID)
 
@@ -227,8 +304,7 @@ func (d *Database) GetBattleUserActiveStatus(BattleID string, UserID string) err
 		&active,
 	)
 	if e != nil {
-		log.Println(e)
-		return errors.New("error getting battle user")
+		return e
 	}
 
 	if active {

@@ -31,6 +31,8 @@ type Config struct {
 	SecureCookieFlag bool
 	// Whether LDAP is enabled for authentication
 	LdapEnabled bool
+	// Hash key used for encrypting/decrypting values like Battle JoinCode and LeaderCode
+	AESHashkey string
 }
 
 type api struct {
@@ -88,6 +90,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		email:  email,
 		cookie: cookie,
 	}
+	a.config.AESHashkey = viper.GetString("config.aes_hashkey")
 	swaggerJsonPath := "/" + a.config.PathPrefix + "swagger/doc.json"
 
 	swaggerdocs.SwaggerInfo.BasePath = a.config.PathPrefix + "/api"
