@@ -240,14 +240,10 @@
             .then(function () {
                 eventTag('user_verify_request', 'engagement', 'success')
 
-                notifications.success(
-                    'Verification Email requested, watch your inbox.',
-                )
+                notifications.success($_('requestVerifyEmailSuccess'))
             })
             .catch(function () {
-                notifications.danger(
-                    'Error attempting to send Verification Email.',
-                )
+                notifications.danger($_('requestVerifyEmailFailure'))
                 eventTag('user_verify_request', 'engagement', 'failure')
             })
     }
@@ -342,6 +338,7 @@
                                     class="font-bold text-green-600
                                     border-green-500 border py-1 px-2 rounded
                                     ml-1"
+                                    data-testid="user-verified"
                                 >
                                     {$_(
                                         'pages.warriorProfile.fields.email.verified',
@@ -349,9 +346,11 @@
                                 </span>
                             {:else if warriorProfile.rank != 'GUEST'}
                                 <button
-                                    class="float-right inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+                                    class=" float-right inline-block align-baseline font-bold text-sm text-blue-500
+                                        hover:text-blue-800"
                                     on:click="{requestVerifyEmail}"
-                                    >Request Verification Email
+                                    data-testid="request-verify"
+                                    >{$_('requestVerifyEmail')}
                                 </button>
                             {/if}
                         </label>

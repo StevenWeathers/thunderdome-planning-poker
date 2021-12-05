@@ -427,5 +427,8 @@
   "jiraXmlImport": "Jira XML Import",
   "fast": "Fast",
   "secure": "Secure",
-  "apiDocumentation": "API Documentation"
+  "apiDocumentation": "API Documentation",
+  "requestVerifyEmail": "Request Verification Email",
+  "requestVerifyEmailSuccess": "Verification Email requested, watch your inbox",
+  "requestVerifyEmailFailure": "Error attempting to send Verification Email"
 }

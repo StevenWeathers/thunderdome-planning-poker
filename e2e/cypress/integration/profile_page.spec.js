@@ -19,6 +19,9 @@ describe('The User Profile Page', () => {
       cy.get('h2').should('contain', 'Your Profile')
 
       cy.get('[name=yourName]').should('have.value', this.currentUser.name)
+
+      cy.getByTestId('user-verified').should('not.exist')
+      cy.getByTestId('request-verify').should('not.exist')
     })
 
     describe('API Keys', () => {
@@ -53,6 +56,9 @@ describe('The User Profile Page', () => {
       cy.get('h2').should('contain', 'Your Profile')
 
       cy.get('[name=yourName]').should('have.value', this.currentUser.name)
+
+      cy.getByTestId('user-verified').should('not.exist')
+      cy.getByTestId('request-verify').should('exist')
     })
 
     describe('API Keys', () => {
@@ -120,6 +126,14 @@ describe('The User Profile Page', () => {
     beforeEach(() => {
       cy.task('db:teardown:verifiedUser')
       cy.task('db:seed:verifiedUser').as('currentUser')
+    })
+
+    it('should have verified status next to email field label', function () {
+      cy.login(this.currentUser)
+
+      cy.visit('/profile')
+
+      cy.getByTestId('user-verified').should('exist')
     })
 
     describe('API Keys', () => {
