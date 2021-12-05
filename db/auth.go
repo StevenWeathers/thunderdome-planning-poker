@@ -134,6 +134,38 @@ func (d *Database) UserUpdatePassword(UserID string, UserPassword string) (Name 
 	return UserName.String, UserEmail.String, nil
 }
 
+// UserVerifyRequest inserts a new user verify request
+func (d *Database) UserVerifyRequest(UserId string) (*model.User, string, error) {
+	var VerifyId string
+	user := &model.User{
+		Id: UserId,
+	}
+
+	e := d.db.QueryRow(
+		`SELECT name, email FROM users WHERE id = $1`,
+		user.Id,
+	).Scan(
+		&user.Name,
+		&user.Email,
+	)
+	if e != nil {
+		log.Println(e)
+		return nil, "", errors.New("user not found")
+	}
+
+	err := d.db.QueryRow(`
+		INSERT INTO user_verify (user_id) VALUES ($1) RETURNING verify_id;
+		`,
+		user.Id,
+	).Scan(&VerifyId)
+	if err != nil {
+		log.Println("Unable to insert user verification: ", err)
+		return nil, VerifyId, err
+	}
+
+	return user, VerifyId, nil
+}
+
 // VerifyUserAccount updates a user account verified status
 func (d *Database) VerifyUserAccount(VerifyID string) error {
 	if _, err := d.db.Exec(

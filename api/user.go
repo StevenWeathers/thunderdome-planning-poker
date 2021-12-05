@@ -120,6 +120,31 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 	}
 }
 
+// handleVerifyRequest sends verification email
+// @Summary Request Verification Email
+// @Description Sends verification email
+// @Tags user
+// @Success 200 object standardJsonResponse{}
+// @Success 400 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Router /users/{userId}/request-verify [post]
+func (a *api) handleVerifyRequest() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
+
+		User, VerifyId, err := a.db.UserVerifyRequest(UserID)
+		if err != nil {
+			Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.email.SendEmailVerification(User.Name, User.Email, VerifyId)
+
+		Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 // handleGetActiveCountries gets a list of registered users countries
 // @Summary Get Active Countries
 // @Description Gets a list of users countries

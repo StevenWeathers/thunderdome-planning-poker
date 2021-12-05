@@ -234,6 +234,24 @@
         showApiKeyCreate = !showApiKeyCreate
     }
 
+    function requestVerifyEmail(e) {
+        e.preventDefault()
+        xfetch(`/api/users/${$warrior.id}/request-verify`, { method: 'POST' })
+            .then(function () {
+                eventTag('user_verify_request', 'engagement', 'success')
+
+                notifications.success(
+                    'Verification Email requested, watch your inbox.',
+                )
+            })
+            .catch(function () {
+                notifications.danger(
+                    'Error attempting to send Verification Email.',
+                )
+                eventTag('user_verify_request', 'engagement', 'failure')
+            })
+    }
+
     function handleDeleteAccount() {
         xfetch(`/api/users/${$warrior.id}`, { method: 'DELETE' })
             .then(function () {
@@ -329,6 +347,12 @@
                                         'pages.warriorProfile.fields.email.verified',
                                     )}
                                 </span>
+                            {:else if warriorProfile.rank != 'GUEST'}
+                                <button
+                                    class="float-right inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+                                    on:click="{requestVerifyEmail}"
+                                    >Request Verification Email
+                                </button>
                             {/if}
                         </label>
                         <input

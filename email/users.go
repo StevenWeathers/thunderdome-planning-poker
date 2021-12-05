@@ -52,6 +52,52 @@ func (m *Email) SendWelcome(UserName string, UserEmail string, VerifyID string) 
 	return nil
 }
 
+// SendEmailVerification sends the verification email to registered user
+func (m *Email) SendEmailVerification(UserName string, UserEmail string, VerifyID string) error {
+	emailBody, err := m.generateBody(
+		hermes.Body{
+			Name: UserName,
+			Intros: []string{
+				"Please verify your Thunderdome account email.",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: "Please validate your email, the following link will expire in 24 hours.",
+					Button: hermes.Button{
+						Color: "#22BC66",
+						Text:  "Verify Account",
+						Link:  m.config.AppURL + "verify-account/" + VerifyID,
+					},
+				},
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		log.Println("Error Generating Verification Email HTML: ", err)
+		return err
+	}
+
+	sendErr := m.Send(
+		UserName,
+		UserEmail,
+		"Verify your Thunderdome account email",
+		emailBody,
+	)
+	if sendErr != nil {
+		log.Println("Error sending Verification Email: ", sendErr)
+		return sendErr
+	}
+
+	return nil
+}
+
 // SendForgotPassword Sends a Forgot Password reset email to user
 func (m *Email) SendForgotPassword(UserName string, UserEmail string, ResetID string) error {
 	emailBody, err := m.generateBody(
