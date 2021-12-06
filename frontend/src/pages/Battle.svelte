@@ -610,6 +610,7 @@
                         hostname="{hostname}"
                         battleId="{battle.id}"
                         joinCode="{battle.joinCode}"
+                        notifications="{notifications}"
                     />
                     {#if isLeader}
                         <div class="mt-4 text-right">
