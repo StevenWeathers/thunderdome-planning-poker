@@ -143,7 +143,7 @@
                     <button
                         on:click="{toggleBecomeLeader}"
                         class="inline-block align-baseline text-sm
-                        text-green-500 hover:text-green-800 bg-transparent
+                        text-blue-500 hover:text-blue-800 bg-transparent
                         border-transparent"
                         data-testid="user-becomeleader"
                     >

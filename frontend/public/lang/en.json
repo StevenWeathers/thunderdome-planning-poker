@@ -409,5 +409,11 @@
   "optionalPasscodePlaceholder": "Optional passcode to join",
   "leaderPasscode": "Leader code",
   "optionalLeadercodePlaceholder": "Optional leader code to become a leader",
-  "becomeLeader": "Become Leader"
+  "becomeLeader": "Become Leader",
+  "apikeyCopySuccess": "API key copied to clipboard",
+  "apikeyCopyFailure": "Couldn't copy API key to clipboard",
+  "inviteLinkCopySuccess": "Invite Link copied to clipboard",
+  "inviteLinkCopyFailure": "Couldn't copy invite link to clipboard",
+  "joinCodeCopySuccess": "Passcode copied to clipboard",
+  "joinCodeCopyFailure": "Couldn't copy passcode to clipboard"
 }

@@ -71,8 +71,20 @@
 
     function copyKey() {
         const apk = document.getElementById('apiKey')
-        apk.select()
-        document.execCommand('copy')
+
+        if (!navigator.clipboard) {
+            apk.select()
+            document.execCommand('copy')
+        } else {
+            navigator.clipboard
+                .writeText(apk.value)
+                .then(function () {
+                    notifications.success($_('apikeyCopySuccess'))
+                })
+                .catch(function () {
+                    notifications.danger($_('apikeyCopyFailure'))
+                })
+        }
     }
 </script>
 

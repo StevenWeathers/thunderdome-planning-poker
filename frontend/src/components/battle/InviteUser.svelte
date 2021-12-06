@@ -19,12 +19,10 @@
             navigator.clipboard
                 .writeText(bl.value)
                 .then(function () {
-                    notifications.success('Invite Link copied to clipboard')
+                    notifications.success($_('inviteLinkCopySuccess'))
                 })
                 .catch(function () {
-                    notifications.danger(
-                        "Couldn't copy Invite Link to clipboard",
-                    )
+                    notifications.danger($_('inviteLinkCopyFailure'))
                 })
         }
     }
@@ -39,10 +37,10 @@
             navigator.clipboard
                 .writeText(jc.value)
                 .then(function () {
-                    notifications.success('Join Code copied to clipboard')
+                    notifications.success($_('joinCodeCopySuccess'))
                 })
                 .catch(function () {
-                    notifications.danger("Couldn't copy Join Code to clipboard")
+                    notifications.danger($_('joinCodeCopyFailure'))
                 })
         }
     }

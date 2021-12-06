@@ -30,6 +30,8 @@
     export let acceptanceCriteria = ''
 
     const isAbsolute = new RegExp('^([a-z]+://|//)', 'i')
+    let descriptionExpanded = false
+    let acceptanceExpanded = false
 
     function handleSubmit(event) {
         event.preventDefault()
@@ -138,35 +140,66 @@
                 placeholder="{$_('planLinkPlaceholder')}"
             />
         </div>
-        <div class="mb-16">
-            <div class="text-sm font-bold mb-2">{$_('planDescription')}</div>
-            <div class="h-48">
-                <div
-                    class="w-full"
-                    use:quill="{{
-                        placeholder: $_('planDescriptionPlaceholder'),
-                        content: description,
-                    }}"
-                    on:text-change="{e => (description = e.detail.html)}"
-                    id="description"
-                ></div>
-            </div>
-        </div>
-        <div class="mb-16">
+        <div>
             <div class="text-sm font-bold mb-2">
+                <button
+                    on:click="{e => {
+                        e.preventDefault()
+                        descriptionExpanded = !descriptionExpanded
+                    }}"
+                    class="inline-block align-baseline text-sm
+                        text-blue-700 hover:text-blue-800 bg-transparent
+                        border-transparent mr-1 font-bold text-xl"
+                >
+                    {#if descriptionExpanded}-{:else}+{/if}
+                </button>
+                {$_('planDescription')}
+            </div>
+            {#if descriptionExpanded}
+                <div class="mb-2">
+                    <div
+                        class="w-full"
+                        use:quill="{{
+                            placeholder: $_('planDescriptionPlaceholder'),
+                            content: description,
+                        }}"
+                        on:text-change="{e => (description = e.detail.html)}"
+                        id="description"
+                    ></div>
+                </div>
+            {/if}
+        </div>
+        <div>
+            <div class="text-sm font-bold mb-2">
+                <button
+                    on:click="{e => {
+                        e.preventDefault()
+                        acceptanceExpanded = !acceptanceExpanded
+                    }}"
+                    class="inline-block align-baseline text-sm
+                        text-blue-700 hover:text-blue-800 bg-transparent
+                        border-transparent mr-1 font-bold text-xl"
+                >
+                    {#if acceptanceExpanded}-{:else}+{/if}
+                </button>
                 {$_('planAcceptanceCriteria')}
             </div>
-            <div class="h-48">
-                <div
-                    class="w-full"
-                    use:quill="{{
-                        placeholder: $_('planAcceptanceCriteriaPlaceholder'),
-                        content: acceptanceCriteria,
-                    }}"
-                    on:text-change="{e => (acceptanceCriteria = e.detail.html)}"
-                    id="acceptanceCriteria"
-                ></div>
-            </div>
+            {#if acceptanceExpanded}
+                <div class="mb-2">
+                    <div
+                        class="w-full"
+                        use:quill="{{
+                            placeholder: $_(
+                                'planAcceptanceCriteriaPlaceholder',
+                            ),
+                            content: acceptanceCriteria,
+                        }}"
+                        on:text-change="{e =>
+                            (acceptanceCriteria = e.detail.html)}"
+                        id="acceptanceCriteria"
+                    ></div>
+                </div>
+            {/if}
         </div>
         <div class="text-right">
             <div>
