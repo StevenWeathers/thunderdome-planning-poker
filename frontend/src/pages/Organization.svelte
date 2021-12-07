@@ -230,7 +230,7 @@
 </svelte:head>
 
 <PageLayout>
-    <h1 class="mb-4 text-3xl font-bold">
+    <h1 class="mb-4 text-4xl font-semibold font-rajdhani uppercase">
         {$_('organization')}: {organization.name}
     </h1>
 
@@ -238,7 +238,9 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                    <h2
+                        class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase mb-4"
+                    >
                         {$_('departments')}
                     </h2>
                 </div>
@@ -281,7 +283,9 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                    <h2
+                        class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase mb-4"
+                    >
                         {$_('teams')}
                     </h2>
                 </div>
@@ -335,7 +339,9 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                    <h2
+                        class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase mb-4"
+                    >
                         {$_('users')}
                     </h2>
                 </div>

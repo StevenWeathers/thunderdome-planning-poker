@@ -194,9 +194,11 @@
 </svelte:head>
 
 <PageLayout>
-    <h1 class="text-3xl font-bold">{$_('team')}: {team.name}</h1>
+    <h1 class="text-4xl font-semibold font-rajdhani uppercase">
+        {$_('team')}: {team.name}
+    </h1>
     {#if organizationId}
-        <div class="font-bold">
+        <div class="text-2xl font-semibold font-rajdhani uppercase">
             {$_('organization')}
             <ChevronRight class="inline-block" />
             <a
@@ -224,7 +226,9 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded flex">
             <div class="w-full md:w-1/2 lg:w-3/5 md:pr-4">
                 <div class="flex w-full">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                    <h2
+                        class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase mb-4"
+                    >
                         {$_('battles')}
                     </h2>
                 </div>
@@ -265,7 +269,9 @@
 
             <div class="w-full md:w-1/2 lg:w-2/5 md:pl-2 xl:pl-4">
                 {#if isTeamMember}
-                    <h2 class="mb-4 text-2xl font-bold leading-tight">
+                    <h2
+                        class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
+                    >
                         {$_('pages.myBattles.createBattle.title')}
                     </h2>
                     <CreateBattle
@@ -284,7 +290,9 @@
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
             <div class="flex w-full">
                 <div class="w-4/5">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                    <h2
+                        class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase mb-4"
+                    >
                         {$_('users')}
                     </h2>
                 </div>

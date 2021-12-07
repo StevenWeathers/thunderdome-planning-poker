@@ -298,7 +298,7 @@
                     name="updateProfile"
                 >
                     <h2
-                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight"
                     >
                         {$_('pages.warriorProfile.title')}
@@ -563,7 +563,7 @@
                     name="updateWarriorPassword"
                 >
                     <div
-                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight text-center"
                     >
                         {$_('pages.warriorProfile.updatePasswordForm.title')}
@@ -642,12 +642,15 @@
                 </form>
             {/if}
         </div>
+
         <div class="w-full">
             {#if ExternalAPIEnabled}
                 <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
                     <div class="flex w-full">
                         <div class="flex-1">
-                            <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                            <h2
+                                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4"
+                            >
                                 {$_('pages.warriorProfile.apiKeys.title')}
                             </h2>
                         </div>

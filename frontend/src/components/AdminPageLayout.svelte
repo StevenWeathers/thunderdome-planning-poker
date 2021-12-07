@@ -1,5 +1,5 @@
 <script>
-    import { appRoutes, AppConfig } from '../config'
+    import { AppConfig, appRoutes } from '../config'
     import { _ } from '../i18n'
 
     export let activePage = 'admin'

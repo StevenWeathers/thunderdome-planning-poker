@@ -4,12 +4,14 @@
     import { _ } from '../i18n'
 
     const { AppVersion } = AppConfig
-    const footerLinkClasses = 'no-underline text-teal-500 hover:text-teal-800'
+    const footerLinkClasses = 'no-underline text-blue-500 hover:text-blue-800'
 </script>
 
-<footer class="p-6 text-center">
+<footer
+    class="border-t px-16 py-10 text-center font-rajdhani text-xl"
+    style="box-shadow: inset 0 7px 30px -7px rgba(0,0,0,0.1);"
+>
     <GithubIcon />
-    &nbsp;
     <a
         href="https://github.com/StevenWeathers/thunderdome-planning-poker"
         class="{footerLinkClasses}"
@@ -22,6 +24,7 @@
             authorClose: `</a>`,
         },
     })}
+    <br />
     {@html $_('footer.license', {
         values: {
             licenseOpen: `<a href="http://www.apache.org/licenses/" class="${footerLinkClasses}">`,
@@ -29,14 +32,6 @@
         },
     })}
     <br />
-    {@html $_('footer.poweredBy', {
-        values: {
-            svelteOpen: `<a href="https://svelte.dev/" class="${footerLinkClasses}">`,
-            svelteClose: `</a>`,
-            goOpen: `<a href="https://golang.org/" class="${footerLinkClasses}">`,
-            goClose: `</a>`,
-        },
-    })}
     <div class="text-sm text-gray-500">
         {$_('appVersion', { values: { version: AppVersion } })}
     </div>

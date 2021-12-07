@@ -39,13 +39,9 @@
   "planTypeEpic": "Epic",
   "planTypeTask": "Task",
   "planTypeSubtask": "Subtask",
-  "landingTitle": "Thunderdome ist eine Open Source Agile Planning Poker App mit einem lustigen Thema",
-  "landingBullet1": "Gebaut mit coolen Technologien wie Svelte, Go und WebSockets",
-  "landingBullet3": "Funktioniert mit allen {mbOpen}modernen Browsern*{mbClose}, inklusive Mobile",
-  "landingBullet3NotSorry": "*Entschuldigung, keine Entschuldigung bei IE",
-  "landingFeatures": "Eigenschaften",
+  "landingTitle": "Thunderdome ist eine Agile Planning Poker App mit einem lustigen Thema",
   "landingFeatureOpenSourceTitle": "Open Source",
-  "landingFeatureOpenSourceText": "Check out the {repoOpen}repository{repoClose} to request or contribute enhancements, locale translations and bug fixes or to {donateOpen}Donate{donateClose}",
+  "landingFeatureOpenSourceText": "Check out the {repoOpen}Github repository{repoClose} to request or contribute enhancements, locale translations and bug fixes or to {donateOpen}Donate{donateClose}.",
   "pages": {
     "myBattles": {
       "countPlansPointed": "{totalPointed} von {totalPlans} Pl\u00E4nen gesch\u00E4tzt",
@@ -285,7 +281,7 @@
     }
   },
   "footer": {
-    "authoredBy": "by {authorOpen}Steven Weathers{authorClose}.",
+    "authoredBy": "is designed and developed by {authorOpen}Steven Weathers{authorClose}.",
     "license": "Der Source Code ist lizensiert {licenseOpen}Apache 2.0{licenseClose}.",
     "poweredBy": "Erstellt mit {svelteOpen}Svelte{svelteClose} und {goOpen}Go{goClose}"
   },
@@ -364,9 +360,6 @@
   "adminPageTeams": "Teams",
   "adminPageUsers": "Benutzer",
   "adminPageApi": "API Keys",
-  "additionalTools": "Additional Tools",
-  "exothermicDescription": "Agile Story Mapping",
-  "wakitaDescription": "Agile Retrospective",
   "maintenanceLowercaseEmails": "Lowercase User Emails",
   "becomeSpectator": "Become Spectator",
   "becomeParticipant": "Become Participant",
@@ -415,11 +408,11 @@
   "appPreviewAlt": "Preview of Thunderdome, Agile Planning Poker UI Experience",
   "openSource": "Open Source",
   "hostedOrSelfHosted": "Hosted service or self-hosted",
+  "hostedDesc": "{linkOpen}Thunderdome.dev{linkClose} is a free hosted service (SaaS) without Ads.",
+  "selfHostedDesc": "Alternatively you can {linkOpen}run it on your own server{linkClose}.",
   "organizationsAndTeams": "Organizations and Teams",
   "conciseVotingResults": "Concise Voting Results",
   "jiraXmlImport": "Jira XML Import",
-  "fast": "Fast",
-  "secure": "Secure",
   "apiDocumentation": "API Documentation",
   "requestVerifyEmail": "Request Verification Email",
   "requestVerifyEmailSuccess": "Verification Email requested, watch your inbox",
@@ -437,5 +430,6 @@
   "inviteLinkCopySuccess": "Invite Link copied to clipboard",
   "inviteLinkCopyFailure": "Couldn't copy invite link to clipboard",
   "joinCodeCopySuccess": "Passcode copied to clipboard",
-  "joinCodeCopyFailure": "Couldn't copy passcode to clipboard"
+  "joinCodeCopyFailure": "Couldn't copy passcode to clipboard",
+  "landingSalesPitch": "Remote team collaboration with realtime agile story pointing, no cost and ad free!"
 }

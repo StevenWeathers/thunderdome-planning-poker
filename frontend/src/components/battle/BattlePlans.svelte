@@ -93,7 +93,11 @@
 <div class="bg-white shadow-lg mb-4 rounded">
     <div class="flex items-center bg-gray-200 p-4 rounded-t">
         <div class="w-1/2">
-            <h3 class="text-2xl leading-tight font-bold">{$_('plans')}</h3>
+            <h3
+                class="text-3xl leading-tight font-semibold font-rajdhani uppercase"
+            >
+                {$_('plans')}
+            </h3>
         </div>
         <div class="w-1/2 text-right">
             {#if isLeader}

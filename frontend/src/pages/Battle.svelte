@@ -479,7 +479,9 @@
     {#if battle.name && !socketReconnecting && !socketError}
         <div class="mb-6 flex flex-wrap">
             <div class="w-full text-center md:w-2/3 md:text-left">
-                <h1 class="text-3xl font-bold leading-tight">
+                <h1
+                    class="text-4xl font-semibold font-rajdhani uppercase leading-tight"
+                >
                     {#if currentPlan.link}
                         <a
                             href="{currentPlan.link}"
@@ -511,7 +513,7 @@
                     >
                 </h1>
                 <h2
-                    class="text-gray-700 text-2xl font-bold leading-tight"
+                    class="text-gray-700 text-3xl font-semibold font-rajdhani uppercase leading-tight"
                     data-testid="battle-name"
                 >
                     {battle.name}
@@ -573,7 +575,9 @@
             <div class="w-full lg:w-1/4 px-4">
                 <div class="bg-white shadow-lg mb-4 rounded">
                     <div class="bg-blue-500 p-4 rounded-t">
-                        <h3 class="text-2xl text-white leading-tight font-bold">
+                        <h3
+                            class="text-3xl text-white leading-tight font-semibold font-rajdhani uppercase"
+                        >
                             {$_('pages.battle.warriors')}
                         </h3>
                     </div>

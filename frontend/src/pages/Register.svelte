@@ -5,7 +5,7 @@
     import { warrior } from '../stores.js'
     import { validateName } from '../validationUtils.js'
     import { _ } from '../i18n'
-    import { appRoutes, AppConfig } from '../config'
+    import { AppConfig, appRoutes } from '../config'
 
     export let router
     export let xfetch
@@ -107,12 +107,12 @@
 
 <PageLayout>
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">
+        <h1 class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase">
             {$_('pages.createAccount.title')}
         </h1>
         {#if battleId}
             <div
-                class="font-bold text-m md:text-l mb-2 md:mb-6 md:leading-tight
+                class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
                 text-center"
             >
                 {@html $_('pages.createAccount.loginForBattle', {
@@ -133,7 +133,7 @@
                     name="registerGuest"
                 >
                     <h2
-                        class="font-bold text-xl md:text-2xl b-4 mb-2 md:mb-6
+                        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl b-4 mb-2 md:mb-6
                         md:leading-tight text-center"
                     >
                         {$_('pages.createAccount.guestForm.title')}
@@ -180,7 +180,7 @@
             <div class="w-full md:w-1/2 px-4">
                 <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
                     <h2
-                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight text-center"
                     >
                         {@html $_(

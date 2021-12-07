@@ -1,7 +1,6 @@
 <script>
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
-    import { warrior } from '../stores.js'
     import { validatePasswords } from '../validationUtils.js'
     import { _ } from '../i18n'
     import { appRoutes } from '../config'
@@ -66,7 +65,7 @@
                 name="resetWarriorPassword"
             >
                 <div
-                    class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                    class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                     md:leading-tight text-center"
                 >
                     {$_('pages.login.passwordReset.title')}

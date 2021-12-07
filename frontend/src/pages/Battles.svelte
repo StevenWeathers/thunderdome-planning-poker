@@ -56,7 +56,9 @@
 </svelte:head>
 
 <PageLayout>
-    <h1 class="mb-4 text-3xl font-bold">{$_('pages.myBattles.title')}</h1>
+    <h1 class="mb-4 text-4xl font-semibold font-rajdhani uppercase">
+        {$_('pages.myBattles.title')}
+    </h1>
 
     <div class="flex flex-wrap">
         <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pr-4">
@@ -108,7 +110,9 @@
 
         <div class="w-full md:w-1/2 lg:w-2/5 md:pl-2 xl:pl-4">
             <div class="p-6 bg-white shadow-lg rounded">
-                <h2 class="mb-4 text-2xl font-bold leading-tight">
+                <h2
+                    class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
+                >
                     {$_('pages.myBattles.createBattle.title')}
                 </h2>
                 <CreateBattle

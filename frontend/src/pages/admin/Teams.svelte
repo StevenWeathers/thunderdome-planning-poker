@@ -75,7 +75,9 @@
 
 <AdminPageLayout activePage="teams">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">{$_('teams')}</h1>
+        <h1 class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase">
+            {$_('teams')}
+        </h1>
     </div>
 
     <div class="w-full">

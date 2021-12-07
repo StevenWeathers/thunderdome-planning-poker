@@ -140,7 +140,9 @@
 
 <AdminPageLayout activePage="alerts">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">{$_('alerts')}</h1>
+        <h1 class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase">
+            {$_('alerts')}
+        </h1>
     </div>
 
     <div class="w-full">

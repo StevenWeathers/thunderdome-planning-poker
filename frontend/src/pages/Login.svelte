@@ -107,14 +107,14 @@
                     name="authWarrior"
                 >
                     <div
-                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight text-center"
                     >
                         {$_('pages.login.title')}
                     </div>
                     {#if battleId && AllowRegistration}
                         <div
-                            class="font-bold text-m md:text-l mb-2 md:mb-6
+                            class="font-semibold font-rajdhani uppercase text-lg md:text-xl mb-2 md:mb-6
                             md:leading-tight text-center"
                         >
                             {@html $_('pages.login.registerForBattle', {
@@ -196,7 +196,7 @@
                     name="resetPassword"
                 >
                     <div
-                        class="font-bold text-xl md:text-2xl mb-2 md:mb-6
+                        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight text-center"
                     >
                         {$_('forgotPassword')}

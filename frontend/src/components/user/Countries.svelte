@@ -17,25 +17,19 @@
         })
 </script>
 
-<section>
-    <div class="container mx-auto px-4 py-6 lg:py-10">
-        <div class="text-center mb-6">
-            <h2 class="text-4xl font-bold">
-                {$_('landingCountries', {
-                    values: { count: activeCountries.length },
-                })}
-            </h2>
-        </div>
+<div class="text-center mb-6">
+    <div class="m-auto title-line bg-yellow-thunder"></div>
+    <h2 class="text-5xl font-semibold mb-12 font-rajdhani uppercase">
+        {$_('landingCountries', {
+            values: { count: activeCountries.length },
+        })}
+    </h2>
+</div>
 
-        <ul class="grid grid-cols-8 lg:grid-cols-12 gap-x-4">
-            {#each activeCountries as country}
-                <li>
-                    <CountryFlag
-                        country="{country}"
-                        additionalClass="mx-auto"
-                    />
-                </li>
-            {/each}
-        </ul>
-    </div>
-</section>
+<ul class="grid grid-cols-8 lg:grid-cols-12 gap-x-4 gap-y-8">
+    {#each activeCountries as country}
+        <li>
+            <CountryFlag country="{country}" additionalClass="mx-auto" />
+        </li>
+    {/each}
+</ul>

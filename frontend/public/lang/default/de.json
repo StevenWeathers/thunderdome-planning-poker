@@ -5,7 +5,6 @@
   "battleCreate": "Schlacht erstellen",
   "battleEdit": "Schlacht bearbeiten",
   "warriorCreate": "Krieger erstellen",
-  "landingBullet2": "Einfache {crossoutOpen}Benutzer{crossoutClose}Krieger-Erfahrung",
   "landingCountries": "Krieger in \u00FCber {count} L\u00E4ndern",
   "pages": {
     "myBattles": {
@@ -68,6 +67,7 @@
       "battleDeleted": "Schlacht gel\u00F6scht"
     }
   },
+  "plans": "Plans",
   "battle": "Schlacht",
   "battles": "Schlachten",
   "battlesActive": "Aktive Schlachten",
@@ -85,9 +85,5 @@
   "getBattleError": "Error getting battle",
   "getBattlesError": "Error getting battles",
   "showActiveBattles": "Show Active Battles",
-  "organizationsAndTeamsDescription": "Create organizations with departments and teams at each level to associate battle's to a team for quick access. Just  a small team?, no problem! Stand alone teams can be created without the need for organizations.",
-  "customizableBattleOptions": "Customizable Battle Options",
-  "customizableBattleOptionsDescription": "Each battle can set the allowed point values from the configured (default 0-100 scale) set as well as whether or not to automatically finish voting when all votes have been cast.",
-  "conciseVotingResultsDescription": "Voting results show how many and whom voted for each point value. A tally of total votes, highest vote, and a rounded (customizable per battle) average vote helps quickly come to a consensus.",
-  "secureDescription": "Every battle has a randomly generated, not incremental ID which keeps strangers from joining your battle without the share link.<br/>HTTPS, backend only cookie, and salted/hashed password storage keep your authenticated sessions secure."
+  "customizableBattleOptions": "Customizable Battle Options"
 }

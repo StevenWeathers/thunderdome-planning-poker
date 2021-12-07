@@ -72,7 +72,7 @@
     {/if}
     <div
         class="w-full rounded overflow-hidden shadow-lg border {activeColor}
-        {lockedClass} relative text-3xl lg:text-5xl relative z-0"
+        {lockedClass} relative text-5xl lg:text-6xl relative z-0 font-rajdhani"
         on:click="{voteAction}"
     >
         <div class="py-12 md:py-16 text-center">{point}</div>

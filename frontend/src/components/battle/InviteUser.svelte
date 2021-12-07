@@ -47,7 +47,9 @@
 </script>
 
 <div class="w-full">
-    <h4 class="text-xl mb-2 leading-tight font-bold">
+    <h4
+        class="text-2xl mb-2 leading-tight font-semibold font-rajdhani uppercase"
+    >
         {$_('pages.battle.warriorInvite')}
     </h4>
     <div class="flex flex-wrap items-stretch w-full">

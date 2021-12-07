@@ -215,23 +215,27 @@
 <Notifications bind:this="{notifications}" />
 
 {#if $isLocaleLoaded}
-    <GlobalAlerts registered="{!!activeWarrior.name}" />
+    <header>
+        <GlobalAlerts registered="{!!activeWarrior.name}" />
 
-    <GlobalHeader
-        router="{router}"
-        eventTag="{eventTag}"
-        xfetch="{xfetch}"
-        notifications="{notifications}"
-    />
+        <GlobalHeader
+            router="{router}"
+            eventTag="{eventTag}"
+            xfetch="{xfetch}"
+            notifications="{notifications}"
+        />
+    </header>
 
-    <svelte:component
-        this="{currentPage.route}"
-        {...currentPage.params}
-        notifications="{notifications}"
-        router="{router}"
-        eventTag="{eventTag}"
-        xfetch="{xfetch}"
-    />
+    <main class="flex-grow">
+        <svelte:component
+            this="{currentPage.route}"
+            {...currentPage.params}
+            notifications="{notifications}"
+            router="{router}"
+            eventTag="{eventTag}"
+            xfetch="{xfetch}"
+        />
+    </main>
 
     <GlobalFooter />
 {:else}

@@ -58,12 +58,16 @@
 
 <AdminPageLayout activePage="battles">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-bold">{$_('battle')}</h1>
+        <h1 class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase">
+            {$_('battle')}
+        </h1>
     </div>
 
     <div class="w-full">
         <div class="p-4 md:p-6 mb-4 md:mb-6 bg-white shadow-lg rounded">
-            <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center">
+            <h3
+                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center"
+            >
                 {battle.name}
             </h3>
             <table class="table-fixed w-full mb-4">
@@ -107,7 +111,9 @@
             </table>
         </div>
         <div class="p-4 md:p-6 mb-4 md:mb-6 bg-white shadow-lg rounded">
-            <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center">
+            <h3
+                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center"
+            >
                 {$_('users')}
             </h3>
             <table class="table-fixed w-full mb-4">
@@ -168,8 +174,10 @@
             </table>
         </div>
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-            <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center">
-                Plans
+            <h3
+                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center"
+            >
+                {$_('plans')}
             </h3>
             <table class="table-fixed w-full">
                 <thead>
