@@ -1,7 +1,8 @@
 <script>
-    import WarriorIcon from './icons/UserIcon.svelte'
     import HollowButton from './HollowButton.svelte'
+    import SolidButton from './SolidButton.svelte'
     import LocaleSwitcher from './LocaleSwitcher.svelte'
+    import UserIcon from './icons/UserIcon.svelte'
     import { validateUserIsAdmin } from '../validationUtils'
     import { _, locale, setupI18n } from '../i18n'
     import { warrior } from '../stores'
@@ -11,8 +12,20 @@
     export let router
     export let eventTag
     export let notifications
+    export let currentPage
 
     const { AllowRegistration, PathPrefix } = AppConfig
+
+    const activePageClass = 'text-purple-700 border-purple-700'
+    const pageClass =
+        'text-gray-700 border-white hover:text-purple-700 transition duration-300'
+
+    let showMobileMenu = false
+
+    function toggleMobileMenu(e) {
+        !!e && e.preventDefault()
+        showMobileMenu = !showMobileMenu
+    }
 
     function logoutWarrior() {
         xfetch('/api/auth/logout', { method: 'DELETE' })
@@ -31,96 +44,236 @@
 
 <style>
     :global(.nav-logo) {
-        max-height: 3.75rem;
+        height: 3.5rem;
     }
 </style>
 
-<nav
-    class="flex items-center justify-between flex-wrap bg-white px-6 py-2"
-    role="navigation"
-    aria-label="main navigation"
->
-    <div class="flex items-center flex-shrink-0 mr-6">
-        <a href="{appRoutes.landing}">
-            <img
-                src="{PathPrefix}/img/logo.svg"
-                alt="Thunderdome"
-                class="nav-logo"
-            />
-        </a>
-    </div>
-    <div class="text-right mt-4 md:mt-0">
-        {#if $warrior.name}
-            <span class="font-bold mr-2 text-xl">
-                <WarriorIcon />
-                <a href="{appRoutes.profile}" data-testid="userprofile-link"
-                    >{$warrior.name}</a
+<nav class="bg-white" aria-label="main navigation">
+    <div class="px-8">
+        <div class="flex justify-between">
+            <div class="flex space-x-7">
+                <div>
+                    <a href="{appRoutes.landing}" class="block my-3 mr-10">
+                        <img
+                            src="{PathPrefix}/img/logo.svg"
+                            alt="Thunderdome"
+                            class="nav-logo"
+                        />
+                    </a>
+                </div>
+                <nav
+                    class="hidden lg:flex items-center space-x-1 font-semibold font-rajdhani uppercase text-lg lg:text-xl"
                 >
-            </span>
-            <HollowButton
-                color="teal"
-                href="{appRoutes.battles}"
-                additionalClasses="mr-2"
+                    {#if $warrior.name}
+                        <a
+                            href="{appRoutes.battles}"
+                            class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                            'battles'
+                                ? activePageClass
+                                : pageClass}"
+                        >
+                            {$_('battles')}
+                        </a>
+                        {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
+                            <a
+                                href="{appRoutes.organizations}"
+                                class="pt-6 pb-4 px-4  border-b-4 {currentPage ==
+                                'organizations'
+                                    ? activePageClass
+                                    : pageClass}"
+                            >
+                                {$_('teams')}
+                            </a>
+                        {/if}
+                        {#if validateUserIsAdmin($warrior)}
+                            <a
+                                href="{appRoutes.admin}"
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                                'admin'
+                                    ? activePageClass
+                                    : pageClass}"
+                            >
+                                {$_('pages.admin.nav')}
+                            </a>
+                        {/if}
+                    {/if}
+                </nav>
+            </div>
+            <div
+                class="hidden lg:flex items-center space-x-3 font-rajdhani font-semibold"
             >
-                {$_('pages.myBattles.nav')}
-            </HollowButton>
-            {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
-                <HollowButton
-                    color="blue"
-                    href="{appRoutes.organizations}"
-                    additionalClasses="mr-2"
-                >
-                    {$_('organizations')} &amp; {$_('teams')}
-                </HollowButton>
-            {/if}
-            {#if !$warrior.rank || $warrior.rank === 'GUEST' || $warrior.rank === 'PRIVATE'}
-                {#if AllowRegistration}
-                    <HollowButton
-                        color="teal"
-                        href="{appRoutes.register}"
-                        additionalClasses="mr-2"
+                {#if !$warrior.name}
+                    <div class="uppercase">
+                        <a
+                            href="{appRoutes.login}"
+                            class="py-2 px-2 text-gray-700 hover:text-green-600 transition duration-300 text-lg lg:text-xl"
+                            >{$_('pages.login.nav')}</a
+                        >
+                        {#if AllowRegistration}
+                            <SolidButton
+                                href="{appRoutes.register}"
+                                additionalClasses="uppercase text-md lg:text-lg"
+                                >{$_('pages.createAccount.nav')}</SolidButton
+                            >
+                        {/if}
+                    </div>
+                {:else}
+                    <span
+                        class="font-bold mr-2 text-lg lg:text-xl inline-block max-w-48 truncate"
                     >
-                        {$_('pages.createAccount.nav')}
-                    </HollowButton>
+                        <UserIcon />
+                        <a
+                            href="{appRoutes.profile}"
+                            data-testid="userprofile-link">{$warrior.name}</a
+                        >
+                    </span>
+                    {#if !$warrior.rank || $warrior.rank === 'GUEST' || $warrior.rank === 'PRIVATE'}
+                        <a
+                            href="{appRoutes.login}"
+                            class="py-2 px-2 text-gray-700 hover:text-green-600 transition duration-300 uppercase text-xl"
+                            >{$_('pages.login.nav')}</a
+                        >
+                        {#if AllowRegistration}
+                            <SolidButton
+                                href="{appRoutes.register}"
+                                additionalClasses="uppercase text-md lg:text-lg"
+                                >{$_('pages.createAccount.nav')}</SolidButton
+                            >
+                        {/if}
+                    {:else}
+                        <HollowButton
+                            color="red"
+                            onClick="{logoutWarrior}"
+                            additionalClasses="uppercase text-md lg:text-lg"
+                        >
+                            {$_('logout')}
+                        </HollowButton>
+                    {/if}
                 {/if}
-                <HollowButton href="{appRoutes.login}">
-                    {$_('pages.login.nav')}
-                </HollowButton>
-            {:else}
-                {#if validateUserIsAdmin($warrior)}
-                    <HollowButton
-                        color="purple"
-                        href="{appRoutes.admin}"
-                        additionalClasses="mr-2"
-                    >
-                        {$_('pages.admin.nav')}
-                    </HollowButton>
-                {/if}
-                <HollowButton color="red" onClick="{logoutWarrior}">
-                    {$_('logout')}
-                </HollowButton>
-            {/if}
-        {:else}
-            {#if AllowRegistration}
-                <HollowButton
-                    color="teal"
-                    href="{appRoutes.register}"
-                    additionalClasses="mr-2"
+                <LocaleSwitcher
+                    class="ml-2 text-lg lg:text-xl uppercase"
+                    selectedLocale="{$locale}"
+                    on:locale-changed="{e =>
+                        setupI18n({
+                            withLocale: e.detail,
+                        })}"
+                />
+            </div>
+            <div class="lg:hidden flex items-center">
+                <button
+                    class="outline-none mobile-menu-button"
+                    on:click="{toggleMobileMenu}"
                 >
-                    {$_('pages.createAccount.nav')}
-                </HollowButton>
-            {/if}
-            <HollowButton href="{appRoutes.login}">
-                {$_('pages.login.nav')}
-            </HollowButton>
-        {/if}
-        <LocaleSwitcher
-            class="ml-2"
-            selectedLocale="{$locale}"
-            on:locale-changed="{e =>
-                setupI18n({
-                    withLocale: e.detail,
-                })}"
-        />
+                    <svg
+                        class=" w-6 h-6 text-gray-500 hover:text-green-500 "
+                        x-show="!showMenu"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
+    {#if showMobileMenu}
+        <div class="lg:hidden py-2 border-t-2 border-gray-200">
+            <ul class="font-rajdhani font-semibold text-lg">
+                {#if $warrior.name}
+                    <li>
+                        <a
+                            href="{appRoutes.battles}"
+                            class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
+                        >
+                            {$_('battles')}
+                        </a>
+                    </li>
+                    {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
+                        <li>
+                            <a
+                                href="{appRoutes.organizations}"
+                                class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
+                            >
+                                {$_('teams')}
+                            </a>
+                        </li>
+                    {/if}
+                    {#if validateUserIsAdmin($warrior)}
+                        <li>
+                            <a
+                                href="{appRoutes.admin}"
+                                class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
+                            >
+                                {$_('pages.admin.nav')}
+                            </a>
+                        </li>
+                    {/if}
+                {:else}
+                    <li>
+                        <a
+                            href="{appRoutes.login}"
+                            class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
+                        >
+                            {$_('pages.login.nav')}
+                        </a>
+                    </li>
+                    {#if AllowRegistration}
+                        <li>
+                            <a
+                                href="{appRoutes.register}"
+                                class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
+                            >
+                                {$_('pages.createAccount.nav')}
+                            </a>
+                        </li>
+                    {/if}
+                {/if}
+            </ul>
+            <div class="font-rajdhani font-semibold mx-4 my-2">
+                {#if $warrior.name}
+                    <span class="font-bold mr-2 text-lg lg:text-xl">
+                        <UserIcon />
+                        <a
+                            href="{appRoutes.profile}"
+                            data-testid="m-userprofile-link">{$warrior.name}</a
+                        >
+                    </span>
+                    {#if !$warrior.rank || $warrior.rank === 'GUEST' || $warrior.rank === 'PRIVATE'}
+                        <a
+                            href="{appRoutes.login}"
+                            class="py-2 px-2 text-gray-700 hover:text-green-600 transition duration-300 uppercase text-lg"
+                            >{$_('pages.login.nav')}</a
+                        >
+                        {#if AllowRegistration}
+                            <SolidButton
+                                href="{appRoutes.register}"
+                                additionalClasses="uppercase text-md lg:text-lg"
+                                >{$_('pages.createAccount.nav')}</SolidButton
+                            >
+                        {/if}
+                    {:else}
+                        <HollowButton
+                            color="red"
+                            onClick="{logoutWarrior}"
+                            additionalClasses="uppercase text-md lg:text-lg"
+                        >
+                            {$_('logout')}
+                        </HollowButton>
+                    {/if}
+                {/if}
+                <LocaleSwitcher
+                    class="mt-4 block text-xl uppercase w-full"
+                    selectedLocale="{$locale}"
+                    on:locale-changed="{e =>
+                        setupI18n({
+                            withLocale: e.detail,
+                        })}"
+                />
+            </div>
+        </div>
+    {/if}
 </nav>

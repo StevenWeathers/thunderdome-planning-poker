@@ -6,6 +6,7 @@
     export let testid = ''
     export let onClick = () => {}
     export let options = {}
+    export let href = ''
 </script>
 
 <style>
@@ -74,15 +75,28 @@
     }
 </style>
 
-<button
-    class="btn btn-{color}
-    {disabled ? 'disabled' : ''}
-    {additionalClasses}"
-    on:click="{onClick}"
-    type="{type}"
-    disabled="{disabled}"
-    data-testid="{testid}"
-    {...options}
->
-    <slot />
-</button>
+{#if href != ''}
+    <a
+        href="{href}"
+        class="btn btn-{color}
+       {disabled ? 'disabled' : ''}
+       {additionalClasses}"
+        data-testid="{testid}"
+        {...options}
+    >
+        <slot />
+    </a>
+{:else}
+    <button
+        class="btn btn-{color}
+        {disabled ? 'disabled' : ''}
+        {additionalClasses}"
+        on:click="{onClick}"
+        type="{type}"
+        disabled="{disabled}"
+        data-testid="{testid}"
+        {...options}
+    >
+        <slot />
+    </button>
+{/if}

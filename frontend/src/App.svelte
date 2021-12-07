@@ -48,6 +48,7 @@
     let currentPage = {
         route: Landing,
         params: {},
+        name: 'landing',
     }
 
     const router = Navaid('/')
@@ -55,60 +56,70 @@
             currentPage = {
                 route: Landing,
                 params: {},
+                name: 'landing',
             }
         })
         .on(`${appRoutes.register}/:battleId?`, params => {
             currentPage = {
                 route: Register,
                 params,
+                name: 'register',
             }
         })
         .on(`${appRoutes.login}/:battleId?`, params => {
             currentPage = {
                 route: Login,
                 params,
+                name: 'login',
             }
         })
         .on(`${appRoutes.resetPwd}/:resetId`, params => {
             currentPage = {
                 route: ResetPassword,
                 params,
+                name: 'reset-password',
             }
         })
         .on(`${appRoutes.verifyAct}/:verifyId`, params => {
             currentPage = {
                 route: VerifyAccount,
                 params,
+                name: 'verify-account',
             }
         })
         .on(appRoutes.profile, params => {
             currentPage = {
                 route: WarriorProfile,
                 params,
+                name: 'profile',
             }
         })
         .on(appRoutes.battles, () => {
             currentPage = {
                 route: Battles,
                 params: {},
+                name: 'battles',
             }
         })
         .on(`${appRoutes.battle}/:battleId`, params => {
             currentPage = {
                 route: Battle,
                 params,
+                name: 'battle',
             }
         })
         .on(appRoutes.organizations, () => {
             currentPage = {
                 route: Organizations,
                 params: {},
+                name: 'organizations',
             }
         })
         .on(`${appRoutes.organization}/:organizationId`, params => {
             currentPage = {
                 route: Organization,
                 params,
+                name: 'organizations',
             }
         })
         .on(
@@ -117,6 +128,7 @@
                 currentPage = {
                     route: Team,
                     params,
+                    name: 'team',
                 }
             },
         )
@@ -126,6 +138,7 @@
                 currentPage = {
                     route: Department,
                     params,
+                    name: 'department',
                 }
             },
         )
@@ -135,6 +148,7 @@
                 currentPage = {
                     route: Team,
                     params,
+                    name: 'team',
                 }
             },
         )
@@ -142,60 +156,70 @@
             currentPage = {
                 route: Team,
                 params,
+                name: 'team',
             }
         })
         .on(appRoutes.admin, () => {
             currentPage = {
                 route: Admin,
                 params: {},
+                name: 'admin',
             }
         })
         .on(`${appRoutes.admin}/users/:userId`, params => {
             currentPage = {
                 route: AdminUser,
                 params: params,
+                name: 'admin',
             }
         })
         .on(`${appRoutes.admin}/users`, () => {
             currentPage = {
                 route: AdminUsers,
                 params: {},
+                name: 'admin',
             }
         })
         .on(`${appRoutes.admin}/organizations`, () => {
             currentPage = {
                 route: AdminOrganizations,
                 params: {},
+                name: 'admin',
             }
         })
         .on(`${appRoutes.admin}/teams`, () => {
             currentPage = {
                 route: AdminTeams,
                 params: {},
+                name: 'admin',
             }
         })
         .on(`${appRoutes.admin}/apikeys`, () => {
             currentPage = {
                 route: AdminApikeys,
                 params: {},
+                name: 'admin',
             }
         })
         .on(`${appRoutes.admin}/alerts`, () => {
             currentPage = {
                 route: AdminAlerts,
                 params: {},
+                name: 'admin',
             }
         })
         .on(`${appRoutes.admin}/battles/:battleId`, params => {
             currentPage = {
                 route: AdminBattle,
                 params: params,
+                name: 'admin',
             }
         })
         .on(`${appRoutes.admin}/battles`, () => {
             currentPage = {
                 route: AdminBattles,
                 params: {},
+                name: 'admin',
             }
         })
         .listen()
@@ -223,6 +247,7 @@
             eventTag="{eventTag}"
             xfetch="{xfetch}"
             notifications="{notifications}"
+            currentPage="{currentPage.name}"
         />
     </header>
 
