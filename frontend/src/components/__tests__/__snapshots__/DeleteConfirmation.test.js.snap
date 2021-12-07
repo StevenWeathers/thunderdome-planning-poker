@@ -76,6 +76,7 @@ exports[`DeleteConfirmation component should match snapshot 1`] = `
               >
                 Confirm Delete
               </button>
+              
             </div>
           </div>
         </div>
@@ -158,6 +159,7 @@ exports[`DeleteConfirmation component should match snapshot when permanent=false
               >
                 Confirm Delete
               </button>
+              
             </div>
           </div>
         </div>
