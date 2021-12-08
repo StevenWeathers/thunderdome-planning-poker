@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/google/uuid"
 	"log"
@@ -62,12 +61,7 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 }
 
 // CreatePlan adds a new plan to a battle
-func (d *Database) CreatePlan(BattleID string, UserID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*model.Plan, error) {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
-	}
-
+func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*model.Plan, error) {
 	// @TODO - refactor stored procedure to replace need for app generated uuid
 	newID, _ := uuid.NewUUID()
 	PlanID := newID.String()
@@ -84,12 +78,7 @@ func (d *Database) CreatePlan(BattleID string, UserID string, PlanName string, P
 }
 
 // ActivatePlanVoting sets the plan by ID to active, wipes any previous votes/points, and disables votingLock
-func (d *Database) ActivatePlanVoting(BattleID string, UserID string, PlanID string) ([]*model.Plan, error) {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
-	}
-
+func (d *Database) ActivatePlanVoting(BattleID string, PlanID string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call activate_plan_voting($1, $2);`, BattleID, PlanID,
 	); err != nil {
@@ -147,14 +136,7 @@ func (d *Database) RetractVote(BattleID string, UserID string, PlanID string) []
 }
 
 // EndPlanVoting sets plan to active: false
-func (d *Database) EndPlanVoting(BattleID string, UserID string, PlanID string, AutoFinishVoting bool) ([]*model.Plan, error) {
-	if !AutoFinishVoting {
-		err := d.ConfirmLeader(BattleID, UserID)
-		if err != nil {
-			return nil, errors.New("incorrect permissions")
-		}
-	}
-
+func (d *Database) EndPlanVoting(BattleID string, PlanID string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call end_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
 		log.Println(err)
@@ -166,12 +148,7 @@ func (d *Database) EndPlanVoting(BattleID string, UserID string, PlanID string, 
 }
 
 // SkipPlan sets plan to active: false and unsets battle's activePlanId
-func (d *Database) SkipPlan(BattleID string, UserID string, PlanID string) ([]*model.Plan, error) {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
-	}
-
+func (d *Database) SkipPlan(BattleID string, PlanID string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call skip_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
 		log.Println(err)
@@ -183,12 +160,7 @@ func (d *Database) SkipPlan(BattleID string, UserID string, PlanID string) ([]*m
 }
 
 // RevisePlan updates the plan by ID
-func (d *Database) RevisePlan(BattleID string, UserID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*model.Plan, error) {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
-	}
-
+func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*model.Plan, error) {
 	// set PlanID to true
 	if _, err := d.db.Exec(
 		`call revise_plan($1, $2, $3, $4, $5, $6, $7);`, PlanID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria); err != nil {
@@ -201,12 +173,7 @@ func (d *Database) RevisePlan(BattleID string, UserID string, PlanID string, Pla
 }
 
 // BurnPlan removes a plan from the current battle by ID
-func (d *Database) BurnPlan(BattleID string, UserID string, PlanID string) ([]*model.Plan, error) {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
-	}
-
+func (d *Database) BurnPlan(BattleID string, PlanID string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call delete_plan($1, $2);`, BattleID, PlanID); err != nil {
 		log.Println(err)
@@ -218,12 +185,7 @@ func (d *Database) BurnPlan(BattleID string, UserID string, PlanID string) ([]*m
 }
 
 // FinalizePlan sets plan to active: false
-func (d *Database) FinalizePlan(BattleID string, UserID string, PlanID string, PlanPoints string) ([]*model.Plan, error) {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
-	}
-
+func (d *Database) FinalizePlan(BattleID string, PlanID string, PlanPoints string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call finalize_plan($1, $2, $3);`, BattleID, PlanID, PlanPoints); err != nil {
 		log.Println(err)

@@ -98,7 +98,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		// when battleLeaders array is passed add additional leaders to battle
 		if len(keyVal.BattleLeaders) > 0 {
-			updatedLeaders, err := a.db.AddBattleLeadersByEmail(newBattle.Id, UserID, keyVal.BattleLeaders)
+			updatedLeaders, err := a.db.AddBattleLeadersByEmail(newBattle.Id, keyVal.BattleLeaders)
 			if err != nil {
 				log.Println("error adding additional battle leaders")
 			} else {

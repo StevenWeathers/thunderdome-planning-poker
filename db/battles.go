@@ -62,12 +62,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 }
 
 // ReviseBattle updates the battle by ID
-func (d *Database) ReviseBattle(BattleID string, UserID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string) error {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return errors.New("incorrect permissions")
-	}
-
+func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string) error {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	if _, err := d.db.Exec(`
 		UPDATE battles
@@ -104,12 +99,7 @@ func (d *Database) GetBattleLeaderCode(BattleID string, passphrase string) (stri
 }
 
 // ReviseBattleLeaderCode updates the battle leader_code
-func (d *Database) ReviseBattleLeaderCode(BattleID string, UserID string, LeaderCode string, passphrase string) error {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return errors.New("incorrect permissions")
-	}
-
+func (d *Database) ReviseBattleLeaderCode(BattleID string, LeaderCode string, passphrase string) error {
 	EncryptedCode, codeErr := encrypt(LeaderCode, passphrase)
 	if codeErr != nil {
 		return errors.New("unable to revise battle leadercode")
@@ -129,12 +119,7 @@ func (d *Database) ReviseBattleLeaderCode(BattleID string, UserID string, Leader
 }
 
 // ReviseBattleJoinCode updates the battle join_code
-func (d *Database) ReviseBattleJoinCode(BattleID string, UserID string, JoinCode string, passphrase string) error {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return errors.New("incorrect permissions")
-	}
-
+func (d *Database) ReviseBattleJoinCode(BattleID string, JoinCode string, passphrase string) error {
 	EncryptedCode, codeErr := encrypt(JoinCode, passphrase)
 	if codeErr != nil {
 		return errors.New("unable to revise battle join_code")
@@ -476,12 +461,7 @@ func (d *Database) SetBattleLeader(BattleID string, LeaderID string) ([]string, 
 }
 
 // DemoteBattleLeader removes a user from battle leaders
-func (d *Database) DemoteBattleLeader(BattleID string, UserID string, LeaderID string) ([]string, error) {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
-	}
-
+func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]string, error) {
 	leaders := make([]string, 0)
 
 	// set battle leader
@@ -532,12 +512,7 @@ func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator boo
 }
 
 // DeleteBattle removes all battle associations and the battle itself by BattleID
-func (d *Database) DeleteBattle(BattleID string, UserID string) error {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return errors.New("incorrect permissions")
-	}
-
+func (d *Database) DeleteBattle(BattleID string) error {
 	if _, err := d.db.Exec(
 		`call delete_battle($1);`, BattleID); err != nil {
 		log.Println(err)
@@ -548,12 +523,7 @@ func (d *Database) DeleteBattle(BattleID string, UserID string) error {
 }
 
 // AddBattleLeadersByEmail adds additional battle leaders using provided emails for matches
-func (d *Database) AddBattleLeadersByEmail(BattleID string, UserID string, LeaderEmails []string) ([]string, error) {
-	err := d.ConfirmLeader(BattleID, UserID)
-	if err != nil {
-		return nil, errors.New("incorrect permissions")
-	}
-
+func (d *Database) AddBattleLeadersByEmail(BattleID string, LeaderEmails []string) ([]string, error) {
 	var leaders string
 	var newLeaders []string
 	emails := strings.Join(LeaderEmails[:], ",")

@@ -206,7 +206,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	apiRouter.HandleFunc("/battles", a.userOnly(a.adminOnly(a.handleGetBattles()))).Methods("GET")
 	apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetBattle())).Methods("GET")
 	// websocket for battle
-	apiRouter.HandleFunc("/arena/{battleId}", a.serveWs())
+	apiRouter.HandleFunc("/arena/{battleId}", a.serveBattleWs())
 
 	return a
 }
