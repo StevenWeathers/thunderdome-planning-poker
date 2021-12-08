@@ -2,6 +2,7 @@
 package api
 
 import (
+	"github.com/StevenWeathers/thunderdome-planning-poker/battle"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/email"
 	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
@@ -31,8 +32,6 @@ type Config struct {
 	SecureCookieFlag bool
 	// Whether LDAP is enabled for authentication
 	LdapEnabled bool
-	// Hash key used for encrypting/decrypting values like Battle JoinCode and LeaderCode
-	AESHashkey string
 }
 
 type api struct {
@@ -41,6 +40,7 @@ type api struct {
 	email  *email.Email
 	cookie *securecookie.SecureCookie
 	db     *db.Database
+	battle *battle.Service
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -89,8 +89,8 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		db:     database,
 		email:  email,
 		cookie: cookie,
+		battle: battle.New(database),
 	}
-	a.config.AESHashkey = viper.GetString("config.aes_hashkey")
 	swaggerJsonPath := "/" + a.config.PathPrefix + "swagger/doc.json"
 
 	swaggerdocs.SwaggerInfo.BasePath = a.config.PathPrefix + "/api"

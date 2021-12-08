@@ -194,7 +194,7 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		battle, err := a.db.GetBattle(BattleId, UserId, a.config.AESHashkey)
+		battle, err := a.db.GetBattle(BattleId, UserId)
 		if err != nil {
 			Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return

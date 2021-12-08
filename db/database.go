@@ -25,15 +25,17 @@ func New(AdminEmail string) *Database {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// @TODO - abstract config to be a pass in to New
 	var d = &Database{
 		// read environment variables and sets up database configuration values
 		config: &Config{
-			host:     viper.GetString("db.host"),
-			port:     viper.GetInt("db.port"),
-			user:     viper.GetString("db.user"),
-			password: viper.GetString("db.pass"),
-			dbname:   viper.GetString("db.name"),
-			sslmode:  viper.GetString("db.sslmode"),
+			host:       viper.GetString("db.host"),
+			port:       viper.GetInt("db.port"),
+			user:       viper.GetString("db.user"),
+			password:   viper.GetString("db.pass"),
+			dbname:     viper.GetString("db.name"),
+			sslmode:    viper.GetString("db.sslmode"),
+			AESHashkey: viper.GetString("config.aes_hashkey"),
 		},
 	}
 

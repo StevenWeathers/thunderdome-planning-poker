@@ -124,15 +124,15 @@ func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteVa
 }
 
 // RetractVote removes a users vote for the plan
-func (d *Database) RetractVote(BattleID string, UserID string, PlanID string) []*model.Plan {
+func (d *Database) RetractVote(BattleID string, UserID string, PlanID string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call retract_user_vote($1, $2);`, PlanID, UserID); err != nil {
-		log.Println(err)
+		return nil, err
 	}
 
 	plans := d.GetPlans(BattleID, "")
 
-	return plans
+	return plans, nil
 }
 
 // EndPlanVoting sets plan to active: false

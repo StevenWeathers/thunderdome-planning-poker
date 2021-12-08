@@ -78,7 +78,7 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 }
 
 // GetBattleLeaderCode retrieve the battle leader_code
-func (d *Database) GetBattleLeaderCode(BattleID string, passphrase string) (string, error) {
+func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 	var EncryptedLeaderCode string
 
 	if err := d.db.QueryRow(`
@@ -90,7 +90,7 @@ func (d *Database) GetBattleLeaderCode(BattleID string, passphrase string) (stri
 		return "", errors.New("unable to revise battle leader_code")
 	}
 
-	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, passphrase)
+	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, d.config.AESHashkey)
 	if codeErr != nil {
 		return "", errors.New("unable to retrieve battle leader_code")
 	}
@@ -99,8 +99,8 @@ func (d *Database) GetBattleLeaderCode(BattleID string, passphrase string) (stri
 }
 
 // ReviseBattleLeaderCode updates the battle leader_code
-func (d *Database) ReviseBattleLeaderCode(BattleID string, LeaderCode string, passphrase string) error {
-	EncryptedCode, codeErr := encrypt(LeaderCode, passphrase)
+func (d *Database) ReviseBattleLeaderCode(BattleID string, LeaderCode string) error {
+	EncryptedCode, codeErr := encrypt(LeaderCode, d.config.AESHashkey)
 	if codeErr != nil {
 		return errors.New("unable to revise battle leadercode")
 	}
@@ -119,8 +119,8 @@ func (d *Database) ReviseBattleLeaderCode(BattleID string, LeaderCode string, pa
 }
 
 // ReviseBattleJoinCode updates the battle join_code
-func (d *Database) ReviseBattleJoinCode(BattleID string, JoinCode string, passphrase string) error {
-	EncryptedCode, codeErr := encrypt(JoinCode, passphrase)
+func (d *Database) ReviseBattleJoinCode(BattleID string, JoinCode string) error {
+	EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
 	if codeErr != nil {
 		return errors.New("unable to revise battle join_code")
 	}
@@ -139,7 +139,7 @@ func (d *Database) ReviseBattleJoinCode(BattleID string, JoinCode string, passph
 }
 
 // GetBattle gets a battle by ID
-func (d *Database) GetBattle(BattleID string, UserID string, passphrase string) (*model.Battle, error) {
+func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, error) {
 	var b = &model.Battle{
 		Id:                 BattleID,
 		Users:              make([]*model.BattleUser, 0),
@@ -191,7 +191,7 @@ func (d *Database) GetBattle(BattleID string, UserID string, passphrase string) 
 	isBattleLeader := contains(b.Leaders, UserID)
 
 	if JoinCode != "" {
-		DecryptedCode, codeErr := decrypt(JoinCode, passphrase)
+		DecryptedCode, codeErr := decrypt(JoinCode, d.config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode join_code")
 		}
@@ -199,7 +199,7 @@ func (d *Database) GetBattle(BattleID string, UserID string, passphrase string) 
 	}
 
 	if LeaderCode != "" && isBattleLeader {
-		DecryptedCode, codeErr := decrypt(LeaderCode, passphrase)
+		DecryptedCode, codeErr := decrypt(LeaderCode, d.config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode leader_code")
 		}
