@@ -151,7 +151,7 @@
                     {/if}
                 {/if}
                 <LocaleSwitcher
-                    class="ml-2 text-lg lg:text-xl uppercase"
+                    class="ml-2 text-lg lg:text-xl"
                     selectedLocale="{$locale}"
                     on:locale-changed="{e =>
                         setupI18n({
@@ -182,7 +182,7 @@
     </div>
     {#if showMobileMenu}
         <div class="lg:hidden py-2 border-t-2 border-gray-200">
-            <ul class="font-rajdhani font-semibold text-lg">
+            <ul class="font-rajdhani font-semibold uppercase text-lg">
                 {#if $warrior.name}
                     <li>
                         <a
@@ -245,7 +245,7 @@
                     {#if !$warrior.rank || $warrior.rank === 'GUEST' || $warrior.rank === 'PRIVATE'}
                         <a
                             href="{appRoutes.login}"
-                            class="py-2 px-2 text-gray-700 hover:text-green-600 transition duration-300 uppercase text-lg"
+                            class="py-2 px-2 text-gray-700 hover:text-green-600 transition duration-300 uppercase text-lg uppercase"
                             >{$_('pages.login.nav')}</a
                         >
                         {#if AllowRegistration}
@@ -266,7 +266,7 @@
                     {/if}
                 {/if}
                 <LocaleSwitcher
-                    class="mt-4 block text-xl uppercase w-full"
+                    class="mt-4 block text-xl w-full"
                     selectedLocale="{$locale}"
                     on:locale-changed="{e =>
                         setupI18n({

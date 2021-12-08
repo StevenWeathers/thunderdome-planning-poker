@@ -99,7 +99,7 @@
     <div class="w-full">
         <div class="p-4 md:p-6 mb-4 md:mb-6 bg-white shadow-lg rounded">
             <h3
-                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center"
+                class="text-2xl md:text-3xl font-semibold font-rajdhani mb-4 text-center"
             >
                 {user.name}
             </h3>

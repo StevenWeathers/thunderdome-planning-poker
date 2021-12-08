@@ -179,7 +179,9 @@
             <div
                 class="text-center p-2 md:p-4 bg-white shadow-lg rounded text-xl"
             >
-                <div class="text-2xl md:text-3xl font-bold text-center mb-4">
+                <div
+                    class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase text-center mb-4"
+                >
                     {$_('pages.admin.maintenance.title')}
                 </div>
                 <HollowButton onClick="{cleanGuests}" color="red">
