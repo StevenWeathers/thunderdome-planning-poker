@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"github.com/google/uuid"
 	"log"
 )
 
@@ -62,12 +61,8 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 
 // CreatePlan adds a new plan to a battle
 func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*model.Plan, error) {
-	// @TODO - refactor stored procedure to replace need for app generated uuid
-	newID, _ := uuid.NewUUID()
-	PlanID := newID.String()
-
 	if _, err := d.db.Exec(
-		`call create_plan($1, $2, $3, $4, $5, $6, $7, $8);`, BattleID, PlanID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria,
+		`call create_plan($1, $2, $3, $4, $5, $6, $7);`, BattleID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria,
 	); err != nil {
 		log.Println(err)
 	}
