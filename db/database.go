@@ -12,7 +12,6 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq" // necessary for postgres
-	"github.com/spf13/viper"
 )
 
 //go:embed migrations/*.sql
@@ -20,33 +19,25 @@ var fs embed.FS
 
 // New runs db migrations, sets up a db connection pool
 // and sets previously active users to false during startup
-func New(AdminEmail string) *Database {
+func New(AdminEmail string, config *Config) *Database {
 	dms, err := iofs.New(fs, "migrations")
 	if err != nil {
 		log.Fatal(err)
 	}
-	// @TODO - abstract config to be a pass in to New
+
 	var d = &Database{
 		// read environment variables and sets up database configuration values
-		config: &Config{
-			host:       viper.GetString("db.host"),
-			port:       viper.GetInt("db.port"),
-			user:       viper.GetString("db.user"),
-			password:   viper.GetString("db.pass"),
-			dbname:     viper.GetString("db.name"),
-			sslmode:    viper.GetString("db.sslmode"),
-			AESHashkey: viper.GetString("config.aes_hashkey"),
-		},
+		config: config,
 	}
 
 	psqlInfo := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		d.config.host,
-		d.config.port,
-		d.config.user,
-		d.config.password,
-		d.config.dbname,
-		d.config.sslmode,
+		d.config.Host,
+		d.config.Port,
+		d.config.User,
+		d.config.Password,
+		d.config.Name,
+		d.config.SSLMode,
 	)
 
 	pdb, err := sql.Open("postgres", psqlInfo)

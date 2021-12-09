@@ -6,12 +6,12 @@ import (
 
 // Config holds all the configuration for the db
 type Config struct {
-	host       string
-	port       int
-	user       string
-	password   string
-	dbname     string
-	sslmode    string
+	Host       string
+	Port       int
+	User       string
+	Password   string
+	Name       string
+	SSLMode    string
 	AESHashkey string
 }
 

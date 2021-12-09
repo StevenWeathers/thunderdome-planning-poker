@@ -91,7 +91,15 @@ func main() {
 	}
 
 	s.email = email.New(s.config.AppDomain, s.config.PathPrefix)
-	s.db = db.New(s.config.AdminEmail)
+	s.db = db.New(s.config.AdminEmail, &db.Config{
+		Host:       viper.GetString("db.host"),
+		Port:       viper.GetInt("db.port"),
+		User:       viper.GetString("db.user"),
+		Password:   viper.GetString("db.pass"),
+		Name:       viper.GetString("db.name"),
+		SSLMode:    viper.GetString("db.sslmode"),
+		AESHashkey: viper.GetString("config.aes_hashkey"),
+	})
 
 	s.routes()
 
