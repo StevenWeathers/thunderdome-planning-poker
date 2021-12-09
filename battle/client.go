@@ -1,4 +1,4 @@
-package api
+package battle
 
 import (
 	"encoding/json"
@@ -55,45 +55,26 @@ type connection struct {
 	send chan []byte
 }
 
-// socketEvent is the event structure used for socket messages
-type socketEvent struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
-	User  string `json:"warriorId"`
-}
-
-func createSocketEvent(Type string, Value string, User string) []byte {
-	newEvent := &socketEvent{
-		Type:  Type,
-		Value: Value,
-		User:  User,
-	}
-
-	event, _ := json.Marshal(newEvent)
-
-	return event
-}
-
 // readPump pumps messages from the websocket connection to the hub.
-func (sub subscription) readPump(api *api) {
+func (sub subscription) readPump(b *Service) {
 	eventHandlers := map[string]func(string, string, string) ([]byte, error, bool){
-		"jab_warrior":      api.battle.UserNudge,
-		"vote":             api.battle.UserVote,
-		"retract_vote":     api.battle.UserVoteRetract,
-		"end_voting":       api.battle.PlanVoteEnd,
-		"add_plan":         api.battle.PlanAdd,
-		"revise_plan":      api.battle.PlanRevise,
-		"burn_plan":        api.battle.PlanDelete,
-		"activate_plan":    api.battle.PlanActivate,
-		"skip_plan":        api.battle.PlanSkip,
-		"finalize_plan":    api.battle.PlanFinalize,
-		"promote_leader":   api.battle.UserPromote,
-		"demote_leader":    api.battle.UserDemote,
-		"become_leader":    api.battle.UserPromoteSelf,
-		"spectator_toggle": api.battle.UserSpectatorToggle,
-		"revise_battle":    api.battle.Revise,
-		"concede_battle":   api.battle.Delete,
-		"abandon_battle":   api.battle.Abandon,
+		"jab_warrior":      b.UserNudge,
+		"vote":             b.UserVote,
+		"retract_vote":     b.UserVoteRetract,
+		"end_voting":       b.PlanVoteEnd,
+		"add_plan":         b.PlanAdd,
+		"revise_plan":      b.PlanRevise,
+		"burn_plan":        b.PlanDelete,
+		"activate_plan":    b.PlanActivate,
+		"skip_plan":        b.PlanSkip,
+		"finalize_plan":    b.PlanFinalize,
+		"promote_leader":   b.UserPromote,
+		"demote_leader":    b.UserDemote,
+		"become_leader":    b.UserPromoteSelf,
+		"spectator_toggle": b.UserSpectatorToggle,
+		"revise_battle":    b.Revise,
+		"concede_battle":   b.Delete,
+		"abandon_battle":   b.Abandon,
 	}
 
 	var forceClosed bool
@@ -102,7 +83,7 @@ func (sub subscription) readPump(api *api) {
 	BattleID := sub.arena
 
 	defer func() {
-		Users := api.db.RetreatUser(BattleID, UserID)
+		Users := b.db.RetreatUser(BattleID, UserID)
 		UpdatedUsers, _ := json.Marshal(Users)
 
 		retreatEvent := createSocketEvent("warrior_retreated", string(UpdatedUsers), UserID)
@@ -143,7 +124,7 @@ func (sub subscription) readPump(api *api) {
 
 		// confirm leader for any operation that requires it
 		if _, ok := leaderOnlyOperations[eventType]; ok {
-			err := api.db.ConfirmLeader(BattleID, UserID)
+			err := b.db.ConfirmLeader(BattleID, UserID)
 			if err != nil {
 				badEvent = true
 			}
@@ -216,8 +197,8 @@ func handleSocketClose(ws *websocket.Conn, closeCode int, text string) {
 	}
 }
 
-// serveBattleWs handles websocket requests from the peer.
-func (a *api) serveBattleWs() http.HandlerFunc {
+// ServeBattleWs handles websocket requests from the peer.
+func (b *Service) ServeBattleWs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		battleID := vars["battleId"]
@@ -232,7 +213,7 @@ func (a *api) serveBattleWs() http.HandlerFunc {
 		}
 		c := &connection{send: make(chan []byte, 256), ws: ws}
 
-		SessionId, cookieErr := a.validateSessionCookie(w, r)
+		SessionId, cookieErr := b.validateSessionCookie(w, r)
 		if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
 			handleSocketClose(ws, 4001, "unauthorized")
 			return
@@ -240,20 +221,20 @@ func (a *api) serveBattleWs() http.HandlerFunc {
 
 		if SessionId != "" {
 			var userErr error
-			User, userErr = a.db.GetSessionUser(SessionId)
+			User, userErr = b.db.GetSessionUser(SessionId)
 			if userErr != nil {
 				handleSocketClose(ws, 4001, "unauthorized")
 				return
 			}
 		} else {
-			UserID, err := a.validateUserCookie(w, r)
+			UserID, err := b.validateUserCookie(w, r)
 			if err != nil {
 				handleSocketClose(ws, 4001, "unauthorized")
 				return
 			}
 
 			var userErr error
-			User, userErr = a.db.GetGuestUser(UserID)
+			User, userErr = b.db.GetGuestUser(UserID)
 			if userErr != nil {
 				handleSocketClose(ws, 4001, "unauthorized")
 				return
@@ -261,14 +242,14 @@ func (a *api) serveBattleWs() http.HandlerFunc {
 		}
 
 		// make sure battle is legit
-		b, battleErr := a.db.GetBattle(battleID, User.Id)
+		battle, battleErr := b.db.GetBattle(battleID, User.Id)
 		if battleErr != nil {
 			handleSocketClose(ws, 4004, "battle not found")
 			return
 		}
 
 		// check users battle active status
-		UserErr := a.db.GetBattleUserActiveStatus(battleID, User.Id)
+		UserErr := b.db.GetBattleUserActiveStatus(battleID, User.Id)
 		if UserErr != nil && UserErr.Error() != "sql: no rows in result set" {
 			usrErrMsg := UserErr.Error()
 			log.Println("error finding user : " + usrErrMsg + "\n")
@@ -280,7 +261,7 @@ func (a *api) serveBattleWs() http.HandlerFunc {
 			return
 		}
 
-		if b.JoinCode != "" && (UserErr != nil && UserErr.Error() == "sql: no rows in result set") {
+		if battle.JoinCode != "" && (UserErr != nil && UserErr.Error() == "sql: no rows in result set") {
 			jcrEvent := createSocketEvent("join_code_required", "", User.Id)
 			_ = c.write(websocket.TextMessage, jcrEvent)
 
@@ -296,7 +277,7 @@ func (a *api) serveBattleWs() http.HandlerFunc {
 				keyVal := make(map[string]string)
 				json.Unmarshal(msg, &keyVal)
 
-				if keyVal["type"] == "auth_battle" && keyVal["value"] == b.JoinCode {
+				if keyVal["type"] == "auth_battle" && keyVal["value"] == battle.JoinCode {
 					UserAuthed = true
 					break
 				} else if keyVal["type"] == "auth_battle" {
@@ -313,11 +294,11 @@ func (a *api) serveBattleWs() http.HandlerFunc {
 				ss := subscription{c, battleID, User.Id}
 				h.register <- ss
 
-				Users, _ := a.db.AddUserToBattle(ss.arena, User.Id)
+				Users, _ := b.db.AddUserToBattle(ss.arena, User.Id)
 				UpdatedUsers, _ := json.Marshal(Users)
 
-				battle, _ := json.Marshal(b)
-				initEvent := createSocketEvent("init", string(battle), User.Id)
+				Battle, _ := json.Marshal(battle)
+				initEvent := createSocketEvent("init", string(Battle), User.Id)
 				_ = c.write(websocket.TextMessage, initEvent)
 
 				joinedEvent := createSocketEvent("warrior_joined", string(UpdatedUsers), User.Id)
@@ -325,7 +306,7 @@ func (a *api) serveBattleWs() http.HandlerFunc {
 				h.broadcast <- m
 
 				go ss.writePump()
-				go ss.readPump(a)
+				go ss.readPump(b)
 
 				break
 			}

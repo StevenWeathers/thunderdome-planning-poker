@@ -24,14 +24,6 @@ func (a *api) handleAppStats() http.HandlerFunc {
 			return
 		}
 
-		ActiveBattleUserCount := 0
-		for _, s := range h.arenas {
-			ActiveBattleUserCount = ActiveBattleUserCount + len(s)
-		}
-
-		AppStats.ActiveBattleCount = len(h.arenas)
-		AppStats.ActiveBattleUserCount = ActiveBattleUserCount
-
 		Success(w, r, http.StatusOK, AppStats, nil)
 	}
 }

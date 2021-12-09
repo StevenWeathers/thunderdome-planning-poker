@@ -1,4 +1,4 @@
-package api
+package battle
 
 type message struct {
 	data  []byte

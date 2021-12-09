@@ -40,7 +40,6 @@ type api struct {
 	email  *email.Email
 	cookie *securecookie.SecureCookie
 	db     *db.Database
-	battle *battle.Service
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -89,8 +88,8 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		db:     database,
 		email:  email,
 		cookie: cookie,
-		battle: battle.New(database),
 	}
+	b := battle.New(database, a.validateSessionCookie, a.validateUserCookie)
 	swaggerJsonPath := "/" + a.config.PathPrefix + "swagger/doc.json"
 
 	swaggerdocs.SwaggerInfo.BasePath = a.config.PathPrefix + "/api"
@@ -98,8 +97,6 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	if a.config.ExternalAPIEnabled {
 		a.router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))
 	}
-
-	go h.run()
 
 	apiRouter := a.router.PathPrefix("/api").Subrouter()
 	userRouter := apiRouter.PathPrefix("/users").Subrouter()
@@ -206,7 +203,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	apiRouter.HandleFunc("/battles", a.userOnly(a.adminOnly(a.handleGetBattles()))).Methods("GET")
 	apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetBattle())).Methods("GET")
 	// websocket for battle
-	apiRouter.HandleFunc("/arena/{battleId}", a.serveBattleWs())
+	apiRouter.HandleFunc("/arena/{battleId}", b.ServeBattleWs())
 
 	return a
 }
