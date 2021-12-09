@@ -134,7 +134,7 @@ func (b *Service) PlanVoteEnd(BattleID string, UserID string, EventValue string)
 
 // Revise handles editing the battle settings
 func (b *Service) Revise(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	var revisedBattle struct {
+	var rb struct {
 		BattleName           string   `json:"battleName"`
 		PointValuesAllowed   []string `json:"pointValuesAllowed"`
 		AutoFinishVoting     bool     `json:"autoFinishVoting"`
@@ -142,27 +142,24 @@ func (b *Service) Revise(BattleID string, UserID string, EventValue string) ([]b
 		JoinCode             string   `json:"joinCode"`
 		LeaderCode           string   `json:"leaderCode"`
 	}
-	json.Unmarshal([]byte(EventValue), &revisedBattle)
+	json.Unmarshal([]byte(EventValue), &rb)
 
-	// @TODO - merge these 3 db calls into 1
-	err := b.db.ReviseBattle(BattleID, revisedBattle.BattleName, revisedBattle.PointValuesAllowed, revisedBattle.AutoFinishVoting, revisedBattle.PointAverageRounding)
+	err := b.db.ReviseBattle(
+		BattleID,
+		rb.BattleName,
+		rb.PointValuesAllowed,
+		rb.AutoFinishVoting,
+		rb.PointAverageRounding,
+		rb.JoinCode,
+		rb.LeaderCode,
+	)
 	if err != nil {
 		return nil, err, false
 	}
 
-	err = b.db.ReviseBattleJoinCode(BattleID, revisedBattle.JoinCode)
-	if err != nil {
-		return nil, err, false
-	}
+	rb.LeaderCode = ""
 
-	err = b.db.ReviseBattleLeaderCode(BattleID, revisedBattle.LeaderCode)
-	if err != nil {
-		return nil, err, false
-	}
-
-	revisedBattle.LeaderCode = ""
-
-	updatedBattle, _ := json.Marshal(revisedBattle)
+	updatedBattle, _ := json.Marshal(rb)
 	msg := createSocketEvent("battle_revised", string(updatedBattle), "")
 
 	return msg, nil, false

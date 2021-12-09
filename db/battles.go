@@ -62,13 +62,32 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 }
 
 // ReviseBattle updates the battle by ID
-func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string) error {
+func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) error {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
+	var encryptedJoinCode string
+	var encryptedLeaderCode string
+
+	if JoinCode != "" {
+		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return errors.New("unable to revise battle join_code")
+		}
+		encryptedJoinCode = EncryptedCode
+	}
+
+	if LeaderCode != "" {
+		EncryptedCode, codeErr := encrypt(LeaderCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return errors.New("unable to revise battle leadercode")
+		}
+		encryptedLeaderCode = EncryptedCode
+	}
+
 	if _, err := d.db.Exec(`
 		UPDATE battles
-		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, updated_date = NOW()
+		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, join_code = $6, leader_code = $7, updated_date = NOW()
 		WHERE id = $1`,
-		BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding,
+		BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding, encryptedJoinCode, encryptedLeaderCode,
 	); err != nil {
 		log.Println(err)
 		return errors.New("unable to revise battle")
@@ -96,46 +115,6 @@ func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 	}
 
 	return DecryptedCode, nil
-}
-
-// ReviseBattleLeaderCode updates the battle leader_code
-func (d *Database) ReviseBattleLeaderCode(BattleID string, LeaderCode string) error {
-	EncryptedCode, codeErr := encrypt(LeaderCode, d.config.AESHashkey)
-	if codeErr != nil {
-		return errors.New("unable to revise battle leadercode")
-	}
-
-	if _, err := d.db.Exec(`
-		UPDATE battles
-		SET leader_code = $2, updated_date = NOW()
-		WHERE id = $1`,
-		BattleID, EncryptedCode,
-	); err != nil {
-		log.Println(err)
-		return errors.New("unable to revise battle leadercode")
-	}
-
-	return nil
-}
-
-// ReviseBattleJoinCode updates the battle join_code
-func (d *Database) ReviseBattleJoinCode(BattleID string, JoinCode string) error {
-	EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
-	if codeErr != nil {
-		return errors.New("unable to revise battle join_code")
-	}
-
-	if _, err := d.db.Exec(`
-		UPDATE battles
-		SET join_code = $2, updated_date = NOW()
-		WHERE id = $1`,
-		BattleID, EncryptedCode,
-	); err != nil {
-		log.Println(err)
-		return errors.New("unable to revise battle join_code")
-	}
-
-	return nil
 }
 
 // GetBattle gets a battle by ID
