@@ -15,3 +15,16 @@ type TeamUser struct {
 	Email string `json:"email"`
 	Role  string `json:"role"`
 }
+
+type TeamCheckin struct {
+	Id          string `json:"id"`
+	UserId      string `json:"userId"`
+	UserName    string `json:"userName"`
+	Yesterday   string `json:"yesterday"`
+	Today       string `json:"today"`
+	Blockers    string `json:"blockers"`
+	Discuss     string `json:"discuss"`
+	GoalsMet    bool   `json:"goalsMet"`
+	CreatedDate string `json:"createdDate"`
+	UpdatedDate string `json:"updatedDate"`
+}

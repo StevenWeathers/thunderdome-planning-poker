@@ -23,6 +23,7 @@
     import Organization from './pages/Organization.svelte'
     import Department from './pages/Department.svelte'
     import Team from './pages/Team.svelte'
+    import TeamCheckin from './pages/TeamCheckin.svelte'
     import Register from './pages/Register.svelte'
     import Login from './pages/Login.svelte'
     import ResetPassword from './pages/ResetPassword.svelte'
@@ -159,6 +160,13 @@
         .on(`${appRoutes.team}/:teamId`, params => {
             currentPage = {
                 route: Team,
+                params,
+                name: 'team',
+            }
+        })
+        .on(`${appRoutes.team}/:teamId/checkin`, params => {
+            currentPage = {
+                route: TeamCheckin,
                 params,
                 name: 'team',
             }
