@@ -131,7 +131,7 @@ func (sub subscription) readPump(b *Service) {
 		}
 
 		// find event handler and execute otherwise invalid event
-		if _, ok := eventHandlers[eventType]; ok {
+		if _, ok := eventHandlers[eventType]; ok && !badEvent {
 			msg, eventErr, forceClosed = eventHandlers[eventType](BattleID, UserID, eventValue)
 			if eventErr != nil {
 				badEvent = true
