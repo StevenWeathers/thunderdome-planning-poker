@@ -5,11 +5,12 @@
 
 @import './unreset.css';
 
+/* purgecss start ignore */
+@import '../../node_modules/quill/dist/quill.core.css';
+@import '../../node_modules/quill/dist/quill.snow.css';
+
 .font-rajdhani {
     font-family: 'Rajdhani', sans-serif;
 }
 
-/* purgecss start ignore */
-@import '../../node_modules/quill/dist/quill.core.css';
-@import '../../node_modules/quill/dist/quill.snow.css';
 /* purgecss end ignore */
