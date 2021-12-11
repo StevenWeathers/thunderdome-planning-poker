@@ -11,6 +11,7 @@
     export let avatar = ''
     export let width = 48
     export { klass as class }
+    export let options = {}
 </script>
 
 {#if avatarService === 'dicebear'}
@@ -18,6 +19,7 @@
         src="https://avatars.dicebear.com/api/{avatar}/{warriorId}.svg?w={width}"
         alt="{$_('avatarAltText')}"
         class="{klass}"
+        {...options}
     />
 {:else if avatarService === 'gravatar'}
     {#if gravatarHash !== ''}
@@ -25,12 +27,14 @@
             src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar}&r=g"
             alt="{$_('avatarAltText')}"
             class="{klass}"
+            {...options}
         />
     {:else}
         <img
             src="https://gravatar.com/avatar/{warriorId}?s={width}&d={avatar}&r=g"
             alt="{$_('avatarAltText')}"
             class="{klass}"
+            {...options}
         />
     {/if}
 {:else if avatarService === 'robohash'}
@@ -38,17 +42,20 @@
         src="https://robohash.org/{warriorId}.png?set={avatar}&size={width}x{width}"
         alt="{$_('avatarAltText')}"
         class="{klass}"
+        {...options}
     />
 {:else if avatarService === 'govatar'}
     <img
         src="{PathPrefix}/avatar/{width}/{warriorId}/{avatar}"
         alt="{$_('avatarAltText')}"
         class="{klass}"
+        {...options}
     />
 {:else if avatarService === 'goadorable'}
     <img
         src="{PathPrefix}/avatar/{width}/{warriorId}"
         alt="{$_('avatarAltText')}"
         class="{klass}"
+        {...options}
     />
 {/if}

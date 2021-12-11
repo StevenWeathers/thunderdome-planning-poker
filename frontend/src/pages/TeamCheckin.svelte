@@ -2,9 +2,10 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import Checkin from '../components/user/Checkin.svelte'
+    import UserAvatar from '../components/user/UserAvatar.svelte'
     import { _ } from '../i18n'
     import { warrior } from '../stores.js'
-    import { appRoutes } from '../config'
+    import { AppConfig, appRoutes } from '../config'
     import { validateUserIsRegistered } from '../validationUtils'
     import { onMount } from 'svelte'
     import { getTimezoneName, getTodaysDate } from '../dateUtils'
@@ -19,6 +20,7 @@
 
     const battlesPageLimit = 1000
     const usersPageLimit = 1000
+    const { AvatarService } = AppConfig
 
     let showCheckin = false
     let checkins = []
@@ -239,71 +241,64 @@
     </div>
 
     <div class="w-full mt-8">
-        <div class="grid grid-cols-2 gap-6">
-            {#each checkins as checkin}
-                <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-                    <h3 class="font-rajdhani text-3xl">{checkin.userName}</h3>
-                    <div class="title-line bg-gray-300"></div>
-                    <div>
-                        <h4
-                            class="uppercase font-rajdhani text-2xl"
-                            class:text-purple-500="{checkin.discuss != ''}"
-                            class:text-gray-500="{checkin.discuss == ''}"
-                        >
-                            Discussion
-                        </h4>
-                        {#if checkin.discuss != ''}
-                            <div class="mb-4 unreset">
-                                {@html checkin.discuss}
-                            </div>
-                        {/if}
-                    </div>
-                    <div>
-                        <h4
-                            class="uppercase font-rajdhani text-2xl"
-                            class:text-red-500="{checkin.blockers != ''}"
-                            class:text-gray-500="{checkin.blockers == ''}"
-                        >
-                            Blockers
-                        </h4>
-                        {#if checkin.blockers != ''}
-                            <div class="mb-4 unreset">
-                                {@html checkin.blockers}
-                            </div>
-                        {/if}
-                    </div>
-                    <div>
-                        <h4
-                            class="uppercase font-rajdhani text-2xl"
-                            class:text-green-500="{checkin.today != ''}"
-                            class:text-gray-500="{checkin.today == ''}"
-                        >
-                            Today
-                        </h4>
-                        {#if checkin.today != ''}
-                            <div class="mb-4 unreset">
-                                {@html checkin.today}
-                            </div>
-                        {/if}
-                    </div>
-                    <div>
-                        <h4
-                            class="uppercase font-rajdhani text-2xl"
-                            class:text-blue-500="{checkin.yesterday != ''}"
-                            class:text-gray-500="{checkin.yesterday == ''}"
-                        >
-                            Yesterday
-                        </h4>
-                        {#if checkin.yesterday != ''}
-                            <div class="mb-4 unreset">
-                                {@html checkin.yesterday}
-                            </div>
-                        {/if}
-                    </div>
-                    <div class="title-line bg-gray-300 mt-2"></div>
-                    <p class="mt-2">Goals Met: {checkin.goalsMet}</p>
-                </div>
-            {/each}
+        <div class="shadow border-b border-gray-200 sm:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead
+                    class="bg-gray-200 text-sm font-medium uppercase tracking-wider"
+                >
+                    <tr>
+                        <th class="px-6 py-3">Name</th>
+                        <th class="px-6 py-3">Yesterday</th>
+                        <th class="px-6 py-3">Today</th>
+                        <th class="px-6 py-3">Blockers</th>
+                        <th class="px-6 py-3">Discuss</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {#each checkins as checkin}
+                        <tr>
+                            <td class="px-4 py-2">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <UserAvatar
+                                            warriorId="{checkin.userId}"
+                                            avatarService="{AvatarService}"
+                                            options="{{
+                                                class: 'h-10 w-10 rounded-full',
+                                            }}"
+                                        />
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium">
+                                            {checkin.userName}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-2">
+                                <div class="unreset">
+                                    {@html checkin.yesterday}
+                                </div>
+                            </td>
+                            <td class="px-4 py-2">
+                                <div class="unreset">
+                                    {@html checkin.today}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="unreset">
+                                    {@html checkin.blockers}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="unreset">
+                                    {@html checkin.discuss}
+                                </div>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
         </div>
     </div>
 
