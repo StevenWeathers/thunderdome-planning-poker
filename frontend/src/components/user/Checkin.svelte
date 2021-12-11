@@ -1,4 +1,5 @@
 <script>
+    import { quill } from '../../quill'
     import Modal from '../Modal.svelte'
     import SolidButton from '../SolidButton.svelte'
 
@@ -26,74 +27,66 @@
     }
 </script>
 
-<Modal closeModal="{toggleCheckin}">
+<Modal closeModal="{toggleCheckin}" widthClasses="md:w-2/3">
     <form on:submit="{onSubmit}" name="teamCheckin">
         <div class="mb-4">
-            <label
-                class="block text-gray-700 text-sm font-bold mb-2"
-                for="yesterday"
-            >
+            <div class="text-blue-500 uppercase font-rajdhani text-xl mb-2">
                 Yesterday
-            </label>
-            <textarea
-                bind:value="{yesterday}"
-                placeholder="Yesterday I..."
-                class="bg-gray-200 border-gray-200 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 leading-tight
-                focus:outline-none focus:bg-white focus:border-purple-500"
+            </div>
+            <div
+                class="w-full"
+                use:quill="{{
+                    placeholder: `Yesterday I...`,
+                    content: blockers,
+                }}"
+                on:text-change="{e => (yesterday = e.detail.html)}"
                 id="yesterday"
-                name="yesterday"></textarea>
+            ></div>
         </div>
 
         <div class="mb-4">
-            <label
-                class="block text-gray-700 text-sm font-bold mb-2"
-                for="today"
-            >
+            <div class="text-green-500 uppercase font-rajdhani text-xl mb-2">
                 Today
-            </label>
-            <textarea
-                bind:value="{today}"
-                placeholder="Yesterday I..."
-                class="bg-gray-200 border-gray-200 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 leading-tight
-                focus:outline-none focus:bg-white focus:border-purple-500"
+            </div>
+            <div
+                class="w-full"
+                use:quill="{{
+                    placeholder: `Today I will...`,
+                    content: blockers,
+                }}"
+                on:text-change="{e => (today = e.detail.html)}"
                 id="today"
-                name="today"></textarea>
+            ></div>
         </div>
 
         <div class="mb-4">
-            <label
-                class="block text-gray-700 text-sm font-bold mb-2"
-                for="blockers"
-            >
+            <div class="text-red-500 uppercase font-rajdhani text-xl mb-2">
                 Blockers
-            </label>
-            <textarea
-                bind:value="{blockers}"
-                placeholder="Yesterday I..."
-                class="bg-gray-200 border-gray-200 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 leading-tight
-                focus:outline-none focus:bg-white focus:border-purple-500"
+            </div>
+            <div
+                class="w-full"
+                use:quill="{{
+                    placeholder: `I'm blocked by...`,
+                    content: blockers,
+                }}"
+                on:text-change="{e => (blockers = e.detail.html)}"
                 id="blockers"
-                name="blockers"></textarea>
+            ></div>
         </div>
 
         <div class="mb-4">
-            <label
-                class="block text-gray-700 text-sm font-bold mb-2"
-                for="discuss"
-            >
+            <div class="text-purple-500 uppercase font-rajdhani text-xl mb-2">
                 Discuss
-            </label>
-            <textarea
-                bind:value="{discuss}"
-                placeholder="Yesterday I..."
-                class="bg-gray-200 border-gray-200 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 leading-tight
-                focus:outline-none focus:bg-white focus:border-purple-500"
+            </div>
+            <div
+                class="w-full"
+                use:quill="{{
+                    placeholder: 'I would like to discuss...',
+                    content: discuss,
+                }}"
+                on:text-change="{e => (discuss = e.detail.html)}"
                 id="discuss"
-                name="discuss"></textarea>
+            ></div>
         </div>
 
         <div class="mb-4">

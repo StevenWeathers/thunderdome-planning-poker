@@ -7,11 +7,7 @@
     import { appRoutes } from '../config'
     import { validateUserIsRegistered } from '../validationUtils'
     import { onMount } from 'svelte'
-    import {
-        formatTimestamp,
-        getTimezoneName,
-        getTodaysDate,
-    } from '../dateUtils'
+    import { getTimezoneName, getTodaysDate } from '../dateUtils'
 
     export let xfetch
     export let router
@@ -250,41 +246,62 @@
                     <div class="title-line bg-gray-300"></div>
                     <div>
                         <h4
-                            class="text-purple-500 uppercase font-rajdhani text-2xl"
+                            class="uppercase font-rajdhani text-2xl"
+                            class:text-purple-500="{checkin.discuss != ''}"
+                            class:text-gray-500="{checkin.discuss == ''}"
                         >
                             Discussion
                         </h4>
-                        <p>{checkin.discuss}</p>
+                        {#if checkin.discuss != ''}
+                            <div class="mb-4 unreset">
+                                {@html checkin.discuss}
+                            </div>
+                        {/if}
                     </div>
                     <div>
                         <h4
-                            class="text-red-500 uppercase font-rajdhani text-2xl"
+                            class="uppercase font-rajdhani text-2xl"
+                            class:text-red-500="{checkin.blockers != ''}"
+                            class:text-gray-500="{checkin.blockers == ''}"
                         >
                             Blockers
                         </h4>
-                        <p>{checkin.blockers}</p>
+                        {#if checkin.blockers != ''}
+                            <div class="mb-4 unreset">
+                                {@html checkin.blockers}
+                            </div>
+                        {/if}
                     </div>
                     <div>
                         <h4
-                            class="text-green-500 uppercase font-rajdhani text-2xl"
+                            class="uppercase font-rajdhani text-2xl"
+                            class:text-green-500="{checkin.today != ''}"
+                            class:text-gray-500="{checkin.today == ''}"
                         >
                             Today
                         </h4>
-                        <p>{checkin.today}</p>
+                        {#if checkin.today != ''}
+                            <div class="mb-4 unreset">
+                                {@html checkin.today}
+                            </div>
+                        {/if}
                     </div>
                     <div>
                         <h4
-                            class="text-blue-500 uppercase font-rajdhani text-2xl"
+                            class="uppercase font-rajdhani text-2xl"
+                            class:text-blue-500="{checkin.yesterday != ''}"
+                            class:text-gray-500="{checkin.yesterday == ''}"
                         >
                             Yesterday
                         </h4>
-                        <p>{checkin.yesterday}</p>
+                        {#if checkin.yesterday != ''}
+                            <div class="mb-4 unreset">
+                                {@html checkin.yesterday}
+                            </div>
+                        {/if}
                     </div>
                     <div class="title-line bg-gray-300 mt-2"></div>
                     <p class="mt-2">Goals Met: {checkin.goalsMet}</p>
-                    <p class="mt-2">
-                        Updated Date: {formatTimestamp(checkin.updatedDate)}
-                    </p>
                 </div>
             {/each}
         </div>
