@@ -12,7 +12,7 @@ func (d *Database) CheckinList(TeamId string, Date string, TimeZone string) ([]*
 	Checkins := make([]*model.TeamCheckin, 0)
 
 	rows, err := d.db.Query(`SELECT
- 		tc.id, tc.user_id, u.name,
+ 		tc.id, u.id, u.name, u.avatar,
  		COALESCE(tc.yesterday, ''), COALESCE(tc.today, ''),
  		COALESCE(tc.blockers, ''), coalesce(tc.discuss, ''),
  		tc.goals_met, tc.created_date, tc.updated_date
@@ -30,11 +30,13 @@ func (d *Database) CheckinList(TeamId string, Date string, TimeZone string) ([]*
 		defer rows.Close()
 		for rows.Next() {
 			var checkin model.TeamCheckin
+			var user model.TeamUser
 
 			if err := rows.Scan(
 				&checkin.Id,
-				&checkin.UserId,
-				&checkin.UserName,
+				&user.Id,
+				&user.Name,
+				&user.Avatar,
 				&checkin.Today,
 				&checkin.Yesterday,
 				&checkin.Blockers,
@@ -46,6 +48,7 @@ func (d *Database) CheckinList(TeamId string, Date string, TimeZone string) ([]*
 				log.Println(err)
 				return nil, err
 			} else {
+				checkin.User = &user
 				Checkins = append(Checkins, &checkin)
 			}
 		}

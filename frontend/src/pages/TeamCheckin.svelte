@@ -128,48 +128,6 @@
         teamRole !== ''
 </script>
 
-<style>
-    .gauge {
-        position: relative;
-        text-align: center;
-        width: 270px;
-    }
-
-    .bar-overflow {
-        position: relative;
-        width: 270px;
-        height: 135px;
-        margin-bottom: -40px;
-        overflow: hidden;
-    }
-
-    .bar {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 270px;
-        height: 270px;
-        border-radius: 50%;
-        box-sizing: border-box;
-        border: 20px solid #ccc;
-    }
-
-    .bar-blue {
-        border-bottom-color: #0bf;
-        border-right-color: #0bf;
-    }
-
-    .bar-green {
-        border-bottom-color: greenyellow;
-        border-right-color: greenyellow;
-    }
-
-    .bar-red {
-        border-bottom-color: orangered;
-        border-right-color: orangered;
-    }
-</style>
-
 <svelte:head>
     <title>{$_('team')} {team.name} | {$_('appName')}</title>
 </svelte:head>
@@ -197,49 +155,6 @@
         </div>
     </div>
 
-    <div class="w-full mt-4">
-        <div
-            class="p-4 md:p-6 bg-white shadow-lg rounded grid grid-cols-3 gap-4 justify-items-center font-rajdhani text-3xl"
-        >
-            <div class="text-center">
-                <h3 class="uppercase">Checked In</h3>
-                <div class="gauge">
-                    <div class="bar-overflow">
-                        <div
-                            class="bar bar-blue"
-                            style="transform: rotate({barPercent}deg)"
-                        ></div>
-                    </div>
-                    <span>7</span>
-                </div>
-            </div>
-            <div class="text-center">
-                <h3 class="uppercase">Met Goals</h3>
-                <div class="gauge">
-                    <div class="bar-overflow">
-                        <div
-                            class="bar bar-green"
-                            style="transform: rotate({barPercent}deg)"
-                        ></div>
-                    </div>
-                    <span>5</span>
-                </div>
-            </div>
-            <div class="text-center">
-                <h3 class="uppercase">Blocked</h3>
-                <div class="gauge">
-                    <div class="bar-overflow">
-                        <div
-                            class="bar bar-red"
-                            style="transform: rotate({barPercent}deg)"
-                        ></div>
-                    </div>
-                    <span>2</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="w-full mt-8">
         <div class="shadow border-b border-gray-200 sm:rounded-lg">
             <table class="min-w-full divide-y divide-gray-200">
@@ -261,7 +176,8 @@
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10">
                                         <UserAvatar
-                                            warriorId="{checkin.userId}"
+                                            warriorId="{checkin.user.id}"
+                                            avatar="{checkin.user.avatar}"
                                             avatarService="{AvatarService}"
                                             options="{{
                                                 class: 'h-10 w-10 rounded-full',
@@ -270,7 +186,7 @@
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium">
-                                            {checkin.userName}
+                                            {checkin.user.name}
                                         </div>
                                     </div>
                                 </div>
