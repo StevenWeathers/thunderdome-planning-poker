@@ -6,6 +6,7 @@
     import Checkin from '../components/user/Checkin.svelte'
     import UserAvatar from '../components/user/UserAvatar.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
+    import Gauge from '../components/Gauge.svelte'
     import { _ } from '../i18n.js'
     import { warrior } from '../stores.js'
     import { AppConfig, appRoutes } from '../config.js'
@@ -222,6 +223,18 @@
                 onClick="{toggleCheckin}"
                 >Check In
             </SolidButton>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-x-4 my-4 max-w-4xl mx-auto">
+        <div class="px-2 md:px-4">
+            <Gauge text="Participation" percentage="70" metric="7" />
+        </div>
+        <div class="px-2 md:px-4">
+            <Gauge text="Met Goals" percentage="90" color="green" metric="9" />
+        </div>
+        <div class="px-2 md:px-4">
+            <Gauge text="Blocked" percentage="20" color="red" metric="2" />
         </div>
     </div>
 
