@@ -29,20 +29,25 @@
 
 <style>
     .NEWAlert {
-        @apply bg-indigo-900;
+        @apply bg-indigo-600;
     }
 
     .NEWAlert-body {
-        @apply bg-indigo-800;
         @apply text-indigo-100;
     }
 
     .NEWAlert-type {
         @apply bg-indigo-500;
+        @apply text-white;
     }
 
     .NEWAlert-dismiss {
-        @apply text-indigo-300;
+        @apply text-indigo-100;
+    }
+
+    .NEWAlert-dismiss:hover {
+        @apply text-white;
+        @apply bg-indigo-500;
     }
 
     .ERRORAlert {
@@ -52,12 +57,11 @@
     }
 
     .ERRORAlert-body {
-        @apply bg-red-200;
         @apply text-red-800;
     }
 
     .ERRORAlert-type {
-        @apply bg-red-700;
+        @apply bg-red-500;
         @apply text-red-100;
     }
 
@@ -65,24 +69,31 @@
         @apply text-red-700;
     }
 
+    .ERRORAlert-dismiss:hover {
+        @apply text-white;
+        @apply bg-red-500;
+    }
+
     .INFOAlert {
         @apply bg-blue-100;
-        @apply border-b;
-        @apply border-blue-200;
     }
 
     .INFOAlert-body {
-        @apply bg-blue-200;
         @apply text-blue-800;
     }
 
     .INFOAlert-type {
-        @apply bg-blue-700;
+        @apply bg-blue-500;
         @apply text-blue-100;
     }
 
     .INFOAlert-dismiss {
         @apply text-blue-700;
+    }
+
+    .INFOAlert-dismiss:hover {
+        @apply text-white;
+        @apply bg-blue-500;
     }
 
     .SUCCESSAlert {
@@ -92,17 +103,21 @@
     }
 
     .sSUCCESSAlert-body {
-        @apply bg-green-200;
         @apply text-green-800;
     }
 
     .SUCCESSAlert-type {
-        @apply bg-green-700;
+        @apply bg-green-500;
         @apply text-green-100;
     }
 
     .SUCCESSAlert-dismiss {
         @apply text-green-700;
+    }
+
+    .SUCCESSAlert-dismiss:hover {
+        @apply text-white;
+        @apply bg-green-500;
     }
 
     .WARNINGAlert {
@@ -112,7 +127,6 @@
     }
 
     .WARNINGAlert-body {
-        @apply bg-yellow-200;
         @apply text-yellow-800;
     }
 
@@ -124,49 +138,62 @@
     .WARNINGAlert-dismiss {
         @apply text-yellow-700;
     }
+
+    .WARNINGAlert-dismiss:hover {
+        @apply text-white;
+        @apply bg-yellow-700;
+    }
 </style>
 
 {#each alerts as alert}
     {#if showAlert(dismissed, registered, alert)}
-        <div class="{alert.type}Alert text-center py-4 lg:px-4 relative">
-            <div
-                class="{alert.type}Alert-body p-2 items-center leading-none
-                lg:rounded-full flex lg:inline-flex"
-                role="alert"
-            >
-                <span
-                    class="{alert.type}Alert-type flex rounded-full uppercase
-                    px-2 py-1 text-xs font-bold mr-3"
+        <div class="{alert.type}Alert">
+            <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+                <div
+                    class="flex items-center justify-between flex-wrap"
+                    role="alert"
                 >
-                    {alert.type}
-                </span>
-                <span class="font-semibold mr-2 text-left flex-auto">
-                    {alert.content}
-                </span>
+                    <div class="w-0 flex-1 flex items-center">
+                        <span
+                            class="{alert.type}Alert-type flex rounded-lg uppercase
+                        px-2 py-1 text-xs font-bold mr-3"
+                        >
+                            {alert.type}
+                        </span>
+                        <p
+                            class="ml-3 font-medium {alert.type}Alert-body truncate"
+                        >
+                            {alert.content}
+                        </p>
+                    </div>
+                    {#if alert.allowDismiss}
+                        <div class="order-2 flex-shrink-0 sm:order-3 sm:ml-3">
+                            <button
+                                type="button"
+                                on:click="{dismissAlert(alert.id)}"
+                                class="-mr-1 flex p-2 rounded-md {alert.type}Alert-dismiss focus:outline-none focus:ring-2 focus:ring-white sm:-mr-2"
+                            >
+                                <span class="sr-only">Dismiss</span>
+                                <!-- Heroicon name: outline/x -->
+                                <svg
+                                    class="h-6 w-6"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    {/if}
+                </div>
             </div>
-
-            {#if alert.allowDismiss}
-                <button
-                    class="{alert.type}Alert-dismiss absolute right-0 px-4 py-2"
-                    on:click="{dismissAlert(alert.id)}"
-                >
-                    <svg
-                        class="fill-current h-6 w-6"
-                        role="button"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                    >
-                        <title>Close</title>
-                        <path
-                            d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10
-                            11.819l-2.651 3.029a1.2 1.2 0 1
-                            1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1
-                            1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697
-                            1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"
-                        ></path>
-                    </svg>
-                </button>
-            {/if}
         </div>
     {/if}
 {/each}
