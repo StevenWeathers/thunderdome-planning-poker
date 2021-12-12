@@ -1,15 +1,21 @@
 <script>
+    import { onMount } from 'svelte'
+
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import Checkin from '../components/user/Checkin.svelte'
     import UserAvatar from '../components/user/UserAvatar.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
-    import { _ } from '../i18n'
+    import { _ } from '../i18n.js'
     import { warrior } from '../stores.js'
-    import { AppConfig, appRoutes } from '../config'
-    import { validateUserIsRegistered } from '../validationUtils'
-    import { onMount } from 'svelte'
-    import { getTimezoneName, getTodaysDate } from '../dateUtils'
+    import { AppConfig, appRoutes } from '../config.js'
+    import { validateUserIsRegistered } from '../validationUtils.js'
+    import {
+        formatDayForInput,
+        getTimezoneName,
+        getTodaysDate,
+        subtractDays,
+    } from '../dateUtils.js'
 
     export let xfetch
     export let router
@@ -25,6 +31,9 @@
 
     let showCheckin = false
     let checkins = []
+    let now = new Date()
+    let maxNegativeDate
+    let selectedDate
 
     let team = {
         id: teamId,
@@ -77,7 +86,7 @@
 
     function getCheckins() {
         xfetch(
-            `${teamPrefix}/checkins?date=${getTodaysDate()}&tz=${getTimezoneName()}`,
+            `${teamPrefix}/checkins?date=${selectedDate}&tz=${getTimezoneName()}`,
         )
             .then(res => res.json())
             .then(function (result) {
@@ -115,6 +124,9 @@
             return
         }
 
+        selectedDate = formatDayForInput(now)
+        maxNegativeDate = formatDayForInput(subtractDays(now, 60))
+
         getTeam()
         getCheckins()
     })
@@ -136,12 +148,18 @@
 <PageLayout>
     <div class="flex sm:flex-wrap">
         <div class="md:grow">
-            <h1 class="text-4xl font-semibold font-rajdhani leading-none">
-                Team Checkin: {new Date().toLocaleString([], {
-                    day: 'numeric',
-                    month: 'numeric',
-                    year: 'numeric',
-                })}
+            <h1
+                class="text-4xl font-semibold font-rajdhani leading-none uppercase"
+            >
+                Checkin: <input
+                    type="date"
+                    id="checkindate"
+                    bind:value="{selectedDate}"
+                    min="{maxNegativeDate}"
+                    max="{getTodaysDate()}"
+                    on:change="{getCheckins}"
+                    class="bg-transparent"
+                />
             </h1>
             {#if organizationId}
                 <div class="text-2xl font-semibold font-rajdhani uppercase">
