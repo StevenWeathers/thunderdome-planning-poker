@@ -34,13 +34,13 @@ export default {
             require('postcss-import'),
             require('tailwindcss/nesting'),
             require('tailwindcss'),
-            require('autoprefixer'),
+            require('autoprefixer')
           ],
         },
       }),
     }),
     postcss({
-      plugins: [postcssNesting()],
+      plugins: [postcssNesting(), (production && require('cssnano'))],
       extract: true
     }),
     // If you have external dependencies installed from
