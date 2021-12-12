@@ -138,6 +138,7 @@
             <div class="w-1/2">
                 <img
                     src="https://user-images.githubusercontent.com/846933/144793090-a0f33f90-b679-464c-89b2-9bfb27a18e10.png"
+                    alt="customizable battle options preview"
                     class="w-3/4 m-auto shadow-xl"
                 />
             </div>
@@ -152,6 +153,7 @@
                 <img
                     src="https://user-images.githubusercontent.com/846933/144792861-d17d532f-2235-4a4a-b38f-90be065a2447.png"
                     class="w-3/4 m-auto"
+                    alt="concise voting results preview"
                 />
             </div>
             <div class="w-1/2">
@@ -190,7 +192,7 @@
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
         <div class="flex text-center mb-8">
             <div class="w-1/2">
-                <div class="m-auto title-line bg-yellow-thunder"></div>
+                <div class="mx-auto title-line bg-yellow-thunder"></div>
                 <h3 class="text-4xl font-semibold font-rajdhani uppercase">
                     {$_('openSource')}
                 </h3>
@@ -212,7 +214,7 @@
                 </p>
             </div>
             <div class="w-1/2">
-                <div class="m-auto title-line bg-yellow-thunder"></div>
+                <div class="mx-auto title-line bg-yellow-thunder"></div>
                 <h3 class="text-4xl font-semibold font-rajdhani uppercase">
                     {$_('hostedOrSelfHosted')}
                 </h3>

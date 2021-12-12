@@ -11,7 +11,7 @@
     export let xfetch
     export let router
     export let notifications
-    export let eventTag
+    // export let eventTag
     export let battleId
 
     let battle = {

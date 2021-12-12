@@ -100,8 +100,18 @@
 </script>
 
 {#if allowJiraImport}
-    <HollowButton type="label" additionalClasses="mr-2" color="blue">
+    <HollowButton
+        type="label"
+        additionalClasses="mr-2"
+        color="blue"
+        labelFor="jiraimport"
+    >
         {$_('importJiraXML')}
-        <input type="file" on:change="{uploadFile}" class="hidden" />
+        <input
+            type="file"
+            on:change="{uploadFile}"
+            class="hidden"
+            id="jiraimport"
+        />
     </HollowButton>
 {/if}

@@ -18,7 +18,7 @@
 </script>
 
 <div class="text-center mb-6">
-    <div class="m-auto title-line bg-yellow-thunder"></div>
+    <div class="mx-auto title-line bg-yellow-thunder"></div>
     <h2 class="text-5xl font-semibold mb-12 font-rajdhani uppercase">
         {$_('landingCountries', {
             values: { count: activeCountries.length },

@@ -7,6 +7,7 @@
     export let href = ''
     export let testid = ''
     export let options = {}
+    export let labelFor = ''
 </script>
 
 <style>
@@ -80,6 +81,7 @@
     <label
         class="btn-hollow btn-hollow-{color} cursor-pointer {additionalClasses}"
         data-testid="{testid}"
+        for="{labelFor}"
         {...options}
     >
         <slot />
