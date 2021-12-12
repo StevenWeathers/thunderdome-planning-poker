@@ -228,13 +228,13 @@
 
     <div class="grid grid-cols-3 gap-x-4 my-4 max-w-4xl mx-auto">
         <div class="px-2 md:px-4">
-            <Gauge text="Participation" percentage="70" metric="7" />
+            <Gauge text="Participation" percentage="70" stat="7" />
         </div>
         <div class="px-2 md:px-4">
-            <Gauge text="Met Goals" percentage="90" color="green" metric="9" />
+            <Gauge text="Met Goals" percentage="90" color="green" stat="9" />
         </div>
         <div class="px-2 md:px-4">
-            <Gauge text="Blocked" percentage="20" color="red" metric="2" />
+            <Gauge text="Blocked" percentage="20" color="red" stat="2" />
         </div>
     </div>
 
