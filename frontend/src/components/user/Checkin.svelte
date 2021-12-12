@@ -37,7 +37,7 @@
                 class="w-full"
                 use:quill="{{
                     placeholder: `Yesterday I...`,
-                    content: blockers,
+                    content: yesterday,
                 }}"
                 on:text-change="{e => (yesterday = e.detail.html)}"
                 id="yesterday"
@@ -52,7 +52,7 @@
                 class="w-full"
                 use:quill="{{
                     placeholder: `Today I will...`,
-                    content: blockers,
+                    content: today,
                 }}"
                 on:text-change="{e => (today = e.detail.html)}"
                 id="today"
