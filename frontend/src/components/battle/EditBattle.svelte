@@ -60,7 +60,7 @@
                     placeholder="{$_(
                         'pages.myBattles.createBattle.fields.name.placeholder',
                     )}"
-                    class="bg-gray-200 border-gray-200 border-2 appearance-none
+                    class="bg-gray-100 border-gray-200 border-2 appearance-none
                     rounded w-full py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"
                     id="battleName"
@@ -168,7 +168,7 @@
                     name="joinCode"
                     bind:value="{joinCode}"
                     placeholder="{$_('optionalPasscodePlaceholder')}"
-                    class="bg-gray-200 border-gray-200 border-2 appearance-none
+                    class="bg-gray-100 border-gray-200 border-2 appearance-none
                     rounded w-full py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"
                     id="joinCode"
@@ -188,7 +188,7 @@
                     name="leaderCode"
                     bind:value="{leaderCode}"
                     placeholder="{$_('optionalLeadercodePlaceholder')}"
-                    class="bg-gray-200 border-gray-200 border-2 appearance-none
+                    class="bg-gray-100 border-gray-200 border-2 appearance-none
                     rounded w-full py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"
                     id="leaderCode"

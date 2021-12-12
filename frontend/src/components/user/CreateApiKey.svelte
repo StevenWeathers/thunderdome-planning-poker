@@ -96,7 +96,7 @@
                     {$_('pages.warriorProfile.apiKeys.fields.name.label')}
                 </label>
                 <input
-                    class="bg-gray-200 border-gray-200 border-2 appearance-none
+                    class="bg-gray-100 border-gray-200 border-2 appearance-none
                     rounded w-full py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"
                     type="text"
@@ -131,7 +131,7 @@
             <div class="flex flex-wrap items-stretch w-full mb-3">
                 <input
                     class="flex-shrink flex-grow flex-auto leading-normal w-px
-                    flex-1 border-2 h-10 bg-gray-200 border-gray-200 rounded
+                    flex-1 border-2 h-10 bg-gray-100 border-gray-200 rounded
                     rounded-r-none px-4 appearance-none text-gray-800 font-bold
                     focus:outline-none focus:bg-white focus:border-purple-500 "
                     type="text"

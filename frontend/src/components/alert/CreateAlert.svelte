@@ -60,7 +60,7 @@
             <input
                 bind:value="{alertName}"
                 placeholder="{$_('alertNamePlaceholder')}"
-                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                class="bg-gray-100 border-gray-200 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 leading-tight
                 focus:outline-none focus:bg-white focus:border-purple-500"
                 id="alertName"
@@ -108,7 +108,7 @@
             <input
                 bind:value="{content}"
                 placeholder="{$_('alertContentPlaceholder')}"
-                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                class="bg-gray-100 border-gray-200 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 leading-tight
                 focus:outline-none focus:bg-white focus:border-purple-500"
                 id="alertContent"

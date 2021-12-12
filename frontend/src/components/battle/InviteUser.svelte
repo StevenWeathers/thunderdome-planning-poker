@@ -55,7 +55,7 @@
     <div class="flex flex-wrap items-stretch w-full">
         <input
             class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1
-        border-2 h-10 bg-gray-200 border-gray-200 rounded rounded-r-none px-3
+        border-2 h-10 bg-gray-100 border-gray-200 rounded rounded-r-none px-3
         appearance-none text-gray-700 focus:outline-none focus:bg-white
         focus:border-purple-500"
             type="text"
@@ -80,7 +80,7 @@
             <div class="flex flex-wrap items-stretch w-full">
                 <input
                     class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1
-            border-2 h-10 bg-gray-200 border-gray-200 rounded rounded-r-none px-3
+            border-2 h-10 bg-gray-100 border-gray-200 rounded rounded-r-none px-3
             appearance-none text-gray-700 focus:outline-none focus:bg-white
             focus:border-purple-500"
                     type="text"

@@ -83,7 +83,7 @@
                         placeholder="{$_(
                             'pages.login.passwordReset.fields.password.placeholder',
                         )}"
-                        class="bg-gray-200 border-gray-200 border-2
+                        class="bg-gray-100 border-gray-200 border-2
                         appearance-none rounded w-full py-2 px-3 text-gray-700
                         leading-tight focus:outline-none focus:bg-white
                         focus:border-purple-500"
@@ -108,7 +108,7 @@
                         placeholder="{$_(
                             'pages.login.passwordReset.fields.confirmPassword.placeholder',
                         )}"
-                        class="bg-gray-200 border-gray-200 border-2
+                        class="bg-gray-100 border-gray-200 border-2
                         appearance-none rounded w-full py-2 px-3 text-gray-700
                         leading-tight focus:outline-none focus:bg-white
                         focus:border-purple-500"
