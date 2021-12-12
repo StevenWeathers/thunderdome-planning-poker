@@ -1,9 +1,13 @@
 <script>
+    import './app.css'
+    import './unreset.css'
+    import '../../node_modules/quill/dist/quill.core.css'
+    import '../../node_modules/quill/dist/quill.snow.css'
     import Navaid from 'navaid'
     import { onDestroy } from 'svelte'
 
-    import { isLocaleLoaded, setupI18n } from './i18n'
-    import { appRoutes } from './config'
+    import { isLocaleLoaded, setupI18n } from './i18n.js'
+    import { appRoutes } from './config.js'
     import apiclient from './apiclient.js'
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
@@ -236,10 +240,16 @@
     onDestroy(router.unlisten)
 </script>
 
+<style lang="postcss" global>
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+</style>
+
 <Notifications bind:this="{notifications}" />
 
 {#if $isLocaleLoaded}
-    <header>
+    <header class="w-full">
         <GlobalAlerts registered="{!!activeWarrior.name}" />
 
         <GlobalHeader

@@ -1,6 +1,6 @@
 <script>
-    import { AppConfig } from '../../config'
-    import { _ } from '../../i18n'
+    import { AppConfig } from '../../config.js'
+    import { _ } from '../../i18n.js'
 
     const { PathPrefix } = AppConfig
 

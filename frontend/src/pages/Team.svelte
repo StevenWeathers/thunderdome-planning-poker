@@ -8,9 +8,9 @@
     import ChevronRight from '../components/icons/ChevronRight.svelte'
     import CreateBattle from '../components/battle/CreateBattle.svelte'
     import { warrior } from '../stores.js'
-    import { _ } from '../i18n'
-    import { appRoutes } from '../config'
-    import { validateUserIsRegistered } from '../validationUtils'
+    import { _ } from '../i18n.js'
+    import { appRoutes } from '../config.js'
+    import { validateUserIsRegistered } from '../validationUtils.js'
 
     export let xfetch
     export let router

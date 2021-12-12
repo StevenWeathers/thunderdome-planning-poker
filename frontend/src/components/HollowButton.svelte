@@ -10,7 +10,7 @@
 </script>
 
 <style>
-    :global(.btn-hollow) {
+    .btn-hollow {
         @apply leading-tight;
         @apply font-semibold;
         @apply bg-transparent;
@@ -20,58 +20,58 @@
         @apply rounded;
     }
 
-    :global(.btn-hollow.disabled) {
+    .btn-hollow.disabled {
         @apply opacity-50;
         @apply cursor-not-allowed;
     }
 
-    :global(.btn-hollow:hover) {
+    .btn-hollow:hover {
         @apply border-transparent;
         @apply text-white;
     }
 
-    :global(.btn-hollow-green) {
+    .btn-hollow-green {
         @apply border-green-500;
         @apply text-green-500;
     }
 
-    :global(.btn-hollow-green:hover) {
+    .btn-hollow-green:hover {
         @apply bg-green-600;
     }
 
-    :global(.btn-hollow-blue) {
+    .btn-hollow-blue {
         @apply border-blue-500;
         @apply text-blue-500;
     }
 
-    :global(.btn-hollow-blue:hover) {
+    .btn-hollow-blue:hover {
         @apply bg-blue-600;
     }
 
-    :global(.btn-hollow-red) {
+    .btn-hollow-red {
         @apply border-red-500;
         @apply text-red-500;
     }
 
-    :global(.btn-hollow-red:hover) {
+    .btn-hollow-red:hover {
         @apply bg-red-600;
     }
 
-    :global(.btn-hollow-purple) {
+    .btn-hollow-purple {
         @apply border-purple-500;
         @apply text-purple-500;
     }
 
-    :global(.btn-hollow-purple:hover) {
+    .btn-hollow-purple:hover {
         @apply bg-purple-600;
     }
 
-    :global(.btn-hollow-teal) {
+    .btn-hollow-teal {
         @apply border-teal-500;
         @apply text-teal-500;
     }
 
-    :global(.btn-hollow-teal:hover) {
+    .btn-hollow-teal:hover {
         @apply bg-teal-600;
     }
 </style>

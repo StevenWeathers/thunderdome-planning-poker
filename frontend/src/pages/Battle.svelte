@@ -15,8 +15,8 @@
     import EditBattle from '../components/battle/EditBattle.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import { warrior } from '../stores.js'
-    import { _ } from '../i18n'
-    import { AppConfig, appRoutes, PathPrefix } from '../config'
+    import { _ } from '../i18n.js'
+    import { AppConfig, appRoutes, PathPrefix } from '../config.js'
 
     export let battleId
     export let notifications
@@ -496,7 +496,7 @@
                     {#if currentPlan.type}
                         <span
                             class="inline-block text-lg text-gray-500
-                            border-gray-400 border px-1 rounded"
+                            border-gray-300 border px-1 rounded"
                             data-testid="currentplan-type"
                         >
                             {currentPlan.type}

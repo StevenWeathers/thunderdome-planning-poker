@@ -2,8 +2,8 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import { validatePasswords } from '../validationUtils.js'
-    import { _ } from '../i18n'
-    import { appRoutes } from '../config'
+    import { _ } from '../i18n.js'
+    import { appRoutes } from '../config.js'
 
     export let xfetch
     export let router

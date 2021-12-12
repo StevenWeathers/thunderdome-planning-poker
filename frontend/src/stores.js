@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 import Cookies from 'js-cookie'
-import { AppConfig } from './config'
+import { AppConfig } from './config.js'
 
 const { PathPrefix, CookieName } = AppConfig
 const cookiePath = `${PathPrefix}/`

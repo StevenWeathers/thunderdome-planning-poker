@@ -1,8 +1,8 @@
 <script>
     import SolidButton from '../SolidButton.svelte'
     import { validateName, validatePasswords } from '../../validationUtils.js'
-    import { AppConfig } from '../../config'
-    import { _ } from '../../i18n'
+    import { AppConfig } from '../../config.js'
+    import { _ } from '../../i18n.js'
 
     export let notifications
     export let handleSubmit

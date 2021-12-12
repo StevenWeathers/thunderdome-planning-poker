@@ -2,7 +2,7 @@
     import SolidButton from '../SolidButton.svelte'
     import ClipboardIcon from '../icons/ClipboardIcon.svelte'
     import Modal from '../Modal.svelte'
-    import { _ } from '../../i18n'
+    import { _ } from '../../i18n.js'
     import { warrior } from '../../stores.js'
 
     export let handleApiKeyCreate = () => {}

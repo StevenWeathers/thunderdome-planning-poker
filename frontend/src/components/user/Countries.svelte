@@ -1,6 +1,6 @@
 <script>
     import CountryFlag from './CountryFlag.svelte'
-    import { _ } from '../../i18n'
+    import { _ } from '../../i18n.js'
 
     export let xfetch
     export let eventTag

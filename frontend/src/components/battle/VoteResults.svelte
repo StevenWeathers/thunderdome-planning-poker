@@ -1,7 +1,7 @@
 <script>
     import PointCard from './PointCard.svelte'
     import WarriorIcon from '../icons/UserIcon.svelte'
-    import { _ } from '../../i18n'
+    import { _ } from '../../i18n.js'
 
     export let activePlanId = ''
     export let plans = []

@@ -1,7 +1,7 @@
 <script>
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
-    import { _ } from '../../i18n'
+    import { _ } from '../../i18n.js'
 
     export let toggleBecomeLeader = () => {}
     export let handleBecomeLeader = () => {}

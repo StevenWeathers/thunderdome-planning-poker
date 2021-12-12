@@ -8,8 +8,8 @@
     import CreateAlert from '../../components/alert/CreateAlert.svelte'
     import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import { activeAlerts, warrior } from '../../stores.js'
-    import { _ } from '../../i18n'
-    import { appRoutes } from '../../config'
+    import { _ } from '../../i18n.js'
+    import { appRoutes } from '../../config.js'
     import { validateUserIsAdmin } from '../../validationUtils.js'
 
     export let xfetch

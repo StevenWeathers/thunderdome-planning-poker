@@ -1,6 +1,6 @@
 <script>
-    import { AppConfig, appRoutes } from '../config'
-    import { _ } from '../i18n'
+    import { AppConfig, appRoutes } from '../config.js'
+    import { _ } from '../i18n.js'
 
     export let activePage = 'admin'
 
@@ -53,7 +53,7 @@
 </script>
 
 <style>
-    :global(.admin-nav-pill) {
+    .admin-nav-pill {
         @apply inline-block;
         @apply border;
         @apply rounded;
@@ -62,7 +62,7 @@
     }
 </style>
 
-<div class="flex px-6 py-2 border-b-2 bg-gray-300 border-gray-400">
+<div class="flex px-6 py-2 border-b-2 bg-gray-200 border-gray-300">
     <div class="w-full">
         <ul class="flex justify-end">
             {#each pages as page}

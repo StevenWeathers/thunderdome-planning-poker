@@ -1,8 +1,8 @@
 <script>
     import SolidButton from '../SolidButton.svelte'
     import ClipboardIcon from '../icons/ClipboardIcon.svelte'
-    import { _ } from '../../i18n'
-    import { appRoutes } from '../../config'
+    import { _ } from '../../i18n.js'
+    import { appRoutes } from '../../config.js'
 
     export let notifications
     export let hostname = ''

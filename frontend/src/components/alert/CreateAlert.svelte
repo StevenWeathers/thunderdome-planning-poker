@@ -2,7 +2,7 @@
     import Modal from '../Modal.svelte'
     import DownCarrotIcon from '../icons/DownCarrotIcon.svelte'
     import SolidButton from '../SolidButton.svelte'
-    import { _ } from '../../i18n'
+    import { _ } from '../../i18n.js'
 
     export let toggleCreate = () => {}
     export let handleCreate = () => {}
@@ -78,7 +78,7 @@
                     name="alertType"
                     bind:value="{alertType}"
                     required
-                    class="block appearance-none w-full border-2 border-gray-400
+                    class="block appearance-none w-full border-2 border-gray-300
                     text-gray-700 py-3 px-4 pr-8 rounded leading-tight
                     focus:outline-none focus:border-purple-500"
                 >

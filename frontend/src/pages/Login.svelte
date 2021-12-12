@@ -2,8 +2,8 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
-    import { _, setupI18n } from '../i18n'
-    import { AppConfig, appRoutes } from '../config'
+    import { _, setupI18n } from '../i18n.js'
+    import { AppConfig, appRoutes } from '../config.js'
 
     export let router
     export let xfetch

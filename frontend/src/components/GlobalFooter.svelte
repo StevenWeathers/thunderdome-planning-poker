@@ -1,14 +1,14 @@
 <script>
     import GithubIcon from './icons/Github.svelte'
-    import { AppConfig } from '../config'
-    import { _ } from '../i18n'
+    import { AppConfig } from '../config.js'
+    import { _ } from '../i18n.js'
 
     const { AppVersion } = AppConfig
     const footerLinkClasses = 'no-underline text-blue-500 hover:text-blue-800'
 </script>
 
 <footer
-    class="border-t px-16 py-10 text-center font-rajdhani text-xl"
+    class="w-full border-t px-16 py-10 text-center font-rajdhani text-xl"
     style="box-shadow: inset 0 7px 30px -7px rgba(0,0,0,0.1);"
 >
     <GithubIcon />

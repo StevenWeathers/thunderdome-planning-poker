@@ -2,9 +2,9 @@
     import Countries from '../components/user/Countries.svelte'
     import CheckIcon from '../components/icons/CheckIcon.svelte'
 
-    import { _ } from '../i18n'
-    import { AppConfig, appRoutes } from '../config'
-    import { warrior } from '../stores'
+    import { _ } from '../i18n.js'
+    import { AppConfig, appRoutes } from '../config.js'
+    import { warrior } from '../stores.js'
 
     export let xfetch
     export let eventTag
@@ -30,12 +30,12 @@
         background-color: #ffdd57;
     }
 
-    :global(.browser-mockup) {
+    .browser-mockup {
         border-top: 2em solid;
         position: relative;
     }
 
-    :global(.browser-mockup:before) {
+    .browser-mockup:before {
         display: block;
         position: absolute;
         content: '';
@@ -103,7 +103,7 @@
     </div>
 </section>
 
-<section class="px-4 bg-gray-200 border-b">
+<section class="px-4 bg-slate-100 border-b">
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
         <div class="flex items-center flex-wrap h-full">
             <div class="w-1/2">
@@ -179,7 +179,7 @@
 </section>
 
 {#if ShowActiveCountries}
-    <section class="px-4 bg-gray-200 border-b">
+    <section class="px-4 bg-slate-100 border-b">
         <div class="container mx-auto py-12 md:py-16 lg:py-20">
             <Countries xfetch="{xfetch}" eventTag="{eventTag}" />
         </div>
