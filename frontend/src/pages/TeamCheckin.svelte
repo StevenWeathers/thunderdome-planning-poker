@@ -3,6 +3,7 @@
     import SolidButton from '../components/SolidButton.svelte'
     import Checkin from '../components/user/Checkin.svelte'
     import UserAvatar from '../components/user/UserAvatar.svelte'
+    import ChevronRight from '../components/icons/ChevronRight.svelte'
     import { _ } from '../i18n'
     import { warrior } from '../stores.js'
     import { AppConfig, appRoutes } from '../config'
@@ -133,20 +134,71 @@
 </svelte:head>
 
 <PageLayout>
-    <div class="flex">
-        <div class="flex-1">
+    <div class="flex sm:flex-wrap">
+        <div class="md:grow">
             <h1 class="text-4xl font-semibold font-rajdhani leading-none">
-                {new Date().toLocaleString([], {
+                Team Checkin: {new Date().toLocaleString([], {
                     day: 'numeric',
                     month: 'numeric',
                     year: 'numeric',
                 })}
             </h1>
-            <h2 class="text-2xl font-rajdhani uppercase leading-none">
-                {$_('team')}: {team.name}
-            </h2>
+            {#if organizationId}
+                <div class="text-2xl font-semibold font-rajdhani uppercase">
+                    {$_('organization')}
+                    <ChevronRight class="inline-block" />
+                    <a
+                        class="text-blue-500 hover:text-blue-800"
+                        href="{appRoutes.organization}/{organization.id}"
+                    >
+                        {organization.name}
+                    </a>
+                    {#if departmentId}
+                        &nbsp;
+                        <ChevronRight class="inline-block" />
+                        {$_('department')}
+                        <ChevronRight class="inline-block" />
+                        <a
+                            class="text-blue-500 hover:text-blue-800"
+                            href="{appRoutes.organization}/{organization.id}/department/{department.id}"
+                        >
+                            {department.name}
+                        </a>
+                        <ChevronRight class="inline-block" />
+                        {$_('team')}
+                        <ChevronRight class="inline-block" />
+                        <a
+                            class="text-blue-500 hover:text-blue-800"
+                            href="{appRoutes.organization}/{organization.id}/department/{department.id}"
+                        >
+                            {team.name}
+                        </a>
+                    {:else}
+                        <ChevronRight class="inline-block" />
+                        {$_('team')}
+                        <ChevronRight class="inline-block" />
+                        <a
+                            class="text-blue-500 hover:text-blue-800"
+                            href="{appRoutes.organization}/{organization.id}/team/{team.id}"
+                        >
+                            {team.name}
+                        </a>
+                    {/if}
+                </div>
+            {:else}
+                <div class="text-2xl font-semibold font-rajdhani uppercase">
+                    {$_('team')}
+                    <ChevronRight class="inline-block" />
+                    <a
+                        class="text-blue-500 hover:text-blue-800"
+                        href="{appRoutes.team}/{team.id}"
+                    >
+                        {team.name}
+                    </a>
+                </div>
+            {/if}
         </div>
-        <div class="flex-1 text-right">
+        <div class="md:pl-2 md:shrink text-right">
             <SolidButton
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 onClick="{toggleCheckin}"

@@ -138,6 +138,16 @@
             },
         )
         .on(
+            `${appRoutes.organization}/:organizationId/team/:teamId/checkin`,
+            params => {
+                currentPage = {
+                    route: TeamCheckin,
+                    params,
+                    name: 'team',
+                }
+            },
+        )
+        .on(
             `${appRoutes.organization}/:organizationId/department/:departmentId`,
             params => {
                 currentPage = {
@@ -152,6 +162,16 @@
             params => {
                 currentPage = {
                     route: Team,
+                    params,
+                    name: 'team',
+                }
+            },
+        )
+        .on(
+            `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/checkin`,
+            params => {
+                currentPage = {
+                    route: TeamCheckin,
                     params,
                     name: 'team',
                 }
