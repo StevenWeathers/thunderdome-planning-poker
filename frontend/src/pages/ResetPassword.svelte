@@ -2,8 +2,8 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import { validatePasswords } from '../validationUtils.js'
-    import { _ } from '../i18n'
-    import { appRoutes } from '../config'
+    import { _ } from '../i18n.js'
+    import { appRoutes } from '../config.js'
 
     export let xfetch
     export let router
@@ -83,7 +83,7 @@
                         placeholder="{$_(
                             'pages.login.passwordReset.fields.password.placeholder',
                         )}"
-                        class="bg-gray-200 border-gray-200 border-2
+                        class="bg-gray-100 border-gray-200 border-2
                         appearance-none rounded w-full py-2 px-3 text-gray-700
                         leading-tight focus:outline-none focus:bg-white
                         focus:border-purple-500"
@@ -108,7 +108,7 @@
                         placeholder="{$_(
                             'pages.login.passwordReset.fields.confirmPassword.placeholder',
                         )}"
-                        class="bg-gray-200 border-gray-200 border-2
+                        class="bg-gray-100 border-gray-200 border-2
                         appearance-none rounded w-full py-2 px-3 text-gray-700
                         leading-tight focus:outline-none focus:bg-white
                         focus:border-purple-500"

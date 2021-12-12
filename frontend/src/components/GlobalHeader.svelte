@@ -4,9 +4,9 @@
     import LocaleSwitcher from './LocaleSwitcher.svelte'
     import UserIcon from './icons/UserIcon.svelte'
     import { validateUserIsAdmin } from '../validationUtils'
-    import { _, locale, setupI18n } from '../i18n'
-    import { warrior } from '../stores'
-    import { AppConfig, appRoutes } from '../config'
+    import { _, locale, setupI18n } from '../i18n.js'
+    import { warrior } from '../stores.js'
+    import { AppConfig, appRoutes } from '../config.js'
 
     export let xfetch
     export let router
@@ -43,7 +43,7 @@
 </script>
 
 <style>
-    :global(.nav-logo) {
+    .nav-logo {
         height: 3.5rem;
     }
 </style>

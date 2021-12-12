@@ -6,8 +6,8 @@
     import JiraImport from './JiraImport.svelte'
     import DownCarrotIcon from '../icons/DownCarrotIcon.svelte'
     import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n'
-    import { appRoutes, AppConfig } from '../../config'
+    import { _ } from '../../i18n.js'
+    import { AppConfig, appRoutes } from '../../config.js'
 
     export let notifications
     export let eventTag
@@ -112,7 +112,7 @@
                 placeholder="{$_(
                     'pages.myBattles.createBattle.fields.name.placeholder',
                 )}"
-                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                class="bg-gray-100 border-gray-200 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 leading-tight
                 focus:outline-none focus:bg-white focus:border-purple-500"
                 id="battleName"
@@ -169,7 +169,7 @@
                         placeholder="{$_(
                             'pages.myBattles.createBattle.fields.plans.fields.name.placeholder',
                         )}"
-                        class="bg-gray-200 border-gray-200 border-2
+                        class="bg-gray-100 border-gray-200 border-2
                         appearance-none rounded w-full py-2 px-3 text-gray-700
                         leading-tight focus:outline-none focus:bg-white
                         focus:border-purple-500"
@@ -199,7 +199,7 @@
         <div class="relative">
             <select
                 bind:value="{pointAverageRounding}"
-                class="block appearance-none w-full border-2 border-gray-400
+                class="block appearance-none w-full border-2 border-gray-300
                 text-gray-700 py-3 px-4 pr-8 rounded leading-tight
                 focus:outline-none focus:border-purple-500"
                 id="averageRounding"

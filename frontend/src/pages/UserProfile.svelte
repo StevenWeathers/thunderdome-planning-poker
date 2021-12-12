@@ -10,9 +10,9 @@
     import LocaleSwitcher from '../components/LocaleSwitcher.svelte'
     import { warrior } from '../stores.js'
     import { validateName, validatePasswords } from '../validationUtils.js'
-    import { _, locale, setupI18n } from '../i18n'
-    import { AppConfig, appRoutes } from '../config'
-    import { countryList } from '../country'
+    import { _, locale, setupI18n } from '../i18n.js'
+    import { AppConfig, appRoutes } from '../config.js'
+    import { countryList } from '../country.js'
     import CreateApiKey from '../components/user/CreateApiKey.svelte'
 
     export let xfetch
@@ -316,7 +316,7 @@
                             placeholder="{$_(
                                 'pages.warriorProfile.fields.name.placeholder',
                             )}"
-                            class="bg-gray-200 border-gray-200 border-2
+                            class="bg-gray-100 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             focus:bg-white focus:border-purple-500"
@@ -356,7 +356,7 @@
                         </label>
                         <input
                             bind:value="{warriorProfile.email}"
-                            class="bg-gray-200 border-gray-200 border-2
+                            class="bg-gray-100 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             cursor-not-allowed"
@@ -379,7 +379,7 @@
                             <select
                                 bind:value="{warriorProfile.country}"
                                 class="block appearance-none w-full border-2
-                                border-gray-400 text-gray-700 py-3 px-4 pr-8
+                                border-gray-300 text-gray-700 py-3 px-4 pr-8
                                 rounded leading-tight focus:outline-none
                                 focus:border-purple-500"
                                 id="yourCountry"
@@ -433,7 +433,7 @@
                             placeholder="{$_(
                                 'pages.warriorProfile.fields.company.placeholder',
                             )}"
-                            class="bg-gray-200 border-gray-200 border-2
+                            class="bg-gray-100 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             focus:bg-white focus:border-purple-500"
@@ -455,7 +455,7 @@
                             placeholder="{$_(
                                 'pages.warriorProfile.fields.jobTitle.placeholder',
                             )}"
-                            class="bg-gray-200 border-gray-200 border-2
+                            class="bg-gray-100 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             focus:bg-white focus:border-purple-500"
@@ -497,7 +497,7 @@
                                         <select
                                             bind:value="{warriorProfile.avatar}"
                                             class="block appearance-none w-full
-                                            border-2 border-gray-400
+                                            border-2 border-gray-300
                                             text-gray-700 py-3 px-4 pr-8 rounded
                                             leading-tight focus:outline-none
                                             focus:border-purple-500"
@@ -583,7 +583,7 @@
                             placeholder="{$_(
                                 'pages.warriorProfile.updatePasswordForm.fields.password.placeholder',
                             )}"
-                            class="bg-gray-200 border-gray-200 border-2
+                            class="bg-gray-100 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             focus:bg-white focus:border-purple-500"
@@ -608,7 +608,7 @@
                             placeholder="{$_(
                                 'pages.warriorProfile.updatePasswordForm.fields.confirmPassword.placeholder',
                             )}"
-                            class="bg-gray-200 border-gray-200 border-2
+                            class="bg-gray-100 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             focus:bg-white focus:border-purple-500"

@@ -6,8 +6,8 @@
     import WarriorRankGeneral from '../icons/UserRankAdmin.svelte'
     import WarriorAvatar from './UserAvatar.svelte'
     import BecomeLeader from './BecomeLeader.svelte'
-    import { AppConfig } from '../../config'
-    import { _ } from '../../i18n'
+    import { AppConfig } from '../../config.js'
+    import { _ } from '../../i18n.js'
     import { warrior as activeWarrior } from '../../stores.js'
 
     export let voted = false
@@ -62,7 +62,7 @@
 </script>
 
 <div
-    class="border-b border-gray-500 p-4 flex items-center"
+    class="border-b border-gray-300 p-4 flex items-center"
     data-testid="user-card"
     data-username="{warrior.name}"
 >

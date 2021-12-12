@@ -1,6 +1,6 @@
 <script>
-    import { AppConfig, appRoutes } from '../config'
-    import { _ } from '../i18n'
+    import { AppConfig, appRoutes } from '../config.js'
+    import { _ } from '../i18n.js'
 
     export let activePage = 'admin'
 
@@ -49,11 +49,11 @@
 
     let activePillClasses = 'border-blue-500 bg-blue-500 text-white'
     let nonActivePillClasses =
-        'border-gray-300 hover:border-gray-400 bg-gray-300 text-blue-500 hover:bg-gray-400'
+        'border-gray-200 hover:border-gray-300 bg-gray-200 text-blue-500 hover:bg-gray-300'
 </script>
 
 <style>
-    :global(.admin-nav-pill) {
+    .admin-nav-pill {
         @apply inline-block;
         @apply border;
         @apply rounded;
@@ -62,7 +62,7 @@
     }
 </style>
 
-<div class="flex px-6 py-2 border-b-2 bg-gray-300 border-gray-400">
+<div class="flex px-6 py-2 border-b-2 bg-gray-200 border-gray-300">
     <div class="w-full">
         <ul class="flex justify-end">
             {#each pages as page}

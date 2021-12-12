@@ -7,8 +7,8 @@
     import HollowButton from '../components/HollowButton.svelte'
     import Pagination from '../components/Pagination.svelte'
     import { warrior } from '../stores.js'
-    import { _ } from '../i18n'
-    import { appRoutes } from '../config'
+    import { _ } from '../i18n.js'
+    import { appRoutes } from '../config.js'
 
     export let xfetch
     export let notifications
@@ -65,7 +65,7 @@
             {#each battles as battle}
                 <div class="bg-white shadow-lg rounded mb-2">
                     <div
-                        class="flex flex-wrap items-center p-4 border-gray-400
+                        class="flex flex-wrap items-center p-4 border-gray-300
                         border-b"
                     >
                         <div

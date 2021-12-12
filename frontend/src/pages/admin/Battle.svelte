@@ -4,14 +4,14 @@
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import CheckIcon from '../../components/icons/CheckIcon.svelte'
     import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n'
-    import { appRoutes } from '../../config'
-    import { validateUserIsAdmin } from '../../validationUtils'
+    import { _ } from '../../i18n.js'
+    import { appRoutes } from '../../config.js'
+    import { validateUserIsAdmin } from '../../validationUtils.js'
 
     export let xfetch
     export let router
     export let notifications
-    export let eventTag
+    // export let eventTag
     export let battleId
 
     let battle = {

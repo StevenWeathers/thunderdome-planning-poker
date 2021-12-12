@@ -4,8 +4,8 @@
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
     import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n'
-    import { AppConfig, appRoutes } from '../../config'
+    import { _ } from '../../i18n.js'
+    import { AppConfig, appRoutes } from '../../config.js'
     import { validateUserIsAdmin } from '../../validationUtils.js'
 
     export let xfetch

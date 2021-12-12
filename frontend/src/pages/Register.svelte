@@ -4,8 +4,8 @@
     import WarriorRegisterForm from '../components/user/UserRegisterForm.svelte'
     import { warrior } from '../stores.js'
     import { validateName } from '../validationUtils.js'
-    import { _ } from '../i18n'
-    import { AppConfig, appRoutes } from '../config'
+    import { _ } from '../i18n.js'
+    import { AppConfig, appRoutes } from '../config.js'
 
     export let router
     export let xfetch
@@ -153,7 +153,7 @@
                             placeholder="{$_(
                                 'pages.createAccount.guestForm.fields.name.placeholder',
                             )}"
-                            class="bg-gray-200 border-gray-200 border-2
+                            class="bg-gray-100 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
                             text-gray-700 leading-tight focus:outline-none
                             focus:bg-white focus:border-purple-500"

@@ -1,6 +1,6 @@
 <script>
-    import { countryMap } from '../../country'
-    import { _ } from '../../i18n'
+    import { countryMap } from '../../country.js'
+    import { _ } from '../../i18n.js'
 
     export let country = ''
     export let additionalClass = ''

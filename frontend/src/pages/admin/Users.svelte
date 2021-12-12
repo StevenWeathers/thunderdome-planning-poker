@@ -10,9 +10,9 @@
     import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import SolidButton from '../../components/SolidButton.svelte'
     import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n'
-    import { appRoutes } from '../../config'
-    import { validateUserIsAdmin } from '../../validationUtils'
+    import { _ } from '../../i18n.js'
+    import { appRoutes } from '../../config.js'
+    import { validateUserIsAdmin } from '../../validationUtils.js'
 
     export let xfetch
     export let router
@@ -188,7 +188,7 @@
                                         <input
                                             bind:value="{searchEmail}"
                                             placeholder="{$_('email')}"
-                                            class="bg-gray-200 border-gray-200 border-2 appearance-none
+                                            class="bg-gray-100 border-gray-200 border-2 appearance-none
                     rounded py-2 px-3 text-gray-700 leading-tight
                     focus:outline-none focus:bg-white focus:border-purple-500"
                                             id="searchEmail"

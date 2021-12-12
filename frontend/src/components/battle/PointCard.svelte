@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher } from 'svelte'
     import WarriorIcon from '../icons/UserIcon.svelte'
-    import { _ } from '../../i18n'
+    import { _ } from '../../i18n.js'
 
     const dispatch = createEventDispatcher()
 

@@ -1,8 +1,8 @@
 <script>
     import SolidButton from '../SolidButton.svelte'
     import { validateName, validatePasswords } from '../../validationUtils.js'
-    import { AppConfig } from '../../config'
-    import { _ } from '../../i18n'
+    import { AppConfig } from '../../config.js'
+    import { _ } from '../../i18n.js'
 
     export let notifications
     export let handleSubmit
@@ -67,7 +67,7 @@
             placeholder="{$_(
                 'pages.createAccount.createAccountForm.fields.name.placeholder',
             )}"
-            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
+            class="bg-gray-100 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
             id="yourName2"
@@ -88,7 +88,7 @@
             placeholder="{$_(
                 'pages.createAccount.createAccountForm.fields.email.placeholder',
             )}"
-            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
+            class="bg-gray-100 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
             id="yourEmail"
@@ -110,7 +110,7 @@
             placeholder="{$_(
                 'pages.createAccount.createAccountForm.fields.password.placeholder',
             )}"
-            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
+            class="bg-gray-100 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
             id="yourPassword1"
@@ -134,7 +134,7 @@
             placeholder="{$_(
                 'pages.createAccount.createAccountForm.fields.confirmPassword.placeholder',
             )}"
-            class="bg-gray-200 border-gray-200 border-2 appearance-none rounded
+            class="bg-gray-100 border-gray-200 border-2 appearance-none rounded
             w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
             focus:bg-white focus:border-purple-500"
             id="yourPassword2"

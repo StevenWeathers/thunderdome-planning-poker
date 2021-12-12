@@ -1,7 +1,7 @@
 <script>
     import Modal from '../Modal.svelte'
     import SolidButton from '../SolidButton.svelte'
-    import { _ } from '../../i18n'
+    import { _ } from '../../i18n.js'
 
     export let teamName = ''
 
@@ -29,7 +29,7 @@
             <input
                 bind:value="{teamName}"
                 placeholder="{$_('teamNamePlaceholder')}"
-                class="bg-gray-200 border-gray-200 border-2 appearance-none
+                class="bg-gray-100 border-gray-200 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 leading-tight
                 focus:outline-none focus:bg-white focus:border-purple-500"
                 id="teamName"

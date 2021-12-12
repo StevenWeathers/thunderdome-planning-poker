@@ -1,16 +1,16 @@
-import { get, derived, writable } from 'svelte/store'
+import { derived, get, writable } from 'svelte/store'
 import {
     _,
+    addMessages,
     date,
+    dictionary,
+    getLocaleFromNavigator,
     init,
     locale,
     number,
-    dictionary,
-    addMessages,
-    getLocaleFromNavigator,
 } from 'svelte-i18n'
 
-import { locales, fallbackLocale, PathPrefix, AppConfig } from './config'
+import { AppConfig, fallbackLocale, locales, PathPrefix } from './config.js'
 
 const { AppVersion, FriendlyUIVerbs } = AppConfig
 const verbsType = FriendlyUIVerbs ? 'friendly' : 'default'

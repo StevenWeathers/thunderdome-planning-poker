@@ -10,7 +10,7 @@
 </script>
 
 <style>
-    :global(.btn) {
+    .btn {
         @apply leading-tight;
         @apply py-2;
         @apply px-3;
@@ -19,58 +19,58 @@
         @apply text-white;
     }
 
-    :global(.btn.disabled) {
+    .btn.disabled {
         @apply opacity-50;
         @apply cursor-not-allowed;
     }
 
-    :global(.btn-green) {
+    .btn-green {
         @apply bg-green-500;
     }
 
-    :global(.btn-green:hover) {
+    .btn-green:hover {
         @apply bg-green-600;
     }
 
-    :global(.btn-blue) {
+    .btn-blue {
         @apply bg-blue-500;
     }
 
-    :global(.btn-blue:hover) {
+    .btn-blue:hover {
         @apply bg-blue-600;
     }
 
-    :global(.btn-red) {
+    .btn-red {
         @apply bg-red-500;
     }
 
-    :global(.btn-red:hover) {
+    .btn-red:hover {
         @apply bg-red-600;
     }
 
-    :global(.btn-purple) {
+    .btn-purple {
         @apply bg-purple-500;
     }
 
-    :global(.btn-purple:hover) {
+    .btn-purple:hover {
         @apply bg-purple-600;
     }
 
-    :global(.btn-teal) {
+    .btn-teal {
         @apply bg-teal-500;
     }
 
-    :global(.btn-teal:hover) {
+    .btn-teal:hover {
         @apply bg-teal-600;
     }
 
-    :global(.btn-blue-copy) {
+    .btn-blue-copy {
         @apply bg-blue-500;
         @apply rounded-l-none;
         @apply border-blue-800;
     }
 
-    :global(.btn-blue-copy:hover) {
+    .btn-blue-copy:hover {
         @apply bg-blue-600;
     }
 </style>

@@ -1,8 +1,6 @@
 <script>
     import PageLayout from '../components/PageLayout.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
-    import { warrior } from '../stores.js'
-    import { _ } from '../i18n'
+    import { _ } from '../i18n.js'
 
     export let xfetch
     export let eventTag

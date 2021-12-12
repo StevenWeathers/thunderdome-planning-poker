@@ -4,7 +4,7 @@
     import HollowButton from '../HollowButton.svelte'
     import ViewPlan from './ViewPlan.svelte'
     import JiraImport from './JiraImport.svelte'
-    import { _ } from '../../i18n'
+    import { _ } from '../../i18n.js'
 
     export let plans = []
     export let isLeader = false
@@ -114,7 +114,7 @@
         </div>
     </div>
 
-    <ul class="flex border-b border-gray-400">
+    <ul class="flex border-b border-gray-300">
         <li class="-mb-px {showCompleted ? '' : 'mr-1'}">
             <button
                 class="{showCompleted
@@ -143,7 +143,7 @@
 
     {#each plansToShow as plan (plan.id)}
         <div
-            class="flex flex-wrap items-center border-b border-gray-400 p-4"
+            class="flex flex-wrap items-center border-b border-gray-300 p-4"
             data-testid="plan"
         >
             <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
@@ -160,7 +160,7 @@
                     {/if}
                     <div
                         class="inline-block text-sm text-gray-500
-                        border-gray-400 border px-1 rounded"
+                        border-gray-300 border px-1 rounded"
                         data-testid="plan-type"
                     >
                         {plan.type}
@@ -218,7 +218,7 @@
         </div>
     {/each}
     {#if showCompleted && totalPoints}
-        <div class="flex flex-wrap items-center border-b border-gray-400 p-4">
+        <div class="flex flex-wrap items-center border-b border-gray-300 p-4">
             <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
                 <div class="inline-block font-bold align-middle">
                     {$_('totalPoints')}:

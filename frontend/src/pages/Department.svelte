@@ -8,8 +8,8 @@
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
     import { warrior } from '../stores.js'
-    import { _ } from '../i18n'
-    import { appRoutes } from '../config'
+    import { _ } from '../i18n.js'
+    import { appRoutes } from '../config.js'
     import { validateUserIsRegistered } from '../validationUtils.js'
 
     export let xfetch

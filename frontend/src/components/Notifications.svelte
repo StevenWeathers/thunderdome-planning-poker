@@ -1,5 +1,5 @@
 <script>
-    import { AppConfig } from '../config'
+    import { AppConfig } from '../config.js'
 
     let count = 0
     let defaultTimeout = AppConfig.ToastTimeout
@@ -84,7 +84,7 @@
 </script>
 
 <style>
-    :global(.toasts) {
+    .toasts {
         list-style: none;
         position: fixed;
         top: 0;
@@ -94,7 +94,7 @@
         z-index: 9999;
     }
 
-    :global(.toasts > .toast) {
+    .toasts > .toast {
         position: relative;
         margin: 10px;
         min-width: 40vw;
@@ -103,13 +103,13 @@
         color: #fff;
     }
 
-    :global(.toasts > .toast > .content) {
+    .toasts > .toast > .content {
         padding: 10px;
         display: block;
         font-weight: 500;
     }
 
-    :global(.toasts > .toast > .progress) {
+    .toasts > .toast > .progress {
         position: absolute;
         bottom: 0;
         background-color: rgb(0, 0, 0, 0.3);
@@ -120,8 +120,8 @@
         animation-fill-mode: forwards;
     }
 
-    :global(.toasts > .toast:before),
-    :global(.toasts > .toast:after) {
+    .toasts > .toast:before,
+    .toasts > .toast:after {
         content: '';
         position: absolute;
         z-index: -1;
@@ -132,7 +132,7 @@
         border-radius: 100px / 10px;
     }
 
-    :global(.toasts > .toast:after) {
+    .toasts > .toast:after {
         right: 10px;
         left: auto;
         transform: skew(8deg) rotate(3deg);
