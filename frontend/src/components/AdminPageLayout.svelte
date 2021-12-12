@@ -49,7 +49,7 @@
 
     let activePillClasses = 'border-blue-500 bg-blue-500 text-white'
     let nonActivePillClasses =
-        'border-gray-300 hover:border-gray-400 bg-gray-300 text-blue-500 hover:bg-gray-400'
+        'border-gray-200 hover:border-gray-300 bg-gray-200 text-blue-500 hover:bg-gray-300'
 </script>
 
 <style>
