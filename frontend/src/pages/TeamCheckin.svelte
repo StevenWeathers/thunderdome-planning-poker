@@ -155,66 +155,103 @@
         </div>
     </div>
 
-    <div class="w-full mt-8">
-        <div class="shadow border-b border-gray-200 sm:rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead
-                    class="bg-gray-200 text-sm font-medium uppercase tracking-wider"
+    <div class="flex flex-col mt-8">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div
+                class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+            >
+                <div
+                    class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
                 >
-                    <tr>
-                        <th class="px-6 py-3">Name</th>
-                        <th class="px-6 py-3">Yesterday</th>
-                        <th class="px-6 py-3">Today</th>
-                        <th class="px-6 py-3">Blockers</th>
-                        <th class="px-6 py-3">Discuss</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    {#each checkins as checkin}
-                        <tr>
-                            <td class="px-4 py-2">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        <UserAvatar
-                                            warriorId="{checkin.user.id}"
-                                            avatar="{checkin.user.avatar}"
-                                            avatarService="{AvatarService}"
-                                            options="{{
-                                                class: 'h-10 w-10 rounded-full',
-                                            }}"
-                                        />
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium">
-                                            {checkin.user.name}
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                >
+                                    Name
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                >
+                                    Yesterday
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                >
+                                    Today
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                >
+                                    Blockers
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                >
+                                    Discuss
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {#each checkins as checkin}
+                                <tr>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-10 w-10"
+                                            >
+                                                <UserAvatar
+                                                    warriorId="{checkin.user
+                                                        .id}"
+                                                    avatar="{checkin.user
+                                                        .avatar}"
+                                                    avatarService="{AvatarService}"
+                                                    options="{{
+                                                        class: 'h-10 w-10 rounded-full',
+                                                    }}"
+                                                />
+                                            </div>
+                                            <div class="ml-4">
+                                                <div
+                                                    class="text-sm font-medium"
+                                                >
+                                                    {checkin.user.name}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-4 py-2">
-                                <div class="unreset">
-                                    {@html checkin.yesterday}
-                                </div>
-                            </td>
-                            <td class="px-4 py-2">
-                                <div class="unreset">
-                                    {@html checkin.today}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="unreset">
-                                    {@html checkin.blockers}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="unreset">
-                                    {@html checkin.discuss}
-                                </div>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
+                                    </td>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        <div class="unreset">
+                                            {@html checkin.yesterday}
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        <div class="unreset">
+                                            {@html checkin.today}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="unreset">
+                                            {@html checkin.blockers}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="unreset">
+                                            {@html checkin.discuss}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
