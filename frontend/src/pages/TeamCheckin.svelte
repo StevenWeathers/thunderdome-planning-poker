@@ -6,6 +6,8 @@
     import Checkin from '../components/user/Checkin.svelte'
     import UserAvatar from '../components/user/UserAvatar.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
+    import PencilIcon from '../components/icons/PencilIcon.svelte'
+    import TrashIcon from '../components/icons/TrashIcon.svelte'
     import Gauge from '../components/Gauge.svelte'
     import { _ } from '../i18n.js'
     import { warrior } from '../stores.js'
@@ -35,6 +37,7 @@
     let now = new Date()
     let maxNegativeDate
     let selectedDate
+    let selectedCheckin
 
     let team = {
         id: teamId,
@@ -103,8 +106,13 @@
     // 45 is to add the needed rotation to have the green borders at the bottom
     $: barPercent = 45 + score * 1.8
 
-    function toggleCheckin() {
+    function toggleCheckin(checkin) {
         showCheckin = !showCheckin
+        if (checkin) {
+            selectedCheckin = checkin
+        } else {
+            selectedCheckin = null
+        }
     }
 
     function handleCheckin(checkin) {
@@ -116,6 +124,32 @@
             })
             .catch(function () {
                 notifications.danger(`Error checking in`)
+            })
+    }
+
+    function handleCheckinEdit(checkinId, checkin) {
+        xfetch(`${teamPrefix}/checkins/${checkinId}`, {
+            body: checkin,
+            method: 'PUT',
+        })
+            .then(res => res.json())
+            .then(function () {
+                getCheckins()
+                toggleCheckin()
+            })
+            .catch(function () {
+                notifications.danger(`Error updating checkin`)
+            })
+    }
+
+    function handleCheckinDelete(checkinId) {
+        xfetch(`${teamPrefix}/checkins/${checkinId}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(function () {
+                getCheckins()
+            })
+            .catch(function () {
+                notifications.danger(`Error deleting checkin`)
             })
     }
 
@@ -306,6 +340,40 @@
                                                 >
                                                     {checkin.user.name}
                                                 </div>
+                                                {#if checkin.user.id === $warrior.id}
+                                                    <div>
+                                                        <button
+                                                            on:click="{() => {
+                                                                toggleCheckin(
+                                                                    checkin,
+                                                                )
+                                                            }}"
+                                                            class="text-blue-500"
+                                                            title="Edit"
+                                                        >
+                                                            <span
+                                                                class="sr-only"
+                                                                >Edit</span
+                                                            >
+                                                            <PencilIcon />
+                                                        </button>
+                                                        <button
+                                                            on:click="{() => {
+                                                                handleCheckinDelete(
+                                                                    checkin.id,
+                                                                )
+                                                            }}"
+                                                            class="text-red-500"
+                                                            title="Delete"
+                                                        >
+                                                            <span
+                                                                class="sr-only"
+                                                                >Delete</span
+                                                            >
+                                                            <TrashIcon />
+                                                        </button>
+                                                    </div>
+                                                {/if}
                                             </div>
                                         </div>
                                     </td>
@@ -339,11 +407,28 @@
     </div>
 
     {#if showCheckin}
-        <Checkin
-            teamId="{team.id}"
-            userId="{warrior.id}"
-            toggleCheckin="{toggleCheckin}"
-            handleCheckin="{handleCheckin}"
-        />
+        {#if selectedCheckin}
+            <Checkin
+                teamId="{team.id}"
+                userId="{warrior.id}"
+                checkinId="{selectedCheckin.id}"
+                yesterday="{selectedCheckin.yesterday}"
+                today="{selectedCheckin.today}"
+                blockers="{selectedCheckin.blockers}"
+                discuss="{selectedCheckin.discuss}"
+                goalsMet="{selectedCheckin.goalsMet}"
+                toggleCheckin="{toggleCheckin}"
+                handleCheckin="{handleCheckin}"
+                handleCheckinEdit="{handleCheckinEdit}"
+            />
+        {:else}
+            <Checkin
+                teamId="{team.id}"
+                userId="{warrior.id}"
+                toggleCheckin="{toggleCheckin}"
+                handleCheckin="{handleCheckin}"
+                handleCheckinEdit="{handleCheckinEdit}"
+            />
+        {/if}
     {/if}
 </PageLayout>

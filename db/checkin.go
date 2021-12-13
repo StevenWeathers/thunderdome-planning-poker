@@ -1,9 +1,6 @@
 package db
 
 import (
-	"errors"
-	"log"
-
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
@@ -45,7 +42,6 @@ func (d *Database) CheckinList(TeamId string, Date string, TimeZone string) ([]*
 				&checkin.CreatedDate,
 				&checkin.UpdatedDate,
 			); err != nil {
-				log.Println(err)
 				return nil, err
 			} else {
 				checkin.User = &user
@@ -75,8 +71,45 @@ func (d *Database) CheckinCreate(
 		Discuss,
 		GoalsMet,
 	); err != nil {
-		log.Println(err)
-		return errors.New("error attempting to checkin")
+		return err
+	}
+
+	return nil
+}
+
+// CheckinUpdate updates a team checkin
+func (d *Database) CheckinUpdate(
+	CheckinId string,
+	Yesterday string, Today string, Blockers string, Discuss string,
+	GoalsMet bool,
+) error {
+	if _, err := d.db.Exec(`
+		UPDATE team_checkin
+		SET Yesterday = $2, today = $3, blockers = $4, discuss = $5, goals_met = $6
+		WHERE id = $1;
+		`,
+		CheckinId,
+		Yesterday,
+		Today,
+		Blockers,
+		Discuss,
+		GoalsMet,
+	); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CheckinDelete deletes a team checkin
+func (d *Database) CheckinDelete(CheckinId string) error {
+	_, err := d.db.Exec(
+		`DELETE FROM team_checkin WHERE id = $1;`,
+		CheckinId,
+	)
+
+	if err != nil {
+		return err
 	}
 
 	return nil

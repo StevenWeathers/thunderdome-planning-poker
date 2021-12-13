@@ -5,25 +5,36 @@
 
     export let toggleCheckin = () => {}
     export let handleCheckin = () => {}
+    export let handleCheckinEdit = () => {}
     export let userId
-
-    let today = ''
-    let yesterday = ''
-    let blockers = ''
-    let discuss = ''
-    let goalsMet = true
+    export let checkinId
+    export let today = ''
+    export let yesterday = ''
+    export let blockers = ''
+    export let discuss = ''
+    export let goalsMet = true
 
     function onSubmit(e) {
         e.preventDefault()
 
-        handleCheckin({
-            userId,
-            yesterday,
-            today,
-            blockers,
-            discuss,
-            goalsMet,
-        })
+        if (checkinId) {
+            handleCheckinEdit(checkinId, {
+                yesterday,
+                today,
+                blockers,
+                discuss,
+                goalsMet,
+            })
+        } else {
+            handleCheckin({
+                userId,
+                yesterday,
+                today,
+                blockers,
+                discuss,
+                goalsMet,
+            })
+        }
     }
 </script>
 

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// handleGetTeamCheckins gets a list of team checkins
+// handleCheckinsGet gets a list of team checkins
 // @Summary Get Team Checkins
 // @Description Get a list of team checkins
 // @Tags team
@@ -17,7 +17,7 @@ import (
 // @Success 200 object standardJsonResponse{data=[]model.TeamCheckin}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [get]
-func (a *api) handleGetTeamCheckins() http.HandlerFunc {
+func (a *api) handleCheckinsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
@@ -43,7 +43,7 @@ func (a *api) handleGetTeamCheckins() http.HandlerFunc {
 	}
 }
 
-// handleCreateCheckin handles creating a team user checkin
+// handleCheckinCreate handles creating a team user checkin
 // @Summary Create Team Checkin
 // @Description Creates a team user checkin
 // @Tags team
@@ -53,7 +53,7 @@ func (a *api) handleGetTeamCheckins() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [post]
-func (a *api) handleCreateCheckin() http.HandlerFunc {
+func (a *api) handleCheckinCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
@@ -67,6 +67,63 @@ func (a *api) handleCreateCheckin() http.HandlerFunc {
 		GoalsMet := keyVal["goalsMet"].(bool)
 
 		err := a.db.CheckinCreate(TeamId, UserId, Yesterday, Today, Blockers, Discuss, GoalsMet)
+		if err != nil {
+			Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleCheckinCreate handles updating a team user checkin
+// @Summary Update Team Checkin
+// @Description Updates a team user checkin
+// @Tags team
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /teams/{teamId}/checkins/{checkinId} [put]
+func (a *api) handleCheckinUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		CheckinId := vars["checkinId"]
+
+		keyVal := getJSONRequestBody(r, w)
+		Yesterday := keyVal["yesterday"].(string)
+		Today := keyVal["today"].(string)
+		Blockers := keyVal["blockers"].(string)
+		Discuss := keyVal["discuss"].(string)
+		GoalsMet := keyVal["goalsMet"].(bool)
+
+		err := a.db.CheckinUpdate(CheckinId, Yesterday, Today, Blockers, Discuss, GoalsMet)
+		if err != nil {
+			Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleCheckinDelete handles deleting a team user checkin
+// @Summary Delete Team Checkin
+// @Description Deletes a team user checkin
+// @Tags team
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /teams/{teamId}/checkins/{checkinId} [delete]
+func (a *api) handleCheckinDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		CheckinId := vars["checkinId"]
+
+		err := a.db.CheckinDelete(CheckinId)
 		if err != nil {
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
