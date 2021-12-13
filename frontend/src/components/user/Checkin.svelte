@@ -1,7 +1,7 @@
 <script>
-    import { quill } from '../../quill'
     import Modal from '../Modal.svelte'
     import SolidButton from '../SolidButton.svelte'
+    import { quill } from '../../quill.js'
 
     export let toggleCheckin = () => {}
     export let handleCheckin = () => {}
