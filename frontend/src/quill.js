@@ -32,7 +32,7 @@ function quill(node, options) {
         node.dispatchEvent(
             new CustomEvent('text-change', {
                 detail: {
-                    html: container.innerHTML,
+                    html: container.innerHTML.replace('<p><br></p>', ''),
                     text: quill.getText(),
                 },
             }),

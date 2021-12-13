@@ -3,11 +3,12 @@
 
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
-    import Checkin from '../components/user/Checkin.svelte'
+    import Checkin from '../components/checkin/Checkin.svelte'
     import UserAvatar from '../components/user/UserAvatar.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
     import PencilIcon from '../components/icons/PencilIcon.svelte'
     import TrashIcon from '../components/icons/TrashIcon.svelte'
+    import BlockedPing from '../components/checkin/BlockedPing.svelte'
     import Gauge from '../components/Gauge.svelte'
     import { _ } from '../i18n.js'
     import { warrior } from '../stores.js'
@@ -330,28 +331,28 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-x-4 my-4 max-w-4xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 my-4">
         <div class="px-2 md:px-4">
             <Gauge
-                text="Participants"
+                text="Participation"
                 percentage="{stats.pPerc}"
-                stat="{stats.participants}"
+                stat="{stats.pPerc}"
             />
         </div>
         <div class="px-2 md:px-4">
             <Gauge
-                text="Met Goals"
+                text="Goals Met"
                 percentage="{stats.gPerc}"
                 color="green"
-                stat="{stats.goals}"
+                stat="{stats.gPerc}"
             />
         </div>
         <div class="px-2 md:px-4">
             <Gauge
-                text="Blockers"
+                text="Blocked"
                 percentage="{stats.bPerc}"
                 color="red"
-                stat="{stats.blocked}"
+                stat="{stats.bPerc}"
             />
         </div>
     </div>
@@ -404,19 +405,66 @@
                                 <tr>
                                     <td class="px-4 py-2 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <div
-                                                class="flex-shrink-0 h-10 w-10"
-                                            >
-                                                <UserAvatar
-                                                    warriorId="{checkin.user
-                                                        .id}"
-                                                    avatar="{checkin.user
-                                                        .avatar}"
-                                                    avatarService="{AvatarService}"
-                                                    options="{{
-                                                        class: 'h-10 w-10 rounded-full',
-                                                    }}"
-                                                />
+                                            <div class="">
+                                                <div
+                                                    class="relative cursor-pointer w-16 h-16"
+                                                >
+                                                    <div
+                                                        class="relative w-full h-full"
+                                                    >
+                                                        <div
+                                                            class="w-full h-full bg-gray-200 rounded-full shadow"
+                                                        >
+                                                            <UserAvatar
+                                                                warriorId="{checkin
+                                                                    .user.id}"
+                                                                avatar="{checkin
+                                                                    .user
+                                                                    .avatar}"
+                                                                avatarService="{AvatarService}"
+                                                                options="{{
+                                                                    class: 'w-full h-full rounded-full',
+                                                                }}"
+                                                            />
+                                                        </div>
+                                                        {#if checkin.goalsMet}
+                                                            <div
+                                                                class="absolute bottom-0 w-1/4 h-1/4 rounded-full shadow-md"
+                                                            >
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    viewBox="0 0 1024 1024"
+                                                                >
+                                                                    <circle
+                                                                        class="text-white fill-current"
+                                                                        cx="512"
+                                                                        cy="512"
+                                                                        r="512"
+                                                                    ></circle>
+                                                                    <circle
+                                                                        fill="green"
+                                                                        class="fill-current text-green-500"
+                                                                        cx="512"
+                                                                        cy="512"
+                                                                        r="384"
+                                                                    ></circle>
+                                                                    <path
+                                                                        class="text-white fill-current"
+                                                                        d="M456.4 576.1L334.8 454.4l-81.1 81.1 121.6 121.7 81.1 81.1 81.1-81.1 243.3-243.3-81.1-81.1z"
+                                                                    ></path>
+                                                                </svg>
+                                                            </div>
+                                                        {/if}
+                                                        {#if checkin.blockers != ''}
+                                                            <BlockedPing />
+                                                        {/if}
+                                                        <div
+                                                            class="hidden absolute top-0 right-0 w-1/4 h-1/4 bg-white rounded-full shadow-md"
+                                                        >
+                                                            <!-- emoji -->
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="ml-4">
                                                 <div

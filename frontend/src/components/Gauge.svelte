@@ -5,10 +5,9 @@
     export let percentage = 100
     export let text = ''
     export let color = 'blue'
-    export let stat = `${percentage}%`
+    export let stat = percentage
 
     let svgElem
-    let percElem
 
     let polar_to_cartesian, svg_circle_arc_path, animate_arc
 
@@ -41,91 +40,109 @@
         )
     }
 
-    animate_arc = function (ratio, svg, perc) {
-        let arc = svg.path('')
+    animate_arc = function (ratio, svg) {
+        const arc = svg.select('.gaugeNeedle')
+        const currentRatio = parseFloat(arc.attr('data-ratio'))
+        arc.attr('data-ratio', ratio) // update the ratio
+
         return Snap.animate(
-            0,
+            currentRatio,
             ratio,
             function (val) {
-                let path
-                arc.remove()
-                path = svg_circle_arc_path(500, 500, 450, -90, val * 180.0 - 90)
-                arc = svg.path(path)
-                arc.attr({
-                    class: 'data-arc',
-                })
-                perc.innerText = Math.round(val * 100) + '%'
+                const path = svg_circle_arc_path(
+                    500,
+                    500,
+                    450,
+                    -90,
+                    val * 180.0 - 90,
+                )
+                arc.attr('d', path)
             },
-            Math.round(2000 * ratio),
+            1500,
             mina.easeinout,
         )
     }
 
     afterUpdate(() => {
         const perc = percentage <= 100 ? percentage : 100 // account for overage
-        animate_arc(perc / 100, window.Snap(svgElem), percElem)
+        animate_arc(perc / 100, Snap(svgElem))
     })
 </script>
 
 <style global>
+    .gauge {
+        --tw-aspect-h: 1;
+        --tw-aspect-w: 2;
+        padding-bottom: calc(var(--tw-aspect-h) / var(--tw-aspect-w) * 100%);
+        position: relative;
+    }
+
+    .gauge > * {
+        bottom: 0;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+    }
+
     .gauge path {
         stroke-width: 75;
-        @apply stroke-slate-200;
         fill: none;
     }
 
-    .gauge .title {
-        @apply fill-gray-500;
-    }
-
-    .gauge.blue path.data-arc {
-        @apply stroke-cyan-400;
+    .gauge.blue path {
+        @apply stroke-sky-500;
     }
 
     .gauge.blue .percentage {
-        @apply fill-cyan-600;
+        @apply text-sky-500;
     }
 
-    .gauge.green path.data-arc {
-        @apply stroke-lime-400;
+    .gauge.green path {
+        @apply stroke-green-500;
     }
 
     .gauge.green .percentage {
-        @apply fill-lime-600;
+        @apply text-green-500;
     }
 
-    .gauge.red path.data-arc {
+    .gauge.red path {
         @apply stroke-red-500;
     }
 
     .gauge.red .percentage {
-        @apply fill-red-700;
+        @apply text-red-500;
+    }
+
+    .gauge.purple path {
+        @apply stroke-indigo-500;
+    }
+
+    .gauge.purple .percentage {
+        @apply text-indigo-500;
     }
 </style>
 
 <div class="gauge {color}">
     <svg viewBox="0 0 1000 500" bind:this="{svgElem}" class="max-w-full">
-        <path d="M 950 500 A 450 450 0 0 0 50 500"></path>
-        <text
-            class="percentage"
-            text-anchor="middle"
-            alignment-baseline="middle"
-            x="500"
-            y="300"
-            font-size="140"
-            font-weight="bold"
-            bind:this="{percElem}"
-            >{stat}
-        </text>
-        <text
-            class="title"
-            text-anchor="middle"
-            alignment-baseline="middle"
-            x="500"
-            y="450"
-            font-size="90"
-            font-weight="normal"
-            >{text}
-        </text>
+        <g class="opacity-10">
+            <path d="M 950 500 A 450 450 0 0 0 50 500"></path>
+        </g>
+        <path
+            d="M 50 500 A 450 450 0 0 0 50 500"
+            class="gaugeNeedle"
+            data-ratio="0"></path>
     </svg>
+    <div class="absolute w-full h-full flex flex-col items-center justify-end">
+        <h3 class="block text-5xl font-black ml-1.5 tracking-tight percentage">
+            <span>{stat}</span><span class="ml-0.5 text-base font-bold">%</span>
+        </h3>
+        <h4
+            class="mt-0.5 font-bold text-gray-500 uppercase text-md tracking-wide"
+        >
+            {text}
+        </h4>
+    </div>
 </div>
