@@ -115,8 +115,22 @@ func (d *Database) TeamAddUser(TeamID string, UserID string, Role string) (strin
 }
 
 // TeamUserList gets a list of team users
-func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*model.OrganizationUser {
+func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) ([]*model.OrganizationUser, int, error) {
 	var users = make([]*model.OrganizationUser, 0)
+	var userCount int
+
+	err := d.db.QueryRow(
+		`SELECT count(user_id) FROM team_user WHERE team_id = $1;`,
+		TeamID,
+	).Scan(&userCount)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if userCount == 0 {
+		return users, userCount, nil
+	}
+
 	rows, err := d.db.Query(
 		`SELECT id, name, email, role FROM team_user_list($1, $2, $3);`,
 		TeamID,
@@ -129,7 +143,7 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*model.O
 		for rows.Next() {
 			var usr model.OrganizationUser
 
-			if err := rows.Scan(
+			if err = rows.Scan(
 				&usr.Id,
 				&usr.Name,
 				&usr.Email,
@@ -141,10 +155,10 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*model.O
 			}
 		}
 	} else {
-		log.Println(err)
+		return nil, 0, err
 	}
 
-	return users
+	return users, userCount, nil
 }
 
 // TeamRemoveUser removes a user from a team

@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
@@ -59,6 +60,19 @@ func (d *Database) CheckinCreate(
 	Yesterday string, Today string, Blockers string, Discuss string,
 	GoalsMet bool,
 ) error {
+	var userCount int
+	// target user must be on team to check in
+	usrErr := d.db.QueryRow(`SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
+		TeamId,
+		UserId,
+	).Scan(&userCount)
+	if usrErr != nil {
+		return usrErr
+	}
+	if userCount != 1 {
+		return errors.New("REQUIRES_TEAM_USER")
+	}
+
 	if _, err := d.db.Exec(`INSERT INTO team_checkin
 		(team_id, user_id, yesterday, today, blockers, discuss, goals_met)
 		VALUES ($1, $2, $3, $4, $5, $6, $7);

@@ -62,7 +62,8 @@
     }
 
     afterUpdate(() => {
-        animate_arc(percentage / 100, window.Snap(svgElem), percElem)
+        const perc = percentage <= 100 ? percentage : 100 // account for overage
+        animate_arc(perc / 100, window.Snap(svgElem), percElem)
     })
 </script>
 

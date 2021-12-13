@@ -57,9 +57,9 @@ func (a *api) handleCheckinCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
-		UserId := r.Context().Value(contextKeyUserID).(string)
 
 		keyVal := getJSONRequestBody(r, w)
+		UserId := keyVal["userId"].(string)
 		Yesterday := keyVal["yesterday"].(string)
 		Today := keyVal["today"].(string)
 		Blockers := keyVal["blockers"].(string)
@@ -68,6 +68,10 @@ func (a *api) handleCheckinCreate() http.HandlerFunc {
 
 		err := a.db.CheckinCreate(TeamId, UserId, Yesterday, Today, Blockers, Discuss, GoalsMet)
 		if err != nil {
+			if err.Error() == "REQUIRES_TEAM_USER" {
+				Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
 			Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

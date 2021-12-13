@@ -83,9 +83,18 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
-		Teams := a.db.TeamUserList(TeamID, Limit, Offset)
+		Users, UserCount, err := a.db.TeamUserList(TeamID, Limit, Offset)
+		if err != nil {
+			Failure(w, r, http.StatusInternalServerError, err)
+		}
 
-		Success(w, r, http.StatusOK, Teams, nil)
+		Meta := &pagination{
+			Count:  UserCount,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		Success(w, r, http.StatusOK, Users, Meta)
 	}
 }
 

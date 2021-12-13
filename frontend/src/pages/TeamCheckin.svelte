@@ -28,8 +28,6 @@
     export let departmentId
     export let teamId
 
-    const battlesPageLimit = 1000
-    const usersPageLimit = 1000
     const { AvatarService } = AppConfig
 
     let showCheckin = false
@@ -38,6 +36,14 @@
     let maxNegativeDate
     let selectedDate
     let selectedCheckin
+    let stats = {
+        participants: 0,
+        pPerc: 0,
+        goals: 0,
+        gPerc: 0,
+        blocked: 0,
+        bPerc: 0,
+    }
 
     let team = {
         id: teamId,
@@ -52,8 +58,7 @@
         name: '',
     }
     let users = []
-    let usersPage = 1
-    let battlesPage = 1
+    let userCount = 1
 
     let organizationRole = ''
     let departmentRole = ''
@@ -85,6 +90,7 @@
             })
             .catch(function () {
                 notifications.danger($_('teamGetError'))
+                eventTag('team_checkin_team', 'engagement', 'failure')
             })
     }
 
@@ -98,6 +104,20 @@
             })
             .catch(function () {
                 notifications.danger('Error getting checkins')
+                eventTag('team_checkin_checkins', 'engagement', 'failure')
+            })
+    }
+
+    function getUsers() {
+        xfetch(`${teamPrefix}/users?limit=1&offset=0`)
+            .then(res => res.json())
+            .then(function (result) {
+                users = result.data
+                userCount = result.meta.count
+            })
+            .catch(function () {
+                notifications.danger($_('teamGetUsersError'))
+                eventTag('team_checkin_users', 'engagement', 'failure')
             })
     }
 
@@ -121,9 +141,23 @@
             .then(function () {
                 getCheckins()
                 toggleCheckin()
+                eventTag('team_checkin_create', 'engagement', 'success')
             })
-            .catch(function () {
-                notifications.danger(`Error checking in`)
+            .catch(function (error) {
+                if (Array.isArray(error)) {
+                    error[1].json().then(function (result) {
+                        if (result.error == 'REQUIRES_TEAM_USER') {
+                            notifications.danger(
+                                `User must be in team to checkin`,
+                            )
+                        } else {
+                            notifications.danger(`Error checking in`)
+                        }
+                    })
+                } else {
+                    notifications.danger(`Error checking in`)
+                }
+                eventTag('team_checkin_create', 'engagement', 'failure')
             })
     }
 
@@ -136,9 +170,11 @@
             .then(function () {
                 getCheckins()
                 toggleCheckin()
+                eventTag('team_checkin_edit', 'engagement', 'success')
             })
             .catch(function () {
                 notifications.danger(`Error updating checkin`)
+                eventTag('team_checkin_edit', 'engagement', 'failure')
             })
     }
 
@@ -147,9 +183,11 @@
             .then(res => res.json())
             .then(function () {
                 getCheckins()
+                eventTag('team_checkin_delete', 'engagement', 'success')
             })
             .catch(function () {
                 notifications.danger(`Error deleting checkin`)
+                eventTag('team_checkin_delete', 'engagement', 'failure')
             })
     }
 
@@ -164,7 +202,37 @@
 
         getTeam()
         getCheckins()
+        getUsers()
     })
+
+    function calculateCheckinStats() {
+        const ucs = []
+        stats.blocked = 0
+        stats.goals = 0
+
+        checkins.map(c => {
+            // @todo - remove once multiple same day checkins are prevented
+            if (!ucs.includes(c.user.id)) {
+                ucs.push(c.user.id)
+
+                if (c.blockers != '') {
+                    ++stats.blocked
+                }
+                if (c.goalsMet) {
+                    ++stats.goals
+                }
+            }
+        })
+        stats.participants = ucs.length
+
+        stats.pPerc = (100 * stats.participants) / userCount
+        stats.gPerc = (100 * stats.goals) / userCount
+        stats.bPerc = (100 * stats.blocked) / userCount
+
+        stats = stats
+
+        return stats
+    }
 
     $: isAdmin =
         organizationRole === 'ADMIN' ||
@@ -174,6 +242,8 @@
         organizationRole === 'ADMIN' ||
         departmentRole === 'ADMIN' ||
         teamRole !== ''
+
+    $: checkStats = checkins && userCount && calculateCheckinStats()
 </script>
 
 <svelte:head>
@@ -262,13 +332,27 @@
 
     <div class="grid grid-cols-3 gap-x-4 my-4 max-w-4xl mx-auto">
         <div class="px-2 md:px-4">
-            <Gauge text="Participants" percentage="70" stat="7" />
+            <Gauge
+                text="Participants"
+                percentage="{stats.pPerc}"
+                stat="{stats.participants}"
+            />
         </div>
         <div class="px-2 md:px-4">
-            <Gauge text="Met Goals" percentage="90" color="green" stat="9" />
+            <Gauge
+                text="Met Goals"
+                percentage="{stats.gPerc}"
+                color="green"
+                stat="{stats.goals}"
+            />
         </div>
         <div class="px-2 md:px-4">
-            <Gauge text="Blockers" percentage="20" color="red" stat="2" />
+            <Gauge
+                text="Blockers"
+                percentage="{stats.bPerc}"
+                color="red"
+                stat="{stats.blocked}"
+            />
         </div>
     </div>
 
@@ -410,7 +494,7 @@
         {#if selectedCheckin}
             <Checkin
                 teamId="{team.id}"
-                userId="{warrior.id}"
+                userId="{$warrior.id}"
                 checkinId="{selectedCheckin.id}"
                 yesterday="{selectedCheckin.yesterday}"
                 today="{selectedCheckin.today}"
@@ -424,7 +508,7 @@
         {:else}
             <Checkin
                 teamId="{team.id}"
-                userId="{warrior.id}"
+                userId="{$warrior.id}"
                 toggleCheckin="{toggleCheckin}"
                 handleCheckin="{handleCheckin}"
                 handleCheckinEdit="{handleCheckinEdit}"
