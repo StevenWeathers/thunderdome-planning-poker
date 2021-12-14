@@ -29,7 +29,8 @@
         reader.onload = () => {
             try {
                 const docParser = new DOMParser()
-                const domContent = reader.result.replace(/<!--.*?-->/gis, '')
+                const commentReg = new RegExp('/<!--.*?-->/sig')
+                const domContent = reader.result.replace(commentReg, '')
                 const doc = docParser.parseFromString(
                     domContent,
                     'application/xml',
