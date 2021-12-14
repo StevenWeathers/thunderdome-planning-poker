@@ -122,11 +122,6 @@
             })
     }
 
-    const score = 32
-    // 100%=180° so: ° = % * 1.8
-    // 45 is to add the needed rotation to have the green borders at the bottom
-    $: barPercent = 45 + score * 1.8
-
     function toggleCheckin(checkin) {
         showCheckin = !showCheckin
         if (checkin) {
@@ -407,7 +402,7 @@
                                         <div class="flex items-center">
                                             <div class="">
                                                 <div
-                                                    class="relative cursor-pointer w-16 h-16"
+                                                    class="relative cursor-pointer w-14 h-14"
                                                 >
                                                     <div
                                                         class="relative w-full h-full"

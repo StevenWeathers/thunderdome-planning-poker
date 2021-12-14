@@ -38,10 +38,47 @@
     }
 </script>
 
+<style>
+    .toggle-checkbox:checked {
+        @apply right-0;
+        @apply border-green-500;
+    }
+
+    .toggle-checkbox:checked + .toggle-label {
+        @apply bg-green-500;
+    }
+</style>
+
 <Modal closeModal="{toggleCheckin}" widthClasses="md:w-2/3">
     <form on:submit="{onSubmit}" name="teamCheckin">
         <div class="mb-4">
-            <div class="text-blue-500 uppercase font-rajdhani text-xl mb-2">
+            <div
+                class="text-gray-700 uppercase font-rajdhani text-2xl tracking-wide mb-2"
+            >
+                Did you meet yesterday's goals?
+            </div>
+            <div
+                class="relative inline-block w-16 mr-2 align-middle select-none transition duration-200 ease-in"
+            >
+                <input
+                    type="checkbox"
+                    name="goalsMet"
+                    id="goalsMet"
+                    bind:checked="{goalsMet}"
+                    class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow"
+                />
+                <label
+                    for="goalsMet"
+                    class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-300 cursor-pointer transition-colors duration-200 ease-in-out"
+                >
+                </label>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <div
+                class="text-blue-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
+            >
                 Yesterday
             </div>
             <div
@@ -56,7 +93,9 @@
         </div>
 
         <div class="mb-4">
-            <div class="text-green-500 uppercase font-rajdhani text-xl mb-2">
+            <div
+                class="text-green-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
+            >
                 Today
             </div>
             <div
@@ -71,7 +110,9 @@
         </div>
 
         <div class="mb-4">
-            <div class="text-red-500 uppercase font-rajdhani text-xl mb-2">
+            <div
+                class="text-red-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
+            >
                 Blockers
             </div>
             <div
@@ -86,7 +127,9 @@
         </div>
 
         <div class="mb-4">
-            <div class="text-purple-500 uppercase font-rajdhani text-xl mb-2">
+            <div
+                class="text-purple-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
+            >
                 Discuss
             </div>
             <div
@@ -98,31 +141,6 @@
                 on:text-change="{e => (discuss = e.detail.html)}"
                 id="discuss"
             ></div>
-        </div>
-
-        <div class="mb-4">
-            <label
-                class="block text-gray-700 text-sm font-bold mb-2"
-                for="discuss"
-            >
-                Goals Met
-            </label>
-            <div
-                class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
-            >
-                <input
-                    type="checkbox"
-                    name="activeBattles"
-                    id="activeBattles"
-                    bind:checked="{goalsMet}"
-                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                />
-                <label
-                    for="activeBattles"
-                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                >
-                </label>
-            </div>
         </div>
 
         <div>
