@@ -65,7 +65,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create Team --
-DROP FUNCTION team_create(IN userId UUID, IN teamName VARCHAR(256), OUT teamId UUID);
+DROP FUNCTION IF EXISTS team_create(IN userId UUID, IN teamName VARCHAR(256), OUT teamId UUID);
 CREATE OR REPLACE FUNCTION team_create(
     IN userId UUID,
     IN teamName VARCHAR(256)
