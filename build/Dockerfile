@@ -1,13 +1,13 @@
 ############################
 # STEP 1 build the ui
 ############################
-FROM node:14 as builderNode
+FROM node:16 as builderNode
 
 RUN mkdir /webapp
 COPY ./frontend/ /webapp/frontend/
 COPY ./build/*.js /webapp/build/
 COPY ./*.json /webapp/
-# COPY ./*.js /webapp/
+COPY ./*.js /webapp/
 WORKDIR /webapp
 # install node packages
 RUN npm set progress=false
@@ -17,7 +17,7 @@ RUN npm run build
 ############################
 # STEP 2 build executable binary
 ############################
-FROM golang:1.16-alpine as builderGo
+FROM golang:1.17-alpine as builderGo
 ARG BUILD_VERSION
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
@@ -26,12 +26,14 @@ RUN apk update && apk add --no-cache git ca-certificates
 # Create appuser
 RUN adduser -D -g '' appuser
 # Copy the go source
-COPY ./pkg/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/pkg/
+COPY ./api/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/api/
+COPY ./db/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/db/
+COPY ./battle/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/battle/
+COPY ./email/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/email/
+COPY ./model/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/model/
 COPY ./*.go $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 COPY ./go.mod $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 COPY ./go.sum $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
-# Copy SQL file
-COPY ./schema.sql $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 # Copy our static assets
 COPY --from=builderNode /webapp/dist $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/dist
 # Set working dir
