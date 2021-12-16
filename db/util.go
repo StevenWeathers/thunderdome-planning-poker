@@ -163,3 +163,9 @@ func decrypt(data string, passphrase string) (string, error) {
 	}
 	return string(plaintext), nil
 }
+
+// createGravatarEmailHash md5 hashes email for gravatar use
+func createGravatarEmailHash(email string) string {
+	gh := md5.Sum([]byte(email))
+	return hex.EncodeToString(gh[:])
+}

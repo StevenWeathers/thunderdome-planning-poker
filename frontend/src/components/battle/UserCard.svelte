@@ -4,7 +4,7 @@
     import WarriorRankPrivate from '../icons/UserRankGuest.svelte'
     import WarriorRankCorporal from '../icons/UserRankRegistered.svelte'
     import WarriorRankGeneral from '../icons/UserRankAdmin.svelte'
-    import WarriorAvatar from './UserAvatar.svelte'
+    import UserAvatar from '../user/UserAvatar.svelte'
     import BecomeLeader from './BecomeLeader.svelte'
     import { AppConfig } from '../../config.js'
     import { _ } from '../../i18n.js'
@@ -66,11 +66,14 @@
     data-testid="user-card"
     data-username="{warrior.name}"
 >
-    <div class="w-1/4 mr-1">
-        <WarriorAvatar
+    <div class="w-1/4 mr-2">
+        <UserAvatar
             warriorId="{warrior.id}"
             avatar="{warrior.avatar}"
             avatarService="{avatarService}"
+            gravatarHash="{warrior.gravatarHash}"
+            class="rounded-full"
+            width="68"
         />
     </div>
     <div class="w-3/4">

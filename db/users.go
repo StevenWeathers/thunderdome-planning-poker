@@ -186,7 +186,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 
 	var verifyID string
 	UserType := "REGISTERED"
-	UserAvatar := "identicon"
+	UserAvatar := "robohash"
 	User := &model.User{
 		Name:   UserName,
 		Email:  UserEmail,
@@ -238,7 +238,7 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 
 	var verifyID string
 	UserType := "REGISTERED"
-	UserAvatar := "identicon"
+	UserAvatar := "robohash"
 	User := &model.User{
 		Name:   UserName,
 		Email:  UserEmail,
@@ -264,7 +264,7 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 // UpdateUserProfile updates the users profile
 func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
-		UserAvatar = "identicon"
+		UserAvatar = "robohash"
 	}
 	if _, err := d.db.Exec(
 		`call user_profile_update($1, $2, $3, $4, $5, $6, $7, $8);`,

@@ -304,7 +304,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
 	var users = make([]*model.BattleUser, 0)
 	rows, err := d.db.Query(
 		`SELECT
-			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator
+			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, '')
 		FROM battles_users bw
 		LEFT JOIN users w ON bw.user_id = w.id
 		WHERE bw.battle_id = $1
@@ -315,9 +315,12 @@ func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w model.BattleUser
-			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator); err != nil {
+			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
 				log.Println(err)
 			} else {
+				if w.GravatarHash != "" {
+					w.GravatarHash = createGravatarEmailHash(w.GravatarHash)
+				}
 				users = append(users, &w)
 			}
 		}
@@ -331,7 +334,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
 	var users = make([]*model.BattleUser, 0)
 	rows, err := d.db.Query(
 		`SELECT
-			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator
+			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, '')
 		FROM battles_users bw
 		LEFT JOIN users w ON bw.user_id = w.id
 		WHERE bw.battle_id = $1 AND bw.active = true
@@ -342,9 +345,12 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w model.BattleUser
-			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator); err != nil {
+			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
 				log.Println(err)
 			} else {
+				if w.GravatarHash != "" {
+					w.GravatarHash = createGravatarEmailHash(w.GravatarHash)
+				}
 				users = append(users, &w)
 			}
 		}

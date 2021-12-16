@@ -5,7 +5,7 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import WarriorAvatar from '../components/battle/UserAvatar.svelte'
+    import WarriorAvatar from '../components/user/UserAvatar.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import LocaleSwitcher from '../components/LocaleSwitcher.svelte'
     import { warrior } from '../stores.js'

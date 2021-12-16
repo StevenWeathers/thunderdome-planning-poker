@@ -4,13 +4,14 @@ import "time"
 
 // BattleUser aka user
 type BattleUser struct {
-	Id        string `json:"id"`
-	Name      string `json:"name"`
-	Type      string `json:"rank"`
-	Avatar    string `json:"avatar"`
-	Active    bool   `json:"active"`
-	Abandoned bool   `json:"abandoned"`
-	Spectator bool   `json:"spectator"`
+	Id           string `json:"id"`
+	Name         string `json:"name"`
+	Type         string `json:"rank"`
+	Avatar       string `json:"avatar"`
+	Active       bool   `json:"active"`
+	Abandoned    bool   `json:"abandoned"`
+	Spectator    bool   `json:"spectator"`
+	GravatarHash string `json:"gravatarHash"`
 }
 
 // Battle aka arena
