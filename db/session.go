@@ -54,6 +54,8 @@ func (d *Database) GetSessionUser(SessionId string) (*model.User, error) {
 		return nil, errors.New("active session match not found")
 	}
 
+	User.GravatarHash = createGravatarHash(User.Email)
+
 	return User, nil
 }
 

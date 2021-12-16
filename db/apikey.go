@@ -155,5 +155,7 @@ func (d *Database) GetApiKeyUser(APK string) (*model.User, error) {
 		return nil, errors.New("active API Key match not found")
 	}
 
+	User.GravatarHash = createGravatarHash(User.Email)
+
 	return User, nil
 }

@@ -319,7 +319,9 @@ func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
 				log.Println(err)
 			} else {
 				if w.GravatarHash != "" {
-					w.GravatarHash = createGravatarEmailHash(w.GravatarHash)
+					w.GravatarHash = createGravatarHash(w.GravatarHash)
+				} else {
+					w.GravatarHash = createGravatarHash(w.Id)
 				}
 				users = append(users, &w)
 			}
@@ -349,7 +351,9 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
 				log.Println(err)
 			} else {
 				if w.GravatarHash != "" {
-					w.GravatarHash = createGravatarEmailHash(w.GravatarHash)
+					w.GravatarHash = createGravatarHash(w.GravatarHash)
+				} else {
+					w.GravatarHash = createGravatarHash(w.Id)
 				}
 				users = append(users, &w)
 			}

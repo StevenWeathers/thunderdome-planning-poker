@@ -50,6 +50,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int
 		); err != nil {
 			log.Println(err)
 		} else {
+			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)
 		}
 	}
@@ -95,6 +96,11 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 	w.Locale = UserLocale.String
 	w.Company = UserCompany.String
 	w.JobTitle = UserJobTitle.String
+	if w.Email != "" {
+		w.GravatarHash = createGravatarHash(w.Email)
+	} else {
+		w.GravatarHash = createGravatarHash(w.Id)
+	}
 
 	return &w, nil
 }
@@ -140,6 +146,7 @@ WHERE id = $1 AND type = 'GUEST';
 	w.Locale = UserLocale.String
 	w.Company = UserCompany.String
 	w.JobTitle = UserJobTitle.String
+	w.GravatarHash = createGravatarHash(w.Id)
 
 	return &w, nil
 }
@@ -162,6 +169,8 @@ func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 		return nil, errors.New("user email not found")
 	}
 
+	w.GravatarHash = createGravatarHash(w.Email)
+
 	return &w, nil
 }
 
@@ -174,7 +183,7 @@ func (d *Database) CreateUserGuest(UserName string) (*model.User, error) {
 		return nil, errors.New("unable to create new user")
 	}
 
-	return &model.User{Id: UserID, Name: UserName, Avatar: "identicon", NotificationsEnabled: true, Locale: "en"}, nil
+	return &model.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: createGravatarHash(UserID)}, nil
 }
 
 // CreateUserRegistered adds a new registered user
@@ -188,10 +197,11 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 	UserType := "REGISTERED"
 	UserAvatar := "robohash"
 	User := &model.User{
-		Name:   UserName,
-		Email:  UserEmail,
-		Type:   UserType,
-		Avatar: UserAvatar,
+		Name:         UserName,
+		Email:        UserEmail,
+		Type:         UserType,
+		Avatar:       UserAvatar,
+		GravatarHash: createGravatarHash(UserEmail),
 	}
 
 	if ActiveUserID != "" {
@@ -240,10 +250,11 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 	UserType := "REGISTERED"
 	UserAvatar := "robohash"
 	User := &model.User{
-		Name:   UserName,
-		Email:  UserEmail,
-		Type:   UserType,
-		Avatar: UserAvatar,
+		Name:         UserName,
+		Email:        UserEmail,
+		Type:         UserType,
+		Avatar:       UserAvatar,
+		GravatarHash: createGravatarHash(UserEmail),
 	}
 
 	e := d.db.QueryRow(
@@ -359,6 +370,7 @@ func (d *Database) SearchRegisteredUsersByEmail(Email string, Limit int, Offset 
 		); err != nil {
 			log.Println(err)
 		} else {
+			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)
 		}
 	}

@@ -493,7 +493,12 @@
                             </label>
                             <div class="flex">
                                 <div class="md:w-2/3 lg:w-3/4">
-                                    <div class="relative">
+                                    <div
+                                        class="relative"
+                                        class:hidden="{AvatarService ===
+                                            'gravatar' &&
+                                            warriorProfile.email !== ''}"
+                                    >
                                         <select
                                             bind:value="{warriorProfile.avatar}"
                                             class="block appearance-none w-full
@@ -525,7 +530,9 @@
                                             warriorId="{warriorProfile.id}"
                                             avatar="{warriorProfile.avatar}"
                                             avatarService="{AvatarService}"
-                                            width="40"
+                                            gravatarHash="{warriorProfile.gravatarHash}"
+                                            width="48"
+                                            class="rounded-full"
                                         />
                                     </span>
                                 </div>

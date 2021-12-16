@@ -15,6 +15,7 @@ type User struct {
 	Locale               string    `json:"locale"`
 	Company              string    `json:"company"`
 	JobTitle             string    `json:"jobTitle"`
+	GravatarHash         string    `json:"gravatarHash"`
 	CreatedDate          time.Time `json:"createdDate"`
 	UpdatedDate          time.Time `json:"updatedDate"`
 	LastActive           time.Time `json:"lastActive"`
