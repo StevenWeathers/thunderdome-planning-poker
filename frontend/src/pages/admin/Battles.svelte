@@ -80,7 +80,7 @@
 
     <div class="w-full">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-            <div class="text-right">
+            <div class="text-right mb-4">
                 <div
                     class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
                 >
@@ -100,46 +100,89 @@
                 </div>
                 <label for="activeBattles">{$_('showActiveBattles')}</label>
             </div>
-            <table class="table-fixed w-full">
-                <thead>
-                    <tr>
-                        <th class="flex-1 p-2">{$_('name')}</th>
-                        <th class="flex-1 p-2">{$_('dateCreated')}</th>
-                        <th class="flex-1 p-2">{$_('dateUpdated')}</th>
-                        <th class="flex-1 p-2"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each battles as battle}
-                        <tr>
-                            <td class="border p-2">
-                                <a
-                                    href="{appRoutes.admin}/battles/{battle.id}"
-                                    class="no-underline text-blue-500 hover:text-blue-800"
-                                    >{battle.name}</a
+
+            <div class="flex flex-col">
+                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div
+                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+                    >
+                        <div
+                            class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                        >
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('name')}
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('dateCreated')}
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('dateUpdated')}
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            class="relative px-6 py-3"
+                                        >
+                                            <span class="sr-only">Actions</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="bg-white divide-y divide-gray-200"
                                 >
-                            </td>
-                            <td class="border p-2"
-                                >{new Date(
-                                    battle.createdDate,
-                                ).toLocaleString()}</td
-                            >
-                            <td class="border p-2"
-                                >{new Date(
-                                    battle.updatedDate,
-                                ).toLocaleString()}</td
-                            >
-                            <td class="border p-2 text-right">
-                                <HollowButton
-                                    href="{appRoutes.battle}/{battle.id}"
-                                >
-                                    {$_('battleJoin')}
-                                </HollowButton>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
+                                    {#each battles as battle, i}
+                                        <tr class:bg-slate-100="{i % 2 !== 0}">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                <a
+                                                    href="{appRoutes.admin}/battles/{battle.id}"
+                                                    class="no-underline text-blue-500 hover:text-blue-800"
+                                                    >{battle.name}</a
+                                                >
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {new Date(
+                                                    battle.createdDate,
+                                                ).toLocaleString()}
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {new Date(
+                                                    battle.updatedDate,
+                                                ).toLocaleString()}
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                                            >
+                                                <HollowButton
+                                                    href="{appRoutes.battle}/{battle.id}"
+                                                >
+                                                    {$_('battleJoin')}
+                                                </HollowButton>
+                                            </td>
+                                        </tr>
+                                    {/each}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {#if battleCount > battlesPageLimit}
                 <div class="pt-6 flex justify-center">

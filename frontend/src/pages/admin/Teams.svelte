@@ -82,28 +82,69 @@
 
     <div class="w-full">
         <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-            <table class="table-fixed w-full">
-                <thead>
-                    <tr>
-                        <th class="flex-1 p-2">{$_('name')}</th>
-                        <th class="flex-1 p-2">{$_('dateCreated')}</th>
-                        <th class="flex-1 p-2">{$_('dateUpdated')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each teams as team}
-                        <tr>
-                            <td class="border p-2">{team.name}</td>
-                            <td class="border p-2">
-                                {new Date(team.createdDate).toLocaleString()}
-                            </td>
-                            <td class="border p-2">
-                                {new Date(team.updatedDate).toLocaleString()}
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
+            <div class="flex flex-col">
+                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div
+                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+                    >
+                        <div
+                            class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                        >
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('name')}
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('dateCreated')}
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('dateUpdated')}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="bg-white divide-y divide-gray-200"
+                                >
+                                    {#each teams as team, i}
+                                        <tr class:bg-slate-100="{i % 2 !== 0}">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {team.name}
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {new Date(
+                                                    team.createdDate,
+                                                ).toLocaleString()}
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {new Date(
+                                                    team.updatedDate,
+                                                ).toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    {/each}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {#if appStats.teamCount > teamsPageLimit}
                 <div class="pt-6 flex justify-center">
