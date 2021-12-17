@@ -166,37 +166,37 @@
                                     <tr>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left test-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                                         >
                                             {$_('name')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left test-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                                         >
                                             {$_('type')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left test-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                                         >
                                             {$_('active')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left test-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                                         >
                                             {$_('alertRegisteredOnly')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left test-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                                         >
                                             {$_('alertAllowDismiss')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left test-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                                         >
                                             {$_('dateUpdated')}
                                         </th>
