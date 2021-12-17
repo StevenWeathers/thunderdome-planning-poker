@@ -274,18 +274,18 @@
                     </a>
                     {#if departmentId}
                         &nbsp;
-                        <ChevronRight class="inline-block" />
+                        <ChevronRight />
                         {$_('department')}
-                        <ChevronRight class="inline-block" />
+                        <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800"
                             href="{appRoutes.organization}/{organization.id}/department/{department.id}"
                         >
                             {department.name}
                         </a>
-                        <ChevronRight class="inline-block" />
+                        <ChevronRight />
                         {$_('team')}
-                        <ChevronRight class="inline-block" />
+                        <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800"
                             href="{appRoutes.organization}/{organization.id}/department/{department.id}"
@@ -293,9 +293,9 @@
                             {team.name}
                         </a>
                     {:else}
-                        <ChevronRight class="inline-block" />
+                        <ChevronRight />
                         {$_('team')}
-                        <ChevronRight class="inline-block" />
+                        <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800"
                             href="{appRoutes.organization}/{organization.id}/team/{team.id}"
@@ -307,7 +307,7 @@
             {:else}
                 <div class="text-2xl font-semibold font-rajdhani uppercase">
                     {$_('team')}
-                    <ChevronRight class="inline-block" />
+                    <ChevronRight />
                     <a
                         class="text-blue-500 hover:text-blue-800"
                         href="{appRoutes.team}/{team.id}"
