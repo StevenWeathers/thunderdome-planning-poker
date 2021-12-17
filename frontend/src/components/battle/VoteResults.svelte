@@ -90,7 +90,7 @@
     <div class="w-1/3 ">
         <div class="mb-2">{$_('pages.battle.voteResults.totalVotes')}</div>
         <span data-testid="voteresult-total">{totalVotes}</span>
-        <WarriorIcon />
+        <WarriorIcon class="h-5 w-5" />
     </div>
     <div class="w-1/3">
         <div class="mb-2">{$_('pages.battle.voteResults.average')}</div>
@@ -123,7 +123,7 @@
                     class="relative leading-none"
                     title="{$_('pages.battle.voteResults.showVoters')}"
                 >
-                    <WarriorIcon />
+                    <WarriorIcon class="h-5 w-5" />
                     <span
                         class="text-sm text-right text-gray-900 font-normal w-48
                         absolute left-0 top-0 -mt-2 ml-4 bg-white p-2 rounded

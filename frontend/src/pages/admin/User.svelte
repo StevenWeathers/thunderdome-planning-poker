@@ -2,7 +2,7 @@
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
-    import CheckIcon from '../../components/icons/CheckIcon.svelte'
+    import VerifiedIcon from '../../components/icons/Verified.svelte'
     import Pagination from '../../components/Pagination.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
     import UserAvatar from '../../components/user/UserAvatar.svelte'
@@ -113,7 +113,7 @@
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3"> </th>
+                                        <th scope="col" class="px-6 py-3"></th>
                                         <th
                                             scope="col"
                                             class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
@@ -190,7 +190,7 @@
                                                         'pages.admin.registeredWarriors.verified',
                                                     )}"
                                                 >
-                                                    <CheckIcon />
+                                                    <VerifiedIcon />
                                                 </span>
                                             {/if}
                                         </td>

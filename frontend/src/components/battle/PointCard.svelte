@@ -56,7 +56,7 @@
                 title="{$_('pages.battle.voteResults.showVoters')}"
                 class="text-green-500 relative leading-none"
             >
-                <WarriorIcon height="24" width="24" />
+                <WarriorIcon class="h-5 w-5" />
                 <span
                     class="text-right text-sm text-gray-900 font-normal w-48
                     absolute left-0 top-0 mt-0 ml-6 bg-white p-2 rounded

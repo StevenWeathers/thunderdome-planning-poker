@@ -1,12 +1,10 @@
 <script>
-    export let width = 32
-    export let height = 32
+    let klass = 'h-6 w-6'
+    export { klass as class }
 </script>
 
 <svg
-    class="fill-current inline"
-    width="{width}"
-    height="{height}"
+    class="fill-current inline {klass}"
     aria-hidden="true"
     focusable="false"
     data-prefix="fas"

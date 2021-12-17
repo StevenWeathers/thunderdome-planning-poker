@@ -3,6 +3,16 @@
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
+    import UserIcon from '../../components/icons/UserIcon.svelte'
+    import UserRankGuest from '../../components/icons/UserRankGuest.svelte'
+    import UserRankRegistered from '../../components/icons/UserRankRegistered.svelte'
+    import KeyIcon from '../../components/icons/Key.svelte'
+    import LightingBolt from '../../components/icons/LightningBolt.svelte'
+    import UserGroupIcon from '../../components/icons/UserGroup.svelte'
+    import UsersIcon from '../../components/icons/Users.svelte'
+    import OfficeBuildingIcon from '../../components/icons/OfficeBuilding.svelte'
+    import DocumentTextIcon from '../../components/icons/DocumentText.svelte'
+    import ShieldExclamationIcon from '../../components/icons/ShieldExclamation.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
     import { AppConfig, appRoutes } from '../../config.js'
@@ -104,72 +114,171 @@
             {$_('pages.admin.title')}
         </h1>
     </div>
-    <div class="flex justify-center mb-4">
-        <div class="w-full">
-            <div
-                class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
-                md:pb-4 bg-white shadow-lg rounded text-xl"
-            >
-                <div class="w-1/2">
-                    <div class="mb-2 font-bold">{$_('battlesActive')}</div>
-                    {appStats.activeBattleCount}
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-blue-400 text-white">
+                        <UserRankGuest width="28" height="28" />
+                    </div>
                 </div>
-                <div class="w-1/2">
-                    <div class="mb-2 font-bold">{$_('battlesActiveUsers')}</div>
-                    {appStats.activeBattleUserCount}
-                </div>
-            </div>
-            <div
-                class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
-                md:pb-4 bg-white shadow-lg rounded text-xl"
-            >
-                <div class="w-1/4">
-                    <div class="mb-2 font-bold">
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
                         {$_('pages.admin.counts.unregistered')}
-                    </div>
-                    {appStats.unregisteredUserCount}
-                </div>
-                <div class="w-1/4">
-                    <div class="mb-2 font-bold">
-                        {$_('pages.admin.counts.registered')}
-                    </div>
-                    {appStats.registeredUserCount}
-                </div>
-                <div class="w-1/4">
-                    <div class="mb-2 font-bold">
-                        {$_('pages.admin.counts.battles')}
-                    </div>
-                    {appStats.battleCount}
-                </div>
-                <div class="w-1/4">
-                    <div class="mb-2 font-bold">
-                        {$_('pages.admin.counts.plans')}
-                    </div>
-                    {appStats.planCount}
+                    </h5>
+                    <h3 class="font-bold text-3xl">
+                        {appStats.unregisteredUserCount}
+                    </h3>
                 </div>
             </div>
-            <div
-                class="flex flex-wrap items-center text-center pt-2 pb-2 md:pt-4
-                md:pb-4 bg-white shadow-lg rounded text-xl"
-            >
-                <div class="{ExternalAPIEnabled ? 'w-1/4' : 'w-1/3'}">
-                    <div class="mb-2 font-bold">{$_('organizations')}</div>
-                    {appStats.organizationCount}
-                </div>
-                <div class="{ExternalAPIEnabled ? 'w-1/4' : 'w-1/3'}">
-                    <div class="mb-2 font-bold">{$_('departments')}</div>
-                    {appStats.departmentCount}
-                </div>
-                <div class="{ExternalAPIEnabled ? 'w-1/4' : 'w-1/3'}">
-                    <div class="mb-2 font-bold">{$_('teams')}</div>
-                    {appStats.teamCount}
-                </div>
-                {#if ExternalAPIEnabled}
-                    <div class="w-1/4">
-                        <div class="mb-2 font-bold">{$_('apiKeys')}</div>
-                        {appStats.apikeyCount}
+        </div>
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-indigo-500 text-white">
+                        <UserRankRegistered width="28" height="28" />
                     </div>
-                {/if}
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
+                        {$_('pages.admin.counts.registered')}
+                    </h5>
+                    <h3 class="font-bold text-3xl">
+                        {appStats.registeredUserCount}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        {#if ExternalAPIEnabled}
+            <div class="bg-white border rounded shadow-lg p-2">
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-cyan-500 text-white">
+                            <KeyIcon />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5 class="font-bold uppercase text-gray-500">
+                            {$_('apiKeys')}
+                        </h5>
+                        <h3 class="font-bold text-3xl">
+                            {appStats.apikeyCount}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        {/if}
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-orange-500 text-white">
+                        <ShieldExclamationIcon />
+                    </div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
+                        {$_('pages.admin.counts.battles')}
+                    </h5>
+                    <h3 class="font-bold text-3xl">{appStats.battleCount}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-teal-500 text-white">
+                        <DocumentTextIcon />
+                    </div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
+                        {$_('pages.admin.counts.plans')}
+                    </h5>
+                    <h3 class="font-bold text-3xl">{appStats.planCount}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-red-500 text-white">
+                        <LightingBolt />
+                    </div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
+                        {$_('battlesActive')}
+                    </h5>
+                    <h3 class="font-bold text-3xl">
+                        {appStats.activeBattleCount}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-green-500 text-white">
+                        <UserIcon width="28" height="28" />
+                    </div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
+                        {$_('battlesActiveUsers')}
+                    </h5>
+                    <h3 class="font-bold text-3xl">
+                        {appStats.activeBattleUserCount}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-sky-500 text-white">
+                        <OfficeBuildingIcon />
+                    </div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
+                        {$_('organizations')}
+                    </h5>
+                    <h3 class="font-bold text-3xl">
+                        {appStats.organizationCount}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-rose-500 text-white">
+                        <UserGroupIcon />
+                    </div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
+                        {$_('departments')}
+                    </h5>
+                    <h3 class="font-bold text-3xl">
+                        {appStats.departmentCount}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-purple-500 text-white">
+                        <UsersIcon />
+                    </div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
+                        {$_('teams')}
+                    </h5>
+                    <h3 class="font-bold text-3xl">{appStats.teamCount}</h3>
+                </div>
             </div>
         </div>
     </div>

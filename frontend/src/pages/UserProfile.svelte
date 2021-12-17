@@ -7,6 +7,7 @@
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import ProfileForm from '../components/user/ProfileForm.svelte'
     import CreateApiKey from '../components/user/CreateApiKey.svelte'
+    import CheckIcon from '../components/icons/CheckIcon.svelte'
     import { warrior } from '../stores.js'
     import { validatePasswords } from '../validationUtils.js'
     import { _ } from '../i18n.js'
@@ -394,7 +395,11 @@
                                         class="border px-4 py-2"
                                         data-testid="apikey-active"
                                     >
-                                        {apk.active}
+                                        {#if apk.active}
+                                            <span class="text-green-600"
+                                                ><CheckIcon /></span
+                                            >
+                                        {/if}
                                     </td>
                                     <td class="border px-4 py-2">
                                         {new Date(

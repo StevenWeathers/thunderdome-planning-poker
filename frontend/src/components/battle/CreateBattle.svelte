@@ -4,7 +4,7 @@
     import SolidButton from '../SolidButton.svelte'
     import HollowButton from '../HollowButton.svelte'
     import JiraImport from './JiraImport.svelte'
-    import DownCarrotIcon from '../icons/DownCarrotIcon.svelte'
+    import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
     import { AppConfig, appRoutes } from '../../config.js'

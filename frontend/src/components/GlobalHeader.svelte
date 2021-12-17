@@ -121,7 +121,7 @@
                     <span
                         class="font-bold mr-2 text-lg lg:text-xl inline-block max-w-48 truncate"
                     >
-                        <UserIcon />
+                        <UserIcon class="h-5 w-5" />
                         <a
                             href="{appRoutes.profile}"
                             data-testid="userprofile-link">{$warrior.name}</a
@@ -236,7 +236,7 @@
             <div class="font-rajdhani font-semibold mx-4 my-2">
                 {#if $warrior.name}
                     <span class="font-bold mr-2 text-lg lg:text-xl">
-                        <UserIcon />
+                        <UserIcon class="h-5 w-5" />
                         <a
                             href="{appRoutes.profile}"
                             data-testid="m-userprofile-link">{$warrior.name}</a

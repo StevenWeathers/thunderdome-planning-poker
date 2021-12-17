@@ -170,7 +170,7 @@
                 {#if !warrior.spectator}
                     {#if voted && points === ''}
                         <span class="text-green-500">
-                            <VoteIcon />
+                            <VoteIcon class="h-8 w-8" />
                         </span>
                     {:else if voted && points !== ''}
                         <span

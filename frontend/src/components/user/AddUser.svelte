@@ -1,6 +1,6 @@
 <script>
     import Modal from '../Modal.svelte'
-    import DownCarrotIcon from '../icons/DownCarrotIcon.svelte'
+    import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import SolidButton from '../SolidButton.svelte'
     import { _ } from '../../i18n.js'
 

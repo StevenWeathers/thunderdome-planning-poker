@@ -6,7 +6,7 @@
     import CreateWarrior from '../../components/user/CreateUser.svelte'
     import Pagination from '../../components/Pagination.svelte'
     import CountryFlag from '../../components/user/CountryFlag.svelte'
-    import CheckIcon from '../../components/icons/CheckIcon.svelte'
+    import VerifiedIcon from '../../components/icons/Verified.svelte'
     import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import SolidButton from '../../components/SolidButton.svelte'
     import UserAvatar from '../../components/user/UserAvatar.svelte'
@@ -346,7 +346,7 @@
                                                             'pages.admin.registeredWarriors.verified',
                                                         )}"
                                                     >
-                                                        <CheckIcon />
+                                                        <VerifiedIcon />
                                                     </span>
                                                 {/if}
                                             </td>

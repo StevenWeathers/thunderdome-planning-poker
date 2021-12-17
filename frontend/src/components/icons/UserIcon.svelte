@@ -1,14 +1,12 @@
 <script>
-    export let width = 16
-    export let height = 16
+    let klass = 'h-6 w-6'
+    export { klass as class }
 </script>
 
 <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 448 512"
-    class="fill-current inline-block align-baseline"
-    width="{width}"
-    height="{height}"
+    class="fill-current inline {klass}"
     aria-hidden="true"
     focusable="false"
     data-prefix="fas"

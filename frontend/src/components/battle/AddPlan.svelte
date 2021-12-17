@@ -2,7 +2,7 @@
     import { quill } from '../../quill.js'
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
-    import DownCarrotIcon from '../icons/DownCarrotIcon.svelte'
+    import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import { _ } from '../../i18n.js'
 
     export let handlePlanAdd = () => {}

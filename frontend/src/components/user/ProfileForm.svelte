@@ -1,8 +1,9 @@
 <script>
-    import DownCarrotIcon from '../icons/DownCarrotIcon.svelte'
+    import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import WarriorAvatar from './UserAvatar.svelte'
     import LocaleSwitcher from '../LocaleSwitcher.svelte'
     import SolidButton from '../SolidButton.svelte'
+    import VerifiedIcon from '../icons/Verified.svelte'
     import { countryList } from '../../country.js'
     import { AppConfig } from '../../config.js'
     import { _, locale, setupI18n } from '../../i18n.js'
@@ -142,6 +143,7 @@
                     data-testid="user-verified"
                 >
                     {$_('pages.warriorProfile.fields.email.verified')}
+                    <VerifiedIcon class="inline fill-current h-4 w-4" />
                 </span>
             {:else if profile.rank !== 'GUEST'}
                 <button

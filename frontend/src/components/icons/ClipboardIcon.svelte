@@ -1,16 +1,16 @@
+<script>
+    let klass = 'h-6 w-6'
+    export { klass as class }
+</script>
+
 <svg
-    class="fill-current"
-    width="20"
-    height="20"
-    viewBox="0 0 1792 1792"
     xmlns="http://www.w3.org/2000/svg"
+    class="fill-current inline {klass}"
+    viewBox="0 0 20 20"
+    fill="currentColor"
 >
+    <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"></path>
     <path
-        d="M768 1664h896v-640h-416q-40
-        0-68-28t-28-68v-416h-384v1152zm256-1440v-64q0-13-9.5-22.5t-22.5-9.5h-704q-13
-        0-22.5 9.5t-9.5 22.5v64q0 13 9.5 22.5t22.5 9.5h704q13 0
-        22.5-9.5t9.5-22.5zm256 672h299l-299-299v299zm512 128v672q0 40-28 68t-68
-        28h-960q-40 0-68-28t-28-68v-160h-544q-40 0-68-28t-28-68v-1344q0-40
-        28-68t68-28h1088q40 0 68 28t28 68v328q21 13 36 28l408 408q28 28 48 76t20
-        88z"></path>
+        d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z"
+    ></path>
 </svg>
