@@ -150,6 +150,7 @@
                     class="inline-block align-baseline text-sm
                         text-blue-700 hover:text-blue-800 bg-transparent
                         border-transparent mr-1 font-bold text-xl"
+                    type="button"
                 >
                     {#if descriptionExpanded}-{:else}+{/if}
                 </button>
@@ -179,6 +180,7 @@
                     class="inline-block align-baseline text-sm
                         text-blue-700 hover:text-blue-800 bg-transparent
                         border-transparent mr-1 font-bold text-xl"
+                    type="button"
                 >
                     {#if acceptanceExpanded}-{:else}+{/if}
                 </button>

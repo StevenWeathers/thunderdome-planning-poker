@@ -149,6 +149,7 @@
                                         hover:text-blue-800"
                     on:click="{requestVerifyEmail}"
                     data-testid="request-verify"
+                    type="button"
                     >{$_('requestVerifyEmail')}
                 </button>
             {/if}
