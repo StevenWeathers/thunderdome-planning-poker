@@ -1,19 +1,16 @@
 <script>
     import { onMount } from 'svelte'
 
-    import DownCarrotIcon from '../components/icons/DownCarrotIcon.svelte'
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import WarriorAvatar from '../components/user/UserAvatar.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
-    import LocaleSwitcher from '../components/LocaleSwitcher.svelte'
-    import { warrior } from '../stores.js'
-    import { validateName, validatePasswords } from '../validationUtils.js'
-    import { _, locale, setupI18n } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.js'
-    import { countryList } from '../country.js'
+    import ProfileForm from '../components/user/ProfileForm.svelte'
     import CreateApiKey from '../components/user/CreateApiKey.svelte'
+    import { warrior } from '../stores.js'
+    import { validatePasswords } from '../validationUtils.js'
+    import { _ } from '../i18n.js'
+    import { AppConfig, appRoutes } from '../config.js'
 
     export let xfetch
     export let router
@@ -29,40 +26,7 @@
     let warriorPassword1 = ''
     let warriorPassword2 = ''
 
-    const { ExternalAPIEnabled, AvatarService, LdapEnabled } = AppConfig
-    const configurableAvatarServices = [
-        'dicebear',
-        'gravatar',
-        'robohash',
-        'govatar',
-    ]
-    const isAvatarConfigurable =
-        configurableAvatarServices.includes(AvatarService)
-    const avatarOptions = {
-        dicebear: [
-            'male',
-            'female',
-            'human',
-            'identicon',
-            'bottts',
-            'avataaars',
-            'jdenticon',
-            'gridy',
-            'code',
-        ],
-        gravatar: [
-            'mp',
-            'identicon',
-            'monsterid',
-            'wavatar',
-            'retro',
-            'robohash',
-        ],
-        robohash: ['set1', 'set2', 'set3', 'set4'],
-        govatar: ['male', 'female'],
-    }
-
-    let avatars = isAvatarConfigurable ? avatarOptions[AvatarService] : []
+    const { ExternalAPIEnabled, LdapEnabled } = AppConfig
 
     function toggleUpdatePassword() {
         updatePassword = !updatePassword
@@ -85,53 +49,31 @@
             })
     }
 
-    function updateWarriorProfile(e) {
-        e.preventDefault()
+    function updateWarriorProfile(p) {
         const body = {
-            name: warriorProfile.name,
-            avatar: warriorProfile.avatar,
-            notificationsEnabled: warriorProfile.notificationsEnabled,
-            country: warriorProfile.country,
-            locale: $locale,
-            company: warriorProfile.company,
-            jobTitle: warriorProfile.jobTitle,
-        }
-        const validName = validateName(body.name)
-
-        let noFormErrors = true
-
-        if (!validName.valid) {
-            noFormErrors = false
-            notifications.danger(validName.error, 1500)
+            ...p,
         }
 
-        if (noFormErrors) {
-            xfetch(`/api/users/${$warrior.id}`, { body, method: 'PUT' })
-                .then(res => res.json())
-                .then(function () {
-                    warrior.update({
-                        id: warriorProfile.id,
-                        name: warriorProfile.name,
-                        email: warriorProfile.email,
-                        rank: warriorProfile.rank,
-                        avatar: warriorProfile.avatar,
-                        notificationsEnabled:
-                            warriorProfile.notificationsEnabled,
-                        locale: $locale,
-                    })
-
-                    notifications.success(
-                        $_('pages.warriorProfile.updateSuccess'),
-                    )
-                    eventTag('update_profile', 'engagement', 'success')
+        xfetch(`/api/users/${$warrior.id}`, { body, method: 'PUT' })
+            .then(res => res.json())
+            .then(function () {
+                warrior.update({
+                    id: warriorProfile.id,
+                    name: p.name,
+                    email: warriorProfile.email,
+                    rank: warriorProfile.rank,
+                    avatar: p.avatar,
+                    notificationsEnabled: p.notificationsEnabled,
+                    locale: p.locale,
                 })
-                .catch(function () {
-                    notifications.danger(
-                        $_('pages.warriorProfile.errorUpdating'),
-                    )
-                    eventTag('update_profile', 'engagement', 'failure')
-                })
-        }
+
+                notifications.success($_('pages.warriorProfile.updateSuccess'))
+                eventTag('update_profile', 'engagement', 'success')
+            })
+            .catch(function () {
+                notifications.danger($_('pages.warriorProfile.errorUpdating'))
+                eventTag('update_profile', 'engagement', 'failure')
+            })
     }
 
     function updateWarriorPassword(e) {
@@ -234,20 +176,6 @@
         showApiKeyCreate = !showApiKeyCreate
     }
 
-    function requestVerifyEmail(e) {
-        e.preventDefault()
-        xfetch(`/api/users/${$warrior.id}/request-verify`, { method: 'POST' })
-            .then(function () {
-                eventTag('user_verify_request', 'engagement', 'success')
-
-                notifications.success($_('requestVerifyEmailSuccess'))
-            })
-            .catch(function () {
-                notifications.danger($_('requestVerifyEmailFailure'))
-                eventTag('user_verify_request', 'engagement', 'failure')
-            })
-    }
-
     function handleDeleteAccount() {
         xfetch(`/api/users/${$warrior.id}`, { method: 'DELETE' })
             .then(function () {
@@ -279,7 +207,6 @@
         }
     })
 
-    $: updateDisabled = warriorProfile.name === ''
     $: updatePasswordDisabled =
         warriorPassword1 === '' || warriorPassword2 === '' || LdapEnabled
 </script>
@@ -292,275 +219,14 @@
     <div class="flex justify-center flex-wrap">
         <div class="w-full md:w-1/2 lg:w-1/3">
             {#if !updatePassword}
-                <form
-                    on:submit="{updateWarriorProfile}"
-                    class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
-                    name="updateProfile"
-                >
-                    <h2
-                        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
-                        md:leading-tight"
-                    >
-                        {$_('pages.warriorProfile.title')}
-                    </h2>
-
-                    <div class="mb-4">
-                        <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourName"
-                        >
-                            {$_('pages.warriorProfile.fields.name.label')}
-                        </label>
-                        <input
-                            bind:value="{warriorProfile.name}"
-                            placeholder="{$_(
-                                'pages.warriorProfile.fields.name.placeholder',
-                            )}"
-                            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
-                            id="yourName"
-                            name="yourName"
-                            type="text"
-                            required
-                        />
-                    </div>
-
-                    <div class="mb-4">
-                        <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourEmail"
-                        >
-                            {$_('pages.warriorProfile.fields.email.label')}
-                            {#if warriorProfile.verified}
-                                <span
-                                    class="font-bold text-green-600
-                                    border-green-500 border py-1 px-2 rounded
-                                    ml-1"
-                                    data-testid="user-verified"
-                                >
-                                    {$_(
-                                        'pages.warriorProfile.fields.email.verified',
-                                    )}
-                                </span>
-                            {:else if warriorProfile.rank != 'GUEST'}
-                                <button
-                                    class=" float-right inline-block align-baseline font-bold text-sm text-blue-500
-                                        hover:text-blue-800"
-                                    on:click="{requestVerifyEmail}"
-                                    data-testid="request-verify"
-                                    >{$_('requestVerifyEmail')}
-                                </button>
-                            {/if}
-                        </label>
-                        <input
-                            bind:value="{warriorProfile.email}"
-                            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            cursor-not-allowed"
-                            id="yourEmail"
-                            name="yourEmail"
-                            type="email"
-                            disabled
-                        />
-                    </div>
-
-                    <div class="mb-4">
-                        <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourCountry"
-                        >
-                            {$_('pages.warriorProfile.fields.country.label')}
-                        </label>
-
-                        <div class="relative">
-                            <select
-                                bind:value="{warriorProfile.country}"
-                                class="block appearance-none w-full border-2
-                                border-gray-300 text-gray-700 py-3 px-4 pr-8
-                                rounded leading-tight focus:outline-none
-                                focus:border-purple-500"
-                                id="yourCountry"
-                                name="yourCountry"
-                            >
-                                <option value="">
-                                    {$_(
-                                        'pages.warriorProfile.fields.country.placeholder',
-                                    )}
-                                </option>
-                                {#each countryList as item}
-                                    <option value="{item.abbrev}">
-                                        {item.name} [{item.abbrev}]
-                                    </option>
-                                {/each}
-                            </select>
-                            <div
-                                class="pointer-events-none absolute inset-y-0
-                                right-0 flex items-center px-2 text-gray-700"
-                            >
-                                <DownCarrotIcon />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourLocale"
-                        >
-                            {$_('pages.warriorProfile.fields.locale.label')}
-                        </label>
-                        <LocaleSwitcher
-                            selectedLocale="{$locale}"
-                            on:locale-changed="{e =>
-                                setupI18n({
-                                    withLocale: e.detail,
-                                })}"
-                        />
-                    </div>
-
-                    <div class="mb-4">
-                        <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourCompany"
-                        >
-                            {$_('pages.warriorProfile.fields.company.label')}
-                        </label>
-                        <input
-                            bind:value="{warriorProfile.company}"
-                            placeholder="{$_(
-                                'pages.warriorProfile.fields.company.placeholder',
-                            )}"
-                            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
-                            id="yourCompany"
-                            name="yourCompany"
-                            type="text"
-                        />
-                    </div>
-
-                    <div class="mb-4">
-                        <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                            for="yourJobTitle"
-                        >
-                            {$_('pages.warriorProfile.fields.jobTitle.label')}
-                        </label>
-                        <input
-                            bind:value="{warriorProfile.jobTitle}"
-                            placeholder="{$_(
-                                'pages.warriorProfile.fields.jobTitle.placeholder',
-                            )}"
-                            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
-                            id="yourJobTitle"
-                            name="yourJobTitle"
-                            type="text"
-                        />
-                    </div>
-
-                    <div class="mb-4">
-                        <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                            <input
-                                bind:checked="{warriorProfile.notificationsEnabled}"
-                                type="checkbox"
-                                class="form-checkbox"
-                            />
-                            <span class="ml-2">
-                                {$_(
-                                    'pages.warriorProfile.fields.enable_notifications.label',
-                                )}
-                            </span>
-                        </label>
-                    </div>
-
-                    {#if isAvatarConfigurable}
-                        <div class="mb-4">
-                            <label
-                                class="block text-gray-700 text-sm font-bold
-                                mb-2"
-                                for="yourAvatar"
-                            >
-                                {$_('pages.warriorProfile.fields.avatar.label')}
-                            </label>
-                            <div class="flex">
-                                <div class="md:w-2/3 lg:w-3/4">
-                                    <div
-                                        class="relative"
-                                        class:hidden="{AvatarService ===
-                                            'gravatar' &&
-                                            warriorProfile.email !== ''}"
-                                    >
-                                        <select
-                                            bind:value="{warriorProfile.avatar}"
-                                            class="block appearance-none w-full
-                                            border-2 border-gray-300
-                                            text-gray-700 py-3 px-4 pr-8 rounded
-                                            leading-tight focus:outline-none
-                                            focus:border-purple-500"
-                                            id="yourAvatar"
-                                            name="yourAvatar"
-                                        >
-                                            {#each avatars as item}
-                                                <option value="{item}">
-                                                    {item}
-                                                </option>
-                                            {/each}
-                                        </select>
-                                        <div
-                                            class="pointer-events-none absolute
-                                            inset-y-0 right-0 flex items-center
-                                            px-2 text-gray-700"
-                                        >
-                                            <DownCarrotIcon />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="md:w-1/3 lg:w-1/4 ml-1">
-                                    <span class="float-right">
-                                        <WarriorAvatar
-                                            warriorId="{warriorProfile.id}"
-                                            avatar="{warriorProfile.avatar}"
-                                            avatarService="{AvatarService}"
-                                            gravatarHash="{warriorProfile.gravatarHash}"
-                                            width="48"
-                                            class="rounded-full"
-                                        />
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    {/if}
-
-                    <div>
-                        <div class="text-right">
-                            <button
-                                type="button"
-                                class="inline-block align-baseline font-bold
-                                text-sm text-blue-500 hover:text-blue-800 mr-4"
-                                on:click="{toggleUpdatePassword}"
-                            >
-                                {$_(
-                                    'pages.warriorProfile.updatePasswordButton',
-                                )}
-                            </button>
-                            <SolidButton
-                                type="submit"
-                                disabled="{updateDisabled}"
-                            >
-                                {$_('pages.warriorProfile.saveProfileButton')}
-                            </SolidButton>
-                        </div>
-                    </div>
-                </form>
+                <ProfileForm
+                    profile="{warriorProfile}"
+                    handleUpdate="{updateWarriorProfile}"
+                    toggleUpdatePassword="{toggleUpdatePassword}"
+                    xfetch="{xfetch}"
+                    notifications="{notifications}"
+                    eventTag="{eventTag}"
+                />
             {/if}
 
             {#if updatePassword}
