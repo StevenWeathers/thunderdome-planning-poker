@@ -15,36 +15,58 @@ import (
 	"strconv"
 )
 
-type UserAccount struct {
-	Name      string `json:"name" validate:"required"`
-	Email     string `json:"email" validate:"required,email"`
+type userAccount struct {
+	Name  string `json:"name" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
+}
+
+type userPassword struct {
 	Password1 string `json:"password1" validate:"required,min=6,max=72"`
 	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
 
-type UserPassword struct {
-	Password1 string `json:"password1" validate:"required,min=6,max=72"`
-	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
-}
-
-// validateUserAccount makes sure user name, email, and password are valid before creating the account
-func validateUserAccount(name string, email string, pwd1 string, pwd2 string) (UserName string, UserEmail string, UpdatedPassword string, validateErr error) {
+// validateUserAccount makes sure user's name, email are valid before creating the account
+func validateUserAccount(name string, email string) (UserName string, UserEmail string, validateErr error) {
 	v := validator.New()
-	a := UserAccount{
-		Name:      name,
-		Email:     email,
+	a := userAccount{
+		Name:  name,
+		Email: email,
+	}
+	aErr := v.Struct(a)
+	if aErr != nil {
+		return "", "", aErr
+	}
+
+	return name, email, nil
+}
+
+// validateUserAccountWithPasswords makes sure user's name, email, and password are valid before creating the account
+func validateUserAccountWithPasswords(name string, email string, pwd1 string, pwd2 string) (UserName string, UserEmail string, UpdatedPassword string, validateErr error) {
+	v := validator.New()
+	a := userAccount{
+		Name:  name,
+		Email: email,
+	}
+	p := userPassword{
 		Password1: pwd1,
 		Password2: pwd2,
 	}
-	err := v.Struct(a)
+	aErr := v.Struct(a)
+	if aErr != nil {
+		return "", "", "", aErr
+	}
+	pErr := v.Struct(p)
+	if pErr != nil {
+		return "", "", "", pErr
+	}
 
-	return name, email, pwd1, err
+	return name, email, pwd1, nil
 }
 
 // validateUserPassword makes sure user password is valid before updating the password
 func validateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, validateErr error) {
 	v := validator.New()
-	a := UserPassword{
+	a := userPassword{
 		Password1: pwd1,
 		Password2: pwd2,
 	}

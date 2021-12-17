@@ -67,12 +67,21 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		UserID := vars["userId"]
 
 		if SessionUserType == adminUserType {
+			_, _, vErr := validateUserAccount(UserName, UserEmail)
+			if vErr != nil {
+				Failure(w, r, http.StatusBadRequest, vErr)
+				return
+			}
 			updateErr := a.db.UpdateUserAccount(UserID, UserName, UserEmail, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 			if updateErr != nil {
 				Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
 			}
 		} else {
+			if UserName == "" {
+				Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
+				return
+			}
 			updateErr := a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 			if updateErr != nil {
 				Failure(w, r, http.StatusInternalServerError, updateErr)

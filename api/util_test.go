@@ -4,23 +4,23 @@ import (
 	"testing"
 )
 
-// TestValidUserAccount calls validateUserAccount with valid user inputs for name, email, password1, and password2
+// TestValidUserAccount calls validateUserAccountWithPasswords with valid user inputs for name, email, password1, and password2
 func TestValidUserAccount(t *testing.T) {
 	Name := "Thor"
 	Email := "thor@thunderdome.dev"
 	Password := "lokiIsAJoke"
 
-	name, email, password, err := validateUserAccount(Name, Email, Password, Password)
+	name, email, password, err := validateUserAccountWithPasswords(Name, Email, Password, Password)
 	if err != nil || (Name != name || Email != email || Password != password) {
-		t.Fatalf(`validateUserAccount = %v error`, err)
+		t.Fatalf(`validateUserAccountWithPasswords = %v error`, err)
 	}
 }
 
-// TestInvalidUserAccount calls validateUserAccount with invalid user input for email
+// TestInvalidUserAccount calls validateUserAccountWithPasswords with invalid user input for email
 func TestInvalidUserAccount(t *testing.T) {
-	_, _, _, err := validateUserAccount("Thor", "thor", "lokiIsAJoke", "lokiIsAJoke")
+	_, _, _, err := validateUserAccountWithPasswords("Thor", "thor", "lokiIsAJoke", "lokiIsAJoke")
 	if err == nil {
-		t.Fatalf(`validateUserAccount = %v, want error`, err)
+		t.Fatalf(`validateUserAccountWithPasswords = %v, want error`, err)
 	}
 }
 
@@ -30,7 +30,7 @@ func TestValidUserPassword(t *testing.T) {
 
 	password, err := validateUserPassword(Password, Password)
 	if err != nil || (Password != password) {
-		t.Fatalf(`validateUserAccount = %v error`, err)
+		t.Fatalf(`validateUserAccountWithPasswords = %v error`, err)
 	}
 }
 
@@ -40,6 +40,6 @@ func TestInvalidUserPassword(t *testing.T) {
 
 	_, err := validateUserPassword(Password, Password+"fail")
 	if err == nil {
-		t.Fatalf(`validateUserAccount = %v, want error`, err)
+		t.Fatalf(`validateUserAccountWithPasswords = %v, want error`, err)
 	}
 }

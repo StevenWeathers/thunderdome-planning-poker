@@ -77,7 +77,7 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := getJSONRequestBody(r, w)
 
-		UserName, UserEmail, UserPassword, accountErr := validateUserAccount(
+		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
 			keyVal["name"].(string),
 			strings.ToLower(keyVal["email"].(string)),
 			keyVal["password1"].(string),

@@ -152,7 +152,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 
 		ActiveUserID, _ := a.validateUserCookie(w, r)
 
-		UserName, UserEmail, UserPassword, accountErr := validateUserAccount(
+		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
 			keyVal["name"].(string),
 			strings.ToLower(keyVal["email"].(string)),
 			keyVal["password1"].(string),
