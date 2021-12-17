@@ -15,7 +15,7 @@ type subscription struct {
 // connections.
 type hub struct {
 	// Registered connections.
-	arenas map[string]map[*connection]bool
+	arenas map[string]map[*connection]struct{}
 
 	// Inbound messages from the connections.
 	broadcast chan message
@@ -31,7 +31,7 @@ var h = hub{
 	broadcast:  make(chan message),
 	register:   make(chan subscription),
 	unregister: make(chan subscription),
-	arenas:     make(map[string]map[*connection]bool),
+	arenas:     make(map[string]map[*connection]struct{}),
 }
 
 func (h *hub) run() {
@@ -40,10 +40,10 @@ func (h *hub) run() {
 		case a := <-h.register:
 			connections := h.arenas[a.arena]
 			if connections == nil {
-				connections = make(map[*connection]bool)
+				connections = make(map[*connection]struct{})
 				h.arenas[a.arena] = connections
 			}
-			h.arenas[a.arena][a.conn] = true
+			h.arenas[a.arena][a.conn] = struct{}{}
 		case a := <-h.unregister:
 			connections := h.arenas[a.arena]
 			if connections != nil {

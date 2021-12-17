@@ -26,19 +26,19 @@ const (
 )
 
 // leaderOnlyOperations contains a map of operations that only a battle leader can execute
-var leaderOnlyOperations = map[string]bool{
-	"add_plan":       true,
-	"revise_plan":    true,
-	"burn_plan":      true,
-	"activate_plan":  true,
-	"skip_plan":      true,
-	"end_voting":     true,
-	"finalize_plan":  true,
-	"jab_warrior":    true,
-	"promote_leader": true,
-	"demote_leader":  true,
-	"revise_battle":  true,
-	"concede_battle": true,
+var leaderOnlyOperations = map[string]struct{}{
+	"add_plan":       struct{}{},
+	"revise_plan":    struct{}{},
+	"burn_plan":      struct{}{},
+	"activate_plan":  struct{}{},
+	"skip_plan":      struct{}{},
+	"end_voting":     struct{}{},
+	"finalize_plan":  struct{}{},
+	"jab_warrior":    struct{}{},
+	"promote_leader": struct{}{},
+	"demote_leader":  struct{}{},
+	"revise_battle":  struct{}{},
+	"concede_battle": struct{}{},
 }
 
 var upgrader = websocket.Upgrader{
