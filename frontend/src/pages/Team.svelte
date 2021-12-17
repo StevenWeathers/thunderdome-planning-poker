@@ -200,7 +200,7 @@
     {#if organizationId}
         <div class="text-2xl font-semibold font-rajdhani uppercase">
             {$_('organization')}
-            <ChevronRight class="inline-block" />
+            <ChevronRight />
             <a
                 class="text-blue-500 hover:text-blue-800"
                 href="{appRoutes.organization}/{organization.id}"
@@ -209,9 +209,9 @@
             </a>
             {#if departmentId}
                 &nbsp;
-                <ChevronRight class="inline-block" />
+                <ChevronRight />
                 {$_('department')}
-                <ChevronRight class="inline-block" />
+                <ChevronRight />
                 <a
                     class="text-blue-500 hover:text-blue-800"
                     href="{appRoutes.organization}/{organization.id}/department/{department.id}"

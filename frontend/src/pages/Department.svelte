@@ -208,7 +208,7 @@
     </h1>
     <div class="text-2xl font-semibold font-rajdhani uppercase mb-4">
         {$_('organization')}
-        <ChevronRight class="inline-block" />
+        <ChevronRight />
         <a
             class="text-blue-500 hover:text-blue-800"
             href="{appRoutes.organization}/{organization.id}"
