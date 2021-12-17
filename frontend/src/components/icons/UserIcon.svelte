@@ -6,7 +6,8 @@
 <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 448 512"
-    class="fill-current inline {klass}"
+    class="inline {klass}"
+    fill="currentColor"
     aria-hidden="true"
     focusable="false"
     data-prefix="fas"

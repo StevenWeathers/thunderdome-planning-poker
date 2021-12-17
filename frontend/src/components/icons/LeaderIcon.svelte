@@ -5,9 +5,10 @@
 
 <span class="text-yellow-500">
     <svg
-        class="fill-current inline {klass}"
+        class="inline {klass}"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 640 512"
+        fill="currentColor"
     >
         <path
             d="M528 448H112c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h416c8.8 0

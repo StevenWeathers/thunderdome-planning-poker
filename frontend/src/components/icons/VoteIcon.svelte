@@ -4,7 +4,8 @@
 </script>
 
 <svg
-    class="fill-current inline {klass}"
+    class="inline {klass}"
+    fill="currentColor"
     aria-hidden="true"
     focusable="false"
     data-prefix="fas"
