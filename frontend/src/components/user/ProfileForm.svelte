@@ -5,9 +5,9 @@
     import SolidButton from '../SolidButton.svelte'
     import { countryList } from '../../country.js'
     import { AppConfig } from '../../config.js'
-    import { warrior } from '../../stores.js'
     import { _, locale, setupI18n } from '../../i18n.js'
-    import { validateName } from '../../validationUtils.js'
+    import { warrior } from '../../stores.js'
+    import { validateName, validateUserIsAdmin } from '../../validationUtils.js'
 
     export let profile = {
         id: '',
@@ -23,7 +23,7 @@
         verified: false,
     }
     export let handleUpdate = () => {}
-    export let toggleUpdatePassword = () => {}
+    export let toggleUpdatePassword
     export let eventTag
     export let notifications
     export let xfetch
@@ -66,32 +66,31 @@
 
     function handleSubmit(e) {
         e.preventDefault()
-
         const validName = validateName(profile.name)
-
-        let noFormErrors = true
-
-        if (!validName.valid) {
-            noFormErrors = false
-            notifications.danger(validName.error, 1500)
+        let p = {
+            name: profile.name,
+            country: profile.country,
+            company: profile.company,
+            jobTitle: profile.jobTitle,
+            notificationsEnabled: profile.notificationsEnabled,
+            avatar: profile.avatar,
+            locale: $locale,
         }
 
-        if (noFormErrors) {
-            handleUpdate({
-                name: profile.name,
-                country: profile.country,
-                company: profile.company,
-                jobTitle: profile.jobTitle,
-                notificationsEnabled: profile.notificationsEnabled,
-                avatar: profile.avatar,
-                locale: $locale,
-            })
+        if (userIsAdmin) {
+            p.email = profile.email
+        }
+
+        if (!validName.valid) {
+            notifications.danger(validName.error, 1500)
+        } else {
+            handleUpdate(p)
         }
     }
 
     function requestVerifyEmail(e) {
         e.preventDefault()
-        xfetch(`/api/users/${$warrior.id}/request-verify`, { method: 'POST' })
+        xfetch(`/api/users/${profile.id}/request-verify`, { method: 'POST' })
             .then(function () {
                 eventTag('user_verify_request', 'engagement', 'success')
 
@@ -104,20 +103,10 @@
     }
 
     $: updateDisabled = profile.name === ''
+    $: userIsAdmin = validateUserIsAdmin($warrior)
 </script>
 
-<form
-    on:submit="{handleSubmit}"
-    class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
-    name="updateProfile"
->
-    <h2
-        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
-                        md:leading-tight"
-    >
-        {$_('pages.warriorProfile.title')}
-    </h2>
-
+<form on:submit="{handleSubmit}" name="updateProfile">
     <div class="mb-4">
         <label
             class="block text-gray-700 text-sm font-bold mb-2"
@@ -168,12 +157,12 @@
             bind:value="{profile.email}"
             class="bg-gray-100 border-gray-200 border-2
                             appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            cursor-not-allowed"
+                            text-gray-700 leading-tight focus:outline-none"
+            class:cursor-not-allowed="{!userIsAdmin}"
             id="yourEmail"
             name="yourEmail"
             type="email"
-            disabled
+            disabled="{!userIsAdmin}"
         />
     </div>
 
@@ -342,14 +331,16 @@
 
     <div>
         <div class="text-right">
-            <button
-                type="button"
-                class="inline-block align-baseline font-bold
-                                text-sm text-blue-500 hover:text-blue-800 mr-4"
-                on:click="{toggleUpdatePassword}"
-            >
-                {$_('pages.warriorProfile.updatePasswordButton')}
-            </button>
+            {#if toggleUpdatePassword}
+                <button
+                    type="button"
+                    class="inline-block align-baseline font-bold
+                                    text-sm text-blue-500 hover:text-blue-800 mr-4"
+                    on:click="{toggleUpdatePassword}"
+                >
+                    {$_('pages.warriorProfile.updatePasswordButton')}
+                </button>
+            {/if}
             <SolidButton type="submit" disabled="{updateDisabled}">
                 {$_('pages.warriorProfile.saveProfileButton')}
             </SolidButton>

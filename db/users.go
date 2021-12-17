@@ -272,7 +272,7 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 	return User, verifyID, nil
 }
 
-// UpdateUserProfile updates the users profile
+// UpdateUserProfile updates the users profile (excludes: email, password)
 func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
@@ -290,6 +290,29 @@ func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar 
 	); err != nil {
 		log.Println(err)
 		return errors.New("error attempting to update users profile")
+	}
+
+	return nil
+}
+
+// UpdateUserAccount updates the users profile including email (excludes: password)
+func (d *Database) UpdateUserAccount(UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+	if UserAvatar == "" {
+		UserAvatar = "robohash"
+	}
+	if _, err := d.db.Exec(
+		`call user_account_update($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
+		UserID,
+		UserName,
+		UserEmail,
+		UserAvatar,
+		NotificationsEnabled,
+		Country,
+		Locale,
+		Company,
+		JobTitle,
+	); err != nil {
+		return err
 	}
 
 	return nil

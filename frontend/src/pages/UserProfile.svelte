@@ -219,14 +219,23 @@
     <div class="flex justify-center flex-wrap">
         <div class="w-full md:w-1/2 lg:w-1/3">
             {#if !updatePassword}
-                <ProfileForm
-                    profile="{warriorProfile}"
-                    handleUpdate="{updateWarriorProfile}"
-                    toggleUpdatePassword="{toggleUpdatePassword}"
-                    xfetch="{xfetch}"
-                    notifications="{notifications}"
-                    eventTag="{eventTag}"
-                />
+                <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
+                    <h2
+                        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
+                        md:leading-tight"
+                    >
+                        {$_('pages.warriorProfile.title')}
+                    </h2>
+
+                    <ProfileForm
+                        profile="{warriorProfile}"
+                        handleUpdate="{updateWarriorProfile}"
+                        toggleUpdatePassword="{toggleUpdatePassword}"
+                        xfetch="{xfetch}"
+                        notifications="{notifications}"
+                        eventTag="{eventTag}"
+                    />
+                </div>
             {/if}
 
             {#if updatePassword}

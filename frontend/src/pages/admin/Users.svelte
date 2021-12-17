@@ -10,6 +10,8 @@
     import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import SolidButton from '../../components/SolidButton.svelte'
     import UserAvatar from '../../components/user/UserAvatar.svelte'
+    import ProfileForm from '../../components/user/ProfileForm.svelte'
+    import Modal from '../../components/Modal.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
     import { AppConfig, appRoutes } from '../../config.js'
@@ -31,6 +33,8 @@
     let userDeleteId = null
     let showUserDeletion = false
     let searchEmail = ''
+    let showUserEdit = false
+    let selectedUserProfile = {}
 
     const toggleDeleteUser = id => () => {
         showUserDeletion = !showUserDeletion
@@ -39,6 +43,11 @@
 
     function toggleCreateUser() {
         showCreateUser = !showCreateUser
+    }
+
+    const toggleUserEdit = profile => () => {
+        showUserEdit = !showUserEdit
+        selectedUserProfile = profile
     }
 
     function createUser(
@@ -87,6 +96,24 @@
             })
             .catch(function () {
                 notifications.danger($_('getUsersError'))
+            })
+    }
+
+    function handleUserEdit(p) {
+        xfetch(`/api/users/${selectedUserProfile.id}`, {
+            body: p,
+            method: 'PUT',
+        })
+            .then(res => res.json())
+            .then(function () {
+                notifications.success($_('pages.warriorProfile.updateSuccess'))
+                eventTag('update_profile', 'engagement', 'success')
+                getUsers()
+                toggleUserEdit({})()
+            })
+            .catch(function () {
+                notifications.danger($_('pages.warriorProfile.errorUpdating'))
+                eventTag('update_profile', 'engagement', 'failure')
             })
     }
 
@@ -365,6 +392,14 @@
                                                     </HollowButton>
                                                 {/if}
                                                 <HollowButton
+                                                    color="green"
+                                                    onClick="{toggleUserEdit(
+                                                        user,
+                                                    )}"
+                                                >
+                                                    {$_('edit')}
+                                                </HollowButton>
+                                                <HollowButton
                                                     color="red"
                                                     onClick="{toggleDeleteUser(
                                                         user.id,
@@ -401,6 +436,18 @@
             handleCreate="{createUser}"
             notifications
         />
+    {/if}
+
+    {#if showUserEdit}
+        <Modal closeModal="{toggleUserEdit({})}">
+            <ProfileForm
+                profile="{selectedUserProfile}"
+                handleUpdate="{handleUserEdit}"
+                xfetch="{xfetch}"
+                notifications="{notifications}"
+                eventTag="{eventTag}"
+            />
+        </Modal>
     {/if}
 
     {#if showUserDeletion}

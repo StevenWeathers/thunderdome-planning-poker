@@ -41,10 +41,11 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 // @Param name body string true "the users name"
 // @Param avatar body string true "avatar"
 // @Param notificationsEnabled body boolean true "whether battle notifications are enabled"
-// @Param country body string false "users country code e.g. US"
+// @Param country body string false "user's country code e.g. US"
 // @Param locale body string false "the user's locale e.g. en"
-// @Param company body string false "the users company name"
-// @Param jobTitle body string false "the users job title"
+// @Param company body string false "the user's company name"
+// @Param jobTitle body string false "the user's job title"
+// @Param email body string false "the user's email [admin only param]"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -52,6 +53,7 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 // @Router /users/{userId} [put]
 func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		SessionUserType := r.Context().Value(contextKeyUserType).(string)
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)
 		UserName := keyVal["name"].(string)
@@ -61,12 +63,21 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		Locale := keyVal["locale"].(string)
 		Company := keyVal["company"].(string)
 		JobTitle := keyVal["jobTitle"].(string)
+		UserEmail := keyVal["email"].(string)
 		UserID := vars["userId"]
 
-		updateErr := a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
-		if updateErr != nil {
-			Failure(w, r, http.StatusInternalServerError, updateErr)
-			return
+		if SessionUserType == adminUserType {
+			updateErr := a.db.UpdateUserAccount(UserID, UserName, UserEmail, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
+			if updateErr != nil {
+				Failure(w, r, http.StatusInternalServerError, updateErr)
+				return
+			}
+		} else {
+			updateErr := a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
+			if updateErr != nil {
+				Failure(w, r, http.StatusInternalServerError, updateErr)
+				return
+			}
 		}
 
 		user, UserErr := a.db.GetUser(UserID)
