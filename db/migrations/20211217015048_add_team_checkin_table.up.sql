@@ -11,3 +11,19 @@ CREATE TABLE team_checkin (
     "updated_date" timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY ("id")
 );
+
+CREATE FUNCTION prune_team_checkins()
+RETURNS trigger AS $$
+DECLARE
+  row_count int;
+BEGIN
+  DELETE FROM team_checkin WHERE created_date < (NOW() - '60 days'::interval); -- clean up old sessions
+  IF found THEN
+    GET DIAGNOSTICS row_count = ROW_COUNT;
+    RAISE NOTICE 'DELETED % row(s) FROM team_checkin', row_count;
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER prune_team_checkins AFTER INSERT ON team_checkin EXECUTE PROCEDURE prune_team_checkins();
