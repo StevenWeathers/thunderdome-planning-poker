@@ -2,18 +2,19 @@ package model
 
 import "time"
 
-// ApplicationStats includes user, organization, team, battle, and plan counts
+// ApplicationStats includes counts of different data points of the application
 type ApplicationStats struct {
-	RegisteredCount       int `json:"registeredUserCount"`
 	UnregisteredCount     int `json:"unregisteredUserCount"`
+	RegisteredCount       int `json:"registeredUserCount"`
+	APIKeyCount           int `json:"apikeyCount"`
 	BattleCount           int `json:"battleCount"`
+	ActiveBattleCount     int `json:"activeBattleCount"`
+	ActiveBattleUserCount int `json:"activeBattleUserCount"`
 	PlanCount             int `json:"planCount"`
 	OrganizationCount     int `json:"organizationCount"`
 	DepartmentCount       int `json:"departmentCount"`
 	TeamCount             int `json:"teamCount"`
-	APIKeyCount           int `json:"apikeyCount"`
-	ActiveBattleCount     int `json:"activeBattleCount"`
-	ActiveBattleUserCount int `json:"activeBattleUserCount"`
+	TeamCheckinsCount     int `json:"teamCheckinsCount"`
 }
 
 type Alert struct {
