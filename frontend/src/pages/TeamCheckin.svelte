@@ -320,6 +320,7 @@
             <SolidButton
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 onClick="{toggleCheckin}"
+                disabled="{selectedDate !== formatDayForInput(now)}"
                 >Check In
             </SolidButton>
         </div>
