@@ -173,7 +173,7 @@
         <div class="bg-white border rounded shadow-lg p-2">
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
-                    <div class="rounded p-3 bg-orange-500 text-white">
+                    <div class="rounded p-3 bg-red-500 text-white">
                         <ShieldExclamationIcon />
                     </div>
                 </div>
@@ -203,7 +203,7 @@
         <div class="bg-white border rounded shadow-lg p-2">
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
-                    <div class="rounded p-3 bg-red-500 text-white">
+                    <div class="rounded p-3 bg-yellow-500 text-white">
                         <LightingBolt />
                     </div>
                 </div>
@@ -237,7 +237,7 @@
         <div class="bg-white border rounded shadow-lg p-2">
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
-                    <div class="rounded p-3 bg-sky-500 text-white">
+                    <div class="rounded p-3 bg-orange-500 text-white">
                         <OfficeBuildingIcon />
                     </div>
                 </div>
@@ -286,7 +286,7 @@
         <div class="bg-white border rounded shadow-lg p-2">
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
-                    <div class="rounded p-3 bg-purple-500 text-white">
+                    <div class="rounded p-3 bg-lime-500 text-white">
                         <CheckIcon />
                     </div>
                 </div>
