@@ -1,14 +1,12 @@
 <script>
-    let klass = ''
+    let klass = 'w-5 h-5'
     export { klass as class }
-    export let width = 24
 </script>
 
 <span class="sr-only">Dismiss</span>
 <!-- Heroicon name: outline/x -->
 <svg
-    class="{klass}"
-    width="{width}"
+    class="inline {klass}"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"

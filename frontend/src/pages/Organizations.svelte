@@ -2,7 +2,7 @@
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
-    import HollowButton from '../components/HollowButton.svelte'
+    import SolidButton from '../components/SolidButton.svelte'
     import CreateOrganization from '../components/user/CreateOrganization.svelte'
     import CreateTeam from '../components/user/CreateTeam.svelte'
     import { warrior } from '../stores.js'
@@ -113,89 +113,169 @@
 </svelte:head>
 
 <PageLayout>
-    <div class="w-full">
-        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-            <div class="flex w-full">
-                <div class="w-4/5">
-                    <h2
-                        class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase mb-4"
-                    >
-                        {$_('organizations')}
-                    </h2>
+    <div class="w-full mb-6 lg:mb-8">
+        <div class="flex w-full">
+            <div class="w-4/5">
+                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                    {$_('organizations')}
+                </h2>
+            </div>
+            <div class="w-1/5">
+                <div class="text-right">
+                    <SolidButton onClick="{toggleCreateOrganization}">
+                        {$_('organizationCreate')}
+                    </SolidButton>
                 </div>
-                <div class="w-1/5">
-                    <div class="text-right">
-                        <HollowButton onClick="{toggleCreateOrganization}">
-                            {$_('organizationCreate')}
-                        </HollowButton>
+            </div>
+        </div>
+
+        <div class="flex flex-col">
+            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div
+                    class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+                >
+                    <div
+                        class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                    >
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        {$_('name')}
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        {$_('dateCreated')}
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        {$_('dateUpdated')}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {#each organizations as org, i}
+                                    <tr class:bg-slate-100="{i % 2 !== 0}">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <a
+                                                href="{appRoutes.organization}/{org.id}"
+                                                class="text-blue-500 hover:text-blue-800"
+                                            >
+                                                {org.name}
+                                            </a>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {new Date(
+                                                org.createdDate,
+                                            ).toLocaleString()}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {new Date(
+                                                org.updatedDate,
+                                            ).toLocaleString()}
+                                        </td>
+                                    </tr>
+                                {/each}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
-            <table class="table-fixed w-full">
-                <thead>
-                    <tr>
-                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each organizations as org}
-                        <tr>
-                            <td class="border px-4 py-2">
-                                <a
-                                    href="{appRoutes.organization}/{org.id}"
-                                    class="text-blue-500 hover:text-blue-800"
-                                >
-                                    {org.name}
-                                </a>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
         </div>
     </div>
 
     <div class="w-full">
-        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-            <div class="flex w-full">
-                <div class="w-4/5">
-                    <h2
-                        class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase mb-4"
-                    >
-                        {$_('teams')}
-                    </h2>
+        <div class="flex w-full">
+            <div class="w-4/5">
+                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                    {$_('teams')}
+                </h2>
+            </div>
+            <div class="w-1/5">
+                <div class="text-right">
+                    <SolidButton onClick="{toggleCreateTeam}">
+                        {$_('teamCreate')}
+                    </SolidButton>
                 </div>
-                <div class="w-1/5">
-                    <div class="text-right">
-                        <HollowButton onClick="{toggleCreateTeam}">
-                            {$_('teamCreate')}
-                        </HollowButton>
+            </div>
+        </div>
+
+        <div class="w-full">
+            <div class="flex flex-col">
+                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div
+                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+                    >
+                        <div
+                            class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                        >
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('name')}
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('dateCreated')}
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('dateUpdated')}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="bg-white divide-y divide-gray-200"
+                                >
+                                    {#each teams as team, i}
+                                        <tr class:bg-slate-100="{i % 2 !== 0}">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                <a
+                                                    href="/team/{team.id}"
+                                                    class="text-blue-500 hover:text-blue-800"
+                                                >
+                                                    {team.name}
+                                                </a>
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {new Date(
+                                                    team.createdDate,
+                                                ).toLocaleString()}
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {new Date(
+                                                    team.updatedDate,
+                                                ).toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    {/each}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <table class="table-fixed w-full">
-                <thead>
-                    <tr>
-                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each teams as team}
-                        <tr>
-                            <td class="border px-4 py-2">
-                                <a
-                                    href="/team/{team.id}"
-                                    class="text-blue-500 hover:text-blue-800"
-                                >
-                                    {team.name}
-                                </a>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
         </div>
     </div>
 

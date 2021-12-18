@@ -2,10 +2,9 @@
     import { AppConfig } from '../../config.js'
     import { _ } from '../../i18n.js'
 
-    const { PathPrefix } = AppConfig
+    const { PathPrefix, AvatarService } = AppConfig
     let klass = ''
 
-    export let avatarService = ''
     export let warriorId = ''
     export let gravatarHash = ''
     export let avatar = ''
@@ -14,14 +13,14 @@
     export let options = {}
 </script>
 
-{#if avatarService === 'dicebear'}
+{#if AvatarService === 'dicebear'}
     <img
         src="https://avatars.dicebear.com/api/{avatar}/{warriorId}.svg?w={width}"
         alt="{$_('avatarAltText')}"
         class="{klass}"
         {...options}
     />
-{:else if avatarService === 'gravatar'}
+{:else if AvatarService === 'gravatar'}
     {#if gravatarHash !== ''}
         <img
             src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar}&r=g"
@@ -37,21 +36,21 @@
             {...options}
         />
     {/if}
-{:else if avatarService === 'robohash'}
+{:else if AvatarService === 'robohash'}
     <img
         src="https://robohash.org/{warriorId}.png?set={avatar}&size={width}x{width}"
         alt="{$_('avatarAltText')}"
         class="{klass}"
         {...options}
     />
-{:else if avatarService === 'govatar'}
+{:else if AvatarService === 'govatar'}
     <img
         src="{PathPrefix}/avatar/{width}/{warriorId}/{avatar}"
         alt="{$_('avatarAltText')}"
         class="{klass}"
         {...options}
     />
-{:else if avatarService === 'goadorable'}
+{:else if AvatarService === 'goadorable'}
     <img
         src="{PathPrefix}/avatar/{width}/{warriorId}"
         alt="{$_('avatarAltText')}"

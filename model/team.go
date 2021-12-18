@@ -10,11 +10,12 @@ type Team struct {
 }
 
 type TeamUser struct {
-	Id     string `json:"id"`
-	Name   string `json:"name"`
-	Email  string `json:"email"`
-	Role   string `json:"role"`
-	Avatar string `json:"avatar"`
+	Id           string `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Role         string `json:"role"`
+	Avatar       string `json:"avatar"`
+	GravatarHash string `json:"gravatarHash"`
 }
 
 type TeamCheckin struct {

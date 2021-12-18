@@ -115,8 +115,8 @@ func (d *Database) TeamAddUser(TeamID string, UserID string, Role string) (strin
 }
 
 // TeamUserList gets a list of team users
-func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) ([]*model.OrganizationUser, int, error) {
-	var users = make([]*model.OrganizationUser, 0)
+func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) ([]*model.TeamUser, int, error) {
+	var users = make([]*model.TeamUser, 0)
 	var userCount int
 
 	err := d.db.QueryRow(
@@ -132,7 +132,7 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) ([]*model.
 	}
 
 	rows, err := d.db.Query(
-		`SELECT id, name, email, role FROM team_user_list($1, $2, $3);`,
+		`SELECT id, name, email, role, avatar FROM team_user_list($1, $2, $3);`,
 		TeamID,
 		Limit,
 		Offset,
@@ -141,16 +141,18 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) ([]*model.
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr model.OrganizationUser
+			var usr model.TeamUser
 
 			if err = rows.Scan(
 				&usr.Id,
 				&usr.Name,
 				&usr.Email,
 				&usr.Role,
+				&usr.Avatar,
 			); err != nil {
 				log.Println(err)
 			} else {
+				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}

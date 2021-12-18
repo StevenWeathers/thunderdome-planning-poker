@@ -3,10 +3,13 @@
 
     import PageLayout from '../components/PageLayout.svelte'
     import HollowButton from '../components/HollowButton.svelte'
+    import SolidButton from '../components/SolidButton.svelte'
     import CreateTeam from '../components/user/CreateTeam.svelte'
     import AddUser from '../components/user/AddUser.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
+    import CountryFlag from '../components/user/CountryFlag.svelte'
+    import UserAvatar from '../components/user/UserAvatar.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n.js'
     import { appRoutes } from '../config.js'
@@ -203,126 +206,244 @@
 </svelte:head>
 
 <PageLayout>
-    <h1 class="text-4xl font-semibold font-rajdhani uppercase">
-        {$_('department')}: {department.name}
-    </h1>
-    <div class="text-2xl font-semibold font-rajdhani uppercase mb-4">
-        {$_('organization')}
-        <ChevronRight />
-        <a
-            class="text-blue-500 hover:text-blue-800"
-            href="{appRoutes.organization}/{organization.id}"
-        >
-            {organization.name}
-        </a>
+    <div class="mb-6 lg:mb-8">
+        <h1 class="text-3xl font-semibold font-rajdhani">
+            <span class="uppercase">{$_('department')}</span>
+            <ChevronRight class="w-8 h-8" />
+            {department.name}
+        </h1>
+        <div class="text-xl font-semibold font-rajdhani">
+            <span class="uppercase">{$_('organization')}</span>
+            <ChevronRight />
+            <a
+                class="text-blue-500 hover:text-blue-800"
+                href="{appRoutes.organization}/{organization.id}"
+            >
+                {organization.name}
+            </a>
+        </div>
     </div>
 
-    <div class="w-full mb-4">
-        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-            <div class="flex w-full">
-                <div class="w-4/5">
-                    <h2
-                        class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase mb-4"
-                    >
-                        {$_('teams')}
-                    </h2>
+    <div class="w-full mb-6 lg:mb-8">
+        <div class="flex w-full">
+            <div class="w-4/5">
+                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                    {$_('teams')}
+                </h2>
+            </div>
+            <div class="w-1/5">
+                <div class="text-right">
+                    {#if isAdmin}
+                        <SolidButton onClick="{toggleCreateTeam}">
+                            {$_('teamCreate')}
+                        </SolidButton>
+                    {/if}
                 </div>
-                <div class="w-1/5">
-                    <div class="text-right">
-                        {#if isAdmin}
-                            <HollowButton onClick="{toggleCreateTeam}">
-                                {$_('teamCreate')}
-                            </HollowButton>
-                        {/if}
+            </div>
+        </div>
+
+        <div class="w-full">
+            <div class="flex flex-col">
+                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div
+                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+                    >
+                        <div
+                            class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                        >
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('name')}
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('dateCreated')}
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {$_('dateUpdated')}
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="bg-white divide-y divide-gray-200"
+                                >
+                                    {#each teams as team, i}
+                                        <tr class:bg-slate-100="{i % 2 !== 0}">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                <a
+                                                    href="{appRoutes.organization}/{organizationId}/department/{departmentId}/team/{team.id}"
+                                                    class="text-blue-500 hover:text-blue-800"
+                                                >
+                                                    {team.name}
+                                                </a>
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {new Date(
+                                                    team.createdDate,
+                                                ).toLocaleString()}
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {new Date(
+                                                    team.updatedDate,
+                                                ).toLocaleString()}
+                                            </td>
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap"
+                                            >
+                                                {#if isAdmin}
+                                                    <HollowButton
+                                                        onClick="{toggleDeleteTeam(
+                                                            team.id,
+                                                        )}"
+                                                        color="red"
+                                                    >
+                                                        {$_('delete')}
+                                                    </HollowButton>
+                                                {/if}
+                                            </td>
+                                        </tr>
+                                    {/each}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <table class="table-fixed w-full">
-                <thead>
-                    <tr>
-                        <th class="w-4/6 px-4 py-2">{$_('name')}</th>
-                        <th class="w-2/6 px-4 py-2"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each teams as team}
-                        <tr>
-                            <td class="border px-4 py-2">
-                                <a
-                                    href="{appRoutes.organization}/{organizationId}/department/{departmentId}/team/{team.id}"
-                                    class="text-blue-500 hover:text-blue-800"
-                                >
-                                    {team.name}
-                                </a>
-                            </td>
-                            <td class="border px-4 py-2 text-right">
-                                {#if isAdmin}
-                                    <HollowButton
-                                        onClick="{toggleDeleteTeam(team.id)}"
-                                        color="red"
-                                    >
-                                        {$_('delete')}
-                                    </HollowButton>
-                                {/if}
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
         </div>
     </div>
 
     <div class="w-full">
-        <div class="p-4 md:p-6 bg-white shadow-lg rounded">
-            <div class="flex w-full">
-                <div class="w-4/5">
-                    <h2
-                        class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase mb-4"
-                    >
-                        {$_('users')}
-                    </h2>
+        <div class="flex w-full">
+            <div class="w-4/5">
+                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                    {$_('users')}
+                </h2>
+            </div>
+            <div class="w-1/5">
+                <div class="text-right">
+                    {#if isAdmin}
+                        <SolidButton onClick="{toggleAddUser}">
+                            {$_('userAdd')}
+                        </SolidButton>
+                    {/if}
                 </div>
-                <div class="w-1/5">
-                    <div class="text-right">
-                        {#if isAdmin}
-                            <HollowButton onClick="{toggleAddUser}">
-                                {$_('userAdd')}
-                            </HollowButton>
-                        {/if}
+            </div>
+        </div>
+
+        <div class="flex flex-col">
+            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div
+                    class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+                >
+                    <div
+                        class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                    >
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        {$_('name')}
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        {$_('email')}
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        {$_('role')}
+                                    </th>
+                                    <th scope="col" class="relative px-6 py-3">
+                                        <span class="sr-only">Actions</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {#each users as user, i}
+                                    <tr class:bg-slate-100="{i % 2 !== 0}">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div
+                                                    class="flex-shrink-0 h-10 w-10"
+                                                >
+                                                    <UserAvatar
+                                                        warriorId="{user.id}"
+                                                        avatar="{user.avatar}"
+                                                        gravatarHash="{user.gravatarHash}"
+                                                        width="48"
+                                                        class="h-10 w-10 rounded-full"
+                                                    />
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div
+                                                        class="font-medium text-gray-900"
+                                                    >
+                                                        {user.name}
+                                                        {#if user.country}
+                                                            &nbsp;
+                                                            <CountryFlag
+                                                                country="{user.country}"
+                                                                additionalClass="inline-block"
+                                                                width="32"
+                                                                height="24"
+                                                            />
+                                                        {/if}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {user.email}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">
+                                                {user.role}
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                                        >
+                                            {#if isAdmin}
+                                                <HollowButton
+                                                    onClick="{toggleRemoveUser(
+                                                        user.id,
+                                                    )}"
+                                                    color="red"
+                                                >
+                                                    {$_('remove')}
+                                                </HollowButton>
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                {/each}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
-            <table class="table-fixed w-full">
-                <thead>
-                    <tr>
-                        <th class="w-2/6 px-4 py-2">{$_('name')}</th>
-                        <th class="w-2/6 px-4 py-2">{$_('email')}</th>
-                        <th class="w-1/6 px-4 py-2">{$_('role')}</th>
-                        <th class="w-1/6 px-4 py-2"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each users as usr}
-                        <tr>
-                            <td class="border px-4 py-2">{usr.name}</td>
-                            <td class="border px-4 py-2">{usr.email}</td>
-                            <td class="border px-4 py-2">{usr.role}</td>
-                            <td class="border px-4 py-2 text-right">
-                                {#if isAdmin}
-                                    <HollowButton
-                                        onClick="{toggleRemoveUser(usr.id)}"
-                                        color="red"
-                                    >
-                                        {$_('remove')}
-                                    </HollowButton>
-                                {/if}
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
         </div>
     </div>
 

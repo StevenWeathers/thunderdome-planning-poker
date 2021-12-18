@@ -250,7 +250,7 @@
     <div class="flex sm:flex-wrap">
         <div class="md:grow">
             <h1
-                class="text-4xl font-semibold font-rajdhani leading-none uppercase"
+                class="text-3xl font-semibold font-rajdhani leading-none uppercase"
             >
                 Checkin: <input
                     type="date"
@@ -263,28 +263,26 @@
                 />
             </h1>
             {#if organizationId}
-                <div class="text-2xl font-semibold font-rajdhani uppercase">
-                    {$_('organization')}
-                    <ChevronRight class="inline-block" />
+                <div class="text-xl font-semibold font-rajdhani">
+                    <span class="uppercase">{$_('organization')}</span>
+                    <ChevronRight />
                     <a
                         class="text-blue-500 hover:text-blue-800"
                         href="{appRoutes.organization}/{organization.id}"
+                        >{organization.name}</a
                     >
-                        {organization.name}
-                    </a>
                     {#if departmentId}
                         &nbsp;
                         <ChevronRight />
-                        {$_('department')}
+                        <span class="uppercase">{$_('department')}</span>
                         <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800"
                             href="{appRoutes.organization}/{organization.id}/department/{department.id}"
+                            >{department.name}</a
                         >
-                            {department.name}
-                        </a>
                         <ChevronRight />
-                        {$_('team')}
+                        <span class="uppercase">{$_('team')}</span>
                         <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800"
@@ -294,7 +292,7 @@
                         </a>
                     {:else}
                         <ChevronRight />
-                        {$_('team')}
+                        <span class="uppercase">{$_('team')}</span>
                         <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800"
@@ -305,8 +303,8 @@
                     {/if}
                 </div>
             {:else}
-                <div class="text-2xl font-semibold font-rajdhani uppercase">
-                    {$_('team')}
+                <div class="text-2xl font-semibold font-rajdhani">
+                    <span class="uppercase">{$_('team')}</span>
                     <ChevronRight />
                     <a
                         class="text-blue-500 hover:text-blue-800"
@@ -416,6 +414,9 @@
                                                                 avatar="{checkin
                                                                     .user
                                                                     .avatar}"
+                                                                gravatarHash="{checkin
+                                                                    .user
+                                                                    .gravatarHash}"
                                                                 avatarService="{AvatarService}"
                                                                 options="{{
                                                                     class: 'w-full h-full rounded-full',

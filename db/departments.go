@@ -156,7 +156,7 @@ func (d *Database) DepartmentTeamCreate(DepartmentID string, TeamName string) (*
 func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int) []*model.DepartmentUser {
 	var users = make([]*model.DepartmentUser, 0)
 	rows, err := d.db.Query(
-		`SELECT id, name, email, role FROM department_user_list($1, $2, $3);`,
+		`SELECT id, name, email, role, avatar FROM department_user_list($1, $2, $3);`,
 		DepartmentID,
 		Limit,
 		Offset,
@@ -172,9 +172,11 @@ func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int
 				&usr.Name,
 				&usr.Email,
 				&usr.Role,
+				&usr.Avatar,
 			); err != nil {
 				log.Println(err)
 			} else {
+				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}

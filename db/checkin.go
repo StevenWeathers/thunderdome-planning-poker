@@ -10,7 +10,7 @@ func (d *Database) CheckinList(TeamId string, Date string, TimeZone string) ([]*
 	Checkins := make([]*model.TeamCheckin, 0)
 
 	rows, err := d.db.Query(`SELECT
- 		tc.id, u.id, u.name, u.avatar,
+ 		tc.id, u.id, u.name, u.email, u.avatar,
  		COALESCE(tc.yesterday, ''), COALESCE(tc.today, ''),
  		COALESCE(tc.blockers, ''), coalesce(tc.discuss, ''),
  		tc.goals_met, tc.created_date, tc.updated_date
@@ -34,6 +34,7 @@ func (d *Database) CheckinList(TeamId string, Date string, TimeZone string) ([]*
 				&checkin.Id,
 				&user.Id,
 				&user.Name,
+				&user.GravatarHash,
 				&user.Avatar,
 				&checkin.Yesterday,
 				&checkin.Today,
@@ -45,6 +46,7 @@ func (d *Database) CheckinList(TeamId string, Date string, TimeZone string) ([]*
 			); err != nil {
 				return nil, err
 			} else {
+				user.GravatarHash = createGravatarHash(user.GravatarHash)
 				checkin.User = &user
 				Checkins = append(Checkins, &checkin)
 			}

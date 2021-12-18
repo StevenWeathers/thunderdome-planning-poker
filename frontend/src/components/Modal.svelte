@@ -26,7 +26,7 @@
                         on:click="{closeModal}"
                         class="text-gray-800 hover:bg-red-500 hover:text-white p-1 rounded-full"
                     >
-                        <CloseIcon width="26" />
+                        <CloseIcon class="w-7 h-7" />
                     </button>
                 </div>
 
