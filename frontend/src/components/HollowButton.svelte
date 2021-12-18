@@ -79,7 +79,7 @@
 
 {#if type === 'label'}
     <label
-        class="btn-hollow btn-hollow-{color} cursor-pointer {additionalClasses}"
+        class="btn-hollow btn-hollow-{color} cursor-pointer inline-block {additionalClasses}"
         data-testid="{testid}"
         for="{labelFor}"
         {...options}
