@@ -17,7 +17,7 @@ RETURNS trigger AS $$
 DECLARE
   row_count int;
 BEGIN
-  DELETE FROM team_checkin WHERE created_date < (NOW() - '60 days'::interval); -- clean up old sessions
+  DELETE FROM team_checkin WHERE created_date < (NOW() - '60 days'::interval); -- clean up old checkins
   IF found THEN
     GET DIAGNOSTICS row_count = ROW_COUNT;
     RAISE NOTICE 'DELETED % row(s) FROM team_checkin', row_count;
