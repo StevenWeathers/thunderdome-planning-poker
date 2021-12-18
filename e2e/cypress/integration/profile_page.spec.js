@@ -147,7 +147,7 @@ describe('The User Profile Page', () => {
 
           cy.getByTestId('apikey-name').should('contain', this.currentAPIKey.name)
           cy.getByTestId('apikey-prefix').should('contain', this.currentAPIKey.prefix)
-          cy.getByTestId('apikey-active').should('contain', 'true')
+          cy.getByTestId('apikey-active').invoke('attr', 'data-active').should('eq', 'true')
         })
       })
 
@@ -178,11 +178,11 @@ describe('The User Profile Page', () => {
 
           cy.get('h2').should('contain', 'API Keys')
 
-          cy.getByTestId('apikey-active').should('contain', 'true')
+          cy.getByTestId('apikey-active').invoke('attr', 'data-active').should('eq', 'true')
 
           cy.getByTestId('apikey-activetoggle').click()
 
-          cy.getByTestId('apikey-active').should('contain', 'false')
+          cy.getByTestId('apikey-active').invoke('attr', 'data-active').should('eq', 'false')
         })
       })
 

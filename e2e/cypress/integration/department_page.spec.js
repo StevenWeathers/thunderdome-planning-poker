@@ -22,7 +22,7 @@ describe('The Department Page', () => {
         cy.createUserDepartment(this.currentUser, this.currentOrganization.id).then(() => {
           cy.visit(`/organization/${this.currentOrganization.id}/department/${this.currentDepartment.id}`)
 
-          cy.get('h1').should('contain', `Department: Test Department`)
+          cy.get('h1').should('contain', `Test Department`)
         })
       })
     })
