@@ -66,12 +66,10 @@
         <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pr-4">
             {#each battles as battle}
                 <div
-                    class="bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded mb-2"
-                >
-                    <div
-                        class="flex flex-wrap items-center p-4 border-gray-300 dark:border-gray-700
+                    class="bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
                         border-b"
-                    >
+                >
+                    <div class="flex flex-wrap items-center p-4">
                         <div
                             class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight"
@@ -116,7 +114,7 @@
 
         <div class="w-full md:w-1/2 lg:w-2/5 md:pl-2 xl:pl-4">
             <div
-                class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded dark:text-white"
+                class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white"
             >
                 <h2
                     class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
