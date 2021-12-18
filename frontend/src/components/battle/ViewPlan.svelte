@@ -14,36 +14,46 @@
 </script>
 
 <Modal closeModal="{togglePlanView}" widthClasses="md:w-2/3 lg:w-3/5">
-    <div class="mb-4">
-        <div class="text-sm font-bold mb-2">{$_('planType')}</div>
+    <div class="mb-4 dark:text-white">
+        <div class="font-bold mb-2 dark:text-gray-400">{$_('planType')}</div>
         {planType}
     </div>
-    <div class="mb-4">
-        <div class="text-sm font-bold mb-2">{$_('planName')}</div>
+    <div class="mb-4 dark:text-white">
+        <div class="font-bold mb-2 dark:text-gray-400">{$_('planName')}</div>
         {planName}
     </div>
-    <div class="mb-4">
-        <div class="text-sm font-bold mb-2">{$_('planReferenceId')}</div>
+    <div class="mb-4 dark:text-white">
+        <div class="font-bold mb-2 dark:text-gray-400">
+            {$_('planReferenceId')}
+        </div>
         {referenceId}
     </div>
     <div class="mb-4">
-        <div class="text-sm font-bold mb-2">{$_('planLink')}</div>
+        <div class="font-bold mb-2 dark:text-gray-400">{$_('planLink')}</div>
         {#if planLink !== ''}
-            <a href="{planLink}" target="_blank" class="text-blue-800">
+            <a
+                href="{planLink}"
+                target="_blank"
+                class="text-blue-800 hover:text-blue-600 dark:text-sky-400 dark:hover:text-sky-600"
+            >
                 <ExternalLinkIcon />
                 {planLink}
             </a>
         {/if}
     </div>
     <div class="mb-4">
-        <div class="text-sm font-bold mb-2">{$_('planDescription')}</div>
-        <div class="unreset">
+        <div class="font-bold mb-2 dark:text-gray-400">
+            {$_('planDescription')}
+        </div>
+        <div class="unreset dark:text-white">
             {@html description}
         </div>
     </div>
     <div class="mb-4">
-        <div class="text-sm font-bold mb-2">{$_('planAcceptanceCriteria')}</div>
-        <div class="unreset">
+        <div class="font-bold mb-2 dark:text-gray-400">
+            {$_('planAcceptanceCriteria')}
+        </div>
+        <div class="unreset dark:text-white">
             {@html acceptanceCriteria}
         </div>
     </div>

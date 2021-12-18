@@ -235,6 +235,7 @@
                 bind:checked="{autoFinishVoting}"
                 id="autoFinishVoting"
                 name="autoFinishVoting"
+                class="w-4 h-4 dark:accent-lime-400 mr-1"
             />
             {$_('pages.myBattles.createBattle.fields.autoFinishVoting.label')}
         </label>

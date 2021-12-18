@@ -16,8 +16,8 @@
     let showVoters = false
 
     $: activeColor = active
-        ? 'border-green-500 bg-green-100 text-green-600'
-        : 'border-gray-300 bg-white'
+        ? 'border-green-500 bg-green-100 text-green-600 dark:border-lime-500 dark:bg-lime-100 dark:text-lime-700'
+        : 'border-gray-300 bg-white dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200'
     $: lockedClass = isLocked
         ? 'opacity-25 cursor-not-allowed'
         : 'cursor-pointer'
@@ -45,7 +45,7 @@
 >
     {#if results.count}
         <div
-            class="text-green-500 font-semibold inline-block absolute right-0
+            class="text-green-500 dark:text-lime-400 font-semibold inline-block absolute right-0
             top-0 p-2 text-4xl text-right {showVoters ? 'z-20' : 'z-10'}"
             data-testid="pointCardCount"
         >
@@ -54,7 +54,7 @@
                 on:mouseenter="{() => (showVoters = true)}"
                 on:mouseleave="{() => (showVoters = false)}"
                 title="{$_('pages.battle.voteResults.showVoters')}"
-                class="text-green-500 relative leading-none"
+                class="text-green-500 dark:text-lime-400 relative leading-none"
             >
                 <WarriorIcon class="h-5 w-5" />
                 <span

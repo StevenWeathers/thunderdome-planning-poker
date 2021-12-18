@@ -61,7 +61,7 @@
 </script>
 
 <div
-    class="border-b border-gray-300 p-4 flex items-center"
+    class="border-b border-gray-300 dark:border-gray-700 p-4 flex items-center"
     data-testid="user-card"
     data-username="{warrior.name}"
 >
@@ -78,7 +78,7 @@
         <div class="flex items-center">
             <div class="w-3/4">
                 <p
-                    class="{nameStyleClass} font-bold leading-tight truncate"
+                    class="{nameStyleClass} font-bold leading-tight truncate dark:text-gray-300"
                     title="{warrior.name}"
                 >
                     {#if showRank}
@@ -167,12 +167,12 @@
             <div class="w-1/4 text-right">
                 {#if !warrior.spectator}
                     {#if voted && points === ''}
-                        <span class="text-green-500">
+                        <span class="text-green-500 dark:text-lime-400">
                             <VoteIcon class="h-8 w-8" />
                         </span>
                     {:else if voted && points !== ''}
                         <span
-                            class="font-bold text-green-600 border-green-500
+                            class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500
                             border p-2 rounded ml-2"
                             data-testid="user-points"
                         >

@@ -48,16 +48,16 @@
 
 <div class="w-full">
     <h4
-        class="text-2xl mb-2 leading-tight font-semibold font-rajdhani uppercase"
+        class="text-2xl mb-2 leading-tight font-semibold font-rajdhani uppercase dark:text-white"
     >
         {$_('pages.battle.warriorInvite')}
     </h4>
     <div class="flex flex-wrap items-stretch w-full">
         <input
             class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1
-        border-2 h-10 bg-gray-100 border-gray-200 rounded rounded-r-none px-3
-        appearance-none text-gray-700 focus:outline-none focus:bg-white
-        focus:border-purple-500"
+        border-2 h-10 bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-900 rounded rounded-r-none px-3
+        appearance-none text-gray-700 dark:text-gray-400 focus:outline-none focus:bg-white
+        focus:border-purple-500 dark:focus:border-yellow-400"
             type="text"
             value="{hostname}{appRoutes.battle}/{battleId}"
             id="BattleLink"
@@ -76,13 +76,15 @@
     </div>
     {#if joinCode !== ''}
         <div class="mt-4">
-            <label for="JoinCode" class="font-bold">{$_('passCode')}</label>
+            <label for="JoinCode" class="font-bold dark:text-gray-300"
+                >{$_('passCode')}</label
+            >
             <div class="flex flex-wrap items-stretch w-full">
                 <input
                     class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1
-            border-2 h-10 bg-gray-100 border-gray-200 rounded rounded-r-none px-3
-            appearance-none text-gray-700 focus:outline-none focus:bg-white
-            focus:border-purple-500"
+            border-2 h-10 bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-900 rounded rounded-r-none px-3
+            appearance-none text-gray-700 dark:text-gray-400 focus:outline-none focus:bg-white dark:focus:bg-gray-800
+            focus:border-purple-500 dark:focus:border-yellow-400"
                     type="text"
                     value="{joinCode}"
                     id="JoinCode"

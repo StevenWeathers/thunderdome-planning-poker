@@ -18,13 +18,13 @@
     >
         <div class="py-8">
             <div
-                class="relative shadow-xl bg-white rounded-lg p-4 xl:p-6 max-h-full"
+                class="relative shadow-xl bg-white dark:bg-gray-800 rounded-lg p-4 xl:p-6 max-h-full"
             >
                 <div class="absolute top-4 right-4">
                     <button
                         aria-label="close"
                         on:click="{closeModal}"
-                        class="text-gray-800 hover:bg-red-500 hover:text-white p-1 rounded-full"
+                        class="text-gray-800 dark:text-gray-400 hover:bg-red-500 hover:text-white p-1 rounded-full"
                     >
                         <CloseIcon class="w-7 h-7" />
                     </button>

@@ -479,39 +479,39 @@
     {#if battle.name && !socketReconnecting && !socketError}
         <div class="mb-6 flex flex-wrap">
             <div class="w-full text-center md:w-2/3 md:text-left">
-                <h1 class="text-4xl font-semibold font-rajdhani leading-tight">
+                <h1
+                    class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center"
+                >
                     {#if currentPlan.link}
                         <a
                             href="{currentPlan.link}"
                             target="_blank"
-                            class="text-blue-800"
+                            class="text-blue-800 dark:text-sky-400 inline-block"
                             data-testid="currentplan-link"
                         >
-                            <ExternalLinkIcon />
+                            <ExternalLinkIcon class="w-8 h-8" />
                         </a>
-                        &nbsp;
                     {/if}
                     {#if currentPlan.type}
-                        <span
+                        &nbsp;<span
                             class="inline-block text-lg text-gray-500
-                            border-gray-300 border px-1 rounded"
+                            border-gray-300 border px-1 rounded dark:text-gray-300 dark:border-gray-500"
                             data-testid="currentplan-type"
                         >
                             {currentPlan.type}
                         </span>
-                        &nbsp;
                     {/if}
                     {#if currentPlan.referenceId}
-                        <span data-testid="currentplan-refid"
-                            >[{currentPlan.referenceId}]&nbsp;</span
+                        &nbsp;<span data-testid="currentplan-refid"
+                            >[{currentPlan.referenceId}]</span
                         >
                     {/if}
-                    <span data-testid="currentplan-name"
+                    &nbsp;<span data-testid="currentplan-name"
                         >{currentPlan.name}</span
                     >
                 </h1>
                 <h2
-                    class="text-gray-700 text-3xl font-semibold font-rajdhani leading-tight"
+                    class="text-gray-700 dark:text-gray-300 text-3xl font-semibold font-rajdhani leading-tight"
                     data-testid="battle-name"
                 >
                     {battle.name}
@@ -519,7 +519,7 @@
             </div>
             <div
                 class="w-full md:w-1/3 text-center md:text-right font-semibold
-                text-3xl md:text-4xl text-gray-700"
+                text-3xl md:text-4xl text-gray-700 dark:text-gray-300"
                 data-testid="vote-timer"
             >
                 {#if countdown.seconds !== undefined}
@@ -571,8 +571,10 @@
             </div>
 
             <div class="w-full lg:w-1/4 px-4">
-                <div class="bg-white shadow-lg mb-4 rounded">
-                    <div class="bg-blue-500 p-4 rounded-t">
+                <div
+                    class="bg-white dark:bg-gray-800 shadow-lg mb-4 rounded-lg"
+                >
+                    <div class="bg-blue-500 dark:bg-gray-700 p-4 rounded-t-lg">
                         <h3
                             class="text-3xl text-white leading-tight font-semibold font-rajdhani uppercase"
                         >
@@ -607,7 +609,9 @@
                     {/if}
                 </div>
 
-                <div class="bg-white shadow-lg p-4 mb-4 rounded">
+                <div
+                    class="bg-white dark:bg-gray-800 shadow-lg p-4 mb-4 rounded-lg"
+                >
                     <InviteWarrior
                         hostname="{hostname}"
                         battleId="{battle.id}"

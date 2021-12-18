@@ -22,7 +22,7 @@
     <form on:submit="{handleSubmit}" name="becomeLeader">
         <div class="mb-4">
             <label
-                class="block text-gray-700 text-sm font-bold mb-2"
+                class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                 for="leaderCode"
             >
                 {$_('leaderPasscode')}
@@ -31,9 +31,9 @@
                 <input
                     name="leaderCode"
                     bind:value="{leaderCode}"
-                    class="bg-gray-100 border-gray-200 border-2 appearance-none
-                    rounded w-full py-2 px-3 text-gray-700 leading-tight
-                    focus:outline-none focus:bg-white focus:border-purple-500"
+                    class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
                     id="leaderCode"
                 />
             </div>

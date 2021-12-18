@@ -85,28 +85,28 @@
 
 <div
     class="flex flex-wrap items-center text-center mb-2 md:mb-4 pt-2 pb-2
-    md:pt-4 md:pb-4 bg-white shadow-lg rounded text-xl"
+    md:pt-4 md:pb-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg text-xl"
 >
-    <div class="w-1/3 ">
+    <div class="w-1/3 dark:text-white">
         <div class="mb-2">{$_('pages.battle.voteResults.totalVotes')}</div>
         <span data-testid="voteresult-total">{totalVotes}</span>
         <WarriorIcon class="h-5 w-5" />
     </div>
-    <div class="w-1/3">
+    <div class="w-1/3 dark:text-white">
         <div class="mb-2">{$_('pages.battle.voteResults.average')}</div>
         <span
-            class="font-bold text-green-600 border-green-500 border p-2 rounded
+            class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500 border p-2 rounded
             ml-2 inline-block"
             data-testid="voteresult-average"
         >
             {average}
         </span>
     </div>
-    <div class="w-1/3">
+    <div class="w-1/3 dark:text-white">
         <div class="mb-2">{$_('pages.battle.voteResults.highest')}</div>
         <div>
             <span
-                class="font-bold text-green-600 border-green-500 border p-2
+                class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500 border p-2
                 rounded ml-2 inline-block"
                 data-testid="voteresult-high"
             >
