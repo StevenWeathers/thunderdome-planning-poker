@@ -103,7 +103,7 @@
     </div>
 </section>
 
-<section class="px-4 bg-slate-100 border-b">
+<section class="px-4 bg-white border-b">
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
         <div class="flex items-center flex-wrap h-full">
             <div class="w-1/2">
@@ -146,7 +146,7 @@
     </div>
 </section>
 
-<section class="px-4 bg-white border-b">
+<section class="px-4 bg-slate-100 border-b">
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
         <div class="flex items-center flex-wrap h-full">
             <div class="w-1/2">
@@ -175,6 +175,34 @@
                         and aid in decision making
                     </li>
                 </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="px-4 bg-white border-b">
+    <div class="container mx-auto py-12 md:py-16 lg:py-20">
+        <div class="flex items-center flex-wrap h-full">
+            <div class="w-1/2">
+                <img
+                    src="https://user-images.githubusercontent.com/846933/146627094-1f31a277-a454-4fd1-b707-ecb95559e9ad.png"
+                    class="w-3/4 m-auto"
+                    alt="team checkins preview"
+                />
+            </div>
+            <div class="w-1/2">
+                <div class="mb-4">
+                    <div class="title-line bg-yellow-thunder"></div>
+                    <h3 class="text-4xl font-semibold font-rajdhani uppercase">
+                        Streamline your team's agile stand-up with Team Checkins
+                    </h3>
+                </div>
+
+                <div class="text-lg">
+                    Instead of spending time discussing what you did yesterday
+                    and what you're going to do today, focus on Blockers and
+                    other more critical details.
+                </div>
             </div>
         </div>
     </div>
