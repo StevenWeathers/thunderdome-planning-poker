@@ -16,9 +16,10 @@
 
     const { AllowRegistration, PathPrefix } = AppConfig
 
-    const activePageClass = 'text-purple-700 border-purple-700'
+    const activePageClass =
+        'text-purple-700 border-purple-700 dark:text-yellow-400 dark:border-yellow-400'
     const pageClass =
-        'text-gray-700 border-white hover:text-purple-700 transition duration-300'
+        'text-gray-700 border-white dark:border-gray-800 dark:hover:border-yellow-400 hover:text-purple-700 dark:text-gray-300 dark:hover:text-yellow-400 transition duration-300'
 
     let showMobileMenu = false
 
@@ -48,7 +49,7 @@
     }
 </style>
 
-<nav class="bg-white" aria-label="main navigation">
+<nav class="bg-white dark:bg-gray-800" aria-label="main navigation">
     <div class="px-8">
         <div class="flex justify-between">
             <div class="flex space-x-7">
@@ -67,7 +68,7 @@
                     {#if $warrior.name}
                         <a
                             href="{appRoutes.battles}"
-                            class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                            class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
                             'battles'
                                 ? activePageClass
                                 : pageClass}"
@@ -77,7 +78,7 @@
                         {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
                             <a
                                 href="{appRoutes.organizations}"
-                                class="pt-6 pb-4 px-4  border-b-4 {currentPage ==
+                                class="pt-6 pb-4 px-4  border-b-4 {currentPage ===
                                 'organizations'
                                     ? activePageClass
                                     : pageClass}"
@@ -88,7 +89,7 @@
                         {#if validateUserIsAdmin($warrior)}
                             <a
                                 href="{appRoutes.admin}"
-                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
                                 'admin'
                                     ? activePageClass
                                     : pageClass}"
@@ -100,7 +101,7 @@
                 </nav>
             </div>
             <div
-                class="hidden lg:flex items-center space-x-3 font-rajdhani font-semibold"
+                class="hidden lg:flex items-center space-x-3 font-rajdhani font-semibold dark:text-gray-300"
             >
                 {#if !$warrior.name}
                     <div class="uppercase">

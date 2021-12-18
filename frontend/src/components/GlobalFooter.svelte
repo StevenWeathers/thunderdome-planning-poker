@@ -4,11 +4,12 @@
     import { _ } from '../i18n.js'
 
     const { AppVersion } = AppConfig
-    const footerLinkClasses = 'no-underline text-blue-500 hover:text-blue-800'
+    const footerLinkClasses =
+        'no-underline text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600'
 </script>
 
 <footer
-    class="w-full border-t px-16 py-10 text-center font-rajdhani text-xl"
+    class="w-full border-t px-16 py-10 text-center font-rajdhani text-xl dark:text-white dark:border-gray-800"
     style="box-shadow: inset 0 7px 30px -7px rgba(0,0,0,0.1);"
 >
     <GithubIcon />
@@ -32,7 +33,7 @@
         },
     })}
     <br />
-    <div class="text-sm text-gray-500">
+    <div class="text-sm text-gray-500 dark:text-gray-400">
         {$_('appVersion', { values: { version: AppVersion } })}
     </div>
 </footer>
