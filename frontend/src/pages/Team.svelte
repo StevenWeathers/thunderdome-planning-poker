@@ -239,7 +239,7 @@
             <SolidButton
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 href="{`${currentPageUrl}/checkin`}"
-                >Check In
+                >Checkins
             </SolidButton>
         </div>
     </div>
