@@ -55,13 +55,13 @@
 </script>
 
 <style>
-    :global(.toggle-checkbox:checked) {
+    .toggle-checkbox:checked {
         @apply right-0;
         @apply border-green-400;
         border-color: #68d391;
     }
 
-    :global(.toggle-checkbox:checked + .toggle-label) {
+    .toggle-checkbox:checked + .toggle-label {
         @apply bg-green-400;
         background-color: #68d391;
     }

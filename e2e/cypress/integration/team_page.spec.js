@@ -21,7 +21,7 @@ describe('The Team Page', () => {
       cy.createUserTeam(this.currentUser).then(() => {
         cy.visit(`/team/${this.currentTeam.id}`)
 
-        cy.get('h1').should('contain', `Team: Test Team`)
+        cy.get('h1').should('contain', `Test Team`)
       })
     })
   })

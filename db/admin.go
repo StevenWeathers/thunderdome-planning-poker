@@ -23,7 +23,8 @@ func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 			team_count,
 			apikey_count,
 			active_battle_count,
-			active_battle_user_count
+			active_battle_user_count,
+			team_checkins_count
 		FROM get_app_stats();
 		`,
 	).Scan(
@@ -37,6 +38,7 @@ func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 		&Appstats.APIKeyCount,
 		&Appstats.ActiveBattleCount,
 		&Appstats.ActiveBattleUserCount,
+		&Appstats.TeamCheckinsCount,
 	)
 	if err != nil {
 		log.Println("Unable to get application stats: ", err)

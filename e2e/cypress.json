@@ -7,5 +7,7 @@
     "pass": "odinson",
     "port": "5432",
     "host": "localhost"
-  }
+  },
+  "viewportWidth": 1280,
+  "viewportHeight": 720
 }

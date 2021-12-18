@@ -17,18 +17,22 @@
         z-50 max-h-full"
     >
         <div class="py-8">
-            <div class="shadow-xl bg-white rounded-lg p-4 xl:p-6 max-h-full">
-                <div class="flex justify-end mb-2">
+            <div
+                class="relative shadow-xl bg-white rounded-lg p-4 xl:p-6 max-h-full"
+            >
+                <div class="absolute top-4 right-4">
                     <button
                         aria-label="close"
                         on:click="{closeModal}"
-                        class="text-gray-800"
+                        class="text-gray-800 hover:bg-red-500 hover:text-white p-1 rounded-full"
                     >
-                        <CloseIcon />
+                        <CloseIcon class="w-7 h-7" />
                     </button>
                 </div>
 
-                <slot />
+                <div class="mt-2">
+                    <slot />
+                </div>
             </div>
         </div>
     </div>

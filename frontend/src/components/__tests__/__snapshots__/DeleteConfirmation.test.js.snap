@@ -17,66 +17,76 @@ exports[`DeleteConfirmation component should match snapshot 1`] = `
           class="py-8"
         >
           <div
-            class="shadow-xl bg-white rounded-lg p-4 xl:p-6 max-h-full"
+            class="relative shadow-xl bg-white rounded-lg p-4 xl:p-6 max-h-full"
           >
             <div
-              class="flex justify-end mb-2"
+              class="absolute top-4 right-4"
             >
               <button
                 aria-label="close"
-                class="text-gray-800"
+                class="text-gray-800 hover:bg-red-500 hover:text-white p-1 rounded-full"
               >
+                <span
+                  class="sr-only"
+                >
+                  Dismiss
+                </span>
+                 
                 <svg
-                  class="fill-current inline"
-                  height="24"
-                  viewBox="0 0 1792 1792"
-                  width="24"
+                  aria-hidden="true"
+                  class="inline w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M1490 1322q0 40-28 68l-136 136q-28 28-68 28t-68-28l-294-294-294
-        294q-28 28-68
-        28t-68-28l-136-136q-28-28-28-68t28-68l294-294-294-294q-28-28-28-68t28-68l136-136q28-28
-        68-28t68 28l294 294 294-294q28-28 68-28t68 28l136 136q28 28 28 68t-28
-        68l-294 294 294 294q28 28 28 68z"
+                    d="M6 18L18 6M6 6l12 12"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
                   />
                 </svg>
               </button>
             </div>
              
             <div
-              class="mb-4"
+              class="mt-2"
             >
-              <p
-                class="font-bold text-xl text-red-600"
+              <div
+                class="mb-4"
               >
-                
-                 
-                <br />
-                 
-                This cannot be undone.
-              </p>
-            </div>
-             
-            <div
-              class="text-right"
-            >
-              <button
-                class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 mr-4"
-                data-testid="confirm-cancel"
-                type="button"
-              >
-                Cancel
-              </button>
+                <p
+                  class="font-bold text-xl text-red-600"
+                >
+                  
+                   
+                  <br />
+                   
+                  This cannot be undone.
+                </p>
+              </div>
                
-              <button
-                class="btn btn-red svelte-1ep9he2"
-                data-testid="confirm-confirm"
-                type="button"
+              <div
+                class="text-right"
               >
-                Confirm Delete
-              </button>
-              
+                <button
+                  class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 mr-4"
+                  data-testid="confirm-cancel"
+                  type="button"
+                >
+                  Cancel
+                </button>
+                 
+                <button
+                  class="btn btn-red svelte-1ep9he2"
+                  data-testid="confirm-confirm"
+                  type="button"
+                >
+                  Confirm Delete
+                </button>
+                
+              </div>
             </div>
           </div>
         </div>
@@ -103,63 +113,73 @@ exports[`DeleteConfirmation component should match snapshot when permanent=false
           class="py-8"
         >
           <div
-            class="shadow-xl bg-white rounded-lg p-4 xl:p-6 max-h-full"
+            class="relative shadow-xl bg-white rounded-lg p-4 xl:p-6 max-h-full"
           >
             <div
-              class="flex justify-end mb-2"
+              class="absolute top-4 right-4"
             >
               <button
                 aria-label="close"
-                class="text-gray-800"
+                class="text-gray-800 hover:bg-red-500 hover:text-white p-1 rounded-full"
               >
+                <span
+                  class="sr-only"
+                >
+                  Dismiss
+                </span>
+                 
                 <svg
-                  class="fill-current inline"
-                  height="24"
-                  viewBox="0 0 1792 1792"
-                  width="24"
+                  aria-hidden="true"
+                  class="inline w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M1490 1322q0 40-28 68l-136 136q-28 28-68 28t-68-28l-294-294-294
-        294q-28 28-68
-        28t-68-28l-136-136q-28-28-28-68t28-68l294-294-294-294q-28-28-28-68t28-68l136-136q28-28
-        68-28t68 28l294 294 294-294q28-28 68-28t68 28l136 136q28 28 28 68t-28
-        68l-294 294 294 294q28 28 28 68z"
+                    d="M6 18L18 6M6 6l12 12"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
                   />
                 </svg>
               </button>
             </div>
              
             <div
-              class="mb-4"
+              class="mt-2"
             >
-              <p
-                class="font-bold text-xl text-red-600"
+              <div
+                class="mb-4"
               >
-                
-                 
-              </p>
-            </div>
-             
-            <div
-              class="text-right"
-            >
-              <button
-                class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 mr-4"
-                data-testid="confirm-cancel"
-                type="button"
-              >
-                Cancel
-              </button>
+                <p
+                  class="font-bold text-xl text-red-600"
+                >
+                  
+                   
+                </p>
+              </div>
                
-              <button
-                class="btn btn-red svelte-1ep9he2"
-                data-testid="confirm-confirm"
-                type="button"
+              <div
+                class="text-right"
               >
-                Confirm Delete
-              </button>
-              
+                <button
+                  class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 mr-4"
+                  data-testid="confirm-cancel"
+                  type="button"
+                >
+                  Cancel
+                </button>
+                 
+                <button
+                  class="btn btn-red svelte-1ep9he2"
+                  data-testid="confirm-confirm"
+                  type="button"
+                >
+                  Confirm Delete
+                </button>
+                
+              </div>
             </div>
           </div>
         </div>

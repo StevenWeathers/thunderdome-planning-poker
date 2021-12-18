@@ -394,6 +394,7 @@
                                     <td
                                         class="border px-4 py-2"
                                         data-testid="apikey-active"
+                                        data-active="{apk.active}"
                                     >
                                         {#if apk.active}
                                             <span class="text-green-600"

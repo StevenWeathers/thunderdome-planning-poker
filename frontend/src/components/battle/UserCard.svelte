@@ -20,7 +20,6 @@
     export let eventTag
 
     const showRank = AppConfig.ShowWarriorRank
-    const avatarService = AppConfig.AvatarService
     let nameStyleClass = showRank ? 'text-lg' : 'text-xl'
     let showBecomeLeader = false
 
@@ -70,7 +69,6 @@
         <UserAvatar
             warriorId="{warrior.id}"
             avatar="{warrior.avatar}"
-            avatarService="{avatarService}"
             gravatarHash="{warrior.gravatarHash}"
             class="rounded-full"
             width="68"

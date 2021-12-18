@@ -21,7 +21,7 @@ describe('The Organization Page', () => {
       cy.createUserOrganization(this.currentUser).then(() => {
         cy.visit(`/organization/${this.currentOrganization.id}`)
 
-        cy.get('h1').should('contain', `Organization: Test Organization`)
+        cy.get('h1').should('contain', `Test Organization`)
       })
     })
   })

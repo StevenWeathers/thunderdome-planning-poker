@@ -47,7 +47,7 @@ func (d *Database) OrganizationUserRole(UserID string, OrgID string) (string, er
 	return role, nil
 }
 
-// OrganizationList gets a list of organizations the user is apart of
+// OrganizationListByUser gets a list of organizations the user is apart of
 func (d *Database) OrganizationListByUser(UserID string, Limit int, Offset int) []*model.Organization {
 	var organizations = make([]*model.Organization, 0)
 	rows, err := d.db.Query(
@@ -102,7 +102,7 @@ func (d *Database) OrganizationCreate(UserID string, OrgName string) (*model.Org
 func (d *Database) OrganizationUserList(OrgID string, Limit int, Offset int) []*model.OrganizationUser {
 	var users = make([]*model.OrganizationUser, 0)
 	rows, err := d.db.Query(
-		`SELECT id, name, email, role FROM organization_user_list($1, $2, $3);`,
+		`SELECT id, name, email, role, avatar FROM organization_user_list($1, $2, $3);`,
 		OrgID,
 		Limit,
 		Offset,
@@ -118,9 +118,11 @@ func (d *Database) OrganizationUserList(OrgID string, Limit int, Offset int) []*
 				&usr.Name,
 				&usr.Email,
 				&usr.Role,
+				&usr.Avatar,
 			); err != nil {
 				log.Println(err)
 			} else {
+				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}

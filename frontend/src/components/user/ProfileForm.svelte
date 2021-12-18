@@ -321,7 +321,6 @@
                         <WarriorAvatar
                             warriorId="{profile.id}"
                             avatar="{profile.avatar}"
-                            avatarService="{AvatarService}"
                             gravatarHash="{profile.gravatarHash}"
                             width="48"
                             class="rounded-full"

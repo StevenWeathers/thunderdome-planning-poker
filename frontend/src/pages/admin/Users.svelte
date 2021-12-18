@@ -14,10 +14,8 @@
     import Modal from '../../components/Modal.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
-    import { AppConfig, appRoutes } from '../../config.js'
+    import { appRoutes } from '../../config.js'
     import { validateUserIsAdmin } from '../../validationUtils.js'
-
-    const { AvatarService } = AppConfig
 
     export let xfetch
     export let router
@@ -306,7 +304,6 @@
                                                         <UserAvatar
                                                             warriorId="{user.id}"
                                                             avatar="{user.avatar}"
-                                                            avatarService="{AvatarService}"
                                                             gravatarHash="{user.gravatarHash}"
                                                             width="48"
                                                             class="h-10 w-10 rounded-full"

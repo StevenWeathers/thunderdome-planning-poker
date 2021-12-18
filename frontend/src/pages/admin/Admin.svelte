@@ -13,6 +13,7 @@
     import OfficeBuildingIcon from '../../components/icons/OfficeBuilding.svelte'
     import DocumentTextIcon from '../../components/icons/DocumentText.svelte'
     import ShieldExclamationIcon from '../../components/icons/ShieldExclamation.svelte'
+    import CheckIcon from '../../components/icons/CheckIcon.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
     import { AppConfig, appRoutes } from '../../config.js'
@@ -37,6 +38,7 @@
         apikeyCount: 0,
         activeBattleCount: 0,
         activeBattleUserCount: 0,
+        teamCheckinsCount: 0,
     }
 
     function getAppStats() {
@@ -171,7 +173,7 @@
         <div class="bg-white border rounded shadow-lg p-2">
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
-                    <div class="rounded p-3 bg-orange-500 text-white">
+                    <div class="rounded p-3 bg-red-500 text-white">
                         <ShieldExclamationIcon />
                     </div>
                 </div>
@@ -201,7 +203,7 @@
         <div class="bg-white border rounded shadow-lg p-2">
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
-                    <div class="rounded p-3 bg-red-500 text-white">
+                    <div class="rounded p-3 bg-yellow-500 text-white">
                         <LightingBolt />
                     </div>
                 </div>
@@ -235,7 +237,7 @@
         <div class="bg-white border rounded shadow-lg p-2">
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
-                    <div class="rounded p-3 bg-sky-500 text-white">
+                    <div class="rounded p-3 bg-orange-500 text-white">
                         <OfficeBuildingIcon />
                     </div>
                 </div>
@@ -281,33 +283,74 @@
                 </div>
             </div>
         </div>
+        <div class="bg-white border rounded shadow-lg p-2">
+            <div class="flex flex-row items-center">
+                <div class="flex-shrink pr-4">
+                    <div class="rounded p-3 bg-lime-500 text-white">
+                        <CheckIcon />
+                    </div>
+                </div>
+                <div class="flex-1 text-right md:text-center">
+                    <h5 class="font-bold uppercase text-gray-500">
+                        {$_('teams')} Checkins
+                    </h5>
+                    <h3 class="font-bold text-3xl">
+                        {appStats.teamCheckinsCount}
+                    </h3>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="flex justify-center mb-4">
-        <div class="w-full">
-            <div
-                class="text-center p-2 md:p-4 bg-white shadow-lg rounded text-xl"
-            >
-                <div
-                    class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase text-center mb-4"
-                >
-                    {$_('pages.admin.maintenance.title')}
+    <div class="w-full">
+        <div
+            class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase text-center mb-4"
+        >
+            {$_('pages.admin.maintenance.title')}
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+            <div class="bg-white border rounded shadow-lg p-2">
+                <div class="flex flex-row items-center">
+                    <div class="flex-1 text-center">
+                        <h5 class="font-bold uppercase text-gray-500 mb-2">
+                            {$_('pages.admin.maintenance.cleanGuests', {
+                                values: { daysOld: CleanupGuestsDaysOld },
+                            })}
+                        </h5>
+                        <HollowButton onClick="{cleanGuests}" color="red">
+                            Execute
+                        </HollowButton>
+                    </div>
                 </div>
-                <HollowButton onClick="{cleanGuests}" color="red">
-                    {$_('pages.admin.maintenance.cleanGuests', {
-                        values: { daysOld: CleanupGuestsDaysOld },
-                    })}
-                </HollowButton>
+            </div>
 
-                <HollowButton onClick="{cleanBattles}" color="red">
-                    {$_('pages.admin.maintenance.cleanBattles', {
-                        values: { daysOld: CleanupBattlesDaysOld },
-                    })}
-                </HollowButton>
+            <div class="bg-white border rounded shadow-lg p-2">
+                <div class="flex flex-row items-center">
+                    <div class="flex-1 text-center">
+                        <h5 class="font-bold uppercase text-gray-500 mb-2">
+                            {$_('pages.admin.maintenance.cleanBattles', {
+                                values: { daysOld: CleanupBattlesDaysOld },
+                            })}
+                        </h5>
+                        <HollowButton onClick="{cleanBattles}" color="red">
+                            Execute
+                        </HollowButton>
+                    </div>
+                </div>
+            </div>
 
-                <HollowButton onClick="{lowercaseEmails}" color="red">
-                    {$_('maintenanceLowercaseEmails')}
-                </HollowButton>
+            <div class="bg-white border rounded shadow-lg p-2">
+                <div class="flex flex-row items-center">
+                    <div class="flex-1 text-center">
+                        <h5 class="font-bold uppercase text-gray-500 mb-2">
+                            {$_('maintenanceLowercaseEmails')}
+                        </h5>
+                        <HollowButton onClick="{lowercaseEmails}" color="red">
+                            Execute
+                        </HollowButton>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

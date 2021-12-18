@@ -479,9 +479,7 @@
     {#if battle.name && !socketReconnecting && !socketError}
         <div class="mb-6 flex flex-wrap">
             <div class="w-full text-center md:w-2/3 md:text-left">
-                <h1
-                    class="text-4xl font-semibold font-rajdhani uppercase leading-tight"
-                >
+                <h1 class="text-4xl font-semibold font-rajdhani leading-tight">
                     {#if currentPlan.link}
                         <a
                             href="{currentPlan.link}"
@@ -513,7 +511,7 @@
                     >
                 </h1>
                 <h2
-                    class="text-gray-700 text-3xl font-semibold font-rajdhani uppercase leading-tight"
+                    class="text-gray-700 text-3xl font-semibold font-rajdhani leading-tight"
                     data-testid="battle-name"
                 >
                     {battle.name}

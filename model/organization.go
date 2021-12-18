@@ -11,10 +11,12 @@ type Organization struct {
 }
 
 type OrganizationUser struct {
-	Id    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Role  string `json:"role"`
+	Id           string `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Role         string `json:"role"`
+	Avatar       string `json:"avatar"`
+	GravatarHash string `json:"gravatarHash"`
 }
 
 type Department struct {
@@ -25,8 +27,10 @@ type Department struct {
 }
 
 type DepartmentUser struct {
-	Id    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Role  string `json:"role"`
+	Id           string `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Role         string `json:"role"`
+	Avatar       string `json:"avatar"`
+	GravatarHash string `json:"gravatarHash"`
 }

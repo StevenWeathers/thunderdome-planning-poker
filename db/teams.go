@@ -115,10 +115,24 @@ func (d *Database) TeamAddUser(TeamID string, UserID string, Role string) (strin
 }
 
 // TeamUserList gets a list of team users
-func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*model.OrganizationUser {
-	var users = make([]*model.OrganizationUser, 0)
+func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) ([]*model.TeamUser, int, error) {
+	var users = make([]*model.TeamUser, 0)
+	var userCount int
+
+	err := d.db.QueryRow(
+		`SELECT count(user_id) FROM team_user WHERE team_id = $1;`,
+		TeamID,
+	).Scan(&userCount)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if userCount == 0 {
+		return users, userCount, nil
+	}
+
 	rows, err := d.db.Query(
-		`SELECT id, name, email, role FROM team_user_list($1, $2, $3);`,
+		`SELECT id, name, email, role, avatar FROM team_user_list($1, $2, $3);`,
 		TeamID,
 		Limit,
 		Offset,
@@ -127,24 +141,26 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) []*model.O
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr model.OrganizationUser
+			var usr model.TeamUser
 
-			if err := rows.Scan(
+			if err = rows.Scan(
 				&usr.Id,
 				&usr.Name,
 				&usr.Email,
 				&usr.Role,
+				&usr.Avatar,
 			); err != nil {
 				log.Println(err)
 			} else {
+				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		log.Println(err)
+		return nil, 0, err
 	}
 
-	return users
+	return users, userCount, nil
 }
 
 // TeamRemoveUser removes a user from a team

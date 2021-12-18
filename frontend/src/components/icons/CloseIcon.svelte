@@ -1,14 +1,21 @@
+<script>
+    let klass = 'w-5 h-5'
+    export { klass as class }
+</script>
+
+<span class="sr-only">Dismiss</span>
+<!-- Heroicon name: outline/x -->
 <svg
-    class="fill-current inline"
-    width="24"
-    height="24"
-    viewBox="0 0 1792 1792"
+    class="inline {klass}"
     xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    aria-hidden="true"
 >
     <path
-        d="M1490 1322q0 40-28 68l-136 136q-28 28-68 28t-68-28l-294-294-294
-        294q-28 28-68
-        28t-68-28l-136-136q-28-28-28-68t28-68l294-294-294-294q-28-28-28-68t28-68l136-136q28-28
-        68-28t68 28l294 294 294-294q28-28 68-28t68 28l136 136q28 28 28 68t-28
-        68l-294 294 294 294q28 28 28 68z"></path>
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M6 18L18 6M6 6l12 12"></path>
 </svg>
