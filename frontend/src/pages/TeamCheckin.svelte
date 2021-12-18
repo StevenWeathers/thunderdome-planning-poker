@@ -12,7 +12,7 @@
     import Gauge from '../components/Gauge.svelte'
     import { _ } from '../i18n.js'
     import { warrior } from '../stores.js'
-    import { AppConfig, appRoutes } from '../config.js'
+    import { appRoutes } from '../config.js'
     import { validateUserIsRegistered } from '../validationUtils.js'
     import {
         formatDayForInput,
@@ -28,8 +28,6 @@
     export let organizationId
     export let departmentId
     export let teamId
-
-    const { AvatarService } = AppConfig
 
     let showCheckin = false
     let checkins = []
@@ -417,7 +415,6 @@
                                                                 gravatarHash="{checkin
                                                                     .user
                                                                     .gravatarHash}"
-                                                                avatarService="{AvatarService}"
                                                                 options="{{
                                                                     class: 'w-full h-full rounded-full',
                                                                 }}"
