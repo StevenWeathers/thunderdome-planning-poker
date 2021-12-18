@@ -17,7 +17,6 @@
     import {
         formatDayForInput,
         getTimezoneName,
-        getTodaysDate,
         subtractDays,
     } from '../dateUtils.js'
 
@@ -130,7 +129,11 @@
     }
 
     function handleCheckin(checkin) {
-        xfetch(`${teamPrefix}/checkins`, { body: checkin })
+        const body = {
+            ...checkin,
+        }
+
+        xfetch(`${teamPrefix}/checkins`, { body })
             .then(res => res.json())
             .then(function () {
                 getCheckins()
@@ -255,7 +258,7 @@
                     id="checkindate"
                     bind:value="{selectedDate}"
                     min="{maxNegativeDate}"
-                    max="{getTodaysDate()}"
+                    max="{formatDayForInput(now)}"
                     on:change="{getCheckins}"
                     class="bg-transparent"
                 />
