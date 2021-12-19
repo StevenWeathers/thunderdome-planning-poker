@@ -269,7 +269,7 @@
                     min="{maxNegativeDate}"
                     max="{formatDayForInput(now)}"
                     on:change="{getCheckins}"
-                    class="bg-transparent accent-lime-400"
+                    class="bg-transparent"
                 />
             </h1>
 
