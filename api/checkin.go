@@ -46,6 +46,12 @@ func (a *api) handleCheckinsGet() http.HandlerFunc {
 // handleCheckinCreate handles creating a team user checkin
 // @Summary Create Team Checkin
 // @Description Creates a team user checkin
+// @Param userId body string true "the user ID to check in"
+// @Param yesterday body string true "what you did yesterday"
+// @Param today body string true "what you're going to do today"
+// @Param blockers body string true "any blockers"
+// @Param discuss body string true "anything to discuss"
+// @Param goalsMet body boolean true "did you meet yesterday's goals"
 // @Tags team
 // @Produce  json
 // @Success 200 object standardJsonResponse{}

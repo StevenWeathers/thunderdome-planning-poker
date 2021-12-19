@@ -12,6 +12,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq" // necessary for postgres
+	"github.com/microcosm-cc/bluemonday"
 )
 
 //go:embed migrations/*.sql
@@ -25,9 +26,14 @@ func New(AdminEmail string, config *Config) *Database {
 		log.Fatal(err)
 	}
 
+	// Do this once for each unique policy, and use the policy for the life of the program
+	// Policy creation/editing is not safe to use in multiple goroutines
+	bmp := bluemonday.UGCPolicy()
+
 	var d = &Database{
 		// read environment variables and sets up database configuration values
-		config: config,
+		config:              config,
+		htmlSanitizerPolicy: bmp,
 	}
 
 	psqlInfo := fmt.Sprintf(
@@ -47,6 +53,9 @@ func New(AdminEmail string, config *Config) *Database {
 	d.db = pdb
 
 	driver, err := postgres.WithInstance(pdb, &postgres.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
 	m, err := migrate.NewWithInstance(
 		"iofs",
 		dms,

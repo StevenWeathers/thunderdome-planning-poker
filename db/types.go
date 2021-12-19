@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 // Config holds all the configuration for the db
@@ -17,6 +18,7 @@ type Config struct {
 
 // Database contains all the methods to interact with DB
 type Database struct {
-	config *Config
-	db     *sql.DB
+	config              *Config
+	db                  *sql.DB
+	htmlSanitizerPolicy *bluemonday.Policy
 }

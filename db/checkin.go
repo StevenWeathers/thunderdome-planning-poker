@@ -75,16 +75,21 @@ func (d *Database) CheckinCreate(
 		return errors.New("REQUIRES_TEAM_USER")
 	}
 
+	SanitizedYesterday := d.htmlSanitizerPolicy.Sanitize(Yesterday)
+	SanitizedToday := d.htmlSanitizerPolicy.Sanitize(Today)
+	SanitizedBlockers := d.htmlSanitizerPolicy.Sanitize(Blockers)
+	SanitizedDiscuss := d.htmlSanitizerPolicy.Sanitize(Discuss)
+
 	if _, err := d.db.Exec(`INSERT INTO team_checkin
 		(team_id, user_id, yesterday, today, blockers, discuss, goals_met)
 		VALUES ($1, $2, $3, $4, $5, $6, $7);
 		`,
 		TeamId,
 		UserId,
-		Yesterday,
-		Today,
-		Blockers,
-		Discuss,
+		SanitizedYesterday,
+		SanitizedToday,
+		SanitizedBlockers,
+		SanitizedDiscuss,
 		GoalsMet,
 	); err != nil {
 		return err
@@ -99,16 +104,21 @@ func (d *Database) CheckinUpdate(
 	Yesterday string, Today string, Blockers string, Discuss string,
 	GoalsMet bool,
 ) error {
+	SanitizedYesterday := d.htmlSanitizerPolicy.Sanitize(Yesterday)
+	SanitizedToday := d.htmlSanitizerPolicy.Sanitize(Today)
+	SanitizedBlockers := d.htmlSanitizerPolicy.Sanitize(Blockers)
+	SanitizedDiscuss := d.htmlSanitizerPolicy.Sanitize(Discuss)
+
 	if _, err := d.db.Exec(`
 		UPDATE team_checkin
 		SET Yesterday = $2, today = $3, blockers = $4, discuss = $5, goals_met = $6
 		WHERE id = $1;
 		`,
 		CheckinId,
-		Yesterday,
-		Today,
-		Blockers,
-		Discuss,
+		SanitizedYesterday,
+		SanitizedToday,
+		SanitizedBlockers,
+		SanitizedDiscuss,
 		GoalsMet,
 	); err != nil {
 		return err

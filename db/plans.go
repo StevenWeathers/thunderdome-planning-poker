@@ -61,8 +61,10 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 
 // CreatePlan adds a new plan to a battle
 func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*model.Plan, error) {
+	SanitizedDescription := d.htmlSanitizerPolicy.Sanitize(Description)
+	SanitizedAcceptanceCriteria := d.htmlSanitizerPolicy.Sanitize(AcceptanceCriteria)
 	if _, err := d.db.Exec(
-		`call create_plan($1, $2, $3, $4, $5, $6, $7);`, BattleID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria,
+		`call create_plan($1, $2, $3, $4, $5, $6, $7);`, BattleID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria,
 	); err != nil {
 		log.Println(err)
 	}
@@ -156,9 +158,11 @@ func (d *Database) SkipPlan(BattleID string, PlanID string) ([]*model.Plan, erro
 
 // RevisePlan updates the plan by ID
 func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*model.Plan, error) {
+	SanitizedDescription := d.htmlSanitizerPolicy.Sanitize(Description)
+	SanitizedAcceptanceCriteria := d.htmlSanitizerPolicy.Sanitize(AcceptanceCriteria)
 	// set PlanID to true
 	if _, err := d.db.Exec(
-		`call revise_plan($1, $2, $3, $4, $5, $6, $7);`, PlanID, PlanName, PlanType, ReferenceID, Link, Description, AcceptanceCriteria); err != nil {
+		`call revise_plan($1, $2, $3, $4, $5, $6, $7);`, PlanID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria); err != nil {
 		log.Println(err)
 	}
 
