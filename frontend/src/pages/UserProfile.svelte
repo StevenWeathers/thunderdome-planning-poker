@@ -217,19 +217,19 @@
 </svelte:head>
 
 <PageLayout>
+    <h2
+        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
+                        md:leading-tight dark:text-white"
+    >
+        {$_('pages.warriorProfile.title')}
+    </h2>
+
     <div class="flex justify-center flex-wrap">
         <div class="w-full md:w-1/2 lg:w-1/3">
             {#if !updatePassword}
                 <div
                     class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
                 >
-                    <h2
-                        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
-                        md:leading-tight dark:text-white"
-                    >
-                        {$_('pages.warriorProfile.title')}
-                    </h2>
-
                     <ProfileForm
                         profile="{warriorProfile}"
                         handleUpdate="{updateWarriorProfile}"
@@ -326,11 +326,9 @@
             {/if}
         </div>
 
-        <div class="w-full">
+        <div class="w-full md:w-1/2 lg:w-2/3">
             {#if ExternalAPIEnabled}
-                <div
-                    class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
-                >
+                <div class="ml-8">
                     <div class="flex w-full">
                         <div class="flex-1">
                             <h2
@@ -360,92 +358,149 @@
                         </div>
                     </div>
 
-                    <table class="table-fixed w-full dark:text-white">
-                        <thead>
-                            <tr>
-                                <th class="w-2/12 px-4 py-2">
-                                    {$_('pages.warriorProfile.apiKeys.name')}
-                                </th>
-                                <th class="w-2/12 px-4 py-2">
-                                    {$_('pages.warriorProfile.apiKeys.prefix')}
-                                </th>
-                                <th class="w-2/12 px-4 py-2">
-                                    {$_('pages.warriorProfile.apiKeys.active')}
-                                </th>
-                                <th class="w-3/12 px-4 py-2">
-                                    {$_('pages.warriorProfile.apiKeys.updated')}
-                                </th>
-                                <th class="w-3/12 px-4 py-2">
-                                    {$_('pages.warriorProfile.apiKeys.actions')}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {#each apiKeys as apk}
-                                <tr>
-                                    <td
-                                        class="border px-4 py-2"
-                                        data-testid="apikey-name">{apk.name}</td
+                    <div class="flex flex-col">
+                        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div
+                                class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+                            >
+                                <div
+                                    class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
+                                >
+                                    <table
+                                        class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
                                     >
-                                    <td
-                                        class="border px-4 py-2"
-                                        data-testid="apikey-prefix"
-                                    >
-                                        {apk.prefix}
-                                    </td>
-                                    <td
-                                        class="border px-4 py-2"
-                                        data-testid="apikey-active"
-                                        data-active="{apk.active}"
-                                    >
-                                        {#if apk.active}
-                                            <span class="text-green-600"
-                                                ><CheckIcon /></span
-                                            >
-                                        {/if}
-                                    </td>
-                                    <td class="border px-4 py-2">
-                                        {new Date(
-                                            apk.updatedDate,
-                                        ).toLocaleString()}
-                                    </td>
-                                    <td class="border px-4 py-2">
-                                        <HollowButton
-                                            onClick="{toggleApiKeyActiveStatus(
-                                                apk.id,
-                                                apk.active,
-                                            )}"
-                                            testid="apikey-activetoggle"
+                                        <thead
+                                            class="bg-gray-50 dark:bg-gray-800"
                                         >
-                                            {#if !apk.active}
-                                                {$_(
-                                                    'pages.warriorProfile.apiKeys.activateButton',
-                                                )}
-                                            {:else}
-                                                {$_(
-                                                    'pages.warriorProfile.apiKeys.deactivateButton',
-                                                )}
-                                            {/if}
-                                        </HollowButton>
-                                        <HollowButton
-                                            color="red"
-                                            onClick="{deleteApiKey(apk.id)}"
-                                            testid="apikey-delete"
+                                            <tr>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                                >
+                                                    {$_('name')}
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                                >
+                                                    {$_(
+                                                        'pages.warriorProfile.apiKeys.prefix',
+                                                    )}
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                                >
+                                                    {$_(
+                                                        'pages.warriorProfile.apiKeys.active',
+                                                    )}
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                                >
+                                                    {$_(
+                                                        'pages.warriorProfile.apiKeys.updated',
+                                                    )}
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    class="relative px-6 py-3"
+                                                >
+                                                    <span class="sr-only"
+                                                        >Actions</span
+                                                    >
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
                                         >
-                                            {$_(
-                                                'pages.warriorProfile.apiKeys.deleteButton',
-                                            )}
-                                        </HollowButton>
-                                    </td>
-                                </tr>
-                            {/each}
-                        </tbody>
-                    </table>
+                                            {#each apiKeys as apk, i}
+                                                <tr
+                                                    class:bg-slate-100="{i %
+                                                        2 !==
+                                                        0}"
+                                                    class:dark:bg-gray-800="{i %
+                                                        2 !==
+                                                        0}"
+                                                >
+                                                    <td
+                                                        class="px-6 py-4 whitespace-nowrap"
+                                                        data-testid="apikey-name"
+                                                        >{apk.name}</td
+                                                    >
+                                                    <td
+                                                        class="px-6 py-4 whitespace-nowrap"
+                                                        data-testid="apikey-prefix"
+                                                    >
+                                                        {apk.prefix}
+                                                    </td>
+                                                    <td
+                                                        class="px-6 py-4 whitespace-nowrap"
+                                                        data-testid="apikey-active"
+                                                        data-active="{apk.active}"
+                                                    >
+                                                        {#if apk.active}
+                                                            <span
+                                                                class="text-green-600"
+                                                                ><CheckIcon
+                                                                /></span
+                                                            >
+                                                        {/if}
+                                                    </td>
+                                                    <td
+                                                        class="px-6 py-4 whitespace-nowrap"
+                                                    >
+                                                        {new Date(
+                                                            apk.updatedDate,
+                                                        ).toLocaleString()}
+                                                    </td>
+                                                    <td
+                                                        class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                                                    >
+                                                        <HollowButton
+                                                            onClick="{toggleApiKeyActiveStatus(
+                                                                apk.id,
+                                                                apk.active,
+                                                            )}"
+                                                            testid="apikey-activetoggle"
+                                                        >
+                                                            {#if !apk.active}
+                                                                {$_(
+                                                                    'pages.warriorProfile.apiKeys.activateButton',
+                                                                )}
+                                                            {:else}
+                                                                {$_(
+                                                                    'pages.warriorProfile.apiKeys.deactivateButton',
+                                                                )}
+                                                            {/if}
+                                                        </HollowButton>
+                                                        <HollowButton
+                                                            color="red"
+                                                            onClick="{deleteApiKey(
+                                                                apk.id,
+                                                            )}"
+                                                            testid="apikey-delete"
+                                                        >
+                                                            {$_(
+                                                                'pages.warriorProfile.apiKeys.deleteButton',
+                                                            )}
+                                                        </HollowButton>
+                                                    </td>
+                                                </tr>
+                                            {/each}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             {/if}
         </div>
 
-        <div class="w-full text-center">
+        <div class="w-full text-center mt-8">
             <HollowButton onClick="{toggleDeleteAccount}" color="red">
                 {$_('pages.warriorProfile.delete.deleteButton')}
             </HollowButton>
