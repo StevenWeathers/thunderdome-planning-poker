@@ -86,7 +86,7 @@
                                 class="block appearance-none w-full border-2 dark:bg-gray-900
                                 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 pr-8
                                 rounded leading-tight focus:outline-none
-                                focus:border-purple-500 dark:focus:border-yellow-400"
+                                focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                             >
                                 <option value="" disabled>
                                     {$_('pages.battle.points')}

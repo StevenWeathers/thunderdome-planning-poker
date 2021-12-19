@@ -101,7 +101,7 @@
                 <input
                     class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     type="text"
                     id="keyName"
                     name="keyName"
@@ -136,7 +136,7 @@
                     class="flex-shrink flex-grow flex-auto leading-normal w-px
                     flex-1 border-2 h-10 bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-900 rounded
                     rounded-r-none px-4 appearance-none text-gray-800 dark:text-gray-400 font-bold
-                    focus:outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-purple-500 dark:focus:border-yellow-400"
+                    focus:outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     type="text"
                     value="{apiKey}"
                     id="apiKey"

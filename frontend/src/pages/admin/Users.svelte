@@ -216,7 +216,7 @@
                                         placeholder="{$_('email')}"
                                         class="bg-gray-100 dark:bg-gray-800 appearance-none
                     rounded py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                    focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
+                    focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                                         id="searchEmail"
                                         name="searchEmail"
                                     />

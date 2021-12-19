@@ -62,7 +62,7 @@
                 placeholder="{$_('alertNamePlaceholder')}"
                 class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="alertName"
                 name="alertName"
                 required
@@ -84,7 +84,7 @@
                     required
                     class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
                 text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
-                focus:outline-none focus:border-purple-500 dark:focus:border-yellow-400 dark:bg-gray-900"
+                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 >
                     <option value="" disabled>
                         {$_('alertTypePlaceholder')}
@@ -114,7 +114,7 @@
                 placeholder="{$_('alertContentPlaceholder')}"
                 class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="alertContent"
                 name="alertContent"
                 required

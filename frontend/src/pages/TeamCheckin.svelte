@@ -243,6 +243,13 @@
     $: checkStats = checkins && userCount && calculateCheckinStats()
 </script>
 
+<style global>
+    ::-webkit-calendar-picker-indicator {
+        margin-left: 0px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%2322c55e" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
+    }
+</style>
+
 <svelte:head>
     <title>{$_('team')} {team.name} | {$_('appName')}</title>
 </svelte:head>
@@ -253,14 +260,16 @@
             <h1
                 class="text-3xl font-semibold font-rajdhani leading-none uppercase dark:text-white"
             >
-                Checkin: <input
+                Checkin
+                <ChevronRight class="w-8 h-8" />
+                <input
                     type="date"
                     id="checkindate"
                     bind:value="{selectedDate}"
                     min="{maxNegativeDate}"
                     max="{formatDayForInput(now)}"
                     on:change="{getCheckins}"
-                    class="bg-transparent"
+                    class="bg-transparent accent-lime-400"
                 />
             </h1>
 
@@ -271,7 +280,7 @@
                     <span class="uppercase">{$_('organization')}</span>
                     <ChevronRight />
                     <a
-                        class="text-blue-500 hover:text-blue-800"
+                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                         href="{appRoutes.organization}/{organization.id}"
                         >{organization.name}</a
                     >
@@ -281,7 +290,7 @@
                         <span class="uppercase">{$_('department')}</span>
                         <ChevronRight />
                         <a
-                            class="text-blue-500 hover:text-blue-800"
+                            class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                             href="{appRoutes.organization}/{organization.id}/department/{department.id}"
                             >{department.name}</a
                         >
@@ -289,7 +298,7 @@
                         <span class="uppercase">{$_('team')}</span>
                         <ChevronRight />
                         <a
-                            class="text-blue-500 hover:text-blue-800"
+                            class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                             href="{appRoutes.organization}/{organization.id}/department/{department.id}"
                         >
                             {team.name}
@@ -299,7 +308,7 @@
                         <span class="uppercase">{$_('team')}</span>
                         <ChevronRight />
                         <a
-                            class="text-blue-500 hover:text-blue-800"
+                            class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                             href="{appRoutes.organization}/{organization.id}/team/{team.id}"
                         >
                             {team.name}
@@ -313,7 +322,7 @@
                     <span class="uppercase">{$_('team')}</span>
                     <ChevronRight />
                     <a
-                        class="text-blue-500 hover:text-blue-800"
+                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                         href="{appRoutes.team}/{team.id}"
                     >
                         {team.name}

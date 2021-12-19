@@ -218,7 +218,7 @@
                     <span class="uppercase">{$_('organization')}</span>
                     <ChevronRight />
                     <a
-                        class="text-blue-500 hover:text-blue-800"
+                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                         href="{appRoutes.organization}/{organization.id}"
                     >
                         {organization.name}
@@ -229,7 +229,7 @@
                         <span class="uppercase">{$_('department')}</span>
                         <ChevronRight />
                         <a
-                            class="text-blue-500 hover:text-blue-800"
+                            class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                             href="{appRoutes.organization}/{organization.id}/department/{department.id}"
                         >
                             {department.name}
