@@ -53,7 +53,7 @@
     <form on:submit="{onSubmit}" name="teamCheckin">
         <div class="mb-4">
             <div
-                class="text-gray-700 uppercase font-rajdhani text-2xl tracking-wide mb-2"
+                class="text-gray-700 uppercase font-rajdhani text-2xl tracking-wide mb-2 dark:text-gray-400"
             >
                 Did you meet yesterday's goals?
             </div>
@@ -81,15 +81,17 @@
             >
                 Yesterday
             </div>
-            <div
-                class="w-full"
-                use:quill="{{
-                    placeholder: `Yesterday I...`,
-                    content: yesterday,
-                }}"
-                on:text-change="{e => (yesterday = e.detail.html)}"
-                id="yesterday"
-            ></div>
+            <div class="bg-white">
+                <div
+                    class="w-full"
+                    use:quill="{{
+                        placeholder: `Yesterday I...`,
+                        content: yesterday,
+                    }}"
+                    on:text-change="{e => (yesterday = e.detail.html)}"
+                    id="yesterday"
+                ></div>
+            </div>
         </div>
 
         <div class="mb-4">
@@ -98,15 +100,17 @@
             >
                 Today
             </div>
-            <div
-                class="w-full"
-                use:quill="{{
-                    placeholder: `Today I will...`,
-                    content: today,
-                }}"
-                on:text-change="{e => (today = e.detail.html)}"
-                id="today"
-            ></div>
+            <div class="bg-white">
+                <div
+                    class="w-full"
+                    use:quill="{{
+                        placeholder: `Today I will...`,
+                        content: today,
+                    }}"
+                    on:text-change="{e => (today = e.detail.html)}"
+                    id="today"
+                ></div>
+            </div>
         </div>
 
         <div class="mb-4">
@@ -115,15 +119,17 @@
             >
                 Blockers
             </div>
-            <div
-                class="w-full"
-                use:quill="{{
-                    placeholder: `I'm blocked by...`,
-                    content: blockers,
-                }}"
-                on:text-change="{e => (blockers = e.detail.html)}"
-                id="blockers"
-            ></div>
+            <div class="bg-white">
+                <div
+                    class="w-full"
+                    use:quill="{{
+                        placeholder: `I'm blocked by...`,
+                        content: blockers,
+                    }}"
+                    on:text-change="{e => (blockers = e.detail.html)}"
+                    id="blockers"
+                ></div>
+            </div>
         </div>
 
         <div class="mb-4">
@@ -132,15 +138,17 @@
             >
                 Discuss
             </div>
-            <div
-                class="w-full"
-                use:quill="{{
-                    placeholder: 'I would like to discuss...',
-                    content: discuss,
-                }}"
-                on:text-change="{e => (discuss = e.detail.html)}"
-                id="discuss"
-            ></div>
+            <div class="bg-white">
+                <div
+                    class="w-full"
+                    use:quill="{{
+                        placeholder: 'I would like to discuss...',
+                        content: discuss,
+                    }}"
+                    on:text-change="{e => (discuss = e.detail.html)}"
+                    id="discuss"
+                ></div>
+            </div>
         </div>
 
         <div>

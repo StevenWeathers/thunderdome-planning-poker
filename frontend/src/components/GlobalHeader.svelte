@@ -16,9 +16,10 @@
 
     const { AllowRegistration, PathPrefix } = AppConfig
 
-    const activePageClass = 'text-purple-700 border-purple-700'
+    const activePageClass =
+        'text-purple-700 border-purple-700 dark:text-yellow-400 dark:border-yellow-400'
     const pageClass =
-        'text-gray-700 border-white hover:text-purple-700 transition duration-300'
+        'text-gray-700 border-white dark:border-gray-800 dark:hover:border-yellow-400 hover:text-purple-700 dark:text-gray-300 dark:hover:text-yellow-400 transition duration-300'
 
     let showMobileMenu = false
 
@@ -48,7 +49,7 @@
     }
 </style>
 
-<nav class="bg-white" aria-label="main navigation">
+<nav class="bg-white dark:bg-gray-800" aria-label="main navigation">
     <div class="px-8">
         <div class="flex justify-between">
             <div class="flex space-x-7">
@@ -67,7 +68,7 @@
                     {#if $warrior.name}
                         <a
                             href="{appRoutes.battles}"
-                            class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                            class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
                             'battles'
                                 ? activePageClass
                                 : pageClass}"
@@ -77,7 +78,7 @@
                         {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
                             <a
                                 href="{appRoutes.organizations}"
-                                class="pt-6 pb-4 px-4  border-b-4 {currentPage ==
+                                class="pt-6 pb-4 px-4  border-b-4 {currentPage ===
                                 'organizations'
                                     ? activePageClass
                                     : pageClass}"
@@ -88,7 +89,7 @@
                         {#if validateUserIsAdmin($warrior)}
                             <a
                                 href="{appRoutes.admin}"
-                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
                                 'admin'
                                     ? activePageClass
                                     : pageClass}"
@@ -100,13 +101,13 @@
                 </nav>
             </div>
             <div
-                class="hidden lg:flex items-center space-x-3 font-rajdhani font-semibold"
+                class="hidden lg:flex items-center space-x-3 font-rajdhani font-semibold dark:text-gray-300"
             >
                 {#if !$warrior.name}
                     <div class="uppercase">
                         <a
                             href="{appRoutes.login}"
-                            class="py-2 px-2 text-gray-700 hover:text-green-600 transition duration-300 text-lg lg:text-xl"
+                            class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 text-lg lg:text-xl"
                             >{$_('pages.login.nav')}</a
                         >
                         {#if AllowRegistration}
@@ -130,7 +131,7 @@
                     {#if !$warrior.rank || $warrior.rank === 'GUEST' || $warrior.rank === 'PRIVATE'}
                         <a
                             href="{appRoutes.login}"
-                            class="py-2 px-2 text-gray-700 hover:text-green-600 transition duration-300 uppercase text-xl"
+                            class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 uppercase text-xl"
                             >{$_('pages.login.nav')}</a
                         >
                         {#if AllowRegistration}
@@ -165,7 +166,7 @@
                     on:click="{toggleMobileMenu}"
                 >
                     <svg
-                        class=" w-6 h-6 text-gray-500 hover:text-green-500 "
+                        class="w-6 h-6 text-gray-500 dark:text-200 hover:text-green-500"
                         x-show="!showMenu"
                         fill="none"
                         stroke-linecap="round"
@@ -181,8 +182,12 @@
         </div>
     </div>
     {#if showMobileMenu}
-        <div class="lg:hidden py-2 border-t-2 border-gray-200">
-            <ul class="font-rajdhani font-semibold uppercase text-lg">
+        <div
+            class="lg:hidden py-2 border-t-2 border-gray-200 dark:border-gray-700"
+        >
+            <ul
+                class="font-rajdhani font-semibold uppercase text-lg dark:text-white"
+            >
                 {#if $warrior.name}
                     <li>
                         <a
@@ -233,7 +238,7 @@
                     {/if}
                 {/if}
             </ul>
-            <div class="font-rajdhani font-semibold mx-4 my-2">
+            <div class="font-rajdhani font-semibold mx-4 my-2 dark:text-white">
                 {#if $warrior.name}
                     <span class="font-bold mr-2 text-lg lg:text-xl">
                         <UserIcon class="h-5 w-5" />
@@ -245,7 +250,7 @@
                     {#if !$warrior.rank || $warrior.rank === 'GUEST' || $warrior.rank === 'PRIVATE'}
                         <a
                             href="{appRoutes.login}"
-                            class="py-2 px-2 text-gray-700 hover:text-green-600 transition duration-300 uppercase text-lg uppercase"
+                            class="py-2 px-2 text-gray-700 dark:text-gray-400 hover:text-green-600 transition duration-300 uppercase text-lg uppercase"
                             >{$_('pages.login.nav')}</a
                         >
                         {#if AllowRegistration}

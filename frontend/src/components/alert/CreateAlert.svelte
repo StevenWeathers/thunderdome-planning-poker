@@ -52,7 +52,7 @@
     <form on:submit="{onSubmit}" name="createAlert">
         <div class="mb-4">
             <label
-                class="block text-gray-700 text-sm font-bold mb-2"
+                class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
                 for="alertName"
             >
                 {$_('name')}
@@ -60,9 +60,9 @@
             <input
                 bind:value="{alertName}"
                 placeholder="{$_('alertNamePlaceholder')}"
-                class="bg-gray-100 border-gray-200 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 leading-tight
-                focus:outline-none focus:bg-white focus:border-purple-500"
+                class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="alertName"
                 name="alertName"
                 required
@@ -70,17 +70,21 @@
         </div>
 
         <div class="mb-4">
-            <label class="block text-sm font-bold mb-2" for="alertType">
+            <label
+                class="block font-bold mb-2 dark:text-gray-400"
+                for="alertType"
+            >
                 {$_('type')}
             </label>
             <div class="relative">
                 <select
                     name="alertType"
+                    id="alertType"
                     bind:value="{alertType}"
                     required
-                    class="block appearance-none w-full border-2 border-gray-300
-                    text-gray-700 py-3 px-4 pr-8 rounded leading-tight
-                    focus:outline-none focus:border-purple-500"
+                    class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 >
                     <option value="" disabled>
                         {$_('alertTypePlaceholder')}
@@ -100,7 +104,7 @@
 
         <div class="mb-4">
             <label
-                class="block text-gray-700 text-sm font-bold mb-2"
+                class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
                 for="alertContent"
             >
                 {$_('alertContent')}
@@ -108,9 +112,9 @@
             <input
                 bind:value="{content}"
                 placeholder="{$_('alertContentPlaceholder')}"
-                class="bg-gray-100 border-gray-200 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 leading-tight
-                focus:outline-none focus:bg-white focus:border-purple-500"
+                class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="alertContent"
                 name="alertContent"
                 required
@@ -118,34 +122,37 @@
         </div>
 
         <div class="mb-4">
-            <label class="text-gray-700 text-sm font-bold mb-2">
+            <label class="text-gray-700 font-bold mb-2 dark:text-gray-400">
                 <input
                     type="checkbox"
                     bind:checked="{active}"
                     id="active"
                     name="active"
+                    class="w-4 h-4 dark:accent-lime-400 mr-1"
                 />
                 {$_('active')}
             </label>
         </div>
         <div class="mb-4">
-            <label class="text-gray-700 text-sm font-bold mb-2">
+            <label class="text-gray-700 font-bold mb-2 dark:text-gray-400">
                 <input
                     type="checkbox"
                     bind:checked="{registeredOnly}"
                     id="registeredOnly"
                     name="registeredOnly"
+                    class="w-4 h-4 dark:accent-lime-400 mr-1"
                 />
                 {$_('alertRegisteredOnly')}
             </label>
         </div>
         <div class="mb-4">
-            <label class="text-gray-700 text-sm font-bold mb-2">
+            <label class="text-gray-700 font-bold mb-2 dark:text-gray-400">
                 <input
                     type="checkbox"
                     bind:checked="{allowDismiss}"
                     id="allowDismiss"
                     name="allowDismiss"
+                    class="w-4 h-4 dark:accent-lime-400 mr-1"
                 />
                 {$_('alertAllowDismiss')}
             </label>

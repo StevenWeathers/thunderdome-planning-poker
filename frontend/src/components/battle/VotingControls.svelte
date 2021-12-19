@@ -71,7 +71,9 @@
                 {$_('votingRestart')}
             </SolidButton>
             <form on:submit="{handleSubmit}" name="savePlanPoints">
-                <legend class="text-xl mb-2 font-semibold leading-tight">
+                <legend
+                    class="text-xl mb-2 font-semibold leading-tight dark:text-gray-300"
+                >
                     {$_('pages.battle.finalPoints')}
                 </legend>
                 <div class="flex -mx-2">
@@ -81,10 +83,10 @@
                                 name="planPoints"
                                 bind:value="{planPoints}"
                                 required
-                                class="block appearance-none w-full border-2
-                                border-gray-300 text-gray-700 py-3 px-4 pr-8
+                                class="block appearance-none w-full border-2 dark:bg-gray-900
+                                border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 pr-8
                                 rounded leading-tight focus:outline-none
-                                focus:border-purple-500"
+                                focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                             >
                                 <option value="" disabled>
                                     {$_('pages.battle.points')}
@@ -95,7 +97,7 @@
                             </select>
                             <div
                                 class="pointer-events-none absolute inset-y-0
-                                right-0 flex items-center px-2 text-gray-700"
+                                right-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
                             >
                                 <DownCarrotIcon />
                             </div>

@@ -56,18 +56,20 @@
 </svelte:head>
 
 <PageLayout>
-    <h1 class="mb-4 text-4xl font-semibold font-rajdhani uppercase">
+    <h1
+        class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
+    >
         {$_('pages.myBattles.title')}
     </h1>
 
     <div class="flex flex-wrap">
         <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pr-4">
             {#each battles as battle}
-                <div class="bg-white shadow-lg rounded mb-2">
-                    <div
-                        class="flex flex-wrap items-center p-4 border-gray-300
+                <div
+                    class="bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
                         border-b"
-                    >
+                >
+                    <div class="flex flex-wrap items-center p-4">
                         <div
                             class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight"
@@ -77,7 +79,9 @@
                                 &nbsp;
                             {/if}
                             <span data-testid="battle-name">{battle.name}</span>
-                            <div class="font-semibold md:text-sm text-gray-600">
+                            <div
+                                class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
+                            >
                                 {$_('pages.myBattles.countPlansPointed', {
                                     values: {
                                         totalPointed: battle.plans.filter(
@@ -109,7 +113,9 @@
         </div>
 
         <div class="w-full md:w-1/2 lg:w-2/5 md:pl-2 xl:pl-4">
-            <div class="p-6 bg-white shadow-lg rounded">
+            <div
+                class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white"
+            >
                 <h2
                     class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
                 >

@@ -116,7 +116,9 @@
     <div class="w-full mb-6 lg:mb-8">
         <div class="flex w-full">
             <div class="w-4/5">
-                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                <h2
+                    class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                >
                     {$_('organizations')}
                 </h2>
             </div>
@@ -135,38 +137,45 @@
                     class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
                 >
                     <div
-                        class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                        class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                     >
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                        <table
+                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                        >
+                            <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
                                     <th
                                         scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                     >
                                         {$_('name')}
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                     >
                                         {$_('dateCreated')}
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                     >
                                         {$_('dateUpdated')}
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody
+                                class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+                            >
                                 {#each organizations as org, i}
-                                    <tr class:bg-slate-100="{i % 2 !== 0}">
+                                    <tr
+                                        class:bg-slate-100="{i % 2 !== 0}"
+                                        class:dark:bg-gray-800="{i % 2 !== 0}"
+                                    >
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <a
                                                 href="{appRoutes.organization}/{org.id}"
-                                                class="text-blue-500 hover:text-blue-800"
+                                                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                             >
                                                 {org.name}
                                             </a>
@@ -194,7 +203,9 @@
     <div class="w-full">
         <div class="flex w-full">
             <div class="w-4/5">
-                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                <h2
+                    class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                >
                     {$_('teams')}
                 </h2>
             </div>
@@ -214,42 +225,48 @@
                         class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
                     >
                         <div
-                            class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                         >
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                            <table
+                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                            >
+                                <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('name')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('dateCreated')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('dateUpdated')}
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody
-                                    class="bg-white divide-y divide-gray-200"
+                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
                                 >
                                     {#each teams as team, i}
-                                        <tr class:bg-slate-100="{i % 2 !== 0}">
+                                        <tr
+                                            class:bg-slate-100="{i % 2 !== 0}"
+                                            class:dark:bg-gray-800="{i % 2 !==
+                                                0}"
+                                        >
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap"
                                             >
                                                 <a
                                                     href="/team/{team.id}"
-                                                    class="text-blue-500 hover:text-blue-800"
+                                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                                 >
                                                     {team.name}
                                                 </a>

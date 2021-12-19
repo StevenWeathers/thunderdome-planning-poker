@@ -57,7 +57,7 @@
 <form on:submit="{onSubmit}" name="createAccount">
     <div class="mb-4">
         <label
-            class="block text-gray-700 text-sm font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourName2"
         >
             {$_('pages.createAccount.createAccountForm.fields.name.label')}
@@ -67,9 +67,9 @@
             placeholder="{$_(
                 'pages.createAccount.createAccountForm.fields.name.placeholder',
             )}"
-            class="bg-gray-100 border-gray-200 border-2 appearance-none rounded
-            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
-            focus:bg-white focus:border-purple-500"
+            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
             id="yourName2"
             name="yourName2"
             required
@@ -78,7 +78,7 @@
 
     <div class="mb-4">
         <label
-            class="block text-gray-700 text-sm font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourEmail"
         >
             {$_('pages.createAccount.createAccountForm.fields.email.label')}
@@ -88,9 +88,9 @@
             placeholder="{$_(
                 'pages.createAccount.createAccountForm.fields.email.placeholder',
             )}"
-            class="bg-gray-100 border-gray-200 border-2 appearance-none rounded
-            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
-            focus:bg-white focus:border-purple-500"
+            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
             id="yourEmail"
             name="yourEmail"
             type="email"
@@ -100,7 +100,7 @@
 
     <div class="mb-4">
         <label
-            class="block text-gray-700 text-sm font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourPassword1"
         >
             {$_('pages.createAccount.createAccountForm.fields.password.label')}
@@ -110,9 +110,9 @@
             placeholder="{$_(
                 'pages.createAccount.createAccountForm.fields.password.placeholder',
             )}"
-            class="bg-gray-100 border-gray-200 border-2 appearance-none rounded
-            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
-            focus:bg-white focus:border-purple-500"
+            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
             id="yourPassword1"
             name="yourPassword1"
             type="password"
@@ -122,7 +122,7 @@
 
     <div class="mb-4">
         <label
-            class="block text-gray-700 text-sm font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourPassword2"
         >
             {$_(
@@ -134,9 +134,9 @@
             placeholder="{$_(
                 'pages.createAccount.createAccountForm.fields.confirmPassword.placeholder',
             )}"
-            class="bg-gray-100 border-gray-200 border-2 appearance-none rounded
-            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
-            focus:bg-white focus:border-purple-500"
+            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
             id="yourPassword2"
             name="yourPassword2"
             type="password"

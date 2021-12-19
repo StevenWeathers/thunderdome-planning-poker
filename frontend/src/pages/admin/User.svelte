@@ -93,7 +93,9 @@
 
 <AdminPageLayout activePage="users">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-semibold font-rajdhani">
+        <h1
+            class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
+        >
             {user.name}
         </h1>
     </div>
@@ -106,46 +108,48 @@
                         class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
                     >
                         <div
-                            class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                         >
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                            <table
+                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                            >
+                                <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th scope="col" class="px-6 py-3"></th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('email')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('type')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('createdDate')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('updatedDate')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('lastActive')}
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody
-                                    class="bg-white divide-y divide-gray-200"
+                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
                                 >
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -219,7 +223,7 @@
         </div>
         <div class="p-4 md:p-6">
             <h4
-                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center"
+                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
             >
                 {$_('battles')}
             </h4>
@@ -230,26 +234,28 @@
                         class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
                     >
                         <div
-                            class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                         >
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                            <table
+                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                            >
+                                <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('name')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('dateCreated')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('dateUpdated')}
                                         </th>
@@ -262,16 +268,20 @@
                                     </tr>
                                 </thead>
                                 <tbody
-                                    class="bg-white divide-y divide-gray-200"
+                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
                                 >
                                     {#each battles as battle, i}
-                                        <tr class:bg-slate-100="{i % 2 !== 0}">
+                                        <tr
+                                            class:bg-slate-100="{i % 2 !== 0}"
+                                            class:dark:bg-gray-800="{i % 2 !==
+                                                0}"
+                                        >
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap"
                                             >
                                                 <a
                                                     href="{appRoutes.admin}/battles/{battle.id}"
-                                                    class="no-underline text-blue-500 hover:text-blue-800"
+                                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                                     >{battle.name}</a
                                                 >
                                             </td>

@@ -103,19 +103,19 @@
             {#if !forgotPassword}
                 <form
                     on:submit="{authWarrior}"
-                    class="bg-white shadow-lg rounded p-6 mb-4"
+                    class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-4"
                     name="authWarrior"
                 >
                     <div
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
-                        md:leading-tight text-center"
+                        md:leading-tight text-center dark:text-white"
                     >
                         {$_('pages.login.title')}
                     </div>
                     {#if battleId && AllowRegistration}
                         <div
                             class="font-semibold font-rajdhani uppercase text-lg md:text-xl mb-2 md:mb-6
-                            md:leading-tight text-center"
+                            md:leading-tight text-center dark:text-white"
                         >
                             {@html $_('pages.login.registerForBattle', {
                                 values: {
@@ -127,7 +127,7 @@
                     {/if}
                     <div class="mb-4">
                         <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
+                            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourEmail"
                         >
                             {$_('pages.login.fields.email.label')}
@@ -137,10 +137,9 @@
                             placeholder="{$_(
                                 'pages.login.fields.email.placeholder',
                             )}"
-                            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
+                            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                             id="yourEmail"
                             name="yourEmail"
                             type="email"
@@ -150,7 +149,7 @@
 
                     <div class="mb-4">
                         <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
+                            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourPassword"
                         >
                             {$_('pages.login.fields.password.label')}
@@ -160,10 +159,9 @@
                             placeholder="{$_(
                                 'pages.login.fields.password.placeholder',
                             )}"
-                            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
+                            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                             id="yourPassword"
                             name="yourPassword"
                             type="password"
@@ -192,18 +190,18 @@
             {#if forgotPassword}
                 <form
                     on:submit="{sendPasswordReset}"
-                    class="bg-white shadow-lg rounded p-6 mb-4"
+                    class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-4"
                     name="resetPassword"
                 >
                     <div
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
-                        md:leading-tight text-center"
+                        md:leading-tight text-center dark:text-white"
                     >
                         {$_('forgotPassword')}
                     </div>
                     <div class="mb-4">
                         <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
+                            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourResetEmail"
                         >
                             {$_('email')}
@@ -211,10 +209,9 @@
                         <input
                             bind:value="{warriorResetEmail}"
                             placeholder="{$_('enterYourEmail')}"
-                            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
+                            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                             id="yourResetEmail"
                             name="yourResetEmail"
                             type="email"

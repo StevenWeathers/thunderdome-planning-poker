@@ -51,11 +51,11 @@
     }
 </script>
 
-<div class="flex text-gray-700 text-lg">
+<div class="flex text-gray-700 dark:text-gray-400 text-lg">
     <div
         class="h-12 w-12 mr-1 flex justify-center items-center {current > 1
             ? 'cursor-pointer'
-            : 'text-gray-400'}"
+            : 'text-gray-400 dark:text-gray-700'}"
         on:click="{() => current > 1 && setCurrent(current - 1)}"
     >
         <ChevronLeftIcon class="w-6 h-6" />
@@ -66,8 +66,8 @@
                 class="w-12 sm:flex justify-center items-center hidden
                 select-none cursor-pointer leading-5 transition duration-150
                 ease-in {i == current
-                    ? `border-t-2 border-indigo-600 `
-                    : 'border-t-2 border-white'}
+                    ? `border-t-2 border-indigo-600 dark:border-yellow-400`
+                    : 'border-t-2 border-slate-100 dark:border-gray-900'}
                 "
                 on:click="{() => setCurrent(i)}"
             >
@@ -86,7 +86,7 @@
         class="h-12 w-12 ml-1 flex justify-center items-center {current <
         num_pages
             ? 'cursor-pointer'
-            : 'text-gray-400'}"
+            : 'text-gray-400 dark:text-gray-700'}"
         on:click="{() => current < num_pages && setCurrent(current + 1)}"
     >
         <ChevronRightIcon class="w-6 h-6" />

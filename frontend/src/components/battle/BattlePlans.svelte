@@ -90,11 +90,13 @@
     $: plansToShow = showCompleted ? pointedPlans : unpointedPlans
 </script>
 
-<div class="bg-white shadow-lg mb-4 rounded">
-    <div class="flex items-center bg-gray-200 p-4 rounded-t">
+<div class="shadow-lg mb-4">
+    <div
+        class="flex items-center bg-gray-200 dark:bg-gray-700 p-4 rounded-t-lg"
+    >
         <div class="w-1/2">
             <h3
-                class="text-3xl leading-tight font-semibold font-rajdhani uppercase"
+                class="text-3xl leading-tight font-semibold font-rajdhani uppercase dark:text-white"
             >
                 {$_('plans')}
             </h3>
@@ -114,13 +116,15 @@
         </div>
     </div>
 
-    <ul class="flex border-b border-gray-300">
+    <ul
+        class="flex border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 "
+    >
         <li class="-mb-px {showCompleted ? '' : 'mr-1'}">
             <button
                 class="{showCompleted
-                    ? 'hover:text-blue-600 text-blue-400'
-                    : 'border-b border-blue-500 text-blue-600 hover:text-blue-800'}
-                bg-white inline-block py-4 px-4 font-semibold"
+                    ? 'hover:text-blue-600 text-blue-400 dark:hover:text-sky-300 dark:text-sky-600'
+                    : 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'}
+                bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(false)}"
                 data-testid="plans-unpointed"
             >
@@ -130,9 +134,9 @@
         <li class="mr-1 {showCompleted ? 'mr-1' : ''}">
             <button
                 class="{showCompleted
-                    ? 'border-b border-blue-500 text-blue-600 hover:text-blue-800'
-                    : 'hover:text-blue-600 text-blue-400'}
-                bg-white inline-block py-4 px-4 font-semibold"
+                    ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
+                    : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
+                bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
                 on:click="{toggleShowCompleted(true)}"
                 data-testid="plans-pointed"
             >
@@ -143,23 +147,25 @@
 
     {#each plansToShow as plan (plan.id)}
         <div
-            class="flex flex-wrap items-center border-b border-gray-300 p-4"
+            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 "
             data-testid="plan"
         >
             <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
-                <div class="inline-block font-bold align-middle">
+                <div
+                    class="inline-block font-bold align-middle dark:text-white"
+                >
                     {#if plan.link !== ''}
                         <a
                             href="{plan.link}"
                             target="_blank"
-                            class="text-blue-800"
+                            class="text-blue-800 dark:text-sky-400"
                         >
                             <ExternalLinkIcon />
                         </a>
                         &nbsp;
                     {/if}
                     <div
-                        class="inline-block text-sm text-gray-500
+                        class="inline-block text-sm text-gray-500 dark:text-gray-300
                         border-gray-300 border px-1 rounded"
                         data-testid="plan-type"
                     >
@@ -172,8 +178,8 @@
                 &nbsp;
                 {#if plan.points !== ''}
                     <div
-                        class="inline-block font-bold text-green-600
-                        border-green-500 border px-2 py-1 rounded ml-2"
+                        class="inline-block font-bold text-green-600 dark:text-lime-400
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ml-2"
                         data-testid="plan-points"
                     >
                         {plan.points}
@@ -218,15 +224,19 @@
         </div>
     {/each}
     {#if showCompleted && totalPoints}
-        <div class="flex flex-wrap items-center border-b border-gray-300 p-4">
+        <div
+            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 "
+        >
             <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
-                <div class="inline-block font-bold align-middle">
+                <div
+                    class="inline-block font-bold align-middle dark:text-gray-300"
+                >
                     {$_('totalPoints')}:
                 </div>
                 &nbsp;
                 <div
-                    class="inline-block font-bold text-green-600
-                    border-green-500 border px-2 py-1 rounded ml-2"
+                    class="inline-block font-bold text-green-600 dark:text-lime-400
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ml-2"
                 >
                     {totalPoints}
                 </div>

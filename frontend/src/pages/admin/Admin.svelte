@@ -112,12 +112,16 @@
 
 <AdminPageLayout activePage="admin">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase">
+        <h1
+            class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
+        >
             {$_('pages.admin.title')}
         </h1>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-blue-400 text-white">
@@ -125,16 +129,20 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('pages.admin.counts.unregistered')}
                     </h5>
-                    <h3 class="font-bold text-3xl">
+                    <h3 class="font-bold text-3xl dark:text-white">
                         {appStats.unregisteredUserCount}
                     </h3>
                 </div>
             </div>
         </div>
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-indigo-500 text-white">
@@ -142,17 +150,21 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('pages.admin.counts.registered')}
                     </h5>
-                    <h3 class="font-bold text-3xl">
+                    <h3 class="font-bold text-3xl dark:text-white">
                         {appStats.registeredUserCount}
                     </h3>
                 </div>
             </div>
         </div>
         {#if ExternalAPIEnabled}
-            <div class="bg-white border rounded shadow-lg p-2">
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
                 <div class="flex flex-row items-center">
                     <div class="flex-shrink pr-4">
                         <div class="rounded p-3 bg-cyan-500 text-white">
@@ -160,17 +172,21 @@
                         </div>
                     </div>
                     <div class="flex-1 text-right md:text-center">
-                        <h5 class="font-bold uppercase text-gray-500">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
                             {$_('apiKeys')}
                         </h5>
-                        <h3 class="font-bold text-3xl">
+                        <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.apikeyCount}
                         </h3>
                     </div>
                 </div>
             </div>
         {/if}
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-red-500 text-white">
@@ -178,14 +194,20 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('pages.admin.counts.battles')}
                     </h5>
-                    <h3 class="font-bold text-3xl">{appStats.battleCount}</h3>
+                    <h3 class="font-bold text-3xl dark:text-white">
+                        {appStats.battleCount}
+                    </h3>
                 </div>
             </div>
         </div>
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-teal-500 text-white">
@@ -193,14 +215,20 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('pages.admin.counts.plans')}
                     </h5>
-                    <h3 class="font-bold text-3xl">{appStats.planCount}</h3>
+                    <h3 class="font-bold text-3xl dark:text-white">
+                        {appStats.planCount}
+                    </h3>
                 </div>
             </div>
         </div>
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-yellow-500 text-white">
@@ -208,16 +236,20 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('battlesActive')}
                     </h5>
-                    <h3 class="font-bold text-3xl">
+                    <h3 class="font-bold text-3xl dark:text-white">
                         {appStats.activeBattleCount}
                     </h3>
                 </div>
             </div>
         </div>
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-green-500 text-white">
@@ -225,16 +257,20 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('battlesActiveUsers')}
                     </h5>
-                    <h3 class="font-bold text-3xl">
+                    <h3 class="font-bold text-3xl dark:text-white">
                         {appStats.activeBattleUserCount}
                     </h3>
                 </div>
             </div>
         </div>
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-orange-500 text-white">
@@ -242,16 +278,20 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('organizations')}
                     </h5>
-                    <h3 class="font-bold text-3xl">
+                    <h3 class="font-bold text-3xl dark:text-white">
                         {appStats.organizationCount}
                     </h3>
                 </div>
             </div>
         </div>
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-rose-500 text-white">
@@ -259,16 +299,20 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('departments')}
                     </h5>
-                    <h3 class="font-bold text-3xl">
+                    <h3 class="font-bold text-3xl dark:text-white">
                         {appStats.departmentCount}
                     </h3>
                 </div>
             </div>
         </div>
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-purple-500 text-white">
@@ -276,14 +320,20 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('teams')}
                     </h5>
-                    <h3 class="font-bold text-3xl">{appStats.teamCount}</h3>
+                    <h3 class="font-bold text-3xl dark:text-white">
+                        {appStats.teamCount}
+                    </h3>
                 </div>
             </div>
         </div>
-        <div class="bg-white border rounded shadow-lg p-2">
+        <div
+            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+        >
             <div class="flex flex-row items-center">
                 <div class="flex-shrink pr-4">
                     <div class="rounded p-3 bg-lime-500 text-white">
@@ -291,10 +341,12 @@
                     </div>
                 </div>
                 <div class="flex-1 text-right md:text-center">
-                    <h5 class="font-bold uppercase text-gray-500">
+                    <h5
+                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                    >
                         {$_('teams')} Checkins
                     </h5>
-                    <h3 class="font-bold text-3xl">
+                    <h3 class="font-bold text-3xl dark:text-white">
                         {appStats.teamCheckinsCount}
                     </h3>
                 </div>
@@ -304,16 +356,20 @@
 
     <div class="w-full">
         <div
-            class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase text-center mb-4"
+            class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase text-center mb-4 dark:text-white"
         >
             {$_('pages.admin.maintenance.title')}
         </div>
 
         <div class="grid grid-cols-3 gap-4">
-            <div class="bg-white border rounded shadow-lg p-2">
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
                 <div class="flex flex-row items-center">
                     <div class="flex-1 text-center">
-                        <h5 class="font-bold uppercase text-gray-500 mb-2">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400 mb-2"
+                        >
                             {$_('pages.admin.maintenance.cleanGuests', {
                                 values: { daysOld: CleanupGuestsDaysOld },
                             })}
@@ -325,10 +381,14 @@
                 </div>
             </div>
 
-            <div class="bg-white border rounded shadow-lg p-2">
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
                 <div class="flex flex-row items-center">
                     <div class="flex-1 text-center">
-                        <h5 class="font-bold uppercase text-gray-500 mb-2">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400 mb-2"
+                        >
                             {$_('pages.admin.maintenance.cleanBattles', {
                                 values: { daysOld: CleanupBattlesDaysOld },
                             })}
@@ -340,10 +400,14 @@
                 </div>
             </div>
 
-            <div class="bg-white border rounded shadow-lg p-2">
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
                 <div class="flex flex-row items-center">
                     <div class="flex-1 text-center">
-                        <h5 class="font-bold uppercase text-gray-500 mb-2">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400 mb-2"
+                        >
                             {$_('maintenanceLowercaseEmails')}
                         </h5>
                         <HollowButton onClick="{lowercaseEmails}" color="red">

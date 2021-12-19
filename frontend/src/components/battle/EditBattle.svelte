@@ -18,8 +18,10 @@
     export let joinCode = ''
     export let leaderCode = ''
 
-    let checkedPointColor = 'border-green-500 bg-green-100 text-green-600'
-    let uncheckedPointColor = 'border-gray-300 bg-white'
+    let checkedPointColor =
+        'border-green-500 bg-green-100 text-green-600 dark:bg-gray-900 dark:text-lime-500 dark:border-lime-500'
+    let uncheckedPointColor =
+        'border-gray-300 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300'
 
     function saveBattle(e) {
         e.preventDefault()
@@ -48,7 +50,7 @@
     <form on:submit="{saveBattle}" name="createBattle">
         <div class="mb-4">
             <label
-                class="block text-gray-700 text-sm font-bold mb-2"
+                class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="battleName"
             >
                 {$_('pages.myBattles.createBattle.fields.name.label')}
@@ -60,9 +62,9 @@
                     placeholder="{$_(
                         'pages.myBattles.createBattle.fields.name.placeholder',
                     )}"
-                    class="bg-gray-100 border-gray-200 border-2 appearance-none
-                    rounded w-full py-2 px-3 text-gray-700 leading-tight
-                    focus:outline-none focus:bg-white focus:border-purple-500"
+                    class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="battleName"
                     required
                 />
@@ -70,7 +72,9 @@
         </div>
 
         <div class="mb-4">
-            <h3 class="block text-gray-700 text-sm font-bold mb-2">
+            <h3
+                class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
+            >
                 {$_(
                     'pages.myBattles.createBattle.fields.allowedPointValues.label',
                 )}
@@ -107,7 +111,7 @@
 
         <div class="mb-4">
             <label
-                class="text-gray-700 text-sm font-bold mb-2"
+                class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="averageRounding"
             >
                 {$_(
@@ -117,9 +121,9 @@
             <div class="relative">
                 <select
                     bind:value="{pointAverageRounding}"
-                    class="block appearance-none w-full border-2 border-gray-300
-                    text-gray-700 py-3 px-4 pr-8 rounded leading-tight
-                    focus:outline-none focus:border-purple-500"
+                    class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                     id="averageRounding"
                     name="averageRounding"
                 >
@@ -134,7 +138,7 @@
                 </select>
                 <div
                     class="pointer-events-none absolute inset-y-0 right-0 flex
-                    items-center px-2 text-gray-700"
+                    items-center px-2 text-gray-700 dark:text-gray-400"
                 >
                     <DownCarrotIcon />
                 </div>
@@ -142,13 +146,16 @@
         </div>
 
         <div class="mb-4">
-            <label class="text-gray-700 text-sm font-bold mb-2">
+            <label
+                class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
+            >
                 <input
                     type="checkbox"
                     bind:checked="{autoFinishVoting}"
                     id="autoFinishVoting"
                     name="autoFinishVoting"
                     disabled="{!votingLocked}"
+                    class="w-4 h-4 dark:accent-lime-400 mr-1"
                 />
                 {$_(
                     'pages.myBattles.createBattle.fields.autoFinishVoting.label',
@@ -158,7 +165,7 @@
 
         <div class="mb-4">
             <label
-                class="block text-gray-700 text-sm font-bold mb-2"
+                class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="joinCode"
             >
                 {$_('passCode')}
@@ -168,9 +175,9 @@
                     name="joinCode"
                     bind:value="{joinCode}"
                     placeholder="{$_('optionalPasscodePlaceholder')}"
-                    class="bg-gray-100 border-gray-200 border-2 appearance-none
-                    rounded w-full py-2 px-3 text-gray-700 leading-tight
-                    focus:outline-none focus:bg-white focus:border-purple-500"
+                    class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="joinCode"
                 />
             </div>
@@ -178,7 +185,7 @@
 
         <div class="mb-4">
             <label
-                class="block text-gray-700 text-sm font-bold mb-2"
+                class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="leaderCode"
             >
                 {$_('leaderPasscode')}
@@ -188,9 +195,9 @@
                     name="leaderCode"
                     bind:value="{leaderCode}"
                     placeholder="{$_('optionalLeadercodePlaceholder')}"
-                    class="bg-gray-100 border-gray-200 border-2 appearance-none
-                    rounded w-full py-2 px-3 text-gray-700 leading-tight
-                    focus:outline-none focus:bg-white focus:border-purple-500"
+                    class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="leaderCode"
                 />
             </div>
