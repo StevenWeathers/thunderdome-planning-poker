@@ -110,7 +110,7 @@
 <form on:submit="{handleSubmit}" name="updateProfile">
     <div class="mb-4">
         <label
-            class="block text-gray-700 text-sm font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourName"
         >
             {$_('pages.warriorProfile.fields.name.label')}
@@ -118,10 +118,9 @@
         <input
             bind:value="{profile.name}"
             placeholder="{$_('pages.warriorProfile.fields.name.placeholder')}"
-            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
+            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
             id="yourName"
             name="yourName"
             type="text"
@@ -131,7 +130,7 @@
 
     <div class="mb-4">
         <label
-            class="block text-gray-700 text-sm font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourEmail"
         >
             {$_('pages.warriorProfile.fields.email.label')}
@@ -158,9 +157,9 @@
         </label>
         <input
             bind:value="{profile.email}"
-            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none"
+            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
             class:cursor-not-allowed="{!userIsAdmin}"
             id="yourEmail"
             name="yourEmail"
@@ -171,7 +170,7 @@
 
     <div class="mb-4">
         <label
-            class="block text-gray-700 text-sm font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourCountry"
         >
             {$_('pages.warriorProfile.fields.country.label')}
@@ -180,10 +179,9 @@
         <div class="relative">
             <select
                 bind:value="{profile.country}"
-                class="block appearance-none w-full border-2
-                                border-gray-300 text-gray-700 py-3 px-4 pr-8
-                                rounded leading-tight focus:outline-none
-                                focus:border-purple-500"
+                class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                focus:outline-none focus:border-purple-500 dark:focus:border-yellow-400 dark:bg-gray-900"
                 id="yourCountry"
                 name="yourCountry"
             >
@@ -198,7 +196,7 @@
             </select>
             <div
                 class="pointer-events-none absolute inset-y-0
-                                right-0 flex items-center px-2 text-gray-700"
+                                right-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
             >
                 <DownCarrotIcon />
             </div>
@@ -206,7 +204,7 @@
     </div>
 
     <div class="mb-4">
-        <div class="text-gray-700 text-sm font-bold mb-2">
+        <div class="text-gray-700 dark:text-gray-400 font-bold mb-2">
             {$_('pages.warriorProfile.fields.locale.label')}
         </div>
         <LocaleSwitcher
@@ -220,7 +218,7 @@
 
     <div class="mb-4">
         <label
-            class="block text-gray-700 text-sm font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourCompany"
         >
             {$_('pages.warriorProfile.fields.company.label')}
@@ -230,10 +228,9 @@
             placeholder="{$_(
                 'pages.warriorProfile.fields.company.placeholder',
             )}"
-            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
+            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
             id="yourCompany"
             name="yourCompany"
             type="text"
@@ -242,7 +239,7 @@
 
     <div class="mb-4">
         <label
-            class="block text-gray-700 text-sm font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourJobTitle"
         >
             {$_('pages.warriorProfile.fields.jobTitle.label')}
@@ -252,10 +249,9 @@
             placeholder="{$_(
                 'pages.warriorProfile.fields.jobTitle.placeholder',
             )}"
-            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
+            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
             id="yourJobTitle"
             name="yourJobTitle"
             type="text"
@@ -263,13 +259,13 @@
     </div>
 
     <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
+        <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2">
             <input
                 bind:checked="{profile.notificationsEnabled}"
                 type="checkbox"
-                class="form-checkbox"
+                class="w-4 h-4 dark:accent-lime-400 mr-1"
             />
-            <span class="ml-2">
+            <span>
                 {$_('pages.warriorProfile.fields.enable_notifications.label')}
             </span>
         </label>
@@ -278,7 +274,7 @@
     {#if isAvatarConfigurable}
         <div class="mb-4">
             <label
-                class="block text-gray-700 text-sm font-bold
+                class="block text-gray-700 dark:text-gray-400 font-bold
                                 mb-2"
                 for="yourAvatar"
             >
@@ -293,11 +289,9 @@
                     >
                         <select
                             bind:value="{profile.avatar}"
-                            class="block appearance-none w-full
-                                            border-2 border-gray-300
-                                            text-gray-700 py-3 px-4 pr-8 rounded
-                                            leading-tight focus:outline-none
-                                            focus:border-purple-500"
+                            class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                focus:outline-none focus:border-purple-500 dark:focus:border-yellow-400 dark:bg-gray-900"
                             id="yourAvatar"
                             name="yourAvatar"
                         >
@@ -310,7 +304,7 @@
                         <div
                             class="pointer-events-none absolute
                                             inset-y-0 right-0 flex items-center
-                                            px-2 text-gray-700"
+                                            px-2 text-gray-700 dark:text-gray-300"
                         >
                             <DownCarrotIcon />
                         </div>

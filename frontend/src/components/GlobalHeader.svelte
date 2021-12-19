@@ -107,7 +107,7 @@
                     <div class="uppercase">
                         <a
                             href="{appRoutes.login}"
-                            class="py-2 px-2 text-gray-700 hover:text-green-600 transition duration-300 text-lg lg:text-xl"
+                            class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 text-lg lg:text-xl"
                             >{$_('pages.login.nav')}</a
                         >
                         {#if AllowRegistration}

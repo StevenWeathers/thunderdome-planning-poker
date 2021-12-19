@@ -107,13 +107,15 @@
 
 <PageLayout>
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase">
+        <h1
+            class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
+        >
             {$_('pages.createAccount.title')}
         </h1>
         {#if battleId}
             <div
                 class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
-                text-center"
+                text-center dark:text-white"
             >
                 {@html $_('pages.createAccount.loginForBattle', {
                     values: {
@@ -129,19 +131,19 @@
             <div class="w-full md:w-1/2 px-4">
                 <form
                     on:submit="{createUserGuest}"
-                    class="bg-white shadow-lg rounded p-4 md:p-6 mb-4"
+                    class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
                     name="registerGuest"
                 >
                     <h2
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl b-4 mb-2 md:mb-6
-                        md:leading-tight text-center"
+                        md:leading-tight text-center dark:text-white"
                     >
                         {$_('pages.createAccount.guestForm.title')}
                     </h2>
 
                     <div class="mb-6">
                         <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
+                            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourName1"
                         >
                             {$_(
@@ -153,10 +155,9 @@
                             placeholder="{$_(
                                 'pages.createAccount.guestForm.fields.name.placeholder',
                             )}"
-                            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-purple-500"
+                            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
                             id="yourName1"
                             name="yourName1"
                             required
@@ -178,10 +179,12 @@
 
         {#if registrationAllowed}
             <div class="w-full md:w-1/2 px-4">
-                <div class="bg-white shadow-lg rounded p-4 md:p-6 mb-4">
+                <div
+                    class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
+                >
                     <h2
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
-                        md:leading-tight text-center"
+                        md:leading-tight text-center dark:text-white"
                     >
                         {@html $_(
                             'pages.createAccount.createAccountForm.title',
@@ -205,7 +208,7 @@
             <div class="w-full md:w-1/2 px-4">
                 <h2
                     class="font-bold text-2xl md:text-3xl md:leading-tight
-                    text-center"
+                    text-center dark:text-white"
                 >
                     {$_('pages.createAccount.registrationDisabled')}
                 </h2>

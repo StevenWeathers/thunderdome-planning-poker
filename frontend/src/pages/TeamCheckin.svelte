@@ -251,7 +251,7 @@
     <div class="flex sm:flex-wrap">
         <div class="md:grow">
             <h1
-                class="text-3xl font-semibold font-rajdhani leading-none uppercase"
+                class="text-3xl font-semibold font-rajdhani leading-none uppercase dark:text-white"
             >
                 Checkin: <input
                     type="date"
@@ -263,8 +263,11 @@
                     class="bg-transparent"
                 />
             </h1>
+
             {#if organizationId}
-                <div class="text-xl font-semibold font-rajdhani">
+                <div
+                    class="text-xl font-semibold font-rajdhani dark:text-white"
+                >
                     <span class="uppercase">{$_('organization')}</span>
                     <ChevronRight />
                     <a
@@ -304,7 +307,9 @@
                     {/if}
                 </div>
             {:else}
-                <div class="text-2xl font-semibold font-rajdhani">
+                <div
+                    class="text-2xl font-semibold font-rajdhani dark:text-white"
+                >
                     <span class="uppercase">{$_('team')}</span>
                     <ChevronRight />
                     <a
@@ -358,44 +363,48 @@
                 class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
             >
                 <div
-                    class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                    class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                 >
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table
+                        class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                    >
+                        <thead class="bg-gray-50 dark:bg-gray-800">
                             <tr>
                                 <th
                                     scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
                                 >
                                     Name
                                 </th>
                                 <th
                                     scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
                                 >
                                     Yesterday
                                 </th>
                                 <th
                                     scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
                                 >
                                     Today
                                 </th>
                                 <th
                                     scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
                                 >
                                     Blockers
                                 </th>
                                 <th
                                     scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"
+                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
                                 >
                                     Discuss
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody
+                            class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+                        >
                             {#each checkins as checkin}
                                 <tr>
                                     <td class="px-4 py-2 whitespace-nowrap">

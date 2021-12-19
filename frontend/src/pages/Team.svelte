@@ -205,13 +205,16 @@
 <PageLayout>
     <div class="flex mb-6 lg:mb-8">
         <div class="flex-1">
-            <h1 class="text-3xl font-semibold font-rajdhani">
+            <h1 class="text-3xl font-semibold font-rajdhani dark:text-white">
                 <span class="uppercase">{$_('team')}</span>
                 <ChevronRight class="w-8 h-8" />
                 {team.name}
             </h1>
+
             {#if organizationId}
-                <div class="text-xl font-semibold font-rajdhani">
+                <div
+                    class="text-xl font-semibold font-rajdhani dark:text-white"
+                >
                     <span class="uppercase">{$_('organization')}</span>
                     <ChevronRight />
                     <a
@@ -245,11 +248,13 @@
     </div>
 
     <div class="w-full mb-6 lg:mb-8">
-        <div class="p-4 md:p-6 bg-white shadow-lg rounded flex">
+        <div
+            class="p-4 md:p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg flex"
+        >
             <div class="w-full md:w-1/2 lg:w-3/5 md:pr-4">
                 <div class="flex w-full">
                     <h2
-                        class="text-2xl font-semibold font-rajdhani uppercase mb-4"
+                        class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                     >
                         {$_('battles')}
                     </h2>
@@ -292,7 +297,7 @@
             <div class="w-full md:w-1/2 lg:w-2/5 md:pl-2 xl:pl-4">
                 {#if isTeamMember}
                     <h2
-                        class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
+                        class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight dark:text-white"
                     >
                         {$_('pages.myBattles.createBattle.title')}
                     </h2>
@@ -311,7 +316,9 @@
     <div class="w-full">
         <div class="flex w-full">
             <div class="w-4/5">
-                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                <h2
+                    class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                >
                     {$_('users')}
                 </h2>
             </div>
@@ -332,26 +339,28 @@
                     class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
                 >
                     <div
-                        class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                        class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                     >
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                        <table
+                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                        >
+                            <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
                                     <th
                                         scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                     >
                                         {$_('name')}
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                     >
                                         {$_('email')}
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                     >
                                         {$_('role')}
                                     </th>
@@ -360,9 +369,14 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody
+                                class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+                            >
                                 {#each users as user, i}
-                                    <tr class:bg-slate-100="{i % 2 !== 0}">
+                                    <tr
+                                        class:bg-slate-100="{i % 2 !== 0}"
+                                        class:dark:bg-gray-800="{i % 2 !== 0}"
+                                    >
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div

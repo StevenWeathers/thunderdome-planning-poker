@@ -112,7 +112,9 @@
 
 <AdminPageLayout activePage="admin">
     <div class="text-center px-2 mb-4">
-        <h1 class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase">
+        <h1
+            class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
+        >
             {$_('pages.admin.title')}
         </h1>
     </div>
@@ -304,7 +306,7 @@
 
     <div class="w-full">
         <div
-            class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase text-center mb-4"
+            class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase text-center mb-4 dark:text-white"
         >
             {$_('pages.admin.maintenance.title')}
         </div>

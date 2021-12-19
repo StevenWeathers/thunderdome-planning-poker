@@ -234,7 +234,7 @@
 </svelte:head>
 
 <PageLayout>
-    <h1 class="mb-4 text-3xl font-semibold font-rajdhani">
+    <h1 class="mb-4 text-3xl font-semibold font-rajdhani dark:text-white">
         <span class="uppercase">{$_('organization')}</span>
         <ChevronRight class="w-8 h-8" />
         {organization.name}
@@ -243,7 +243,9 @@
     <div class="w-full mb-6 lg:mb-8">
         <div class="flex w-full">
             <div class="w-4/5">
-                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                <h2
+                    class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                >
                     {$_('departments')}
                 </h2>
             </div>
@@ -265,26 +267,28 @@
                         class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
                     >
                         <div
-                            class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                         >
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                            <table
+                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                            >
+                                <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('name')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('dateCreated')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('dateUpdated')}
                                         </th>
@@ -292,16 +296,20 @@
                                     </tr>
                                 </thead>
                                 <tbody
-                                    class="bg-white divide-y divide-gray-200"
+                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
                                 >
                                     {#each departments as department, i}
-                                        <tr class:bg-slate-100="{i % 2 !== 0}">
+                                        <tr
+                                            class:bg-slate-100="{i % 2 !== 0}"
+                                            class:dark:bg-gray-800="{i % 2 !==
+                                                0}"
+                                        >
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap"
                                             >
                                                 <a
                                                     href="{appRoutes.organization}/{organizationId}/department/{department.id}"
-                                                    class="text-blue-500 hover:text-blue-800"
+                                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                                 >
                                                     {department.name}
                                                 </a>
@@ -321,7 +329,7 @@
                                                 ).toLocaleString()}
                                             </td>
                                             <td
-                                                class="px-6 py-4 whitespace-nowrap"
+                                                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
                                             >
                                                 {#if isAdmin}
                                                     <HollowButton
@@ -348,7 +356,9 @@
     <div class="w-full mb-6 lg:mb-8">
         <div class="flex w-full">
             <div class="w-4/5">
-                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                <h2
+                    class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                >
                     {$_('teams')}
                 </h2>
             </div>
@@ -370,26 +380,28 @@
                         class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
                     >
                         <div
-                            class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                         >
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                            <table
+                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                            >
+                                <thead class="bg-gray-50 dark:bg-gray-800">
                                     <tr>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('name')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('dateCreated')}
                                         </th>
                                         <th
                                             scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                         >
                                             {$_('dateUpdated')}
                                         </th>
@@ -397,16 +409,20 @@
                                     </tr>
                                 </thead>
                                 <tbody
-                                    class="bg-white divide-y divide-gray-200"
+                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
                                 >
                                     {#each teams as team, i}
-                                        <tr class:bg-slate-100="{i % 2 !== 0}">
+                                        <tr
+                                            class:bg-slate-100="{i % 2 !== 0}"
+                                            class:dark:bg-gray-800="{i % 2 !==
+                                                0}"
+                                        >
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap"
                                             >
                                                 <a
                                                     href="{appRoutes.organization}/{organizationId}/team/{team.id}"
-                                                    class="text-blue-500 hover:text-blue-800"
+                                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                                 >
                                                     {team.name}
                                                 </a>
@@ -426,7 +442,7 @@
                                                 ).toLocaleString()}
                                             </td>
                                             <td
-                                                class="px-6 py-4 whitespace-nowrap"
+                                                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
                                             >
                                                 {#if isAdmin}
                                                     <HollowButton
@@ -453,7 +469,9 @@
     <div class="w-full">
         <div class="flex w-full">
             <div class="w-4/5">
-                <h2 class="text-2xl font-semibold font-rajdhani uppercase mb-4">
+                <h2
+                    class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                >
                     {$_('users')}
                 </h2>
             </div>
@@ -474,26 +492,28 @@
                     class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
                 >
                     <div
-                        class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+                        class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                     >
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                        <table
+                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                        >
+                            <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
                                     <th
                                         scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                     >
                                         {$_('name')}
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                     >
                                         {$_('email')}
                                     </th>
                                     <th
                                         scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                     >
                                         {$_('role')}
                                     </th>
@@ -502,9 +522,14 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody
+                                class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+                            >
                                 {#each users as user, i}
-                                    <tr class:bg-slate-100="{i % 2 !== 0}">
+                                    <tr
+                                        class:bg-slate-100="{i % 2 !== 0}"
+                                        class:dark:bg-gray-800="{i % 2 !== 0}"
+                                    >
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div

@@ -92,13 +92,16 @@
     {#if apiKey === ''}
         <form on:submit="{handleSubmit}" name="createApiKey">
             <div class="mb-4">
-                <label class="block text-sm font-bold mb-2" for="keyName">
+                <label
+                    class="block dark:text-gray-400 font-bold mb-2"
+                    for="keyName"
+                >
                     {$_('pages.warriorProfile.apiKeys.fields.name.label')}
                 </label>
                 <input
-                    class="bg-gray-100 border-gray-200 border-2 appearance-none
-                    rounded w-full py-2 px-3 text-gray-700 leading-tight
-                    focus:outline-none focus:bg-white focus:border-purple-500"
+                    class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
                     type="text"
                     id="keyName"
                     name="keyName"
@@ -119,7 +122,7 @@
         </form>
     {:else}
         <div class="mb-4">
-            <p class="mb-3 mt-3">
+            <p class="mb-3 mt-3 dark:text-white">
                 {@html $_('pages.warriorProfile.apiKeys.createSuccess', {
                     values: {
                         keyName: `<span class="font-bold">${keyName}</span>`,
@@ -131,9 +134,9 @@
             <div class="flex flex-wrap items-stretch w-full mb-3">
                 <input
                     class="flex-shrink flex-grow flex-auto leading-normal w-px
-                    flex-1 border-2 h-10 bg-gray-100 border-gray-200 rounded
-                    rounded-r-none px-4 appearance-none text-gray-800 font-bold
-                    focus:outline-none focus:bg-white focus:border-purple-500 "
+                    flex-1 border-2 h-10 bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-900 rounded
+                    rounded-r-none px-4 appearance-none text-gray-800 dark:text-gray-400 font-bold
+                    focus:outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-purple-500 dark:focus:border-yellow-400"
                     type="text"
                     value="{apiKey}"
                     id="apiKey"
@@ -150,7 +153,9 @@
                     </SolidButton>
                 </div>
             </div>
-            <p>{$_('pages.warriorProfile.apiKeys.storeWarning')}</p>
+            <p class="dark:text-white">
+                {$_('pages.warriorProfile.apiKeys.storeWarning')}
+            </p>
         </div>
         <div class="text-right">
             <div>
