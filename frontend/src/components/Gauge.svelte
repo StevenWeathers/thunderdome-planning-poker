@@ -140,7 +140,7 @@
             <span>{stat}</span><span class="ml-0.5 text-base font-bold">%</span>
         </h3>
         <h4
-            class="mt-0.5 font-bold text-gray-500 uppercase text-md tracking-wide"
+            class="mt-0.5 font-bold text-gray-500 dark:text-gray-400 uppercase text-md tracking-wide"
         >
             {text}
         </h4>

@@ -47,9 +47,10 @@
         })
     }
 
-    let activePillClasses = 'border-blue-500 bg-blue-500 text-white'
+    let activePillClasses =
+        'border-blue-500 bg-blue-500 text-white dark:bg-sky-500 dark:border-sky-500 dark:text-gray-900'
     let nonActivePillClasses =
-        'border-gray-200 hover:border-gray-300 bg-gray-200 text-blue-500 hover:bg-gray-300'
+        'border-gray-200 hover:border-gray-300 bg-gray-200 text-blue-500 dark:text-gray-400 dark:hover:text-gray-900 hover:bg-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:hover:bg-gray-400 dark:hover:border-gray-400'
 </script>
 
 <style>
@@ -62,14 +63,16 @@
     }
 </style>
 
-<div class="flex px-6 py-2 border-b-2 bg-gray-200 border-gray-300">
+<div
+    class="flex px-6 py-2 border-b-2 bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+>
     <div class="w-full">
         <ul class="flex justify-end">
             {#each pages as page}
                 <li class="ml-3">
                     <a
                         class="admin-nav-pill {activePage ===
-                        page.name.toLowerCase()
+                        page.name.toLowerCase().replace(' ', '')
                             ? activePillClasses
                             : nonActivePillClasses}"
                         href="{appRoutes.admin}{page.path}"

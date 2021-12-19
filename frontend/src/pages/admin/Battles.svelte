@@ -99,7 +99,9 @@
                 >
                 </label>
             </div>
-            <label for="activeBattles">{$_('showActiveBattles')}</label>
+            <label for="activeBattles" class="dark:text-gray-300"
+                >{$_('showActiveBattles')}</label
+            >
         </div>
 
         <div class="flex flex-col">

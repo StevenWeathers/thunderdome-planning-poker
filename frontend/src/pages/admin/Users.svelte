@@ -201,7 +201,7 @@
     <div class="w-full">
         <div class="flex w-full">
             <div class="w-2/5">
-                <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4 dark:text-white">
                     {$_('pages.admin.registeredWarriors.title')}
                 </h2>
             </div>
@@ -214,9 +214,9 @@
                                     <input
                                         bind:value="{searchEmail}"
                                         placeholder="{$_('email')}"
-                                        class="bg-gray-100 border-gray-200 border-2 appearance-none
-                    rounded py-2 px-3 text-gray-700 leading-tight
-                    focus:outline-none focus:bg-white focus:border-purple-500"
+                                        class="bg-gray-100 dark:bg-gray-800 appearance-none
+                    rounded py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
+                    focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-purple-500 dark:focus:border-yellow-400"
                                         id="searchEmail"
                                         name="searchEmail"
                                     />
@@ -344,15 +344,19 @@
                                             {/if}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">
+                                            <div
+                                                class="text-sm text-gray-900 dark:text-gray-400"
+                                            >
                                                 {user.company}
                                             </div>
-                                            <div class="text-sm text-gray-500">
+                                            <div
+                                                class="text-sm text-gray-500 dark:text-gray-300"
+                                            >
                                                 {user.jobTitle}
                                             </div>
                                         </td>
                                         <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
                                         >
                                             {user.rank}
                                         </td>

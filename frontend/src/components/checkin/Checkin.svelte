@@ -53,7 +53,7 @@
     <form on:submit="{onSubmit}" name="teamCheckin">
         <div class="mb-4">
             <div
-                class="text-gray-700 uppercase font-rajdhani text-2xl tracking-wide mb-2"
+                class="text-gray-700 uppercase font-rajdhani text-2xl tracking-wide mb-2 dark:text-gray-400"
             >
                 Did you meet yesterday's goals?
             </div>
