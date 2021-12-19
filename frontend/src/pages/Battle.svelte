@@ -667,12 +667,12 @@
             <div class="w-full md:w-1/2 lg:w-1/3">
                 <form
                     on:submit="{authBattle}"
-                    class="bg-white shadow-lg rounded p-6 mb-4"
+                    class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-4"
                     name="authBattle"
                 >
                     <div class="mb-4">
                         <label
-                            class="block text-gray-700 text-sm font-bold mb-2"
+                            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="battleJoinCode"
                         >
                             {$_('passCodeRequired')}
@@ -680,10 +680,9 @@
                         <input
                             bind:value="{joinPasscode}"
                             placeholder="{$_('enterPasscode')}"
-                            class="bg-gray-100 border-gray-200 border-2
-                            appearance-none rounded w-full py-2 px-3
-                            text-gray-700 leading-tight focus:outline-none
-                            focus:bg-white focus:border-indigo-500 focus:caret-indigo-500"
+                            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                             id="battleJoinCode"
                             name="battleJoinCode"
                             type="password"
