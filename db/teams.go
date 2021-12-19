@@ -7,7 +7,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
-// TeamUserRole gets a users role in team
+// TeamUserRole gets a user's role in team
 func (d *Database) TeamUserRole(UserID string, TeamID string) (string, error) {
 	var teamRole string
 
@@ -251,6 +251,71 @@ func (d *Database) TeamDelete(TeamID string) error {
 
 	if err != nil {
 		log.Println("Unable to delete team: ", err)
+		return err
+	}
+
+	return nil
+}
+
+// TeamRetroList gets a list of team retros
+func (d *Database) TeamRetroList(TeamID string, Limit int, Offset int) []*model.Retro {
+	var retros = make([]*model.Retro, 0)
+	rows, err := d.db.Query(
+		`SELECT id, name, format, phase FROM team_retro_list($1, $2, $3);`,
+		TeamID,
+		Limit,
+		Offset,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var tb model.Retro
+
+			if err := rows.Scan(
+				&tb.Id,
+				&tb.Name,
+				&tb.Format,
+				&tb.Phase,
+			); err != nil {
+				log.Println(err)
+			} else {
+				retros = append(retros, &tb)
+			}
+		}
+	} else {
+		log.Println(err)
+	}
+
+	return retros
+}
+
+// TeamAddRetro adds a retro to a team
+func (d *Database) TeamAddRetro(TeamID string, RetroID string) error {
+	_, err := d.db.Exec(
+		`SELECT team_retro_add($1, $2);`,
+		TeamID,
+		RetroID,
+	)
+
+	if err != nil {
+		log.Println("Unable to add retro to team: ", err)
+		return err
+	}
+
+	return nil
+}
+
+// TeamRemoveRetro removes a retro from a team
+func (d *Database) TeamRemoveRetro(TeamID string, RetroID string) error {
+	_, err := d.db.Exec(
+		`SELECT team_retro_remove($1, $2);`,
+		TeamID,
+		RetroID,
+	)
+
+	if err != nil {
+		log.Println("Unable to remove retro from team: ", err)
 		return err
 	}
 

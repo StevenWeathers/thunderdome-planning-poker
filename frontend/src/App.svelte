@@ -7,7 +7,7 @@
     import { onDestroy } from 'svelte'
 
     import { isLocaleLoaded, setupI18n } from './i18n.js'
-    import { appRoutes } from './config.js'
+    import { AppConfig, appRoutes } from './config.js'
     import apiclient from './apiclient.js'
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
@@ -19,6 +19,8 @@
     import Landing from './pages/Landing.svelte'
     import Battles from './pages/Battles.svelte'
     import Battle from './pages/Battle.svelte'
+    import Retros from './pages/Retros.svelte'
+    import Retro from './pages/Retro.svelte'
     import Organizations from './pages/Organizations.svelte'
     import Organization from './pages/Organization.svelte'
     import Department from './pages/Department.svelte'
@@ -38,6 +40,9 @@
     import AdminAlerts from './pages/admin/Alerts.svelte'
     import AdminBattles from './pages/admin/Battles.svelte'
     import AdminBattle from './pages/admin/Battle.svelte'
+    import AdminRetros from './pages/admin/Retros.svelte'
+
+    const { FeaturePoker, FeatureRetro } = AppConfig
 
     let notifications
 
@@ -57,204 +62,261 @@
     }
 
     const router = Navaid('/')
-        .on(appRoutes.landing, () => {
+
+    router.on(appRoutes.landing, () => {
+        currentPage = {
+            route: Landing,
+            params: {},
+            name: 'landing',
+        }
+    })
+    router.on(`${appRoutes.register}`, params => {
+        currentPage = {
+            route: Register,
+            params,
+            name: 'register',
+        }
+    })
+    router.on(`${appRoutes.login}`, params => {
+        currentPage = {
+            route: Login,
+            params,
+            name: 'login',
+        }
+    })
+    router.on(`${appRoutes.resetPwd}/:resetId`, params => {
+        currentPage = {
+            route: ResetPassword,
+            params,
+            name: 'reset-password',
+        }
+    })
+    router.on(`${appRoutes.verifyAct}/:verifyId`, params => {
+        currentPage = {
+            route: VerifyAccount,
+            params,
+            name: 'verify-account',
+        }
+    })
+    router.on(appRoutes.profile, params => {
+        currentPage = {
+            route: WarriorProfile,
+            params,
+            name: 'profile',
+        }
+    })
+    router.on(appRoutes.organizations, () => {
+        currentPage = {
+            route: Organizations,
+            params: {},
+            name: 'organizations',
+        }
+    })
+    router.on(`${appRoutes.organization}/:organizationId`, params => {
+        currentPage = {
+            route: Organization,
+            params,
+            name: 'organizations',
+        }
+    })
+    router.on(
+        `${appRoutes.organization}/:organizationId/team/:teamId`,
+        params => {
             currentPage = {
-                route: Landing,
-                params: {},
-                name: 'landing',
-            }
-        })
-        .on(`${appRoutes.register}/:battleId?`, params => {
-            currentPage = {
-                route: Register,
+                route: Team,
                 params,
-                name: 'register',
+                name: 'team',
             }
-        })
-        .on(`${appRoutes.login}/:battleId?`, params => {
+        },
+    )
+    router.on(
+        `${appRoutes.organization}/:organizationId/team/:teamId/checkin`,
+        params => {
             currentPage = {
-                route: Login,
+                route: TeamCheckin,
                 params,
-                name: 'login',
+                name: 'team',
             }
-        })
-        .on(`${appRoutes.resetPwd}/:resetId`, params => {
+        },
+    )
+    router.on(
+        `${appRoutes.organization}/:organizationId/department/:departmentId`,
+        params => {
             currentPage = {
-                route: ResetPassword,
+                route: Department,
                 params,
-                name: 'reset-password',
+                name: 'department',
             }
-        })
-        .on(`${appRoutes.verifyAct}/:verifyId`, params => {
+        },
+    )
+    router.on(
+        `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId`,
+        params => {
             currentPage = {
-                route: VerifyAccount,
+                route: Team,
                 params,
-                name: 'verify-account',
+                name: 'team',
             }
-        })
-        .on(appRoutes.profile, params => {
+        },
+    )
+    router.on(
+        `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/checkin`,
+        params => {
             currentPage = {
-                route: WarriorProfile,
+                route: TeamCheckin,
                 params,
-                name: 'profile',
+                name: 'team',
             }
-        })
-        .on(appRoutes.battles, () => {
+        },
+    )
+    router.on(`${appRoutes.team}/:teamId`, params => {
+        currentPage = {
+            route: Team,
+            params,
+            name: 'team',
+        }
+    })
+    router.on(`${appRoutes.team}/:teamId/checkin`, params => {
+        currentPage = {
+            route: TeamCheckin,
+            params,
+            name: 'team',
+        }
+    })
+    router.on(appRoutes.admin, () => {
+        currentPage = {
+            route: Admin,
+            params: {},
+            name: 'admin',
+        }
+    })
+    router.on(`${appRoutes.admin}/users/:userId`, params => {
+        currentPage = {
+            route: AdminUser,
+            params: params,
+            name: 'admin',
+        }
+    })
+    router.on(`${appRoutes.admin}/users`, () => {
+        currentPage = {
+            route: AdminUsers,
+            params: {},
+            name: 'admin',
+        }
+    })
+    router.on(`${appRoutes.admin}/organizations`, () => {
+        currentPage = {
+            route: AdminOrganizations,
+            params: {},
+            name: 'admin',
+        }
+    })
+    router.on(`${appRoutes.admin}/teams`, () => {
+        currentPage = {
+            route: AdminTeams,
+            params: {},
+            name: 'admin',
+        }
+    })
+    router.on(`${appRoutes.admin}/apikeys`, () => {
+        currentPage = {
+            route: AdminApikeys,
+            params: {},
+            name: 'admin',
+        }
+    })
+    router.on(`${appRoutes.admin}/alerts`, () => {
+        currentPage = {
+            route: AdminAlerts,
+            params: {},
+            name: 'admin',
+        }
+    })
+
+    if (FeaturePoker) {
+        router.on(appRoutes.battles, () => {
             currentPage = {
                 route: Battles,
                 params: {},
                 name: 'battles',
             }
         })
-        .on(`${appRoutes.battle}/:battleId`, params => {
+        router.on(`${appRoutes.battle}/:battleId`, params => {
             currentPage = {
                 route: Battle,
                 params,
                 name: 'battle',
             }
         })
-        .on(appRoutes.organizations, () => {
-            currentPage = {
-                route: Organizations,
-                params: {},
-                name: 'organizations',
-            }
-        })
-        .on(`${appRoutes.organization}/:organizationId`, params => {
-            currentPage = {
-                route: Organization,
-                params,
-                name: 'organizations',
-            }
-        })
-        .on(
-            `${appRoutes.organization}/:organizationId/team/:teamId`,
-            params => {
-                currentPage = {
-                    route: Team,
-                    params,
-                    name: 'team',
-                }
-            },
-        )
-        .on(
-            `${appRoutes.organization}/:organizationId/team/:teamId/checkin`,
-            params => {
-                currentPage = {
-                    route: TeamCheckin,
-                    params,
-                    name: 'team',
-                }
-            },
-        )
-        .on(
-            `${appRoutes.organization}/:organizationId/department/:departmentId`,
-            params => {
-                currentPage = {
-                    route: Department,
-                    params,
-                    name: 'department',
-                }
-            },
-        )
-        .on(
-            `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId`,
-            params => {
-                currentPage = {
-                    route: Team,
-                    params,
-                    name: 'team',
-                }
-            },
-        )
-        .on(
-            `${appRoutes.organization}/:organizationId/department/:departmentId/team/:teamId/checkin`,
-            params => {
-                currentPage = {
-                    route: TeamCheckin,
-                    params,
-                    name: 'team',
-                }
-            },
-        )
-        .on(`${appRoutes.team}/:teamId`, params => {
-            currentPage = {
-                route: Team,
-                params,
-                name: 'team',
-            }
-        })
-        .on(`${appRoutes.team}/:teamId/checkin`, params => {
-            currentPage = {
-                route: TeamCheckin,
-                params,
-                name: 'team',
-            }
-        })
-        .on(appRoutes.admin, () => {
-            currentPage = {
-                route: Admin,
-                params: {},
-                name: 'admin',
-            }
-        })
-        .on(`${appRoutes.admin}/users/:userId`, params => {
-            currentPage = {
-                route: AdminUser,
-                params: params,
-                name: 'admin',
-            }
-        })
-        .on(`${appRoutes.admin}/users`, () => {
-            currentPage = {
-                route: AdminUsers,
-                params: {},
-                name: 'admin',
-            }
-        })
-        .on(`${appRoutes.admin}/organizations`, () => {
-            currentPage = {
-                route: AdminOrganizations,
-                params: {},
-                name: 'admin',
-            }
-        })
-        .on(`${appRoutes.admin}/teams`, () => {
-            currentPage = {
-                route: AdminTeams,
-                params: {},
-                name: 'admin',
-            }
-        })
-        .on(`${appRoutes.admin}/apikeys`, () => {
-            currentPage = {
-                route: AdminApikeys,
-                params: {},
-                name: 'admin',
-            }
-        })
-        .on(`${appRoutes.admin}/alerts`, () => {
-            currentPage = {
-                route: AdminAlerts,
-                params: {},
-                name: 'admin',
-            }
-        })
-        .on(`${appRoutes.admin}/battles/:battleId`, params => {
-            currentPage = {
-                route: AdminBattle,
-                params: params,
-                name: 'admin',
-            }
-        })
-        .on(`${appRoutes.admin}/battles`, () => {
+        router.on(`${appRoutes.admin}/battles`, () => {
             currentPage = {
                 route: AdminBattles,
                 params: {},
                 name: 'admin',
             }
         })
-        .listen()
+        router.on(`${appRoutes.admin}/battles/:battleId`, params => {
+            currentPage = {
+                route: AdminBattle,
+                params: params,
+                name: 'admin',
+            }
+        })
+        router.on(`${appRoutes.register}/battle/:battleId`, params => {
+            currentPage = {
+                route: Register,
+                params,
+                name: 'register',
+            }
+        })
+        router.on(`${appRoutes.login}/battle/:battleId`, params => {
+            currentPage = {
+                route: Login,
+                params,
+                name: 'login',
+            }
+        })
+    }
+
+    if (FeatureRetro) {
+        router.on(appRoutes.retros, () => {
+            currentPage = {
+                route: Retros,
+                params: {},
+                name: 'retros',
+            }
+        })
+        router.on(`${appRoutes.retro}/:retroId`, params => {
+            currentPage = {
+                route: Retro,
+                params,
+                name: 'retro',
+            }
+        })
+        router.on(`${appRoutes.admin}/retros`, () => {
+            currentPage = {
+                route: AdminRetros,
+                params: {},
+                name: 'admin',
+            }
+        })
+        router.on(`${appRoutes.register}/retro/:retroId`, params => {
+            currentPage = {
+                route: Register,
+                params,
+                name: 'register',
+            }
+        })
+        router.on(`${appRoutes.login}/retro/:retroId`, params => {
+            currentPage = {
+                route: Login,
+                params,
+                name: 'login',
+            }
+        })
+    }
+
+    router.listen()
 
     const xfetch = apiclient(handle401)
 

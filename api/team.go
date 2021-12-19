@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
@@ -266,5 +267,38 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 		}
 
 		Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleGetTeamRetros gets a list of retros associated to the team
+func (a *api) handleGetTeamRetros() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		Limit, _ := strconv.Atoi(vars["limit"])
+		Offset, _ := strconv.Atoi(vars["offset"])
+
+		Retrospectives := a.db.TeamRetroList(TeamID, Limit, Offset)
+
+		Success(w, r, http.StatusOK, Retrospectives, nil)
+	}
+}
+
+// handleTeamRemoveRetro handles removing retro from a team
+func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		keyVal := getJSONRequestBody(r, w)
+
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		RetrospectiveID := keyVal["id"].(string)
+
+		err := a.db.TeamRemoveRetro(TeamID, RetrospectiveID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
 	}
 }

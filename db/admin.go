@@ -24,7 +24,12 @@ func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 			apikey_count,
 			active_battle_count,
 			active_battle_user_count,
-			team_checkins_count
+			team_checkins_count,
+			retro_count,
+			active_retro_count,
+			active_retro_user_count,
+			retro_item_count,
+			retro_action_count
 		FROM get_app_stats();
 		`,
 	).Scan(
@@ -39,6 +44,11 @@ func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 		&Appstats.ActiveBattleCount,
 		&Appstats.ActiveBattleUserCount,
 		&Appstats.TeamCheckinsCount,
+		&Appstats.RetroCount,
+		&Appstats.ActiveRetroCount,
+		&Appstats.ActiveRetroUserCount,
+		&Appstats.RetroItemCount,
+		&Appstats.RetroActionCount,
 	)
 	if err != nil {
 		log.Println("Unable to get application stats: ", err)

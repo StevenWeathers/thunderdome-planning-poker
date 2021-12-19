@@ -12,15 +12,26 @@
     export let notifications
     export let eventTag
     export let battleId
+    export let retroId
 
     const guestsAllowed = AppConfig.AllowGuests
     const registrationAllowed = AppConfig.AllowRegistration
 
     let warriorName = $warrior.name || ''
 
-    $: targetPage = battleId
-        ? `${appRoutes.battle}/${battleId}`
-        : appRoutes.battles
+    function targetPage() {
+        let tp = appRoutes.battles
+
+        if (battleId) {
+            tp = `${appRoutes.battle}/${battleId}`
+        }
+
+        if (retroId) {
+            tp = `${appRoutes.retro}/${retroId}`
+        }
+
+        return tp
+    }
 
     function createUserGuest(e) {
         e.preventDefault()
@@ -49,7 +60,7 @@
                     })
 
                     eventTag('register_guest', 'engagement', 'success', () => {
-                        router.route(targetPage, true)
+                        router.route(targetPage(), true)
                     })
                 })
                 .catch(function () {
@@ -87,7 +98,7 @@
                 })
 
                 eventTag('register_account', 'engagement', 'success', () => {
-                    router.route(targetPage, true)
+                    router.route(targetPage(), true)
                 })
             })
             .catch(function () {
@@ -110,7 +121,11 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            {$_('pages.createAccount.title')}
+            {#if retroId}
+                Register
+            {:else}
+                {$_('pages.createAccount.title')}
+            {/if}
         </h1>
         {#if battleId}
             <div
@@ -119,10 +134,22 @@
             >
                 {@html $_('pages.createAccount.loginForBattle', {
                     values: {
-                        loginOpen: `<a href="${appRoutes.login}/${battleId}" class="font-bold text-blue-500 hover:text-blue-800">`,
+                        loginOpen: `<a href="${appRoutes.login}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
                         loginClose: `</a>`,
                     },
                 })}
+            </div>
+        {/if}
+        {#if retroId}
+            <div
+                class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
+                text-center dark:text-white"
+            >
+                or <a
+                    href="{appRoutes.login}/retro/{retroId}"
+                    class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                    >Login</a
+                > to join the Retro
             </div>
         {/if}
     </div>
