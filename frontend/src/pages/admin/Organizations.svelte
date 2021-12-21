@@ -7,6 +7,10 @@
     import { _ } from '../../i18n.js'
     import { appRoutes } from '../../config.js'
     import { validateUserIsAdmin } from '../../validationUtils.js'
+    import Table from '../../components/table/Table.svelte'
+    import HeadCol from '../../components/table/HeadCol.svelte'
+    import TableRow from '../../components/table/TableRow.svelte'
+    import RowCol from '../../components/table/RowCol.svelte'
 
     export let xfetch
     export let router
@@ -90,68 +94,34 @@
     </div>
 
     <div class="w-full">
-        <div class="flex flex-col">
-            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div
-                    class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                >
-                    <div
-                        class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                    >
-                        <table
-                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                        >
-                            <thead class="bg-gray-50 dark:bg-gray-800">
-                                <tr>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('name')}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('dateCreated')}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('dateUpdated')}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody
-                                class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
-                            >
-                                {#each organizations as org, i}
-                                    <tr
-                                        class:bg-slate-100="{i % 2 !== 0}"
-                                        class:dark:bg-gray-800="{i % 2 !== 0}"
-                                    >
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {org.name}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {new Date(
-                                                org.createdDate,
-                                            ).toLocaleString()}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {new Date(
-                                                org.updatedDate,
-                                            ).toLocaleString()}
-                                        </td>
-                                    </tr>
-                                {/each}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <Table>
+            <tr slot="header">
+                <HeadCol>
+                    {$_('name')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('dateCreated')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('dateUpdated')}
+                </HeadCol>
+            </tr>
+            <tbody slot="body" let:class="{className}" class="{className}">
+                {#each organizations as org, i}
+                    <TableRow itemIndex="{i}">
+                        <RowCol>
+                            {org.name}
+                        </RowCol>
+                        <RowCol>
+                            {new Date(org.createdDate).toLocaleString()}
+                        </RowCol>
+                        <RowCol>
+                            {new Date(org.updatedDate).toLocaleString()}
+                        </RowCol>
+                    </TableRow>
+                {/each}
+            </tbody>
+        </Table>
 
         {#if appStats.organizationCount > organizationsPageLimit}
             <div class="pt-6 flex justify-center">

@@ -9,6 +9,10 @@
     import { _ } from '../../i18n.js'
     import { appRoutes } from '../../config.js'
     import { validateUserIsAdmin } from '../../validationUtils.js'
+    import Table from '../../components/table/Table.svelte'
+    import HeadCol from '../../components/table/HeadCol.svelte'
+    import RowCol from '../../components/table/RowCol.svelte'
+    import TableRow from '../../components/table/TableRow.svelte'
 
     export let xfetch
     export let router
@@ -69,100 +73,56 @@
 
     <div class="w-full">
         <div class="p-4 md:p-6">
-            <div class="flex flex-col">
-                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div
-                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                    >
-                        <div
-                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                        >
-                            <table
-                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                            >
-                                <thead class="bg-gray-50 dark:bg-gray-800">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('votingLocked')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('autoFinishVoting')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('pointValuesAllowed')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('pointAverageRounding')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('dateCreated')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('dateUpdated')}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody
-                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+            <Table>
+                <tr slot="header">
+                    <HeadCol>
+                        {$_('votingLocked')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('autoFinishVoting')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('pointValuesAllowed')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('pointAverageRounding')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateCreated')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateUpdated')}
+                    </HeadCol>
+                </tr>
+                <tbody slot="body" let:class="{className}" class="{className}">
+                    <TableRow itemIndex="{0}">
+                        <RowCol>
+                            {#if battle.votingLocked}
+                                <span class="text-green-600"><CheckIcon /></span
                                 >
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {#if battle.votingLocked}
-                                                <span class="text-green-600"
-                                                    ><CheckIcon /></span
-                                                >
-                                            {/if}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {#if battle.autoFinishVoting}
-                                                <span class="text-green-600"
-                                                    ><CheckIcon /></span
-                                                >
-                                            {/if}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap"
-                                            >{battle.pointValuesAllowed.join(
-                                                ', ',
-                                            )}</td
-                                        >
-                                        <td class="px-6 py-4 whitespace-nowrap"
-                                            >{battle.pointAverageRounding}</td
-                                        >
-                                        <td class="px-6 py-4 whitespace-nowrap"
-                                            >{new Date(
-                                                battle.createdDate,
-                                            ).toLocaleString()}</td
-                                        >
-                                        <td class="px-6 py-4 whitespace-nowrap"
-                                            >{new Date(
-                                                battle.updatedDate,
-                                            ).toLocaleString()}</td
-                                        >
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            {/if}
+                        </RowCol>
+                        <RowCol>
+                            {#if battle.autoFinishVoting}
+                                <span class="text-green-600"><CheckIcon /></span
+                                >
+                            {/if}
+                        </RowCol>
+                        <RowCol>
+                            {battle.pointValuesAllowed.join(', ')}
+                        </RowCol>
+                        <RowCol>
+                            {battle.pointAverageRounding}
+                        </RowCol>
+                        <RowCol>
+                            {new Date(battle.createdDate).toLocaleString()}
+                        </RowCol>
+                        <RowCol>
+                            {new Date(battle.updatedDate).toLocaleString()}
+                        </RowCol>
+                    </TableRow>
+                </tbody>
+            </Table>
         </div>
         <div class="p-4 md:p-6">
             <h3
@@ -171,152 +131,100 @@
                 {$_('users')}
             </h3>
 
-            <div class="flex flex-col">
-                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div
-                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                    >
-                        <div
-                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                        >
-                            <table
-                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                            >
-                                <thead class="bg-gray-50 dark:bg-gray-800">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+            <Table>
+                <tr slot="header">
+                    <HeadCol>
+                        {$_('name')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('rank')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('active')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('abandoned')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('spectator')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('leader')}
+                    </HeadCol>
+                </tr>
+                <tbody slot="body" let:class="{className}" class="{className}">
+                    {#each battle.users as user, i}
+                        <TableRow itemIndex="{i}">
+                            <RowCol>
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <UserAvatar
+                                            warriorId="{user.id}"
+                                            avatar="{user.avatar}"
+                                            gravatarHash="{user.gravatarHash}"
+                                            width="48"
+                                            class="h-10 w-10 rounded-full"
+                                        />
+                                    </div>
+                                    <div class="ml-4">
+                                        <div
+                                            class="text-sm font-medium text-gray-900"
                                         >
-                                            {$_('name')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('rank')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('active')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('abandoned')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('spectator')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('leader')}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody
-                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
-                                >
-                                    {#each battle.users as user, i}
-                                        <tr
-                                            class:bg-slate-100="{i % 2 !== 0}"
-                                            class:dark:bg-gray-800="{i % 2 !==
-                                                0}"
-                                        >
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
+                                            <a
+                                                href="{appRoutes.admin}/users/{user.id}"
+                                                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                                >{user.name}</a
                                             >
-                                                <div class="flex items-center">
-                                                    <div
-                                                        class="flex-shrink-0 h-10 w-10"
-                                                    >
-                                                        <UserAvatar
-                                                            warriorId="{user.id}"
-                                                            avatar="{user.avatar}"
-                                                            gravatarHash="{user.gravatarHash}"
-                                                            width="48"
-                                                            class="h-10 w-10 rounded-full"
-                                                        />
-                                                    </div>
-                                                    <div class="ml-4">
-                                                        <div
-                                                            class="text-sm font-medium text-gray-900"
-                                                        >
-                                                            <a
-                                                                href="{appRoutes.admin}/users/{user.id}"
-                                                                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                                                                >{user.name}</a
-                                                            >
-                                                            {#if user.country}
-                                                                &nbsp;
-                                                                <CountryFlag
-                                                                    country="{user.country}"
-                                                                    additionalClass="inline-block"
-                                                                    width="32"
-                                                                    height="24"
-                                                                />
-                                                            {/if}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                                >{user.rank}</td
-                                            >
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {#if user.active}
-                                                    <span class="text-green-600"
-                                                        ><CheckIcon /></span
-                                                    >
-                                                {/if}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {#if user.abandoned}
-                                                    <span class="text-green-600"
-                                                        ><CheckIcon /></span
-                                                    >
-                                                {/if}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {#if user.spectator}
-                                                    <span class="text-green-600"
-                                                        ><CheckIcon /></span
-                                                    >
-                                                {/if}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {#if battle.leaders.includes(user.id)}
-                                                    <span class="text-green-600"
-                                                        ><CheckIcon /></span
-                                                    >
-                                                {/if}
-                                            </td>
-                                        </tr>
-                                    {/each}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                            {#if user.country}
+                                                &nbsp;
+                                                <CountryFlag
+                                                    country="{user.country}"
+                                                    additionalClass="inline-block"
+                                                    width="32"
+                                                    height="24"
+                                                />
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                            </RowCol>
+                            <RowCol>
+                                {user.rank}
+                            </RowCol>
+                            <RowCol>
+                                {#if user.active}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </RowCol>
+                            <RowCol>
+                                {#if user.abandoned}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </RowCol>
+                            <RowCol>
+                                {#if user.spectator}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </RowCol>
+                            <RowCol>
+                                {#if battle.leaders.includes(user.id)}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </RowCol>
+                        </TableRow>
+                    {/each}
+                </tbody>
+            </Table>
         </div>
+
         <div class="p-4 md:p-6">
             <h3
                 class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
@@ -324,117 +232,66 @@
                 {$_('plans')}
             </h3>
 
-            <div class="flex flex-col">
-                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div
-                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                    >
-                        <div
-                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                        >
-                            <table
-                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                            >
-                                <thead class="bg-gray-50 dark:bg-gray-800">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('name')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('type')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            {$_('planReferenceId')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('voteCount')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('points')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('active')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('skipped')}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody
-                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
-                                >
-                                    {#each battle.plans as plan, i}
-                                        <tr
-                                            class:bg-slate-100="{i % 2 !== 0}"
-                                            class:dark:bg-gray-800="{i % 2 !==
-                                                0}"
-                                        >
-                                            <td class="px-6 py-4">
-                                                {plan.name}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                                >{plan.type}</td
-                                            >
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                                >{plan.referenceId}</td
-                                            >
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                                >{plan.votes.length}</td
-                                            >
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                                >{plan.points}</td
-                                            >
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {#if plan.active}
-                                                    <span class="text-green-600"
-                                                        ><CheckIcon /></span
-                                                    >
-                                                {/if}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {#if plan.skipped}
-                                                    <span class="text-green-600"
-                                                        ><CheckIcon /></span
-                                                    >
-                                                {/if}
-                                            </td>
-                                        </tr>
-                                    {/each}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Table>
+                <tr slot="header">
+                    <HeadCol>
+                        {$_('name')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('type')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('planReferenceId')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('voteCount')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('points')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('active')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('skipped')}
+                    </HeadCol>
+                </tr>
+                <tbody slot="body" let:class="{className}" class="{className}">
+                    {#each battle.plans as plan, i}
+                        <TableRow itemIndex="{i}">
+                            <RowCol>
+                                {plan.name}
+                            </RowCol>
+                            <RowCol>
+                                {plan.type}
+                            </RowCol>
+                            <RowCol>
+                                {plan.referenceId}
+                            </RowCol>
+                            <RowCol>
+                                {plan.votes.length}
+                            </RowCol>
+                            <RowCol>
+                                {plan.points}
+                            </RowCol>
+                            <RowCol>
+                                {#if plan.active}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </RowCol>
+                            <RowCol>
+                                {#if plan.skipped}
+                                    <span class="text-green-600"
+                                        ><CheckIcon /></span
+                                    >
+                                {/if}
+                            </RowCol>
+                        </TableRow>
+                    {/each}
+                </tbody>
+            </Table>
         </div>
     </div>
 </AdminPageLayout>

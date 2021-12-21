@@ -11,6 +11,10 @@
     import { _ } from '../../i18n.js'
     import { appRoutes } from '../../config.js'
     import { validateUserIsAdmin } from '../../validationUtils.js'
+    import Table from '../../components/table/Table.svelte'
+    import HeadCol from '../../components/table/HeadCol.svelte'
+    import TableRow from '../../components/table/TableRow.svelte'
+    import RowCol from '../../components/table/RowCol.svelte'
 
     export let xfetch
     export let router
@@ -154,128 +158,81 @@
             </HollowButton>
         </div>
 
-        <div class="flex flex-col">
-            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div
-                    class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                >
-                    <div
-                        class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                    >
-                        <table
-                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                        >
-                            <thead class="bg-gray-50 dark:bg-gray-800">
-                                <tr>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('name')}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('type')}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('active')}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('alertRegisteredOnly')}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('alertAllowDismiss')}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('dateUpdated')}
-                                    </th>
-                                    <th scope="col" class="relative px-6 py-3">
-                                        <span class="sr-only">Actions</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody
-                                class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+        <Table>
+            <tr slot="header">
+                <HeadCol>
+                    {$_('name')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('type')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('active')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('alertRegisteredOnly')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('alertAllowDismiss')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('dateUpdated')}
+                </HeadCol>
+                <HeadCol type="action">
+                    <span class="sr-only">Actions</span>
+                </HeadCol>
+            </tr>
+            <tbody slot="body" let:class="{className}" class="{className}">
+                {#each alerts as alert, i}
+                    <TableRow itemIndex="{i}">
+                        <RowCol>
+                            {alert.name}
+                        </RowCol>
+                        <RowCol>
+                            {alert.type}
+                        </RowCol>
+                        <RowCol>
+                            {#if alert.active}
+                                <span class="text-green-600">
+                                    <CheckIcon />
+                                </span>
+                            {/if}
+                        </RowCol>
+                        <RowCol>
+                            {#if alert.registeredOnly}
+                                <span class="text-green-600">
+                                    <CheckIcon />
+                                </span>
+                            {/if}
+                        </RowCol>
+                        <RowCol>
+                            {#if alert.allowDismiss}
+                                <span class="text-green-600">
+                                    <CheckIcon />
+                                </span>
+                            {/if}
+                        </RowCol>
+                        <RowCol>
+                            {new Date(alert.updatedDate).toLocaleString()}
+                        </RowCol>
+                        <RowCol type="action">
+                            <HollowButton
+                                onClick="{toggleUpdateAlert(alert)}"
+                                color="blue"
                             >
-                                {#each alerts as alert, i}
-                                    <tr
-                                        class:bg-slate-100="{i % 2 !== 0}"
-                                        class:dark:bg-gray-800="{i % 2 !== 0}"
-                                    >
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {alert.name}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {alert.type}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {#if alert.active}
-                                                <span class="text-green-600">
-                                                    <CheckIcon />
-                                                </span>
-                                            {/if}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {#if alert.registeredOnly}
-                                                <span class="text-green-600">
-                                                    <CheckIcon />
-                                                </span>
-                                            {/if}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {#if alert.allowDismiss}
-                                                <span class="text-green-600">
-                                                    <CheckIcon />
-                                                </span>
-                                            {/if}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {new Date(
-                                                alert.updatedDate,
-                                            ).toLocaleString()}
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                                        >
-                                            <HollowButton
-                                                onClick="{toggleUpdateAlert(
-                                                    alert,
-                                                )}"
-                                                color="blue"
-                                            >
-                                                {$_('edit')}
-                                            </HollowButton>
-                                            <HollowButton
-                                                onClick="{toggleDeleteAlert(
-                                                    alert.id,
-                                                )}"
-                                                color="red"
-                                            >
-                                                {$_('delete')}
-                                            </HollowButton>
-                                        </td>
-                                    </tr>
-                                {/each}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                {$_('edit')}
+                            </HollowButton>
+                            <HollowButton
+                                onClick="{toggleDeleteAlert(alert.id)}"
+                                color="red"
+                            >
+                                {$_('delete')}
+                            </HollowButton>
+                        </RowCol>
+                    </TableRow>
+                {/each}
+            </tbody>
+        </Table>
 
         {#if alertCount > alertsPageLimit}
             <div class="pt-6 flex justify-center">

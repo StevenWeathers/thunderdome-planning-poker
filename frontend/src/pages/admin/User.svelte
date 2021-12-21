@@ -11,6 +11,10 @@
     import { _ } from '../../i18n.js'
     import { appRoutes } from '../../config.js'
     import { validateUserIsAdmin } from '../../validationUtils.js'
+    import Table from '../../components/table/Table.svelte'
+    import HeadCol from '../../components/table/HeadCol.svelte'
+    import TableRow from '../../components/table/TableRow.svelte'
+    import RowCol from '../../components/table/RowCol.svelte'
 
     export let xfetch
     export let router
@@ -102,124 +106,82 @@
 
     <div class="w-full">
         <div class="p-4 md:p-6">
-            <div class="flex flex-col">
-                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div
-                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                    >
-                        <div
-                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                        >
-                            <table
-                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                            >
-                                <thead class="bg-gray-50 dark:bg-gray-800">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3"></th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('email')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('type')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('createdDate')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('updatedDate')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('lastActive')}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody
-                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+            <Table>
+                <tr slot="header">
+                    <HeadCol />
+                    <HeadCol>
+                        {$_('pages.admin.registeredWarriors.country')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('email')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('type')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('createdDate')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('updatedDate')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('lastActive')}
+                    </HeadCol>
+                </tr>
+                <tbody slot="body" let:class="{className}" class="{className}">
+                    <TableRow itemIndex="{0}">
+                        <RowCol>
+                            <div className="flex items-center flex-nowrap">
+                                <div className="flex-shrink-0 h-10 w-10">
+                                    <UserAvatar
+                                        warriorId="{user.id}"
+                                        avatar="{user.avatar}"
+                                        gravatarHash="{user.gravatarHash}"
+                                        width="48"
+                                        class="h-10 w-10 rounded-full"
+                                    />
+                                </div>
+                            </div>
+                        </RowCol>
+                        <RowCol>
+                            {#if user.country}
+                                &nbsp;
+                                <CountryFlag
+                                    country="{user.country}"
+                                    additionalClass="inline-block"
+                                    width="32"
+                                    height="24"
+                                />
+                            {/if}
+                        </RowCol>
+                        <RowCol>
+                            {user.email}
+                            {#if user.verified}
+                                <span
+                                    class="text-green-600"
+                                    title="{$_(
+                                        'pages.admin.registeredWarriors.verified',
+                                    )}"
                                 >
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="flex-shrink-0 h-10 w-10"
-                                                >
-                                                    <UserAvatar
-                                                        warriorId="{user.id}"
-                                                        avatar="{user.avatar}"
-                                                        gravatarHash="{user.gravatarHash}"
-                                                        width="48"
-                                                        class="h-10 w-10 rounded-full"
-                                                    />
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div
-                                                        class="text-sm font-medium text-gray-900"
-                                                    >
-                                                        {#if user.country}
-                                                            &nbsp;
-                                                            <CountryFlag
-                                                                country="{user.country}"
-                                                                additionalClass="inline-block"
-                                                                width="32"
-                                                                height="24"
-                                                            />
-                                                        {/if}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap"
-                                            >{user.email}
-                                            {#if user.verified}
-                                                <span
-                                                    class="text-green-600"
-                                                    title="{$_(
-                                                        'pages.admin.registeredWarriors.verified',
-                                                    )}"
-                                                >
-                                                    <VerifiedIcon />
-                                                </span>
-                                            {/if}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap"
-                                            >{user.rank}</td
-                                        >
-                                        <td class="px-6 py-4 whitespace-nowrap"
-                                            >{new Date(
-                                                user.createdDate,
-                                            ).toLocaleString()}</td
-                                        >
-                                        <td class="px-6 py-4 whitespace-nowrap"
-                                            >{new Date(
-                                                user.updatedDate,
-                                            ).toLocaleString()}</td
-                                        >
-                                        <td class="px-6 py-4 whitespace-nowrap"
-                                            >{new Date(
-                                                user.lastActive,
-                                            ).toLocaleString()}</td
-                                        >
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                    <VerifiedIcon />
+                                </span>
+                            {/if}
+                        </RowCol>
+                        <RowCol>
+                            {user.rank}
+                        </RowCol>
+                        <RowCol>
+                            {new Date(user.createdDate).toLocaleString()}
+                        </RowCol>
+                        <RowCol>
+                            {new Date(user.updatedDate).toLocaleString()}
+                        </RowCol>
+                        <RowCol>
+                            {new Date(user.lastActive).toLocaleString()}
+                        </RowCol>
+                    </TableRow>
+                </tbody>
+            </Table>
         </div>
         <div class="p-4 md:p-6">
             <h4
@@ -228,94 +190,48 @@
                 {$_('battles')}
             </h4>
 
-            <div class="flex flex-col">
-                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div
-                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                    >
-                        <div
-                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                        >
-                            <table
-                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                            >
-                                <thead class="bg-gray-50 dark:bg-gray-800">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('name')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('dateCreated')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('dateUpdated')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="relative px-6 py-3"
-                                        >
-                                            <span class="sr-only">Actions</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody
-                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+            <Table>
+                <tr slot="header">
+                    <HeadCol>
+                        {$_('name')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateCreated')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateUpdated')}
+                    </HeadCol>
+                    <HeadCol type="action">
+                        <span class="sr-only">Actions</span>
+                    </HeadCol>
+                </tr>
+                <tbody slot="body" let:class="{className}" class="{className}">
+                    {#each battles as battle, i}
+                        <TableRow itemIndex="{i}">
+                            <RowCol>
+                                <a
+                                    href="{appRoutes.admin}/battles/{battle.id}"
+                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                    >{battle.name}</a
                                 >
-                                    {#each battles as battle, i}
-                                        <tr
-                                            class:bg-slate-100="{i % 2 !== 0}"
-                                            class:dark:bg-gray-800="{i % 2 !==
-                                                0}"
-                                        >
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                <a
-                                                    href="{appRoutes.admin}/battles/{battle.id}"
-                                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                                                    >{battle.name}</a
-                                                >
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {new Date(
-                                                    battle.createdDate,
-                                                ).toLocaleString()}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {new Date(
-                                                    battle.updatedDate,
-                                                ).toLocaleString()}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                                            >
-                                                <HollowButton
-                                                    href="{appRoutes.battle}/{battle.id}"
-                                                >
-                                                    {$_('battleJoin')}
-                                                </HollowButton>
-                                            </td>
-                                        </tr>
-                                    {/each}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            </RowCol>
+                            <RowCol>
+                                {new Date(battle.createdDate).toLocaleString()}
+                            </RowCol>
+                            <RowCol>
+                                {new Date(battle.updatedDate).toLocaleString()}
+                            </RowCol>
+                            <RowCol type="action">
+                                <HollowButton
+                                    href="{appRoutes.battle}/{battle.id}"
+                                >
+                                    {$_('battleJoin')}
+                                </HollowButton>
+                            </RowCol>
+                        </TableRow>
+                    {/each}
+                </tbody>
+            </Table>
 
             {#if battleCount > battlesPageLimit}
                 <div class="pt-6 flex justify-center">

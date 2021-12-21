@@ -16,6 +16,10 @@
     import { _ } from '../../i18n.js'
     import { appRoutes } from '../../config.js'
     import { validateUserIsAdmin } from '../../validationUtils.js'
+    import Table from '../../components/table/Table.svelte'
+    import HeadCol from '../../components/table/HeadCol.svelte'
+    import RowCol from '../../components/table/RowCol.svelte'
+    import TableRow from '../../components/table/TableRow.svelte'
 
     export let xfetch
     export let router
@@ -236,175 +240,124 @@
             </div>
         </div>
 
-        <div class="flex flex-col">
-            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div
-                    class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                >
-                    <div
-                        class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                    >
-                        <table
-                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                        >
-                            <thead class="bg-gray-50 dark:bg-gray-800">
-                                <tr>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+        <Table>
+            <tr slot="header">
+                <HeadCol>
+                    {$_('name')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('email')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('pages.admin.registeredWarriors.company')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('pages.admin.registeredWarriors.rank')}
+                </HeadCol>
+                <HeadCol type="action">
+                    <span class="sr-only">Actions</span>
+                </HeadCol>
+            </tr>
+            <tbody slot="body" let:class="{className}" class="{className}">
+                {#each users as user, i}
+                    <TableRow itemIndex="{i}">
+                        <RowCol>
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <UserAvatar
+                                        warriorId="{user.id}"
+                                        avatar="{user.avatar}"
+                                        gravatarHash="{user.gravatarHash}"
+                                        width="48"
+                                        class="h-10 w-10 rounded-full"
+                                    />
+                                </div>
+                                <div class="ml-4">
+                                    <div
+                                        class="text-sm font-medium text-gray-900"
                                     >
-                                        {$_(
-                                            'pages.admin.registeredWarriors.name',
-                                        )}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_(
-                                            'pages.admin.registeredWarriors.email',
-                                        )}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_(
-                                            'pages.admin.registeredWarriors.company',
-                                        )}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_(
-                                            'pages.admin.registeredWarriors.rank',
-                                        )}
-                                    </th>
-                                    <th scope="col" class="relative px-6 py-3">
-                                        <span class="sr-only">Actions</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody
-                                class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+                                        <a
+                                            href="{appRoutes.admin}/users/{user.id}"
+                                            class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                            >{user.name}</a
+                                        >
+                                        {#if user.country}
+                                            &nbsp;
+                                            <CountryFlag
+                                                country="{user.country}"
+                                                additionalClass="inline-block"
+                                                width="32"
+                                                height="24"
+                                            />
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+                        </RowCol>
+                        <RowCol>
+                            {user.email}
+                            {#if user.verified}
+                                &nbsp;
+                                <span
+                                    class="text-green-600"
+                                    title="{$_(
+                                        'pages.admin.registeredWarriors.verified',
+                                    )}"
+                                >
+                                    <VerifiedIcon />
+                                </span>
+                            {/if}
+                        </RowCol>
+                        <RowCol>
+                            <div
+                                class="text-sm text-gray-900 dark:text-gray-400"
                             >
-                                {#each users as user, i}
-                                    <tr
-                                        class:bg-slate-100="{i % 2 !== 0}"
-                                        class:dark:bg-gray-800="{i % 2 !== 0}"
-                                    >
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="flex-shrink-0 h-10 w-10"
-                                                >
-                                                    <UserAvatar
-                                                        warriorId="{user.id}"
-                                                        avatar="{user.avatar}"
-                                                        gravatarHash="{user.gravatarHash}"
-                                                        width="48"
-                                                        class="h-10 w-10 rounded-full"
-                                                    />
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div
-                                                        class="text-sm font-medium text-gray-900"
-                                                    >
-                                                        <a
-                                                            href="{appRoutes.admin}/users/{user.id}"
-                                                            class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                                                            >{user.name}</a
-                                                        >
-                                                        {#if user.country}
-                                                            &nbsp;
-                                                            <CountryFlag
-                                                                country="{user.country}"
-                                                                additionalClass="inline-block"
-                                                                width="32"
-                                                                height="24"
-                                                            />
-                                                        {/if}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {user.email}
-                                            {#if user.verified}
-                                                &nbsp;
-                                                <span
-                                                    class="text-green-600"
-                                                    title="{$_(
-                                                        'pages.admin.registeredWarriors.verified',
-                                                    )}"
-                                                >
-                                                    <VerifiedIcon />
-                                                </span>
-                                            {/if}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div
-                                                class="text-sm text-gray-900 dark:text-gray-400"
-                                            >
-                                                {user.company}
-                                            </div>
-                                            <div
-                                                class="text-sm text-gray-500 dark:text-gray-300"
-                                            >
-                                                {user.jobTitle}
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
-                                        >
-                                            {user.rank}
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                                        >
-                                            {#if user.rank !== 'ADMIN'}
-                                                <HollowButton
-                                                    onClick="{promoteUser(
-                                                        user.id,
-                                                    )}"
-                                                    color="blue"
-                                                >
-                                                    {$_('promote')}
-                                                </HollowButton>
-                                            {:else}
-                                                <HollowButton
-                                                    onClick="{demoteUser(
-                                                        user.id,
-                                                    )}"
-                                                    color="blue"
-                                                >
-                                                    {$_('demote')}
-                                                </HollowButton>
-                                            {/if}
-                                            <HollowButton
-                                                color="green"
-                                                onClick="{toggleUserEdit(user)}"
-                                            >
-                                                {$_('edit')}
-                                            </HollowButton>
-                                            <HollowButton
-                                                color="red"
-                                                onClick="{toggleDeleteUser(
-                                                    user.id,
-                                                )}"
-                                            >
-                                                {$_('delete')}
-                                            </HollowButton>
-                                        </td>
-                                    </tr>
-                                {/each}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                {user.company}
+                            </div>
+                            <div
+                                class="text-sm text-gray-500 dark:text-gray-300"
+                            >
+                                {user.jobTitle}
+                            </div>
+                        </RowCol>
+                        <RowCol>
+                            <span class="text-gray-500 dark:text-gray-300"
+                                >{user.rank}</span
+                            >
+                        </RowCol>
+                        <RowCol type="action">
+                            {#if user.rank !== 'ADMIN'}
+                                <HollowButton
+                                    onClick="{promoteUser(user.id)}"
+                                    color="blue"
+                                >
+                                    {$_('promote')}
+                                </HollowButton>
+                            {:else}
+                                <HollowButton
+                                    onClick="{demoteUser(user.id)}"
+                                    color="blue"
+                                >
+                                    {$_('demote')}
+                                </HollowButton>
+                            {/if}
+                            <HollowButton
+                                color="green"
+                                onClick="{toggleUserEdit(user)}"
+                            >
+                                {$_('edit')}
+                            </HollowButton>
+                            <HollowButton
+                                color="red"
+                                onClick="{toggleDeleteUser(user.id)}"
+                            >
+                                {$_('delete')}
+                            </HollowButton>
+                        </RowCol>
+                    </TableRow>
+                {/each}
+            </tbody>
+        </Table>
 
         {#if totalUsers > usersPageLimit}
             <div class="pt-6 flex justify-center">
