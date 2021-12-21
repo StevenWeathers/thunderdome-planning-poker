@@ -19,6 +19,10 @@
         getTimezoneName,
         subtractDays,
     } from '../dateUtils.js'
+    import TableRow from '../components/table/TableRow.svelte'
+    import RowCol from '../components/table/RowCol.svelte'
+    import HeadCol from '../components/table/HeadCol.svelte'
+    import Table from '../components/table/Table.svelte'
 
     export let xfetch
     export let router
@@ -366,191 +370,139 @@
         </div>
     </div>
 
-    <div class="flex flex-col mt-8">
-        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div
-                class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-            >
-                <div
-                    class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                >
-                    <table
-                        class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                    >
-                        <thead class="bg-gray-50 dark:bg-gray-800">
-                            <tr>
-                                <th
-                                    scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
-                                >
-                                    Name
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
-                                >
-                                    Yesterday
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
-                                >
-                                    Today
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
-                                >
-                                    Blockers
-                                </th>
-                                <th
-                                    scope="col"
-                                    class="px-6 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider"
-                                >
-                                    Discuss
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody
-                            class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
-                        >
-                            {#each checkins as checkin}
-                                <tr>
-                                    <td class="px-4 py-2 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="">
+    <div class="mt-8">
+        <Table>
+            <tr slot="header">
+                <HeadCol>
+                    {$_('name')}
+                </HeadCol>
+                <HeadCol>Yesterday</HeadCol>
+                <HeadCol>Today</HeadCol>
+                <HeadCol>Blockers</HeadCol>
+                <HeadCol>Discuss</HeadCol>
+            </tr>
+            <tbody slot="body" let:class="{className}" class="{className}">
+                {#each checkins as checkin, i}
+                    <TableRow itemIndex="{i}">
+                        <RowCol>
+                            <div class="flex items-center">
+                                <div class="">
+                                    <div
+                                        class="relative cursor-pointer w-14 h-14"
+                                    >
+                                        <div class="relative w-full h-full">
+                                            <div
+                                                class="w-full h-full bg-gray-200 rounded-full shadow"
+                                            >
+                                                <UserAvatar
+                                                    warriorId="{checkin.user
+                                                        .id}"
+                                                    avatar="{checkin.user
+                                                        .avatar}"
+                                                    gravatarHash="{checkin.user
+                                                        .gravatarHash}"
+                                                    options="{{
+                                                        class: 'w-full h-full rounded-full',
+                                                    }}"
+                                                />
+                                            </div>
+                                            {#if checkin.goalsMet}
                                                 <div
-                                                    class="relative cursor-pointer w-14 h-14"
+                                                    class="absolute bottom-0 w-1/4 h-1/4 rounded-full shadow-md"
                                                 >
-                                                    <div
-                                                        class="relative w-full h-full"
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 1024 1024"
                                                     >
-                                                        <div
-                                                            class="w-full h-full bg-gray-200 rounded-full shadow"
-                                                        >
-                                                            <UserAvatar
-                                                                warriorId="{checkin
-                                                                    .user.id}"
-                                                                avatar="{checkin
-                                                                    .user
-                                                                    .avatar}"
-                                                                gravatarHash="{checkin
-                                                                    .user
-                                                                    .gravatarHash}"
-                                                                options="{{
-                                                                    class: 'w-full h-full rounded-full',
-                                                                }}"
-                                                            />
-                                                        </div>
-                                                        {#if checkin.goalsMet}
-                                                            <div
-                                                                class="absolute bottom-0 w-1/4 h-1/4 rounded-full shadow-md"
-                                                            >
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    viewBox="0 0 1024 1024"
-                                                                >
-                                                                    <circle
-                                                                        class="text-white fill-current"
-                                                                        cx="512"
-                                                                        cy="512"
-                                                                        r="512"
-                                                                    ></circle>
-                                                                    <circle
-                                                                        fill="green"
-                                                                        class="fill-current text-green-500"
-                                                                        cx="512"
-                                                                        cy="512"
-                                                                        r="384"
-                                                                    ></circle>
-                                                                    <path
-                                                                        class="text-white fill-current"
-                                                                        d="M456.4 576.1L334.8 454.4l-81.1 81.1 121.6 121.7 81.1 81.1 81.1-81.1 243.3-243.3-81.1-81.1z"
-                                                                    ></path>
-                                                                </svg>
-                                                            </div>
-                                                        {/if}
-                                                        {#if checkin.blockers != ''}
-                                                            <BlockedPing />
-                                                        {/if}
-                                                        <div
-                                                            class="hidden absolute top-0 right-0 w-1/4 h-1/4 bg-white rounded-full shadow-md"
-                                                        >
-                                                            <!-- emoji -->
-                                                        </div>
-                                                    </div>
+                                                        <circle
+                                                            class="text-white fill-current"
+                                                            cx="512"
+                                                            cy="512"
+                                                            r="512"></circle>
+                                                        <circle
+                                                            fill="green"
+                                                            class="fill-current text-green-500"
+                                                            cx="512"
+                                                            cy="512"
+                                                            r="384"></circle>
+                                                        <path
+                                                            class="text-white fill-current"
+                                                            d="M456.4 576.1L334.8 454.4l-81.1 81.1 121.6 121.7 81.1 81.1 81.1-81.1 243.3-243.3-81.1-81.1z"
+                                                        ></path>
+                                                    </svg>
                                                 </div>
+                                            {/if}
+                                            {#if checkin.blockers != ''}
+                                                <BlockedPing />
+                                            {/if}
+                                            <div
+                                                class="hidden absolute top-0 right-0 w-1/4 h-1/4 bg-white rounded-full shadow-md"
+                                            >
+                                                <!-- emoji -->
                                             </div>
-                                            <div class="ml-4">
-                                                <div
-                                                    class="text-sm font-medium"
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium">
+                                        {checkin.user.name}
+                                    </div>
+                                    {#if checkin.user.id === $warrior.id}
+                                        <div>
+                                            <button
+                                                on:click="{() => {
+                                                    toggleCheckin(checkin)
+                                                }}"
+                                                class="text-blue-500"
+                                                title="Edit"
+                                            >
+                                                <span class="sr-only">Edit</span
                                                 >
-                                                    {checkin.user.name}
-                                                </div>
-                                                {#if checkin.user.id === $warrior.id}
-                                                    <div>
-                                                        <button
-                                                            on:click="{() => {
-                                                                toggleCheckin(
-                                                                    checkin,
-                                                                )
-                                                            }}"
-                                                            class="text-blue-500"
-                                                            title="Edit"
-                                                        >
-                                                            <span
-                                                                class="sr-only"
-                                                                >Edit</span
-                                                            >
-                                                            <PencilIcon />
-                                                        </button>
-                                                        <button
-                                                            on:click="{() => {
-                                                                handleCheckinDelete(
-                                                                    checkin.id,
-                                                                )
-                                                            }}"
-                                                            class="text-red-500"
-                                                            title="Delete"
-                                                        >
-                                                            <span
-                                                                class="sr-only"
-                                                                >Delete</span
-                                                            >
-                                                            <TrashIcon />
-                                                        </button>
-                                                    </div>
-                                                {/if}
-                                            </div>
+                                                <PencilIcon />
+                                            </button>
+                                            <button
+                                                on:click="{() => {
+                                                    handleCheckinDelete(
+                                                        checkin.id,
+                                                    )
+                                                }}"
+                                                class="text-red-500"
+                                                title="Delete"
+                                            >
+                                                <span class="sr-only"
+                                                    >Delete</span
+                                                >
+                                                <TrashIcon />
+                                            </button>
                                         </div>
-                                    </td>
-                                    <td class="px-4 py-2 whitespace-nowrap">
-                                        <div class="unreset">
-                                            {@html checkin.yesterday}
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-2 whitespace-nowrap">
-                                        <div class="unreset">
-                                            {@html checkin.today}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="unreset">
-                                            {@html checkin.blockers}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="unreset">
-                                            {@html checkin.discuss}
-                                        </div>
-                                    </td>
-                                </tr>
-                            {/each}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                                    {/if}
+                                </div>
+                            </div>
+                        </RowCol>
+                        <RowCol>
+                            <div className="unreset">
+                                {@html checkin.yesterday}
+                            </div>
+                        </RowCol>
+                        <RowCol>
+                            <div class="unreset">
+                                {@html checkin.today}
+                            </div>
+                        </RowCol>
+                        <RowCol>
+                            <div className="unreset">
+                                {@html checkin.blockers}
+                            </div>
+                        </RowCol>
+                        <RowCol>
+                            <div class="unreset">
+                                {@html checkin.discuss}
+                            </div>
+                        </RowCol>
+                    </TableRow>
+                {/each}
+            </tbody>
+        </Table>
     </div>
 
     {#if showCheckin}

@@ -15,6 +15,10 @@
     import { _ } from '../i18n.js'
     import { appRoutes } from '../config.js'
     import { validateUserIsRegistered } from '../validationUtils.js'
+    import RowCol from '../components/table/RowCol.svelte'
+    import TableRow from '../components/table/TableRow.svelte'
+    import HeadCol from '../components/table/HeadCol.svelte'
+    import Table from '../components/table/Table.svelte'
 
     export let xfetch
     export let router
@@ -261,95 +265,58 @@
         </div>
 
         <div class="w-full">
-            <div class="flex flex-col">
-                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div
-                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                    >
-                        <div
-                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                        >
-                            <table
-                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                            >
-                                <thead class="bg-gray-50 dark:bg-gray-800">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('name')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('dateCreated')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('dateUpdated')}
-                                        </th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody
-                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+            <Table>
+                <tr slot="header">
+                    <HeadCol>
+                        {$_('name')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateCreated')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateUpdated')}
+                    </HeadCol>
+                    <HeadCol type="action">
+                        <span class="sr-only">Actions</span>
+                    </HeadCol>
+                </tr>
+                <tbody slot="body" let:class="{className}" class="{className}">
+                    {#each departments as department, i}
+                        <TableRow itemIndex="{i}">
+                            <RowCol>
+                                <a
+                                    href="{appRoutes.organization}/{organizationId}/department/{department.id}"
+                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                 >
-                                    {#each departments as department, i}
-                                        <tr
-                                            class:bg-slate-100="{i % 2 !== 0}"
-                                            class:dark:bg-gray-800="{i % 2 !==
-                                                0}"
-                                        >
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                <a
-                                                    href="{appRoutes.organization}/{organizationId}/department/{department.id}"
-                                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                                                >
-                                                    {department.name}
-                                                </a>
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {new Date(
-                                                    department.createdDate,
-                                                ).toLocaleString()}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {new Date(
-                                                    department.updatedDate,
-                                                ).toLocaleString()}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                                            >
-                                                {#if isAdmin}
-                                                    <HollowButton
-                                                        onClick="{toggleDeleteTeam(
-                                                            department.id,
-                                                        )}"
-                                                        color="red"
-                                                    >
-                                                        {$_('delete')}
-                                                    </HollowButton>
-                                                {/if}
-                                            </td>
-                                        </tr>
-                                    {/each}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                    {department.name}
+                                </a>
+                            </RowCol>
+                            <RowCol>
+                                {new Date(
+                                    department.createdDate,
+                                ).toLocaleString()}
+                            </RowCol>
+                            <RowCol>
+                                {new Date(
+                                    department.updatedDate,
+                                ).toLocaleString()}
+                            </RowCol>
+                            <RowCol type="action">
+                                {#if isAdmin}
+                                    <HollowButton
+                                        onClick="{toggleDeleteTeam(
+                                            department.id,
+                                        )}"
+                                        color="red"
+                                    >
+                                        {$_('delete')}
+                                    </HollowButton>
+                                {/if}
+                            </RowCol>
+                        </TableRow>
+                    {/each}
+                </tbody>
+            </Table>
         </div>
     </div>
 
@@ -374,95 +341,52 @@
         </div>
 
         <div class="w-full">
-            <div class="flex flex-col">
-                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div
-                        class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                    >
-                        <div
-                            class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                        >
-                            <table
-                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                            >
-                                <thead class="bg-gray-50 dark:bg-gray-800">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('name')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('dateCreated')}
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                        >
-                                            {$_('dateUpdated')}
-                                        </th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody
-                                    class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+            <Table>
+                <tr slot="header">
+                    <HeadCol>
+                        {$_('name')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateCreated')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateUpdated')}
+                    </HeadCol>
+                    <HeadCol type="action">
+                        <span class="sr-only">Actions</span>
+                    </HeadCol>
+                </tr>
+                <tbody slot="body" let:class="{className}" class="{className}">
+                    {#each teams as team, i}
+                        <TableRow itemIndex="{i}">
+                            <RowCol>
+                                <a
+                                    href="{appRoutes.organization}/{organizationId}/team/{team.id}"
+                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                 >
-                                    {#each teams as team, i}
-                                        <tr
-                                            class:bg-slate-100="{i % 2 !== 0}"
-                                            class:dark:bg-gray-800="{i % 2 !==
-                                                0}"
-                                        >
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                <a
-                                                    href="{appRoutes.organization}/{organizationId}/team/{team.id}"
-                                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                                                >
-                                                    {team.name}
-                                                </a>
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {new Date(
-                                                    team.createdDate,
-                                                ).toLocaleString()}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap"
-                                            >
-                                                {new Date(
-                                                    team.updatedDate,
-                                                ).toLocaleString()}
-                                            </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                                            >
-                                                {#if isAdmin}
-                                                    <HollowButton
-                                                        onClick="{toggleDeleteTeam(
-                                                            team.id,
-                                                        )}"
-                                                        color="red"
-                                                    >
-                                                        {$_('delete')}
-                                                    </HollowButton>
-                                                {/if}
-                                            </td>
-                                        </tr>
-                                    {/each}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                    {team.name}
+                                </a>
+                            </RowCol>
+                            <RowCol>
+                                {new Date(team.createdDate).toLocaleString()}
+                            </RowCol>
+                            <RowCol>
+                                {new Date(team.updatedDate).toLocaleString()}
+                            </RowCol>
+                            <RowCol type="action">
+                                {#if isAdmin}
+                                    <HollowButton
+                                        onClick="{toggleDeleteTeam(team.id)}"
+                                        color="red"
+                                    >
+                                        {$_('delete')}
+                                    </HollowButton>
+                                {/if}
+                            </RowCol>
+                        </TableRow>
+                    {/each}
+                </tbody>
+            </Table>
         </div>
     </div>
 
@@ -486,113 +410,77 @@
             </div>
         </div>
 
-        <div class="flex flex-col">
-            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div
-                    class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
-                >
-                    <div
-                        class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
-                    >
-                        <table
-                            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                        >
-                            <thead class="bg-gray-50 dark:bg-gray-800">
-                                <tr>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+        <Table>
+            <tr slot="header">
+                <HeadCol>
+                    {$_('name')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('email')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('role')}
+                </HeadCol>
+                <HeadCol type="action">
+                    <span class="sr-only">Actions</span>
+                </HeadCol>
+            </tr>
+            <tbody slot="body" let:class="{className}" class="{className}">
+                {#each users as user, i}
+                    <TableRow itemIndex="{i}">
+                        <RowCol>
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <UserAvatar
+                                        warriorId="{user.id}"
+                                        avatar="{user.avatar}"
+                                        gravatarHash="{user.gravatarHash}"
+                                        width="48"
+                                        class="h-10 w-10 rounded-full"
+                                    />
+                                </div>
+                                <div class="ml-4">
+                                    <div
+                                        class="font-medium text-gray-900 dark:text-gray-200"
                                     >
-                                        {$_('name')}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('email')}
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                                    >
-                                        {$_('role')}
-                                    </th>
-                                    <th scope="col" class="relative px-6 py-3">
-                                        <span class="sr-only">Actions</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody
-                                class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+                                        {user.name}
+                                        {#if user.country}
+                                            &nbsp;
+                                            <CountryFlag
+                                                country="{user.country}"
+                                                additionalClass="inline-block"
+                                                width="32"
+                                                height="24"
+                                            />
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+                        </RowCol>
+                        <RowCol>
+                            {user.email}
+                        </RowCol>
+                        <RowCol>
+                            <div
+                                className="text-sm text-gray-500 dark:text-gray-300"
                             >
-                                {#each users as user, i}
-                                    <tr
-                                        class:bg-slate-100="{i % 2 !== 0}"
-                                        class:dark:bg-gray-800="{i % 2 !== 0}"
-                                    >
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="flex-shrink-0 h-10 w-10"
-                                                >
-                                                    <UserAvatar
-                                                        warriorId="{user.id}"
-                                                        avatar="{user.avatar}"
-                                                        gravatarHash="{user.gravatarHash}"
-                                                        width="48"
-                                                        class="h-10 w-10 rounded-full"
-                                                    />
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div
-                                                        class="font-medium text-gray-900 dark:text-gray-200"
-                                                    >
-                                                        {user.name}
-                                                        {#if user.country}
-                                                            &nbsp;
-                                                            <CountryFlag
-                                                                country="{user.country}"
-                                                                additionalClass="inline-block"
-                                                                width="32"
-                                                                height="24"
-                                                            />
-                                                        {/if}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {user.email}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div
-                                                class="text-sm text-gray-500 dark:text-gray-300"
-                                            >
-                                                {user.role}
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                                        >
-                                            {#if isAdmin}
-                                                <HollowButton
-                                                    onClick="{toggleRemoveUser(
-                                                        user.id,
-                                                    )}"
-                                                    color="red"
-                                                >
-                                                    {$_('remove')}
-                                                </HollowButton>
-                                            {/if}
-                                        </td>
-                                    </tr>
-                                {/each}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                {user.role}
+                            </div>
+                        </RowCol>
+                        <RowCol type="action">
+                            {#if isAdmin}
+                                <HollowButton
+                                    onClick="{toggleRemoveUser(user.id)}"
+                                    color="red"
+                                >
+                                    {$_('remove')}
+                                </HollowButton>
+                            {/if}
+                        </RowCol>
+                    </TableRow>
+                {/each}
+            </tbody>
+        </Table>
     </div>
 
     {#if showCreateDepartment}
