@@ -18,6 +18,7 @@
     import HeadCol from '../components/table/HeadCol.svelte'
     import TableRow from '../components/table/TableRow.svelte'
     import RowCol from '../components/table/RowCol.svelte'
+    import Modal from '../components/Modal.svelte'
 
     export let xfetch
     export let router
@@ -46,6 +47,7 @@
     }
     let users = []
     let battles = []
+    let showCreateBattle = false
     let showAddUser = false
     let showRemoveUser = false
     let showRemoveBattle = false
@@ -74,6 +76,10 @@
 
     function toggleAddUser() {
         showAddUser = !showAddUser
+    }
+
+    function toggleCreateBattle() {
+        showCreateBattle = !showCreateBattle
     }
 
     const toggleRemoveUser = userId => () => {
@@ -256,75 +262,71 @@
     {#if FeaturePoker}
         <div class="w-full mb-6 lg:mb-8">
             <div class="flex w-full">
-                <h2
-                    class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-                >
-                    {$_('battles')}
-                </h2>
+                <div class="flex-1">
+                    <h2
+                        class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                    >
+                        {$_('battles')}
+                    </h2>
+                </div>
+                <div class="flex-1 text-right">
+                    {#if isTeamMember}
+                        <SolidButton onClick="{toggleCreateBattle}"
+                            >Create Battle
+                        </SolidButton>
+                    {/if}
+                </div>
             </div>
 
             <div class="flex flex-wrap">
-                <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pr-4">
-                    {#each battles as battle}
-                        <div
-                            class="bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
-                            border-b"
-                        >
-                            <div class="flex flex-wrap items-center p-4">
-                                <div
-                                    class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
-                                md:text-xl leading-tight"
+                {#each battles as battle}
+                    <div
+                        class="w-full bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
+                        border-b"
+                    >
+                        <div class="flex flex-wrap items-center p-4">
+                            <div
+                                class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
+                            md:text-xl leading-tight"
+                            >
+                                <span data-testid="battle-name"
+                                    >{battle.name}</span
                                 >
-                                    <span data-testid="battle-name"
-                                        >{battle.name}</span
-                                    >
-                                </div>
-                                <div
-                                    class="w-full md:w-1/2 md:mb-0 md:text-right"
-                                >
-                                    {#if isAdmin}
-                                        <HollowButton
-                                            onClick="{toggleRemoveBattle(
-                                                battle.id,
-                                            )}"
-                                            color="red"
-                                        >
-                                            {$_('remove')}
-                                        </HollowButton>
-                                    {/if}
+                            </div>
+                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
+                                {#if isAdmin}
                                     <HollowButton
-                                        href="{appRoutes.battle}/{battle.id}"
+                                        onClick="{toggleRemoveBattle(
+                                            battle.id,
+                                        )}"
+                                        color="red"
                                     >
-                                        {$_('battleJoin')}
+                                        {$_('remove')}
                                     </HollowButton>
-                                </div>
+                                {/if}
+                                <HollowButton
+                                    href="{appRoutes.battle}/{battle.id}"
+                                >
+                                    {$_('battleJoin')}
+                                </HollowButton>
                             </div>
                         </div>
-                    {/each}
-                </div>
-
-                <div class="w-full md:w-1/2 lg:w-2/5 md:pl-2 xl:pl-4">
-                    <div
-                        class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white"
-                    >
-                        {#if isTeamMember}
-                            <h2
-                                class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
-                            >
-                                {$_('pages.myBattles.createBattle.title')}
-                            </h2>
-                            <CreateBattle
-                                apiPrefix="{teamPrefix}"
-                                notifications="{notifications}"
-                                router="{router}"
-                                eventTag="{eventTag}"
-                                xfetch="{xfetch}"
-                            />
-                        {/if}
                     </div>
-                </div>
+                {/each}
             </div>
         </div>
+
+        {#if showCreateBattle}
+            <Modal closeModal="{toggleCreateBattle}">
+                <CreateBattle
+                    apiPrefix="{teamPrefix}"
+                    notifications="{notifications}"
+                    router="{router}"
+                    eventTag="{eventTag}"
+                    xfetch="{xfetch}"
+                />
+            </Modal>
+        {/if}
     {/if}
 
     <div class="w-full">
