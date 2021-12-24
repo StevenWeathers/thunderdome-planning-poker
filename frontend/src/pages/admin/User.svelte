@@ -9,7 +9,7 @@
     import CountryFlag from '../../components/user/CountryFlag.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.js'
+    import { AppConfig, appRoutes } from '../../config.js'
     import { validateUserIsAdmin } from '../../validationUtils.js'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
@@ -21,6 +21,8 @@
     export let notifications
     // export let eventTag
     export let userId
+
+    const { FeaturePoker } = AppConfig
 
     let user = {
         id: '',
@@ -87,7 +89,7 @@
         }
 
         getUser()
-        getBattles()
+        FeaturePoker && getBattles()
     })
 </script>
 
@@ -183,66 +185,77 @@
                 </tbody>
             </Table>
         </div>
-        <div class="p-4 md:p-6">
-            <h4
-                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-            >
-                {$_('battles')}
-            </h4>
 
-            <Table>
-                <tr slot="header">
-                    <HeadCol>
-                        {$_('name')}
-                    </HeadCol>
-                    <HeadCol>
-                        {$_('dateCreated')}
-                    </HeadCol>
-                    <HeadCol>
-                        {$_('dateUpdated')}
-                    </HeadCol>
-                    <HeadCol type="action">
-                        <span class="sr-only">Actions</span>
-                    </HeadCol>
-                </tr>
-                <tbody slot="body" let:class="{className}" class="{className}">
-                    {#each battles as battle, i}
-                        <TableRow itemIndex="{i}">
-                            <RowCol>
-                                <a
-                                    href="{appRoutes.admin}/battles/{battle.id}"
-                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                                    >{battle.name}</a
-                                >
-                            </RowCol>
-                            <RowCol>
-                                {new Date(battle.createdDate).toLocaleString()}
-                            </RowCol>
-                            <RowCol>
-                                {new Date(battle.updatedDate).toLocaleString()}
-                            </RowCol>
-                            <RowCol type="action">
-                                <HollowButton
-                                    href="{appRoutes.battle}/{battle.id}"
-                                >
-                                    {$_('battleJoin')}
-                                </HollowButton>
-                            </RowCol>
-                        </TableRow>
-                    {/each}
-                </tbody>
-            </Table>
+        {#if FeaturePoker}
+            <div class="p-4 md:p-6">
+                <h4
+                    class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
+                >
+                    {$_('battles')}
+                </h4>
 
-            {#if battleCount > battlesPageLimit}
-                <div class="pt-6 flex justify-center">
-                    <Pagination
-                        bind:current="{battlesPage}"
-                        num_items="{battleCount}"
-                        per_page="{battlesPageLimit}"
-                        on:navigate="{changeBattlesPage}"
-                    />
-                </div>
-            {/if}
-        </div>
+                <Table>
+                    <tr slot="header">
+                        <HeadCol>
+                            {$_('name')}
+                        </HeadCol>
+                        <HeadCol>
+                            {$_('dateCreated')}
+                        </HeadCol>
+                        <HeadCol>
+                            {$_('dateUpdated')}
+                        </HeadCol>
+                        <HeadCol type="action">
+                            <span class="sr-only">Actions</span>
+                        </HeadCol>
+                    </tr>
+                    <tbody
+                        slot="body"
+                        let:class="{className}"
+                        class="{className}"
+                    >
+                        {#each battles as battle, i}
+                            <TableRow itemIndex="{i}">
+                                <RowCol>
+                                    <a
+                                        href="{appRoutes.admin}/battles/{battle.id}"
+                                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                        >{battle.name}</a
+                                    >
+                                </RowCol>
+                                <RowCol>
+                                    {new Date(
+                                        battle.createdDate,
+                                    ).toLocaleString()}
+                                </RowCol>
+                                <RowCol>
+                                    {new Date(
+                                        battle.updatedDate,
+                                    ).toLocaleString()}
+                                </RowCol>
+                                <RowCol type="action">
+                                    <HollowButton
+                                        href="{appRoutes.battle}/{battle.id}"
+                                    >
+                                        {$_('battleJoin')}
+                                    </HollowButton>
+                                </RowCol>
+                            </TableRow>
+                        {/each}
+                    </tbody>
+                </Table>
+
+                {#if battleCount > battlesPageLimit}
+                    <div class="pt-6 flex justify-center">
+                        <Pagination
+                            bind:current="{battlesPage}"
+                            num_items="{battleCount}"
+                            per_page="{battlesPageLimit}"
+                            on:navigate="{changeBattlesPage}"
+                        />
+                    </div>
+                {/if}
+            </div>
+        {/if}
     </div>
 </AdminPageLayout>

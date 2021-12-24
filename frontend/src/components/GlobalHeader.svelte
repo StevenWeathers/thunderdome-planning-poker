@@ -14,7 +14,8 @@
     export let notifications
     export let currentPage
 
-    const { AllowRegistration, PathPrefix } = AppConfig
+    const { AllowRegistration, PathPrefix, FeaturePoker, FeatureRetro } =
+        AppConfig
 
     const activePageClass =
         'text-purple-700 border-purple-700 dark:text-yellow-400 dark:border-yellow-400'
@@ -66,15 +67,28 @@
                     class="hidden lg:flex items-center space-x-1 font-semibold font-rajdhani uppercase text-lg lg:text-xl"
                 >
                     {#if $warrior.name}
-                        <a
-                            href="{appRoutes.battles}"
-                            class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
-                            'battles'
-                                ? activePageClass
-                                : pageClass}"
-                        >
-                            {$_('battles')}
-                        </a>
+                        {#if FeaturePoker}
+                            <a
+                                href="{appRoutes.battles}"
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
+                                'battles'
+                                    ? activePageClass
+                                    : pageClass}"
+                            >
+                                {$_('battles')}
+                            </a>
+                        {/if}
+                        {#if FeatureRetro}
+                            <a
+                                href="{appRoutes.retros}"
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                                'retros'
+                                    ? activePageClass
+                                    : pageClass}"
+                            >
+                                Retros
+                            </a>
+                        {/if}
                         {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
                             <a
                                 href="{appRoutes.organizations}"
@@ -166,7 +180,7 @@
                     on:click="{toggleMobileMenu}"
                 >
                     <svg
-                        class="w-6 h-6 text-gray-500 dark:text-200 hover:text-green-500"
+                        class="w-6 h-6 text-gray-500 dark:text-200 hover:text-green-500 dark:hover:text-yellow-400"
                         x-show="!showMenu"
                         fill="none"
                         stroke-linecap="round"
@@ -189,19 +203,31 @@
                 class="font-rajdhani font-semibold uppercase text-lg dark:text-white"
             >
                 {#if $warrior.name}
-                    <li>
-                        <a
-                            href="{appRoutes.battles}"
-                            class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
-                        >
-                            {$_('battles')}
-                        </a>
-                    </li>
+                    {#if FeaturePoker}
+                        <li>
+                            <a
+                                href="{appRoutes.battles}"
+                                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
+                            >
+                                {$_('battles')}
+                            </a>
+                        </li>
+                    {/if}
+                    {#if FeatureRetro}
+                        <li>
+                            <a
+                                href="{appRoutes.retros}"
+                                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
+                            >
+                                Retros
+                            </a>
+                        </li>
+                    {/if}
                     {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
                         <li>
                             <a
                                 href="{appRoutes.organizations}"
-                                class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
+                                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
                                 {$_('teams')}
                             </a>
@@ -211,7 +237,7 @@
                         <li>
                             <a
                                 href="{appRoutes.admin}"
-                                class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
+                                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
                                 {$_('pages.admin.nav')}
                             </a>
@@ -221,7 +247,7 @@
                     <li>
                         <a
                             href="{appRoutes.login}"
-                            class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
+                            class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                         >
                             {$_('pages.login.nav')}
                         </a>
@@ -230,7 +256,7 @@
                         <li>
                             <a
                                 href="{appRoutes.register}"
-                                class="block p-4 hover:bg-green-500 hover:text-white transition duration-300"
+                                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
                                 {$_('pages.createAccount.nav')}
                             </a>

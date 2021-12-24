@@ -67,7 +67,7 @@
                 JoinPassRequired = true
                 break
             case 'join_code_incorrect':
-                notifications.danger($_('passCodeIncorrect'))
+                notifications.danger($_('incorrectPassCode'))
                 break
             case 'init': {
                 JoinPassRequired = false
@@ -266,7 +266,7 @@
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'battle', '', () => {
                         warrior.delete()
-                        router.route(`${appRoutes.register}/${battleId}`)
+                        router.route(`${appRoutes.register}/battle/${battleId}`)
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'battle', '', () => {
@@ -458,7 +458,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route(`${loginOrRegister}/${battleId}`)
+            router.route(`${loginOrRegister}/battle/${battleId}`)
             return
         }
         const voteCounter = setInterval(() => {

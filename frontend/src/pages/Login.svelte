@@ -10,6 +10,7 @@
     export let notifications
     export let eventTag
     export let battleId
+    export let retroId
 
     const { AllowRegistration, LdapEnabled } = AppConfig
     const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth'
@@ -20,9 +21,19 @@
     let warriorResetEmail = ''
     let forgotPassword = false
 
-    $: targetPage = battleId
-        ? `${appRoutes.battle}/${battleId}`
-        : appRoutes.battles
+    function targetPage() {
+        let tp = appRoutes.battles
+
+        if (battleId) {
+            tp = `${appRoutes.battle}/${battleId}`
+        }
+
+        if (retroId) {
+            tp = `${appRoutes.retro}/${retroId}`
+        }
+
+        return tp
+    }
 
     function authWarrior(e) {
         e.preventDefault()
@@ -48,7 +59,7 @@
                     setupI18n({
                         withLocale: newWarrior.locale,
                     })
-                    router.route(targetPage, true)
+                    router.route(targetPage(), true)
                 })
             })
             .catch(function () {
@@ -119,10 +130,22 @@
                         >
                             {@html $_('pages.login.registerForBattle', {
                                 values: {
-                                    registerOpen: `<a href="${appRoutes.register}/${battleId}" class="font-bold text-blue-500 hover:text-blue-800">`,
+                                    registerOpen: `<a href="${appRoutes.register}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
                                     registerClose: `</a>`,
                                 },
                             })}
+                        </div>
+                    {/if}
+                    {#if retroId && AllowRegistration}
+                        <div
+                            class="font-semibold font-rajdhani uppercase text-lg md:text-xl mb-2 md:mb-6
+                            md:leading-tight text-center dark:text-white"
+                        >
+                            or <a
+                                href="{appRoutes.register}/retro/{retroId}"
+                                class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                >Register</a
+                            > to join the Retro
                         </div>
                     {/if}
                     <div class="mb-4">

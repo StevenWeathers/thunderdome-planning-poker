@@ -4,48 +4,58 @@
 
     export let activePage = 'admin'
 
-    const { ExternalAPIEnabled } = AppConfig
+    const { ExternalAPIEnabled, FeaturePoker, FeatureRetro } = AppConfig
 
     const pages = [
         {
             name: 'Admin',
             label: $_('adminPageAdmin'),
             path: '',
+            enabled: true,
         },
         {
             name: 'Alerts',
             label: $_('adminPageAlerts'),
             path: '/alerts',
+            enabled: true,
         },
         {
             name: 'Battles',
             label: $_('battles'),
             path: '/battles',
+            enabled: FeaturePoker,
+        },
+        {
+            name: 'Retros',
+            label: 'Retros',
+            path: '/retros',
+            enabled: FeatureRetro,
         },
         {
             name: 'Organizations',
             label: $_('adminPageOrganizations'),
             path: '/organizations',
+            enabled: true,
         },
         {
             name: 'Teams',
             label: $_('adminPageTeams'),
             path: '/teams',
+            enabled: true,
         },
         {
             name: 'Users',
             label: $_('adminPageUsers'),
             path: '/users',
+            enabled: true,
         },
-    ]
-
-    if (ExternalAPIEnabled) {
-        pages.push({
+        {
             name: 'API Keys',
             label: $_('adminPageApi'),
             path: '/apikeys',
-        })
-    }
+            enabled: ExternalAPIEnabled,
+        },
+    ]
 
     let activePillClasses =
         'border-blue-500 bg-blue-500 text-white dark:bg-sky-500 dark:border-sky-500 dark:text-gray-900'
@@ -69,17 +79,19 @@
     <div class="w-full">
         <ul class="flex justify-end">
             {#each pages as page}
-                <li class="ml-3">
-                    <a
-                        class="admin-nav-pill {activePage ===
-                        page.name.toLowerCase().replace(' ', '')
-                            ? activePillClasses
-                            : nonActivePillClasses}"
-                        href="{appRoutes.admin}{page.path}"
-                    >
-                        {page.label}
-                    </a>
-                </li>
+                {#if page.enabled}
+                    <li class="ml-3">
+                        <a
+                            class="admin-nav-pill {activePage ===
+                            page.name.toLowerCase().replace(' ', '')
+                                ? activePillClasses
+                                : nonActivePillClasses}"
+                            href="{appRoutes.admin}{page.path}"
+                        >
+                            {page.label}
+                        </a>
+                    </li>
+                {/if}
             {/each}
         </ul>
     </div>

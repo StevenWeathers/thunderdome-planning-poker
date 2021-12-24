@@ -15,6 +15,11 @@ type ApplicationStats struct {
 	DepartmentCount       int `json:"departmentCount"`
 	TeamCount             int `json:"teamCount"`
 	TeamCheckinsCount     int `json:"teamCheckinsCount"`
+	RetroCount            int `json:"retroCount"`
+	ActiveRetroCount      int `json:"activeRetroCount"`
+	ActiveRetroUserCount  int `json:"activeRetroUserCount"`
+	RetroItemCount        int `json:"retroItemCount"`
+	RetroActionCount      int `json:"retroActionCount"`
 }
 
 type Alert struct {

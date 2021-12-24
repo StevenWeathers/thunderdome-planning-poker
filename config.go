@@ -57,6 +57,12 @@ func InitConfig() {
 	viper.SetDefault("config.show_active_countries", false)
 	viper.SetDefault("config.cleanup_battles_days_old", 180)
 	viper.SetDefault("config.cleanup_guests_days_old", 180)
+	viper.SetDefault("config.cleanup_retros_days_old", 180)
+
+	// feature flags
+	viper.SetDefault("feature.poker", true)
+	viper.SetDefault("feature.retro", false)
+	viper.SetDefault("feature.storyboard", false)
 
 	viper.SetDefault("auth.method", "normal")
 	viper.SetDefault("auth.ldap.url", "")
@@ -112,6 +118,11 @@ func InitConfig() {
 	viper.BindEnv("config.show_active_countries", "CONFIG_SHOW_ACTIVE_COUNTRIES")
 	viper.BindEnv("config.cleanup_battles_days_old", "CONFIG_CLEANUP_BATTLES_DAYS_OLD")
 	viper.BindEnv("config.cleanup_guests_days_old", "CONFIG_CLEANUP_GUESTS_DAYS_OLD")
+	viper.BindEnv("config.cleanup_retros_days_old", "CONFIG_CLEANUP_RETROS_DAYS_OLD")
+
+	viper.BindEnv("feature.poker", "FEATURE_POKER")
+	viper.BindEnv("feature.retro", "FEATURE_RETRO")
+	viper.BindEnv("feature.storyboard", "FEATURE_STORYBOARD")
 
 	viper.BindEnv("auth.method", "AUTH_METHOD")
 	viper.BindEnv("auth.ldap.url", "AUTH_LDAP_URL")

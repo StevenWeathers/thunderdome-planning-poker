@@ -52,6 +52,9 @@ func (s *server) routes() {
 		ExternalAPIEnabled: s.config.ExternalAPIEnabled,
 		UserAPIKeyLimit:    s.config.UserAPIKeyLimit,
 		LdapEnabled:        s.config.LdapEnabled,
+		FeaturePoker:       viper.GetBool("feature.poker"),
+		FeatureRetro:       viper.GetBool("feature.retro"),
+		FeatureStoryboard:  viper.GetBool("feature.storyboard"),
 	}
 	api.Init(apiConfig, s.router, s.db, s.email, s.cookie)
 
@@ -116,8 +119,12 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		UserAPIKeyLimit       int
 		CleanupGuestsDaysOld  int
 		CleanupBattlesDaysOld int
+		CleanupRetrosDaysOld  int
 		ShowActiveCountries   bool
 		LdapEnabled           bool
+		FeaturePoker          bool
+		FeatureRetro          bool
+		FeatureStoryboard     bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -146,8 +153,12 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		PathPrefix:            s.config.PathPrefix,
 		CleanupGuestsDaysOld:  viper.GetInt("config.cleanup_guests_days_old"),
 		CleanupBattlesDaysOld: viper.GetInt("config.cleanup_battles_days_old"),
+		CleanupRetrosDaysOld:  viper.GetInt("config.cleanup_retros_days_old"),
 		ShowActiveCountries:   viper.GetBool("config.show_active_countries"),
 		LdapEnabled:           s.config.LdapEnabled,
+		FeaturePoker:          viper.GetBool("feature.poker"),
+		FeatureRetro:          viper.GetBool("feature.retro"),
+		FeatureStoryboard:     viper.GetBool("feature.storyboard"),
 	}
 
 	data := UIConfig{
