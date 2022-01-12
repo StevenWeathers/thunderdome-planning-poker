@@ -2,7 +2,7 @@
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
-    import UpdatePasswordForm from '../components/User/UpdatePasswordForm.svelte'
+    import UpdatePasswordForm from '../components/user/UpdatePasswordForm.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import ProfileForm from '../components/user/ProfileForm.svelte'
