@@ -152,6 +152,44 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 	}
 }
 
+// handleAdminUpdateUserPassword attempts to update a users password
+// @Summary Update Password
+// @Description Updates the users password
+// @Tags admin
+// @Param userId path string true "the user ID to update password for"
+// @Success 200 object standardJsonResponse{}
+// @Success 400 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /admin/users/{userId}/password [patch]
+func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		keyVal := getJSONRequestBody(r, w)
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
+
+		UserPassword, passwordErr := validateUserPassword(
+			keyVal["password1"].(string),
+			keyVal["password2"].(string),
+		)
+
+		if passwordErr != nil {
+			Failure(w, r, http.StatusBadRequest, passwordErr)
+			return
+		}
+
+		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(UserID, UserPassword)
+		if updateErr != nil {
+			Failure(w, r, http.StatusInternalServerError, updateErr)
+			return
+		}
+
+		a.email.SendPasswordUpdate(UserName, UserEmail)
+
+		Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 // handleGetOrganizations gets a list of organizations
 // @Summary Get Organizations
 // @Description get a list of organizations

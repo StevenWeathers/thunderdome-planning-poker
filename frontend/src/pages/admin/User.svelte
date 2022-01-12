@@ -5,8 +5,11 @@
     import VerifiedIcon from '../../components/icons/Verified.svelte'
     import Pagination from '../../components/Pagination.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import UpdatePasswordForm from '../../components/user/UpdatePasswordForm.svelte'
     import UserAvatar from '../../components/user/UserAvatar.svelte'
     import CountryFlag from '../../components/user/CountryFlag.svelte'
+    import Modal from '../../components/Modal.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
     import { AppConfig, appRoutes } from '../../config.js'
@@ -19,10 +22,12 @@
     export let xfetch
     export let router
     export let notifications
-    // export let eventTag
+    export let eventTag
     export let userId
 
     const { FeaturePoker } = AppConfig
+
+    let showUpdatePassword = false
 
     let user = {
         id: '',
@@ -39,6 +44,10 @@
         createdDate: '',
         updatedDate: '',
         lastActive: '',
+    }
+
+    function toggleUpdatePassword() {
+        showUpdatePassword = !showUpdatePassword
     }
 
     function getUser() {
@@ -78,6 +87,29 @@
         getBattles()
     }
 
+    function updatePassword(password1, password2) {
+        const body = {
+            password1,
+            password2,
+        }
+
+        xfetch(`/api/admin/users/${userId}/password`, { body, method: 'PATCH' })
+            .then(function () {
+                notifications.success(
+                    $_('pages.warriorProfile.passwordUpdated'),
+                    1500,
+                )
+                toggleUpdatePassword()
+                eventTag('update_password', 'engagement', 'success')
+            })
+            .catch(function () {
+                notifications.danger(
+                    $_('pages.warriorProfile.passwordUpdateError'),
+                )
+                eventTag('update_password', 'engagement', 'failure')
+            })
+    }
+
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.login)
@@ -98,12 +130,21 @@
 </svelte:head>
 
 <AdminPageLayout activePage="users">
-    <div class="text-center px-2 mb-4">
-        <h1
-            class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
-        >
-            {user.name}
-        </h1>
+    <div class="w-full">
+        <div class="flex px-4 md:px-6">
+            <div class="flex-1">
+                <h1
+                    class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
+                >
+                    {user.name}
+                </h1>
+            </div>
+            <div class="flex-1 text-right">
+                <SolidButton onClick="{toggleUpdatePassword}"
+                    >{$_('pages.warriorProfile.updatePasswordButton')}
+                </SolidButton>
+            </div>
+        </div>
     </div>
 
     <div class="w-full">
@@ -258,4 +299,14 @@
             </div>
         {/if}
     </div>
+
+    {#if showUpdatePassword}
+        <Modal closeModal="{toggleUpdatePassword}">
+            <UpdatePasswordForm
+                handleUpdate="{updatePassword}"
+                toggleForm="{toggleUpdatePassword}"
+                notifications="{notifications}"
+            />
+        </Modal>
+    {/if}
 </AdminPageLayout>

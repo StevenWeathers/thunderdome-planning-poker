@@ -2,14 +2,13 @@
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
+    import UpdatePasswordForm from '../components/User/UpdatePasswordForm.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import ProfileForm from '../components/user/ProfileForm.svelte'
     import CreateApiKey from '../components/user/CreateApiKey.svelte'
     import CheckIcon from '../components/icons/CheckIcon.svelte'
     import { warrior } from '../stores.js'
-    import { validatePasswords } from '../validationUtils.js'
     import { _ } from '../i18n.js'
     import { AppConfig, appRoutes } from '../config.js'
 
@@ -24,10 +23,8 @@
     let showAccountDeletion = false
 
     let updatePassword = false
-    let warriorPassword1 = ''
-    let warriorPassword2 = ''
 
-    const { ExternalAPIEnabled, LdapEnabled } = AppConfig
+    const { ExternalAPIEnabled } = AppConfig
 
     function toggleUpdatePassword() {
         updatePassword = !updatePassword
@@ -77,41 +74,27 @@
             })
     }
 
-    function updateWarriorPassword(e) {
-        e.preventDefault()
+    function updateWarriorPassword(password1, password2) {
         const body = {
-            password1: warriorPassword1,
-            password2: warriorPassword2,
-        }
-        const validPasswords = validatePasswords(
-            warriorPassword1,
-            warriorPassword2,
-        )
-
-        let noFormErrors = true
-
-        if (!validPasswords.valid) {
-            noFormErrors = false
-            notifications.danger(validPasswords.error, 1500)
+            password1,
+            password2,
         }
 
-        if (noFormErrors) {
-            xfetch('/api/auth/update-password', { body, method: 'PATCH' })
-                .then(function () {
-                    notifications.success(
-                        $_('pages.warriorProfile.passwordUpdated'),
-                        1500,
-                    )
-                    updatePassword = false
-                    eventTag('update_password', 'engagement', 'success')
-                })
-                .catch(function () {
-                    notifications.danger(
-                        $_('pages.warriorProfile.passwordUpdateError'),
-                    )
-                    eventTag('update_password', 'engagement', 'failure')
-                })
-        }
+        xfetch('/api/auth/update-password', { body, method: 'PATCH' })
+            .then(function () {
+                notifications.success(
+                    $_('pages.warriorProfile.passwordUpdated'),
+                    1500,
+                )
+                toggleUpdatePassword()
+                eventTag('update_password', 'engagement', 'success')
+            })
+            .catch(function () {
+                notifications.danger(
+                    $_('pages.warriorProfile.passwordUpdateError'),
+                )
+                eventTag('update_password', 'engagement', 'failure')
+            })
     }
 
     function getApiKeys() {
@@ -207,9 +190,6 @@
             getApiKeys()
         }
     })
-
-    $: updatePasswordDisabled =
-        warriorPassword1 === '' || warriorPassword2 === '' || LdapEnabled
 </script>
 
 <svelte:head>
@@ -242,87 +222,22 @@
             {/if}
 
             {#if updatePassword}
-                <form
-                    on:submit="{updateWarriorPassword}"
+                <div
                     class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-4"
-                    name="updateWarriorPassword"
                 >
                     <div
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
-                        md:leading-tight text-center dark:text-white"
+        md:leading-tight text-center dark:text-white"
                     >
                         {$_('pages.warriorProfile.updatePasswordForm.title')}
                     </div>
 
-                    <div class="mb-4">
-                        <label
-                            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-                            for="yourPassword1"
-                        >
-                            {$_(
-                                'pages.warriorProfile.updatePasswordForm.fields.password.label',
-                            )}
-                        </label>
-                        <input
-                            bind:value="{warriorPassword1}"
-                            placeholder="{$_(
-                                'pages.warriorProfile.updatePasswordForm.fields.password.placeholder',
-                            )}"
-                            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-                            id="yourPassword1"
-                            name="yourPassword1"
-                            type="password"
-                            required
-                        />
-                    </div>
-
-                    <div class="mb-4">
-                        <label
-                            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
-                            for="yourPassword2"
-                        >
-                            {$_(
-                                'pages.warriorProfile.updatePasswordForm.fields.confirmPassword.label',
-                            )}
-                        </label>
-                        <input
-                            bind:value="{warriorPassword2}"
-                            placeholder="{$_(
-                                'pages.warriorProfile.updatePasswordForm.fields.confirmPassword.placeholder',
-                            )}"
-                            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-                            id="yourPassword2"
-                            name="yourPassword2"
-                            type="password"
-                            required
-                        />
-                    </div>
-
-                    <div class="text-right">
-                        <button
-                            type="button"
-                            class="inline-block align-baseline font-bold text-sm
-                            text-blue-500 hover:text-blue-800 mr-4"
-                            on:click="{toggleUpdatePassword}"
-                        >
-                            {$_(
-                                'pages.warriorProfile.updatePasswordForm.cancelButton',
-                            )}
-                        </button>
-                        <SolidButton
-                            type="submit"
-                            disabled="{updatePasswordDisabled}"
-                        >
-                            {$_(
-                                'pages.warriorProfile.updatePasswordForm.saveButton',
-                            )}
-                        </SolidButton>
-                    </div>
-                </form>
+                    <UpdatePasswordForm
+                        handleUpdate="{updateWarriorPassword}"
+                        toggleForm="{toggleUpdatePassword}"
+                        notifications="{notifications}"
+                    />
+                </div>
             {/if}
         </div>
 
