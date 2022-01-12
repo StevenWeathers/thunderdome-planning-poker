@@ -28,7 +28,6 @@ RUN adduser -D -g '' appuser
 # Copy the go source
 COPY ./api/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/api/
 COPY ./db/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/db/
-COPY ./battle/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/battle/
 COPY ./email/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/email/
 COPY ./model/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/model/
 COPY ./*.go $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
