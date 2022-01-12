@@ -124,6 +124,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		apiRouter.HandleFunc("/auth/register", a.handleUserRegistration()).Methods("POST")
 	}
 	apiRouter.HandleFunc("/auth/guest", a.handleCreateGuestUser()).Methods("POST")
+	apiRouter.HandleFunc("/auth/user", a.userOnly(a.handleSessionUserProfile())).Methods("GET")
 	apiRouter.HandleFunc("/auth/logout", a.handleLogout()).Methods("DELETE")
 	// user(s)
 	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserProfile()))).Methods("GET")

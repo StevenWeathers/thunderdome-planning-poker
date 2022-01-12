@@ -6,8 +6,32 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// handleSessionUserProfile returns the users profile by session user ID
+// @Summary Get Session User Profile
+// @Description Gets a users profile by session user ID
+// @Tags auth, user
+// @Produce  json
+// @Success 200 object standardJsonResponse{data=model.User}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /auth/user [get]
+func (a *api) handleSessionUserProfile() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		UserID := r.Context().Value(contextKeyUserID).(string)
+
+		User, UserErr := a.db.GetUser(UserID)
+		if UserErr != nil {
+			Failure(w, r, http.StatusInternalServerError, UserErr)
+			return
+		}
+
+		Success(w, r, http.StatusOK, User, nil)
+	}
+}
+
 // handleUserProfile returns the users profile if it matches their session
-// @Summary Get Profile
+// @Summary Get User Profile
 // @Description Gets a users profile
 // @Tags user
 // @Produce  json
@@ -33,7 +57,7 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 }
 
 // handleUserProfileUpdate attempts to update users profile
-// @Summary Update Profile
+// @Summary Update User Profile
 // @Description Update a users profile
 // @Tags user
 // @Produce  json
