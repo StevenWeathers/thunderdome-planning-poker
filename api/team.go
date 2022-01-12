@@ -51,11 +51,10 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param userId path string true "the user ID"
-// @Param teamId path string true "the team ID"
 // @Success 200 object standardJsonResponse{data=[]model.Team}
 // @Success 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
-// @Router /users/{userId}/teams/{teamId} [get]
+// @Router /users/{userId}/teams [get]
 func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

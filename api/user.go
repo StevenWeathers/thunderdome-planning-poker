@@ -144,6 +144,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 // @Summary Request Verification Email
 // @Description Sends verification email
 // @Tags user
+// @Param userId path string true "the user ID"
 // @Success 200 object standardJsonResponse{}
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}

@@ -46,6 +46,7 @@ func (a *api) handleCheckinsGet() http.HandlerFunc {
 // handleCheckinCreate handles creating a team user checkin
 // @Summary Create Team Checkin
 // @Description Creates a team user checkin
+// @Param teamId path string true "the team ID"
 // @Param userId body string true "the user ID to check in"
 // @Param yesterday body string true "what you did yesterday"
 // @Param today body string true "what you're going to do today"
@@ -89,6 +90,8 @@ func (a *api) handleCheckinCreate() http.HandlerFunc {
 // handleCheckinCreate handles updating a team user checkin
 // @Summary Update Team Checkin
 // @Description Updates a team user checkin
+// @Param teamId path string true "the team ID"
+// @Param checkinId path string true "the checkin ID"
 // @Tags team
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
@@ -121,6 +124,8 @@ func (a *api) handleCheckinUpdate() http.HandlerFunc {
 // handleCheckinDelete handles deleting a team user checkin
 // @Summary Delete Team Checkin
 // @Description Deletes a team user checkin
+// @Param teamId path string true "the team ID"
+// @Param checkinId path string true "the checkin ID"
 // @Tags team
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
