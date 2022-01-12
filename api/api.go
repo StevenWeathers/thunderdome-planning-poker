@@ -3,7 +3,7 @@ package api
 
 import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
-	"github.com/StevenWeathers/thunderdome-planning-poker/battle"
+	"github.com/StevenWeathers/thunderdome-planning-poker/api/battle"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/email"
 	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
