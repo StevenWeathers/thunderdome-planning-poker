@@ -46,7 +46,7 @@ DB_NAME=
 
 ```
 go mod download
-go install github.com/swaggo/swag/cmd/swag@latest
+go install github.com/swaggo/swag/cmd/swag@1.7.4
 npm install
 ```
 

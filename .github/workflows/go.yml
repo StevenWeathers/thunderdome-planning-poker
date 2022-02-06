@@ -45,7 +45,7 @@ jobs:
           fi
 
       - name: Install swag
-        run: go install github.com/swaggo/swag/cmd/swag@latest
+        run: go install github.com/swaggo/swag/cmd/swag@v1.7.4
 
       - name: Generate swagger docs
         run: swag init -g api/api.go -o swaggerdocs
