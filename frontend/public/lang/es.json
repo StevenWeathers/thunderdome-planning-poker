@@ -253,7 +253,7 @@
       "voteResults": {
         "totalVotes": "Total Votes",
         "average": "Average",
-        "highest": "Highest",
+        "highest": "Most Voted",
         "showVoters": "Show Voters"
       }
     }
