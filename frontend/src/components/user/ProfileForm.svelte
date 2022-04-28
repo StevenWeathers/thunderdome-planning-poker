@@ -125,7 +125,7 @@
             id="yourName"
             name="yourName"
             type="text"
-            disabled={ldapEnabled}
+            disabled="{ldapEnabled}"
             required
         />
     </div>
