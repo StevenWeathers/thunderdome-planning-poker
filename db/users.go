@@ -295,6 +295,28 @@ func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar 
 	return nil
 }
 
+// UpdateUserProfileLdap updates the users profile (excludes: username, email, password)
+func (d *Database) UpdateUserProfileLdap(UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+	if UserAvatar == "" {
+		UserAvatar = "robohash"
+	}
+	if _, err := d.db.Exec(
+		`call user_profile_ldap_update($1, $2, $3, $4, $5, $6, $7);`,
+		UserID,
+		UserAvatar,
+		NotificationsEnabled,
+		Country,
+		Locale,
+		Company,
+		JobTitle,
+	); err != nil {
+		log.Println(err)
+		return errors.New("error attempting to update users profile")
+	}
+
+	return nil
+}
+
 // UpdateUserAccount updates the users profile including email (excludes: password)
 func (d *Database) UpdateUserAccount(UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {

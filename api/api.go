@@ -115,7 +115,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
 
 	// user authentication, profile
-	if a.config.LdapEnabled == true {
+	if a.config.LdapEnabled {
 		apiRouter.HandleFunc("/auth/ldap", a.handleLdapLogin()).Methods("POST")
 	} else {
 		apiRouter.HandleFunc("/auth", a.handleLogin()).Methods("POST")

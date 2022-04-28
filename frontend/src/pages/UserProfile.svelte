@@ -24,7 +24,7 @@
 
     let updatePassword = false
 
-    const { ExternalAPIEnabled } = AppConfig
+    const { ExternalAPIEnabled, LdapEnabled } = AppConfig
 
     function toggleUpdatePassword() {
         updatePassword = !updatePassword
@@ -217,6 +217,7 @@
                         xfetch="{xfetch}"
                         notifications="{notifications}"
                         eventTag="{eventTag}"
+                        ldapEnabled="{LdapEnabled}"
                     />
                 </div>
             {/if}
@@ -415,11 +416,13 @@
             {/if}
         </div>
 
-        <div class="w-full text-center mt-8">
-            <HollowButton onClick="{toggleDeleteAccount}" color="red">
-                {$_('pages.warriorProfile.delete.deleteButton')}
-            </HollowButton>
-        </div>
+        {#if !LdapEnabled}
+            <div class="w-full text-center mt-8">
+                <HollowButton onClick="{toggleDeleteAccount}" color="red">
+                    {$_('pages.warriorProfile.delete.deleteButton')}
+                </HollowButton>
+            </div>
+        {/if}
     </div>
     {#if showApiKeyCreate}
         <CreateApiKey

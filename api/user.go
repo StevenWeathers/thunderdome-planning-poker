@@ -102,11 +102,16 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 				return
 			}
 		} else {
-			if UserName == "" {
-				Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
-				return
+			var updateErr error
+			if a.config.LdapEnabled == false {
+				if UserName == "" {
+					Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
+					return
+				}
+				updateErr = a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
+			} else {
+				updateErr = a.db.UpdateUserProfileLdap(UserID, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 			}
-			updateErr := a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 			if updateErr != nil {
 				Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
