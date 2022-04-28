@@ -154,7 +154,7 @@
         {/if}
     </div>
     <div class="flex flex-wrap justify-center">
-        {#if !$warrior.id && guestsAllowed && registrationAllowed}
+        {#if !$warrior.id && (guestsAllowed || registrationAllowed)}
             <div class="w-full md:w-1/2 px-4">
                 <form
                     on:submit="{createUserGuest}"

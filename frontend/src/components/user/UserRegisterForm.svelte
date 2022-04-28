@@ -8,9 +8,6 @@
     export let handleSubmit
     export let guestWarriorsName = ''
 
-    const guestsAllowed = AppConfig.AllowGuests
-    const registrationAllowed = AppConfig.AllowRegistration
-
     let warriorName = guestWarriorsName
     let warriorEmail = ''
     let warriorPassword1 = ''
