@@ -7,7 +7,7 @@
     import CreateTeam from '../components/user/CreateTeam.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n.js'
-    import { appRoutes } from '../config.js'
+    import { AppConfig, appRoutes } from '../config.js'
     import { validateUserIsRegistered } from '../validationUtils.js'
     import RowCol from '../components/table/RowCol.svelte'
     import TableRow from '../components/table/TableRow.svelte'
@@ -21,6 +21,7 @@
 
     const organizationsPageLimit = 1000
     const teamsPageLimit = 1000
+    const { OrganizationsEnabled } = AppConfig
 
     let organizations = []
     let teams = []
@@ -107,7 +108,9 @@
             return
         }
 
-        getOrganizations()
+        if (OrganizationsEnabled) {
+            getOrganizations()
+        }
         getTeams()
     })
 </script>
@@ -117,62 +120,64 @@
 </svelte:head>
 
 <PageLayout>
-    <div class="w-full mb-6 lg:mb-8">
-        <div class="flex w-full">
-            <div class="w-4/5">
-                <h2
-                    class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-                >
-                    {$_('organizations')}
-                </h2>
-            </div>
-            <div class="w-1/5">
-                <div class="text-right">
-                    <SolidButton onClick="{toggleCreateOrganization}">
-                        {$_('organizationCreate')}
-                    </SolidButton>
+    {#if OrganizationsEnabled}
+        <div class="w-full mb-6 lg:mb-8">
+            <div class="flex w-full">
+                <div class="w-4/5">
+                    <h2
+                        class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                    >
+                        {$_('organizations')}
+                    </h2>
+                </div>
+                <div class="w-1/5">
+                    <div class="text-right">
+                        <SolidButton onClick="{toggleCreateOrganization}">
+                            {$_('organizationCreate')}
+                        </SolidButton>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <Table>
-            <tr slot="header">
-                <HeadCol>
-                    {$_('name')}
-                </HeadCol>
-                <HeadCol>
-                    {$_('dateCreated')}
-                </HeadCol>
-                <HeadCol>
-                    {$_('dateUpdated')}
-                </HeadCol>
-            </tr>
-            <tbody slot="body" let:class="{className}" class="{className}">
-                {#each organizations as organization, i}
-                    <TableRow itemIndex="{i}">
-                        <RowCol>
-                            <a
-                                href="{appRoutes.organization}/{organization.id}"
-                                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                            >
-                                {organization.name}
-                            </a>
-                        </RowCol>
-                        <RowCol>
-                            {new Date(
-                                organization.createdDate,
-                            ).toLocaleString()}
-                        </RowCol>
-                        <RowCol>
-                            {new Date(
-                                organization.updatedDate,
-                            ).toLocaleString()}
-                        </RowCol>
-                    </TableRow>
-                {/each}
-            </tbody>
-        </Table>
-    </div>
+            <Table>
+                <tr slot="header">
+                    <HeadCol>
+                        {$_('name')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateCreated')}
+                    </HeadCol>
+                    <HeadCol>
+                        {$_('dateUpdated')}
+                    </HeadCol>
+                </tr>
+                <tbody slot="body" let:class="{className}" class="{className}">
+                    {#each organizations as organization, i}
+                        <TableRow itemIndex="{i}">
+                            <RowCol>
+                                <a
+                                    href="{appRoutes.organization}/{organization.id}"
+                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                >
+                                    {organization.name}
+                                </a>
+                            </RowCol>
+                            <RowCol>
+                                {new Date(
+                                    organization.createdDate,
+                                ).toLocaleString()}
+                            </RowCol>
+                            <RowCol>
+                                {new Date(
+                                    organization.updatedDate,
+                                ).toLocaleString()}
+                            </RowCol>
+                        </TableRow>
+                    {/each}
+                </tbody>
+            </Table>
+        </div>
+    {/if}
 
     <div class="w-full">
         <div class="flex w-full">

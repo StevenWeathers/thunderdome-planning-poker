@@ -43,18 +43,19 @@ func (s *server) routes() {
 
 	// api (used by the webapp but can be enabled for external use)
 	apiConfig := &api.Config{
-		AppDomain:          s.config.AppDomain,
-		FrontendCookieName: s.config.FrontendCookieName,
-		SecureCookieName:   viper.GetString("http.backend_cookie_name"),
-		SecureCookieFlag:   viper.GetBool("http.secure_cookie"),
-		SessionCookieName:  viper.GetString("http.session_cookie_name"),
-		PathPrefix:         s.config.PathPrefix,
-		ExternalAPIEnabled: s.config.ExternalAPIEnabled,
-		UserAPIKeyLimit:    s.config.UserAPIKeyLimit,
-		LdapEnabled:        s.config.LdapEnabled,
-		FeaturePoker:       viper.GetBool("feature.poker"),
-		FeatureRetro:       viper.GetBool("feature.retro"),
-		FeatureStoryboard:  viper.GetBool("feature.storyboard"),
+		AppDomain:            s.config.AppDomain,
+		FrontendCookieName:   s.config.FrontendCookieName,
+		SecureCookieName:     viper.GetString("http.backend_cookie_name"),
+		SecureCookieFlag:     viper.GetBool("http.secure_cookie"),
+		SessionCookieName:    viper.GetString("http.session_cookie_name"),
+		PathPrefix:           s.config.PathPrefix,
+		ExternalAPIEnabled:   s.config.ExternalAPIEnabled,
+		UserAPIKeyLimit:      s.config.UserAPIKeyLimit,
+		LdapEnabled:          s.config.LdapEnabled,
+		FeaturePoker:         viper.GetBool("feature.poker"),
+		FeatureRetro:         viper.GetBool("feature.retro"),
+		FeatureStoryboard:    viper.GetBool("feature.storyboard"),
+		OrganizationsEnabled: viper.GetBool("config.organizations_enabled"),
 	}
 	api.Init(apiConfig, s.router, s.db, s.email, s.cookie)
 
@@ -112,6 +113,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AllowJiraImport       bool
 		DefaultLocale         string
 		FriendlyUIVerbs       bool
+		OrganizationsEnabled  bool
 		AppVersion            string
 		CookieName            string
 		PathPrefix            string
@@ -146,6 +148,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AllowJiraImport:       viper.GetBool("config.allow_jira_import"),
 		DefaultLocale:         viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:       viper.GetBool("config.friendly_ui_verbs"),
+		OrganizationsEnabled:  viper.GetBool("config.organizations_enabled"),
 		ExternalAPIEnabled:    s.config.ExternalAPIEnabled,
 		UserAPIKeyLimit:       s.config.UserAPIKeyLimit,
 		AppVersion:            s.config.Version,

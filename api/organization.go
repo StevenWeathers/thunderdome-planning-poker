@@ -34,6 +34,10 @@ type orgTeamResponse struct {
 // @Router /users/{userId}/organizations [get]
 func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
@@ -58,6 +62,10 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 // @Router /organizations/{orgId} [get]
 func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
@@ -91,6 +99,10 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 // @Router /users/{userId}/organizations [post]
 func (a *api) handleCreateOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
@@ -119,6 +131,10 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 // @Router /organizations/{orgId}/teams [get]
 func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
@@ -141,6 +157,10 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 // @Router /organizations/{orgId}/users [get]
 func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
@@ -165,6 +185,10 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 // @Router /organizations/{orgId}/teams [post]
 func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)
 
@@ -195,6 +219,10 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 // @Router /organizations/{orgId}/users [post]
 func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
@@ -232,6 +260,10 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 // @Router /organizations/{orgId}/users/{userId} [delete]
 func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		UserID := vars["userId"]
@@ -261,6 +293,10 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 		vars := mux.Vars(r)
@@ -306,6 +342,10 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Router /organizations/{orgId}/teams/{teamId}/users [post]
 func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)

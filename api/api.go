@@ -39,6 +39,8 @@ type Config struct {
 	FeatureRetro bool
 	// Feature flag for Storyboards
 	FeatureStoryboard bool
+	// Whether Organizations (and Departments) feature is enabled
+	OrganizationsEnabled bool
 }
 
 type api struct {

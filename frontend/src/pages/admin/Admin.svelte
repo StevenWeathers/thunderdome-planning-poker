@@ -34,6 +34,7 @@
         ExternalAPIEnabled,
         FeaturePoker,
         FeatureRetro,
+        OrganizationsEnabled,
     } = AppConfig
 
     let appStats = {
@@ -284,48 +285,50 @@
                 </div>
             </div>
         {/if}
-        <div
-            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-        >
-            <div class="flex flex-row items-center">
-                <div class="flex-shrink pr-4">
-                    <div class="rounded p-3 bg-orange-500 text-white">
-                        <OfficeBuildingIcon />
+        {#if OrganizationsEnabled}
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-orange-500 text-white">
+                            <OfficeBuildingIcon />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
+                            {$_('organizations')}
+                        </h5>
+                        <h3 class="font-bold text-3xl dark:text-white">
+                            {appStats.organizationCount}
+                        </h3>
                     </div>
                 </div>
-                <div class="flex-1 text-right md:text-center">
-                    <h5
-                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
-                    >
-                        {$_('organizations')}
-                    </h5>
-                    <h3 class="font-bold text-3xl dark:text-white">
-                        {appStats.organizationCount}
-                    </h3>
-                </div>
             </div>
-        </div>
-        <div
-            class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-        >
-            <div class="flex flex-row items-center">
-                <div class="flex-shrink pr-4">
-                    <div class="rounded p-3 bg-rose-500 text-white">
-                        <UserGroupIcon />
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-rose-500 text-white">
+                            <UserGroupIcon />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
+                            {$_('departments')}
+                        </h5>
+                        <h3 class="font-bold text-3xl dark:text-white">
+                            {appStats.departmentCount}
+                        </h3>
                     </div>
                 </div>
-                <div class="flex-1 text-right md:text-center">
-                    <h5
-                        class="font-bold uppercase text-gray-500 dark:text-gray-400"
-                    >
-                        {$_('departments')}
-                    </h5>
-                    <h3 class="font-bold text-3xl dark:text-white">
-                        {appStats.departmentCount}
-                    </h3>
-                </div>
             </div>
-        </div>
+        {/if}
         <div
             class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
         >

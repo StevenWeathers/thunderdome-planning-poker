@@ -4,7 +4,12 @@
 
     export let activePage = 'admin'
 
-    const { ExternalAPIEnabled, FeaturePoker, FeatureRetro } = AppConfig
+    const {
+        ExternalAPIEnabled,
+        FeaturePoker,
+        FeatureRetro,
+        OrganizationsEnabled,
+    } = AppConfig
 
     const pages = [
         {
@@ -35,7 +40,7 @@
             name: 'Organizations',
             label: $_('adminPageOrganizations'),
             path: '/organizations',
-            enabled: true,
+            enabled: OrganizationsEnabled,
         },
         {
             name: 'Teams',

@@ -35,6 +35,10 @@ type departmentTeamResponse struct {
 // @Router /organizations/{orgId}/departments [get]
 func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
@@ -58,6 +62,10 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId} [get]
 func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
 		DepartmentRole := r.Context().Value(contextKeyDepartmentRole).(string)
 		vars := mux.Vars(r)
@@ -100,6 +108,10 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments [post]
 func (a *api) handleCreateDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)
 
@@ -127,6 +139,10 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [get]
 func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
@@ -149,6 +165,10 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId}/users [get]
 func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
@@ -173,6 +193,10 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
 func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		keyVal := getJSONRequestBody(r, w)
 
@@ -203,6 +227,10 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId}/users [post]
 func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
@@ -240,6 +268,10 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId}/users/{userId} [delete]
 func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		UserID := vars["userId"]
@@ -270,6 +302,10 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users [post]
 func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
@@ -315,6 +351,10 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId} [get]
 func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
 		DepartmentRole := r.Context().Value(contextKeyDepartmentRole).(string)
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)

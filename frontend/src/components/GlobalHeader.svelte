@@ -14,8 +14,13 @@
     export let notifications
     export let currentPage
 
-    const { AllowRegistration, PathPrefix, FeaturePoker, FeatureRetro } =
-        AppConfig
+    const {
+        AllowRegistration,
+        PathPrefix,
+        FeaturePoker,
+        FeatureRetro,
+        OrganizationsEnabled,
+    } = AppConfig
 
     const activePageClass =
         'text-purple-700 border-purple-700 dark:text-yellow-400 dark:border-yellow-400'
@@ -91,9 +96,9 @@
                         {/if}
                         {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
                             <a
-                                href="{appRoutes.organizations}"
+                                href="{appRoutes.teams}"
                                 class="pt-6 pb-4 px-4  border-b-4 {currentPage ===
-                                'organizations'
+                                'teams'
                                     ? activePageClass
                                     : pageClass}"
                             >

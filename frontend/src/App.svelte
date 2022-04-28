@@ -21,7 +21,7 @@
     import Battle from './pages/Battle.svelte'
     import Retros from './pages/Retros.svelte'
     import Retro from './pages/Retro.svelte'
-    import Organizations from './pages/Organizations.svelte'
+    import Teams from './pages/Teams.svelte'
     import Organization from './pages/Organization.svelte'
     import Department from './pages/Department.svelte'
     import Team from './pages/Team.svelte'
@@ -105,11 +105,11 @@
             name: 'profile',
         }
     })
-    router.on(appRoutes.organizations, () => {
+    router.on(appRoutes.teams, () => {
         currentPage = {
-            route: Organizations,
+            route: Teams,
             params: {},
-            name: 'organizations',
+            name: 'Teams',
         }
     })
     router.on(`${appRoutes.organization}/:organizationId`, params => {

@@ -203,6 +203,10 @@ func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
 // @Router /admin/organizations [get]
 func (a *api) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !a.config.OrganizationsEnabled {
+			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
 		Limit, Offset := getLimitOffsetFromRequest(r, w)
 
 		Organizations := a.db.OrganizationList(Limit, Offset)
