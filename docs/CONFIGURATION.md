@@ -57,6 +57,10 @@ Thunderdome sends emails for user registration related activities, the following
 | `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity. Usually unset. | |
 | `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome. | no-reply@thunderdome.dev |
 
+## Configure Admin Email
+
+To grant Admin access to Thunderdome for the first Admin user create an account first, then set the `ADMIN_EMAIL` environment variable or `admin.email` config file value.  Upon the app starting up Thunderdome will read this value and set that user as ADMIN role.
+
 ## Optional configuration items
 
 | Option                            | Environment Variable            | Description                                                                                                  | Default Value                          |
