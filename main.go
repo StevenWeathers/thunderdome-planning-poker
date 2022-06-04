@@ -96,7 +96,7 @@ func main() {
 		logger: logger,
 	}
 
-	s.email = email.New(s.config.AppDomain, s.config.PathPrefix)
+	s.email = email.New(s.config.AppDomain, s.config.PathPrefix, s.logger)
 	s.db = db.New(s.config.AdminEmail, &db.Config{
 		Host:       viper.GetString("db.host"),
 		Port:       viper.GetInt("db.port"),

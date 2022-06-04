@@ -1,9 +1,8 @@
 package email
 
 import (
-	"log"
-
 	"github.com/matcornic/hermes/v2"
+	"go.uber.org/zap"
 )
 
 // SendWelcome sends the welcome email to new registered user
@@ -34,7 +33,8 @@ func (m *Email) SendWelcome(UserName string, UserEmail string, VerifyID string) 
 		},
 	)
 	if err != nil {
-		log.Println("Error Generating Welcome Email HTML: ", err)
+		m.logger.Error("Error Generating Welcome Email HTML", zap.Error(err))
+
 		return err
 	}
 
@@ -45,7 +45,7 @@ func (m *Email) SendWelcome(UserName string, UserEmail string, VerifyID string) 
 		emailBody,
 	)
 	if sendErr != nil {
-		log.Println("Error sending Welcome Email: ", sendErr)
+		m.logger.Error("Error sending Welcome Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -80,7 +80,7 @@ func (m *Email) SendEmailVerification(UserName string, UserEmail string, VerifyI
 		},
 	)
 	if err != nil {
-		log.Println("Error Generating Verification Email HTML: ", err)
+		m.logger.Error("Error Generating Verification Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -91,7 +91,7 @@ func (m *Email) SendEmailVerification(UserName string, UserEmail string, VerifyI
 		emailBody,
 	)
 	if sendErr != nil {
-		log.Println("Error sending Verification Email: ", sendErr)
+		m.logger.Error("Error sending Verification Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -125,7 +125,7 @@ func (m *Email) SendForgotPassword(UserName string, UserEmail string, ResetID st
 		},
 	)
 	if err != nil {
-		log.Println("Error Generating Forgot Password Email HTML: ", err)
+		m.logger.Error("Error Generating Forgot Password Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -136,7 +136,7 @@ func (m *Email) SendForgotPassword(UserName string, UserEmail string, ResetID st
 		emailBody,
 	)
 	if sendErr != nil {
-		log.Println("Error sending Forgot Password Email: ", sendErr)
+		m.logger.Error("Error sending Forgot Password Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -163,7 +163,7 @@ func (m *Email) SendPasswordReset(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		log.Println("Error Generating Reset Password Email HTML: ", err)
+		m.logger.Error("Error Generating Reset Password Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -174,7 +174,7 @@ func (m *Email) SendPasswordReset(UserName string, UserEmail string) error {
 		emailBody,
 	)
 	if sendErr != nil {
-		log.Println("Error sending Reset Password Email: ", sendErr)
+		m.logger.Error("Error sending Reset Password Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -201,7 +201,7 @@ func (m *Email) SendPasswordUpdate(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		log.Println("Error Generating Update Password Email HTML: ", err)
+		m.logger.Error("Error Generating Update Password Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -212,7 +212,7 @@ func (m *Email) SendPasswordUpdate(UserName string, UserEmail string) error {
 		emailBody,
 	)
 	if sendErr != nil {
-		log.Println("Error sending Update Password Email: ", sendErr)
+		m.logger.Error("Error sending Update Password Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -239,7 +239,7 @@ func (m *Email) SendDeleteConfirmation(UserName string, UserEmail string) error 
 		},
 	)
 	if err != nil {
-		log.Println("Error Generating Delete Account Confirmation Email HTML: ", err)
+		m.logger.Error("Error Generating Delete Account Confirmation Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -250,7 +250,7 @@ func (m *Email) SendDeleteConfirmation(UserName string, UserEmail string) error 
 		emailBody,
 	)
 	if sendErr != nil {
-		log.Println("Error sending Delete Account Confirmation Email: ", sendErr)
+		m.logger.Error("Error sending Delete Account Confirmation Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -277,7 +277,7 @@ func (m *Email) SendEmailUpdate(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		log.Println("Error Generating Update Email Email HTML: ", err)
+		m.logger.Error("Error Generating Email Update Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -288,7 +288,7 @@ func (m *Email) SendEmailUpdate(UserName string, UserEmail string) error {
 		emailBody,
 	)
 	if sendErr != nil {
-		log.Println("Error sending Update Email Email: ", sendErr)
+		m.logger.Error("Error sending Email Update Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -315,7 +315,7 @@ func (m *Email) SendMergedUpdate(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		log.Println("Error Generating Merged Email Email HTML: ", err)
+		m.logger.Error("Error Generating Update Merged Email Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -326,7 +326,7 @@ func (m *Email) SendMergedUpdate(UserName string, UserEmail string) error {
 		emailBody,
 	)
 	if sendErr != nil {
-		log.Println("Error sending Update Merged Email: ", sendErr)
+		m.logger.Error("Error sending Update Merged Email", zap.Error(sendErr))
 		return sendErr
 	}
 
