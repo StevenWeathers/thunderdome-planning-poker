@@ -2,9 +2,9 @@ package db
 
 import (
 	"errors"
-	"log"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 // DepartmentUserRole gets a users role in department (and organization)
@@ -22,7 +22,7 @@ func (d *Database) DepartmentUserRole(UserID string, OrgID string, DepartmentID 
 		&departmentRole,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("department_get_user_role query error", zap.Error(e))
 		return "", "", errors.New("error getting department users role")
 	}
 
@@ -43,7 +43,7 @@ func (d *Database) DepartmentGet(DepartmentID string) (*model.Department, error)
 		&org.UpdatedDate,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("department_get_by_id query error", zap.Error(e))
 		return nil, errors.New("department not found")
 	}
 
@@ -71,13 +71,13 @@ func (d *Database) OrganizationDepartmentList(OrgID string, Limit int, Offset in
 				&department.CreatedDate,
 				&department.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("department_list query scan error", zap.Error(err))
 			} else {
 				departments = append(departments, &department)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("department_list query error", zap.Error(err))
 	}
 
 	return departments
@@ -94,7 +94,7 @@ func (d *Database) DepartmentCreate(OrgID string, OrgName string) (*model.Depart
 	).Scan(&od.Id, &od.Name, &od.CreatedDate, &od.UpdatedDate)
 
 	if err != nil {
-		log.Println("Unable to create organization department: ", err)
+		d.logger.Error("Unable to create organization department", zap.Error(err))
 		return nil, err
 	}
 
@@ -122,13 +122,13 @@ func (d *Database) DepartmentTeamList(DepartmentID string, Limit int, Offset int
 				&team.CreatedDate,
 				&team.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("department_team_list query scan error", zap.Error(err))
 			} else {
 				teams = append(teams, &team)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("department_team_list query error", zap.Error(err))
 	}
 
 	return teams
@@ -145,7 +145,7 @@ func (d *Database) DepartmentTeamCreate(DepartmentID string, TeamName string) (*
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
-		log.Println("Unable to create department team: ", err)
+		d.logger.Error("Unable to create department tea", zap.Error(err))
 		return nil, err
 	}
 
@@ -174,14 +174,14 @@ func (d *Database) DepartmentUserList(DepartmentID string, Limit int, Offset int
 				&usr.Role,
 				&usr.Avatar,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("department_user_list query scan error", zap.Error(err))
 			} else {
 				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("department_user_list query error", zap.Error(err))
 	}
 
 	return users
@@ -197,7 +197,7 @@ func (d *Database) DepartmentAddUser(DepartmentID string, UserID string, Role st
 	)
 
 	if err != nil {
-		log.Println("Unable to add user to department: ", err)
+		d.logger.Error("Unable to add user to department", zap.Error(err))
 		return "", err
 	}
 
@@ -213,7 +213,7 @@ func (d *Database) DepartmentRemoveUser(DepartmentID string, UserID string) erro
 	)
 
 	if err != nil {
-		log.Println("Unable to remove user from department: ", err)
+		d.logger.Error("Unable to remove user from department", zap.Error(err))
 		return err
 	}
 
@@ -238,7 +238,7 @@ func (d *Database) DepartmentTeamUserRole(UserID string, OrgID string, Departmen
 		&teamRole,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("department_team_user_role query error", zap.Error(e))
 		return "", "", "", errors.New("error getting department team users role")
 	}
 

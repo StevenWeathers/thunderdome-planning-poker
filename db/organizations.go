@@ -2,9 +2,9 @@ package db
 
 import (
 	"errors"
-	"log"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 // OrganizationGet gets an organization
@@ -21,7 +21,7 @@ func (d *Database) OrganizationGet(OrgID string) (*model.Organization, error) {
 		&org.UpdatedDate,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("organization_get_by_id query error", zap.Error(e))
 		return nil, errors.New("error getting organization")
 	}
 
@@ -40,7 +40,7 @@ func (d *Database) OrganizationUserRole(UserID string, OrgID string) (string, er
 		&role,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("organization_get_user_role query error", zap.Error(e))
 		return "", errors.New("error getting organization users role")
 	}
 
@@ -68,13 +68,13 @@ func (d *Database) OrganizationListByUser(UserID string, Limit int, Offset int) 
 				&org.CreatedDate,
 				&org.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("organization_list_by_user query scan error", zap.Error(err))
 			} else {
 				organizations = append(organizations, &org)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("organization_list_by_user query error", zap.Error(err))
 	}
 
 	return organizations
@@ -91,7 +91,7 @@ func (d *Database) OrganizationCreate(UserID string, OrgName string) (*model.Org
 	).Scan(&o.Id, &o.Name, &o.CreatedDate, &o.UpdatedDate)
 
 	if err != nil {
-		log.Println("Unable to create organization: ", err)
+		d.logger.Error("Unable to create organization", zap.Error(err))
 		return nil, err
 	}
 
@@ -120,14 +120,14 @@ func (d *Database) OrganizationUserList(OrgID string, Limit int, Offset int) []*
 				&usr.Role,
 				&usr.Avatar,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("organization_user_list query scan error", zap.Error(err))
 			} else {
 				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("organization_user_list query error", zap.Error(err))
 	}
 
 	return users
@@ -143,7 +143,7 @@ func (d *Database) OrganizationAddUser(OrgID string, UserID string, Role string)
 	)
 
 	if err != nil {
-		log.Println("Unable to add user to organization: ", err)
+		d.logger.Error("Unable to add user to organization", zap.Error(err))
 		return "", err
 	}
 
@@ -159,7 +159,7 @@ func (d *Database) OrganizationRemoveUser(OrganizationID string, UserID string) 
 	)
 
 	if err != nil {
-		log.Println("Unable to remove user from organization: ", err)
+		d.logger.Error("Unable to remove user from organization", zap.Error(err))
 		return err
 	}
 
@@ -187,13 +187,13 @@ func (d *Database) OrganizationTeamList(OrgID string, Limit int, Offset int) []*
 				&team.CreatedDate,
 				&team.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("organization_team_list query scan error", zap.Error(err))
 			} else {
 				teams = append(teams, &team)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("organization_team_list query error", zap.Error(err))
 	}
 
 	return teams
@@ -210,7 +210,7 @@ func (d *Database) OrganizationTeamCreate(OrgID string, TeamName string) (*model
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
-		log.Println("Unable to create organization team: ", err)
+		d.logger.Error("Unable to create organization team", zap.Error(err))
 		return nil, err
 	}
 
@@ -232,7 +232,7 @@ func (d *Database) OrganizationTeamUserRole(UserID string, OrgID string, TeamID 
 		&teamRole,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("organization_team_user_role query error", zap.Error(e))
 		return "", "", errors.New("error getting organization team users role")
 	}
 

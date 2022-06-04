@@ -3,9 +3,9 @@ package db
 import (
 	"database/sql"
 	"errors"
-	"log"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 // GetRegisteredUsers gets a list of registered users
@@ -13,13 +13,13 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int
 	var users = make([]*model.User, 0)
 	var Count int
 
-	e := d.db.QueryRow(
+	err := d.db.QueryRow(
 		"SELECT COUNT(*) FROM users WHERE email IS NOT NULL;",
 	).Scan(
 		&Count,
 	)
-	if e != nil {
-		log.Println(e)
+	if err != nil {
+		d.logger.Error("get registered users query error", zap.Error(err))
 	}
 
 	rows, err := d.db.Query(
@@ -48,7 +48,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int
 			&w.Company,
 			&w.JobTitle,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("registered_users_list query scan error", zap.Error(err))
 		} else {
 			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)
@@ -67,7 +67,7 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 	var UserCompany sql.NullString
 	var UserJobTitle sql.NullString
 
-	e := d.db.QueryRow(
+	err := d.db.QueryRow(
 		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active FROM users WHERE id = $1",
 		UserID,
 	).Scan(
@@ -86,8 +86,8 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 		&w.UpdatedDate,
 		&w.LastActive,
 	)
-	if e != nil {
-		log.Println(e)
+	if err != nil {
+		d.logger.Error("get user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
@@ -114,7 +114,7 @@ func (d *Database) GetGuestUser(UserID string) (*model.User, error) {
 	var UserCompany sql.NullString
 	var UserJobTitle sql.NullString
 
-	e := d.db.QueryRow(`
+	err := d.db.QueryRow(`
 SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active
 FROM users
 WHERE id = $1 AND type = 'GUEST';
@@ -136,8 +136,8 @@ WHERE id = $1 AND type = 'GUEST';
 		&w.UpdatedDate,
 		&w.LastActive,
 	)
-	if e != nil {
-		log.Println(e)
+	if err != nil {
+		d.logger.Error("get guest user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
@@ -154,7 +154,7 @@ WHERE id = $1 AND type = 'GUEST';
 // GetUserByEmail gets the user by email
 func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 	var w model.User
-	e := d.db.QueryRow(
+	err := d.db.QueryRow(
 		"SELECT id, name, email, type, verified FROM users WHERE email = $1",
 		UserEmail,
 	).Scan(
@@ -164,8 +164,8 @@ func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 		&w.Type,
 		&w.Verified,
 	)
-	if e != nil {
-		log.Println(e)
+	if err != nil {
+		d.logger.Error("get user by email query error", zap.Error(err))
 		return nil, errors.New("user email not found")
 	}
 
@@ -177,9 +177,9 @@ func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 // CreateUserGuest adds a new guest user
 func (d *Database) CreateUserGuest(UserName string) (*model.User, error) {
 	var UserID string
-	e := d.db.QueryRow(`INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
-	if e != nil {
-		log.Println(e)
+	err := d.db.QueryRow(`INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
+	if err != nil {
+		d.logger.Error("create guest user query error", zap.Error(err))
 		return nil, errors.New("unable to create new user")
 	}
 
@@ -205,7 +205,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 	}
 
 	if ActiveUserID != "" {
-		e := d.db.QueryRow(
+		err := d.db.QueryRow(
 			`SELECT userId, verifyId FROM register_existing_user($1, $2, $3, $4, $5);`,
 			ActiveUserID,
 			UserName,
@@ -213,20 +213,20 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 			hashedPassword,
 			UserType,
 		).Scan(&User.Id, &verifyID)
-		if e != nil {
-			log.Println(e)
+		if err != nil {
+			d.logger.Error("register_existing_user query error", zap.Error(err))
 			return nil, "", "", errors.New("a user with that email already exists")
 		}
 	} else {
-		e := d.db.QueryRow(
+		err := d.db.QueryRow(
 			`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 			UserName,
 			UserEmail,
 			hashedPassword,
 			UserType,
 		).Scan(&User.Id, &verifyID)
-		if e != nil {
-			log.Println(e)
+		if err != nil {
+			d.logger.Error("register_user query error", zap.Error(err))
 			return nil, "", "", errors.New("a user with that email already exists")
 		}
 	}
@@ -257,15 +257,15 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 		GravatarHash: createGravatarHash(UserEmail),
 	}
 
-	e := d.db.QueryRow(
+	err := d.db.QueryRow(
 		`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 		UserName,
 		UserEmail,
 		hashedPassword,
 		UserType,
 	).Scan(&User.Id, &verifyID)
-	if e != nil {
-		log.Println(e)
+	if err != nil {
+		d.logger.Error("register_user query error", zap.Error(err))
 		return nil, "", errors.New("a user with that email already exists")
 	}
 
@@ -288,7 +288,7 @@ func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar 
 		Company,
 		JobTitle,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("user_profile_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
 	}
 
@@ -310,7 +310,7 @@ func (d *Database) UpdateUserProfileLdap(UserID string, UserAvatar string, Notif
 		Company,
 		JobTitle,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("user_profile_ldap_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
 	}
 
@@ -346,7 +346,7 @@ func (d *Database) DeleteUser(UserID string) error {
 		`call delete_user($1);`,
 		UserID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("delete_user query error", zap.Error(err))
 		return errors.New("error attempting to delete user")
 	}
 
@@ -365,7 +365,7 @@ func (d *Database) GetActiveCountries() ([]string, error) {
 			if err := rows.Scan(
 				&country,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("countries_active query scan error", zap.Error(err))
 			} else {
 				if country.String != "" {
 					countries = append(countries, country.String)
@@ -373,7 +373,7 @@ func (d *Database) GetActiveCountries() ([]string, error) {
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("countries_active query error", zap.Error(err))
 		return nil, errors.New("error attempting to get active countries")
 	}
 
@@ -413,7 +413,7 @@ func (d *Database) SearchRegisteredUsersByEmail(Email string, Limit int, Offset 
 			&w.JobTitle,
 			&count,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("registered_users_email_search query error", zap.Error(err))
 		} else {
 			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)

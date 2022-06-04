@@ -2,10 +2,11 @@ package battle
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -94,11 +95,11 @@ func (sub subscription) readPump(b *Service) {
 		if forceClosed {
 			cm := websocket.FormatCloseMessage(4002, "abandoned")
 			if err := c.ws.WriteControl(websocket.CloseMessage, cm, time.Now().Add(writeWait)); err != nil {
-				log.Printf("abandon error: %v", err)
+				b.logger.Error("abandon error", zap.Error(err))
 			}
 		}
 		if err := c.ws.Close(); err != nil {
-			log.Printf("close error: %v", err)
+			b.logger.Error("close error", zap.Error(err))
 		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
@@ -111,7 +112,7 @@ func (sub subscription) readPump(b *Service) {
 		_, msg, err := c.ws.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-				log.Printf("error: %v", err)
+				b.logger.Error("unexpected close error", zap.Error(err))
 			}
 			break
 		}
@@ -138,7 +139,7 @@ func (sub subscription) readPump(b *Service) {
 
 				// don't log forceClosed events e.g. Abandon
 				if !forceClosed {
-					log.Println(eventErr)
+					b.logger.Error("close error", zap.Error(eventErr))
 				}
 			}
 		}
@@ -187,13 +188,13 @@ func (sub *subscription) writePump() {
 }
 
 // handleSocketUnauthorized sets the format close message and closes the websocket
-func handleSocketClose(ws *websocket.Conn, closeCode int, text string) {
+func (b *Service) handleSocketClose(ws *websocket.Conn, closeCode int, text string) {
 	cm := websocket.FormatCloseMessage(closeCode, text)
 	if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
-		log.Printf("unauthorized close error: %v", err)
+		b.logger.Error("unauthorized close error", zap.Error(err))
 	}
 	if err := ws.Close(); err != nil {
-		log.Printf("close error: %v", err)
+		b.logger.Error("close error", zap.Error(err))
 	}
 }
 
@@ -208,14 +209,14 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			log.Println(err)
+			b.logger.Error("websocket upgrade error", zap.Error(err))
 			return
 		}
 		c := &connection{send: make(chan []byte, 256), ws: ws}
 
 		SessionId, cookieErr := b.validateSessionCookie(w, r)
 		if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
-			handleSocketClose(ws, 4001, "unauthorized")
+			b.handleSocketClose(ws, 4001, "unauthorized")
 			return
 		}
 
@@ -223,20 +224,20 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			var userErr error
 			User, userErr = b.db.GetSessionUser(SessionId)
 			if userErr != nil {
-				handleSocketClose(ws, 4001, "unauthorized")
+				b.handleSocketClose(ws, 4001, "unauthorized")
 				return
 			}
 		} else {
 			UserID, err := b.validateUserCookie(w, r)
 			if err != nil {
-				handleSocketClose(ws, 4001, "unauthorized")
+				b.handleSocketClose(ws, 4001, "unauthorized")
 				return
 			}
 
 			var userErr error
 			User, userErr = b.db.GetGuestUser(UserID)
 			if userErr != nil {
-				handleSocketClose(ws, 4001, "unauthorized")
+				b.handleSocketClose(ws, 4001, "unauthorized")
 				return
 			}
 		}
@@ -244,7 +245,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		// make sure battle is legit
 		battle, battleErr := b.db.GetBattle(battleID, User.Id)
 		if battleErr != nil {
-			handleSocketClose(ws, 4004, "battle not found")
+			b.handleSocketClose(ws, 4004, "battle not found")
 			return
 		}
 
@@ -252,11 +253,11 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		UserErr := b.db.GetBattleUserActiveStatus(battleID, User.Id)
 		if UserErr != nil && UserErr.Error() != "sql: no rows in result set" {
 			usrErrMsg := UserErr.Error()
-			log.Println("error finding user : " + usrErrMsg + "\n")
+			b.logger.Error("error finding user", zap.Error(UserErr))
 			if usrErrMsg == "DUPLICATE_BATTLE_USER" {
-				handleSocketClose(ws, 4003, "duplicate session")
+				b.handleSocketClose(ws, 4003, "duplicate session")
 			} else {
-				handleSocketClose(ws, 4005, "internal error")
+				b.handleSocketClose(ws, 4005, "internal error")
 			}
 			return
 		}
@@ -269,7 +270,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 				_, msg, err := c.ws.ReadMessage()
 				if err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-						log.Printf("error: %v", err)
+						b.logger.Error("unexpected close error", zap.Error(err))
 					}
 					break
 				}

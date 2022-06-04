@@ -2,9 +2,9 @@ package db
 
 import (
 	"errors"
-	"log"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 // GetActiveAlerts gets a list of active global alerts
@@ -29,7 +29,7 @@ func (d *Database) GetActiveAlerts() []interface{} {
 				&a.AllowDismiss,
 				&a.RegisteredOnly,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("query scan error", zap.Error(err))
 			} else {
 				Alerts = append(Alerts, &a)
 			}
@@ -50,7 +50,7 @@ func (d *Database) AlertsList(Limit int, Offset int) ([]*model.Alert, int, error
 		&AlertCount,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("query scan error", zap.Error(e))
 	}
 
 	rows, err := d.db.Query(
@@ -79,7 +79,7 @@ func (d *Database) AlertsList(Limit int, Offset int) ([]*model.Alert, int, error
 				&a.CreatedDate,
 				&a.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("query scan error", zap.Error(err))
 				return nil, AlertCount, err
 			} else {
 				Alerts = append(Alerts, &a)
@@ -103,7 +103,7 @@ func (d *Database) AlertsCreate(Name string, Type string, Content string, Active
 		AllowDismiss,
 		RegisteredOnly,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("insert error", zap.Error(err))
 		return errors.New("error attempting to add new alert")
 	}
 
@@ -126,7 +126,7 @@ func (d *Database) AlertsUpdate(ID string, Name string, Type string, Content str
 		AllowDismiss,
 		RegisteredOnly,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("update error", zap.Error(err))
 		return errors.New("error attempting to update alert")
 	}
 
@@ -141,7 +141,7 @@ func (d *Database) AlertDelete(AlertID string) error {
 	)
 
 	if err != nil {
-		log.Println("Unable to delete alert: ", err)
+		d.logger.Error("Unable to delete alert", zap.Error(err))
 		return err
 	}
 

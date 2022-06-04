@@ -25,17 +25,17 @@ func (a *api) handleLogin() http.HandlerFunc {
 
 		authedUser, sessionId, err := a.db.AuthUser(UserEmail, UserPassword)
 		if err != nil {
-			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
+			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
 
 		cookieErr := a.createSessionCookie(w, sessionId)
 		if cookieErr != nil {
-			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		Success(w, r, http.StatusOK, authedUser, nil)
+		a.Success(w, r, http.StatusOK, authedUser, nil)
 	}
 }
 
@@ -58,17 +58,17 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 
 		authedUser, sessionId, err := a.authAndCreateUserLdap(UserEmail, UserPassword)
 		if err != nil {
-			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
+			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
 
 		cookieErr := a.createSessionCookie(w, sessionId)
 		if cookieErr != nil {
-			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		Success(w, r, http.StatusOK, authedUser, nil)
+		a.Success(w, r, http.StatusOK, authedUser, nil)
 	}
 }
 
@@ -82,18 +82,18 @@ func (a *api) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		SessionId, cookieErr := a.validateSessionCookie(w, r)
 		if cookieErr != nil {
-			Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		err := a.db.DeleteSession(SessionId)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		a.clearUserCookies(w)
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -109,7 +109,7 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
 		if !AllowGuests {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "GUESTS_USERS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "GUESTS_USERS_DISABLED"))
 			return
 		}
 
@@ -119,17 +119,17 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 
 		newUser, err := a.db.CreateUserGuest(UserName)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		cookieErr := a.createUserCookie(w, newUser.Id)
 		if cookieErr != nil {
-			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		Success(w, r, http.StatusOK, newUser, nil)
+		a.Success(w, r, http.StatusOK, newUser, nil)
 	}
 }
 
@@ -145,7 +145,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
 		if !AllowRegistration {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "USER_REGISTRATION_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "USER_REGISTRATION_DISABLED"))
 		}
 
 		keyVal := getJSONRequestBody(r, w)
@@ -160,13 +160,13 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 		)
 
 		if accountErr != nil {
-			Failure(w, r, http.StatusBadRequest, accountErr)
+			a.Failure(w, r, http.StatusBadRequest, accountErr)
 			return
 		}
 
 		newUser, VerifyID, SessionID, err := a.db.CreateUserRegistered(UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -178,11 +178,11 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 
 		cookieErr := a.createSessionCookie(w, SessionID)
 		if cookieErr != nil {
-			Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		Success(w, r, http.StatusOK, newUser, nil)
+		a.Success(w, r, http.StatusOK, newUser, nil)
 	}
 }
 
@@ -202,7 +202,7 @@ func (a *api) handleForgotPassword() http.HandlerFunc {
 			a.email.SendForgotPassword(UserName, UserEmail, ResetID)
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -225,19 +225,19 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 		)
 
 		if passwordErr != nil {
-			Failure(w, r, http.StatusBadRequest, passwordErr)
+			a.Failure(w, r, http.StatusBadRequest, passwordErr)
 			return
 		}
 
 		UserName, UserEmail, resetErr := a.db.UserResetPassword(ResetID, UserPassword)
 		if resetErr != nil {
-			Failure(w, r, http.StatusInternalServerError, resetErr)
+			a.Failure(w, r, http.StatusInternalServerError, resetErr)
 			return
 		}
 
 		a.email.SendPasswordReset(UserName, UserEmail)
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -261,19 +261,19 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 		)
 
 		if passwordErr != nil {
-			Failure(w, r, http.StatusBadRequest, passwordErr)
+			a.Failure(w, r, http.StatusBadRequest, passwordErr)
 			return
 		}
 
 		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(UserID, UserPassword)
 		if updateErr != nil {
-			Failure(w, r, http.StatusInternalServerError, updateErr)
+			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
 		a.email.SendPasswordUpdate(UserName, UserEmail)
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -291,10 +291,10 @@ func (a *api) handleAccountVerification() http.HandlerFunc {
 
 		verifyErr := a.db.VerifyUserAccount(VerifyID)
 		if verifyErr != nil {
-			Failure(w, r, http.StatusInternalServerError, verifyErr)
+			a.Failure(w, r, http.StatusInternalServerError, verifyErr)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

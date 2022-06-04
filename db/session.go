@@ -2,8 +2,9 @@ package db
 
 import (
 	"errors"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"log"
+	"go.uber.org/zap"
 )
 
 // CreateSession creates a new user authenticated session
@@ -19,7 +20,7 @@ func (d *Database) CreateSession(UserId string) (string, error) {
 		SessionId,
 		UserId,
 	); sessionErr != nil {
-		log.Println("Unable to create a user session: ", sessionErr)
+		d.logger.Error("Unable to create a user session", zap.Error(sessionErr))
 		return "", sessionErr
 	}
 
@@ -50,7 +51,7 @@ func (d *Database) GetSessionUser(SessionId string) (*model.User, error) {
 		&User.UpdatedDate,
 		&User.LastActive)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("user_session_get query error", zap.Error(e))
 		return nil, errors.New("active session match not found")
 	}
 
@@ -66,7 +67,7 @@ func (d *Database) DeleteSession(SessionId string) error {
 		`,
 		SessionId,
 	); sessionErr != nil {
-		log.Println("Unable to delete user session: ", sessionErr)
+		d.logger.Error("Unable to delete user session", zap.Error(sessionErr))
 		return sessionErr
 	}
 

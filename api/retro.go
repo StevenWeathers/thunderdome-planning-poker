@@ -2,12 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"github.com/gorilla/mux"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"github.com/gorilla/mux"
 )
 
 // handleRetroCreate handles creating a retro (arena)
@@ -18,7 +18,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
-			log.Println("error in reading request body: " + bodyErr.Error() + "\n")
+			a.logger.Error("error in reading request body: " + bodyErr.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -60,7 +60,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			}
 		}
 
-		Success(w, r, http.StatusOK, newRetro, nil)
+		a.Success(w, r, http.StatusOK, newRetro, nil)
 	}
 }
 
@@ -77,7 +77,7 @@ func (a *api) handleRetroGet() http.HandlerFunc {
 			return
 		}
 
-		Success(w, r, http.StatusOK, retro, nil)
+		a.Success(w, r, http.StatusOK, retro, nil)
 	}
 }
 
@@ -92,7 +92,7 @@ func (a *api) handleRetrosGetByUser() http.HandlerFunc {
 			return
 		}
 
-		Success(w, r, http.StatusOK, retros, nil)
+		a.Success(w, r, http.StatusOK, retros, nil)
 	}
 }
 
@@ -124,7 +124,7 @@ func (a *api) handleGetRetros() http.HandlerFunc {
 		}
 
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -134,6 +134,6 @@ func (a *api) handleGetRetros() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		Success(w, r, http.StatusOK, Retros, Meta)
+		a.Success(w, r, http.StatusOK, Retros, Meta)
 	}
 }

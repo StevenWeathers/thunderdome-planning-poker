@@ -1,13 +1,12 @@
 package main
 
 import (
-	"log"
-
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 // InitConfig initializes the application configuration
-func InitConfig() {
+func InitConfig(logger *zap.Logger) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
@@ -139,7 +138,7 @@ func InitConfig() {
 	err := viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			log.Fatal(err)
+			logger.Fatal(err.Error())
 		}
 	}
 }

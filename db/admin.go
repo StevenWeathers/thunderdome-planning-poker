@@ -2,10 +2,10 @@ package db
 
 import (
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 // GetAppStats gets counts of common application metrics such as users and battles
@@ -51,7 +51,7 @@ func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 		&Appstats.RetroActionCount,
 	)
 	if err != nil {
-		log.Println("Unable to get application stats: ", err)
+		d.logger.Error("Unable to get application stats", zap.Error(err))
 		return nil, err
 	}
 
@@ -64,7 +64,7 @@ func (d *Database) PromoteUser(UserID string) error {
 		`call promote_user($1);`,
 		UserID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call promote_user error", zap.Error(err))
 		return errors.New("error attempting to promote user to admin")
 	}
 
@@ -77,7 +77,7 @@ func (d *Database) DemoteUser(UserID string) error {
 		`call demote_user($1);`,
 		UserID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call demote_user error", zap.Error(err))
 		return errors.New("error attempting to demote user to registered")
 	}
 
@@ -90,7 +90,7 @@ func (d *Database) CleanBattles(DaysOld int) error {
 		`call clean_battles($1);`,
 		DaysOld,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call clean_battles", zap.Error(err))
 		return errors.New("error attempting to clean battles")
 	}
 
@@ -103,7 +103,7 @@ func (d *Database) CleanGuests(DaysOld int) error {
 		`call clean_guest_users($1);`,
 		DaysOld,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call clean_guest_users", zap.Error(err))
 		return errors.New("error attempting to clean Guest Users")
 	}
 
@@ -127,14 +127,14 @@ func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
 				&usr.Name,
 				&usr.Email,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("lowercase_unique_user_emails scan error", zap.Error(err))
 				return nil, err
 			} else {
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("lowercase_unique_user_emails query error", zap.Error(err))
 		return nil, err
 	}
 
@@ -158,14 +158,14 @@ func (d *Database) MergeDuplicateAccounts() ([]*model.User, error) {
 				&usr.Name,
 				&usr.Email,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("merge_nonunique_user_accounts scan error", zap.Error(err))
 				return nil, err
 			} else {
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("merge_nonunique_user_accounts query error", zap.Error(err))
 		return nil, err
 	}
 
@@ -192,13 +192,13 @@ func (d *Database) OrganizationList(Limit int, Offset int) []*model.Organization
 				&org.CreatedDate,
 				&org.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("organization_list scan error", zap.Error(err))
 			} else {
 				organizations = append(organizations, &org)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("organization_list query error", zap.Error(err))
 	}
 
 	return organizations
@@ -224,13 +224,13 @@ func (d *Database) TeamList(Limit int, Offset int) []*model.Team {
 				&team.CreatedDate,
 				&team.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("team_list scan error", zap.Error(err))
 			} else {
 				teams = append(teams, &team)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("team_list query error", zap.Error(err))
 	}
 
 	return teams
@@ -259,7 +259,7 @@ func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
 				&ak.CreatedDate,
 				&ak.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("apikeys_list scan error", zap.Error(err))
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
@@ -267,6 +267,8 @@ func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
 				APIKeys = append(APIKeys, &ak)
 			}
 		}
+	} else {
+		d.logger.Error("apikeys_list query error", zap.Error(err))
 	}
 
 	return APIKeys

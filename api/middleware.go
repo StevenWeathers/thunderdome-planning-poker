@@ -2,9 +2,10 @@ package api
 
 import (
 	"context"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"net/http"
 	"strings"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 
 	"github.com/gorilla/mux"
 )
@@ -20,13 +21,13 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 			var apiKeyErr error
 			User, apiKeyErr = a.db.GetApiKeyUser(apiKey)
 			if apiKeyErr != nil {
-				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
+				a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
 			}
 		} else {
 			SessionId, cookieErr := a.validateSessionCookie(w, r)
 			if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
-				Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+				a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 				return
 			}
 
@@ -34,20 +35,20 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 				var userErr error
 				User, userErr = a.db.GetSessionUser(SessionId)
 				if userErr != nil {
-					Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
 				}
 			} else {
 				UserID, err := a.validateUserCookie(w, r)
 				if err != nil {
-					Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
 				}
 
 				var userErr error
 				User, userErr = a.db.GetGuestUser(UserID)
 				if userErr != nil {
-					Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
 				}
 			}
@@ -69,7 +70,7 @@ func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		EntityUserID := vars["userId"]
 
 		if UserType != adminUserType && EntityUserID != UserID {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
@@ -83,7 +84,7 @@ func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
 		if UserType != adminUserType {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ADMIN"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ADMIN"))
 			return
 		}
 
@@ -100,18 +101,18 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		EntityUserID := vars["userId"]
 
 		if UserType != adminUserType && (EntityUserID != UserID) {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		EntityUser, EntityUserErr := a.db.GetUser(EntityUserID)
 		if EntityUserErr != nil {
-			Failure(w, r, http.StatusInternalServerError, EntityUserErr)
+			a.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
 			return
 		}
 
 		if EntityUser.Verified == false {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
 			return
 		}
 
@@ -129,7 +130,7 @@ func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 
@@ -149,11 +150,11 @@ func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 		if UserType != adminUserType && Role != "ADMIN" {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ORG_ADMIN"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ORG_ADMIN"))
 			return
 		}
 
@@ -174,7 +175,7 @@ func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
 
@@ -196,11 +197,11 @@ func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
 		if UserType != adminUserType && TeamRole != "ADMIN" && OrgRole != "ADMIN" {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_ORGANIZATION_ADMIN"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_ORGANIZATION_ADMIN"))
 			return
 		}
 
@@ -222,7 +223,7 @@ func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 			return
 		}
 
@@ -244,11 +245,11 @@ func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 			return
 		}
 		if UserType != adminUserType && DepartmentRole != "ADMIN" && OrgRole != "ADMIN" {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
 			return
 		}
 
@@ -271,7 +272,7 @@ func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
 
@@ -295,12 +296,12 @@ func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
 
 		if UserType != adminUserType && TeamRole != "ADMIN" && DepartmentRole != "ADMIN" && OrgRole != "ADMIN" {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
 			return
 		}
 
@@ -322,7 +323,7 @@ func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
 
@@ -342,11 +343,11 @@ func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
 		if UserType != adminUserType && Role != "ADMIN" {
-			Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_ADMIN"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_ADMIN"))
 			return
 		}
 

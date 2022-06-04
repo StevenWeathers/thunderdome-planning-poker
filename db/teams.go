@@ -2,24 +2,24 @@ package db
 
 import (
 	"errors"
-	"log"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 // TeamUserRole gets a user's role in team
 func (d *Database) TeamUserRole(UserID string, TeamID string) (string, error) {
 	var teamRole string
 
-	e := d.db.QueryRow(
+	err := d.db.QueryRow(
 		`SELECT role FROM team_get_user_role($1, $2)`,
 		UserID,
 		TeamID,
 	).Scan(
 		&teamRole,
 	)
-	if e != nil {
-		log.Println(e)
+	if err != nil {
+		d.logger.Error("team_get_user_role query error", zap.Error(err))
 		return "", errors.New("error getting team users role")
 	}
 
@@ -30,7 +30,7 @@ func (d *Database) TeamUserRole(UserID string, TeamID string) (string, error) {
 func (d *Database) TeamGet(TeamID string) (*model.Team, error) {
 	var team = &model.Team{}
 
-	e := d.db.QueryRow(
+	err := d.db.QueryRow(
 		`SELECT id, name, created_date, updated_date FROM team_get_by_id($1)`,
 		TeamID,
 	).Scan(
@@ -39,8 +39,8 @@ func (d *Database) TeamGet(TeamID string) (*model.Team, error) {
 		&team.CreatedDate,
 		&team.UpdatedDate,
 	)
-	if e != nil {
-		log.Println(e)
+	if err != nil {
+		d.logger.Error("team_get_by_id query error", zap.Error(err))
 		return nil, errors.New("team not found")
 	}
 
@@ -68,13 +68,13 @@ func (d *Database) TeamListByUser(UserID string, Limit int, Offset int) []*model
 				&team.CreatedDate,
 				&team.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("team_list_by_user query scan error", zap.Error(err))
 			} else {
 				teams = append(teams, &team)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("team_list_by_user query error", zap.Error(err))
 	}
 
 	return teams
@@ -90,7 +90,7 @@ func (d *Database) TeamCreate(UserID string, TeamName string) (*model.Team, erro
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
-		log.Println("Unable to create team: ", err)
+		d.logger.Error("team_create query error", zap.Error(err))
 		return nil, err
 	}
 
@@ -107,7 +107,7 @@ func (d *Database) TeamAddUser(TeamID string, UserID string, Role string) (strin
 	)
 
 	if err != nil {
-		log.Println("Unable to add user to team: ", err)
+		d.logger.Error("team_user_add query error", zap.Error(err))
 		return "", err
 	}
 
@@ -150,13 +150,14 @@ func (d *Database) TeamUserList(TeamID string, Limit int, Offset int) ([]*model.
 				&usr.Role,
 				&usr.Avatar,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("team_user_list query scan error", zap.Error(err))
 			} else {
 				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}
 	} else {
+		d.logger.Error("team_user_list query error", zap.Error(err))
 		return nil, 0, err
 	}
 
@@ -172,7 +173,7 @@ func (d *Database) TeamRemoveUser(TeamID string, UserID string) error {
 	)
 
 	if err != nil {
-		log.Println("Unable to remove user from team: ", err)
+		d.logger.Error("team_user_remove query error", zap.Error(err))
 		return err
 	}
 
@@ -198,13 +199,13 @@ func (d *Database) TeamBattleList(TeamID string, Limit int, Offset int) []*model
 				&tb.Id,
 				&tb.Name,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("team_battle_list query scan error", zap.Error(err))
 			} else {
 				battles = append(battles, &tb)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("team_battle_list query error", zap.Error(err))
 	}
 
 	return battles
@@ -219,7 +220,7 @@ func (d *Database) TeamAddBattle(TeamID string, BattleID string) error {
 	)
 
 	if err != nil {
-		log.Println("Unable to add battle to team: ", err)
+		d.logger.Error("team_battle_add query error", zap.Error(err))
 		return err
 	}
 
@@ -235,7 +236,7 @@ func (d *Database) TeamRemoveBattle(TeamID string, BattleID string) error {
 	)
 
 	if err != nil {
-		log.Println("Unable to remove battle from team: ", err)
+		d.logger.Error("team_battle_remove query error", zap.Error(err))
 		return err
 	}
 
@@ -250,7 +251,7 @@ func (d *Database) TeamDelete(TeamID string) error {
 	)
 
 	if err != nil {
-		log.Println("Unable to delete team: ", err)
+		d.logger.Error("team_delete query error", zap.Error(err))
 		return err
 	}
 
@@ -278,13 +279,13 @@ func (d *Database) TeamRetroList(TeamID string, Limit int, Offset int) []*model.
 				&tb.Format,
 				&tb.Phase,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("team_retro_list query scan error", zap.Error(err))
 			} else {
 				retros = append(retros, &tb)
 			}
 		}
 	} else {
-		log.Println(err)
+		d.logger.Error("team_retro_list query error", zap.Error(err))
 	}
 
 	return retros
@@ -299,7 +300,7 @@ func (d *Database) TeamAddRetro(TeamID string, RetroID string) error {
 	)
 
 	if err != nil {
-		log.Println("Unable to add retro to team: ", err)
+		d.logger.Error("team_retro_add query error", zap.Error(err))
 		return err
 	}
 
@@ -315,7 +316,7 @@ func (d *Database) TeamRemoveRetro(TeamID string, RetroID string) error {
 	)
 
 	if err != nil {
-		log.Println("Unable to remove retro from team: ", err)
+		d.logger.Error("team_retro_remove query error", zap.Error(err))
 		return err
 	}
 

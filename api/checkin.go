@@ -1,9 +1,10 @@
 package api
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 // handleCheckinsGet gets a list of team checkins
@@ -35,11 +36,11 @@ func (a *api) handleCheckinsGet() http.HandlerFunc {
 
 		Checkins, err := a.db.CheckinList(TeamID, date, tz)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, Checkins, nil)
+		a.Success(w, r, http.StatusOK, Checkins, nil)
 	}
 }
 
@@ -76,14 +77,14 @@ func (a *api) handleCheckinCreate() http.HandlerFunc {
 		err := a.db.CheckinCreate(TeamId, UserId, Yesterday, Today, Blockers, Discuss, GoalsMet)
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
-				Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 				return
 			}
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -113,11 +114,11 @@ func (a *api) handleCheckinUpdate() http.HandlerFunc {
 
 		err := a.db.CheckinUpdate(CheckinId, Yesterday, Today, Blockers, Discuss, GoalsMet)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -140,10 +141,10 @@ func (a *api) handleCheckinDelete() http.HandlerFunc {
 
 		err := a.db.CheckinDelete(CheckinId)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

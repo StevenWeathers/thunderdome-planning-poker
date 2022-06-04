@@ -36,7 +36,7 @@ type departmentTeamResponse struct {
 func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
@@ -45,7 +45,7 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 
 		Departments := a.db.OrganizationDepartmentList(OrgID, Limit, Offset)
 
-		Success(w, r, http.StatusOK, Departments, nil)
+		a.Success(w, r, http.StatusOK, Departments, nil)
 	}
 }
 
@@ -63,7 +63,7 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
@@ -74,13 +74,13 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -91,7 +91,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 			DepartmentRole:   DepartmentRole,
 		}
 
-		Success(w, r, http.StatusOK, result, nil)
+		a.Success(w, r, http.StatusOK, result, nil)
 	}
 }
 
@@ -109,7 +109,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 func (a *api) handleCreateDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
@@ -119,11 +119,11 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		NewDepartment, err := a.db.DepartmentCreate(OrgID, OrgName)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, NewDepartment, nil)
+		a.Success(w, r, http.StatusOK, NewDepartment, nil)
 	}
 }
 
@@ -140,7 +140,7 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
@@ -149,7 +149,7 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 
 		Teams := a.db.DepartmentTeamList(DepartmentID, Limit, Offset)
 
-		Success(w, r, http.StatusOK, Teams, nil)
+		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
 }
 
@@ -166,7 +166,7 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
@@ -175,7 +175,7 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 
 		Users := a.db.DepartmentUserList(DepartmentID, Limit, Offset)
 
-		Success(w, r, http.StatusOK, Users, nil)
+		a.Success(w, r, http.StatusOK, Users, nil)
 	}
 }
 
@@ -194,7 +194,7 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
@@ -204,11 +204,11 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		NewTeam, err := a.db.DepartmentTeamCreate(DepartmentID, TeamName)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, NewTeam, nil)
+		a.Success(w, r, http.StatusOK, NewTeam, nil)
 	}
 }
 
@@ -228,7 +228,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		keyVal := getJSONRequestBody(r, w)
@@ -240,17 +240,17 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
 		_, err := a.db.DepartmentAddUser(DepartmentId, User.Id, Role)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -269,7 +269,7 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
@@ -278,11 +278,11 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 
 		err := a.db.DepartmentRemoveUser(DepartmentID, UserID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -303,7 +303,7 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		keyVal := getJSONRequestBody(r, w)
@@ -317,23 +317,23 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
 		_, DepartmentRole, roleErr := a.db.DepartmentUserRole(User.Id, OrgID, DepartmentID)
 		if DepartmentRole == "" || roleErr != nil {
-			Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "DEPARTMENT_USER_REQUIRED"))
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "DEPARTMENT_USER_REQUIRED"))
 			return
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.Id, Role)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -352,7 +352,7 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.config.OrganizationsEnabled {
-			Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
@@ -365,19 +365,19 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 
 		Organization, err := a.db.OrganizationGet(OrgID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Department, err := a.db.DepartmentGet(DepartmentID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -390,6 +390,6 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 			TeamRole:         TeamRole,
 		}
 
-		Success(w, r, http.StatusOK, result, nil)
+		a.Success(w, r, http.StatusOK, result, nil)
 	}
 }

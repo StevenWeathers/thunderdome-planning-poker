@@ -4,7 +4,6 @@ package email
 import (
 	"crypto/tls"
 	"fmt"
-	"log"
 	"net/mail"
 	"net/smtp"
 	"strconv"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/matcornic/hermes/v2"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 // smtpServer data to smtp server
@@ -46,10 +46,11 @@ type Config struct {
 // Email contains all the methods to send application emails
 type Email struct {
 	config *Config
+	logger *zap.Logger
 }
 
 // New creates a new instance of Email
-func New(AppDomain string, PathPrefix string) *Email {
+func New(AppDomain string, PathPrefix string, logger *zap.Logger) *Email {
 	var AppURL string = "https://" + AppDomain + PathPrefix + "/"
 	var m = &Email{
 		// read environment variables and sets up mailserver configuration values
@@ -64,6 +65,7 @@ func New(AppDomain string, PathPrefix string) *Email {
 			smtpPass:     viper.GetString("smtp.pass"),
 			smtpSender:   viper.GetString("smtp.sender"),
 		},
+		logger: logger,
 	}
 
 	// smtp server configuration.
@@ -136,7 +138,7 @@ func (m *Email) Send(UserName string, UserEmail string, Subject string, Body str
 
 	c, err := smtp.Dial(smtpServerConfig.Address())
 	if err != nil {
-		log.Println("Error dialing SMTP: ", err)
+		m.logger.Error("Error dialing SMTP", zap.Error(err))
 		return err
 	}
 
@@ -145,38 +147,38 @@ func (m *Email) Send(UserName string, UserEmail string, Subject string, Body str
 	// Auth
 	if m.config.smtpSecure {
 		if err = c.Auth(smtpAuth); err != nil {
-			log.Println("Error authenticating SMTP: ", err)
+			m.logger.Error("Error authenticating SMTP", zap.Error(err))
 			return err
 		}
 	}
 
 	// To && From
 	if err = c.Mail(smtpFrom.Address); err != nil {
-		log.Println("Error setting SMTP from: ", err)
+		m.logger.Error("Error setting SMTP from", zap.Error(err))
 		return err
 	}
 
 	if err = c.Rcpt(to.Address); err != nil {
-		log.Println("Error setting SMTP to: ", err)
+		m.logger.Error("Error setting SMTP to", zap.Error(err))
 		return err
 	}
 
 	// Data
 	w, err := c.Data()
 	if err != nil {
-		log.Println("Error setting SMTP data: ", err)
+		m.logger.Error("Error setting SMTP data", zap.Error(err))
 		return err
 	}
 
 	_, err = w.Write([]byte(message))
 	if err != nil {
-		log.Println("Error sending email: ", err)
+		m.logger.Error("Error sending email", zap.Error(err))
 		return err
 	}
 
 	err = w.Close()
 	if err != nil {
-		log.Println("Error closing SMTP: ", err)
+		m.logger.Error("Error closing SMTP", zap.Error(err))
 		return err
 	}
 

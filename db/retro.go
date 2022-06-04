@@ -2,8 +2,9 @@ package db
 
 import (
 	"errors"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"log"
+	"go.uber.org/zap"
 )
 
 // RetroCreate adds a new retro to the db
@@ -36,6 +37,7 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 		encryptedJoinCode,
 	).Scan(&b.Id)
 	if e != nil {
+		d.logger.Error("create retro error", zap.Error(e))
 		return nil, e
 	}
 
@@ -48,7 +50,7 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 			b.Id,
 			OwnerID,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("insert retro user error", zap.Error(err))
 		}
 	}
 
@@ -124,7 +126,7 @@ func (d *Database) RetroGetByUser(UserID string) ([]*model.Retro, error) {
 			&b.Phase,
 			&b.JoinCode,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("get retro by user error", zap.Error(err))
 		} else {
 			retros = append(retros, b)
 		}
@@ -136,9 +138,9 @@ func (d *Database) RetroGetByUser(UserID string) ([]*model.Retro, error) {
 // RetroConfirmOwner confirms the user is infact owner of the retro
 func (d *Database) RetroConfirmOwner(RetroID string, userID string) error {
 	var ownerID string
-	e := d.db.QueryRow("SELECT owner_id FROM retro WHERE id = $1", RetroID).Scan(&ownerID)
-	if e != nil {
-		log.Println(e)
+	err := d.db.QueryRow("SELECT owner_id FROM retro WHERE id = $1", RetroID).Scan(&ownerID)
+	if err != nil {
+		d.logger.Error("get retro owner error", zap.Error(err))
 		return errors.New("Retro Not found")
 	}
 
@@ -154,7 +156,7 @@ func (d *Database) RetroGetUser(RetroID string, UserID string) (*model.RetroUser
 	var active bool
 	var w model.RetroUser
 
-	e := d.db.QueryRow(
+	err := d.db.QueryRow(
 		`SELECT * FROM get_retro_user($1, $2);`,
 		RetroID,
 		UserID,
@@ -163,8 +165,8 @@ func (d *Database) RetroGetUser(RetroID string, UserID string) (*model.RetroUser
 		&w.UserName,
 		&active,
 	)
-	if e != nil {
-		log.Println(e)
+	if err != nil {
+		d.logger.Error("get retro user error", zap.Error(err))
 		return nil, errors.New("User Not found")
 	}
 
@@ -187,7 +189,7 @@ func (d *Database) RetroGetUsers(RetroID string) []*model.RetroUser {
 		for rows.Next() {
 			var w model.RetroUser
 			if err := rows.Scan(&w.UserID, &w.UserName, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
-				log.Println(err)
+				d.logger.Error("get retro users error", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -211,7 +213,7 @@ func (d *Database) RetroAddUser(RetroID string, UserID string) ([]*model.RetroUs
 		RetroID,
 		UserID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("insert retro user error", zap.Error(err))
 	}
 
 	users := d.RetroGetUsers(RetroID)
@@ -223,12 +225,12 @@ func (d *Database) RetroAddUser(RetroID string, UserID string) ([]*model.RetroUs
 func (d *Database) RetroRetreatUser(RetroID string, UserID string) []*model.RetroUser {
 	if _, err := d.db.Exec(
 		`UPDATE retro_user SET active = false WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("update retro user active false error", zap.Error(err))
 	}
 
 	if _, err := d.db.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("update user last active timestamp error", zap.Error(err))
 	}
 
 	users := d.RetroGetUsers(RetroID)
@@ -240,13 +242,13 @@ func (d *Database) RetroRetreatUser(RetroID string, UserID string) []*model.Retr
 func (d *Database) RetroAbandon(RetroID string, UserID string) ([]*model.RetroUser, error) {
 	if _, err := d.db.Exec(
 		`UPDATE retro_user SET active = false, abandoned = true WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("update retro user abandoned true error", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.db.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("update user last active timestamp error", zap.Error(err))
 		return nil, err
 	}
 
@@ -259,7 +261,7 @@ func (d *Database) RetroAbandon(RetroID string, UserID string) ([]*model.RetroUs
 func (d *Database) RetroSetOwner(RetroID string, userID string, OwnerID string) (*model.Retro, error) {
 	if _, err := d.db.Exec(
 		`call set_retro_owner($1, $2);`, RetroID, OwnerID); err != nil {
-		log.Println(err)
+		d.logger.Error("call set_retro_owner error", zap.Error(err))
 	}
 
 	retro, err := d.RetroGet(RetroID)
@@ -274,7 +276,7 @@ func (d *Database) RetroSetOwner(RetroID string, userID string, OwnerID string) 
 func (d *Database) RetroAdvancePhase(RetroID string, Phase string) (*model.Retro, error) {
 	if _, err := d.db.Exec(
 		`call set_retro_phase($1, $2);`, RetroID, Phase); err != nil {
-		log.Println(err)
+		d.logger.Error("call set_retro_phase error", zap.Error(err))
 		return nil, errors.New("Unable to advance phase")
 	}
 
@@ -290,7 +292,7 @@ func (d *Database) RetroAdvancePhase(RetroID string, Phase string) (*model.Retro
 func (d *Database) RetroDelete(RetroID string) error {
 	if _, err := d.db.Exec(
 		`call delete_retro($1);`, RetroID); err != nil {
-		log.Println(err)
+		d.logger.Error("call delete_retro error", zap.Error(err))
 		return err
 	}
 
@@ -301,7 +303,7 @@ func (d *Database) RetroDelete(RetroID string) error {
 func (d *Database) GetRetroUserActiveStatus(RetroID string, UserID string) error {
 	var active bool
 
-	e := d.db.QueryRow(`
+	err := d.db.QueryRow(`
 		SELECT coalesce(active, FALSE)
 		FROM retro_user
 		WHERE user_id = $2 AND retro_id = $1;`,
@@ -310,8 +312,9 @@ func (d *Database) GetRetroUserActiveStatus(RetroID string, UserID string) error
 	).Scan(
 		&active,
 	)
-	if e != nil {
-		return e
+	if err != nil {
+		d.logger.Error("get retro user active status error", zap.Error(err))
+		return err
 	}
 
 	if active {
@@ -358,7 +361,7 @@ func (d *Database) GetRetros(Limit int, Offset int) ([]*model.Retro, int, error)
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("get retros error", zap.Error(err))
 		} else {
 			retros = append(retros, b)
 		}
@@ -405,7 +408,7 @@ func (d *Database) GetActiveRetros(Limit int, Offset int) ([]*model.Retro, int, 
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("get active retros error", zap.Error(err))
 		} else {
 			retros = append(retros, b)
 		}

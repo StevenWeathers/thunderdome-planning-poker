@@ -8,10 +8,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
-	"golang.org/x/crypto/bcrypt"
 	"io"
-	"log"
 	"math/big"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // contains checks if a string is present in a slice
@@ -82,7 +82,6 @@ func hashSaltPassword(UserPassword string) (string, error) {
 	// than the MinCost (4)
 	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.DefaultCost)
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 	// GenerateFromPassword returns a byte slice, so we need to
@@ -98,7 +97,6 @@ func comparePasswords(hashedPwd string, password string) bool {
 	SubmittedPassword := []byte(password)
 	err := bcrypt.CompareHashAndPassword(byteHash, SubmittedPassword)
 	if err != nil {
-		log.Println(err)
 		return false
 	}
 

@@ -3,8 +3,9 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"log"
+	"go.uber.org/zap"
 )
 
 // GetPlans retrieves plans for given battle
@@ -33,7 +34,7 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 			if err := planRows.Scan(
 				&p.Id, &p.Name, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Points, &p.Active, &p.Skipped, &p.VoteStartTime, &p.VoteEndTime, &v,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("get battle plans query error", zap.Error(err))
 			} else {
 				p.ReferenceId = ReferenceID.String
 				p.Link = Link.String
@@ -41,7 +42,7 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 				p.AcceptanceCriteria = AcceptanceCriteria.String
 				err = json.Unmarshal([]byte(v), &p.Votes)
 				if err != nil {
-					log.Println(err)
+					d.logger.Error("get battle plans query scan error", zap.Error(err))
 				}
 
 				// don't send others vote values to client, prevent sneaky devs from peaking at votes
@@ -66,7 +67,7 @@ func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string,
 	if _, err := d.db.Exec(
 		`call create_plan($1, $2, $3, $4, $5, $6, $7);`, BattleID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call create_plan error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -79,7 +80,7 @@ func (d *Database) ActivatePlanVoting(BattleID string, PlanID string) ([]*model.
 	if _, err := d.db.Exec(
 		`call activate_plan_voting($1, $2);`, BattleID, PlanID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call activate_plan_voting error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -91,7 +92,7 @@ func (d *Database) ActivatePlanVoting(BattleID string, PlanID string) ([]*model.
 func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteValue string) (BattlePlans []*model.Plan, AllUsersVoted bool) {
 	if _, err := d.db.Exec(
 		`call set_user_vote($1, $2, $3);`, PlanID, UserID, VoteValue); err != nil {
-		log.Println(err)
+		d.logger.Error("call set_user_vote error", zap.Error(err))
 	}
 
 	Plans := d.GetPlans(BattleID, "")
@@ -124,6 +125,7 @@ func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteVa
 func (d *Database) RetractVote(BattleID string, UserID string, PlanID string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call retract_user_vote($1, $2);`, PlanID, UserID); err != nil {
+		d.logger.Error("call retract_user_vote error", zap.Error(err))
 		return nil, err
 	}
 
@@ -136,7 +138,7 @@ func (d *Database) RetractVote(BattleID string, UserID string, PlanID string) ([
 func (d *Database) EndPlanVoting(BattleID string, PlanID string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call end_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
-		log.Println(err)
+		d.logger.Error("call end_plan_voting error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -148,7 +150,7 @@ func (d *Database) EndPlanVoting(BattleID string, PlanID string) ([]*model.Plan,
 func (d *Database) SkipPlan(BattleID string, PlanID string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call skip_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
-		log.Println(err)
+		d.logger.Error("call skip_plan_voting error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -163,7 +165,7 @@ func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, P
 	// set PlanID to true
 	if _, err := d.db.Exec(
 		`call revise_plan($1, $2, $3, $4, $5, $6, $7);`, PlanID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria); err != nil {
-		log.Println(err)
+		d.logger.Error("call revise_plan error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -175,7 +177,7 @@ func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, P
 func (d *Database) BurnPlan(BattleID string, PlanID string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call delete_plan($1, $2);`, BattleID, PlanID); err != nil {
-		log.Println(err)
+		d.logger.Error("call delete_plan error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -187,7 +189,7 @@ func (d *Database) BurnPlan(BattleID string, PlanID string) ([]*model.Plan, erro
 func (d *Database) FinalizePlan(BattleID string, PlanID string, PlanPoints string) ([]*model.Plan, error) {
 	if _, err := d.db.Exec(
 		`call finalize_plan($1, $2, $3);`, BattleID, PlanID, PlanPoints); err != nil {
-		log.Println(err)
+		d.logger.Error("call finalize_plan error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")

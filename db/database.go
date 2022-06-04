@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+
 	"github.com/golang-migrate/migrate/v4/source/iofs"
-	"log"
+	"go.uber.org/zap"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -20,10 +21,10 @@ var fs embed.FS
 
 // New runs db migrations, sets up a db connection pool
 // and sets previously active users to false during startup
-func New(AdminEmail string, config *Config) *Database {
+func New(AdminEmail string, config *Config, logger *zap.Logger) *Database {
 	dms, err := iofs.New(fs, "migrations")
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("error loading db migrations", zap.Error(err))
 	}
 
 	// Do this once for each unique policy, and use the policy for the life of the program
@@ -34,6 +35,7 @@ func New(AdminEmail string, config *Config) *Database {
 		// read environment variables and sets up database configuration values
 		config:              config,
 		htmlSanitizerPolicy: bmp,
+		logger:              logger,
 	}
 
 	psqlInfo := fmt.Sprintf(
@@ -48,13 +50,13 @@ func New(AdminEmail string, config *Config) *Database {
 
 	pdb, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal("error connecting to the database: ", err)
+		d.logger.Fatal("error connecting to the database: ", zap.Error(err))
 	}
 	d.db = pdb
 
 	driver, err := postgres.WithInstance(pdb, &postgres.Config{})
 	if err != nil {
-		log.Fatal(err)
+		d.logger.Error("db driver error", zap.Error(err))
 	}
 	m, err := migrate.NewWithInstance(
 		"iofs",
@@ -62,13 +64,13 @@ func New(AdminEmail string, config *Config) *Database {
 		"postgres",
 		driver)
 	if err := m.Up(); err != nil && err.Error() != "no change" {
-		log.Fatal(err)
+		d.logger.Error("db migration up error", zap.Error(err))
 	}
 
 	// on server start reset all users to active false for battles
 	if _, err := d.db.Exec(
 		`call deactivate_all_users();`); err != nil {
-		log.Println(err)
+		d.logger.Error("call deactivate_all_users error", zap.Error(err))
 	}
 
 	// on server start if admin email is specified set that user to admin type
@@ -77,7 +79,7 @@ func New(AdminEmail string, config *Config) *Database {
 			`call promote_user_by_email($1);`,
 			AdminEmail,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("call promote_user_by_email error", zap.Error(err), zap.String("admin_email", AdminEmail))
 		}
 	}
 
