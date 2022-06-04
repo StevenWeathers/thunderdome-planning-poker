@@ -1,9 +1,8 @@
 package db
 
 import (
-	"log"
-
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 // FilterItemsByUser filters the list of items by userId
@@ -29,6 +28,7 @@ func (d *Database) CreateRetroItem(RetroID string, UserID string, ItemType strin
 		RetroID,
 	).Scan(&groupId)
 	if err != nil {
+		d.logger.Error("insert retro group error", zap.Error(err))
 		return nil, err
 	}
 
@@ -38,7 +38,7 @@ func (d *Database) CreateRetroItem(RetroID string, UserID string, ItemType strin
 		VALUES ($1, $2, $3, $4, $5);`,
 		RetroID, groupId, ItemType, Content, UserID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("insert retro item error", zap.Error(err))
 	}
 
 	items := d.GetRetroItems(RetroID)
@@ -52,7 +52,7 @@ func (d *Database) GroupRetroItem(RetroID string, ItemId string, GroupId string)
 		`UPDATE retro_item SET group_id = $3 WHERE retro_id = $1 AND id = $2;`,
 		RetroID, ItemId, GroupId,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("update retro item error", zap.Error(err))
 	}
 
 	items := d.GetRetroItems(RetroID)
@@ -64,7 +64,7 @@ func (d *Database) GroupRetroItem(RetroID string, ItemId string, GroupId string)
 func (d *Database) DeleteRetroItem(RetroID string, userID string, Type string, ItemID string) ([]*model.RetroItem, error) {
 	if _, err := d.db.Exec(
 		`DELETE FROM retro_item WHERE id = $1 AND type = $2;`, ItemID, Type); err != nil {
-		log.Println(err)
+		d.logger.Error("delete retro item error", zap.Error(err))
 	}
 
 	items := d.GetRetroItems(RetroID)
@@ -85,13 +85,13 @@ func (d *Database) GetRetroItems(RetroID string) []*model.RetroItem {
 		for itemRows.Next() {
 			var ri = &model.RetroItem{}
 			if err := itemRows.Scan(&ri.ID, &ri.UserID, &ri.GroupID, &ri.Content, &ri.Type); err != nil {
-				log.Println(err)
+				d.logger.Error("get retro items query scan error", zap.Error(err))
 			} else {
 				items = append(items, ri)
 			}
 		}
 	} else {
-		log.Println(itemsErr)
+		d.logger.Error("get retro items query error", zap.Error(itemsErr))
 	}
 
 	return items
@@ -110,13 +110,13 @@ func (d *Database) GetRetroGroups(RetroID string) []*model.RetroGroup {
 		for itemRows.Next() {
 			var ri = &model.RetroGroup{}
 			if err := itemRows.Scan(&ri.ID, &ri.Name); err != nil {
-				log.Println(err)
+				d.logger.Error("get retro groups query scan error", zap.Error(err))
 			} else {
 				groups = append(groups, ri)
 			}
 		}
 	} else {
-		log.Println(itemsErr)
+		d.logger.Error("get retro groups query error", zap.Error(itemsErr))
 	}
 
 	return groups
@@ -128,7 +128,7 @@ func (d *Database) GroupNameChange(RetroID string, GroupId string, Name string) 
 		`UPDATE retro_group SET name = $3 WHERE retro_id = $1 AND id = $2;`,
 		RetroID, GroupId, Name,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("update retro group error", zap.Error(err))
 	}
 
 	groups := d.GetRetroGroups(RetroID)
@@ -149,13 +149,13 @@ func (d *Database) GetRetroVotes(RetroID string) []*model.RetroVote {
 		for itemRows.Next() {
 			var rv = &model.RetroVote{}
 			if err := itemRows.Scan(&rv.GroupID, &rv.UserID); err != nil {
-				log.Println(err)
+				d.logger.Error("get retro votes query scan error", zap.Error(err))
 			} else {
 				votes = append(votes, rv)
 			}
 		}
 	} else {
-		log.Println(itemsErr)
+		d.logger.Error("get retro votes query error", zap.Error(itemsErr))
 	}
 
 	return votes
@@ -169,7 +169,7 @@ func (d *Database) GroupUserVote(RetroID string, GroupID string, UserID string) 
 		VALUES ($1, $2, $3);`,
 		RetroID, GroupID, UserID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("retro group vote query error", zap.Error(err))
 	}
 
 	votes := d.GetRetroVotes(RetroID)
@@ -184,7 +184,7 @@ func (d *Database) GroupUserSubtractVote(RetroID string, GroupID string, UserID 
 		WHERE retro_id = $1 AND group_id = $2 AND user_id = $3;`,
 		RetroID, GroupID, UserID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("retro group subtract vote query error", zap.Error(err))
 	}
 
 	votes := d.GetRetroVotes(RetroID)
@@ -202,7 +202,7 @@ func (d *Database) RetroUserVoteCount(RetroID string, UserID string) (int, error
 		UserID,
 	).Scan(&voteCount)
 	if err != nil {
-		log.Println(err)
+		d.logger.Error("retro group vote count query error", zap.Error(err))
 		return voteCount, err
 	}
 

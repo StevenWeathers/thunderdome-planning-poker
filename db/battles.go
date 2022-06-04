@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 //CreateBattle creates a new story pointing session (battle)
@@ -34,7 +34,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 		PointAverageRounding,
 	).Scan(&b.Id)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("create_battle query error", zap.Error(e))
 		return nil, errors.New("error creating battle")
 	}
 
@@ -52,7 +52,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 			plan.AcceptanceCriteria,
 		).Scan(&plan.Id)
 		if e != nil {
-			log.Println(e)
+			d.logger.Error("insert plans error", zap.Error(e))
 		}
 	}
 
@@ -89,7 +89,7 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 		WHERE id = $1`,
 		BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding, encryptedJoinCode, encryptedLeaderCode,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("update battle error", zap.Error(err))
 		return errors.New("unable to revise battle")
 	}
 
@@ -105,8 +105,8 @@ func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 		WHERE id = $1`,
 		BattleID,
 	).Scan(&EncryptedLeaderCode); err != nil {
-		log.Println(err)
-		return "", errors.New("unable to revise battle leader_code")
+		d.logger.Error("get battle leadercode error", zap.Error(err))
+		return "", errors.New("unable to retrieve battle leader_code")
 	}
 
 	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, d.config.AESHashkey)
@@ -159,7 +159,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 		&leaders,
 	)
 	if e != nil {
-		log.Println("error getting battle: ", e)
+		d.logger.Error("error getting battle", zap.Error(e))
 		return nil, errors.New("not found")
 	}
 
@@ -250,7 +250,7 @@ func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*mo
 			&plans,
 			&leaders,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("error getting battle by user", zap.Error(e))
 		} else {
 			_ = json.Unmarshal([]byte(plans), &b.Plans)
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
@@ -268,7 +268,7 @@ func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 	var leaderID string
 	e := d.db.QueryRow("SELECT user_id FROM battles_leaders WHERE battle_id = $1 AND user_id = $2", BattleID, UserID).Scan(&leaderID)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("error confirming battle leader", zap.Error(e))
 		return errors.New("not a battle leader")
 	}
 
@@ -316,7 +316,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
 		for rows.Next() {
 			var w model.BattleUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
-				log.Println(err)
+				d.logger.Error("error getting battle users", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -348,7 +348,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
 		for rows.Next() {
 			var w model.BattleUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
-				log.Println(err)
+				d.logger.Error("error getting active battle users", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -372,7 +372,7 @@ func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*model.Bat
 		BattleID,
 		UserID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("error adding user to battle", zap.Error(err))
 	}
 
 	users := d.GetBattleUsers(BattleID)
@@ -384,12 +384,12 @@ func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*model.Bat
 func (d *Database) RetreatUser(BattleID string, UserID string) []*model.BattleUser {
 	if _, err := d.db.Exec(
 		`UPDATE battles_users SET active = false WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("error updating battle user to active false", zap.Error(err))
 	}
 
 	if _, err := d.db.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("error updating user last active timestamp", zap.Error(err))
 	}
 
 	users := d.GetBattleUsers(BattleID)
@@ -401,13 +401,13 @@ func (d *Database) RetreatUser(BattleID string, UserID string) []*model.BattleUs
 func (d *Database) AbandonBattle(BattleID string, UserID string) ([]*model.BattleUser, error) {
 	if _, err := d.db.Exec(
 		`UPDATE battles_users SET active = false, abandoned = true WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("error updating battle user to abandoned", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.db.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("error updating user last active timestamp", zap.Error(err))
 		return nil, err
 	}
 
@@ -423,7 +423,7 @@ func (d *Database) SetBattleLeader(BattleID string, LeaderID string) ([]string, 
 	// set battle leader
 	if _, err := d.db.Exec(
 		`call set_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
-		log.Println(err)
+		d.logger.Error("call set_battle_leader query error", zap.Error(err))
 		return nil, errors.New("unable to promote leader")
 	}
 
@@ -440,7 +440,7 @@ func (d *Database) SetBattleLeader(BattleID string, LeaderID string) ([]string, 
 		if err := leaderRows.Scan(
 			&leader,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("battles_leaders query scan error", zap.Error(err))
 		} else {
 			leaders = append(leaders, leader)
 		}
@@ -456,7 +456,7 @@ func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]strin
 	// set battle leader
 	if _, err := d.db.Exec(
 		`call demote_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
-		log.Println(err)
+		d.logger.Error("call demote_battle_leader query error", zap.Error(err))
 		return nil, errors.New("unable to demote leader")
 	}
 
@@ -473,7 +473,7 @@ func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]strin
 		if err := leaderRows.Scan(
 			&leader,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("battles_leaders query scan error", zap.Error(err))
 		} else {
 			leaders = append(leaders, leader)
 		}
@@ -486,13 +486,13 @@ func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]strin
 func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*model.BattleUser, error) {
 	if _, err := d.db.Exec(
 		`UPDATE battles_users SET spectator = $3 WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
-		log.Println(err)
+		d.logger.Error("update battle user spectator error", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.db.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("error updating user last active timestamp", zap.Error(err))
 	}
 
 	users := d.GetBattleUsers(BattleID)
@@ -504,7 +504,7 @@ func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator boo
 func (d *Database) DeleteBattle(BattleID string) error {
 	if _, err := d.db.Exec(
 		`call delete_battle($1);`, BattleID); err != nil {
-		log.Println(err)
+		d.logger.Error("delete battle error", zap.Error(err))
 		return err
 	}
 
@@ -521,7 +521,7 @@ func (d *Database) AddBattleLeadersByEmail(BattleID string, LeaderEmails []strin
 		`select leaders FROM add_battle_leaders_by_email($1, $2);`, BattleID, emails,
 	).Scan(&leaders)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("add_battle_leaders_by_email query error", zap.Error(e))
 		return nil, errors.New("error creating battle")
 	}
 
@@ -581,7 +581,7 @@ func (d *Database) GetBattles(Limit int, Offset int) ([]*model.Battle, int, erro
 			&b.UpdatedDate,
 			&leaders,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("get battles query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
@@ -645,7 +645,7 @@ func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*model.Battle, int
 			&b.UpdatedDate,
 			&leaders,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("get active battles query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
