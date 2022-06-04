@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/go-ldap/ldap/v3"
@@ -228,7 +229,7 @@ func (a *api) Failure(w http.ResponseWriter, r *http.Request, code int, err erro
 		a.logger.Error(
 			"[http] error",
 			zap.String("method", r.Method),
-			zap.String("url_path", r.URL.Path),
+			zap.String("url_path", sanitizeUserInputForLogs(r.URL.Path)),
 			zap.Error(err),
 		)
 	}
@@ -293,6 +294,13 @@ func getSearchFromRequest(r *http.Request, w http.ResponseWriter) (search string
 	return Search, nil
 }
 
+// for logging purposes sanitize strings by removing new lines
+func sanitizeUserInputForLogs(unescapedInput string) string {
+	escapedString := strings.Replace(unescapedInput, "\n", "", -1)
+	escapedString = strings.Replace(escapedString, "\r", "", -1)
+	return escapedString
+}
+
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user
 func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*model.User, string, error) {
 	var AuthedUser *model.User
@@ -330,12 +338,12 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		a.logger.Error("Failed performing ldap search query", zap.String("username", UserName), zap.Error(err))
+		a.logger.Error("Failed performing ldap search query", zap.String("username", sanitizeUserInputForLogs(UserName)), zap.Error(err))
 		return AuthedUser, SessionId, err
 	}
 
 	if len(sr.Entries) != 1 {
-		a.logger.Error("User does not exist or too many entries returned", zap.String("username", UserName))
+		a.logger.Error("User does not exist or too many entries returned", zap.String("username", sanitizeUserInputForLogs(UserName)))
 		return AuthedUser, SessionId, errors.New("user not found")
 	}
 
@@ -345,13 +353,13 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 
 	err = l.Bind(userdn, UserPassword)
 	if err != nil {
-		a.logger.Error("Failed authenticating user", zap.String("username", UserName))
+		a.logger.Error("Failed authenticating user", zap.String("username", sanitizeUserInputForLogs(UserName)))
 		return AuthedUser, SessionId, err
 	}
 
 	AuthedUser, err = a.db.GetUserByEmail(useremail)
 	if AuthedUser == nil {
-		a.logger.Error("User does not exist in database, auto-recruit", zap.String("useremail", useremail))
+		a.logger.Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
 		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(usercn, useremail, "", "")
 		if err != nil {
 			a.logger.Error("Failed auto-creating new user", zap.Error(err))
