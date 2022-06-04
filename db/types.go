@@ -2,7 +2,9 @@ package db
 
 import (
 	"database/sql"
+
 	"github.com/microcosm-cc/bluemonday"
+	"go.uber.org/zap"
 )
 
 // Config holds all the configuration for the db
@@ -21,4 +23,5 @@ type Database struct {
 	config              *Config
 	db                  *sql.DB
 	htmlSanitizerPolicy *bluemonday.Policy
+	logger              *zap.Logger
 }

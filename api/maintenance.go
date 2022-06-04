@@ -1,10 +1,10 @@
 package api
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 // handleCleanBattles handles cleaning up old battles (ADMIN Manaually Triggered)
@@ -70,7 +70,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 			return
 		}
 
-		log.Println("Lowercased", len(lowercasedUsers), "user emails")
+		a.logger.Info("Lowercased user emails", zap.Int("count", len(lowercasedUsers)))
 		for _, u := range lowercasedUsers {
 			a.email.SendEmailUpdate(u.Name, u.Email)
 		}
@@ -81,7 +81,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 			return
 		}
 
-		log.Println("Merged", len(mergedUsers), "user accounts")
+		a.logger.Info("Merged user accounts", zap.Int("count", len(mergedUsers)))
 		for _, u := range mergedUsers {
 			a.email.SendMergedUpdate(u.Name, u.Email)
 		}

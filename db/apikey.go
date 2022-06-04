@@ -2,11 +2,11 @@ package db
 
 import (
 	"errors"
-	"log"
 	"strings"
 	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 // GenerateApiKey generates a new API key for a User
@@ -14,16 +14,14 @@ func (d *Database) GenerateApiKey(UserID string, KeyName string) (*model.APIKey,
 	apiPrefix, prefixErr := randomString(8)
 	if prefixErr != nil {
 		err := errors.New("error generating api prefix")
-		log.Println(err)
-		log.Println(prefixErr)
+		d.logger.Error("error generating api prefix", zap.Error(prefixErr))
 		return nil, err
 	}
 
 	apiSecret, secretErr := randomString(32)
 	if secretErr != nil {
 		err := errors.New("error generating api secret")
-		log.Println(err)
-		log.Println(secretErr)
+		d.logger.Error("error generating api secret", zap.Error(prefixErr))
 		return nil, err
 	}
 
@@ -45,7 +43,7 @@ func (d *Database) GenerateApiKey(UserID string, KeyName string) (*model.APIKey,
 		UserID,
 	).Scan(&APIKEY.CreatedDate)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("user_apikey_add query error", zap.Error(e))
 		return nil, errors.New("unable to create new api key")
 	}
 
@@ -73,7 +71,7 @@ func (d *Database) GetUserApiKeys(UserID string) ([]*model.APIKey, error) {
 				&ak.CreatedDate,
 				&ak.UpdatedDate,
 			); err != nil {
-				log.Println(err)
+				d.logger.Error("GetUserApiKeys scan error", zap.Error(err))
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
@@ -90,13 +88,13 @@ func (d *Database) GetUserApiKeys(UserID string) ([]*model.APIKey, error) {
 func (d *Database) UpdateUserApiKey(UserID string, KeyID string, Active bool) ([]*model.APIKey, error) {
 	if _, err := d.db.Exec(
 		`CALL user_apikey_update($1, $2, $3);`, KeyID, UserID, Active); err != nil {
-		log.Println(err)
+		d.logger.Error("UpdateUserApiKey query error", zap.Error(err))
 		return nil, err
 	}
 
 	keys, keysErr := d.GetUserApiKeys(UserID)
 	if keysErr != nil {
-		log.Println(keysErr)
+		d.logger.Error("GetUserApiKeys query error", zap.Error(keysErr))
 		return nil, keysErr
 	}
 
@@ -107,13 +105,13 @@ func (d *Database) UpdateUserApiKey(UserID string, KeyID string, Active bool) ([
 func (d *Database) DeleteUserApiKey(UserID string, KeyID string) ([]*model.APIKey, error) {
 	if _, err := d.db.Exec(
 		`CALL user_apikey_delete($1, $2);`, KeyID, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("call user_apikey_delete error", zap.Error(err))
 		return nil, err
 	}
 
 	keys, keysErr := d.GetUserApiKeys(UserID)
 	if keysErr != nil {
-		log.Println(keysErr)
+		d.logger.Error("GetUserApiKeys query error", zap.Error(keysErr))
 		return nil, keysErr
 	}
 
@@ -151,7 +149,7 @@ func (d *Database) GetApiKeyUser(APK string) (*model.User, error) {
 		&User.UpdatedDate,
 		&User.LastActive)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("GetApiKeyUser query error", zap.Error(e))
 		return nil, errors.New("active API Key match not found")
 	}
 

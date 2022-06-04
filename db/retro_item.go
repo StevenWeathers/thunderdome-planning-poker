@@ -1,8 +1,9 @@
 package db
 
 import (
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"log"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
 // FilterItemsByUser filters the list of items by userId

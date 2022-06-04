@@ -2,12 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"github.com/gorilla/mux"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"github.com/gorilla/mux"
 )
 
 // handleGetUserBattles looks up battles associated with UserID
@@ -100,7 +100,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		if len(keyVal.BattleLeaders) > 0 {
 			updatedLeaders, err := a.db.AddBattleLeadersByEmail(newBattle.Id, keyVal.BattleLeaders)
 			if err != nil {
-				log.Println("error adding additional battle leaders")
+				a.logger.Error("error adding additional battle leaders")
 			} else {
 				newBattle.Leaders = updatedLeaders
 			}

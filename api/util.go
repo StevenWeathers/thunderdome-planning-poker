@@ -5,14 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"github.com/go-ldap/ldap/v3"
-	"github.com/spf13/viper"
-	"gopkg.in/go-playground/validator.v9"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"github.com/go-ldap/ldap/v3"
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type userAccount struct {
@@ -300,14 +302,14 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 
 	l, err := ldap.DialURL(viper.GetString("auth.ldap.url"))
 	if err != nil {
-		log.Println("Failed connecting to ldap server at", viper.GetString("auth.ldap.url"))
+		a.logger.Error("Failed connecting to ldap server at " + viper.GetString("auth.ldap.url"))
 		return AuthedUser, SessionId, err
 	}
 	defer l.Close()
 	if viper.GetBool("auth.ldap.use_tls") {
 		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 		if err != nil {
-			log.Println("Failed securing ldap connection", err)
+			a.logger.Error("Failed securing ldap connection", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 	}
@@ -315,7 +317,7 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 	if viper.GetString("auth.ldap.bindname") != "" {
 		err = l.Bind(viper.GetString("auth.ldap.bindname"), viper.GetString("auth.ldap.bindpass"))
 		if err != nil {
-			log.Println("Failed binding for authentication:", err)
+			a.logger.Error("Failed binding for authentication", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 	}
@@ -329,12 +331,12 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		log.Println("Failed performing ldap search query for", UserName, ":", err)
+		a.logger.Error("Failed performing ldap search query", zap.String("username", UserName), zap.Error(err))
 		return AuthedUser, SessionId, err
 	}
 
 	if len(sr.Entries) != 1 {
-		log.Println("User", UserName, "does not exist or too many entries returned")
+		a.logger.Error("User does not exist or too many entries returned", zap.String("username", UserName))
 		return AuthedUser, SessionId, errors.New("user not found")
 	}
 
@@ -344,21 +346,21 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 
 	err = l.Bind(userdn, UserPassword)
 	if err != nil {
-		log.Println("Failed authenticating user ", UserName)
+		a.logger.Error("Failed authenticating user", zap.String("username", UserName))
 		return AuthedUser, SessionId, err
 	}
 
 	AuthedUser, err = a.db.GetUserByEmail(useremail)
 	if AuthedUser == nil {
-		log.Println("User", useremail, "does not exist in database, auto-recruit")
+		a.logger.Error("User does not exist in database, auto-recruit", zap.String("useremail", useremail))
 		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(usercn, useremail, "", "")
 		if err != nil {
-			log.Println("Failed auto-creating new user", err)
+			a.logger.Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 		err = a.db.VerifyUserAccount(verifyID)
 		if err != nil {
-			log.Println("Failed verifying new user", err)
+			a.logger.Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 		AuthedUser = newUser
@@ -366,7 +368,7 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 	} else {
 		SessionId, sessErr = a.db.CreateSession(AuthedUser.Id)
 		if sessErr != nil {
-			log.Println("Failed creating user session", err)
+			a.logger.Error("Failed creating user session", zap.Error(err))
 			return nil, "", err
 		}
 	}

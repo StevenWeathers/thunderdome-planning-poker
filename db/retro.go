@@ -2,8 +2,9 @@ package db
 
 import (
 	"errors"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"log"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 )
 
 // RetroCreate adds a new retro to the db

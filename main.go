@@ -3,12 +3,13 @@ package main
 import (
 	_ "embed"
 	"fmt"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db"
-	"github.com/StevenWeathers/thunderdome-planning-poker/email"
-	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
+	"github.com/StevenWeathers/thunderdome-planning-poker/email"
+	"go.uber.org/zap"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
@@ -55,13 +56,17 @@ type server struct {
 	email  *email.Email
 	cookie *securecookie.SecureCookie
 	db     *db.Database
+	logger *zap.Logger
 }
 
 func main() {
-	embedUseOS = len(os.Args) > 1 && os.Args[1] == "live"
-	log.Println("Thunderdome version " + version)
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+	logger.Info("Thunderdome version " + version)
 
-	InitConfig()
+	embedUseOS = len(os.Args) > 1 && os.Args[1] == "live"
+
+	InitConfig(logger)
 
 	cookieHashkey := viper.GetString("http.cookie_hashkey")
 	pathPrefix := viper.GetString("http.path_prefix")
@@ -88,6 +93,7 @@ func main() {
 		},
 		router: router,
 		cookie: securecookie.New([]byte(cookieHashkey), nil),
+		logger: logger,
 	}
 
 	s.email = email.New(s.config.AppDomain, s.config.PathPrefix)
@@ -99,7 +105,7 @@ func main() {
 		Name:       viper.GetString("db.name"),
 		SSLMode:    viper.GetString("db.sslmode"),
 		AESHashkey: viper.GetString("config.aes_hashkey"),
-	})
+	}, s.logger)
 
 	s.routes()
 
@@ -111,7 +117,10 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	log.Println("Access the WebUI via 127.0.0.1:" + s.config.ListenPort)
+	s.logger.Info("Access the WebUI via 127.0.0.1:" + s.config.ListenPort)
 
-	log.Fatal(srv.ListenAndServe())
+	err := srv.ListenAndServe()
+	if err != nil {
+		s.logger.Fatal(err.Error())
+	}
 }

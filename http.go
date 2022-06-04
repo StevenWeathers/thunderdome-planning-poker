@@ -7,7 +7,6 @@ import (
 	"image"
 	"image/png"
 	"io/fs"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -23,9 +22,9 @@ import (
 //go:embed dist
 var f embed.FS
 
-func getFileSystem(useOS bool) (http.FileSystem, fs.FS) {
+func (s *server) getFileSystem(useOS bool) (http.FileSystem, fs.FS) {
 	if useOS {
-		log.Print("using live mode")
+		s.logger.Info("using live mode")
 		return http.FS(os.DirFS("dist")), fs.FS(os.DirFS("dist"))
 	}
 
@@ -38,7 +37,7 @@ func getFileSystem(useOS bool) (http.FileSystem, fs.FS) {
 }
 
 func (s *server) routes() {
-	HFS, FSS := getFileSystem(embedUseOS)
+	HFS, FSS := s.getFileSystem(embedUseOS)
 	staticHandler := http.FileServer(HFS)
 
 	// api (used by the webapp but can be enabled for external use)
@@ -57,7 +56,7 @@ func (s *server) routes() {
 		FeatureStoryboard:    viper.GetBool("feature.storyboard"),
 		OrganizationsEnabled: viper.GetBool("config.organizations_enabled"),
 	}
-	api.Init(apiConfig, s.router, s.db, s.email, s.cookie)
+	api.Init(apiConfig, s.router, s.db, s.email, s.cookie, s.logger)
 
 	// static assets
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
@@ -78,18 +77,18 @@ func (s *server) getIndexTemplate(FSS fs.FS) *template.Template {
 	// get the html template from dist, have it ready for requests
 	tmplContent, ioErr := fs.ReadFile(FSS, "static/index.html")
 	if ioErr != nil {
-		log.Println("Error opening index template")
+		s.logger.Error("Error opening index template")
 		if !embedUseOS {
-			log.Fatal(ioErr)
+			s.logger.Fatal(ioErr.Error())
 		}
 	}
 
 	tmplString := string(tmplContent)
 	tmpl, tmplErr := template.New("index").Parse(tmplString)
 	if tmplErr != nil {
-		log.Println("Error parsing index template")
+		s.logger.Error("Error parsing index template")
 		if !embedUseOS {
-			log.Fatal(tmplErr)
+			s.logger.Fatal(tmplErr.Error())
 		}
 	}
 
@@ -205,7 +204,7 @@ func (s *server) handleUserAvatar() http.HandlerFunc {
 			var err error
 			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(UserID))))
 			if err != nil {
-				log.Fatalln(err)
+				s.logger.Fatal(err.Error())
 			}
 		}
 
@@ -213,7 +212,7 @@ func (s *server) handleUserAvatar() http.HandlerFunc {
 		buffer := new(bytes.Buffer)
 
 		if err := png.Encode(buffer, img); err != nil {
-			log.Println("unable to encode image.")
+			s.logger.Error("unable to encode image.")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -222,7 +221,7 @@ func (s *server) handleUserAvatar() http.HandlerFunc {
 		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
 
 		if _, err := w.Write(buffer.Bytes()); err != nil {
-			log.Println("unable to write image.")
+			s.logger.Error("unable to write image.")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

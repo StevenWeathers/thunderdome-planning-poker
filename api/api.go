@@ -2,8 +2,8 @@
 package api
 
 import (
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/api/battle"
+	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/email"
 	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/spf13/viper"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"go.uber.org/zap"
 )
 
 // Config contains configuration values used by the APIs
@@ -49,6 +50,7 @@ type api struct {
 	email  *email.Email
 	cookie *securecookie.SecureCookie
 	db     *db.Database
+	logger *zap.Logger
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -90,13 +92,14 @@ const (
 // @in header
 // @name X-API-Key
 // @version BETA
-func Init(config *Config, router *mux.Router, database *db.Database, email *email.Email, cookie *securecookie.SecureCookie) *api {
+func Init(config *Config, router *mux.Router, database *db.Database, email *email.Email, cookie *securecookie.SecureCookie, logger *zap.Logger) *api {
 	var a = &api{
 		config: config,
 		router: router,
 		db:     database,
 		email:  email,
 		cookie: cookie,
+		logger: logger,
 	}
 	b := battle.New(database, a.validateSessionCookie, a.validateUserCookie)
 	rs := retro.New(database, a.validateSessionCookie, a.validateUserCookie)

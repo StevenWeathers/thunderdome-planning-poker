@@ -8,10 +8,11 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
-	"golang.org/x/crypto/bcrypt"
 	"io"
 	"log"
 	"math/big"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // contains checks if a string is present in a slice

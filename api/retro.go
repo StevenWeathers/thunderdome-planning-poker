@@ -2,12 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"github.com/gorilla/mux"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"github.com/gorilla/mux"
 )
 
 // handleRetroCreate handles creating a retro (arena)
@@ -18,7 +18,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
-			log.Println("error in reading request body: " + bodyErr.Error() + "\n")
+			a.logger.Error("error in reading request body: " + bodyErr.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

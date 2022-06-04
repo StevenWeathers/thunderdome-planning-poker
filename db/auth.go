@@ -3,9 +3,9 @@ package db
 import (
 	"database/sql"
 	"errors"
-	"log"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"go.uber.org/zap"
 )
 
 // AuthUser authenticate the user
@@ -28,7 +28,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		&user.Locale,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("Unable to auth user", zap.Error(e))
 		return nil, "", errors.New("user not found")
 	}
 
@@ -64,7 +64,7 @@ func (d *Database) UserResetRequest(UserEmail string) (resetID string, UserName 
 		UserEmail,
 	).Scan(&ResetID, &UserID, &name)
 	if e != nil {
-		log.Println("Unable to reset user: ", e)
+		d.logger.Error("Unable to reset user", zap.Error(e))
 		return "", "", e
 	}
 
@@ -91,7 +91,7 @@ func (d *Database) UserResetPassword(ResetID string, UserPassword string) (UserN
 		ResetID,
 	).Scan(&name, &email)
 	if UserErr != nil {
-		log.Println("Unable to get user for password reset confirmation email: ", UserErr)
+		d.logger.Error("Unable to get user for password reset confirmation email", zap.Error(UserErr))
 		return "", "", UserErr
 	}
 
@@ -117,7 +117,7 @@ func (d *Database) UserUpdatePassword(UserID string, UserPassword string) (Name 
 		UserID,
 	).Scan(&UserName, &UserEmail)
 	if UserErr != nil {
-		log.Println("Unable to get user for password update: ", UserErr)
+		d.logger.Error("Unable to get user for password update", zap.Error(UserErr))
 		return "", "", UserErr
 	}
 
@@ -149,7 +149,7 @@ func (d *Database) UserVerifyRequest(UserId string) (*model.User, string, error)
 		&user.Email,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("error finding user verify id", zap.Error(e))
 		return nil, "", errors.New("user not found")
 	}
 
@@ -159,7 +159,7 @@ func (d *Database) UserVerifyRequest(UserId string) (*model.User, string, error)
 		user.Id,
 	).Scan(&VerifyId)
 	if err != nil {
-		log.Println("Unable to insert user verification: ", err)
+		d.logger.Error("Unable to insert user verification", zap.Error(err))
 		return nil, VerifyId, err
 	}
 
