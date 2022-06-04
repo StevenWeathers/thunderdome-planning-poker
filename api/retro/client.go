@@ -58,8 +58,8 @@ func (sub subscription) readPump(b *Service) {
 		"update_action":       b.UpdateAction,
 		"delete_action":       b.DeleteAction,
 		"advance_phase":       b.AdvancePhase,
-		"concede":             b.Delete,
-		"abandon":             b.Abandon,
+		"concede_retro":       b.Delete,
+		"abandon_retro":       b.Abandon,
 	}
 
 	var forceClosed bool
