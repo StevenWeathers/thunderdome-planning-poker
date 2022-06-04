@@ -24,11 +24,11 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 
 		APIKeys, keysErr := a.db.GetUserApiKeys(UserID)
 		if keysErr != nil {
-			Failure(w, r, http.StatusInternalServerError, keysErr)
+			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		Success(w, r, http.StatusOK, APIKeys, nil)
+		a.Success(w, r, http.StatusOK, APIKeys, nil)
 	}
 }
 
@@ -53,22 +53,22 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 
 		APIKeys, keysErr := a.db.GetUserApiKeys(UserID)
 		if keysErr != nil {
-			Failure(w, r, http.StatusInternalServerError, keysErr)
+			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
 		if len(APIKeys) == a.config.UserAPIKeyLimit {
-			Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "USER_APIKEY_LIMIT_REACHED"))
+			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "USER_APIKEY_LIMIT_REACHED"))
 			return
 		}
 
 		APIKey, keyErr := a.db.GenerateApiKey(UserID, APIKeyName)
 		if keyErr != nil {
-			Failure(w, r, http.StatusInternalServerError, keyErr)
+			a.Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
 		}
 
-		Success(w, r, http.StatusOK, APIKey, nil)
+		a.Success(w, r, http.StatusOK, APIKey, nil)
 	}
 }
 
@@ -95,11 +95,11 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 
 		APIKeys, keysErr := a.db.UpdateUserApiKey(UserID, APK, active)
 		if keysErr != nil {
-			Failure(w, r, http.StatusInternalServerError, keysErr)
+			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		Success(w, r, http.StatusOK, APIKeys, nil)
+		a.Success(w, r, http.StatusOK, APIKeys, nil)
 	}
 }
 
@@ -123,10 +123,10 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 
 		APIKeys, keysErr := a.db.DeleteUserApiKey(UserID, APK)
 		if keysErr != nil {
-			Failure(w, r, http.StatusInternalServerError, keysErr)
+			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		Success(w, r, http.StatusOK, APIKeys, nil)
+		a.Success(w, r, http.StatusOK, APIKeys, nil)
 	}
 }

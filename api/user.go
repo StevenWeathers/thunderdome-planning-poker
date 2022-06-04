@@ -22,11 +22,11 @@ func (a *api) handleSessionUserProfile() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			Failure(w, r, http.StatusInternalServerError, UserErr)
+			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		Success(w, r, http.StatusOK, User, nil)
+		a.Success(w, r, http.StatusOK, User, nil)
 	}
 }
 
@@ -48,11 +48,11 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			Failure(w, r, http.StatusInternalServerError, UserErr)
+			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		Success(w, r, http.StatusOK, User, nil)
+		a.Success(w, r, http.StatusOK, User, nil)
 	}
 }
 
@@ -93,19 +93,19 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		if SessionUserType == adminUserType {
 			_, _, vErr := validateUserAccount(UserName, UserEmail)
 			if vErr != nil {
-				Failure(w, r, http.StatusBadRequest, vErr)
+				a.Failure(w, r, http.StatusBadRequest, vErr)
 				return
 			}
 			updateErr := a.db.UpdateUserAccount(UserID, UserName, UserEmail, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 			if updateErr != nil {
-				Failure(w, r, http.StatusInternalServerError, updateErr)
+				a.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
 			}
 		} else {
 			var updateErr error
 			if a.config.LdapEnabled == false {
 				if UserName == "" {
-					Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
+					a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 					return
 				}
 				updateErr = a.db.UpdateUserProfile(UserID, UserName, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
@@ -113,18 +113,18 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 				updateErr = a.db.UpdateUserProfileLdap(UserID, UserAvatar, NotificationsEnabled, Country, Locale, Company, JobTitle)
 			}
 			if updateErr != nil {
-				Failure(w, r, http.StatusInternalServerError, updateErr)
+				a.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
 			}
 		}
 
 		user, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			Failure(w, r, http.StatusInternalServerError, UserErr)
+			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		Success(w, r, http.StatusOK, user, nil)
+		a.Success(w, r, http.StatusOK, user, nil)
 	}
 }
 
@@ -148,13 +148,13 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUser(UserID)
 		if UserErr != nil {
-			Failure(w, r, http.StatusInternalServerError, UserErr)
+			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
 		updateErr := a.db.DeleteUser(UserID)
 		if updateErr != nil {
-			Failure(w, r, http.StatusInternalServerError, updateErr)
+			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
@@ -165,7 +165,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 			a.clearUserCookies(w)
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -185,13 +185,13 @@ func (a *api) handleVerifyRequest() http.HandlerFunc {
 
 		User, VerifyId, err := a.db.UserVerifyRequest(UserID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		a.email.SendEmailVerification(User.Name, User.Email, VerifyId)
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -207,11 +207,11 @@ func (a *api) handleGetActiveCountries() http.HandlerFunc {
 		countries, err := a.db.GetActiveCountries()
 
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		w.Header().Set("Cache-Control", "max-age=3600") // cache for 1 hour just to decrease load
-		Success(w, r, http.StatusOK, countries, nil)
+		a.Success(w, r, http.StatusOK, countries, nil)
 	}
 }

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -197,7 +196,7 @@ func (a *api) validateSessionCookie(w http.ResponseWriter, r *http.Request) (str
 }
 
 // Success returns the successful response including any data and meta
-func Success(w http.ResponseWriter, r *http.Request, code int, data interface{}, meta interface{}) {
+func (a *api) Success(w http.ResponseWriter, r *http.Request, code int, data interface{}, meta interface{}) {
 	result := &standardJsonResponse{
 		Success: true,
 		Error:   "",
@@ -221,12 +220,17 @@ func Success(w http.ResponseWriter, r *http.Request, code int, data interface{},
 }
 
 // Failure responds with an error and its associated status code header
-func Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
+func (a *api) Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
 	// Extract error message.
 	errCode, errMessage := ErrorCode(err), ErrorMessage(err)
 
 	if errCode == EINTERNAL {
-		LogError(r, err)
+		a.logger.Error(
+			"[http] error",
+			zap.String("method", r.Method),
+			zap.String("url_path", r.URL.Path),
+			zap.Error(err),
+		)
 	}
 
 	result := &standardJsonResponse{
@@ -241,11 +245,6 @@ func Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
-}
-
-// LogError logs an error with the HTTP route information.
-func LogError(r *http.Request, err error) {
-	log.Printf("[http] error: %s %s: %s", r.Method, r.URL.Path, err)
 }
 
 // getJSONRequestBody gets a JSON request body broken into a key/value map

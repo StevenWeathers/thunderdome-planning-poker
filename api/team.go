@@ -32,7 +32,7 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -41,7 +41,7 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 			TeamRole: TeamRole,
 		}
 
-		Success(w, r, http.StatusOK, result, nil)
+		a.Success(w, r, http.StatusOK, result, nil)
 	}
 }
 
@@ -64,7 +64,7 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 
 		Teams := a.db.TeamListByUser(UserID, Limit, Offset)
 
-		Success(w, r, http.StatusOK, Teams, nil)
+		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
 }
 
@@ -85,7 +85,7 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 
 		Users, UserCount, err := a.db.TeamUserList(TeamID, Limit, Offset)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 		}
 
 		Meta := &pagination{
@@ -94,7 +94,7 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		Success(w, r, http.StatusOK, Users, Meta)
+		a.Success(w, r, http.StatusOK, Users, Meta)
 	}
 }
 
@@ -120,11 +120,11 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 		TeamName := keyVal["name"].(string)
 		NewTeam, err := a.db.TeamCreate(UserID, TeamName)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, NewTeam, nil)
+		a.Success(w, r, http.StatusOK, NewTeam, nil)
 	}
 }
 
@@ -152,17 +152,17 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
-			Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
 		_, err := a.db.TeamAddUser(TeamID, User.Id, Role)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -186,11 +186,11 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 
 		err := a.db.TeamRemoveUser(TeamID, UserID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -211,7 +211,7 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 
 		Battles := a.db.TeamBattleList(TeamID, Limit, Offset)
 
-		Success(w, r, http.StatusOK, Battles, nil)
+		a.Success(w, r, http.StatusOK, Battles, nil)
 	}
 }
 
@@ -235,11 +235,11 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 
 		err := a.db.TeamRemoveBattle(TeamID, BattleID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -261,11 +261,11 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 
 		err := a.db.TeamDelete(TeamID)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -279,7 +279,7 @@ func (a *api) handleGetTeamRetros() http.HandlerFunc {
 
 		Retrospectives := a.db.TeamRetroList(TeamID, Limit, Offset)
 
-		Success(w, r, http.StatusOK, Retrospectives, nil)
+		a.Success(w, r, http.StatusOK, Retrospectives, nil)
 	}
 }
 

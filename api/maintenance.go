@@ -22,11 +22,11 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 
 		err := a.db.CleanBattles(DaysOld)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -45,11 +45,11 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 
 		err := a.db.CleanGuests(DaysOld)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -66,7 +66,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lowercasedUsers, err := a.db.LowercaseUserEmails()
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -77,7 +77,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 
 		mergedUsers, err := a.db.MergeDuplicateAccounts()
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -86,6 +86,6 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 			a.email.SendMergedUpdate(u.Name, u.Email)
 		}
 
-		Success(w, r, http.StatusOK, nil, nil)
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

@@ -31,7 +31,7 @@ func (a *api) handleGetUserBattles() http.HandlerFunc {
 
 		battles, Count, err := a.db.GetBattlesByUser(UserID, Limit, Offset)
 		if err != nil {
-			Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
+			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
 		}
 
@@ -41,7 +41,7 @@ func (a *api) handleGetUserBattles() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		Success(w, r, http.StatusOK, battles, Meta)
+		a.Success(w, r, http.StatusOK, battles, Meta)
 	}
 }
 
@@ -76,7 +76,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
-			Failure(w, r, http.StatusInternalServerError, bodyErr)
+			a.Failure(w, r, http.StatusInternalServerError, bodyErr)
 			return
 		}
 
@@ -92,7 +92,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		newBattle, err := a.db.CreateBattle(UserID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting, keyVal.PointAverageRounding)
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -124,13 +124,13 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 				err := a.db.TeamAddBattle(TeamID, newBattle.Id)
 
 				if err != nil {
-					Failure(w, r, http.StatusInternalServerError, err)
+					a.Failure(w, r, http.StatusInternalServerError, err)
 					return
 				}
 			}
 		}
 
-		Success(w, r, http.StatusOK, newBattle, nil)
+		a.Success(w, r, http.StatusOK, newBattle, nil)
 	}
 }
 
@@ -162,7 +162,7 @@ func (a *api) handleGetBattles() http.HandlerFunc {
 		}
 
 		if err != nil {
-			Failure(w, r, http.StatusInternalServerError, err)
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -172,7 +172,7 @@ func (a *api) handleGetBattles() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		Success(w, r, http.StatusOK, Battles, Meta)
+		a.Success(w, r, http.StatusOK, Battles, Meta)
 	}
 }
 
@@ -196,7 +196,7 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 
 		battle, err := a.db.GetBattle(BattleId, UserId)
 		if err != nil {
-			Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
+			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
 		}
 
@@ -204,11 +204,11 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 		if battle.JoinCode != "" {
 			UserErr := a.db.GetBattleUserActiveStatus(BattleId, UserId)
 			if UserErr != nil && UserType != adminUserType {
-				Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
+				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
 				return
 			}
 		}
 
-		Success(w, r, http.StatusOK, battle, nil)
+		a.Success(w, r, http.StatusOK, battle, nil)
 	}
 }

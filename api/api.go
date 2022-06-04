@@ -101,8 +101,8 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		cookie: cookie,
 		logger: logger,
 	}
-	b := battle.New(database, a.validateSessionCookie, a.validateUserCookie)
-	rs := retro.New(database, a.validateSessionCookie, a.validateUserCookie)
+	b := battle.New(database, logger, a.validateSessionCookie, a.validateUserCookie)
+	rs := retro.New(database, logger, a.validateSessionCookie, a.validateUserCookie)
 	swaggerJsonPath := "/" + a.config.PathPrefix + "swagger/doc.json"
 
 	swaggerdocs.SwaggerInfo.BasePath = a.config.PathPrefix + "/api"
