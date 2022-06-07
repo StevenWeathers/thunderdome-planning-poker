@@ -21,6 +21,8 @@
     import Battle from './pages/Battle.svelte'
     import Retros from './pages/Retros.svelte'
     import Retro from './pages/Retro.svelte'
+    import Storyboards from './pages/Storyboards.svelte'
+    import Storyboard from './pages/Storyboard.svelte'
     import Teams from './pages/Teams.svelte'
     import Organization from './pages/Organization.svelte'
     import Department from './pages/Department.svelte'
@@ -42,7 +44,7 @@
     import AdminBattle from './pages/admin/Battle.svelte'
     import AdminRetros from './pages/admin/Retros.svelte'
 
-    const { FeaturePoker, FeatureRetro } = AppConfig
+    const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig
 
     let notifications
 
@@ -312,6 +314,21 @@
                 route: Login,
                 params,
                 name: 'login',
+            }
+        })
+    }
+
+    if (FeatureStoryboard) {
+        router.on(appRoutes.storyboards, () => {
+            currentPage = {
+                route: Storyboards,
+                params: {},
+            }
+        })
+        router.on(`${appRoutes.storyboard}/:storyboardId`, params => {
+            currentPage = {
+                route: Storyboard,
+                params,
             }
         })
     }

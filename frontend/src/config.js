@@ -28,6 +28,8 @@ const defaultAppRoutes = {
     battle: `${PathPrefix}/battle`,
     retros: `${PathPrefix}/retros`,
     retro: `${PathPrefix}/retro`,
+    storyboards: `${PathPrefix}/storyboards`,
+    storyboard: `${PathPrefix}/storyboard`,
     teams: `${PathPrefix}/teams`,
     organization: `${PathPrefix}/organization`,
     team: `${PathPrefix}/team`,
