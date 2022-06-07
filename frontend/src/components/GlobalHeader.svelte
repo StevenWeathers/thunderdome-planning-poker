@@ -19,6 +19,7 @@
         PathPrefix,
         FeaturePoker,
         FeatureRetro,
+        FeatureStoryboard,
         OrganizationsEnabled,
     } = AppConfig
 
@@ -92,6 +93,17 @@
                                     : pageClass}"
                             >
                                 Retros
+                            </a>
+                        {/if}
+                        {#if FeatureStoryboard}
+                            <a
+                                href="{appRoutes.storyboards}"
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                                'storyboards'
+                                    ? activePageClass
+                                    : pageClass}"
+                            >
+                                Storyboards
                             </a>
                         {/if}
                         {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}

@@ -75,6 +75,24 @@
     .btn-hollow-teal:hover {
         @apply bg-teal-600;
     }
+
+    .btn-hollow-orange {
+        @apply border-orange-500;
+        @apply text-orange-500;
+    }
+
+    .btn-hollow-orange:hover {
+        @apply bg-orange-600;
+    }
+
+    .btn-hollow-indigo {
+        @apply border-indigo-500;
+        @apply text-indigo-500;
+    }
+
+    .btn-hollow-indigo:hover {
+        @apply bg-indigo-600;
+    }
 </style>
 
 {#if type === 'label'}

@@ -323,12 +323,14 @@
             currentPage = {
                 route: Storyboards,
                 params: {},
+                name: 'storyboards',
             }
         })
         router.on(`${appRoutes.storyboard}/:storyboardId`, params => {
             currentPage = {
                 route: Storyboard,
                 params,
+                name: 'storyboard',
             }
         })
     }

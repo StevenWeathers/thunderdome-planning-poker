@@ -1,18 +1,18 @@
 <script>
-  import SolidButton from '../SolidButton.svelte'
-  import Modal from '../Modal.svelte'
+    import SolidButton from '../SolidButton.svelte'
+    import Modal from '../Modal.svelte'
 
-  export let handleLegendRevision = () => {}
-  export let toggleEditLegend = () => {}
+    export let handleLegendRevision = () => {}
+    export let toggleEditLegend = () => {}
 
-  export let colorLegend = []
+    export let colorLegend = []
 
-  function handleSubmit (event) {
-    event.preventDefault()
+    function handleSubmit(event) {
+        event.preventDefault()
 
-    handleLegendRevision(colorLegend)
-    toggleEditLegend()
-  }
+        handleLegendRevision(colorLegend)
+        toggleEditLegend()
+    }
 </script>
 
 <style>
@@ -59,20 +59,19 @@
 
 <Modal closeModal="{toggleEditLegend}">
     <form on:submit="{handleSubmit}" name="colorLegend">
-        <div class="mb-4">
+        <div class="mt-8 mb-4">
             {#each colorLegend as color, i}
                 <div class="mb-1 flex">
                     <span class="p-4 inline-block colorcard-{color.color}"
                     ></span>
                     <input
-                            class="bg-gray-200 border-gray-200 border-2
-                        appearance-none rounded flex-grow ml-2 py-2 px-3
-                        text-gray-700 leading-tight focus:outline-none
-                        focus:bg-white focus:border-purple-500"
-                            type="text"
-                            bind:value="{colorLegend[i].legend}"
-                            placeholder="Enter a color legend"
-                            name="legend-{color.color}"
+                        class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
+                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                        type="text"
+                        bind:value="{colorLegend[i].legend}"
+                        placeholder="Enter a color legend"
+                        name="legend-{color.color}"
                     />
                 </div>
             {/each}
