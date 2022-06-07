@@ -48,8 +48,28 @@ type connection struct {
 // readPump pumps messages from the websocket connection to the hub.
 func (sub subscription) readPump(b *Service) {
 	eventHandlers := map[string]func(string, string, string) ([]byte, error, bool){
-		"concede_storyboard": b.Delete,
-		"abandon_storyboard": b.Abandon,
+		"add_goal":             b.AddGoal,
+		"revise_goal":          b.ReviseGoal,
+		"delete_goal":          b.DeleteGoal,
+		"add_column":           b.AddColumn,
+		"revise_column":        b.ReviseColumn,
+		"delete_column":        b.DeleteColumn,
+		"add_story":            b.AddStory,
+		"update_story_name":    b.UpdateStoryName,
+		"update_story_content": b.UpdateStoryContent,
+		"update_story_color":   b.UpdateStoryColor,
+		"update_story_points":  b.UpdateStoryPoints,
+		"update_story_closed":  b.UpdateStoryClosed,
+		"move_story":           b.MoveStory,
+		"add_story_comment":    b.AddStoryComment,
+		"delete_story":         b.DeleteStory,
+		"add_persona":          b.AddPersona,
+		"update_persona":       b.UpdatePersona,
+		"delete_persona":       b.DeletePersona,
+		"promote_owner":        b.PromoteOwner,
+		"revise_color_legend":  b.ReviseColorLegend,
+		"concede_storyboard":   b.Delete,
+		"abandon_storyboard":   b.Abandon,
 	}
 
 	var forceClosed bool
