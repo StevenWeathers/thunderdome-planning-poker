@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"log"
+	"go.uber.org/zap"
 )
 
 // CreateStoryboardGoal adds a new goal to a Storyboard
@@ -17,7 +17,7 @@ func (d *Database) CreateStoryboardGoal(StoryboardID string, userID string, Goal
 	if _, err := d.db.Exec(
 		`call create_storyboard_goal($1, $2);`, StoryboardID, GoalName,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call create_storyboard_goal error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -37,7 +37,7 @@ func (d *Database) ReviseGoalName(StoryboardID string, userID string, GoalID str
 		GoalID,
 		GoalName,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call update_storyboard_goal error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -54,7 +54,7 @@ func (d *Database) DeleteStoryboardGoal(StoryboardID string, userID string, Goal
 
 	if _, err := d.db.Exec(
 		`call delete_storyboard_goal($1);`, GoalID); err != nil {
-		log.Println(err)
+		d.logger.Error("call delete_storyboard_goal error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -81,12 +81,12 @@ func (d *Database) GetStoryboardGoals(StoryboardID string) []*model.StoryboardGo
 				Columns:   make([]*model.StoryboardColumn, 0),
 			}
 			if err := goalRows.Scan(&sg.GoalID, &sg.SortOrder, &sg.GoalName, &columns); err != nil {
-				log.Println(err)
+				d.logger.Error("get_storyboard_goals query scan error", zap.Error(err))
 			} else {
 				goalColumns := make([]*model.StoryboardColumn, 0)
 				jsonErr := json.Unmarshal([]byte(columns), &goalColumns)
 				if jsonErr != nil {
-					log.Println(jsonErr)
+					d.logger.Error("storyboard goals json error", zap.Error(jsonErr))
 				}
 				sg.Columns = goalColumns
 				goals = append(goals, sg)

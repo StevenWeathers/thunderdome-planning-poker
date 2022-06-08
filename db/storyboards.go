@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
-	"log"
 )
 
 //CreateStoryboard adds a new storyboard to the db
@@ -23,7 +22,7 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string) (*mod
 		StoryboardName,
 	).Scan(&b.StoryboardID)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("create_storyboard query error", zap.Error(e))
 		return nil, errors.New("Error Creating Storyboard")
 	}
 
@@ -54,13 +53,13 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 		&cl,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("get storyboard query error", zap.Error(e))
 		return nil, errors.New("Not found")
 	}
 
 	clErr := json.Unmarshal([]byte(cl), &b.ColorLegend)
 	if clErr != nil {
-		log.Println(clErr)
+		d.logger.Error("color legend json error", zap.Error(clErr))
 	}
 
 	b.Users = d.GetStoryboardUsers(StoryboardID)
@@ -93,7 +92,7 @@ func (d *Database) GetStoryboardsByUser(UserID string) ([]*model.Storyboard, int
 			&b.StoryboardName,
 			&b.OwnerID,
 		); err != nil {
-			log.Println(err)
+			d.logger.Error("get_storyboards_by_user query scan error", zap.Error(err))
 		} else {
 			storyboards = append(storyboards, b)
 		}
@@ -107,7 +106,7 @@ func (d *Database) ConfirmStoryboardOwner(StoryboardID string, userID string) er
 	var ownerID string
 	e := d.db.QueryRow("SELECT owner_id FROM storyboard WHERE id = $1", StoryboardID).Scan(&ownerID)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("get owner_id from storyboard query error", zap.Error(e))
 		return errors.New("Storyboard Not found")
 	}
 
@@ -133,7 +132,7 @@ func (d *Database) GetStoryboardUser(StoryboardID string, UserID string) (*model
 		&active,
 	)
 	if e != nil {
-		log.Println(e)
+		d.logger.Error("get_storyboard_user query error", zap.Error(e))
 		return nil, errors.New("User Not found")
 	}
 
@@ -156,7 +155,7 @@ func (d *Database) GetStoryboardUsers(StoryboardID string) []*model.StoryboardUs
 		for rows.Next() {
 			var w model.StoryboardUser
 			if err := rows.Scan(&w.UserID, &w.UserName, &w.Active); err != nil {
-				log.Println(err)
+				d.logger.Error("get_storyboard_users query scan error", zap.Error(err))
 			} else {
 				users = append(users, &w)
 			}
@@ -178,7 +177,7 @@ func (d *Database) GetStoryboardPersonas(StoryboardID string) []*model.Storyboar
 		for rows.Next() {
 			var p model.StoryboardPersona
 			if err := rows.Scan(&p.PersonaID, &p.Name, &p.Role, &p.Description); err != nil {
-				log.Println(err)
+				d.logger.Error("get_storyboard_personas query scan error", zap.Error(err))
 			} else {
 				personas = append(personas, &p)
 			}
@@ -197,7 +196,7 @@ func (d *Database) AddUserToStoryboard(StoryboardID string, UserID string) ([]*m
 		StoryboardID,
 		UserID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("insert storybaord user error", zap.Error(err))
 	}
 
 	users := d.GetStoryboardUsers(StoryboardID)
@@ -209,12 +208,12 @@ func (d *Database) AddUserToStoryboard(StoryboardID string, UserID string) ([]*m
 func (d *Database) RetreatStoryboardUser(StoryboardID string, UserID string) []*model.StoryboardUser {
 	if _, err := d.db.Exec(
 		`UPDATE storyboard_user SET active = false WHERE storyboard_id = $1 AND user_id = $2`, StoryboardID, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("set storyboard user active false error", zap.Error(err))
 	}
 
 	if _, err := d.db.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("set user last active error", zap.Error(err))
 	}
 
 	users := d.GetStoryboardUsers(StoryboardID)
@@ -251,13 +250,13 @@ func (d *Database) GetStoryboardUserActiveStatus(StoryboardID string, UserID str
 func (d *Database) AbandonStoryboard(StoryboardID string, UserID string) ([]*model.StoryboardUser, error) {
 	if _, err := d.db.Exec(
 		`UPDATE storyboard_user SET active = false, abandoned = true WHERE storyboard_id = $1 AND user_id = $2`, StoryboardID, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("set storyboard user active false error", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.db.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		log.Println(err)
+		d.logger.Error("set user last active error", zap.Error(err))
 		return nil, err
 	}
 
@@ -275,7 +274,7 @@ func (d *Database) SetStoryboardOwner(StoryboardID string, userID string, OwnerI
 
 	if _, err := d.db.Exec(
 		`call set_storyboard_owner($1, $2);`, StoryboardID, OwnerID); err != nil {
-		log.Println(err)
+		d.logger.Error("call set_storyboard_owner error", zap.Error(err))
 	}
 
 	storyboard, err := d.GetStoryboard(StoryboardID)
@@ -298,7 +297,7 @@ func (d *Database) StoryboardReviseColorLegend(StoryboardID string, UserID strin
 		StoryboardID,
 		ColorLegend,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call revise_color_legend error", zap.Error(err))
 		return nil, err
 	}
 
@@ -319,7 +318,7 @@ func (d *Database) DeleteStoryboard(StoryboardID string, userID string) error {
 
 	if _, err := d.db.Exec(
 		`call delete_storyboard($1);`, StoryboardID); err != nil {
-		log.Println(err)
+		d.logger.Error("call delete_storyboard error", zap.Error(err))
 		return err
 	}
 
@@ -340,7 +339,7 @@ func (d *Database) AddStoryboardPersona(StoryboardID string, UserID string, Name
 		Role,
 		Description,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call persona_add error", zap.Error(err))
 	}
 
 	personas := d.GetStoryboardPersonas(StoryboardID)
@@ -363,7 +362,7 @@ func (d *Database) UpdateStoryboardPersona(StoryboardID string, UserID string, P
 		Role,
 		Description,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call persona_edit error", zap.Error(err))
 	}
 
 	personas := d.GetStoryboardPersonas(StoryboardID)
@@ -383,7 +382,7 @@ func (d *Database) DeleteStoryboardPersona(StoryboardID string, UserID string, P
 		StoryboardID,
 		PersonaID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call persona_delete error", zap.Error(err))
 	}
 
 	personas := d.GetStoryboardPersonas(StoryboardID)

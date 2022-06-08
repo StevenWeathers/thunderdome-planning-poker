@@ -3,7 +3,7 @@ package db
 import (
 	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"log"
+	"go.uber.org/zap"
 )
 
 // CreateStoryboardStory adds a new story to a Storyboard
@@ -16,7 +16,7 @@ func (d *Database) CreateStoryboardStory(StoryboardID string, GoalID string, Col
 	if _, err := d.db.Exec(
 		`call create_storyboard_story($1, $2, $3);`, StoryboardID, GoalID, ColumnID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call create_storyboard_story error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -36,7 +36,7 @@ func (d *Database) ReviseStoryName(StoryboardID string, userID string, StoryID s
 		StoryID,
 		StoryName,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call update_story_name error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -56,7 +56,7 @@ func (d *Database) ReviseStoryContent(StoryboardID string, userID string, StoryI
 		StoryID,
 		StoryContent,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call update_story_content error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -76,7 +76,7 @@ func (d *Database) ReviseStoryColor(StoryboardID string, userID string, StoryID 
 		StoryID,
 		StoryColor,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call update_story_color error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -96,7 +96,7 @@ func (d *Database) ReviseStoryPoints(StoryboardID string, userID string, StoryID
 		StoryID,
 		Points,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call update_story_points error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -116,7 +116,7 @@ func (d *Database) ReviseStoryClosed(StoryboardID string, userID string, StoryID
 		StoryID,
 		Closed,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call update_story_closed error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -138,7 +138,7 @@ func (d *Database) MoveStoryboardStory(StoryboardID string, userID string, Story
 		ColumnID,
 		PlaceBefore,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call move_story error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -155,7 +155,7 @@ func (d *Database) DeleteStoryboardStory(StoryboardID string, userID string, Sto
 
 	if _, err := d.db.Exec(
 		`call delete_storyboard_story($1);`, StoryID); err != nil {
-		log.Println(err)
+		d.logger.Error("call delete_storyboard_story error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -172,7 +172,7 @@ func (d *Database) AddStoryComment(StoryboardID string, UserID string, StoryID s
 		UserID,
 		Comment,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call story_comment_add error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)

@@ -3,7 +3,7 @@ package db
 import (
 	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"log"
+	"go.uber.org/zap"
 )
 
 // CreateStoryboardColumn adds a new column to a Storyboard
@@ -16,7 +16,7 @@ func (d *Database) CreateStoryboardColumn(StoryboardID string, GoalID string, us
 	if _, err := d.db.Exec(
 		`call create_storyboard_column($1, $2);`, StoryboardID, GoalID,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call create_storyboard_column error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -37,7 +37,7 @@ func (d *Database) ReviseStoryboardColumn(StoryboardID string, UserID string, Co
 		ColumnID,
 		ColumnName,
 	); err != nil {
-		log.Println(err)
+		d.logger.Error("call revise_storyboard_column error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -54,7 +54,7 @@ func (d *Database) DeleteStoryboardColumn(StoryboardID string, userID string, Co
 
 	if _, err := d.db.Exec(
 		`call delete_storyboard_column($1);`, ColumnID); err != nil {
-		log.Println(err)
+		d.logger.Error("call delete_storyboard_column error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
