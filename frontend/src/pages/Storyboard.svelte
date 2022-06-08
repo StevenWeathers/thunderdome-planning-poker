@@ -1,7 +1,10 @@
 <script>
-    import dragula from 'dragula'
     import Sockette from 'sockette'
     import { onDestroy, onMount } from 'svelte'
+    import {
+        dndzone,
+        SHADOW_ITEM_MARKER_PROPERTY_NAME,
+    } from 'svelte-dnd-action'
 
     import AddGoal from '../components/storyboard/AddGoal.svelte'
     import PageLayout from '../components/PageLayout.svelte'
@@ -32,13 +35,6 @@
 
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
-
-    // instantiate dragula, utilizing drop-column as class for the containers
-    const drake = dragula({
-        isContainer: function (el) {
-            return el.classList.contains('drop-column')
-        },
-    })
 
     let socketError = false
     let socketReconnecting = false
@@ -151,25 +147,55 @@
         eventTag('story_edit_closed', 'storyboard', '')
     }
 
-    drake.on('drop', function (el, target, source, sibling) {
-        const storyId = el.dataset.storyid
-        const goalId = target.dataset.goalid
-        const columnId = target.dataset.columnid
+    function handleDndConsider(e) {
+        const goalIndex = e.target.dataset.goalindex
+        const columnIndex = e.target.dataset.columnindex
 
-        // determine what story to place story before in target column
-        const placeBefore = sibling ? sibling.dataset.storyid : ''
+        storyboard.goals[goalIndex].columns[columnIndex].stories =
+            e.detail.items
+        storyboard.goals = storyboard.goals
+    }
 
-        sendSocketEvent(
-            'move_story',
-            JSON.stringify({
-                storyId,
-                goalId,
-                columnId,
-                placeBefore,
-            }),
-        )
-        eventTag('story_move', 'storyboard', '')
-    })
+    function handleDndFinalize(e) {
+        const goalIndex = e.target.dataset.goalindex
+        const columnIndex = e.target.dataset.columnindex
+        const storyId = e.detail.info.id
+
+        storyboard.goals[goalIndex].columns[columnIndex].stories =
+            e.detail.items
+        storyboard.goals = storyboard.goals
+
+        const matchedStory = storyboard.goals[goalIndex].columns[
+            columnIndex
+        ].stories.find(i => i.id === storyId)
+
+        if (matchedStory) {
+            const goalId = storyboard.goals[goalIndex].id
+            const columnId = storyboard.goals[goalIndex].columns[columnIndex].id
+
+            // determine what story to place story before in target column
+            const matchedStoryIndex =
+                storyboard.goals[goalIndex].columns[
+                    columnIndex
+                ].stories.indexOf(matchedStory)
+            const sibling =
+                storyboard.goals[goalIndex].columns[columnIndex].stories[
+                    matchedStoryIndex + 1
+                ]
+            const placeBefore = sibling ? sibling.id : ''
+
+            sendSocketEvent(
+                'move_story',
+                JSON.stringify({
+                    storyId,
+                    goalId,
+                    columnId,
+                    placeBefore,
+                }),
+            )
+            eventTag('story_move', 'storyboard', '')
+        }
+    }
 
     const onSocketMessage = function (evt) {
         const parsedEvent = JSON.parse(evt.data)
@@ -833,7 +859,7 @@
                 </div>
             </div>
             <section class="flex px-2" style="overflow-x: scroll">
-                {#each goal.columns as goalColumn (goalColumn.id)}
+                {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
                     <div class="flex-none my-4 mx-2 w-40">
                         <div class="flex-none">
                             <div class="w-full mb-2">
@@ -876,15 +902,30 @@
                                 </div>
                             </div>
                         </div>
-                        <ul
-                            class="drop-column w-full"
+                        <div
+                            class="w-full relative"
                             style="min-height: 160px;"
                             data-goalid="{goal.id}"
                             data-columnid="{goalColumn.id}"
+                            data-goalIndex="{goalIndex}"
+                            data-columnindex="{columnIndex}"
+                            use:dndzone="{{
+                                items: goalColumn.stories,
+                                type: 'story',
+                                dropTargetStyle: '',
+                                dropTargetClasses: [
+                                    'outline',
+                                    'outline-2',
+                                    'outline-indigo-500',
+                                    'dark:outline-yellow-400',
+                                ],
+                            }}"
+                            on:consider="{handleDndConsider}"
+                            on:finalize="{handleDndFinalize}"
                         >
                             {#each goalColumn.stories as story (story.id)}
-                                <li
-                                    class="max-w-xs shadow bg-white border-l-4
+                                <div
+                                    class="relative max-w-xs shadow bg-white border-l-4
                                     story-{story.color} border my-4
                                     cursor-pointer"
                                     style="list-style: none;"
@@ -942,9 +983,73 @@
                                             </div>
                                         </div>
                                     </div>
-                                </li>
+                                    {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+                                        <div
+                                            class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white border-l-4
+                                    story-{story.color} border
+                                    cursor-pointer"
+                                            style="list-style: none;"
+                                            data-goalid="{goal.id}"
+                                            data-columnid="{goalColumn.id}"
+                                            data-storyid="{story.id}"
+                                            on:click="{toggleStoryForm(story)}"
+                                        >
+                                            <div>
+                                                <div>
+                                                    <div
+                                                        class="h-20 p-1 text-sm
+                                                overflow-hidden {story.closed
+                                                            ? 'line-through'
+                                                            : ''}"
+                                                        title="{story.name}"
+                                                    >
+                                                        {story.name}
+                                                    </div>
+                                                    <div class="h-8">
+                                                        <div
+                                                            class="flex content-center
+                                                    p-1 text-sm"
+                                                        >
+                                                            <div
+                                                                class="w-1/2
+                                                        text-gray-600"
+                                                            >
+                                                                {#if story.comments.length > 0}
+                                                                    <span
+                                                                        class="inline-block
+                                                                align-middle"
+                                                                    >
+                                                                        {story
+                                                                            .comments
+                                                                            .length}
+                                                                        <CommentIcon
+                                                                        />
+                                                                    </span>
+                                                                {/if}
+                                                            </div>
+                                                            <div
+                                                                class="w-1/2 text-right"
+                                                            >
+                                                                {#if story.points > 0}
+                                                                    <span
+                                                                        class="px-2
+                                                                bg-gray-300
+                                                                inline-block
+                                                                align-middle"
+                                                                    >
+                                                                        {story.points}
+                                                                    </span>
+                                                                {/if}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {/if}
+                                </div>
                             {/each}
-                        </ul>
+                        </div>
                     </div>
                 {/each}
             </section>
