@@ -87,8 +87,11 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		Locale := keyVal["locale"].(string)
 		Company := keyVal["company"].(string)
 		JobTitle := keyVal["jobTitle"].(string)
-		UserEmail := keyVal["email"].(string)
 		UserID := vars["userId"]
+		var UserEmail string
+		if keyVal["email"] != nil {
+			UserEmail = keyVal["email"].(string)
+		}
 
 		if SessionUserType == adminUserType {
 			_, _, vErr := validateUserAccount(UserName, UserEmail)
