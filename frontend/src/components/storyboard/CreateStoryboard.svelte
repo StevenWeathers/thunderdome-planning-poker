@@ -23,9 +23,9 @@
 
         xfetch(`${apiPrefix}/users/${$user.id}/storyboards`, { body })
             .then(res => res.json())
-            .then(function (storyboard) {
+            .then(function ({ data }) {
                 eventTag('create_storyboard', 'engagement', 'success', () => {
-                    router.route(`${appRoutes.storyboard}/${storyboard.id}`)
+                    router.route(`${appRoutes.storyboard}/${data.id}`)
                 })
             })
             .catch(function (error) {

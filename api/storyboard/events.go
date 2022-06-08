@@ -326,7 +326,7 @@ func (b *Service) Delete(StoryboardID string, UserID string, EventValue string) 
 	if err != nil {
 		return nil, err, false
 	}
-	msg := createSocketEvent("conceded", "", "")
+	msg := createSocketEvent("storyboard_conceded", "", "")
 
 	return msg, nil, false
 }
@@ -335,7 +335,7 @@ func (b *Service) Delete(StoryboardID string, UserID string, EventValue string) 
 func (b *Service) Abandon(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
 	b.db.AbandonStoryboard(StoryboardID, UserID)
 
-	return nil, errors.New("ABANDONED_RETRO"), true
+	return nil, errors.New("ABANDONED_STORYBOARD"), true
 }
 
 // socketEvent is the event structure used for socket messages
