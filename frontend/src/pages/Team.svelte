@@ -7,6 +7,7 @@
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
     import CreateBattle from '../components/battle/CreateBattle.svelte'
+    import CreateRetro from '../components/retro/CreateRetro.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import CountryFlag from '../components/user/CountryFlag.svelte'
     import UserAvatar from '../components/user/UserAvatar.svelte'
@@ -28,9 +29,10 @@
     export let departmentId
     export let teamId
 
-    const { FeaturePoker } = AppConfig
+    const { FeaturePoker, FeatureRetro } = AppConfig
 
     const battlesPageLimit = 1000
+    const retrosPageLimit = 1000
     const usersPageLimit = 1000
 
     let team = {
@@ -47,14 +49,19 @@
     }
     let users = []
     let battles = []
+    let retros = []
     let showCreateBattle = false
+    let showCreateRetro = false
     let showAddUser = false
     let showRemoveUser = false
     let showRemoveBattle = false
+    let showRemoveRetro = false
     let removeBattleId = null
+    let removeRetroId = null
     let removeUserId = null
     let usersPage = 1
     let battlesPage = 1
+    let retrosPage = 1
 
     let organizationRole = ''
     let departmentRole = ''
@@ -82,6 +89,10 @@
         showCreateBattle = !showCreateBattle
     }
 
+    function toggleCreateRetro() {
+        showCreateRetro = !showCreateRetro
+    }
+
     const toggleRemoveUser = userId => () => {
         showRemoveUser = !showRemoveUser
         removeUserId = userId
@@ -90,6 +101,11 @@
     const toggleRemoveBattle = battleId => () => {
         showRemoveBattle = !showRemoveBattle
         removeBattleId = battleId
+    }
+
+    const toggleRemoveRetro = retroId => () => {
+        showRemoveRetro = !showRemoveRetro
+        removeRetroId = retroId
     }
 
     function getTeam() {
@@ -109,6 +125,7 @@
                 }
 
                 getBattles()
+                getRetros()
                 getUsers()
             })
             .catch(function () {
@@ -141,6 +158,20 @@
             })
             .catch(function () {
                 notifications.danger($_('teamGetBattlesError'))
+            })
+    }
+
+    function getRetros() {
+        const retrosOffset = (retrosPage - 1) * retrosPageLimit
+        xfetch(
+            `${teamPrefix}/retros?limit=${retrosPageLimit}&offset=${retrosOffset}`,
+        )
+            .then(res => res.json())
+            .then(function (result) {
+                retros = result.data
+            })
+            .catch(function () {
+                notifications.danger($_('teamGetRetrosError'))
             })
     }
 
@@ -188,6 +219,20 @@
             .catch(function () {
                 notifications.danger($_('battleRemoveError'))
                 eventTag('team_remove_battle', 'engagement', 'failure')
+            })
+    }
+
+    function handleRetroRemove() {
+        xfetch(`${teamPrefix}/retros/${removeRetroId}`, { method: 'DELETE' })
+            .then(function () {
+                eventTag('team_remove_retro', 'engagement', 'success')
+                toggleRemoveRetro(null)()
+                notifications.success($_('retroRemoveSuccess'))
+                getRetros()
+            })
+            .catch(function () {
+                notifications.danger($_('retroRemoveError'))
+                eventTag('team_remove_retro', 'engagement', 'failure')
             })
     }
 
@@ -329,6 +374,74 @@
         {/if}
     {/if}
 
+    {#if FeatureRetro}
+        <div class="w-full mb-6 lg:mb-8">
+            <div class="flex w-full">
+                <div class="flex-1">
+                    <h2
+                        class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                    >
+                        Retros
+                    </h2>
+                </div>
+                <div class="flex-1 text-right">
+                    {#if isTeamMember}
+                        <SolidButton onClick="{toggleCreateRetro}"
+                            >Create Retro
+                        </SolidButton>
+                    {/if}
+                </div>
+            </div>
+
+            <div class="flex flex-wrap">
+                {#each retros as retro}
+                    <div
+                        class="w-full bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
+                        border-b"
+                    >
+                        <div class="flex flex-wrap items-center p-4">
+                            <div
+                                class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
+                            md:text-xl leading-tight"
+                            >
+                                <span data-testid="battle-name"
+                                    >{retro.name}</span
+                                >
+                            </div>
+                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
+                                {#if isAdmin}
+                                    <HollowButton
+                                        onClick="{toggleRemoveRetro(retro.id)}"
+                                        color="red"
+                                    >
+                                        {$_('remove')}
+                                    </HollowButton>
+                                {/if}
+                                <HollowButton
+                                    href="{appRoutes.retro}/{retro.id}"
+                                >
+                                    Join Retro
+                                </HollowButton>
+                            </div>
+                        </div>
+                    </div>
+                {/each}
+            </div>
+        </div>
+
+        {#if showCreateRetro}
+            <Modal closeModal="{toggleCreateRetro}">
+                <CreateRetro
+                    apiPrefix="{teamPrefix}"
+                    notifications="{notifications}"
+                    router="{router}"
+                    eventTag="{eventTag}"
+                    xfetch="{xfetch}"
+                />
+            </Modal>
+        {/if}
+    {/if}
+
     <div class="w-full">
         <div class="flex w-full">
             <div class="w-4/5">
@@ -443,6 +556,16 @@
             permanent="{false}"
             confirmText="{$_('removeBattleConfirmText')}"
             confirmBtnText="{$_('removeBattle')}"
+        />
+    {/if}
+
+    {#if showRemoveRetro}
+        <DeleteConfirmation
+            toggleDelete="{toggleRemoveRetro(null)}"
+            handleDelete="{handleRetroRemove}"
+            permanent="{false}"
+            confirmText="Are you sure you want to remove this retro from the team?"
+            confirmBtnText="Remove Retro"
         />
     {/if}
 </PageLayout>
