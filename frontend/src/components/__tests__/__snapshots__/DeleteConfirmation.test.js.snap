@@ -54,7 +54,7 @@ exports[`DeleteConfirmation component should match snapshot 1`] = `
               class="mt-2"
             >
               <div
-                class="mb-4"
+                class="mt-4 mb-4"
               >
                 <p
                   class="font-bold text-xl text-red-600"
@@ -150,7 +150,7 @@ exports[`DeleteConfirmation component should match snapshot when permanent=false
               class="mt-2"
             >
               <div
-                class="mb-4"
+                class="mt-4 mb-4"
               >
                 <p
                   class="font-bold text-xl text-red-600"
