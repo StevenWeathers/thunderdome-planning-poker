@@ -256,6 +256,15 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	if a.config.FeatureRetro {
 		userRouter.HandleFunc("/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleStoryboardCreate()))).Methods("POST")
 		userRouter.HandleFunc("/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleGetUserStoryboards()))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/storyboards", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamStoryboards()))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/storyboards/{storyboardId}", a.userOnly(a.departmentTeamAdminOnly(a.handleTeamRemoveStoryboard()))).Methods("DELETE")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.departmentTeamUserOnly(a.handleStoryboardCreate()))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/storyboards", a.userOnly(a.orgTeamOnly(a.handleGetTeamStoryboards()))).Methods("GET")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/storyboards/{storyboardId}", a.userOnly(a.orgTeamAdminOnly(a.handleTeamRemoveStoryboard()))).Methods("DELETE")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.orgTeamOnly(a.handleStoryboardCreate()))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/storyboards", a.userOnly(a.teamUserOnly(a.handleGetTeamStoryboards()))).Methods("GET")
+		teamRouter.HandleFunc("/{teamId}/storyboards/{storyboardId}", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveStoryboard()))).Methods("DELETE")
+		teamRouter.HandleFunc("/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.handleStoryboardCreate()))).Methods("POST")
 		apiRouter.HandleFunc("/storyboards/{retroId}", a.userOnly(a.handleStoryboardGet())).Methods("GET")
 		apiRouter.HandleFunc("/storyboard/{storyboardId}", sb.ServeWs())
 	}

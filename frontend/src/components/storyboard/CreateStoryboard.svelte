@@ -28,7 +28,7 @@
                     router.route(`${appRoutes.storyboard}/${data.id}`)
                 })
             })
-            .catch(function (error) {
+            .catch(function () {
                 notifications.danger('Error encountered creating storyboard')
                 eventTag('create_storyboard', 'engagement', 'failure')
             })
