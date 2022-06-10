@@ -11,7 +11,7 @@
 </script>
 
 <Modal closeModal="{toggleDelete}">
-    <div class="mt-4 mb-4">
+    <div class="mt-8 mb-4">
         <p class="font-bold text-xl text-red-600">
             {confirmText}
             {#if permanent}

@@ -297,3 +297,33 @@ func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
 		return
 	}
 }
+
+// handleGetTeamStoryboards gets a list of storyboards associated to the team
+func (a *api) handleGetTeamStoryboards() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
+
+		Storyboards := a.db.TeamStoryboardList(TeamID, Limit, Offset)
+
+		a.Success(w, r, http.StatusOK, Storyboards, nil)
+	}
+}
+
+// handleTeamRemoveStoryboard handles removing storyboard from a team
+func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		StoryboardID := vars["storyboardId"]
+
+		err := a.db.TeamRemoveStoryboard(TeamID, StoryboardID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		return
+	}
+}

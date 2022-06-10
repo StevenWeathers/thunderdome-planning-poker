@@ -2,7 +2,6 @@ package db
 
 import (
 	"errors"
-
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
@@ -317,6 +316,69 @@ func (d *Database) TeamRemoveRetro(TeamID string, RetroID string) error {
 
 	if err != nil {
 		d.logger.Error("team_retro_remove query error", zap.Error(err))
+		return err
+	}
+
+	return nil
+}
+
+// TeamStoryboardList gets a list of team storyboards
+func (d *Database) TeamStoryboardList(TeamID string, Limit int, Offset int) []*model.Storyboard {
+	var storyboards = make([]*model.Storyboard, 0)
+	rows, err := d.db.Query(
+		`SELECT id, name FROM team_storyboard_list($1, $2, $3);`,
+		TeamID,
+		Limit,
+		Offset,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var tb model.Storyboard
+
+			if err := rows.Scan(
+				&tb.StoryboardID,
+				&tb.StoryboardName,
+			); err != nil {
+				d.logger.Error("team_storyboard_list query scan error", zap.Error(err))
+			} else {
+				storyboards = append(storyboards, &tb)
+			}
+		}
+	} else {
+		d.logger.Error("team_storyboard_list query error", zap.Error(err))
+	}
+
+	return storyboards
+}
+
+// TeamAddStoryboard adds a storyboard to a team
+func (d *Database) TeamAddStoryboard(TeamID string, StoryboardID string) error {
+	_, err := d.db.Exec(
+		`SELECT team_storyboard_add($1, $2);`,
+		TeamID,
+		StoryboardID,
+	)
+
+	if err != nil {
+		d.logger.Error("team_storyboard_add query error", zap.Error(err))
+		return err
+	}
+
+	return nil
+}
+
+// TeamRemoveStoryboard removes a storyboard from a team
+func (d *Database) TeamRemoveStoryboard(TeamID string, StoryboardID string) error {
+	_, err := d.db.Exec(
+		`SELECT team_storyboard_remove($1, $2);`,
+		TeamID,
+		StoryboardID,
+	)
+
+	if err != nil {
+		d.logger.Error("team_storyboard_remove query error", zap.Error(err))
 		return err
 	}
 

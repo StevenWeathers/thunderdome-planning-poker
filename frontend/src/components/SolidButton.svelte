@@ -73,6 +73,14 @@
     .btn-blue-copy:hover {
         @apply bg-blue-600;
     }
+
+    .btn-orange {
+        @apply bg-orange-500;
+    }
+
+    .btn-orange:hover {
+        @apply bg-orange-600;
+    }
 </style>
 
 {#if href != ''}
