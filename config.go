@@ -62,7 +62,7 @@ func InitConfig(logger *zap.Logger) {
 	// feature flags
 	viper.SetDefault("feature.poker", true)
 	viper.SetDefault("feature.retro", true)
-	viper.SetDefault("feature.storyboard", true)
+	viper.SetDefault("feature.storyboard", false)
 
 	viper.SetDefault("auth.method", "normal")
 	viper.SetDefault("auth.ldap.url", "")
