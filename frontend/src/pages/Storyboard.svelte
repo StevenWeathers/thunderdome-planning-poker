@@ -665,10 +665,12 @@
                             class="origin-top-right absolute right-0 mt-1 w-64
                             rounded-md shadow-lg text-left"
                         >
-                            <div class="rounded-md bg-white shadow-xs">
-                                <ul class="p-2">
+                            <div
+                                class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
+                            >
+                                <div class="p-2">
                                     {#each storyboard.personas as persona}
-                                        <li class="mb-1 w-full">
+                                        <div class="mb-1 w-full">
                                             <div>
                                                 <span class="font-bold">
                                                     {persona.name}
@@ -699,9 +701,9 @@
                                             <span class="text-sm">
                                                 {persona.role}
                                             </span>
-                                        </li>
+                                        </div>
                                     {/each}
-                                </ul>
+                                </div>
 
                                 {#if storyboard.owner_id === $user.id}
                                     <div class="p-2 text-right">
@@ -736,25 +738,27 @@
                             class="origin-top-right absolute right-0 mt-1 w-64
                             rounded-md shadow-lg text-left"
                         >
-                            <div class="rounded-md bg-white shadow-xs">
-                                <ul class="p-2">
+                            <div
+                                class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
+                            >
+                                <div class="p-2">
                                     {#each storyboard.color_legend as color}
-                                        <li class="mb-1 flex w-full">
+                                        <div class="mb-1 flex w-full">
                                             <span
                                                 class="p-4 mr-2 inline-block
                                                 colorcard-{color.color}"></span>
                                             <span
                                                 class="inline-block align-middle
                                                 {color.legend === ''
-                                                    ? 'text-gray-300'
-                                                    : 'text-gray-600'}"
+                                                    ? 'text-gray-300 dark:text-gray-500'
+                                                    : 'text-gray-600 dark:text-gray-200'}"
                                             >
                                                 {color.legend ||
                                                     'legend not specified'}
                                             </span>
-                                        </li>
+                                        </div>
                                     {/each}
-                                </ul>
+                                </div>
 
                                 {#if storyboard.owner_id === $user.id}
                                     <div class="p-2 text-right">
@@ -789,7 +793,9 @@
                             class="origin-top-right absolute right-0 mt-1 w-64
                             rounded-md shadow-lg text-left"
                         >
-                            <div class="rounded-md bg-white shadow-xs">
+                            <div
+                                class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
+                            >
                                 {#each storyboard.users as usr, index (usr.id)}
                                     {#if usr.active}
                                         <UserCard
@@ -893,8 +899,8 @@
                                         )}"
                                         class="flex-grow font-bold text-xl py-1
                                         px-2 border-dashed border-2
-                                        border-gray-400 hover:border-green-500
-                                        text-gray-600 hover:text-green-500"
+                                        border-gray-400 dark:border-gray-600 hover:border-green-500
+                                        text-gray-600 dark:text-gray-400 hover:text-green-500"
                                         title="Add Story to Column"
                                     >
                                         +
@@ -925,7 +931,7 @@
                         >
                             {#each goalColumn.stories as story (story.id)}
                                 <div
-                                    class="relative max-w-xs shadow bg-white border-l-4
+                                    class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-l-4
                                     story-{story.color} border my-4
                                     cursor-pointer"
                                     style="list-style: none;"
@@ -952,7 +958,7 @@
                                                 >
                                                     <div
                                                         class="w-1/2
-                                                        text-gray-600"
+                                                        text-gray-600 dark:text-gray-300"
                                                     >
                                                         {#if story.comments.length > 0}
                                                             <span
@@ -971,7 +977,7 @@
                                                         {#if story.points > 0}
                                                             <span
                                                                 class="px-2
-                                                                bg-gray-300
+                                                                bg-gray-300 dark:bg-gray-500
                                                                 inline-block
                                                                 align-middle"
                                                             >
@@ -985,7 +991,7 @@
                                     </div>
                                     {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
                                         <div
-                                            class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white border-l-4
+                                            class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-l-4
                                     story-{story.color} border
                                     cursor-pointer"
                                             style="list-style: none;"

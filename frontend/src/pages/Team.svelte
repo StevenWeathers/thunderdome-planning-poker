@@ -688,8 +688,8 @@
             toggleDelete="{toggleRemoveRetro(null)}"
             handleDelete="{handleRetroRemove}"
             permanent="{false}"
-            confirmText="Are you sure you want to remove this retro from the team?"
-            confirmBtnText="Remove Retro"
+            confirmText="{$_('removeRetroConfirmText')}"
+            confirmBtnText="{$_('removeRetro')}"
         />
     {/if}
 
@@ -698,8 +698,8 @@
             toggleDelete="{toggleRemoveStoryboard(null)}"
             handleDelete="{handleStoryboardRemove}"
             permanent="{false}"
-            confirmText="Are you sure you want to remove this storyboard from the team?"
-            confirmBtnText="Remove Storyboard"
+            confirmText="{$_('removeStoryboardConfirmText')}"
+            confirmBtnText="{$_('removeStoryboard')}"
         />
     {/if}
 </PageLayout>

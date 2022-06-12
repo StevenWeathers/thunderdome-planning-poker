@@ -431,5 +431,19 @@
   "inviteLinkCopyFailure": "Couldn't copy invite link to clipboard",
   "joinCodeCopySuccess": "Passcode copied to clipboard",
   "joinCodeCopyFailure": "Couldn't copy passcode to clipboard",
-  "landingSalesPitch": "Remote team collaboration with realtime agile story pointing, no cost and ad free!"
+  "landingSalesPitch": "Remote team collaboration with realtime agile story pointing, no cost and ad free!",
+  "teamGetRetrosError": "Error getting team retros",
+  "retroAddSuccess": "Retro added successfully.",
+  "retroAddError": "Error attempting to add retro.",
+  "removeRetro": "Remove Retro",
+  "removeRetroConfirmText": "Are you sure you want to remove this retro?",
+  "retroRemoveSuccess": "Retro removed successfully.",
+  "retroRemoveError": "Error attempting to remove retro.",
+  "teamGetStoryboardsError": "Error getting team storyboards",
+  "removeStoryboard": "Remove Storyboard",
+  "removeStoryboardConfirmText": "Are you sure you want to remove this storyboard?",
+  "storyboardRemoveSuccess": "Storyboard removed successfully.",
+  "storyboardRemoveError": "Error attempting to remove storyboard.",
+  "storyboardAddSuccess": "Storyboard added successfully.",
+  "storyboardAddError": "Error attempting to add storyboard."
 }
