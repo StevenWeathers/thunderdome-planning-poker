@@ -4,10 +4,7 @@
 
     import PageLayout from '../components/PageLayout.svelte'
     import UserCard from '../components/retro/UserCard.svelte'
-    import InviteUser from '../components/retro/InviteUser.svelte'
-    import UsersIcon from '../components/icons/Users.svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import DownCarrotIcon from '../components/icons/ChevronDown.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import SolidButton from '../components/SolidButton.svelte'
@@ -19,6 +16,7 @@
     import VotePhase from '../components/retro/VotePhase.svelte'
     import Export from '../components/retro/Export.svelte'
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
+    import InviteUser from '../components/retro/InviteUser.svelte'
     import { appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
     import { _ } from '../i18n'
@@ -47,7 +45,6 @@
         actionItems: [],
         votes: [],
     }
-    let showUsers = false
     let showDeleteRetro = false
     let actionItem = ''
     let showExport = false
@@ -241,11 +238,6 @@
         })
     }
 
-    function toggleUsersPanel() {
-        showUsers = !showUsers
-        eventTag('show_users', 'retro', `show: ${showUsers}`)
-    }
-
     const toggleDeleteRetro = () => {
         showDeleteRetro = !showDeleteRetro
     }
@@ -424,325 +416,326 @@
         <div class="w-1/4">
             <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
                 {retro.name}
-            </h1>
-        </div>
-        <div class="w-3/4 text-right">
-            <div>
-                {#if retro.phase === 'completed'}
-                    <SolidButton color="green" onClick="{toggleExport}">
-                        {#if showExport}
-                            Back
-                        {:else}
-                            Export
-                        {/if}
-                    </SolidButton>
-                {/if}
-                {#if isOwner}
-                    {#if retro.phase !== 'completed'}
-                        <SolidButton color="blue" onClick="{advancePhase}">
-                            Next Phase
+        >
+            <div class="w-1/4">
+                <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
+                    {retro.name}
+                </h1>
+            </div>
+            <div class="w-3/4 text-right">
+                <div>
+                    {#if retro.phase === 'completed'}
+                        <SolidButton color="green" onClick="{toggleExport}">
+                            {#if showExport}
+                                Back
+                            {:else}
+                                Export
+                            {/if}
                         </SolidButton>
                     {/if}
+                    {#if isOwner}
+                        {#if retro.phase !== 'completed'}
+                            <SolidButton color="blue" onClick="{advancePhase}">
+                                Next Phase
+                            </SolidButton>
+                        {/if}
 
-                    <HollowButton
-                        color="red"
-                        onClick="{toggleDeleteRetro}"
-                        class="mr-2"
-                    >
-                        Delete Retro
-                    </HollowButton>
-                {:else}
-                    <HollowButton color="red" onClick="{abandonRetro}">
-                        Leave Retro
-                    </HollowButton>
-                {/if}
-                <div class="inline-block relative">
-                    <HollowButton
-                        color="teal"
-                        class="transition ease-in-out duration-150"
-                        onClick="{toggleUsersPanel}"
-                    >
-                        <UsersIcon />&nbsp; Users
-                        <DownCarrotIcon />
-                    </HollowButton>
-                    {#if showUsers}
-                        <div
-                            class="origin-top-right absolute right-0 mt-1 w-64
-                            rounded-md shadow-lg text-left"
+                        <HollowButton
+                            color="red"
+                            onClick="{toggleDeleteRetro}"
+                            class="mr-2"
                         >
-                            <div
-                                class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
-                            >
-                                {#each retro.users as usr, index (usr.id)}
-                                    {#if usr.active}
-                                        <UserCard
-                                            user="{usr}"
-                                            showBorder="{index !==
-                                                retro.users.length - 1}"
-                                        />
-                                    {/if}
-                                {/each}
-
-                                <div class="p-2">
-                                    <InviteUser
-                                        hostname="{hostname}"
-                                        retroId="{retro.id}"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                            Delete Retro
+                        </HollowButton>
+                    {:else}
+                        <HollowButton color="red" onClick="{abandonRetro}">
+                            Leave Retro
+                        </HollowButton>
                     {/if}
                 </div>
             </div>
         </div>
-    </div>
-    <div
-        class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-gray-400 dark:border-gray-700 flex flex-wrap"
-    >
-        <div class="w-1/2">
-            <div class="flex items-center text-gray-500 dark:text-gray-300">
-                <div
-                    class="flex-initial px-1 {retro.phase === 'intro' &&
-                        'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
-                >
-                    Prime Directive
-                </div>
-                <div class="flex-initial px-1">
-                    <ChevronRight />
-                </div>
-                <div
-                    class="flex-initial px-1 {retro.phase === 'brainstorm' &&
-                        'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
-                >
-                    Brainstorm
-                </div>
-                <div class="flex-initial px-1">
-                    <ChevronRight />
-                </div>
-                <div
-                    class="flex-initial px-1 {retro.phase === 'group' &&
-                        'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
-                >
-                    Group
-                </div>
-                <div class="flex-initial px-1">
-                    <ChevronRight />
-                </div>
-                <div
-                    class="flex-initial px-1 {retro.phase === 'vote' &&
-                        'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
-                >
-                    Vote
-                </div>
-                <div class="flex-initial px-1">
-                    <ChevronRight />
-                </div>
-                <div
-                    class="flex-initial px-1 {retro.phase === 'action' &&
-                        'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
-                >
-                    Action Items
-                </div>
-                <div class="flex-initial px-1">
-                    <ChevronRight />
-                </div>
-                <div
-                    class="flex-initial px-1 {retro.phase === 'completed' &&
-                        'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
-                >
-                    Done
+        <div
+            class="flex-none px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-gray-400 dark:border-gray-700 flex flex-wrap"
+        >
+            <div class="w-1/2">
+                <div class="flex items-center text-gray-500 dark:text-gray-300">
+                    <div
+                        class="flex-initial px-1 {retro.phase === 'intro' &&
+                            'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
+                    >
+                        Prime Directive
+                    </div>
+                    <div class="flex-initial px-1">
+                        <ChevronRight />
+                    </div>
+                    <div
+                        class="flex-initial px-1 {retro.phase ===
+                            'brainstorm' &&
+                            'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
+                    >
+                        Brainstorm
+                    </div>
+                    <div class="flex-initial px-1">
+                        <ChevronRight />
+                    </div>
+                    <div
+                        class="flex-initial px-1 {retro.phase === 'group' &&
+                            'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
+                    >
+                        Group
+                    </div>
+                    <div class="flex-initial px-1">
+                        <ChevronRight />
+                    </div>
+                    <div
+                        class="flex-initial px-1 {retro.phase === 'vote' &&
+                            'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
+                    >
+                        Vote
+                    </div>
+                    <div class="flex-initial px-1">
+                        <ChevronRight />
+                    </div>
+                    <div
+                        class="flex-initial px-1 {retro.phase === 'action' &&
+                            'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
+                    >
+                        Action Items
+                    </div>
+                    <div class="flex-initial px-1">
+                        <ChevronRight />
+                    </div>
+                    <div
+                        class="flex-initial px-1 {retro.phase === 'completed' &&
+                            'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
+                    >
+                        Done
+                    </div>
                 </div>
             </div>
+            <div class="w-1/2 text-right text-gray-600 dark:text-gray-400">
+                {#if retro.phase === 'brainstorm'}
+                    Add your comments below
+                {:else if retro.phase === 'group'}
+                    Drag and drop comments to group them together
+                {:else if retro.phase === 'vote'}
+                    Vote for the groups you'd like to discuss most
+                {:else if retro.phase === 'action'}
+                    Add action items, you can no longer group or vote comments
+                {/if}
+            </div>
         </div>
-        <div class="w-1/2 text-right text-gray-600 dark:text-gray-400">
-            {#if retro.phase === 'brainstorm'}
-                Add your comments below
-            {:else if retro.phase === 'group'}
-                Drag and drop comments to group them together
-            {:else if retro.phase === 'vote'}
-                Vote for the groups you'd like to discuss most
-            {:else if retro.phase === 'action'}
-                Add action items, you can no longer group or vote comments
-            {/if}
-        </div>
-    </div>
-    {#if showExport}
-        <Export retro="{retro}" />
-    {/if}
-    {#if !showExport}
-        <div class="w-full p-4 flex flex-wrap">
-            {#if retro.phase === 'intro'}
-                <div
-                    class="m-auto w-full md:w-3/4 lg:w-2/3 md:py-14 lg:py-20 dark:text-white"
-                >
-                    <h2
-                        class="text-3xl md:text-4xl lg:text-5xl font-rajdhani mb-2 tracking-wide"
-                    >
-                        The Prime Directive
-                    </h2>
-                    <div class="title-line bg-yellow-thunder"></div>
-                    <p
-                        class="md:leading-loose tracking-wider text-xl md:text-2xl lg:text-3xl"
-                    >
-                        "Regardless of what we discover, we understand and truly
-                        believe that everyone did the best job they could, given
-                        what they knew at the time, their skills and abilities,
-                        the resources available, and the situation at hand."
-                    </p>
-                    <p class="tracking-wider md:text-lg lg:text-xl ">
-                        &mdash;Norm Kerth, Project Retrospectives: A Handbook
-                        for Team Review <a
-                            href="https://retrospectivewiki.org/index.php?title=The_Prime_Directive"
-                            target="_blank"
-                            class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+        {#if showExport}
+            <Export retro="{retro}" />
+        {/if}
+        {#if !showExport}
+            <div class="w-full p-4 flex flex-col flex-grow">
+                <div class="grow flex">
+                    {#if retro.phase === 'intro'}
+                        <div
+                            class="m-auto w-full md:w-3/4 lg:w-2/3 md:py-14 lg:py-20 dark:text-white"
                         >
-                            <ExternalLinkIcon class="w-6 h-6 md:w-8 md:h-8" />
-                        </a>
-                    </p>
-                </div>
-            {/if}
-            {#if retro.phase === 'brainstorm'}
-                <div class="w-full grid gap-4 grid-cols-3">
-                    <RetroItemForm
-                        handleSubmit="{handleItemAdd}"
-                        handleDelete="{handleItemDelete}"
-                        itemType="worked"
-                        newItemPlaceholder="What worked well..."
-                        phase="{retro.phase}"
-                        isOwner="{isOwner}"
-                        items="{workedItems}"
-                    />
-                    <RetroItemForm
-                        handleSubmit="{handleItemAdd}"
-                        handleDelete="{handleItemDelete}"
-                        itemType="improve"
-                        newItemPlaceholder="What needs improvement..."
-                        phase="{retro.phase}"
-                        isOwner="{isOwner}"
-                        items="{improveItems}"
-                    />
-                    <RetroItemForm
-                        handleSubmit="{handleItemAdd}"
-                        handleDelete="{handleItemDelete}"
-                        itemType="question"
-                        newItemPlaceholder="I want to ask..."
-                        phase="{retro.phase}"
-                        isOwner="{isOwner}"
-                        items="{questionItems}"
-                    />
-                </div>
-            {/if}
-            {#if retro.phase === 'group'}
-                <div
-                    class="w-full grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4"
-                >
-                    <GroupPhase
-                        groups="{groupedItems}"
-                        handleItemChange="{handleItemGroupChange}"
-                        handleGroupNameChange="{handleGroupNameChange}"
-                    />
-                </div>
-            {/if}
-            {#if retro.phase === 'vote'}
-                <div class="w-full">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-                        <VotePhase
-                            groups="{groupedItems}"
-                            handleVote="{handleVote}"
-                            handleVoteSubtract="{handleVoteSubtract}"
-                            voteLimitReached="{voteLimitReached}"
-                        />
-                    </div>
-                </div>
-            {/if}
-            {#if retro.phase === 'action' || retro.phase === 'completed'}
-                <div class="w-full md:w-2/3">
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
-                        <VotePhase groups="{groupedItems}" />
-                    </div>
-                </div>
-                <div class="w-full md:w-1/3">
-                    <div class="pl-4">
-                        <div class="flex items-center mb-4">
-                            <div class="flex-shrink pr-2">
-                                <CheckCircle
-                                    class="w-8 h-8 text-indigo-500 dark:text-violet-400"
+                            <h2
+                                class="text-3xl md:text-4xl lg:text-5xl font-rajdhani mb-2 tracking-wide"
+                            >
+                                The Prime Directive
+                            </h2>
+                            <div class="title-line bg-yellow-thunder"></div>
+                            <p
+                                class="md:leading-loose tracking-wider text-xl md:text-2xl lg:text-3xl"
+                            >
+                                "Regardless of what we discover, we understand
+                                and truly believe that everyone did the best job
+                                they could, given what they knew at the time,
+                                their skills and abilities, the resources
+                                available, and the situation at hand."
+                            </p>
+                            <p class="tracking-wider md:text-lg lg:text-xl ">
+                                &mdash;Norm Kerth, Project Retrospectives: A
+                                Handbook for Team Review <a
+                                    href="https://retrospectivewiki.org/index.php?title=The_Prime_Directive"
+                                    target="_blank"
+                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                >
+                                    <ExternalLinkIcon
+                                        class="w-6 h-6 md:w-8 md:h-8"
+                                    />
+                                </a>
+                            </p>
+                        </div>
+                    {/if}
+                    {#if retro.phase === 'brainstorm'}
+                        <div class="w-full grid gap-4 grid-cols-3">
+                            <RetroItemForm
+                                handleSubmit="{handleItemAdd}"
+                                handleDelete="{handleItemDelete}"
+                                itemType="worked"
+                                newItemPlaceholder="What worked well..."
+                                phase="{retro.phase}"
+                                isOwner="{isOwner}"
+                                items="{workedItems}"
+                            />
+                            <RetroItemForm
+                                handleSubmit="{handleItemAdd}"
+                                handleDelete="{handleItemDelete}"
+                                itemType="improve"
+                                newItemPlaceholder="What needs improvement..."
+                                phase="{retro.phase}"
+                                isOwner="{isOwner}"
+                                items="{improveItems}"
+                            />
+                            <RetroItemForm
+                                handleSubmit="{handleItemAdd}"
+                                handleDelete="{handleItemDelete}"
+                                itemType="question"
+                                newItemPlaceholder="I want to ask..."
+                                phase="{retro.phase}"
+                                isOwner="{isOwner}"
+                                items="{questionItems}"
+                            />
+                        </div>
+                    {/if}
+                    {#if retro.phase === 'group'}
+                        <div
+                            class="w-full grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4"
+                        >
+                            <GroupPhase
+                                groups="{groupedItems}"
+                                handleItemChange="{handleItemGroupChange}"
+                                handleGroupNameChange="{handleGroupNameChange}"
+                            />
+                        </div>
+                    {/if}
+                    {#if retro.phase === 'vote'}
+                        <div class="w-full">
+                            <div
+                                class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4"
+                            >
+                                <VotePhase
+                                    groups="{groupedItems}"
+                                    handleVote="{handleVote}"
+                                    handleVoteSubtract="{handleVoteSubtract}"
+                                    voteLimitReached="{voteLimitReached}"
                                 />
                             </div>
-                            <div class="flex-grow">
-                                <form on:submit="{handleActionItem}">
-                                    <input
-                                        bind:value="{actionItem}"
-                                        placeholder="Action item..."
-                                        class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
-                    px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
-                    focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
-                                        id="actionItem"
-                                        name="actionItem"
-                                        type="text"
-                                        required
-                                        disabled="{!isOwner}"
-                                    />
-                                    <button type="submit" class="hidden"
-                                    ></button>
-                                </form>
+                        </div>
+                    {/if}
+                    {#if retro.phase === 'action' || retro.phase === 'completed'}
+                        <div class="w-full md:w-2/3">
+                            <div
+                                class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4"
+                            >
+                                <VotePhase groups="{groupedItems}" />
                             </div>
                         </div>
-                        {#each retro.actionItems as item, i}
-                            <div
-                                class="mb-2 p-2 bg-white dark:bg-gray-800 shadow border-l-4 border-indigo-500 dark:border-violet-400"
-                            >
-                                <div class="flex items-center">
-                                    <div class="flex-shrink">
-                                        {#if isOwner}
-                                            <button
-                                                on:click="{handleActionDelete(
-                                                    item.id,
-                                                )}"
-                                                class="pr-2 pt-1 text-gray-500 dark:text-gray-400
-                                                hover:text-red-500"
-                                            >
-                                                <TrashIcon />
-                                            </button>
-                                        {/if}
-                                    </div>
-                                    <div class="flex-grow dark:text-white">
-                                        <div class="pr-2">
-                                            {item.content}
-                                        </div>
-                                    </div>
-                                    <div class="flex-shrink">
-                                        <input
-                                            type="checkbox"
-                                            id="{i}Completed"
-                                            checked="{item.completed}"
-                                            class="opacity-0 absolute h-6 w-6"
-                                            on:change="{handleActionUpdate(
-                                                item.id,
-                                                item.completed,
-                                                item.content,
-                                            )}"
+                        <div class="w-full md:w-1/3">
+                            <div class="pl-4">
+                                <div class="flex items-center mb-4">
+                                    <div class="flex-shrink pr-2">
+                                        <CheckCircle
+                                            class="w-8 h-8 text-indigo-500 dark:text-violet-400"
                                         />
-                                        <div
-                                            class="bg-white dark:bg-gray-800 border-2 rounded-md
+                                    </div>
+                                    <div class="flex-grow">
+                                        <form on:submit="{handleActionItem}">
+                                            <input
+                                                bind:value="{actionItem}"
+                                                placeholder="Action item..."
+                                                class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
+                    px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
+                    focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
+                                                id="actionItem"
+                                                name="actionItem"
+                                                type="text"
+                                                required
+                                                disabled="{!isOwner}"
+                                            />
+                                            <button type="submit" class="hidden"
+                                            ></button>
+                                        </form>
+                                    </div>
+                                </div>
+                                {#each retro.actionItems as item, i}
+                                    <div
+                                        class="mb-2 p-2 bg-white dark:bg-gray-800 shadow border-l-4 border-indigo-500 dark:border-violet-400"
+                                    >
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink">
+                                                {#if isOwner}
+                                                    <button
+                                                        on:click="{handleActionDelete(
+                                                            item.id,
+                                                        )}"
+                                                        class="pr-2 pt-1 text-gray-500 dark:text-gray-400
+                                                hover:text-red-500"
+                                                    >
+                                                        <TrashIcon />
+                                                    </button>
+                                                {/if}
+                                            </div>
+                                            <div
+                                                class="flex-grow dark:text-white"
+                                            >
+                                                <div class="pr-2">
+                                                    {item.content}
+                                                </div>
+                                            </div>
+                                            <div class="flex-shrink">
+                                                <input
+                                                    type="checkbox"
+                                                    id="{i}Completed"
+                                                    checked="{item.completed}"
+                                                    class="opacity-0 absolute h-6 w-6"
+                                                    on:change="{handleActionUpdate(
+                                                        item.id,
+                                                        item.completed,
+                                                        item.content,
+                                                    )}"
+                                                />
+                                                <div
+                                                    class="bg-white dark:bg-gray-800 border-2 rounded-md
                                             border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
                                             justify-center items-center mr-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
-                                        >
-                                            <CheckboxIcon />
+                                                >
+                                                    <CheckboxIcon />
+                                                </div>
+                                                <label
+                                                    for="{i}Completed"
+                                                    class="select-none"></label>
+                                            </div>
                                         </div>
-                                        <label
-                                            for="{i}Completed"
-                                            class="select-none"></label>
                                     </div>
-                                </div>
+                                {/each}
                             </div>
+                        </div>
+                    {/if}
+                </div>
+
+                <div class="w-full self-end my-4">
+                    <div class="flex w-full justify-center">
+                        {#each retro.users as usr, index (usr.id)}
+                            {#if usr.active}
+                                <UserCard
+                                    user="{usr}"
+                                    showBorder="{index !==
+                                        retro.users.length - 1}"
+                                />
+                            {/if}
                         {/each}
                     </div>
+
+                    <div class="w-full md:w-1/3 p-2 dark:text-white hidden">
+                        <InviteUser
+                            hostname="{hostname}"
+                            retroId="{retro.id}"
+                        />
+                    </div>
                 </div>
-            {/if}
-        </div>
-    {/if}
+            </div>
+        {/if}
+    </div>
 {:else}
     <PageLayout>
         <div class="flex items-center">

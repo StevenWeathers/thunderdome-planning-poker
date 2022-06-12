@@ -51,7 +51,7 @@
 </svelte:head>
 
 <section
-    class="px-4 bg-yellow-thunder text-gray-800 border-b dark:border-gray-700"
+    class="w-full px-4 bg-yellow-thunder text-gray-800 border-b dark:border-gray-700"
 >
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
         <div class="flex flex-wrap items-center -mx-4">
@@ -96,7 +96,9 @@
     </div>
 </section>
 
-<section class="px-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+<section
+    class="w-full px-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700"
+>
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
         <div class="flex items-center flex-wrap h-full">
             <div class="w-1/2">
@@ -142,7 +144,7 @@
 </section>
 
 <section
-    class="px-4 bg-slate-100 dark:bg-gray-900 border-b dark:border-gray-700"
+    class="w-full px-4 bg-slate-100 dark:bg-gray-900 border-b dark:border-gray-700"
 >
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
         <div class="flex items-center flex-wrap h-full">
@@ -179,7 +181,9 @@
     </div>
 </section>
 
-<section class="px-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+<section
+    class="w-full px-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700"
+>
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
         <div class="flex items-center flex-wrap h-full">
             <div class="w-1/2">
@@ -211,7 +215,7 @@
 
 {#if ShowActiveCountries}
     <section
-        class="px-4 bg-slate-100 dark:bg-gray-900 border-b dark:border-gray-700"
+        class="w-full px-4 bg-slate-100 dark:bg-gray-900 border-b dark:border-gray-700"
     >
         <div class="container mx-auto py-12 md:py-16 lg:py-20">
             <Countries xfetch="{xfetch}" eventTag="{eventTag}" />
@@ -219,7 +223,7 @@
     </section>
 {/if}
 
-<section class="px-4 bg-white dark:bg-gray-800">
+<section class="w-full px-4 bg-white dark:bg-gray-800">
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
         <div class="flex text-center mb-8">
             <div class="w-1/2">

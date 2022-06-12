@@ -22,7 +22,7 @@
         appearance-none text-gray-700 focus:outline-none focus:bg-white
         focus:border-orange-500 "
         type="text"
-        value="{hostname}{appRoutes.retrospective}/{retrospectiveId}"
+        value="{hostname}{appRoutes.retro}/{retrospectiveId}"
         id="RetrospectiveLink"
         readonly
     />

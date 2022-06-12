@@ -85,10 +85,10 @@
     }
 </style>
 
-<div
-    class="flex px-6 py-2 border-b-2 bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
->
-    <div class="w-full">
+<div class="grow-0 w-full">
+    <div
+        class="w-full flex px-6 py-2 border-b-2 bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+    >
         <ul class="flex justify-end">
             {#each pages as page}
                 {#if page.enabled}
@@ -109,7 +109,7 @@
     </div>
 </div>
 
-<section>
+<section class="grow w-full">
     <div class="px-4 py-4 md:py-6 md:px-6 lg:py-8 lg:px-8">
         <slot />
     </div>

@@ -392,7 +392,7 @@
         />
     </header>
 
-    <main class="flex-grow">
+    <main class="flex-grow flex flex-wrap flex-col">
         <svelte:component
             this="{currentPage.route}"
             {...currentPage.params}

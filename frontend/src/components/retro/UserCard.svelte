@@ -2,12 +2,10 @@
     export let user = {}
     export let showBorder = 'true'
     import UserAvatar from '../user/UserAvatar.svelte'
-
-    $: borderClasses = showBorder === 'true' ? 'border-b border-gray-500' : ''
 </script>
 
 <div
-    class="{borderClasses} p-2 flex items-center"
+    class="shrink text-center px-2 "
     data-testId="userCard"
     data-userName="{user.name}"
 >
@@ -15,12 +13,13 @@
         warriorId="{user.id}"
         avatar="{user.avatar}"
         gravatarHash="{user.gravatarHash}"
+        class="mx-auto"
     />
-    <p
-        class="ml-2 text-l font-bold leading-tight truncate"
+    <div
+        class="text-l font-bold leading-tight truncate dark:text-white"
         data-testId="userName"
         title="{user.name}"
     >
         {user.name}
-    </p>
+    </div>
 </div>
