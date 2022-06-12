@@ -409,13 +409,10 @@
 </svelte:head>
 
 {#if retro.name && !socketReconnecting && !socketError}
-    <div
-        class="px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
+    <div class="flex flex-col flex-grow w-full">
+        <div
+            class="flex-none px-6 py-2 bg-gray-100 dark:bg-gray-800 border-b border-t border-gray-400 dark:border-gray-700 flex
         flex-wrap"
-    >
-        <div class="w-1/4">
-            <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
-                {retro.name}
         >
             <div class="w-1/4">
                 <h1 class="text-3xl font-bold leading-tight dark:text-gray-200">
