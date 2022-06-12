@@ -333,6 +333,20 @@
                 name: 'storyboard',
             }
         })
+        router.on(`${appRoutes.register}/storyboard/:storyboardId`, params => {
+            currentPage = {
+                route: Register,
+                params,
+                name: 'register',
+            }
+        })
+        router.on(`${appRoutes.login}/storyboard/:storyboardId`, params => {
+            currentPage = {
+                route: Login,
+                params,
+                name: 'login',
+            }
+        })
     }
 
     router.listen()

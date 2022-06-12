@@ -11,6 +11,7 @@
     export let eventTag
     export let battleId
     export let retroId
+    export let storyboardId
 
     const { AllowRegistration, LdapEnabled } = AppConfig
     const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth'
@@ -30,6 +31,10 @@
 
         if (retroId) {
             tp = `${appRoutes.retro}/${retroId}`
+        }
+
+        if (storyboardId) {
+            tp = `${appRoutes.storyboard}/${storyboardId}`
         }
 
         return tp
@@ -146,6 +151,18 @@
                                 class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                 >Register</a
                             > to join the Retro
+                        </div>
+                    {/if}
+                    {#if storyboardId && AllowRegistration}
+                        <div
+                            class="font-semibold font-rajdhani uppercase text-lg md:text-xl mb-2 md:mb-6
+                            md:leading-tight text-center dark:text-white"
+                        >
+                            or <a
+                                href="{appRoutes.register}/storyboard/{storyboardId}"
+                                class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                >Register</a
+                            > to join the Storyboard
                         </div>
                     {/if}
                     <div class="mb-4">

@@ -13,6 +13,7 @@
     export let eventTag
     export let battleId
     export let retroId
+    export let storyboardId
 
     const guestsAllowed = AppConfig.AllowGuests
     const registrationAllowed = AppConfig.AllowRegistration
@@ -28,6 +29,10 @@
 
         if (retroId) {
             tp = `${appRoutes.retro}/${retroId}`
+        }
+
+        if (storyboardId) {
+            tp = `${appRoutes.retro}/${storyboardId}`
         }
 
         return tp
@@ -150,6 +155,18 @@
                     class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                     >Login</a
                 > to join the Retro
+            </div>
+        {/if}
+        {#if storyboardId}
+            <div
+                class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
+                text-center dark:text-white"
+            >
+                or <a
+                    href="{appRoutes.login}/storyboard/{storyboardId}"
+                    class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                    >Login</a
+                > to join the Storyboard
             </div>
         {/if}
     </div>
