@@ -59,40 +59,43 @@ Thunderdome sends emails for user registration related activities, the following
 
 ## Configure Admin Email
 
-To grant Admin access to Thunderdome for the first Admin user create an account first, then set the `ADMIN_EMAIL` environment variable or `admin.email` config file value.  Upon the app starting up Thunderdome will read this value and set that user as ADMIN role.
+To grant Admin access to Thunderdome for the first Admin user create an account first, then set the `ADMIN_EMAIL`
+environment variable or `admin.email` config file value. Upon the app starting up Thunderdome will read this value and
+set that user as ADMIN role.
 
 ## Optional configuration items
 
-| Option                            | Environment Variable            | Description                                                                                                  | Default Value                          |
-|-----------------------------------|---------------------------------|--------------------------------------------------------------------------------------------------------------|----------------------------------------|
-| `http.port`                       | PORT                            | Which port to listen for HTTP connections.                                                                   | 8080                                   |
-| `http.path_prefix`                | PATH_PREFIX                     | Prefix added to all application urls for shared domain use, in format of `/{prefix}` e.g. `/thunderdome`     |                                        |
-| `http.secure_cookie`              | COOKIE_SECURE                   | Use secure cookies or not.                                                                                   | true                                   |
-| `http.backend_cookie_name`        | BACKEND_COOKIE_NAME             | The name of the backend cookie utilized for actual auth/validation                                           | warriorId                              |
-| `http.frontend_cookie_name`       | FRONTEND_COOKIE_NAME            | The name of the cookie utilized by the UI (purely for convenience not auth)                                  | warrior                                |
-| `analytics.enabled`               | ANALYTICS_ENABLED               | Enable/disable google analytics.                                                                             | true                                   |
-| `analytics.id`                    | ANALYTICS_ID                    | Google analytics identifier.                                                                                 | UA-140245309-1                         |
-| `config.allowedPointValues`       | CONFIG_POINTS_ALLOWED           | List of available point values for creating battles.                                                         | 0, 1/2, 2, 3, 5, 8, 13, 20, 40, 100, ? |
-| `config.defaultPointValues`       | CONFIG_POINTS_DEFAULT           | List of default selected points for new battles.                                                             | 1, 2, 3, 5, 8 , 13, ?                  |
-| `config.show_warrior_rank`        | CONFIG_SHOW_RANK                | Set to enable an icon showing the rank of a warrior during battle.                                           | false                                  |
-| `config.avatar_service`           | CONFIG_AVATAR_SERVICE           | Avatar service used, possible values see next paragraph                                                      | gravatar                               |
-| `config.toast_timeout`            | CONFIG_TOAST_TIMEOUT            | Number of milliseconds before notifications are hidden.                                                      | 1000                                   |
-| `config.allow_guests`             | CONFIG_ALLOW_GUESTS             | Whether or not to allow guest (anonymous) users.                                                             | true                                   |
-| `config.allow_registration`       | CONFIG_ALLOW_REGISTRATION       | Whether or not to allow user registration (outside Admin).                                                   | true                                   |
-| `config.allow_jira_import`        | CONFIG_ALLOW_JIRA_IMPORT        | Whether or not to allow import plans from JIRA XML.                                                          | true                                   |
-| `config.default_locale`           | CONFIG_DEFAULT_LOCALE           | The default locale (language) for the UI                                                                     | en                                     |
-| `config.friendly_ui_verbs`        | CONFIG_FRIENDLY_UI_VERBS        | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly          | false                                  |
-| `config.allow_external_api`       | CONFIG_ALLOW_EXTERNAL_API       | Whether or not to allow External API access                                                                  | false                                  |
-| `config.user_apikey_limit`        | CONFIG_USER_APIKEY_LIMIT        | Limit users number of API keys                                                                               | 5                                      |
-| `config.show_active_countries`    | CONFIG_SHOW_ACTIVE_COUNTRIES    | Whether or not to show active countries on landing page                                                      | false                                  |
-| `config.cleanup_battles_days_old` | CONFIG_CLEANUP_BATTLES_DAYS_OLD | How many days back to clean up old battles, e.g. battles older than 180 days. Triggered manually by Admins . | 180                                    |
-| `config.cleanup_retros_days_old`  | CONFIG_CLEANUP_RETROS_DAYS_OLD  | How many days back to clean up old retros, e.g. retros older than 180 days. Triggered manually by Admins .   | 180                                    |
-| `config.cleanup_guests_days_old`  | CONFIG_CLEANUP_GUESTS_DAYS_OLD  | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins.    | 180                                    |
-| `config.organizations_enabled`  | CONFIG_ORGANIZATIONS_ENABLED  | Whether or not creating organizations (with departments) are enabled    | true                                    |
-| `auth.method`                     | AUTH_METHOD                     | Choose `normal` or `ldap` as authentication method. See separate section on LDAP configuration.              | normal                                 |
-| `feature.poker`                   | FEATURE_POKER                   | Enable or Disable Agile Story Pointing (Poker) feature                                                       | true                                   |
-| `feature.retro`                   | FEATURE_RETRO                   | Enable or Disable Agile Retrospectives feature                                                               | true                                   |
-| `feature.storyboard`              | FEATURE_STORYBOARD              | Enable or Disable Agile Storyboard feature                                                                   | true                                   |
+| Option                                | Environment Variable                | Description                                                                                                          | Default Value                          |
+|---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|----------------------------------------|
+| `http.port`                           | PORT                                | Which port to listen for HTTP connections.                                                                           | 8080                                   |
+| `http.path_prefix`                    | PATH_PREFIX                         | Prefix added to all application urls for shared domain use, in format of `/{prefix}` e.g. `/thunderdome`             |                                        |
+| `http.secure_cookie`                  | COOKIE_SECURE                       | Use secure cookies or not.                                                                                           | true                                   |
+| `http.backend_cookie_name`            | BACKEND_COOKIE_NAME                 | The name of the backend cookie utilized for actual auth/validation                                                   | warriorId                              |
+| `http.frontend_cookie_name`           | FRONTEND_COOKIE_NAME                | The name of the cookie utilized by the UI (purely for convenience not auth)                                          | warrior                                |
+| `analytics.enabled`                   | ANALYTICS_ENABLED                   | Enable/disable google analytics.                                                                                     | true                                   |
+| `analytics.id`                        | ANALYTICS_ID                        | Google analytics identifier.                                                                                         | UA-140245309-1                         |
+| `config.allowedPointValues`           | CONFIG_POINTS_ALLOWED               | List of available point values for creating battles.                                                                 | 0, 1/2, 2, 3, 5, 8, 13, 20, 40, 100, ? |
+| `config.defaultPointValues`           | CONFIG_POINTS_DEFAULT               | List of default selected points for new battles.                                                                     | 1, 2, 3, 5, 8 , 13, ?                  |
+| `config.show_warrior_rank`            | CONFIG_SHOW_RANK                    | Set to enable an icon showing the rank of a warrior during battle.                                                   | false                                  |
+| `config.avatar_service`               | CONFIG_AVATAR_SERVICE               | Avatar service used, possible values see next paragraph                                                              | gravatar                               |
+| `config.toast_timeout`                | CONFIG_TOAST_TIMEOUT                | Number of milliseconds before notifications are hidden.                                                              | 1000                                   |
+| `config.allow_guests`                 | CONFIG_ALLOW_GUESTS                 | Whether or not to allow guest (anonymous) users.                                                                     | true                                   |
+| `config.allow_registration`           | CONFIG_ALLOW_REGISTRATION           | Whether or not to allow user registration (outside Admin).                                                           | true                                   |
+| `config.allow_jira_import`            | CONFIG_ALLOW_JIRA_IMPORT            | Whether or not to allow import plans from JIRA XML.                                                                  | true                                   |
+| `config.default_locale`               | CONFIG_DEFAULT_LOCALE               | The default locale (language) for the UI                                                                             | en                                     |
+| `config.friendly_ui_verbs`            | CONFIG_FRIENDLY_UI_VERBS            | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly                  | false                                  |
+| `config.allow_external_api`           | CONFIG_ALLOW_EXTERNAL_API           | Whether or not to allow External API access                                                                          | false                                  |
+| `config.user_apikey_limit`            | CONFIG_USER_APIKEY_LIMIT            | Limit users number of API keys                                                                                       | 5                                      |
+| `config.show_active_countries`        | CONFIG_SHOW_ACTIVE_COUNTRIES        | Whether or not to show active countries on landing page                                                              | false                                  |
+| `config.cleanup_battles_days_old`     | CONFIG_CLEANUP_BATTLES_DAYS_OLD     | How many days back to clean up old battles, e.g. battles older than 180 days. Triggered manually by Admins .         | 180                                    |
+| `config.cleanup_retros_days_old`      | CONFIG_CLEANUP_RETROS_DAYS_OLD      | How many days back to clean up old retros, e.g. retros older than 180 days. Triggered manually by Admins .           | 180                                    |
+| `config.cleanup_storyboards_days_old` | CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD | How many days back to clean up old storyboards, e.g. storyboards older than 180 days. Triggered manually by Admins . | 180                                    |
+| `config.cleanup_guests_days_old`      | CONFIG_CLEANUP_GUESTS_DAYS_OLD      | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins.            | 180                                    |
+| `config.organizations_enabled`        | CONFIG_ORGANIZATIONS_ENABLED        | Whether or not creating organizations (with departments) are enabled                                                 | true                                    |
+| `auth.method`                         | AUTH_METHOD                         | Choose `normal` or `ldap` as authentication method. See separate section on LDAP configuration.                      | normal                                 |
+| `feature.poker`                       | FEATURE_POKER                       | Enable or Disable Agile Story Pointing (Poker) feature                                                               | true                                   |
+| `feature.retro`                       | FEATURE_RETRO                       | Enable or Disable Agile Retrospectives feature                                                                       | true                                   |
+| `feature.storyboard`                  | FEATURE_STORYBOARD                  | Enable or Disable Agile Storyboard feature                                                                           | true                                   |
 
 ### Avatar Service configuration
 

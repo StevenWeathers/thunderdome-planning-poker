@@ -29,7 +29,14 @@ func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 			active_retro_count,
 			active_retro_user_count,
 			retro_item_count,
-			retro_action_count
+			retro_action_count,
+			storyboard_count,
+			active_storyboard_count,
+			active_storyboard_user_count,
+			storyboard_goal_count,
+			storyboard_column_count,
+			storyboard_story_count,
+			storyboard_persona_count
 		FROM get_app_stats();
 		`,
 	).Scan(
@@ -49,6 +56,13 @@ func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 		&Appstats.ActiveRetroUserCount,
 		&Appstats.RetroItemCount,
 		&Appstats.RetroActionCount,
+		&Appstats.StoryboardCount,
+		&Appstats.ActiveStoryboardCount,
+		&Appstats.ActiveStoryboardUserCount,
+		&Appstats.StoryboardGoalCount,
+		&Appstats.StoryboardColumnCount,
+		&Appstats.StoryboardStoryCount,
+		&Appstats.StoryboardPersonaCount,
 	)
 	if err != nil {
 		d.logger.Error("Unable to get application stats", zap.Error(err))
@@ -92,6 +106,32 @@ func (d *Database) CleanBattles(DaysOld int) error {
 	); err != nil {
 		d.logger.Error("call clean_battles", zap.Error(err))
 		return errors.New("error attempting to clean battles")
+	}
+
+	return nil
+}
+
+// CleanRetros deletes retros older than {DaysOld} days
+func (d *Database) CleanRetros(DaysOld int) error {
+	if _, err := d.db.Exec(
+		`call clean_retros($1);`,
+		DaysOld,
+	); err != nil {
+		d.logger.Error("call clean_retros", zap.Error(err))
+		return errors.New("error attempting to clean retros")
+	}
+
+	return nil
+}
+
+// CleanStoryboards deletes storyboards older than {DaysOld} days
+func (d *Database) CleanStoryboards(DaysOld int) error {
+	if _, err := d.db.Exec(
+		`call clean_storyboards($1);`,
+		DaysOld,
+	); err != nil {
+		d.logger.Error("call clean_storyboards", zap.Error(err))
+		return errors.New("error attempting to clean storyboards")
 	}
 
 	return nil

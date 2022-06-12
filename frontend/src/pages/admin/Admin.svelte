@@ -31,9 +31,12 @@
     const {
         CleanupGuestsDaysOld,
         CleanupBattlesDaysOld,
+        CleanupRetrosDaysOld,
+        CleanupStoryboardsDaysOld,
         ExternalAPIEnabled,
         FeaturePoker,
         FeatureRetro,
+        FeatureStoryboard,
         OrganizationsEnabled,
     } = AppConfig
 
@@ -54,6 +57,13 @@
         activeRetroUserCount: 0,
         retroItemCount: 0,
         retroActionCount: 0,
+        storyboardCount: 0,
+        activeStoryboardCount: 0,
+        activeStoryboardUserCount: 0,
+        storyboardGoalCount: 0,
+        storyboardColumnCount: 0,
+        storyboardStoryCount: 0,
+        storyboardPersonaCount: 0,
     }
 
     function getAppStats() {
@@ -77,6 +87,32 @@
             .catch(function () {
                 notifications.danger($_('oldBattleCleanError'))
                 eventTag('admin_clean_battles', 'engagement', 'failure')
+            })
+    }
+
+    function cleanRetros() {
+        xfetch('/api/maintenance/clean-retros', { method: 'DELETE' })
+            .then(function () {
+                eventTag('admin_clean_retros', 'engagement', 'success')
+
+                getAppStats()
+            })
+            .catch(function () {
+                notifications.danger($_('oldRetrosCleanError'))
+                eventTag('admin_clean_retros', 'engagement', 'failure')
+            })
+    }
+
+    function cleanStoryboards() {
+        xfetch('/api/maintenance/clean-storyboards', { method: 'DELETE' })
+            .then(function () {
+                eventTag('admin_clean_storyboards', 'engagement', 'success')
+
+                getAppStats()
+            })
+            .catch(function () {
+                notifications.danger($_('oldStoryboardsCleanError'))
+                eventTag('admin_clean_storyboards', 'engagement', 'failure')
             })
     }
 
@@ -478,6 +514,155 @@
                 </div>
             </div>
         {/if}
+        {#if FeatureStoryboard}
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-fuchsia-500 text-white">
+                            <CheckCircle />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
+                            Storyboard's
+                        </h5>
+                        <h3 class="font-bold text-3xl dark:text-white">
+                            {appStats.storyboardCount}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-amber-500 text-white">
+                            <CheckCircle />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
+                            Active Storyboard's
+                        </h5>
+                        <h3 class="font-bold text-3xl dark:text-white">
+                            {appStats.activeStoryboardCount}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-pink-500 text-white">
+                            <UserIcon />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
+                            Active Storyboard Users
+                        </h5>
+                        <h3 class="font-bold text-3xl dark:text-white">
+                            {appStats.activeStoryboardUserCount}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-emerald-500 text-white">
+                            <CheckCircle />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
+                            Storyboard Goals
+                        </h5>
+                        <h3 class="font-bold text-3xl dark:text-white">
+                            {appStats.storyboardGoalCount}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-violet-500 text-white">
+                            <CheckCircle />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
+                            Storyboard Columns
+                        </h5>
+                        <h3 class="font-bold text-3xl dark:text-white">
+                            {appStats.storyboardColumnCount}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-violet-500 text-white">
+                            <CheckCircle />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
+                            Storyboard Stories
+                        </h5>
+                        <h3 class="font-bold text-3xl dark:text-white">
+                            {appStats.storyboardStoryCount}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+            >
+                <div class="flex flex-row items-center">
+                    <div class="flex-shrink pr-4">
+                        <div class="rounded p-3 bg-violet-500 text-white">
+                            <CheckCircle />
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right md:text-center">
+                        <h5
+                            class="font-bold uppercase text-gray-500 dark:text-gray-400"
+                        >
+                            Storyboard Personas
+                        </h5>
+                        <h3 class="font-bold text-3xl dark:text-white">
+                            {appStats.storyboardPersonaCount}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        {/if}
     </div>
 
     <div class="w-full">
@@ -521,6 +706,51 @@
                                 })}
                             </h5>
                             <HollowButton onClick="{cleanBattles}" color="red">
+                                Execute
+                            </HollowButton>
+                        </div>
+                    </div>
+                </div>
+            {/if}
+            {#if FeatureRetro}
+                <div
+                    class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+                >
+                    <div class="flex flex-row items-center">
+                        <div class="flex-1 text-center">
+                            <h5
+                                class="font-bold uppercase text-gray-500 dark:text-gray-400 mb-2"
+                            >
+                                {$_('adminCleanOldRetros', {
+                                    values: { daysOld: CleanupRetrosDaysOld },
+                                })}
+                            </h5>
+                            <HollowButton onClick="{cleanRetros}" color="red">
+                                Execute
+                            </HollowButton>
+                        </div>
+                    </div>
+                </div>
+            {/if}
+            {#if FeatureStoryboard}
+                <div
+                    class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
+                >
+                    <div class="flex flex-row items-center">
+                        <div class="flex-1 text-center">
+                            <h5
+                                class="font-bold uppercase text-gray-500 dark:text-gray-400 mb-2"
+                            >
+                                {$_('adminCleanOldStoryboards', {
+                                    values: {
+                                        daysOld: CleanupStoryboardsDaysOld,
+                                    },
+                                })}
+                            </h5>
+                            <HollowButton
+                                onClick="{cleanStoryboards}"
+                                color="red"
+                            >
                                 Execute
                             </HollowButton>
                         </div>

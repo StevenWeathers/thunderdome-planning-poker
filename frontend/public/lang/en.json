@@ -423,5 +423,9 @@
   "storyboardRemoveSuccess": "Storyboard removed successfully.",
   "storyboardRemoveError": "Error attempting to remove storyboard.",
   "storyboardAddSuccess": "Storyboard added successfully.",
-  "storyboardAddError": "Error attempting to add storyboard."
+  "storyboardAddError": "Error attempting to add storyboard.",
+  "adminCleanOldRetros": "Clean Retros older than {daysOld} days",
+  "oldRetrosCleanError": "Error encountered cleaning retros",
+  "adminCleanOldStoryboards": "Clean Storyboards older than {daysOld} days",
+  "oldStoryboardsCleanError": "Error encountered cleaning storyboards"
 }

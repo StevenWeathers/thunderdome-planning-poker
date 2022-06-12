@@ -269,6 +269,14 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 }
 
 // handleGetTeamRetros gets a list of retros associated to the team
+// @Summary Get Team Retros
+// @Description Get a list of retros associated to the team
+// @Tags team
+// @Produce  json
+// @Param teamId path string true "the team ID"
+// @Success 200 object standardJsonResponse{data=[]model.Retro}
+// @Security ApiKeyAuth
+// @Router /teams/{teamId}/retros [get]
 func (a *api) handleGetTeamRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -282,6 +290,17 @@ func (a *api) handleGetTeamRetros() http.HandlerFunc {
 }
 
 // handleTeamRemoveRetro handles removing retro from a team
+// @Summary Remove Team Retro
+// @Description Remove a retro from the team
+// @Tags team
+// @Produce  json
+// @Param teamId path string true "the team ID"
+// @Param retroId path string true "the retro ID"
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /{teamId}/retros/{retroId} [delete]
 func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -299,6 +318,14 @@ func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
 }
 
 // handleGetTeamStoryboards gets a list of storyboards associated to the team
+// @Summary Get Team Storyboards
+// @Description Get a list of storyboards associated to the team
+// @Tags team
+// @Produce  json
+// @Param teamId path string true "the team ID"
+// @Success 200 object standardJsonResponse{data=[]model.Storyboard}
+// @Security ApiKeyAuth
+// @Router /teams/{teamId}/storyboards [get]
 func (a *api) handleGetTeamStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -312,6 +339,17 @@ func (a *api) handleGetTeamStoryboards() http.HandlerFunc {
 }
 
 // handleTeamRemoveStoryboard handles removing storyboard from a team
+// @Summary Remove Team Storyboard
+// @Description Remove a storyboard from the team
+// @Tags team
+// @Produce  json
+// @Param teamId path string true "the team ID"
+// @Param storyboardId path string true "the storyboard ID"
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /{teamId}/storyboards/{storyboardId} [delete]
 func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

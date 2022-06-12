@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// handleCleanBattles handles cleaning up old battles (ADMIN Manaually Triggered)
+// handleCleanBattles handles cleaning up old battles (ADMIN Manually Triggered)
 // @Summary Clean Old Battles
 // @Description Deletes battles older than {config.cleanup_battles_days_old} based on last activity date
 // @Tags maintenance
@@ -21,6 +21,52 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 		DaysOld := viper.GetInt("config.cleanup_battles_days_old")
 
 		err := a.db.CleanBattles(DaysOld)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleCleanRetros handles cleaning up old retros (ADMIN Manually Triggered)
+// @Summary Clean Old Retros
+// @Description Deletes retros older than {config.cleanup_retros_days_old} based on last activity date
+// @Tags maintenance
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /maintenance/clean-retros [delete]
+func (a *api) handleCleanRetros() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		DaysOld := viper.GetInt("config.cleanup_retros_days_old")
+
+		err := a.db.CleanRetros(DaysOld)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleCleanStoryboards handles cleaning up old storyboards (ADMIN Manually Triggered)
+// @Summary Clean Old Storyboards
+// @Description Deletes storyboards older than {config.cleanup_storyboards_days_old} based on last activity date
+// @Tags maintenance
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /maintenance/clean-storyboards [delete]
+func (a *api) handleCleanStoryboards() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		DaysOld := viper.GetInt("config.cleanup_storyboards_days_old")
+
+		err := a.db.CleanStoryboards(DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

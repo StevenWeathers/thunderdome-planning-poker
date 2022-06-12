@@ -102,30 +102,31 @@ func (s *server) getIndexTemplate(FSS fs.FS) *template.Template {
 // handleIndex parses the index html file, injecting any relevant data
 func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 	type AppConfig struct {
-		AllowedPointValues    []string
-		DefaultPointValues    []string
-		ShowWarriorRank       bool
-		AvatarService         string
-		ToastTimeout          int
-		AllowGuests           bool
-		AllowRegistration     bool
-		AllowJiraImport       bool
-		DefaultLocale         string
-		FriendlyUIVerbs       bool
-		OrganizationsEnabled  bool
-		AppVersion            string
-		CookieName            string
-		PathPrefix            string
-		ExternalAPIEnabled    bool
-		UserAPIKeyLimit       int
-		CleanupGuestsDaysOld  int
-		CleanupBattlesDaysOld int
-		CleanupRetrosDaysOld  int
-		ShowActiveCountries   bool
-		LdapEnabled           bool
-		FeaturePoker          bool
-		FeatureRetro          bool
-		FeatureStoryboard     bool
+		AllowedPointValues        []string
+		DefaultPointValues        []string
+		ShowWarriorRank           bool
+		AvatarService             string
+		ToastTimeout              int
+		AllowGuests               bool
+		AllowRegistration         bool
+		AllowJiraImport           bool
+		DefaultLocale             string
+		FriendlyUIVerbs           bool
+		OrganizationsEnabled      bool
+		AppVersion                string
+		CookieName                string
+		PathPrefix                string
+		ExternalAPIEnabled        bool
+		UserAPIKeyLimit           int
+		CleanupGuestsDaysOld      int
+		CleanupBattlesDaysOld     int
+		CleanupRetrosDaysOld      int
+		CleanupStoryboardsDaysOld int
+		ShowActiveCountries       bool
+		LdapEnabled               bool
+		FeaturePoker              bool
+		FeatureRetro              bool
+		FeatureStoryboard         bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -137,30 +138,31 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 	tmpl := s.getIndexTemplate(FSS)
 
 	appConfig := AppConfig{
-		AllowedPointValues:    viper.GetStringSlice("config.allowedPointValues"),
-		DefaultPointValues:    viper.GetStringSlice("config.defaultPointValues"),
-		ShowWarriorRank:       viper.GetBool("config.show_warrior_rank"),
-		AvatarService:         viper.GetString("config.avatar_service"),
-		ToastTimeout:          viper.GetInt("config.toast_timeout"),
-		AllowGuests:           viper.GetBool("config.allow_guests"),
-		AllowRegistration:     viper.GetBool("config.allow_registration") && viper.GetString("auth.method") == "normal",
-		AllowJiraImport:       viper.GetBool("config.allow_jira_import"),
-		DefaultLocale:         viper.GetString("config.default_locale"),
-		FriendlyUIVerbs:       viper.GetBool("config.friendly_ui_verbs"),
-		OrganizationsEnabled:  viper.GetBool("config.organizations_enabled"),
-		ExternalAPIEnabled:    s.config.ExternalAPIEnabled,
-		UserAPIKeyLimit:       s.config.UserAPIKeyLimit,
-		AppVersion:            s.config.Version,
-		CookieName:            s.config.FrontendCookieName,
-		PathPrefix:            s.config.PathPrefix,
-		CleanupGuestsDaysOld:  viper.GetInt("config.cleanup_guests_days_old"),
-		CleanupBattlesDaysOld: viper.GetInt("config.cleanup_battles_days_old"),
-		CleanupRetrosDaysOld:  viper.GetInt("config.cleanup_retros_days_old"),
-		ShowActiveCountries:   viper.GetBool("config.show_active_countries"),
-		LdapEnabled:           s.config.LdapEnabled,
-		FeaturePoker:          viper.GetBool("feature.poker"),
-		FeatureRetro:          viper.GetBool("feature.retro"),
-		FeatureStoryboard:     viper.GetBool("feature.storyboard"),
+		AllowedPointValues:        viper.GetStringSlice("config.allowedPointValues"),
+		DefaultPointValues:        viper.GetStringSlice("config.defaultPointValues"),
+		ShowWarriorRank:           viper.GetBool("config.show_warrior_rank"),
+		AvatarService:             viper.GetString("config.avatar_service"),
+		ToastTimeout:              viper.GetInt("config.toast_timeout"),
+		AllowGuests:               viper.GetBool("config.allow_guests"),
+		AllowRegistration:         viper.GetBool("config.allow_registration") && viper.GetString("auth.method") == "normal",
+		AllowJiraImport:           viper.GetBool("config.allow_jira_import"),
+		DefaultLocale:             viper.GetString("config.default_locale"),
+		FriendlyUIVerbs:           viper.GetBool("config.friendly_ui_verbs"),
+		OrganizationsEnabled:      viper.GetBool("config.organizations_enabled"),
+		ExternalAPIEnabled:        s.config.ExternalAPIEnabled,
+		UserAPIKeyLimit:           s.config.UserAPIKeyLimit,
+		AppVersion:                s.config.Version,
+		CookieName:                s.config.FrontendCookieName,
+		PathPrefix:                s.config.PathPrefix,
+		CleanupGuestsDaysOld:      viper.GetInt("config.cleanup_guests_days_old"),
+		CleanupBattlesDaysOld:     viper.GetInt("config.cleanup_battles_days_old"),
+		CleanupRetrosDaysOld:      viper.GetInt("config.cleanup_retros_days_old"),
+		CleanupStoryboardsDaysOld: viper.GetInt("config.cleanup_storyboards_days_old"),
+		ShowActiveCountries:       viper.GetBool("config.show_active_countries"),
+		LdapEnabled:               s.config.LdapEnabled,
+		FeaturePoker:              viper.GetBool("feature.poker"),
+		FeatureRetro:              viper.GetBool("feature.retro"),
+		FeatureStoryboard:         viper.GetBool("feature.storyboard"),
 	}
 
 	data := UIConfig{

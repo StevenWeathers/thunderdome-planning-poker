@@ -57,6 +57,7 @@ func InitConfig(logger *zap.Logger) {
 	viper.SetDefault("config.cleanup_battles_days_old", 180)
 	viper.SetDefault("config.cleanup_guests_days_old", 180)
 	viper.SetDefault("config.cleanup_retros_days_old", 180)
+	viper.SetDefault("config.cleanup_storyboards_days_old", 180)
 	viper.SetDefault("config.organizations_enabled", true)
 
 	// feature flags
@@ -119,6 +120,7 @@ func InitConfig(logger *zap.Logger) {
 	viper.BindEnv("config.cleanup_battles_days_old", "CONFIG_CLEANUP_BATTLES_DAYS_OLD")
 	viper.BindEnv("config.cleanup_guests_days_old", "CONFIG_CLEANUP_GUESTS_DAYS_OLD")
 	viper.BindEnv("config.cleanup_retros_days_old", "CONFIG_CLEANUP_RETROS_DAYS_OLD")
+	viper.BindEnv("config.cleanup_storyboards_days_old", "CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD")
 	viper.BindEnv("config.organizations_enabled", "CONFIG_ORGANIZATIONS_ENABLED")
 
 	viper.BindEnv("feature.poker", "FEATURE_POKER")
