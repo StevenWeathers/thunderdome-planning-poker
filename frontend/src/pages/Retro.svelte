@@ -17,6 +17,7 @@
     import Export from '../components/retro/Export.svelte'
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
     import InviteUser from '../components/retro/InviteUser.svelte'
+    import EditRetro from '../components/retro/EditRetro.svelte'
     import { appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
     import { _ } from '../i18n'
@@ -37,6 +38,7 @@
     let socketError = false
     let socketReconnecting = false
     let retro = {
+        name: '',
         ownerId: '',
         phase: 'brainstorm',
         users: [],
@@ -52,6 +54,7 @@
     let JoinPassRequired = false
     let joinPasscode = ''
     let voteLimitReached = false
+    let showEditRetro = false
 
     function organizeItemsByGroup() {
         const groupMap = retro.groups.reduce((prev, g) => {
@@ -146,6 +149,11 @@
             }
             case 'action_updated':
                 retro.actionItems = JSON.parse(parsedEvent.value)
+                break
+            case 'retro_edited':
+                const revisedRetro = JSON.parse(parsedEvent.value)
+                retro.name = revisedRetro.retroName
+                retro.joinCode = revisedRetro.joinCode
                 break
             case 'conceded':
                 // retro over, goodbye.
@@ -362,6 +370,16 @@
         eventTag('auth_retro', 'retro', '')
     }
 
+    function handleRetroEdit(revisedRetro) {
+        sendSocketEvent('edit_retro', JSON.stringify(revisedRetro))
+        eventTag('edit_retro', 'retro', '')
+        toggleEditRetro()
+    }
+
+    function toggleEditRetro() {
+        showEditRetro = !showEditRetro
+    }
+
     onMount(() => {
         if (!$user.id) {
             router.route(`${loginOrRegister}/retro/${retroId}`)
@@ -436,6 +454,14 @@
                                 Next Phase
                             </SolidButton>
                         {/if}
+
+                        <HollowButton
+                            color="blue"
+                            onClick="{toggleEditRetro}"
+                            testid="retro-edit"
+                        >
+                            Edit Retro
+                        </HollowButton>
 
                         <HollowButton
                             color="red"
@@ -791,6 +817,15 @@
             </div>
         </div>
     </PageLayout>
+{/if}
+
+{#if showEditRetro}
+    <EditRetro
+        retroName="{retro.name}"
+        handleRetroEdit="{handleRetroEdit}"
+        toggleEditRetro="{toggleEditRetro}"
+        joinCode="{retro.joinCode}"
+    />
 {/if}
 
 {#if showDeleteRetro}

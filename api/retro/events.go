@@ -201,6 +201,29 @@ func (b *Service) AdvancePhase(RetroID string, UserID string, EventValue string)
 	return msg, nil, false
 }
 
+// EditRetro handles editing the retro settings
+func (b *Service) EditRetro(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rb struct {
+		Name     string `json:"retroName"`
+		JoinCode string `json:"joinCode"`
+	}
+	json.Unmarshal([]byte(EventValue), &rb)
+
+	err := b.db.EditRetro(
+		RetroID,
+		rb.Name,
+		rb.JoinCode,
+	)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedRetro, _ := json.Marshal(rb)
+	msg := createSocketEvent("retro_edited", string(updatedRetro), "")
+
+	return msg, nil, false
+}
+
 // Delete handles deleting the retro
 func (b *Service) Delete(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	err := b.db.RetroDelete(RetroID)

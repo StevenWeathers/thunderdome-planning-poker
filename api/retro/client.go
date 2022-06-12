@@ -58,6 +58,7 @@ func (sub subscription) readPump(b *Service) {
 		"update_action":       b.UpdateAction,
 		"delete_action":       b.DeleteAction,
 		"advance_phase":       b.AdvancePhase,
+		"edit_retro":          b.EditRetro,
 		"concede_retro":       b.Delete,
 		"abandon_retro":       b.Abandon,
 	}

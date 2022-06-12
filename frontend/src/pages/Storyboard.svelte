@@ -295,7 +295,7 @@
             case 'storyboard_edited':
                 const revisedStoryboard = JSON.parse(parsedEvent.value)
                 storyboard.name = revisedStoryboard.storyboardName
-                revisedStoryboard.joinCode = revisedStoryboard.joinCode
+                storyboard.joinCode = revisedStoryboard.joinCode
                 break
             case 'storyboard_conceded':
                 // storyboard over, goodbye.

@@ -57,6 +57,28 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 	return b, nil
 }
 
+// EditRetro updates the retro by ID
+func (d *Database) EditRetro(RetroID string, RetroName string, JoinCode string) error {
+	var encryptedJoinCode string
+
+	if JoinCode != "" {
+		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return errors.New("unable to revise retro join_code")
+		}
+		encryptedJoinCode = EncryptedCode
+	}
+
+	if _, err := d.db.Exec(`call edit_retro($1, $2, $3);`,
+		RetroID, RetroName, encryptedJoinCode,
+	); err != nil {
+		d.logger.Error("update retro error", zap.Error(err))
+		return errors.New("unable to edit retro")
+	}
+
+	return nil
+}
+
 // RetroGet gets a retro by ID
 func (d *Database) RetroGet(RetroID string) (*model.Retro, error) {
 	var b = &model.Retro{
