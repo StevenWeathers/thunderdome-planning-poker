@@ -488,7 +488,7 @@
 
     onMount(() => {
         if (!$user.id) {
-            router.route(`${loginOrRegister}/${storyboardId}`)
+            router.route(`${loginOrRegister}/storyboard/${storyboardId}`)
         }
     })
 </script>
