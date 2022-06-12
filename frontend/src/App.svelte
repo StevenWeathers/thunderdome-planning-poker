@@ -43,6 +43,7 @@
     import AdminBattles from './pages/admin/Battles.svelte'
     import AdminBattle from './pages/admin/Battle.svelte'
     import AdminRetros from './pages/admin/Retros.svelte'
+    import AdminStoryboards from './pages/admin/Storyboards.svelte'
 
     const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig
 
@@ -331,6 +332,13 @@
                 route: Storyboard,
                 params,
                 name: 'storyboard',
+            }
+        })
+        router.on(`${appRoutes.admin}/storyboards`, () => {
+            currentPage = {
+                route: AdminStoryboards,
+                params: {},
+                name: 'admin',
             }
         })
         router.on(`${appRoutes.register}/storyboard/:storyboardId`, params => {

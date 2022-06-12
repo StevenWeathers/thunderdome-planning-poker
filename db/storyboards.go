@@ -389,3 +389,92 @@ func (d *Database) DeleteStoryboardPersona(StoryboardID string, UserID string, P
 
 	return personas, nil
 }
+
+// GetStoryboards gets a list of storyboards
+func (d *Database) GetStoryboards(Limit int, Offset int) ([]*model.Storyboard, int, error) {
+	var storyboards = make([]*model.Storyboard, 0)
+	var Count int
+
+	e := d.db.QueryRow(
+		"SELECT COUNT(*) FROM storyboard;",
+	).Scan(
+		&Count,
+	)
+	if e != nil {
+		return nil, Count, e
+	}
+
+	rows, storyboardErr := d.db.Query(`
+		SELECT s.id, s.name, s.created_date, s.updated_date
+		FROM storyboard s
+		GROUP BY s.id ORDER BY s.created_date DESC
+		LIMIT $1 OFFSET $2;
+	`, Limit, Offset)
+	if storyboardErr != nil {
+		return nil, Count, storyboardErr
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var b = &model.Storyboard{
+			Users: make([]*model.StoryboardUser, 0),
+		}
+		if err := rows.Scan(
+			&b.StoryboardID,
+			&b.StoryboardName,
+			&b.CreatedDate,
+			&b.UpdatedDate,
+		); err != nil {
+			d.logger.Error("get storyboards error", zap.Error(err))
+		} else {
+			storyboards = append(storyboards, b)
+		}
+	}
+
+	return storyboards, Count, nil
+}
+
+// GetActiveStoryboards gets a list of active storyboards
+func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*model.Storyboard, int, error) {
+	var storyboards = make([]*model.Storyboard, 0)
+	var Count int
+
+	e := d.db.QueryRow(
+		"SELECT COUNT(DISTINCT su.storyboard_id) FROM storyboard_user su WHERE su.active IS TRUE;",
+	).Scan(
+		&Count,
+	)
+	if e != nil {
+		return nil, Count, e
+	}
+
+	rows, err := d.db.Query(`
+		SELECT s.id, s.name, s.created_date, s.updated_date
+		FROM storyboard_user su
+		LEFT JOIN storyboard s ON s.id = su.storyboard_id
+		WHERE su.active IS TRUE GROUP BY s.id
+		LIMIT $1 OFFSET $2;
+	`, Limit, Offset)
+	if err != nil {
+		return nil, Count, err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var b = &model.Storyboard{
+			Users: make([]*model.StoryboardUser, 0),
+		}
+		if err := rows.Scan(
+			&b.StoryboardID,
+			&b.StoryboardName,
+			&b.CreatedDate,
+			&b.UpdatedDate,
+		); err != nil {
+			d.logger.Error("get active storyboards error", zap.Error(err))
+		} else {
+			storyboards = append(storyboards, b)
+		}
+	}
+
+	return storyboards, Count, nil
+}

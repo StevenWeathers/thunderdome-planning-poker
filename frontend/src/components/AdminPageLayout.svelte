@@ -8,6 +8,7 @@
         ExternalAPIEnabled,
         FeaturePoker,
         FeatureRetro,
+        FeatureStoryboard,
         OrganizationsEnabled,
     } = AppConfig
 
@@ -35,6 +36,12 @@
             label: 'Retros',
             path: '/retros',
             enabled: FeatureRetro,
+        },
+        {
+            name: 'Storyboards',
+            label: 'Storyboards',
+            path: '/storyboards',
+            enabled: FeatureStoryboard,
         },
         {
             name: 'Organizations',

@@ -2,9 +2,11 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 // handleStoryboardCreate handles creating a storyboard (arena)
@@ -135,6 +137,48 @@ func (a *api) handleGetUserStoryboards() http.HandlerFunc {
 		storyboards, Count, err := a.db.GetStoryboardsByUser(UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARDS_NOT_FOUND"))
+			return
+		}
+
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		a.Success(w, r, http.StatusOK, storyboards, Meta)
+	}
+}
+
+// handleGetStoryboards gets a list of storyboards
+// @Summary Get Storyboards
+// @Description get list of storyboards
+// @Tags retro
+// @Produce  json
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param active query boolean false "Only active storyboards"
+// @Success 200 object standardJsonResponse{data=[]model.Storyboard}
+// @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /storyboards [get]
+func (a *api) handleGetStoryboards() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		query := r.URL.Query()
+		var err error
+		var Count int
+		var storyboards []*model.Storyboard
+		Active, _ := strconv.ParseBool(query.Get("active"))
+
+		if Active {
+			storyboards, Count, err = a.db.GetActiveStoryboards(Limit, Offset)
+		} else {
+			storyboards, Count, err = a.db.GetStoryboards(Limit, Offset)
+		}
+
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

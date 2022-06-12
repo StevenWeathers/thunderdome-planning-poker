@@ -17,6 +17,8 @@ type Storyboard struct {
 	ColorLegend    []*Color             `json:"color_legend"`
 	Personas       []*StoryboardPersona `json:"personas"`
 	JoinCode       string               `json:"joinCode"`
+	CreatedDate    string               `json:"createdDate" db:"created_date"`
+	UpdatedDate    string               `json:"updatedDate" db:"updated_date"`
 }
 
 // StoryboardGoal A row in a story mapping board
