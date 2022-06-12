@@ -91,7 +91,7 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 
 	// get storyboard
 	e := d.db.QueryRow(
-		`SELECT id, name, owner_id, color_legend, join_code FROM storyboard WHERE id = $1`,
+		`SELECT id, name, owner_id, color_legend, COALESCE(join_code, '') FROM storyboard WHERE id = $1`,
 		StoryboardID,
 	).Scan(
 		&b.StoryboardID,
