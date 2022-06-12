@@ -47,6 +47,7 @@
         actionItems: [],
         votes: [],
     }
+    let maxVotes = 3
     let showDeleteRetro = false
     let actionItem = ''
     let showExport = false
@@ -81,7 +82,7 @@
             }
         })
 
-        voteLimitReached = userVoteCount === 3
+        voteLimitReached = userVoteCount === maxVotes
 
         return Object.values(groupMap)
     }
@@ -736,14 +737,14 @@
                     {/if}
                 </div>
 
-                <div class="w-full self-end my-4">
+                <div class="w-full self-end mb-4 mt-8">
                     <div class="flex w-full justify-center">
                         {#each retro.users as usr, index (usr.id)}
                             {#if usr.active}
                                 <UserCard
                                     user="{usr}"
-                                    showBorder="{index !==
-                                        retro.users.length - 1}"
+                                    votes="{retro.votes}"
+                                    maxVotes="{maxVotes}"
                                 />
                             {/if}
                         {/each}
