@@ -458,5 +458,13 @@
   "adminCleanOldRetros": "Clean Retros older than {daysOld} days",
   "oldRetrosCleanError": "Error encountered cleaning retros",
   "adminCleanOldStoryboards": "Clean Storyboards older than {daysOld} days",
-  "oldStoryboardsCleanError": "Error encountered cleaning storyboards"
+  "oldStoryboardsCleanError": "Error encountered cleaning storyboards",
+  "deleteDepartmentConfirmText": "Are you sure you want to delete this department?",
+  "deleteDepartment": "Delete Department",
+  "departmentDeleteSuccess": "Department deleted successfully.",
+  "departmentDeleteError": "Error attempting to delete department",
+  "deleteOrganizationConfirmText": "Are you sure you want to delete this organization?",
+  "deleteOrganization": "Delete Organization",
+  "organizationDeleteSuccess": "Organization deleted successfully.",
+  "organizationDeleteError": "Error attempting to delete organization"
 }

@@ -154,7 +154,7 @@ func (a *api) handleGetUserStoryboards() http.HandlerFunc {
 // handleGetStoryboards gets a list of storyboards
 // @Summary Get Storyboards
 // @Description get list of storyboards
-// @Tags retro
+// @Tags storyboard
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"

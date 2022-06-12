@@ -244,3 +244,18 @@ func (d *Database) DepartmentTeamUserRole(UserID string, OrgID string, Departmen
 
 	return orgRole, departmentRole, teamRole, nil
 }
+
+// DepartmentDelete deletes a department
+func (d *Database) DepartmentDelete(DepartmentID string) error {
+	_, err := d.db.Exec(
+		`CALL department_delete($1);`,
+		DepartmentID,
+	)
+
+	if err != nil {
+		d.logger.Error("department_delete query error", zap.Error(err))
+		return err
+	}
+
+	return nil
+}

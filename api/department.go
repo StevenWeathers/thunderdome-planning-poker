@@ -393,3 +393,29 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 		a.Success(w, r, http.StatusOK, result, nil)
 	}
 }
+
+// handleDeleteDepartment handles deleting a department
+// @Summary Delete Department
+// @Description Delete a Department
+// @Tags organization
+// @Produce  json
+// @Param departmentId path string true "the department ID"
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /organizations/{orgId}/departments/{departmentId} [delete]
+func (a *api) handleDeleteDepartment() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		DepartmentID := vars["departmentId"]
+
+		err := a.db.DepartmentDelete(DepartmentID)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}

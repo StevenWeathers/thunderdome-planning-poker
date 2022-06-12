@@ -61,6 +61,7 @@
     let showRemoveBattle = false
     let showRemoveRetro = false
     let showRemoveStoryboard = false
+    let showDeleteTeam = false
     let removeBattleId = null
     let removeRetroId = null
     let removeStoryboardId = null
@@ -122,6 +123,10 @@
     const toggleRemoveStoryboard = storyboardId => () => {
         showRemoveStoryboard = !showRemoveStoryboard
         removeStoryboardId = storyboardId
+    }
+
+    const toggleDeleteTeam = () => {
+        showDeleteTeam = !showDeleteTeam
     }
 
     function getTeam() {
@@ -287,6 +292,22 @@
             .catch(function () {
                 notifications.danger($_('storyboardRemoveError'))
                 eventTag('team_remove_storyboard', 'engagement', 'failure')
+            })
+    }
+
+    function handleDeleteTeam() {
+        xfetch(`${teamPrefix}`, {
+            method: 'DELETE',
+        })
+            .then(function () {
+                eventTag('team_delete', 'engagement', 'success')
+                toggleDeleteTeam()
+                notifications.success($_('teamDeleteSuccess'))
+                router.route(appRoutes.teams)
+            })
+            .catch(function () {
+                notifications.danger($_('teamDeleteError'))
+                eventTag('team_delete', 'engagement', 'failure')
             })
     }
 
@@ -659,6 +680,14 @@
         </Table>
     </div>
 
+    {#if isAdmin && !organizationId && !departmentId}
+        <div class="w-full text-center mt-8">
+            <HollowButton onClick="{toggleDeleteTeam}" color="red">
+                {$_('deleteTeam')}
+            </HollowButton>
+        </div>
+    {/if}
+
     {#if showAddUser}
         <AddUser toggleAdd="{toggleAddUser}" handleAdd="{handleUserAdd}" />
     {/if}
@@ -700,6 +729,15 @@
             permanent="{false}"
             confirmText="{$_('removeStoryboardConfirmText')}"
             confirmBtnText="{$_('removeStoryboard')}"
+        />
+    {/if}
+
+    {#if showDeleteTeam}
+        <DeleteConfirmation
+            toggleDelete="{toggleDeleteTeam}"
+            handleDelete="{handleDeleteTeam}"
+            confirmText="{$_('deleteTeamConfirmText')}"
+            confirmBtnText="{$_('deleteTeam')}"
         />
     {/if}
 </PageLayout>

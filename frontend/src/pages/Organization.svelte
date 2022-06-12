@@ -46,7 +46,10 @@
     let showRemoveUser = false
     let removeUserId = null
     let showDeleteTeam = false
+    let showDeleteDepartment = false
+    let showDeleteOrganization = false
     let deleteTeamId = null
+    let deleteDeptId = null
     let teamsPage = 1
     let usersPage = 1
     let departmentsPage = 1
@@ -71,6 +74,15 @@
     const toggleDeleteTeam = teamId => () => {
         showDeleteTeam = !showDeleteTeam
         deleteTeamId = teamId
+    }
+
+    const toggleDeleteDepartment = deptId => () => {
+        showDeleteDepartment = !showDeleteDepartment
+        deleteDeptId = deptId
+    }
+
+    const toggleDeleteOrganization = () => {
+        showDeleteOrganization = !showDeleteOrganization
     }
 
     function getOrganization() {
@@ -221,6 +233,49 @@
             })
     }
 
+    function handleDeleteDepartment() {
+        xfetch(
+            `/api/organizations/${organizationId}/departments/${deleteDeptId}`,
+            {
+                method: 'DELETE',
+            },
+        )
+            .then(function () {
+                eventTag(
+                    'organization_delete_department',
+                    'engagement',
+                    'success',
+                )
+                toggleDeleteDepartment(null)()
+                notifications.success($_('departmentDeleteSuccess'))
+                getDepartments()
+            })
+            .catch(function () {
+                notifications.danger($_('departmentDeleteError'))
+                eventTag(
+                    'organization_delete_department',
+                    'engagement',
+                    'failure',
+                )
+            })
+    }
+
+    function handleDeleteOrganization() {
+        xfetch(`/api/organizations/${organizationId}`, {
+            method: 'DELETE',
+        })
+            .then(function () {
+                eventTag('organization_delete', 'engagement', 'success')
+                toggleDeleteTeam()
+                notifications.success($_('organizationDeleteSuccess'))
+                router.route(appRoutes.teams)
+            })
+            .catch(function () {
+                notifications.danger($_('organizationDeleteError'))
+                eventTag('organization_delete', 'engagement', 'failure')
+            })
+    }
+
     onMount(() => {
         if (!$warrior.id || !validateUserIsRegistered($warrior)) {
             router.route(appRoutes.login)
@@ -304,7 +359,7 @@
                             <RowCol type="action">
                                 {#if isAdmin}
                                     <HollowButton
-                                        onClick="{toggleDeleteTeam(
+                                        onClick="{toggleDeleteDepartment(
                                             department.id,
                                         )}"
                                         color="red"
@@ -483,6 +538,14 @@
         </Table>
     </div>
 
+    {#if isAdmin}
+        <div class="w-full text-center mt-8">
+            <HollowButton onClick="{toggleDeleteOrganization}" color="red">
+                {$_('deleteOrganization')}
+            </HollowButton>
+        </div>
+    {/if}
+
     {#if showCreateDepartment}
         <CreateDepartment
             toggleCreate="{toggleCreateDepartment}"
@@ -517,6 +580,24 @@
             handleDelete="{handleDeleteTeam}"
             confirmText="{$_('deleteTeamConfirmText')}"
             confirmBtnText="{$_('deleteTeam')}"
+        />
+    {/if}
+
+    {#if showDeleteDepartment}
+        <DeleteConfirmation
+            toggleDelete="{toggleDeleteDepartment(null)}"
+            handleDelete="{handleDeleteDepartment}"
+            confirmText="{$_('deleteDepartmentConfirmText')}"
+            confirmBtnText="{$_('deleteDepartment')}"
+        />
+    {/if}
+
+    {#if showDeleteOrganization}
+        <DeleteConfirmation
+            toggleDelete="{toggleDeleteOrganization}"
+            handleDelete="{handleDeleteOrganization}"
+            confirmText="{$_('deleteOrganizationConfirmText')}"
+            confirmBtnText="{$_('deleteOrganization')}"
         />
     {/if}
 </PageLayout>

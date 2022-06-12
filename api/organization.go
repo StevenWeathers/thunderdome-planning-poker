@@ -375,3 +375,29 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
+
+// handleDeleteOrganization handles deleting an organization
+// @Summary Delete Organization
+// @Description Delete an Organization
+// @Tags organization
+// @Produce  json
+// @Param orgId path string true "the organization ID"
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /organizations/{orgId} [delete]
+func (a *api) handleDeleteOrganization() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+
+		err := a.db.OrganizationDelete(OrgID)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}

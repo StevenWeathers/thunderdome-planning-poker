@@ -139,7 +139,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
-// @Router /{teamId}/users [post]
+// @Router /teams/{teamId}/users [post]
 func (a *api) handleTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keyVal := getJSONRequestBody(r, w)
@@ -176,7 +176,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
-// @Router /{teamId}/users/{userId} [delete]
+// @Router /teams/{teamId}/users/{userId} [delete]
 func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -225,7 +225,7 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
-// @Router /{teamId}/battles/{battleId} [delete]
+// @Router /teams/{teamId}/battles/{battleId} [delete]
 func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -252,7 +252,7 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
-// @Router /{teamId} [delete]
+// @Router /teams/{teamId} [delete]
 func (a *api) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -300,7 +300,7 @@ func (a *api) handleGetTeamRetros() http.HandlerFunc {
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
-// @Router /{teamId}/retros/{retroId} [delete]
+// @Router /teams/{teamId}/retros/{retroId} [delete]
 func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -349,7 +349,7 @@ func (a *api) handleGetTeamStoryboards() http.HandlerFunc {
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
-// @Router /{teamId}/storyboards/{storyboardId} [delete]
+// @Router /teams/{teamId}/storyboards/{storyboardId} [delete]
 func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

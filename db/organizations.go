@@ -238,3 +238,18 @@ func (d *Database) OrganizationTeamUserRole(UserID string, OrgID string, TeamID 
 
 	return orgRole, teamRole, nil
 }
+
+// OrganizationDelete deletes an organization
+func (d *Database) OrganizationDelete(OrgID string) error {
+	_, err := d.db.Exec(
+		`CALL organization_delete($1);`,
+		OrgID,
+	)
+
+	if err != nil {
+		d.logger.Error("organization_delete query error", zap.Error(err))
+		return err
+	}
+
+	return nil
+}
