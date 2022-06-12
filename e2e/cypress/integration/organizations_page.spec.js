@@ -1,7 +1,7 @@
-describe('The Organizations Page', () => {
+describe('The Teams Page', () => {
   describe('Unauthenicated User', () => {
     it('redirects to login for unauthenticated user', function () {
-      cy.visit('/organizations')
+      cy.visit('/teams')
 
       cy.url().should('include', '/login')
     })
@@ -18,7 +18,7 @@ describe('The Organizations Page', () => {
     it('successfully loads for authenticated registered user', function () {
       cy.login(this.currentUser)
 
-      cy.visit('/organizations')
+      cy.visit('/teams')
 
       cy.get('h2').should('contain', 'Organizations')
       cy.get('h2').should('contain', 'Teams')
@@ -28,7 +28,7 @@ describe('The Organizations Page', () => {
       it('should successfully submit and navigate to new organization page', function () {
         cy.login(this.currentUser)
 
-        cy.visit('/organizations')
+        cy.visit('/teams')
 
         cy.get('button').contains('Create Organization').click()
 
