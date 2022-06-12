@@ -41,10 +41,11 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 
 		var keyVal struct {
 			StoryboardName string `json:"storyboardName"`
+			JoinCode       string `json:"joinCode"`
 		}
 		json.Unmarshal(body, &keyVal) // check for errors
 
-		newStoryboard, err := a.db.CreateStoryboard(UserID, keyVal.StoryboardName)
+		newStoryboard, err := a.db.CreateStoryboard(UserID, keyVal.StoryboardName, keyVal.JoinCode)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

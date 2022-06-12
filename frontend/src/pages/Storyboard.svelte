@@ -15,13 +15,16 @@
     import ColorLegendForm from '../components/storyboard/ColorLegendForm.svelte'
     import PersonasForm from '../components/storyboard/PersonasForm.svelte'
     import UsersIcon from '../components/icons/Users.svelte'
+    import SolidButton from '../components/SolidButton.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import EditIcon from '../components/icons/PencilIcon.svelte'
     import DownCarrotIcon from '../components/icons/ChevronDown.svelte'
     import CommentIcon from '../components/icons/CommentIcon.svelte'
     import DeleteStoryboard from '../components/storyboard/DeleteStoryboard.svelte'
+    import EditStoryboard from '../components/storyboard/EditStoryboard.svelte'
     import { appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
+    import { _ } from '../i18n'
 
     export let storyboardId
     export let notifications
@@ -36,6 +39,7 @@
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
 
+    let JoinPassRequired = false
     let socketError = false
     let socketReconnecting = false
     let storyboard = {
@@ -53,8 +57,17 @@
     let editColumn = null
     let activeStory = null
     let showDeleteStoryboard = false
+    let showEditStoryboard = false
+    let joinPasscode = ''
 
     // event handlers
+    function authStoryboard(e) {
+        e.preventDefault()
+
+        sendSocketEvent('auth_storyboard', joinPasscode)
+        eventTag('auth_storyboard', 'storyboard', '')
+    }
+
     const addStory = (goalId, columnId) => () => {
         sendSocketEvent(
             'add_story',
@@ -201,7 +214,14 @@
         const parsedEvent = JSON.parse(evt.data)
 
         switch (parsedEvent.type) {
+            case 'join_code_required':
+                JoinPassRequired = true
+                break
+            case 'join_code_incorrect':
+                notifications.danger($_('incorrectPassCode'))
+                break
             case 'init':
+                JoinPassRequired = false
                 storyboard = JSON.parse(parsedEvent.value)
                 eventTag('join', 'storyboard', '')
                 break
@@ -271,6 +291,11 @@
                 break
             case 'personas_updated':
                 storyboard.personas = JSON.parse(parsedEvent.value)
+                break
+            case 'storyboard_edited':
+                const revisedStoryboard = JSON.parse(parsedEvent.value)
+                storyboard.name = revisedStoryboard.storyboardName
+                revisedStoryboard.joinCode = revisedStoryboard.joinCode
                 break
             case 'storyboard_conceded':
                 // storyboard over, goodbye.
@@ -482,6 +507,16 @@
         eventTag('persona_delete', 'storyboard', '')
     }
 
+    function handleStoryboardEdit(revisedStoryboard) {
+        sendSocketEvent('edit_storyboard', JSON.stringify(revisedStoryboard))
+        eventTag('edit_storyboard', 'storyboard', '')
+        toggleEditStoryboard()
+    }
+
+    function toggleEditStoryboard() {
+        showEditStoryboard = !showEditStoryboard
+    }
+
     const toggleStoryForm = story => () => {
         activeStory = activeStory != null ? null : story
     }
@@ -638,6 +673,13 @@
                         additionalClasses="mr-2"
                     >
                         Add Goal
+                    </HollowButton>
+                    <HollowButton
+                        color="blue"
+                        onClick="{toggleEditStoryboard}"
+                        testid="storyboard-edit"
+                    >
+                        Edit Storyboard
                     </HollowButton>
                     <HollowButton
                         color="red"
@@ -1065,7 +1107,43 @@
     <PageLayout>
         <div class="flex items-center">
             <div class="flex-1 text-center">
-                {#if socketReconnecting}
+                {#if JoinPassRequired}
+                    <div class="flex justify-center">
+                        <div class="w-full md:w-1/2 lg:w-1/3">
+                            <form
+                                on:submit="{authStoryboard}"
+                                class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-4"
+                                name="authStoryboard"
+                            >
+                                <div class="mb-4">
+                                    <label
+                                        class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
+                                        for="storyboardJoinCode"
+                                    >
+                                        {$_('passCodeRequired')}
+                                    </label>
+                                    <input
+                                        bind:value="{joinPasscode}"
+                                        placeholder="{$_('enterPasscode')}"
+                                        class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                                        id="storyboardJoinCode"
+                                        name="storyboardJoinCode"
+                                        type="password"
+                                        required
+                                    />
+                                </div>
+
+                                <div class="text-right">
+                                    <SolidButton type="submit"
+                                        >Join Storyboard
+                                    </SolidButton>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {:else if socketReconnecting}
                     <h1
                         class="text-5xl text-orange-500 leading-tight font-bold"
                     >
@@ -1134,6 +1212,15 @@
         persona="{showPersonasForm}"
         handlePersonaAdd="{handlePersonaAdd}"
         handlePersonaRevision="{handlePersonaRevision}"
+    />
+{/if}
+
+{#if showEditStoryboard}
+    <EditStoryboard
+        storyboardName="{storyboard.name}"
+        handleStoryboardEdit="{handleStoryboardEdit}"
+        toggleEditStoryboard="{toggleEditStoryboard}"
+        joinCode="{storyboard.joinCode}"
     />
 {/if}
 

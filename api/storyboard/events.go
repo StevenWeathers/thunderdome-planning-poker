@@ -320,6 +320,29 @@ func (b *Service) ReviseColorLegend(StoryboardID string, UserID string, EventVal
 	return msg, nil, false
 }
 
+// EditStoryboard handles editing the storyboard settings
+func (b *Service) EditStoryboard(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rb struct {
+		Name     string `json:"storyboardName"`
+		JoinCode string `json:"joinCode"`
+	}
+	json.Unmarshal([]byte(EventValue), &rb)
+
+	err := b.db.EditStoryboard(
+		StoryboardID,
+		rb.Name,
+		rb.JoinCode,
+	)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedStoryboard, _ := json.Marshal(rb)
+	msg := createSocketEvent("storyboard_edited", string(updatedStoryboard), "")
+
+	return msg, nil, false
+}
+
 // Delete handles deleting the storyboard
 func (b *Service) Delete(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
 	err := b.db.DeleteStoryboard(StoryboardID, UserID)

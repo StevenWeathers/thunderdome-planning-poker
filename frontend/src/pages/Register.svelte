@@ -32,7 +32,7 @@
         }
 
         if (storyboardId) {
-            tp = `${appRoutes.retro}/${storyboardId}`
+            tp = `${appRoutes.storyboard}/${storyboardId}`
         }
 
         return tp

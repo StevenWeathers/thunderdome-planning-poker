@@ -68,6 +68,7 @@ func (sub subscription) readPump(b *Service) {
 		"delete_persona":       b.DeletePersona,
 		"promote_owner":        b.PromoteOwner,
 		"revise_color_legend":  b.ReviseColorLegend,
+		"edit_storyboard":      b.EditStoryboard,
 		"concede_storyboard":   b.Delete,
 		"abandon_storyboard":   b.Abandon,
 	}

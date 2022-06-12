@@ -8,7 +8,17 @@ import (
 )
 
 //CreateStoryboard adds a new storyboard to the db
-func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string) (*model.Storyboard, error) {
+func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinCode string) (*model.Storyboard, error) {
+	var encryptedJoinCode string
+
+	if JoinCode != "" {
+		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, codeErr
+		}
+		encryptedJoinCode = EncryptedCode
+	}
+
 	var b = &model.Storyboard{
 		StoryboardID:   "",
 		OwnerID:        OwnerID,
@@ -17,21 +27,58 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string) (*mod
 	}
 
 	e := d.db.QueryRow(
-		`SELECT * FROM create_storyboard($1, $2);`,
+		`SELECT * FROM create_storyboard($1, $2, $3);`,
 		OwnerID,
 		StoryboardName,
+		encryptedJoinCode,
 	).Scan(&b.StoryboardID)
 	if e != nil {
 		d.logger.Error("create_storyboard query error", zap.Error(e))
-		return nil, errors.New("Error Creating Storyboard")
+		return nil, errors.New("error creating storyboard")
+	}
+
+	// if a join code is set than add owner to retro_user
+	// this prevents them from having to enter join code on initial create to enter
+	if JoinCode != "" {
+		if _, err := d.db.Exec(
+			`INSERT INTO storyboard_user (storyboard_id, user_id)
+		VALUES ($1, $2)`,
+			b.StoryboardID,
+			OwnerID,
+		); err != nil {
+			d.logger.Error("insert storyboard user error", zap.Error(err))
+		}
 	}
 
 	return b, nil
 }
 
+// EditStoryboard updates the storyboard by ID
+func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, JoinCode string) error {
+	var encryptedJoinCode string
+
+	if JoinCode != "" {
+		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return errors.New("unable to revise storyboard join_code")
+		}
+		encryptedJoinCode = EncryptedCode
+	}
+
+	if _, err := d.db.Exec(`call edit_storyboard($1, $2, $3);`,
+		StoryboardID, StoryboardName, encryptedJoinCode,
+	); err != nil {
+		d.logger.Error("update storyboard error", zap.Error(err))
+		return errors.New("unable to edit storyboard")
+	}
+
+	return nil
+}
+
 // GetStoryboard gets a storyboard by ID
 func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error) {
 	var cl string
+	var JoinCode string
 	var b = &model.Storyboard{
 		StoryboardID:   StoryboardID,
 		OwnerID:        "",
@@ -44,13 +91,14 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 
 	// get storyboard
 	e := d.db.QueryRow(
-		`SELECT id, name, owner_id, color_legend FROM storyboard WHERE id = $1`,
+		`SELECT id, name, owner_id, color_legend, join_code FROM storyboard WHERE id = $1`,
 		StoryboardID,
 	).Scan(
 		&b.StoryboardID,
 		&b.StoryboardName,
 		&b.OwnerID,
 		&cl,
+		&JoinCode,
 	)
 	if e != nil {
 		d.logger.Error("get storyboard query error", zap.Error(e))
@@ -65,6 +113,14 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 	b.Users = d.GetStoryboardUsers(StoryboardID)
 	b.Goals = d.GetStoryboardGoals(StoryboardID)
 	b.Personas = d.GetStoryboardPersonas(StoryboardID)
+
+	if JoinCode != "" {
+		DecryptedCode, codeErr := decrypt(JoinCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, errors.New("unable to decode join_code")
+		}
+		b.JoinCode = DecryptedCode
+	}
 
 	return b, nil
 }
