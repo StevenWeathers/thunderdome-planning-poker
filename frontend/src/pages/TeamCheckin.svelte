@@ -447,7 +447,7 @@
                                     <div class="text-sm font-medium">
                                         {checkin.user.name}
                                     </div>
-                                    {#if checkin.user.id === $warrior.id}
+                                    {#if checkin.user.id === $warrior.id || isAdmin}
                                         <div>
                                             <button
                                                 on:click="{() => {
