@@ -11,7 +11,7 @@
     import BlockedPing from '../components/checkin/BlockedPing.svelte'
     import Gauge from '../components/Gauge.svelte'
     import { _ } from '../i18n.js'
-    import { warrior } from '../stores.js'
+    import { warrior as user } from '../stores.js'
     import { appRoutes } from '../config.js'
     import { validateUserIsRegistered } from '../validationUtils.js'
     import {
@@ -23,6 +23,8 @@
     import RowCol from '../components/table/RowCol.svelte'
     import HeadCol from '../components/table/HeadCol.svelte'
     import Table from '../components/table/Table.svelte'
+    import CommentForm from '../components/checkin/CommentForm.svelte'
+    import UserIcon from '../components/icons/UserIcon.svelte'
 
     export let xfetch
     export let router
@@ -65,6 +67,9 @@
     let organizationRole = ''
     let departmentRole = ''
     let teamRole = ''
+
+    let showCommentForm = false
+    let selectedCheckinId = null
 
     const apiPrefix = '/api'
     $: orgPrefix = departmentId
@@ -110,12 +115,18 @@
             })
     }
 
+    let userMap = {}
+
     function getUsers() {
         xfetch(`${teamPrefix}/users?limit=1&offset=0`)
             .then(res => res.json())
             .then(function (result) {
                 users = result.data
                 userCount = result.meta.count
+                userMap = users.reduce((prev, cur) => {
+                    prev[cur.id] = cur.name
+                    return prev
+                }, {})
             })
             .catch(function () {
                 notifications.danger($_('teamGetUsersError'))
@@ -147,7 +158,7 @@
             .catch(function (error) {
                 if (Array.isArray(error)) {
                     error[1].json().then(function (result) {
-                        if (result.error == 'REQUIRES_TEAM_USER') {
+                        if (result.error === 'REQUIRES_TEAM_USER') {
                             notifications.danger(
                                 `User must be in team to checkin`,
                             )
@@ -192,8 +203,58 @@
             })
     }
 
+    const toggleCommentForm = checkinId => () => {
+        showCommentForm = !showCommentForm
+        selectedCheckinId = checkinId
+    }
+
+    function handleCheckinComment(comment) {
+        const body = {
+            ...comment,
+        }
+
+        xfetch(`${teamPrefix}/checkins/${selectedCheckinId}/comments`, { body })
+            .then(res => res.json())
+            .then(function () {
+                getCheckins()
+                toggleCommentForm(null)()
+                eventTag('team_checkin_comment', 'engagement', 'success')
+            })
+            .catch(function (error) {
+                if (Array.isArray(error)) {
+                    error[1].json().then(function (result) {
+                        if (result.error === 'REQUIRES_TEAM_USER') {
+                            notifications.danger(
+                                `User must be in team to comment`,
+                            )
+                        } else {
+                            notifications.danger(`Error commenting on checkin`)
+                        }
+                    })
+                } else {
+                    notifications.danger(`Error commenting on checkin`)
+                }
+                eventTag('team_checkin_comment', 'engagement', 'failure')
+            })
+    }
+
+    const handleCommentDelete = (checkinId, commentId) => () => {
+        xfetch(`${teamPrefix}/checkins/${checkinId}/comments/${commentId}`, {
+            method: 'DELETE',
+        })
+            .then(res => res.json())
+            .then(function () {
+                getCheckins()
+                eventTag('team_checkin_comment_delete', 'engagement', 'success')
+            })
+            .catch(function () {
+                notifications.danger(`Error deleting checkin comment`)
+                eventTag('team_checkin_comment_delete', 'engagement', 'failure')
+            })
+    }
+
     onMount(() => {
-        if (!$warrior.id || !validateUserIsRegistered($warrior)) {
+        if (!$user.id || !validateUserIsRegistered($user)) {
             router.route(appRoutes.login)
             return
         }
@@ -216,7 +277,7 @@
             if (!ucs.includes(c.user.id)) {
                 ucs.push(c.user.id)
 
-                if (c.blockers != '') {
+                if (c.blockers !== '') {
                     ++stats.blocked
                 }
                 if (c.goalsMet) {
@@ -380,6 +441,7 @@
                 <HeadCol>Today</HeadCol>
                 <HeadCol>Blockers</HeadCol>
                 <HeadCol>Discuss</HeadCol>
+                <HeadCol>Comments</HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
                 {#each checkins as checkin, i}
@@ -432,7 +494,7 @@
                                                     </svg>
                                                 </div>
                                             {/if}
-                                            {#if checkin.blockers != ''}
+                                            {#if checkin.blockers !== ''}
                                                 <BlockedPing />
                                             {/if}
                                             <div
@@ -447,7 +509,7 @@
                                     <div class="text-sm font-medium">
                                         {checkin.user.name}
                                     </div>
-                                    {#if checkin.user.id === $warrior.id || isAdmin}
+                                    {#if checkin.user.id === $user.id || isAdmin}
                                         <div>
                                             <button
                                                 on:click="{() => {
@@ -480,23 +542,56 @@
                             </div>
                         </RowCol>
                         <RowCol>
-                            <div className="unreset">
+                            <div class="unreset whitespace-pre-wrap">
                                 {@html checkin.yesterday}
                             </div>
                         </RowCol>
                         <RowCol>
-                            <div class="unreset">
+                            <div class="unreset whitespace-pre-wrap">
                                 {@html checkin.today}
                             </div>
                         </RowCol>
                         <RowCol>
-                            <div className="unreset">
+                            <div class="unreset whitespace-pre-wrap">
                                 {@html checkin.blockers}
                             </div>
                         </RowCol>
                         <RowCol>
-                            <div class="unreset">
+                            <div class="unreset whitespace-pre-wrap">
                                 {@html checkin.discuss}
+                            </div>
+                        </RowCol>
+                        <RowCol>
+                            <div class="whitespace-normal">
+                                {#each checkin.comments as comment}
+                                    <p
+                                        class="pb-2 mb-2 border-b border-gray-300 dark:border-gray-600"
+                                    >
+                                        <span>{comment.comment}</span><br />
+                                        <span
+                                            ><UserIcon class="h-4 w-4" />
+                                            {userMap[comment.user_id] ||
+                                                '...'}</span
+                                        >
+                                        {#if comment.user_id === $user.id || comment.user_id === isAdmin}
+                                            <button
+                                                class="ml-2 text-red-500"
+                                                on:click="{handleCommentDelete(
+                                                    checkin.id,
+                                                    comment.id,
+                                                )}"
+                                            >
+                                                Delete
+                                            </button>
+                                        {/if}
+                                    </p>
+                                {/each}
+                            </div>
+                            <div class="text-right pt-2">
+                                <SolidButton
+                                    onClick="{toggleCommentForm(checkin.id)}"
+                                    >Add Comment
+                                </SolidButton>
                             </div>
                         </RowCol>
                     </TableRow>
@@ -509,7 +604,7 @@
         {#if selectedCheckin}
             <Checkin
                 teamId="{team.id}"
-                userId="{$warrior.id}"
+                userId="{$user.id}"
                 checkinId="{selectedCheckin.id}"
                 yesterday="{selectedCheckin.yesterday}"
                 today="{selectedCheckin.today}"
@@ -523,11 +618,19 @@
         {:else}
             <Checkin
                 teamId="{team.id}"
-                userId="{$warrior.id}"
+                userId="{$user.id}"
                 toggleCheckin="{toggleCheckin}"
                 handleCheckin="{handleCheckin}"
                 handleCheckinEdit="{handleCheckinEdit}"
             />
         {/if}
+    {/if}
+
+    {#if showCommentForm}
+        <CommentForm
+            checkinId="{selectedCheckinId}"
+            toggleForm="{toggleCommentForm(null)}"
+            handleComment="{handleCheckinComment}"
+        />
     {/if}
 </PageLayout>

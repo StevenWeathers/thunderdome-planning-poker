@@ -148,3 +148,69 @@ func (a *api) handleCheckinDelete() http.HandlerFunc {
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
+
+// handleCheckinComment handles creating a team user checkin comment
+// @Summary Create Team Checkin Comment
+// @Description Creates a team user checkin comment
+// @Param teamId path string true "the team ID"
+// @Param checkinId path string true "the checkin ID"
+// @Param userId body string true "the user ID to comment for"
+// @Param comment body string true "the comment text"
+// @Tags team
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /teams/{teamId}/checkins/{checkinId}/comment [post]
+func (a *api) handleCheckinComment() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		TeamId := vars["teamId"]
+		CheckinId := vars["checkinId"]
+
+		keyVal := getJSONRequestBody(r, w)
+		UserId := keyVal["userId"].(string)
+		Comment := keyVal["comment"].(string)
+
+		err := a.db.CheckinComment(TeamId, CheckinId, UserId, Comment)
+		if err != nil {
+			if err.Error() == "REQUIRES_TEAM_USER" {
+				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleCheckinCommentDelete handles deleting a team user checkin comment
+// @Summary Delete Team Checkin Comment
+// @Description Deletes a team user checkin comment
+// @Param teamId path string true "the team ID"
+// @Param checkinId path string true "the checkin ID"
+// @Param commentId path string true "the comment ID"
+// @Tags team
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /teams/{teamId}/checkins/{checkinId}/comments/{commentId} [delete]
+func (a *api) handleCheckinCommentDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		CommentId := vars["commentId"]
+
+		err := a.db.CheckinCommentDelete(CommentId)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
