@@ -1,23 +1,32 @@
 ![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Go/badge.svg)
 ![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Node.js%20CI/badge.svg)
-![](https://github.com/StevenWeathers/thunderdome-planning-poker/workflows/Docker/badge.svg)
-![](https://img.shields.io/docker/cloud/build/stevenweathers/thunderdome-planning-poker.svg)
 [![](https://img.shields.io/docker/pulls/stevenweathers/thunderdome-planning-poker.svg)](https://hub.docker.com/r/stevenweathers/thunderdome-planning-poker)
-[![](https://goreportcard.com/badge/github.com/stevenweathers/thunderdome-planning-poker)](https://goreportcard.com/report/github.com/stevenweathers/thunderdome-planning-poker)
 [![](https://img.shields.io/github/v/release/stevenweathers/thunderdome-planning-poker?include_prereleases)](https://github.com/StevenWeathers/thunderdome-planning-poker/releases/latest)
 
-# Thunderdome Planning Poker
+# Thunderdome
 
-Thunderdome is an open source agile planning poker tool in the theme of Battling for points that helps teams estimate
-stories.
-
-- Planning Sessions are **Battles**
-- Users are **Warriors**
-- Stories are **Plans**
-
-### **Uses WebSockets and [Svelte](https://svelte.dev/) frontend framework for a truly reactive UI experience**
+Remote team collaboration with realtime agile story pointing, no cost and ad free!
 
 ![image](https://user-images.githubusercontent.com/846933/95778842-eb76ef00-0c96-11eb-99d8-af5d098c12ee.png)
+
+## Streamline your team's agile stand-up with Team Checkins
+
+Instead of spending time discussing what you did yesterday and what you're going to do today, focus on Blockers and
+other more critical details.
+
+![image](https://user-images.githubusercontent.com/846933/146627094-1f31a277-a454-4fd1-b707-ecb95559e9ad.png)
+
+## Agile Sprint Retrospective
+
+Realtime agile sprint retrospectives with grouping, voting, and action items.
+
+![image](https://user-images.githubusercontent.com/846933/173260209-3ef3299f-f1b2-41e8-802f-17d40649c66d.png)
+
+## Agile Feature Story Mapping
+
+Realtime agile feature story mapping with goals, columns, stories and more!
+
+![image](https://user-images.githubusercontent.com/846933/173260211-304a973d-4ede-494f-bb7d-b7e5c86a4e6e.png)
 
 # Running in production
 

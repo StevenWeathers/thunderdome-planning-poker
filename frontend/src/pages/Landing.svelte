@@ -182,6 +182,53 @@
 </section>
 
 <section
+    class="w-full px-4 bg-teal-400 text-gray-800 border-b dark:border-gray-700"
+>
+    <div class="container mx-auto py-12 md:py-16 lg:py-20">
+        <div class="flex flex-wrap items-center -mx-4">
+            <div class="w-full md:w-1/2 mb-4 lg:mb-0 px-4">
+                <h2
+                    class="mb-2 lg:mb-4 text-4xl font-rajdhani uppercase font-semibold leading-none"
+                >
+                    Agile Sprint Retrospectives
+                </h2>
+
+                <p class="py-2 lg:py-4 text-2xl lg:text-3xl mb-4 font-rajdhani">
+                    Realtime agile sprint retrospectives with grouping, voting,
+                    and action items.
+                </p>
+
+                <div class="text-center mb-4 md:mb-0">
+                    <a
+                        class="w-full text-3xl md:w-auto inline-block
+                        no-underline bg-transparent bg-gray-800
+                        hover:bg-transparent hover:text-gray-800 font-semibold
+                        text-teal-400 py-4 px-10 border
+                        hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
+                        href="{$warrior.id
+                            ? appRoutes.retros
+                            : appRoutes.register}"
+                    >
+                        Create Retro
+                    </a>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 px-4">
+                <div
+                    class="browser-mockup flex flex-1 bg-white rounded shadow-xl"
+                >
+                    <img
+                        class="w-full"
+                        src="https://user-images.githubusercontent.com/846933/173260209-3ef3299f-f1b2-41e8-802f-17d40649c66d.png"
+                        alt="Preview of Thunderdome.dev retrospective feature"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section
     class="w-full px-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700"
 >
     <div class="container mx-auto py-12 md:py-16 lg:py-20">
@@ -207,6 +254,53 @@
                     Instead of spending time discussing what you did yesterday
                     and what you're going to do today, focus on Blockers and
                     other more critical details.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section
+    class="w-full px-4 bg-violet-400 text-gray-800 border-b dark:border-gray-700"
+>
+    <div class="container mx-auto py-12 md:py-16 lg:py-20">
+        <div class="flex flex-wrap items-center -mx-4">
+            <div class="w-full md:w-1/2 mb-4 lg:mb-0 px-4">
+                <h2
+                    class="mb-2 lg:mb-4 text-4xl font-rajdhani uppercase font-semibold leading-none"
+                >
+                    Agile Feature Story Mapping
+                </h2>
+
+                <p class="py-2 lg:py-4 text-2xl lg:text-3xl mb-4 font-rajdhani">
+                    Realtime agile feature story mapping with goals, columns,
+                    stories and more!
+                </p>
+
+                <div class="text-center mb-4 md:mb-0">
+                    <a
+                        class="w-full text-3xl md:w-auto inline-block
+                        no-underline bg-transparent bg-gray-800
+                        hover:bg-transparent hover:text-gray-800 font-semibold
+                        text-violet-400 py-4 px-10 border
+                        hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
+                        href="{$warrior.id
+                            ? appRoutes.storyboards
+                            : appRoutes.register}"
+                    >
+                        Create Storyboard
+                    </a>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 px-4">
+                <div
+                    class="browser-mockup flex flex-1 bg-white rounded shadow-xl"
+                >
+                    <img
+                        class="w-full"
+                        src="https://user-images.githubusercontent.com/846933/173260211-304a973d-4ede-494f-bb7d-b7e5c86a4e6e.png"
+                        alt="Preview of Thunderdome.dev story mapping feature"
+                    />
                 </div>
             </div>
         </div>
