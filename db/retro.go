@@ -93,7 +93,7 @@ func (d *Database) RetroGet(RetroID string) (*model.Retro, error) {
 	// get retro
 	e := d.db.QueryRow(
 		`SELECT
-			id, name, owner_id, format, phase, COALESCE(join_code, '')
+			id, name, owner_id, format, phase, COALESCE(join_code, ''), created_date, updated_date
 		FROM retro WHERE id = $1`,
 		RetroID,
 	).Scan(
@@ -103,6 +103,8 @@ func (d *Database) RetroGet(RetroID string) (*model.Retro, error) {
 		&b.Format,
 		&b.Phase,
 		&b.JoinCode,
+		&b.CreatedDate,
+		&b.UpdatedDate,
 	)
 	if e != nil {
 		return nil, e

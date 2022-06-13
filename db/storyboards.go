@@ -91,7 +91,7 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 
 	// get storyboard
 	e := d.db.QueryRow(
-		`SELECT id, name, owner_id, color_legend, COALESCE(join_code, '') FROM storyboard WHERE id = $1`,
+		`SELECT id, name, owner_id, color_legend, COALESCE(join_code, ''), created_date, updated_date FROM storyboard WHERE id = $1`,
 		StoryboardID,
 	).Scan(
 		&b.StoryboardID,
@@ -99,6 +99,8 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 		&b.OwnerID,
 		&cl,
 		&JoinCode,
+		&b.CreatedDate,
+		&b.UpdatedDate,
 	)
 	if e != nil {
 		d.logger.Error("get storyboard query error", zap.Error(e))
@@ -210,9 +212,14 @@ func (d *Database) GetStoryboardUsers(StoryboardID string) []*model.StoryboardUs
 		defer rows.Close()
 		for rows.Next() {
 			var w model.StoryboardUser
-			if err := rows.Scan(&w.UserID, &w.UserName, &w.Active); err != nil {
+			if err := rows.Scan(&w.UserID, &w.UserName, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
 				d.logger.Error("get_storyboard_users query scan error", zap.Error(err))
 			} else {
+				if w.GravatarHash != "" {
+					w.GravatarHash = createGravatarHash(w.GravatarHash)
+				} else {
+					w.GravatarHash = createGravatarHash(w.UserID)
+				}
 				users = append(users, &w)
 			}
 		}

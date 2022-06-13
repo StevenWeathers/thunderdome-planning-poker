@@ -2,9 +2,12 @@ package model
 
 // StoryboardUser aka user
 type StoryboardUser struct {
-	UserID   string `json:"id"`
-	UserName string `json:"name"`
-	Active   bool   `json:"active"`
+	UserID       string `json:"id"`
+	UserName     string `json:"name"`
+	Active       bool   `json:"active"`
+	Avatar       string `json:"avatar"`
+	Abandoned    bool   `json:"abandoned"`
+	GravatarHash string `json:"gravatarHash"`
 }
 
 // Storyboard A story mapping board

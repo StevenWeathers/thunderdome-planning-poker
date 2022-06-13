@@ -127,7 +127,11 @@
                 {#each retros as retro, i}
                     <TableRow itemIndex="{i}">
                         <RowCol>
-                            {retro.name}
+                            <a
+                                href="{appRoutes.admin}/retros/{retro.id}"
+                                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                >{retro.name}</a
+                            >
                         </RowCol>
                         <RowCol>
                             {new Date(retro.createdDate).toLocaleString()}

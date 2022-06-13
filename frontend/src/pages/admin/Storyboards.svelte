@@ -127,7 +127,11 @@
                 {#each storyboards as storyboard, i}
                     <TableRow itemIndex="{i}">
                         <RowCol>
-                            {storyboard.name}
+                            <a
+                                href="{appRoutes.admin}/storyboards/{storyboard.id}"
+                                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                >{storyboard.name}</a
+                            >
                         </RowCol>
                         <RowCol>
                             {new Date(storyboard.createdDate).toLocaleString()}

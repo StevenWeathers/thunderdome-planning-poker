@@ -87,9 +87,9 @@
 
 <div class="grow-0 w-full">
     <div
-        class="w-full flex px-6 py-2 border-b-2 bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+        class="w-full flex justify-end px-6 py-2 border-b-2 bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
     >
-        <ul class="flex justify-end">
+        <ul class="flex">
             {#each pages as page}
                 {#if page.enabled}
                     <li class="ml-3">

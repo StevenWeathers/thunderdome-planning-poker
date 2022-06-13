@@ -273,7 +273,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		teamRouter.HandleFunc("/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.handleStoryboardCreate()))).Methods("POST")
 		apiRouter.HandleFunc("/maintenance/clean-storyboards", a.userOnly(a.adminOnly(a.handleCleanStoryboards()))).Methods("DELETE")
 		apiRouter.HandleFunc("/storyboards", a.userOnly(a.adminOnly(a.handleGetStoryboards()))).Methods("GET")
-		apiRouter.HandleFunc("/storyboards/{retroId}", a.userOnly(a.handleStoryboardGet())).Methods("GET")
+		apiRouter.HandleFunc("/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardGet())).Methods("GET")
 		apiRouter.HandleFunc("/storyboard/{storyboardId}", sb.ServeWs())
 	}
 

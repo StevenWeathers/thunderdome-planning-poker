@@ -68,7 +68,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 func (a *api) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		RetroID := vars["id"]
+		RetroID := vars["retroId"]
 
 		retro, err := a.db.RetroGet(RetroID)
 
