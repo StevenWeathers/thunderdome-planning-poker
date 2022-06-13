@@ -358,6 +358,10 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 	}
 
 	AuthedUser, err = a.db.GetUserByEmail(useremail)
+	if AuthedUser.Disabled {
+		return nil, "", fmt.Errorf("user is disabled")
+	}
+
 	if AuthedUser == nil {
 		a.logger.Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
 		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(usercn, useremail, "", "")
