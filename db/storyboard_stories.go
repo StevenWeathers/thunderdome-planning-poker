@@ -179,3 +179,34 @@ func (d *Database) AddStoryComment(StoryboardID string, UserID string, StoryID s
 
 	return goals, nil
 }
+
+// EditStoryComment edits a story comment
+func (d *Database) EditStoryComment(StoryboardID string, CommentID string, Comment string) ([]*model.StoryboardGoal, error) {
+	if _, err := d.db.Exec(
+		`call story_comment_edit($1, $2, $3);`,
+		StoryboardID,
+		CommentID,
+		Comment,
+	); err != nil {
+		d.logger.Error("call story_comment_edit error", zap.Error(err))
+	}
+
+	goals := d.GetStoryboardGoals(StoryboardID)
+
+	return goals, nil
+}
+
+// DeleteStoryComment deletes a story comment
+func (d *Database) DeleteStoryComment(StoryboardID string, CommentID string) ([]*model.StoryboardGoal, error) {
+	if _, err := d.db.Exec(
+		`call story_comment_delete($1, $2);`,
+		StoryboardID,
+		CommentID,
+	); err != nil {
+		d.logger.Error("call story_comment_delete error", zap.Error(err))
+	}
+
+	goals := d.GetStoryboardGoals(StoryboardID)
+
+	return goals, nil
+}

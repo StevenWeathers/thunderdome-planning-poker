@@ -62,6 +62,8 @@ func (sub subscription) readPump(b *Service) {
 		"update_story_closed":  b.UpdateStoryClosed,
 		"move_story":           b.MoveStory,
 		"add_story_comment":    b.AddStoryComment,
+		"edit_story_comment":   b.EditStoryComment,
+		"delete_story_comment": b.DeleteStoryComment,
 		"delete_story":         b.DeleteStory,
 		"add_persona":          b.AddPersona,
 		"update_persona":       b.UpdatePersona,

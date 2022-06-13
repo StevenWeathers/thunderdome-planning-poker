@@ -245,6 +245,41 @@ func (b *Service) AddStoryComment(StoryboardID string, UserID string, EventValue
 	return msg, nil, false
 }
 
+// EditStoryComment handles editing a storyboard story comment
+func (b *Service) EditStoryComment(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		CommentID string `json:"commentId"`
+		Comment   string `json:"comment"`
+	}
+	json.Unmarshal([]byte(EventValue), &rs)
+
+	goals, err := b.db.EditStoryComment(StoryboardID, rs.CommentID, rs.Comment)
+	if err != nil {
+		return nil, err, false
+	}
+	updatedGoals, _ := json.Marshal(goals)
+	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+
+	return msg, nil, false
+}
+
+// DeleteStoryComment handles deleting a storyboard story comment
+func (b *Service) DeleteStoryComment(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		CommentID string `json:"commentId"`
+	}
+	json.Unmarshal([]byte(EventValue), &rs)
+
+	goals, err := b.db.DeleteStoryComment(StoryboardID, rs.CommentID)
+	if err != nil {
+		return nil, err, false
+	}
+	updatedGoals, _ := json.Marshal(goals)
+	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+
+	return msg, nil, false
+}
+
 // AddPersona handles adding a storyboard persona
 func (b *Service) AddPersona(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {

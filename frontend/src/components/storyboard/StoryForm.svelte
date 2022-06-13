@@ -1,6 +1,8 @@
 <script>
     import Modal from '../Modal.svelte'
     import HollowButton from '../HollowButton.svelte'
+    import { warrior as user } from '../../stores.js'
+    import { _ } from '../../i18n.js'
 
     export let toggleStoryForm = () => {}
     export let updateContent = () => () => {}
@@ -10,6 +12,8 @@
     export let updateClosed = () => () => {}
     export let deleteStory = () => () => {}
     export let addComment = () => {}
+    export let editComment = () => {}
+    export let deleteComment = () => {}
 
     export let story = {}
     export let colorLegend = []
@@ -39,6 +43,10 @@
             addComment(story.id, userComment)
             userComment = ''
         }
+    }
+
+    const handleCommentDelete = id => () => {
+        deleteComment(id)
     }
 </script>
 
@@ -192,14 +200,27 @@
                         {#if story.comments}
                             {#each story.comments as comment}
                                 <div
-                                    class="w-full mb-4 text-gray-700 dark:text-gray-400"
+                                    class="w-full mb-4 text-gray-700 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700"
+                                    data-commentid="{comment.id}"
                                 >
                                     <div class="text-sm">
-                                        <span class="font-bold">
+                                        <div class="font-bold">
                                             {userMap[comment.user_id]}
-                                        </span>
+                                        </div>
                                     </div>
-                                    <div>{comment.comment}</div>
+                                    <div class="py-2">{comment.comment}</div>
+                                    {#if comment.user_id === $user.id}
+                                        <div class="mb-2">
+                                            <button
+                                                class="text-red-500 hover:text-red-300"
+                                                on:click="{handleCommentDelete(
+                                                    comment.id,
+                                                )}"
+                                            >
+                                                {$_('delete')}
+                                            </button>
+                                        </div>
+                                    {/if}
                                 </div>
                             {/each}
                         {/if}

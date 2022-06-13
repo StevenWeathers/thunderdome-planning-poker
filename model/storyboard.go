@@ -54,10 +54,12 @@ type StoryboardStory struct {
 
 // StoryComment A story comment by a user
 type StoryComment struct {
-	StoryID    string `json:"story_id"`
-	UserID     string `json:"user_id"`
-	Comment    string `json:"comment"`
-	CreateDate string `json:"created_date"`
+	ID          string `json:"id"`
+	StoryID     string `json:"story_id"`
+	UserID      string `json:"user_id"`
+	Comment     string `json:"comment"`
+	CreateDate  string `json:"created_date"`
+	UpdatedDate string `json:"updated_date"`
 }
 
 // StoryboardPersona A storyboards personas

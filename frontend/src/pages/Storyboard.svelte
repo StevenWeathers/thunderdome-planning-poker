@@ -24,7 +24,7 @@
     import EditStoryboard from '../components/storyboard/EditStoryboard.svelte'
     import { appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
-    import { _ } from '../i18n'
+    import { _ } from '../i18n.js'
 
     export let storyboardId
     export let notifications
@@ -492,6 +492,19 @@
         eventTag('story_add_comment', 'storyboard', '')
     }
 
+    const editStoryComment = (commentId, comment) => {
+        sendSocketEvent(
+            'edit_story_comment',
+            JSON.stringify({ commentId, comment }),
+        )
+        eventTag('story_edit_comment', 'storyboard', '')
+    }
+
+    const deleteStoryComment = commentId => {
+        sendSocketEvent('delete_story_comment', JSON.stringify({ commentId }))
+        eventTag('story_delete_comment', 'storyboard', '')
+    }
+
     const handlePersonaAdd = persona => {
         sendSocketEvent('add_persona', JSON.stringify(persona))
         eventTag('persona_add', 'storyboard', '')
@@ -844,7 +857,7 @@
                                             <UserCard
                                                 user="{usr}"
                                                 sendSocketEvent="{sendSocketEvent}"
-                                                showBorder="{index !=
+                                                showBorder="{index !==
                                                     storyboard.users.length -
                                                         1}"
                                             />
@@ -1201,6 +1214,8 @@
         updateClosed="{storyUpdateClosed}"
         colorLegend="{storyboard.color_legend}"
         addComment="{addStoryComment}"
+        editComment="{editStoryComment}"
+        deleteComment="{deleteStoryComment}"
         users="{storyboard.users}"
     />
 {/if}
