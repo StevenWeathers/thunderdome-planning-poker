@@ -19,6 +19,7 @@ type User struct {
 	CreatedDate          time.Time `json:"createdDate"`
 	UpdatedDate          time.Time `json:"updatedDate"`
 	LastActive           time.Time `json:"lastActive"`
+	Disabled             bool      `json:"disabled"`
 }
 
 // APIKey structure

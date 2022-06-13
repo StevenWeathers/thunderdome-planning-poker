@@ -98,6 +98,32 @@ func (d *Database) DemoteUser(UserID string) error {
 	return nil
 }
 
+// DisableUser disables a user from logging in
+func (d *Database) DisableUser(UserID string) error {
+	if _, err := d.db.Exec(
+		`call user_disable($1);`,
+		UserID,
+	); err != nil {
+		d.logger.Error("call user_disable error", zap.Error(err))
+		return errors.New("error attempting to disable user")
+	}
+
+	return nil
+}
+
+// EnableUser enables a user allowing login
+func (d *Database) EnableUser(UserID string) error {
+	if _, err := d.db.Exec(
+		`call user_enable($1);`,
+		UserID,
+	); err != nil {
+		d.logger.Error("call user_enable error", zap.Error(err))
+		return errors.New("error attempting to enable user")
+	}
+
+	return nil
+}
+
 // CleanBattles deletes battles older than {DaysOld} days
 func (d *Database) CleanBattles(DaysOld int) error {
 	if _, err := d.db.Exec(

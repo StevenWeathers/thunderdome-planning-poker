@@ -149,6 +149,36 @@
         }
     }
 
+    function disableUser(userId) {
+        return function () {
+            xfetch(`/api/admin/users/${userId}/disable`, { method: 'PATCH' })
+                .then(function () {
+                    eventTag('admin_disable_user', 'engagement', 'success')
+
+                    getUsers()
+                })
+                .catch(function () {
+                    notifications.danger('Error disabling user')
+                    eventTag('admin_disable_user', 'engagement', 'failure')
+                })
+        }
+    }
+
+    function enableUser(userId) {
+        return function () {
+            xfetch(`/api/admin/users/${userId}/enable`, { method: 'PATCH' })
+                .then(function () {
+                    eventTag('admin_enable_user', 'engagement', 'success')
+
+                    getUsers()
+                })
+                .catch(function () {
+                    notifications.danger('Error enabling user')
+                    eventTag('admin_enable_user', 'engagement', 'failure')
+                })
+        }
+    }
+
     function handleDeleteUser() {
         xfetch(`/api/users/${userDeleteId}`, { method: 'DELETE' })
             .then(function () {
@@ -297,7 +327,6 @@
                         <RowCol>
                             {user.email}
                             {#if user.verified}
-                                &nbsp;
                                 <span
                                     class="text-green-600"
                                     title="{$_(
@@ -339,6 +368,21 @@
                                     color="blue"
                                 >
                                     {$_('demote')}
+                                </HollowButton>
+                            {/if}
+                            {#if !user.disabled}
+                                <HollowButton
+                                    onClick="{disableUser(user.id)}"
+                                    color="orange"
+                                >
+                                    Disable
+                                </HollowButton>
+                            {:else}
+                                <HollowButton
+                                    onClick="{enableUser(user.id)}"
+                                    color="teal"
+                                >
+                                    Enable
                                 </HollowButton>
                             {/if}
                             <HollowButton

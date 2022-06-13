@@ -152,6 +152,56 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 	}
 }
 
+// handleUserDisable handles disabling a user
+// @Summary Disable User
+// @Description Disable a user from logging in
+// @Tags admin
+// @Produce  json
+// @Param userId path string true "the user ID to disable"
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /admin/users/{userId}/disable [patch]
+func (a *api) handleUserDisable() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
+
+		err := a.db.DisableUser(UserID)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleUserEnable handles enabling a user
+// @Summary Enable User
+// @Description Enable a user to allow login
+// @Tags admin
+// @Produce  json
+// @Param userId path string true "the user ID to enable"
+// @Success 200 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /admin/users/{userId}/enable [patch]
+func (a *api) handleUserEnable() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
+
+		err := a.db.EnableUser(UserID)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 // handleAdminUpdateUserPassword attempts to update a users password
 // @Summary Update Password
 // @Description Updates the users password

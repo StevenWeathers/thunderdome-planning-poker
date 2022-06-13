@@ -14,7 +14,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 	var passHash string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, '') FROM users WHERE email = $1`,
+		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled FROM users WHERE email = $1`,
 		UserEmail,
 	).Scan(
 		&user.Id,
@@ -26,6 +26,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		&user.Verified,
 		&user.NotificationsEnabled,
 		&user.Locale,
+		&user.Disabled,
 	)
 	if e != nil {
 		d.logger.Error("Unable to auth user", zap.Error(e))
@@ -34,6 +35,10 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 
 	if !comparePasswords(passHash, UserPassword) {
 		return nil, "", errors.New("password invalid")
+	}
+
+	if user.Disabled {
+		return nil, "", errors.New("user disabled")
 	}
 
 	// check to see if the bcrypt cost has been updated, if not do so

@@ -24,7 +24,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int
 
 	rows, err := d.db.Query(
 		`
-		SELECT id, name, email, type, avatar, verified, country, company, job_title
+		SELECT id, name, email, type, avatar, verified, country, company, job_title, disabled
 		FROM registered_users_list($1, $2);`,
 		Limit,
 		Offset,
@@ -47,6 +47,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int
 			&w.Country,
 			&w.Company,
 			&w.JobTitle,
+			&w.Disabled,
 		); err != nil {
 			d.logger.Error("registered_users_list query scan error", zap.Error(err))
 		} else {
@@ -68,7 +69,7 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 	var UserJobTitle sql.NullString
 
 	err := d.db.QueryRow(
-		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active FROM users WHERE id = $1",
+		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active, disabled FROM users WHERE id = $1",
 		UserID,
 	).Scan(
 		&w.Id,
@@ -85,6 +86,7 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 		&w.CreatedDate,
 		&w.UpdatedDate,
 		&w.LastActive,
+		&w.Disabled,
 	)
 	if err != nil {
 		d.logger.Error("get user query error", zap.Error(err))
@@ -155,7 +157,7 @@ WHERE id = $1 AND type = 'GUEST';
 func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 	var w model.User
 	err := d.db.QueryRow(
-		"SELECT id, name, email, type, verified FROM users WHERE email = $1",
+		"SELECT id, name, email, type, verified, disabled FROM users WHERE email = $1",
 		UserEmail,
 	).Scan(
 		&w.Id,
@@ -163,6 +165,7 @@ func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 		&w.Email,
 		&w.Type,
 		&w.Verified,
+		&w.Disabled,
 	)
 	if err != nil {
 		d.logger.Error("get user by email query error", zap.Error(err))
