@@ -365,3 +365,41 @@ func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
 		return
 	}
 }
+
+// handleGetTeamRetroActions gets a list of retro actions
+// @Summary Get Retro Actions
+// @Description get list of retro actions
+// @Tags team
+// @Produce  json
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param active query boolean false "Only active retro actions"
+// @Success 200 object standardJsonResponse{data=[]model.RetroAction}
+// @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /teams/{teamId}/retro-actions [get]
+func (a *api) handleGetTeamRetroActions() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		var err error
+		var Count int
+		var Actions []*model.RetroAction
+
+		Actions, Count, err = a.db.GetTeamRetroActions(TeamID, Limit, Offset)
+
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		a.Success(w, r, http.StatusOK, Actions, Meta)
+	}
+}

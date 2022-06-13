@@ -21,6 +21,8 @@
     import TableRow from '../components/table/TableRow.svelte'
     import RowCol from '../components/table/RowCol.svelte'
     import Modal from '../components/Modal.svelte'
+    import Pagination from '../components/Pagination.svelte'
+    import CheckboxIcon from '../components/icons/CheckboxIcon.svelte'
 
     export let xfetch
     export let router
@@ -34,6 +36,7 @@
 
     const battlesPageLimit = 1000
     const retrosPageLimit = 1000
+    const retroActionsPageLimit = 5
     const storyboardsPageLimit = 1000
     const usersPageLimit = 1000
 
@@ -52,6 +55,7 @@
     let users = []
     let battles = []
     let retros = []
+    let retroActions = []
     let storyboards = []
     let showCreateBattle = false
     let showCreateRetro = false
@@ -69,7 +73,9 @@
     let usersPage = 1
     let battlesPage = 1
     let retrosPage = 1
+    let retroActionsPage = 1
     let storyboardsPage = 1
+    let totalRetroActions = 0
 
     let organizationRole = ''
     let departmentRole = ''
@@ -147,6 +153,7 @@
 
                 getBattles()
                 getRetros()
+                getRetrosActions()
                 getStoryboards()
                 getUsers()
             })
@@ -197,6 +204,23 @@
                 })
                 .catch(function () {
                     notifications.danger($_('teamGetRetrosError'))
+                })
+        }
+    }
+
+    function getRetrosActions() {
+        if (FeatureRetro) {
+            const offset = (retroActionsPage - 1) * retroActionsPageLimit
+            xfetch(
+                `${teamPrefix}/retro-actions?limit=${retroActionsPageLimit}&offset=${offset}`,
+            )
+                .then(res => res.json())
+                .then(function (result) {
+                    retroActions = result.data
+                    totalRetroActions = result.meta.count
+                })
+                .catch(function () {
+                    notifications.danger('error getting retro actions')
                 })
         }
     }
@@ -309,6 +333,11 @@
                 notifications.danger($_('teamDeleteError'))
                 eventTag('team_delete', 'engagement', 'failure')
             })
+    }
+
+    const changeRetroActionPage = evt => {
+        retroActionsPage = evt.detail
+        getRetrosActions()
     }
 
     onMount(() => {
@@ -502,6 +531,68 @@
                     </div>
                 {/each}
             </div>
+
+            {#if retros.length}
+                <div class="w-full pt-4 px-4">
+                    <div class="w-full">
+                        <h3
+                            class="text-xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                        >
+                            Retro Action Items
+                        </h3>
+                    </div>
+
+                    <Table>
+                        <tr slot="header">
+                            <HeadCol>Action Item</HeadCol>
+                            <HeadCol>Completed</HeadCol>
+                        </tr>
+                        <tbody
+                            slot="body"
+                            let:class="{className}"
+                            class="{className}"
+                        >
+                            {#each retroActions as item, i}
+                                <TableRow itemIndex="{i}">
+                                    <RowCol>
+                                        {item.content}
+                                    </RowCol>
+                                    <RowCol>
+                                        <input
+                                            type="checkbox"
+                                            id="{i}Completed"
+                                            checked="{item.completed}"
+                                            class="opacity-0 absolute h-6 w-6"
+                                        />
+                                        <div
+                                            class="bg-white dark:bg-gray-800 border-2 rounded-md
+                                            border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
+                                            justify-center items-center mr-2
+                                            focus-within:border-blue-500 dark:focus-within:border-sky-500"
+                                        >
+                                            <CheckboxIcon />
+                                        </div>
+                                        <label
+                                            for="{i}Completed"
+                                            class="select-none"></label>
+                                    </RowCol>
+                                </TableRow>
+                            {/each}
+                        </tbody>
+                    </Table>
+
+                    {#if totalRetroActions > retroActionsPageLimit}
+                        <div class="pt-6 flex justify-center">
+                            <Pagination
+                                bind:current="{retroActionsPage}"
+                                num_items="{totalRetroActions}"
+                                per_page="{retroActionsPageLimit}"
+                                on:navigate="{changeRetroActionPage}"
+                            />
+                        </div>
+                    {/if}
+                </div>
+            {/if}
         </div>
 
         {#if showCreateRetro}

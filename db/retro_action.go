@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
@@ -67,4 +68,53 @@ func (d *Database) GetRetroActions(RetroID string) []*model.RetroAction {
 	}
 
 	return actions
+}
+
+// GetTeamRetroActions retrieves retro actions for the team
+func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int) ([]*model.RetroAction, int, error) {
+	var actions = make([]*model.RetroAction, 0)
+
+	var Count int
+
+	e := d.db.QueryRow(
+		`SELECT COUNT(ra.*) FROM team_retro tr
+				LEFT JOIN retro_action ra ON ra.retro_id = tr.retro_id
+				WHERE tr.team_id = $1;`,
+		TeamID,
+	).Scan(
+		&Count,
+	)
+	if e != nil {
+		return nil, Count, e
+	}
+
+	actionRows, err := d.db.Query(
+		`SELECT ra.id, ra.content, ra.completed FROM team_retro tr
+				INNER JOIN retro_action ra ON ra.retro_id = tr.retro_id
+				WHERE tr.team_id = $1 ORDER BY ra.created_date DESC
+				LIMIT $2 OFFSET $3;`,
+		TeamID,
+		Limit,
+		Offset,
+	)
+	if err == nil && err != sql.ErrNoRows {
+		defer actionRows.Close()
+		for actionRows.Next() {
+			var ri = &model.RetroAction{
+				ID:        "",
+				Content:   "",
+				Completed: false,
+			}
+			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed); err != nil {
+				d.logger.Error("get retro actions error", zap.Error(err))
+			} else {
+				actions = append(actions, ri)
+			}
+		}
+	} else {
+		d.logger.Error("get retro actions error", zap.Error(err))
+		return actions, Count, err
+	}
+
+	return actions, Count, nil
 }
