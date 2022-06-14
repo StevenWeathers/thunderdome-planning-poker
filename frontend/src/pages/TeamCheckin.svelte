@@ -118,7 +118,7 @@
     let userMap = {}
 
     function getUsers() {
-        xfetch(`${teamPrefix}/users?limit=1&offset=0`)
+        xfetch(`${teamPrefix}/users?limit=1000&offset=0`)
             .then(res => res.json())
             .then(function (result) {
                 users = result.data
