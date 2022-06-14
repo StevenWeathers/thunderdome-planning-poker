@@ -41,7 +41,7 @@ func (a *api) handleAppStats() http.HandlerFunc {
 // @Router /admin/users [get]
 func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Users, Count, err := a.db.GetRegisteredUsers(Limit, Offset)
 		if err != nil {
@@ -257,7 +257,7 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Organizations := a.db.OrganizationList(Limit, Offset)
 
@@ -278,7 +278,7 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 // @Router /admin/teams [get]
 func (a *api) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Teams := a.db.TeamList(Limit, Offset)
 
@@ -299,7 +299,7 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Router /admin/apikeys [get]
 func (a *api) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Teams := a.db.GetAPIKeys(Limit, Offset)
 
@@ -322,8 +322,8 @@ func (a *api) handleGetAPIKeys() http.HandlerFunc {
 // @Router /admin/search/users/email [get]
 func (a *api) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
-		Search, err := getSearchFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
+		Search, err := getSearchFromRequest(r)
 		if err != nil {
 			a.Failure(w, r, http.StatusBadRequest, err)
 			return

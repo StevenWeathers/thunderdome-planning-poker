@@ -131,7 +131,7 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 // @Router /users/{userId}/storyboards [get]
 func (a *api) handleGetUserStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
@@ -165,7 +165,7 @@ func (a *api) handleGetUserStoryboards() http.HandlerFunc {
 // @Router /storyboards [get]
 func (a *api) handleGetStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
 		var err error
 		var Count int

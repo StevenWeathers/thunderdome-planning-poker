@@ -25,7 +25,7 @@ import (
 // @Router /users/{userId}/battles [get]
 func (a *api) handleGetUserBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
@@ -148,7 +148,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 // @Router /battles [get]
 func (a *api) handleGetBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
 		var err error
 		var Count int

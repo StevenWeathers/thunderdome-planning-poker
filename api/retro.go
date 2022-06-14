@@ -110,7 +110,7 @@ func (a *api) handleRetrosGetByUser() http.HandlerFunc {
 // @Router /retros [get]
 func (a *api) handleGetRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
 		var err error
 		var Count int

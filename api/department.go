@@ -41,7 +41,7 @@ func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
 		}
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Departments := a.db.OrganizationDepartmentList(OrgID, Limit, Offset)
 
@@ -145,7 +145,7 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 		}
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Teams := a.db.DepartmentTeamList(DepartmentID, Limit, Offset)
 
@@ -171,7 +171,7 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 		}
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Users := a.db.DepartmentUserList(DepartmentID, Limit, Offset)
 

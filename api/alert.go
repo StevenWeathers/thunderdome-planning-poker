@@ -21,7 +21,7 @@ var ActiveAlerts []interface{}
 // @Router /alerts [get]
 func (a *api) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 		Alerts, Count, err := a.db.AlertsList(Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)

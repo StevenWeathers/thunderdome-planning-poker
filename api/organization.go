@@ -41,7 +41,7 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Organizations := a.db.OrganizationListByUser(UserID, Limit, Offset)
 
@@ -137,7 +137,7 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 		}
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Teams := a.db.OrganizationTeamList(OrgID, Limit, Offset)
 
@@ -163,7 +163,7 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 		}
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Teams := a.db.OrganizationUserList(OrgID, Limit, Offset)
 

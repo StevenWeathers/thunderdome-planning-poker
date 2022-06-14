@@ -60,7 +60,7 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Teams := a.db.TeamListByUser(UserID, Limit, Offset)
 
@@ -81,7 +81,7 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Users, UserCount, err := a.db.TeamUserList(TeamID, Limit, Offset)
 		if err != nil {
@@ -207,7 +207,7 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Battles := a.db.TeamBattleList(TeamID, Limit, Offset)
 
@@ -282,7 +282,7 @@ func (a *api) handleGetTeamRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Retrospectives := a.db.TeamRetroList(TeamID, Limit, Offset)
 
@@ -331,7 +331,7 @@ func (a *api) handleGetTeamStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Storyboards := a.db.TeamStoryboardList(TeamID, Limit, Offset)
 
@@ -383,7 +383,7 @@ func (a *api) handleGetTeamRetroActions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		Limit, Offset := getLimitOffsetFromRequest(r, w)
+		Limit, Offset := getLimitOffsetFromRequest(r)
 		var err error
 		var Count int
 		var Actions []*model.RetroAction

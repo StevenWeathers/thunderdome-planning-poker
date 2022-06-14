@@ -264,7 +264,7 @@ func getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[string]inter
 
 // getLimitOffsetFromRequest gets the limit and offset query parameters from the request
 // defaulting to 20 for limit and 0 for offset
-func getLimitOffsetFromRequest(r *http.Request, w http.ResponseWriter) (limit int, offset int) {
+func getLimitOffsetFromRequest(r *http.Request) (limit int, offset int) {
 	defaultLimit := 20
 	defaultOffset := 0
 	query := r.URL.Query()
@@ -282,7 +282,7 @@ func getLimitOffsetFromRequest(r *http.Request, w http.ResponseWriter) (limit in
 }
 
 // getSearchFromRequest gets the search query parameter from the request
-func getSearchFromRequest(r *http.Request, w http.ResponseWriter) (search string, err error) {
+func getSearchFromRequest(r *http.Request) (search string, err error) {
 	v := validator.New()
 	query := r.URL.Query()
 	Search := query.Get("search")
