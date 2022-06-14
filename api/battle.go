@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/api/battle"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -210,5 +211,44 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 		}
 
 		a.Success(w, r, http.StatusOK, battle, nil)
+	}
+}
+
+// handleBattlePlanAdd handles adding a plan to battle
+// @Summary Create Battle Plan
+// @Description Creates a battle plan
+// @Param battleId path string true "the team ID"
+// @Param planName body string true "plan name"
+// @Param type body string true "plan type"
+// @Param referenceId body string true "plan reference id"
+// @Param link body string true "link to plan in external issue tracker"
+// @Param description body string true "plan description"
+// @Param acceptanceCriteria body string true "plan acceptance criteria"
+// @Tags battle
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /battles/{battleId}/plans [post]
+func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		BattleID := vars["battleId"]
+		UserID := r.Context().Value(contextKeyUserID).(string)
+
+		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusInternalServerError, bodyErr)
+			return
+		}
+
+		err := b.APIEvent(BattleID, UserID, "add_plan", string(body))
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

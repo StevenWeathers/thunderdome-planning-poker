@@ -14,6 +14,7 @@ type Service struct {
 	logger                *zap.Logger
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
+	eventHandlers         map[string]func(string, string, string) ([]byte, error, bool)
 }
 
 // New returns a new battle with websocket hub/client and event handlers
@@ -28,6 +29,26 @@ func New(
 		logger:                logger,
 		validateSessionCookie: validateSessionCookie,
 		validateUserCookie:    validateUserCookie,
+	}
+
+	b.eventHandlers = map[string]func(string, string, string) ([]byte, error, bool){
+		"jab_warrior":      b.UserNudge,
+		"vote":             b.UserVote,
+		"retract_vote":     b.UserVoteRetract,
+		"end_voting":       b.PlanVoteEnd,
+		"add_plan":         b.PlanAdd,
+		"revise_plan":      b.PlanRevise,
+		"burn_plan":        b.PlanDelete,
+		"activate_plan":    b.PlanActivate,
+		"skip_plan":        b.PlanSkip,
+		"finalize_plan":    b.PlanFinalize,
+		"promote_leader":   b.UserPromote,
+		"demote_leader":    b.UserDemote,
+		"become_leader":    b.UserPromoteSelf,
+		"spectator_toggle": b.UserSpectatorToggle,
+		"revise_battle":    b.Revise,
+		"concede_battle":   b.Delete,
+		"abandon_battle":   b.Abandon,
 	}
 
 	go h.run()

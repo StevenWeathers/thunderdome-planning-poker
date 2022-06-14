@@ -28,18 +28,18 @@ const (
 
 // leaderOnlyOperations contains a map of operations that only a battle leader can execute
 var leaderOnlyOperations = map[string]struct{}{
-	"add_plan":       struct{}{},
-	"revise_plan":    struct{}{},
-	"burn_plan":      struct{}{},
-	"activate_plan":  struct{}{},
-	"skip_plan":      struct{}{},
-	"end_voting":     struct{}{},
-	"finalize_plan":  struct{}{},
-	"jab_warrior":    struct{}{},
-	"promote_leader": struct{}{},
-	"demote_leader":  struct{}{},
-	"revise_battle":  struct{}{},
-	"concede_battle": struct{}{},
+	"add_plan":       {},
+	"revise_plan":    {},
+	"burn_plan":      {},
+	"activate_plan":  {},
+	"skip_plan":      {},
+	"end_voting":     {},
+	"finalize_plan":  {},
+	"jab_warrior":    {},
+	"promote_leader": {},
+	"demote_leader":  {},
+	"revise_battle":  {},
+	"concede_battle": {},
 }
 
 var upgrader = websocket.Upgrader{
@@ -58,26 +58,6 @@ type connection struct {
 
 // readPump pumps messages from the websocket connection to the hub.
 func (sub subscription) readPump(b *Service) {
-	eventHandlers := map[string]func(string, string, string) ([]byte, error, bool){
-		"jab_warrior":      b.UserNudge,
-		"vote":             b.UserVote,
-		"retract_vote":     b.UserVoteRetract,
-		"end_voting":       b.PlanVoteEnd,
-		"add_plan":         b.PlanAdd,
-		"revise_plan":      b.PlanRevise,
-		"burn_plan":        b.PlanDelete,
-		"activate_plan":    b.PlanActivate,
-		"skip_plan":        b.PlanSkip,
-		"finalize_plan":    b.PlanFinalize,
-		"promote_leader":   b.UserPromote,
-		"demote_leader":    b.UserDemote,
-		"become_leader":    b.UserPromoteSelf,
-		"spectator_toggle": b.UserSpectatorToggle,
-		"revise_battle":    b.Revise,
-		"concede_battle":   b.Delete,
-		"abandon_battle":   b.Abandon,
-	}
-
 	var forceClosed bool
 	c := sub.conn
 	UserID := sub.UserID
@@ -132,8 +112,8 @@ func (sub subscription) readPump(b *Service) {
 		}
 
 		// find event handler and execute otherwise invalid event
-		if _, ok := eventHandlers[eventType]; ok && !badEvent {
-			msg, eventErr, forceClosed = eventHandlers[eventType](BattleID, UserID, eventValue)
+		if _, ok := b.eventHandlers[eventType]; ok && !badEvent {
+			msg, eventErr, forceClosed = b.eventHandlers[eventType](BattleID, UserID, eventValue)
 			if eventErr != nil {
 				badEvent = true
 
@@ -313,4 +293,30 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			}
 		}
 	}
+}
+
+// APIEvent handles api driven events into the arena (if active)
+func (b *Service) APIEvent(arenaID string, UserID, eventType string, eventValue string) error {
+	if _, ok := h.arenas[arenaID]; ok {
+		// confirm leader for any operation that requires it
+		if _, ok := leaderOnlyOperations[eventType]; ok {
+			err := b.db.ConfirmLeader(arenaID, UserID)
+			if err != nil {
+				return err
+			}
+		}
+
+		// find event handler and execute otherwise invalid event
+		if _, ok := b.eventHandlers[eventType]; ok {
+			msg, eventErr, _ := b.eventHandlers[eventType](arenaID, UserID, eventValue)
+			if eventErr != nil {
+				return eventErr
+			}
+
+			m := message{msg, arenaID}
+			h.broadcast <- m
+		}
+	}
+
+	return nil
 }
