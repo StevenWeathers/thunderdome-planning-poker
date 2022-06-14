@@ -76,6 +76,7 @@
     let retroActionsPage = 1
     let storyboardsPage = 1
     let totalRetroActions = 0
+    let completedActionItems = false
 
     let organizationRole = ''
     let departmentRole = ''
@@ -212,7 +213,7 @@
         if (FeatureRetro) {
             const offset = (retroActionsPage - 1) * retroActionsPageLimit
             xfetch(
-                `${teamPrefix}/retro-actions?limit=${retroActionsPageLimit}&offset=${offset}`,
+                `${teamPrefix}/retro-actions?limit=${retroActionsPageLimit}&offset=${offset}&completed=${completedActionItems}`,
             )
                 .then(res => res.json())
                 .then(function (result) {
@@ -358,6 +359,19 @@
         departmentRole === 'ADMIN' ||
         teamRole !== ''
 </script>
+
+<style>
+    .toggle-checkbox:checked {
+        @apply right-0;
+        @apply border-green-400;
+        border-color: #68d391;
+    }
+
+    .toggle-checkbox:checked + .toggle-label {
+        @apply bg-green-400;
+        background-color: #68d391;
+    }
+</style>
 
 <svelte:head>
     <title>{$_('team')} {team.name} | {$_('appName')}</title>
@@ -540,6 +554,31 @@
                         >
                             Retro Action Items
                         </h3>
+
+                        <div class="text-right mb-4">
+                            <div
+                                class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+                            >
+                                <input
+                                    type="checkbox"
+                                    name="completedActionItems"
+                                    id="completedActionItems"
+                                    bind:checked="{completedActionItems}"
+                                    on:change="{getRetrosActions}"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                                />
+                                <label
+                                    for="completedActionItems"
+                                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
+                                >
+                                </label>
+                            </div>
+                            <label
+                                for="completedActionItems"
+                                class="dark:text-gray-300"
+                                >Show Completed Action Items</label
+                            >
+                        </div>
                     </div>
 
                     <Table>

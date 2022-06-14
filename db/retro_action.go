@@ -71,7 +71,7 @@ func (d *Database) GetRetroActions(RetroID string) []*model.RetroAction {
 }
 
 // GetTeamRetroActions retrieves retro actions for the team
-func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int) ([]*model.RetroAction, int, error) {
+func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Completed bool) ([]*model.RetroAction, int, error) {
 	var actions = make([]*model.RetroAction, 0)
 
 	var Count int
@@ -79,8 +79,9 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int) ([]
 	e := d.db.QueryRow(
 		`SELECT COUNT(ra.*) FROM team_retro tr
 				LEFT JOIN retro_action ra ON ra.retro_id = tr.retro_id
-				WHERE tr.team_id = $1;`,
+				WHERE tr.team_id = $1 AND ra.completed = $2;`,
 		TeamID,
+		Completed,
 	).Scan(
 		&Count,
 	)
@@ -91,9 +92,10 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int) ([]
 	actionRows, err := d.db.Query(
 		`SELECT ra.id, ra.content, ra.completed FROM team_retro tr
 				INNER JOIN retro_action ra ON ra.retro_id = tr.retro_id
-				WHERE tr.team_id = $1 ORDER BY ra.created_date DESC
-				LIMIT $2 OFFSET $3;`,
+				WHERE tr.team_id = $1 AND ra.completed = $2 ORDER BY ra.created_date DESC
+				LIMIT $3 OFFSET $4;`,
 		TeamID,
+		Completed,
 		Limit,
 		Offset,
 	)

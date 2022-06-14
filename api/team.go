@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
@@ -373,7 +374,7 @@ func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Param active query boolean false "Only active retro actions"
+// @Param completed query boolean false "Only completed retro actions"
 // @Success 200 object standardJsonResponse{data=[]model.RetroAction}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -386,8 +387,10 @@ func (a *api) handleGetTeamRetroActions() http.HandlerFunc {
 		var err error
 		var Count int
 		var Actions []*model.RetroAction
+		query := r.URL.Query()
+		Completed, _ := strconv.ParseBool(query.Get("completed"))
 
-		Actions, Count, err = a.db.GetTeamRetroActions(TeamID, Limit, Offset)
+		Actions, Count, err = a.db.GetTeamRetroActions(TeamID, Limit, Offset, Completed)
 
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
