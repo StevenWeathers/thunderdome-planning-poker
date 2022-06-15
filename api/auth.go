@@ -286,22 +286,40 @@ func (a *api) handleForgotPassword() http.HandlerFunc {
 	}
 }
 
-// handleResetPassword attempts to reset a users password
+type resetPasswordRequestBody struct {
+	ResetID   string `json:"resetId"`
+	Password1 string `json:"password1"`
+	Password2 string `json:"password2"`
+}
+
+// handleResetPassword attempts to reset a user's password
 // @Summary Reset Password
-// @Description Resets the users password
+// @Description Resets the user's password
 // @Tags auth
+// @Produce json
+// @Param reset body resetPasswordRequestBody false "reset password object"
 // @Success 200 object standardJsonResponse{}
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /auth/reset-password [patch]
 func (a *api) handleResetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
-		ResetID := keyVal["resetId"].(string)
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var u = resetPasswordRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
 		UserPassword, passwordErr := validateUserPassword(
-			keyVal["password1"].(string),
-			keyVal["password2"].(string),
+			u.Password1,
+			u.Password2,
 		)
 
 		if passwordErr != nil {
@@ -309,7 +327,7 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, resetErr := a.db.UserResetPassword(ResetID, UserPassword)
+		UserName, UserEmail, resetErr := a.db.UserResetPassword(u.ResetID, UserPassword)
 		if resetErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, resetErr)
 			return
@@ -321,10 +339,17 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 	}
 }
 
-// handleUpdatePassword attempts to update a users password
+type updatePasswordRequestBody struct {
+	Password1 string `json:"password1"`
+	Password2 string `json:"password2"`
+}
+
+// handleUpdatePassword attempts to update a user's password
 // @Summary Update Password
-// @Description Updates the users password
+// @Description Updates the user's password
 // @Tags auth
+// @Produce json
+// @Param passwords body updatePasswordRequestBody false "update password object"
 // @Success 200 object standardJsonResponse{}
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
@@ -332,12 +357,23 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 // @Router /auth/update-password [patch]
 func (a *api) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
 		UserID := r.Context().Value(contextKeyUserID).(string)
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var u = updatePasswordRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
 		UserPassword, passwordErr := validateUserPassword(
-			keyVal["password1"].(string),
-			keyVal["password2"].(string),
+			u.Password1,
+			u.Password2,
 		)
 
 		if passwordErr != nil {
@@ -357,19 +393,35 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 	}
 }
 
+type verificationRequestBody struct {
+	VerifyID string `json:"verifyId"`
+}
+
 // handleAccountVerification attempts to verify a users account
 // @Summary Verify User
 // @Description Updates the users verified email status
 // @Tags auth
+// @Produce json
+// @Param verify body verificationRequestBody false "verify object"
 // @Success 200 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /auth/verify [patch]
 func (a *api) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
-		VerifyID := keyVal["verifyId"].(string)
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
-		verifyErr := a.db.VerifyUserAccount(VerifyID)
+		var u = verificationRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		verifyErr := a.db.VerifyUserAccount(u.VerifyID)
 		if verifyErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, verifyErr)
 			return
