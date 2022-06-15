@@ -1,29 +1,46 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/spf13/viper"
 )
 
-// handleLogin attempts to login the user by comparing email/password to whats in DB
+type userLoginRequestBody struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// handleLogin attempts to log in the user
 // @Summary Login
 // @Description attempts to log the user in with provided credentials
 // @Description *Endpoint only available when LDAP is not enabled
 // @Tags auth
 // @Produce  json
+// @Param credentials body userLoginRequestBody false "user login object"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth [post]
 func (a *api) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
-		UserEmail := strings.ToLower(keyVal["email"].(string))
-		UserPassword := keyVal["password"].(string)
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
-		authedUser, sessionId, err := a.db.AuthUser(UserEmail, UserPassword)
+		var u = userLoginRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		authedUser, sessionId, err := a.db.AuthUser(strings.ToLower(u.Email), u.Password)
 		if err != nil {
 			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
@@ -45,18 +62,28 @@ func (a *api) handleLogin() http.HandlerFunc {
 // @Description attempts to log the user in with provided credentials
 // @Description *Endpoint only available when LDAP is enabled
 // @Tags auth
-// @Produce  json
+// @Produce json
+// @Param credentials body userLoginRequestBody false "user login object"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/ldap [post]
 func (a *api) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
-		UserEmail := strings.ToLower(keyVal["email"].(string))
-		UserPassword := keyVal["password"].(string)
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
-		authedUser, sessionId, err := a.authAndCreateUserLdap(UserEmail, UserPassword)
+		var u = userLoginRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		authedUser, sessionId, err := a.authAndCreateUserLdap(strings.ToLower(u.Email), u.Password)
 		if err != nil {
 			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
@@ -97,10 +124,16 @@ func (a *api) handleLogout() http.HandlerFunc {
 	}
 }
 
+type guestUserCreateRequestBody struct {
+	Name string `json:"name"`
+}
+
 // handleCreateGuestUser registers a user as a guest user
 // @Summary Create Guest User
 // @Description Registers a user as a guest (non-authenticated)
 // @Tags auth
+// @Produce json
+// @Param user body guestUserCreateRequestBody false "guest user object"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -113,11 +146,20 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 			return
 		}
 
-		keyVal := getJSONRequestBody(r, w)
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
-		UserName := keyVal["name"].(string)
+		var u = guestUserCreateRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
-		newUser, err := a.db.CreateUserGuest(UserName)
+		newUser, err := a.db.CreateUserGuest(u.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -133,10 +175,19 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 	}
 }
 
+type userRegisterRequestBody struct {
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Password1 string `json:"password1"`
+	Password2 string `json:"password2"`
+}
+
 // handleUserRegistration registers a new authenticated user
 // @Summary Create User
 // @Description Registers a user (authenticated)
 // @Tags auth
+// @Produce json
+// @Param user body userRegisterRequestBody false "new user object"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -148,15 +199,26 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "USER_REGISTRATION_DISABLED"))
 		}
 
-		keyVal := getJSONRequestBody(r, w)
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var u = userRegisterRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
 		ActiveUserID, _ := a.validateUserCookie(w, r)
 
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
-			keyVal["name"].(string),
-			strings.ToLower(keyVal["email"].(string)),
-			keyVal["password1"].(string),
-			keyVal["password2"].(string),
+			u.Name,
+			strings.ToLower(u.Email),
+			u.Password1,
+			u.Password2,
 		)
 
 		if accountErr != nil {
@@ -186,16 +248,34 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 	}
 }
 
+type forgotPasswordRequestBody struct {
+	Email string `json:"email"`
+}
+
 // handleForgotPassword attempts to send a password reset email
 // @Summary Forgot Password
 // @Description Sends a forgot password reset email to user
 // @Tags auth
+// @Produce json
+// @Param user body forgotPasswordRequestBody false "forgot password object"
 // @Success 200 object standardJsonResponse{}
 // @Router /auth/forgot-password [post]
 func (a *api) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
-		UserEmail := strings.ToLower(keyVal["email"].(string))
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var u = forgotPasswordRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		UserEmail := strings.ToLower(u.Email)
 
 		ResetID, UserName, resetErr := a.db.UserResetRequest(UserEmail)
 		if resetErr == nil {

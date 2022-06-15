@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -32,13 +34,17 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 	}
 }
 
+type apikeyGenerateRequestBody struct {
+	Name string `json:"name"`
+}
+
 // handleAPIKeyGenerate handles generating an API key for a user
 // @Summary Generate API Key
 // @Description Generates an API key for the user
 // @Tags apikey
 // @Produce  json
 // @Param userId path string true "the user ID to generate API key for"
-// @Param name body string true "Name the API Key to distinguish its use"
+// @Param key body apikeyGenerateRequestBody true "new api key object"
 // @Success 200 object standardJsonResponse{data=model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -47,9 +53,20 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		keyVal := getJSONRequestBody(r, w)
-		APIKeyName := keyVal["name"].(string)
 		UserID := vars["userId"]
+
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var k = apikeyGenerateRequestBody{}
+		jsonErr := json.Unmarshal(body, &k)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
 		APIKeys, keysErr := a.db.GetUserApiKeys(UserID)
 		if keysErr != nil {
@@ -62,7 +79,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		APIKey, keyErr := a.db.GenerateApiKey(UserID, APIKeyName)
+		APIKey, keyErr := a.db.GenerateApiKey(UserID, k.Name)
 		if keyErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
@@ -72,6 +89,10 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 	}
 }
 
+type apikeyUpdateRequestBody struct {
+	Active bool `json:"active"`
+}
+
 // handleUserAPIKeyUpdate handles updating a users API key
 // @Summary Update API Key
 // @Description Updates the API key of the user
@@ -79,7 +100,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 // @Produce  json
 // @Param userId path string true "the user ID"
 // @Param keyID path string true "the API Key ID to update"
-// @Param active body boolean true "Whether the API Key is enabled for use"
+// @Param key body apikeyUpdateRequestBody true "api key object to update"
 // @Success 200 object standardJsonResponse{data=[]model.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -90,10 +111,21 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		APK := vars["keyID"]
-		keyVal := getJSONRequestBody(r, w)
-		active := keyVal["active"].(bool)
 
-		APIKeys, keysErr := a.db.UpdateUserApiKey(UserID, APK, active)
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var k = apikeyUpdateRequestBody{}
+		jsonErr := json.Unmarshal(body, &k)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		APIKeys, keysErr := a.db.UpdateUserApiKey(UserID, APK, k.Active)
 		if keysErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return

@@ -46,6 +46,15 @@ func (a *api) handleGetUserBattles() http.HandlerFunc {
 	}
 }
 
+type battleRequestBody struct {
+	BattleName           string        `json:"name"`
+	PointValuesAllowed   []string      `json:"pointValuesAllowed"`
+	AutoFinishVoting     bool          `json:"autoFinishVoting"`
+	Plans                []*model.Plan `json:"plans"`
+	PointAverageRounding string        `json:"pointAverageRounding"`
+	BattleLeaders        []string      `json:"battleLeaders"`
+}
+
 // handleBattleCreate handles creating a battle (arena)
 // @Summary Create Battle
 // @Description Create a battle associated to the user
@@ -55,12 +64,7 @@ func (a *api) handleGetUserBattles() http.HandlerFunc {
 // @Param orgId path string false "the organization ID"
 // @Param departmentId path string false "the department ID"
 // @Param teamId path string false "the team ID"
-// @Param name body string false "the battle name"
-// @Param pointValuesAllowed body []string false "the allowed point values e.g. 1,2,3,5,8"
-// @Param autoFinishVoting body string false "whether to automatically complete voting when all users have voted"
-// @Param plans body []model.Plan false "the battle plans"
-// @Param pointAverageRounding body string false "which javascript math method to use for rounding point average"
-// @Param battleLeaders body []string true "additional battle leaders beyond the user creating the battle"
+// @Param battle body battleRequestBody false "new battle object"
 // @Success 200 object standardJsonResponse{data=model.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -75,31 +79,28 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		UserID := vars["userId"]
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
+		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, bodyErr)
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
-		var keyVal struct {
-			BattleName           string        `json:"name"`
-			PointValuesAllowed   []string      `json:"pointValuesAllowed"`
-			AutoFinishVoting     bool          `json:"autoFinishVoting"`
-			Plans                []*model.Plan `json:"plans"`
-			PointAverageRounding string        `json:"pointAverageRounding"`
-			BattleLeaders        []string      `json:"battleLeaders"`
+		var b = battleRequestBody{}
+		jsonErr := json.Unmarshal(body, &b)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
 		}
-		json.Unmarshal(body, &keyVal) // check for errors
 
-		newBattle, err := a.db.CreateBattle(UserID, keyVal.BattleName, keyVal.PointValuesAllowed, keyVal.Plans, keyVal.AutoFinishVoting, keyVal.PointAverageRounding)
+		newBattle, err := a.db.CreateBattle(UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		// when battleLeaders array is passed add additional leaders to battle
-		if len(keyVal.BattleLeaders) > 0 {
-			updatedLeaders, err := a.db.AddBattleLeadersByEmail(newBattle.Id, keyVal.BattleLeaders)
+		if len(b.BattleLeaders) > 0 {
+			updatedLeaders, err := a.db.AddBattleLeadersByEmail(newBattle.Id, b.BattleLeaders)
 			if err != nil {
 				a.logger.Error("error adding additional battle leaders")
 			} else {
@@ -195,14 +196,14 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		battle, err := a.db.GetBattle(BattleId, UserId)
+		b, err := a.db.GetBattle(BattleId, UserId)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
 		}
 
 		// don't allow retrieving battle details if battle has JoinCode and user hasn't joined yet
-		if battle.JoinCode != "" {
+		if b.JoinCode != "" {
 			UserErr := a.db.GetBattleUserActiveStatus(BattleId, UserId)
 			if UserErr != nil && UserType != adminUserType {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
@@ -210,20 +211,24 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 			}
 		}
 
-		a.Success(w, r, http.StatusOK, battle, nil)
+		a.Success(w, r, http.StatusOK, b, nil)
 	}
+}
+
+type planRequestBody struct {
+	Name               string `json:"planName"`
+	Type               string `json:"type"`
+	ReferenceID        string `json:"referenceId"`
+	Link               string `json:"link"`
+	Description        string `json:"description"`
+	AcceptanceCriteria string `json:"acceptanceCriteria"`
 }
 
 // handleBattlePlanAdd handles adding a plan to battle
 // @Summary Create Battle Plan
 // @Description Creates a battle plan
 // @Param battleId path string true "the battle ID"
-// @Param planName body string true "plan name"
-// @Param type body string true "plan type"
-// @Param referenceId body string true "plan reference id"
-// @Param link body string true "link to plan in external issue tracker"
-// @Param description body string true "plan description"
-// @Param acceptanceCriteria body string true "plan acceptance criteria"
+// @Param plan body planRequestBody true "new plan object"
 // @Tags battle
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
@@ -237,9 +242,9 @@ func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 		BattleID := vars["battleId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
+		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, bodyErr)
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 

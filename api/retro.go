@@ -11,27 +11,49 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// handleRetroCreate handles creating a retro (arena)
+type retroCreateRequestBody struct {
+	RetroName string `json:"retroName" example:"sprint 10 retro"`
+	Format    string `json:"format" example:"worked_improve_question"`
+	JoinCode  string `json:"joinCode" example:"iammadmax"`
+}
+
+// handleRetroCreate handles creating a retro
+// @Summary Create Retro
+// @Description Create a retro associated to the user
+// @Tags retro
+// @Produce  json
+// @Param userId path string true "the user ID"
+// @Param orgId path string false "the organization ID"
+// @Param departmentId path string false "the department ID"
+// @Param teamId path string false "the team ID"
+// @Param retro body retroCreateRequestBody false "new retro object"
+// @Success 200 object standardJsonResponse{data=model.Retro}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /users/{userId}/retros [post]
+// @Router /teams/{teamId}/users/{userId}/retros [post]
+// @Router /{orgId}/teams/{teamId}/users/{userId}/retros [post]
+// @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
 func (a *api) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 
-		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
+		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.logger.Error("error in reading request body: " + bodyErr.Error())
-			w.WriteHeader(http.StatusInternalServerError)
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
-		var keyVal struct {
-			RetroName string `json:"retroName"`
-			Format    string `json:"format"`
-			JoinCode  string `json:"joinCode"`
+		var nr = retroCreateRequestBody{}
+		jsonErr := json.Unmarshal(body, &nr)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
 		}
-		json.Unmarshal(body, &keyVal) // check for errors
 
-		newRetro, err := a.db.RetroCreate(userID, keyVal.RetroName, keyVal.Format, keyVal.JoinCode)
+		newRetro, err := a.db.RetroCreate(userID, nr.RetroName, nr.Format, nr.JoinCode)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -66,23 +88,45 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 }
 
 // handleRetroGet looks up retro or returns notfound status
+// @Summary Get Retro
+// @Description get retro by ID
+// @Tags retro
+// @Produce  json
+// @Param retroId path string true "the retro ID to get"
+// @Success 200 object standardJsonResponse{data=model.Retro}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 404 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /retros/{retroId} [get]
 func (a *api) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 
-		retro, err := a.db.RetroGet(RetroID)
+		re, err := a.db.RetroGet(RetroID)
 
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, retro, nil)
+		a.Success(w, r, http.StatusOK, re, nil)
 	}
 }
 
 // handleRetrosGetByUser looks up retros associated with userID
+// @Summary Get Retros by User
+// @Description get list of retros for the user
+// @Tags retro
+// @Produce  json
+// @Param userId path string true "the user ID to get retros for"
+// @Param limit query int false "Max number of results to return"
+// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
+// @Success 200 object standardJsonResponse{data=[]model.Retro}
+// @Failure 403 object standardJsonResponse{}
+// @Failure 404 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /users/{userId}/retros [get]
 func (a *api) handleRetrosGetByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID := r.Context().Value(contextKeyUserID).(string)
@@ -141,13 +185,13 @@ func (a *api) handleGetRetros() http.HandlerFunc {
 
 type actionUpdateRequestBody struct {
 	ActionID  string `json:"id" swaggerignore:"true"`
-	Completed bool   `json:"completed"`
-	Content   string `json:"content"`
+	Completed bool   `json:"completed" example:"false"`
+	Content   string `json:"content" example:"update documentation"`
 }
 
-// handleBattlePlanAdd handles adding a plan to battle
-// @Summary Create Battle Plan
-// @Description Creates a battle plan
+// handleRetroActionUpdate handles updating a retro action item
+// @Summary Retro Action Item Update
+// @Description Update a retro action item
 // @Param retroId path string true "the retro ID"
 // @Param actionId path string true "the action ID"
 // @Param actionItem body actionUpdateRequestBody true "updated action item"
@@ -167,7 +211,7 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 		ActionID := vars["actionId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
+		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

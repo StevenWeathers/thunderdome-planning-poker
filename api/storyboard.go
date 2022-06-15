@@ -9,6 +9,11 @@ import (
 	"strconv"
 )
 
+type storyboardCreateRequestBody struct {
+	StoryboardName string `json:"storyboardName"`
+	JoinCode       string `json:"joinCode"`
+}
+
 // handleStoryboardCreate handles creating a storyboard (arena)
 // @Summary Create Storyboard
 // @Description Create a storyboard associated to the user
@@ -18,7 +23,7 @@ import (
 // @Param orgId path string false "the organization ID"
 // @Param departmentId path string false "the department ID"
 // @Param teamId path string false "the team ID"
-// @Param storyboardName body string false "the storyboard name"
+// @Param storyboard body storyboardCreateRequestBody false "new storyboard object"
 // @Success 200 object standardJsonResponse{data=model.Storyboard}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -35,17 +40,18 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, bodyErr)
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
-		var keyVal struct {
-			StoryboardName string `json:"storyboardName"`
-			JoinCode       string `json:"joinCode"`
+		var s = storyboardCreateRequestBody{}
+		jsonErr := json.Unmarshal(body, &s)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
 		}
-		json.Unmarshal(body, &keyVal) // check for errors
 
-		newStoryboard, err := a.db.CreateStoryboard(UserID, keyVal.StoryboardName, keyVal.JoinCode)
+		newStoryboard, err := a.db.CreateStoryboard(UserID, s.StoryboardName, s.JoinCode)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
