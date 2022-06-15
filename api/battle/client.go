@@ -297,22 +297,23 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 
 // APIEvent handles api driven events into the arena (if active)
 func (b *Service) APIEvent(arenaID string, UserID, eventType string, eventValue string) error {
-	if _, ok := h.arenas[arenaID]; ok {
-		// confirm leader for any operation that requires it
-		if _, ok := leaderOnlyOperations[eventType]; ok {
-			err := b.db.ConfirmLeader(arenaID, UserID)
-			if err != nil {
-				return err
-			}
+
+	// confirm leader for any operation that requires it
+	if _, ok := leaderOnlyOperations[eventType]; ok {
+		err := b.db.ConfirmLeader(arenaID, UserID)
+		if err != nil {
+			return err
+		}
+	}
+
+	// find event handler and execute otherwise invalid event
+	if _, ok := b.eventHandlers[eventType]; ok {
+		msg, eventErr, _ := b.eventHandlers[eventType](arenaID, UserID, eventValue)
+		if eventErr != nil {
+			return eventErr
 		}
 
-		// find event handler and execute otherwise invalid event
-		if _, ok := b.eventHandlers[eventType]; ok {
-			msg, eventErr, _ := b.eventHandlers[eventType](arenaID, UserID, eventValue)
-			if eventErr != nil {
-				return eventErr
-			}
-
+		if _, ok := h.arenas[arenaID]; ok {
 			m := message{msg, arenaID}
 			h.broadcast <- m
 		}

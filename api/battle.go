@@ -217,7 +217,7 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 // handleBattlePlanAdd handles adding a plan to battle
 // @Summary Create Battle Plan
 // @Description Creates a battle plan
-// @Param battleId path string true "the team ID"
+// @Param battleId path string true "the battle ID"
 // @Param planName body string true "plan name"
 // @Param type body string true "plan type"
 // @Param referenceId body string true "plan reference id"
