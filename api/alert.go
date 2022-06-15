@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -38,33 +40,41 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 	}
 }
 
+type alertCreateRequestBody struct {
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+	Content        string `json:"content"`
+	Active         bool   `json:"active"`
+	AllowDismiss   bool   `json:"allowDismiss"`
+	RegisteredOnly bool   `json:"registeredOnly"`
+}
+
 // handleAlertCreate creates a new alert
 // @Summary Create Alert
 // @Description Creates an alert (global notice)
 // @Tags alert
 // @Produce  json
-// @Param name body string true "Name of the alert"
-// @Param type body string true "Type of alert" Enums(ERROR, INFO, NEW, SUCCESS, WARNING)
-// @Param content body string true "Alert content"
-// @Param active body boolean true "Whether alert should be displayed or not"
-// @Param allowDismiss body boolean true "Whether or not to allow users to dismiss the alert"
-// @Param registeredOnly body boolean true "Whether or not to only show to users with an active session"
+// @Param alert body alertCreateRequestBody true "new alert object"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [post]
 func (a *api) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
+		var alert = alertCreateRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
-		Name := keyVal["name"].(string)
-		Type := keyVal["type"].(string)
-		Content := keyVal["content"].(string)
-		Active := keyVal["active"].(bool)
-		AllowDismiss := keyVal["allowDismiss"].(bool)
-		RegisteredOnly := keyVal["registeredOnly"].(bool)
+		jsonErr := json.Unmarshal(body, &alert)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
-		err := a.db.AlertsCreate(Name, Type, Content, Active, AllowDismiss, RegisteredOnly)
+		err := a.db.AlertsCreate(alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -76,36 +86,45 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 	}
 }
 
+type alertUpdateRequestBody struct {
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+	Content        string `json:"content"`
+	Active         bool   `json:"active"`
+	AllowDismiss   bool   `json:"allowDismiss"`
+	RegisteredOnly bool   `json:"registeredOnly"`
+}
+
 // handleAlertUpdate updates an alert
 // @Summary Update Alert
 // @Description Updates an Alert
 // @Tags alert
 // @Produce  json
 // @Param alertId path string true "the alert ID to update"
-// @Param name body string true "Name of the alert"
-// @Param type body string true "Type of alert" Enums(ERROR, INFO, NEW, SUCCESS, WARNING)
-// @Param content body string true "Alert content"
-// @Param active body boolean true "Whether alert should be displayed or not"
-// @Param allowDismiss body boolean true "Whether or not to allow users to dismiss the alert"
-// @Param registeredOnly body boolean true "Whether or not to only show to users with an active session"
+// @Param alert body alertUpdateRequestBody true "alert object to update"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [put]
 func (a *api) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
+		var alert = alertUpdateRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &alert)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 		vars := mux.Vars(r)
 
 		ID := vars["alertId"]
-		Name := keyVal["name"].(string)
-		Type := keyVal["type"].(string)
-		Content := keyVal["content"].(string)
-		Active := keyVal["active"].(bool)
-		AllowDismiss := keyVal["allowDismiss"].(bool)
-		RegisteredOnly := keyVal["registeredOnly"].(bool)
 
-		err := a.db.AlertsUpdate(ID, Name, Type, Content, Active, AllowDismiss, RegisteredOnly)
+		err := a.db.AlertsUpdate(ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
