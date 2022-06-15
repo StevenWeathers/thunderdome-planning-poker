@@ -90,7 +90,7 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Com
 	}
 
 	actionRows, err := d.db.Query(
-		`SELECT ra.id, ra.content, ra.completed FROM team_retro tr
+		`SELECT ra.id, ra.content, ra.completed, tr.retro_id FROM team_retro tr
 				INNER JOIN retro_action ra ON ra.retro_id = tr.retro_id
 				WHERE tr.team_id = $1 AND ra.completed = $2 ORDER BY ra.created_date DESC
 				LIMIT $3 OFFSET $4;`,
@@ -102,12 +102,8 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Com
 	if err == nil && err != sql.ErrNoRows {
 		defer actionRows.Close()
 		for actionRows.Next() {
-			var ri = &model.RetroAction{
-				ID:        "",
-				Content:   "",
-				Completed: false,
-			}
-			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed); err != nil {
+			var ri = &model.RetroAction{}
+			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed, &ri.RetroID); err != nil {
 				d.logger.Error("get retro actions error", zap.Error(err))
 			} else {
 				actions = append(actions, ri)

@@ -28,7 +28,7 @@ const (
 
 // ownerOnlyOperations contains a map of operations that only a retro leader can execute
 var ownerOnlyOperations = map[string]struct{}{
-	"concede": struct{}{},
+	"concede": {},
 }
 
 var upgrader = websocket.Upgrader{
@@ -47,22 +47,6 @@ type connection struct {
 
 // readPump pumps messages from the websocket connection to the hub.
 func (sub subscription) readPump(b *Service) {
-	eventHandlers := map[string]func(string, string, string) ([]byte, error, bool){
-		"create_item":         b.CreateItem,
-		"group_item":          b.GroupItem,
-		"group_name_change":   b.GroupNameChange,
-		"group_vote":          b.GroupUserVote,
-		"group_vote_subtract": b.GroupUserSubtractVote,
-		"delete_item":         b.DeleteItem,
-		"create_action":       b.CreateAction,
-		"update_action":       b.UpdateAction,
-		"delete_action":       b.DeleteAction,
-		"advance_phase":       b.AdvancePhase,
-		"edit_retro":          b.EditRetro,
-		"concede_retro":       b.Delete,
-		"abandon_retro":       b.Abandon,
-	}
-
 	var forceClosed bool
 	c := sub.conn
 	UserID := sub.UserID
@@ -117,8 +101,8 @@ func (sub subscription) readPump(b *Service) {
 		}
 
 		// find event handler and execute otherwise invalid event
-		if _, ok := eventHandlers[eventType]; ok && !badEvent {
-			msg, eventErr, forceClosed = eventHandlers[eventType](RetroID, UserID, eventValue)
+		if _, ok := b.eventHandlers[eventType]; ok && !badEvent {
+			msg, eventErr, forceClosed = b.eventHandlers[eventType](RetroID, UserID, eventValue)
 			if eventErr != nil {
 				badEvent = true
 
@@ -298,4 +282,30 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 		}
 	}
+}
+
+// APIEvent handles api driven events into the arena (if active)
+func (b *Service) APIEvent(arenaID string, UserID, eventType string, eventValue string) error {
+	// confirm leader for any operation that requires it
+	if _, ok := ownerOnlyOperations[eventType]; ok {
+		err := b.db.RetroConfirmOwner(arenaID, UserID)
+		if err != nil {
+			return err
+		}
+	}
+
+	// find event handler and execute otherwise invalid event
+	if _, ok := b.eventHandlers[eventType]; ok {
+		msg, eventErr, _ := b.eventHandlers[eventType](arenaID, UserID, eventValue)
+		if eventErr != nil {
+			return eventErr
+		}
+
+		if _, ok := h.arenas[arenaID]; ok {
+			m := message{msg, arenaID}
+			h.broadcast <- m
+		}
+	}
+
+	return nil
 }

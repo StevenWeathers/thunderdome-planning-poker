@@ -23,6 +23,7 @@
     import Modal from '../components/Modal.svelte'
     import Pagination from '../components/Pagination.svelte'
     import CheckboxIcon from '../components/icons/CheckboxIcon.svelte'
+    import EditActionItem from '../components/retro/EditActionItem.svelte'
 
     export let xfetch
     export let router
@@ -341,6 +342,33 @@
         getRetrosActions()
     }
 
+    let showActionEdit = false
+    let selectedAction = null
+    const toggleActionEdit = id => () => {
+        showActionEdit = !showActionEdit
+        selectedAction = retroActions.find(r => r.id === id)
+    }
+
+    function handleActionEdit(action) {
+        xfetch(`/api/retros/${action.retroId}/actions/${action.id}`, {
+            method: 'PUT',
+            body: {
+                content: action.content,
+                completed: action.completed,
+            },
+        })
+            .then(function () {
+                eventTag('team_action_update', 'engagement', 'success')
+                getRetrosActions()
+                toggleActionEdit(null)()
+                notifications.success('Action item updated successfully')
+            })
+            .catch(function () {
+                notifications.danger('Error updating action item')
+                eventTag('team_action_update', 'engagement', 'failure')
+            })
+    }
+
     onMount(() => {
         if (!$warrior.id || !validateUserIsRegistered($warrior)) {
             router.route(appRoutes.login)
@@ -585,6 +613,7 @@
                         <tr slot="header">
                             <HeadCol>Action Item</HeadCol>
                             <HeadCol>Completed</HeadCol>
+                            <HeadCol />
                         </tr>
                         <tbody
                             slot="body"
@@ -602,6 +631,7 @@
                                             id="{i}Completed"
                                             checked="{item.completed}"
                                             class="opacity-0 absolute h-6 w-6"
+                                            disabled
                                         />
                                         <div
                                             class="bg-white dark:bg-gray-800 border-2 rounded-md
@@ -614,6 +644,15 @@
                                         <label
                                             for="{i}Completed"
                                             class="select-none"></label>
+                                    </RowCol>
+                                    <RowCol>
+                                        <button
+                                            class="text-blue-500"
+                                            on:click="{toggleActionEdit(
+                                                item.id,
+                                            )}"
+                                            >Edit
+                                        </button>
                                     </RowCol>
                                 </TableRow>
                             {/each}
@@ -868,6 +907,14 @@
             handleDelete="{handleDeleteTeam}"
             confirmText="{$_('deleteTeamConfirmText')}"
             confirmBtnText="{$_('deleteTeam')}"
+        />
+    {/if}
+
+    {#if showActionEdit}
+        <EditActionItem
+            toggleEdit="{toggleActionEdit(null)}"
+            handleEdit="{handleActionEdit}"
+            action="{selectedAction}"
         />
     {/if}
 </PageLayout>

@@ -13,6 +13,7 @@ type Service struct {
 	logger                *zap.Logger
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
+	eventHandlers         map[string]func(string, string, string) ([]byte, error, bool)
 }
 
 // New returns a new retro with websocket hub/client and event handlers
@@ -27,6 +28,22 @@ func New(
 		logger:                logger,
 		validateSessionCookie: validateSessionCookie,
 		validateUserCookie:    validateUserCookie,
+	}
+
+	rs.eventHandlers = map[string]func(string, string, string) ([]byte, error, bool){
+		"create_item":         rs.CreateItem,
+		"group_item":          rs.GroupItem,
+		"group_name_change":   rs.GroupNameChange,
+		"group_vote":          rs.GroupUserVote,
+		"group_vote_subtract": rs.GroupUserSubtractVote,
+		"delete_item":         rs.DeleteItem,
+		"create_action":       rs.CreateAction,
+		"update_action":       rs.UpdateAction,
+		"delete_action":       rs.DeleteAction,
+		"advance_phase":       rs.AdvancePhase,
+		"edit_retro":          rs.EditRetro,
+		"concede_retro":       rs.Delete,
+		"abandon_retro":       rs.Abandon,
 	}
 
 	go h.run()
