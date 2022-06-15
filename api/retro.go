@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -140,14 +139,18 @@ func (a *api) handleGetRetros() http.HandlerFunc {
 	}
 }
 
+type actionUpdateRequestBody struct {
+	Completed bool   `json:"completed"`
+	Content   string `json:"content"`
+}
+
 // handleBattlePlanAdd handles adding a plan to battle
 // @Summary Create Battle Plan
 // @Description Creates a battle plan
 // @Param retroId path string true "the retro ID"
 // @Param actionId path string true "the action ID"
-// @Param completed body bool true "completed status"
-// @Param content body string true "action item content"
-// @Tags battle
+// @Param actionItem body actionUpdateRequestBody true "updated action item"
+// @Tags retro
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
@@ -169,12 +172,16 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, bodyErr)
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
-		json.Unmarshal(body, &ra)
+		jsonErr := json.Unmarshal(body, &ra)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
 		ra.ActionID = ActionID
-		log.Printf("%v", ra)
 		updatedActionJson, _ := json.Marshal(ra)
 
 		err := rs.APIEvent(RetroID, UserID, "update_action", string(updatedActionJson))

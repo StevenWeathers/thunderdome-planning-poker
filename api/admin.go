@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -59,15 +61,19 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 	}
 }
 
+type userCreateRequestBody struct {
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Password1 string `json:"password1"`
+	Password2 string `json:"password2"`
+}
+
 // handleUserCreate registers a new authenticated user
 // @Summary Create Registered User
 // @Description Create a registered user
 // @Tags admin
 // @Produce  json
-// @Param name body string true "the new users name"
-// @Param email body string true "the new users email"
-// @Param password1 body string true "the new user's password"
-// @Param password2 body string true "the new user's password repeated"
+// @param newUser body userCreateRequestBody true "new user object"
 // @Success 200 object standardJsonResponse{data=model.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -75,17 +81,28 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 // @Router /admin/users [post]
 func (a *api) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
+		var user = userCreateRequestBody{}
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &user)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
 
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
-			keyVal["name"].(string),
-			strings.ToLower(keyVal["email"].(string)),
-			keyVal["password1"].(string),
-			keyVal["password2"].(string),
+			user.Name,
+			strings.ToLower(user.Email),
+			user.Password1,
+			user.Password2,
 		)
 
 		if accountErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, accountErr)
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, accountErr.Error()))
 			return
 		}
 
