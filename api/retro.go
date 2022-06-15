@@ -140,6 +140,7 @@ func (a *api) handleGetRetros() http.HandlerFunc {
 }
 
 type actionUpdateRequestBody struct {
+	ActionID  string `json:"id" swaggerignore:"true"`
 	Completed bool   `json:"completed"`
 	Content   string `json:"content"`
 }
@@ -159,11 +160,7 @@ type actionUpdateRequestBody struct {
 // @Router /retros/{retroId}/actions/{actionId} [put]
 func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var ra struct {
-			ActionID  string `json:"id"`
-			Completed bool   `json:"completed"`
-			Content   string `json:"content"`
-		}
+		var ra = actionUpdateRequestBody{}
 
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]

@@ -10,6 +10,15 @@ import (
 
 var ActiveAlerts []interface{}
 
+type alertRequestBody struct {
+	Name           string `json:"name"`
+	Type           string `json:"type" enums:"ERROR, INFO, NEW, SUCCESS, WARNING"`
+	Content        string `json:"content"`
+	Active         bool   `json:"active"`
+	AllowDismiss   bool   `json:"allowDismiss"`
+	RegisteredOnly bool   `json:"registeredOnly"`
+}
+
 // handleGetAlerts gets a list of alerts
 // @Summary Get Alerts
 // @Description get list of alerts (global notices)
@@ -40,28 +49,19 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 	}
 }
 
-type alertCreateRequestBody struct {
-	Name           string `json:"name"`
-	Type           string `json:"type"`
-	Content        string `json:"content"`
-	Active         bool   `json:"active"`
-	AllowDismiss   bool   `json:"allowDismiss"`
-	RegisteredOnly bool   `json:"registeredOnly"`
-}
-
 // handleAlertCreate creates a new alert
 // @Summary Create Alert
 // @Description Creates an alert (global notice)
 // @Tags alert
 // @Produce  json
-// @Param alert body alertCreateRequestBody true "new alert object"
+// @Param alert body alertRequestBody true "new alert object"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [post]
 func (a *api) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var alert = alertCreateRequestBody{}
+		var alert = alertRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -86,29 +86,20 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 	}
 }
 
-type alertUpdateRequestBody struct {
-	Name           string `json:"name"`
-	Type           string `json:"type"`
-	Content        string `json:"content"`
-	Active         bool   `json:"active"`
-	AllowDismiss   bool   `json:"allowDismiss"`
-	RegisteredOnly bool   `json:"registeredOnly"`
-}
-
 // handleAlertUpdate updates an alert
 // @Summary Update Alert
 // @Description Updates an Alert
 // @Tags alert
 // @Produce  json
 // @Param alertId path string true "the alert ID to update"
-// @Param alert body alertUpdateRequestBody true "alert object to update"
+// @Param alert body alertRequestBody true "alert object to update"
 // @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [put]
 func (a *api) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var alert = alertUpdateRequestBody{}
+		var alert = alertRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
