@@ -25,7 +25,7 @@
     export let eventTag
     export let userId
 
-    const { FeaturePoker } = AppConfig
+    const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig
 
     let showUpdatePassword = false
 
@@ -65,12 +65,11 @@
     let battleCount = 0
     let battles = []
     let battlesPage = 1
-    let activeBattles = false
 
     function getBattles() {
         const battlesOffset = (battlesPage - 1) * battlesPageLimit
         xfetch(
-            `/api/users/${userId}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}&active=${activeBattles}`,
+            `/api/users/${userId}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
         )
             .then(res => res.json())
             .then(function (result) {
@@ -85,6 +84,56 @@
     const changeBattlesPage = evt => {
         battlesPage = evt.detail
         getBattles()
+    }
+
+    const retrosPageLimit = 100
+    let retroCount = 0
+    let retros = []
+    let retrosPage = 1
+
+    function getRetros() {
+        const offset = (retrosPage - 1) * retrosPageLimit
+        xfetch(
+            `/api/users/${userId}/retros?limit=${retrosPageLimit}&offset=${offset}`,
+        )
+            .then(res => res.json())
+            .then(function (result) {
+                retros = result.data
+                retroCount = result.meta.count
+            })
+            .catch(function () {
+                notifications.danger($_('getRetrosError'))
+            })
+    }
+
+    const changeRetrosPage = evt => {
+        retrosPage = evt.detail
+        getRetros()
+    }
+
+    const storyboardsPageLimit = 100
+    let storyboardCount = 0
+    let storyboards = []
+    let storyboardsPage = 1
+
+    function getStoryboards() {
+        const offset = (storyboardsPage - 1) * storyboardsPageLimit
+        xfetch(
+            `/api/users/${userId}/storyboards?limit=${storyboardsPageLimit}&offset=${offset}`,
+        )
+            .then(res => res.json())
+            .then(function (result) {
+                storyboards = result.data
+                storyboardCount = result.meta.count
+            })
+            .catch(function () {
+                notifications.danger($_('getStoryboardsError'))
+            })
+    }
+
+    const changeStoryboardsPage = evt => {
+        storyboardsPage = evt.detail
+        getStoryboards()
     }
 
     function updatePassword(password1, password2) {
@@ -122,6 +171,8 @@
 
         getUser()
         FeaturePoker && getBattles()
+        FeatureRetro && getRetros()
+        FeatureStoryboard && getStoryboards()
     })
 </script>
 
@@ -293,6 +344,150 @@
                             num_items="{battleCount}"
                             per_page="{battlesPageLimit}"
                             on:navigate="{changeBattlesPage}"
+                        />
+                    </div>
+                {/if}
+            </div>
+        {/if}
+
+        {#if FeatureRetro}
+            <div class="p-4 md:p-6">
+                <h4
+                    class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
+                >
+                    {$_('retros')}
+                </h4>
+
+                <Table>
+                    <tr slot="header">
+                        <HeadCol>
+                            {$_('name')}
+                        </HeadCol>
+                        <HeadCol>
+                            {$_('dateCreated')}
+                        </HeadCol>
+                        <HeadCol>
+                            {$_('dateUpdated')}
+                        </HeadCol>
+                        <HeadCol type="action">
+                            <span class="sr-only">{$_('actions')}</span>
+                        </HeadCol>
+                    </tr>
+                    <tbody
+                        slot="body"
+                        let:class="{className}"
+                        class="{className}"
+                    >
+                        {#each retros as retro, i}
+                            <TableRow itemIndex="{i}">
+                                <RowCol>
+                                    <a
+                                        href="{appRoutes.admin}/retros/{retro.id}"
+                                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                        >{retro.name}</a
+                                    >
+                                </RowCol>
+                                <RowCol>
+                                    {new Date(
+                                        retro.createdDate,
+                                    ).toLocaleString()}
+                                </RowCol>
+                                <RowCol>
+                                    {new Date(
+                                        retro.updatedDate,
+                                    ).toLocaleString()}
+                                </RowCol>
+                                <RowCol type="action">
+                                    <HollowButton
+                                        href="{appRoutes.retro}/{retro.id}"
+                                    >
+                                        {$_('joinRetro')}
+                                    </HollowButton>
+                                </RowCol>
+                            </TableRow>
+                        {/each}
+                    </tbody>
+                </Table>
+
+                {#if retroCount > retrosPageLimit}
+                    <div class="pt-6 flex justify-center">
+                        <Pagination
+                            bind:current="{retrosPage}"
+                            num_items="{retroCount}"
+                            per_page="{retrosPageLimit}"
+                            on:navigate="{changeRetrosPage}"
+                        />
+                    </div>
+                {/if}
+            </div>
+        {/if}
+
+        {#if FeatureStoryboard}
+            <div class="p-4 md:p-6">
+                <h4
+                    class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
+                >
+                    {$_('storyboards')}
+                </h4>
+
+                <Table>
+                    <tr slot="header">
+                        <HeadCol>
+                            {$_('name')}
+                        </HeadCol>
+                        <HeadCol>
+                            {$_('dateCreated')}
+                        </HeadCol>
+                        <HeadCol>
+                            {$_('dateUpdated')}
+                        </HeadCol>
+                        <HeadCol type="action">
+                            <span class="sr-only">{$_('actions')}</span>
+                        </HeadCol>
+                    </tr>
+                    <tbody
+                        slot="body"
+                        let:class="{className}"
+                        class="{className}"
+                    >
+                        {#each storyboards as storyboard, i}
+                            <TableRow itemIndex="{i}">
+                                <RowCol>
+                                    <a
+                                        href="{appRoutes.admin}/storyboards/{storyboard.id}"
+                                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                        >{storyboard.name}</a
+                                    >
+                                </RowCol>
+                                <RowCol>
+                                    {new Date(
+                                        storyboard.createdDate,
+                                    ).toLocaleString()}
+                                </RowCol>
+                                <RowCol>
+                                    {new Date(
+                                        storyboard.updatedDate,
+                                    ).toLocaleString()}
+                                </RowCol>
+                                <RowCol type="action">
+                                    <HollowButton
+                                        href="{appRoutes.storyboard}/{storyboard.id}"
+                                    >
+                                        {$_('joinStoryboard')}
+                                    </HollowButton>
+                                </RowCol>
+                            </TableRow>
+                        {/each}
+                    </tbody>
+                </Table>
+
+                {#if storyboardCount > storyboardsPageLimit}
+                    <div class="pt-6 flex justify-center">
+                        <Pagination
+                            bind:current="{storyboardsPage}"
+                            num_items="{storyboardCount}"
+                            per_page="{storyboardsPageLimit}"
+                            on:navigate="{changeStoryboardsPage}"
                         />
                     </div>
                 {/if}

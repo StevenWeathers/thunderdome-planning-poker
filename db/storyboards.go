@@ -149,6 +149,8 @@ func (d *Database) GetStoryboardsByUser(UserID string) ([]*model.Storyboard, int
 			&b.StoryboardID,
 			&b.StoryboardName,
 			&b.OwnerID,
+			&b.CreatedDate,
+			&b.UpdatedDate,
 		); err != nil {
 			d.logger.Error("get_storyboards_by_user query scan error", zap.Error(err))
 		} else {

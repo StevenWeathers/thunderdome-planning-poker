@@ -149,6 +149,8 @@ func (d *Database) RetroGetByUser(UserID string) ([]*model.Retro, error) {
 			&b.Format,
 			&b.Phase,
 			&b.JoinCode,
+			&b.CreatedDate,
+			&b.UpdatedDate,
 		); err != nil {
 			d.logger.Error("get retro by user error", zap.Error(err))
 		} else {
