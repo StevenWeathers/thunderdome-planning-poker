@@ -6,6 +6,7 @@
     export let text = ''
     export let color = 'blue'
     export let stat = percentage
+    export let count = ''
 
     let svgElem
 
@@ -96,7 +97,8 @@
         @apply stroke-sky-500;
     }
 
-    .gauge.blue .percentage {
+    .gauge.blue .percentage,
+    .gauge.blue .count-text {
         @apply text-sky-500;
     }
 
@@ -104,7 +106,8 @@
         @apply stroke-green-500;
     }
 
-    .gauge.green .percentage {
+    .gauge.green .percentage,
+    .gauge.green .count-text {
         @apply text-green-500;
     }
 
@@ -112,7 +115,8 @@
         @apply stroke-red-500;
     }
 
-    .gauge.red .percentage {
+    .gauge.red .percentage,
+    .gauge.red .count-text {
         @apply text-red-500;
     }
 
@@ -120,12 +124,16 @@
         @apply stroke-indigo-500;
     }
 
-    .gauge.purple .percentage {
+    .gauge.purple .percentage,
+    .gauge.purple .count-text {
         @apply text-indigo-500;
     }
 </style>
 
-<div class="gauge {color}">
+<div class="relative gauge {color}">
+    {#if count !== ''}
+        <div class="absolute text-right text-lg count-text">{count}</div>
+    {/if}
     <svg viewBox="0 0 1000 500" bind:this="{svgElem}" class="max-w-full">
         <g class="opacity-10">
             <path d="M 950 500 A 450 450 0 0 0 50 500"></path>

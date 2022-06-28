@@ -288,8 +288,8 @@
         stats.participants = ucs.length
 
         stats.pPerc = Math.round((100 * stats.participants) / userCount)
-        stats.gPerc = Math.round((100 * stats.goals) / ucs.length)
-        stats.bPerc = Math.round((100 * stats.blocked) / ucs.length)
+        stats.gPerc = Math.round((100 * stats.goals) / stats.participants)
+        stats.bPerc = Math.round((100 * stats.blocked) / stats.participants)
 
         stats = stats
 
@@ -411,6 +411,7 @@
                 text="{$_('participation')}"
                 percentage="{stats.pPerc}"
                 stat="{stats.pPerc}"
+                count="{stats.participants} / {userCount}"
             />
         </div>
         <div class="px-2 md:px-4">
@@ -419,6 +420,7 @@
                 percentage="{stats.gPerc}"
                 color="green"
                 stat="{stats.gPerc}"
+                count="{stats.goals} / {stats.participants}"
             />
         </div>
         <div class="px-2 md:px-4">
@@ -427,6 +429,7 @@
                 percentage="{stats.bPerc}"
                 color="red"
                 stat="{stats.bPerc}"
+                count="{stats.blocked} / {stats.participants}"
             />
         </div>
     </div>
