@@ -33,13 +33,13 @@
         },
         {
             name: 'Retros',
-            label: 'Retros',
+            label: $_('retros'),
             path: '/retros',
             enabled: FeatureRetro,
         },
         {
             name: 'Storyboards',
-            label: 'Storyboards',
+            label: $_('storyboards'),
             path: '/storyboards',
             enabled: FeatureStoryboard,
         },

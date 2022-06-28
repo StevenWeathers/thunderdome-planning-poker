@@ -1,5 +1,6 @@
 <script>
     import UserAvatar from '../user/UserAvatar.svelte'
+    import { _ } from '../../i18n.js'
 
     export let user = {}
     export let votes = []
@@ -27,7 +28,9 @@
     >
         {user.name}
         {#if reachedMaxVotes}
-            <div class="text-green-600 dark:text-green-400">All votes in</div>
+            <div class="text-green-600 dark:text-green-400">
+                {$_('allVotesIn')}
+            </div>
         {/if}
     </div>
 </div>

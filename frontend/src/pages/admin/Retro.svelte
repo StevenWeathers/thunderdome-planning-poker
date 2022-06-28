@@ -34,7 +34,7 @@
                 retro = result.data
             })
             .catch(function () {
-                notifications.danger('error getting retros')
+                notifications.danger($_('getRetroErrorMessage'))
             })
     }
 
@@ -53,7 +53,7 @@
 </script>
 
 <svelte:head>
-    <title>Retros {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$_('retro')} {$_('pages.admin.title')} | {$_('appName')}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="retros">

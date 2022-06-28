@@ -34,7 +34,7 @@
                 storyboard = result.data
             })
             .catch(function () {
-                notifications.danger('error getting storyboards')
+                notifications.danger($_('getStoryboardErrorMessage'))
             })
     }
 
@@ -53,7 +53,8 @@
 </script>
 
 <svelte:head>
-    <title>Storyboards {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$_('storyboard')} {$_('pages.admin.title')} | {$_('appName')}</title
+    >
 </svelte:head>
 
 <AdminPageLayout activePage="storyboards">

@@ -146,11 +146,12 @@
                             class="font-semibold font-rajdhani uppercase text-lg md:text-xl mb-2 md:mb-6
                             md:leading-tight text-center dark:text-white"
                         >
-                            or <a
-                                href="{appRoutes.register}/retro/{retroId}"
-                                class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                                >Register</a
-                            > to join the Retro
+                            {@html $_('registerForRetro', {
+                                values: {
+                                    registerOpen: `<a href="${appRoutes.register}/retro/${retroId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+                                    registerClose: `</a>`,
+                                },
+                            })}
                         </div>
                     {/if}
                     {#if storyboardId && AllowRegistration}
@@ -158,11 +159,12 @@
                             class="font-semibold font-rajdhani uppercase text-lg md:text-xl mb-2 md:mb-6
                             md:leading-tight text-center dark:text-white"
                         >
-                            or <a
-                                href="{appRoutes.register}/storyboard/{storyboardId}"
-                                class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                                >Register</a
-                            > to join the Storyboard
+                            {@html $_('registerForStoryboard', {
+                                values: {
+                                    registerOpen: `<a href="${appRoutes.register}/storyboard/${storyboardId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+                                    registerClose: `</a>`,
+                                },
+                            })}
                         </div>
                     {/if}
                     <div class="mb-4">

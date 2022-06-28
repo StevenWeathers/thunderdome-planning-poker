@@ -27,12 +27,12 @@
                 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="actionItem"
             >
-                Action Item
+                {$_('actionItem')}
             </label>
             <div class="control">
                 <input
                     bind:value="{editAction.content}"
-                    placeholder="Action item..."
+                    placeholder="{$_('actionItemPlaceholder')}"
                     class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
                             px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
                             focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
@@ -47,9 +47,9 @@
         <div class="mb-4">
             <label
                 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-                for="actionItem"
+                for="Completed"
             >
-                Action Item
+                {$_('completed')}
             </label>
             <div class="control">
                 <div class="flex-shrink">

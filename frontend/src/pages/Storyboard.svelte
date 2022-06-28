@@ -238,7 +238,7 @@
                 )
                 storyboard.users = JSON.parse(parsedEvent.value)
 
-                notifications.danger(`${leftUser.name} retreated.`)
+                notifications.danger(`${leftUser.name} left.`)
                 break
             case 'storyboard_updated':
                 storyboard = JSON.parse(parsedEvent.value)
@@ -299,7 +299,7 @@
                 break
             case 'storyboard_conceded':
                 // storyboard over, goodbye.
-                notifications.warning('Storyboard deleted')
+                notifications.warning($_('storyboardDeleted'))
                 router.route(appRoutes.storyboards)
                 break
             default:
@@ -329,9 +329,7 @@
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'storyboard', '', () => {
-                        notifications.danger(
-                            `Duplicate storyboard session exists for your ID`,
-                        )
+                        notifications.danger($_('duplicateStoryboardSession'))
                         router.route(`${appRoutes.storyboards}`)
                     })
                 } else if (e.code === 4002) {
@@ -664,7 +662,7 @@
 </style>
 
 <svelte:head>
-    <title>Storyboard {storyboard.name} | Exothermic</title>
+    <title>{$_('storyboard')} {storyboard.name} | {$_('appName')}</title>
 </svelte:head>
 
 {#if storyboard.name && !socketReconnecting && !socketError}
@@ -686,25 +684,25 @@
                             onClick="{toggleAddGoal()}"
                             additionalClasses="mr-2"
                         >
-                            Add Goal
+                            {$_('storyboardAddGoal')}
                         </HollowButton>
                         <HollowButton
                             color="blue"
                             onClick="{toggleEditStoryboard}"
                             testid="storyboard-edit"
                         >
-                            Edit Storyboard
+                            {$_('editStoryboard')}
                         </HollowButton>
                         <HollowButton
                             color="red"
                             onClick="{toggleDeleteStoryboard}"
                             additionalClasses="mr-2"
                         >
-                            Delete Storyboard
+                            {$_('deleteStoryboard')}
                         </HollowButton>
                     {:else}
                         <HollowButton color="red" onClick="{abandonStoryboard}">
-                            Leave Storyboard
+                            {$_('leaveStoryboard')}
                         </HollowButton>
                     {/if}
                     <div class="inline-block relative">
@@ -713,7 +711,7 @@
                             additionalClasses="transition ease-in-out duration-150"
                             onClick="{togglePersonas}"
                         >
-                            Persona's
+                            {$_('personas')}
                             <DownCarrotIcon additionalClasses="ml-1" />
                         </HollowButton>
                         {#if showPersonas}
@@ -740,7 +738,7 @@
                                                             class="text-orange-500
                                                         hover:text-orange-800"
                                                         >
-                                                            Edit
+                                                            {$_('edit')}
                                                         </button>
                                                         &nbsp;|&nbsp;
                                                         <button
@@ -750,7 +748,7 @@
                                                             class="text-red-500
                                                         hover:text-red-800"
                                                         >
-                                                            Delete
+                                                            {$_('delete')}
                                                         </button>
                                                     {/if}
                                                 </div>
@@ -772,7 +770,7 @@
                                                     description: '',
                                                 })}"
                                             >
-                                                Add Persona
+                                                {$_('addPersona')}
                                             </HollowButton>
                                         </div>
                                     {/if}
@@ -786,7 +784,7 @@
                             additionalClasses="transition ease-in-out duration-150"
                             onClick="{toggleColorLegend}"
                         >
-                            Color Legend
+                            {$_('colorLegend')}
                             <DownCarrotIcon additionalClasses="ml-1" />
                         </HollowButton>
                         {#if showColorLegend}
@@ -810,7 +808,9 @@
                                                         : 'text-gray-600 dark:text-gray-200'}"
                                                 >
                                                     {color.legend ||
-                                                        'legend not specified'}
+                                                        $_(
+                                                            'colorLegendNotSpecified',
+                                                        )}
                                                 </span>
                                             </div>
                                         {/each}
@@ -822,7 +822,7 @@
                                                 color="orange"
                                                 onClick="{toggleEditLegend}"
                                             >
-                                                Edit Legend
+                                                {$_('editColorLegend')}
                                             </HollowButton>
                                         </div>
                                     {/if}
@@ -841,7 +841,7 @@
                                 height="18"
                                 width="18"
                             />
-                            Users
+                            {$_('users')}
                             <DownCarrotIcon additionalClasses="ml-1" />
                         </HollowButton>
                         {#if showUsers}
@@ -900,7 +900,7 @@
                                 onClick="{addStoryColumn(goal.id)}"
                                 btnSize="small"
                             >
-                                Add Column
+                                {$_('storyboardAddColumn')}
                             </HollowButton>
                             <HollowButton
                                 color="orange"
@@ -908,7 +908,7 @@
                                 btnSize="small"
                                 additionalClasses="ml-2"
                             >
-                                Edit
+                                {$_('edit')}
                             </HollowButton>
                             <HollowButton
                                 color="red"
@@ -916,7 +916,7 @@
                                 btnSize="small"
                                 additionalClasses="ml-2"
                             >
-                                Delete
+                                {$_('delete')}
                             </HollowButton>
                         {/if}
                     </div>
@@ -941,7 +941,7 @@
                                         border-dashed border-2 border-gray-400 dark:border-gray-600
                                         hover:border-green-500 text-gray-600 dark:text-gray-400
                                         hover:text-green-500 py-1 px-2"
-                                            title="Edit Column"
+                                            title="{$_('storyboardEditColumn')}"
                                         >
                                             <EditIcon />
                                         </button>
@@ -958,7 +958,9 @@
                                         px-2 border-dashed border-2
                                         border-gray-400 dark:border-gray-600 hover:border-green-500
                                         text-gray-600 dark:text-gray-400 hover:text-green-500"
-                                            title="Add Story to Column"
+                                            title="{$_(
+                                                'storyboardAddStoryToColumn',
+                                            )}"
                                         >
                                             +
                                         </button>
@@ -1157,7 +1159,7 @@
 
                                 <div class="text-right">
                                     <SolidButton type="submit"
-                                        >Join Storyboard
+                                        >{$_('joinStoryboard')}
                                     </SolidButton>
                                 </div>
                             </form>
@@ -1167,15 +1169,15 @@
                     <h1
                         class="text-5xl text-orange-500 leading-tight font-bold"
                     >
-                        Ooops, reloading Storyboard...
+                        {$_('reloadingStoryboard')}
                     </h1>
                 {:else if socketError}
                     <h1 class="text-5xl text-red-500 leading-tight font-bold">
-                        Error joining storyboard, refresh and try again.
+                        {$_('joinStoryboardError')}
                     </h1>
                 {:else}
                     <h1 class="text-5xl text-green-500 leading-tight font-bold">
-                        Loading Storyboard...
+                        {$_('loadingStoryboard')}
                     </h1>
                 {/if}
             </div>

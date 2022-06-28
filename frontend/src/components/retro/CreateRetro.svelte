@@ -3,7 +3,8 @@
 
     import SolidButton from '../SolidButton.svelte'
     import { warrior as user } from '../../stores.js'
-    import { appRoutes } from '../../config'
+    import { appRoutes } from '../../config.js'
+    import { _ } from '../../i18n.js'
 
     export let xfetch
     export let notifications
@@ -30,7 +31,7 @@
                 })
             })
             .catch(function (error) {
-                notifications.danger('Error encountered creating retro')
+                notifications.danger($_('createRetroErrorMessage'))
                 eventTag('create_retro', 'engagement', 'failure')
             })
     }
@@ -48,13 +49,13 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="retroName"
         >
-            Retro Name
+            {$_('retroName')}
         </label>
         <div class="control">
             <input
                 name="retroName"
                 bind:value="{retroName}"
-                placeholder="Enter a retro name"
+                placeholder="{$_('retroNamePlaceholder')}"
                 class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -69,13 +70,13 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="joinCode"
         >
-            Join Code (Optional)
+            {$_('joinCodeLabelOptional')}
         </label>
         <div class="control">
             <input
                 name="joinCode"
                 bind:value="{joinCode}"
-                placeholder="Enter a join code"
+                placeholder="{$_('joinCodePlaceholder')}"
                 class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -85,6 +86,6 @@
     </div>
 
     <div class="text-right">
-        <SolidButton type="submit">Create Retro</SolidButton>
+        <SolidButton type="submit">{$_('createRetro')}</SolidButton>
     </div>
 </form>

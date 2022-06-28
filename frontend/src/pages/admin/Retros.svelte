@@ -35,7 +35,7 @@
                 retroCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger('Error getting retros')
+                notifications.danger($_('getRetrosErrorMessage'))
             })
     }
 
@@ -72,7 +72,7 @@
 </style>
 
 <svelte:head>
-    <title>Retros {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$_('retros')} {$_('pages.admin.title')} | {$_('appName')}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="retros">
@@ -80,7 +80,7 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            Retros
+            {$_('retros')}
         </h1>
     </div>
 
@@ -104,7 +104,7 @@
                 </label>
             </div>
             <label for="activeRetros" class="dark:text-gray-300"
-                >Show active retros</label
+                >{$_('showActiveRetros')}</label
             >
         </div>
 
@@ -120,7 +120,7 @@
                     {$_('dateUpdated')}
                 </HeadCol>
                 <HeadCol type="action">
-                    <span class="sr-only">Actions</span>
+                    <span class="sr-only">{$_('actions')}</span>
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
@@ -141,7 +141,7 @@
                         </RowCol>
                         <RowCol type="action">
                             <HollowButton href="{appRoutes.retro}/{retro.id}">
-                                Join Retro
+                                {$_('joinRetro')}
                             </HollowButton>
                         </RowCol>
                     </TableRow>

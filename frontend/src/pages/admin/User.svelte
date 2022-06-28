@@ -247,7 +247,7 @@
                             {$_('dateUpdated')}
                         </HeadCol>
                         <HeadCol type="action">
-                            <span class="sr-only">Actions</span>
+                            <span class="sr-only">{$_('actions')}</span>
                         </HeadCol>
                     </tr>
                     <tbody

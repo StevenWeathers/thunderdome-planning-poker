@@ -399,7 +399,7 @@
                     <h5
                         class="font-bold uppercase text-gray-500 dark:text-gray-400"
                     >
-                        {$_('teams')} Checkins
+                        {$_('teamCheckins')}
                     </h5>
                     <h3 class="font-bold text-3xl dark:text-white">
                         {appStats.teamCheckinsCount}
@@ -421,7 +421,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Retro's
+                            {$_('retros')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.retroCount}
@@ -442,7 +442,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Active Retro's
+                            {$_('activeRetros')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.activeRetroCount}
@@ -463,7 +463,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Active Retro Users
+                            {$_('activeRetroUsers')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.activeRetroUserCount}
@@ -484,7 +484,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Retro Items
+                            {$_('retroItems')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.retroItemCount}
@@ -505,7 +505,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Retro Actions
+                            {$_('retroActionItems')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.retroActionCount}
@@ -528,7 +528,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Storyboard's
+                            {$_('storyboards')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.storyboardCount}
@@ -549,7 +549,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Active Storyboard's
+                            {$_('activeStoryboards')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.activeStoryboardCount}
@@ -570,7 +570,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Active Storyboard Users
+                            {$_('activeStoryboardUsers')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.activeStoryboardUserCount}
@@ -591,7 +591,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Storyboard Goals
+                            {$_('storyboardGoals')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.storyboardGoalCount}
@@ -612,7 +612,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Storyboard Columns
+                            {$_('storyboardColumns')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.storyboardColumnCount}
@@ -633,7 +633,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Storyboard Stories
+                            {$_('storyboardStories')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.storyboardStoryCount}
@@ -654,7 +654,7 @@
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
-                            Storyboard Personas
+                            {$_('storyboardPersonas')}
                         </h5>
                         <h3 class="font-bold text-3xl dark:text-white">
                             {appStats.storyboardPersonaCount}
@@ -686,7 +686,7 @@
                             })}
                         </h5>
                         <HollowButton onClick="{cleanGuests}" color="red">
-                            Execute
+                            {$_('execute')}
                         </HollowButton>
                     </div>
                 </div>
@@ -706,7 +706,7 @@
                                 })}
                             </h5>
                             <HollowButton onClick="{cleanBattles}" color="red">
-                                Execute
+                                {$_('execute')}
                             </HollowButton>
                         </div>
                     </div>
@@ -726,7 +726,7 @@
                                 })}
                             </h5>
                             <HollowButton onClick="{cleanRetros}" color="red">
-                                Execute
+                                {$_('execute')}
                             </HollowButton>
                         </div>
                     </div>
@@ -751,7 +751,7 @@
                                 onClick="{cleanStoryboards}"
                                 color="red"
                             >
-                                Execute
+                                {$_('execute')}
                             </HollowButton>
                         </div>
                     </div>
@@ -768,7 +768,7 @@
                             {$_('maintenanceLowercaseEmails')}
                         </h5>
                         <HollowButton onClick="{lowercaseEmails}" color="red">
-                            Execute
+                            {$_('execute')}
                         </HollowButton>
                     </div>
                 </div>

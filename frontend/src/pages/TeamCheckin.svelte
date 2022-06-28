@@ -110,7 +110,7 @@
                 checkins = result.data
             })
             .catch(function () {
-                notifications.danger('Error getting checkins')
+                notifications.danger($_('getCheckinsError'))
                 eventTag('team_checkin_checkins', 'engagement', 'failure')
             })
     }
@@ -160,14 +160,14 @@
                     error[1].json().then(function (result) {
                         if (result.error === 'REQUIRES_TEAM_USER') {
                             notifications.danger(
-                                `User must be in team to checkin`,
+                                $_('teamUserRequiredToCheckin'),
                             )
                         } else {
-                            notifications.danger(`Error checking in`)
+                            notifications.danger($_('checkinError'))
                         }
                     })
                 } else {
-                    notifications.danger(`Error checking in`)
+                    notifications.danger($_('checkinError'))
                 }
                 eventTag('team_checkin_create', 'engagement', 'failure')
             })
@@ -185,7 +185,7 @@
                 eventTag('team_checkin_edit', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger(`Error updating checkin`)
+                notifications.danger($_('updateCheckinError'))
                 eventTag('team_checkin_edit', 'engagement', 'failure')
             })
     }
@@ -198,7 +198,7 @@
                 eventTag('team_checkin_delete', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger(`Error deleting checkin`)
+                notifications.danger($_('deleteCheckinError'))
                 eventTag('team_checkin_delete', 'engagement', 'failure')
             })
     }
@@ -225,14 +225,14 @@
                     error[1].json().then(function (result) {
                         if (result.error === 'REQUIRES_TEAM_USER') {
                             notifications.danger(
-                                `User must be in team to comment`,
+                                $_('teamUserRequiredToComment'),
                             )
                         } else {
-                            notifications.danger(`Error commenting on checkin`)
+                            notifications.danger($_('checkinCommentError'))
                         }
                     })
                 } else {
-                    notifications.danger(`Error commenting on checkin`)
+                    notifications.danger($_('checkinCommentError'))
                 }
                 eventTag('team_checkin_comment', 'engagement', 'failure')
             })
@@ -248,7 +248,7 @@
                 eventTag('team_checkin_comment_delete', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger(`Error deleting checkin comment`)
+                notifications.danger($_('checkinCommentDeleteError'))
                 eventTag('team_checkin_comment_delete', 'engagement', 'failure')
             })
     }
@@ -325,7 +325,7 @@
             <h1
                 class="text-3xl font-semibold font-rajdhani leading-none uppercase dark:text-white"
             >
-                Checkin
+                {$_('checkIn')}
                 <ChevronRight class="w-8 h-8" />
                 <input
                     type="date"
@@ -400,7 +400,7 @@
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 onClick="{toggleCheckin}"
                 disabled="{selectedDate !== formatDayForInput(now)}"
-                >Check In
+                >{$_('checkIn')}
             </SolidButton>
         </div>
     </div>
@@ -408,14 +408,14 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 my-4">
         <div class="px-2 md:px-4">
             <Gauge
-                text="Participation"
+                text="{$_('participation')}"
                 percentage="{stats.pPerc}"
                 stat="{stats.pPerc}"
             />
         </div>
         <div class="px-2 md:px-4">
             <Gauge
-                text="Goals Met"
+                text="{$_('goalsMet')}"
                 percentage="{stats.gPerc}"
                 color="green"
                 stat="{stats.gPerc}"
@@ -423,7 +423,7 @@
         </div>
         <div class="px-2 md:px-4">
             <Gauge
-                text="Blocked"
+                text="{$_('blocked')}"
                 percentage="{stats.bPerc}"
                 color="red"
                 stat="{stats.bPerc}"
@@ -437,11 +437,11 @@
                 <HeadCol>
                     {$_('name')}
                 </HeadCol>
-                <HeadCol>Yesterday</HeadCol>
-                <HeadCol>Today</HeadCol>
-                <HeadCol>Blockers</HeadCol>
-                <HeadCol>Discuss</HeadCol>
-                <HeadCol>Comments</HeadCol>
+                <HeadCol>{$_('yesterday')}</HeadCol>
+                <HeadCol>{$_('today')}</HeadCol>
+                <HeadCol>{$_('blockers')}</HeadCol>
+                <HeadCol>{$_('discuss')}</HeadCol>
+                <HeadCol>{$_('comments')}</HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
                 {#each checkins as checkin, i}
@@ -516,9 +516,10 @@
                                                     toggleCheckin(checkin)
                                                 }}"
                                                 class="text-blue-500"
-                                                title="Edit"
+                                                title="{$_('edit')}"
                                             >
-                                                <span class="sr-only">Edit</span
+                                                <span class="sr-only"
+                                                    >{$_('edit')}</span
                                                 >
                                                 <PencilIcon />
                                             </button>
@@ -532,7 +533,7 @@
                                                 title="Delete"
                                             >
                                                 <span class="sr-only"
-                                                    >Delete</span
+                                                    >{$_('delete')}</span
                                                 >
                                                 <TrashIcon />
                                             </button>
@@ -581,7 +582,7 @@
                                                     comment.id,
                                                 )}"
                                             >
-                                                Delete
+                                                {$_('delete')}
                                             </button>
                                         {/if}
                                     </p>
@@ -590,7 +591,7 @@
                             <div class="text-right pt-2">
                                 <SolidButton
                                     onClick="{toggleCommentForm(checkin.id)}"
-                                    >Add Comment
+                                    >{$_('addComment')}
                                 </SolidButton>
                             </div>
                         </RowCol>

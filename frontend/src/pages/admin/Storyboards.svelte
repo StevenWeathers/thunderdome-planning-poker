@@ -35,7 +35,7 @@
                 storyboardCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger('Error getting storyboards')
+                notifications.danger($_('getStoryboardsErrorMessage'))
             })
     }
 
@@ -72,7 +72,9 @@
 </style>
 
 <svelte:head>
-    <title>Storyboards {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title
+        >{$_('storyboards')} {$_('pages.admin.title')} | {$_('appName')}</title
+    >
 </svelte:head>
 
 <AdminPageLayout activePage="storyboards">
@@ -80,7 +82,7 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            Storyboards
+            {$_('storyboards')}
         </h1>
     </div>
 
@@ -104,7 +106,7 @@
                 </label>
             </div>
             <label for="activeStoryboards" class="dark:text-gray-300"
-                >Show active storyboards</label
+                >{$_('showActiveStoryboards')}</label
             >
         </div>
 
@@ -120,7 +122,7 @@
                     {$_('dateUpdated')}
                 </HeadCol>
                 <HeadCol type="action">
-                    <span class="sr-only">Actions</span>
+                    <span class="sr-only">{$_('actions')}</span>
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
@@ -143,7 +145,7 @@
                             <HollowButton
                                 href="{appRoutes.storyboard}/{storyboard.id}"
                             >
-                                Join Storyboard
+                                {$_('joinStoryboard')}
                             </HollowButton>
                         </RowCol>
                     </TableRow>

@@ -1,4 +1,6 @@
 <script>
+    import { _ } from '../../i18n.js'
+
     export let retro = {
         items: [],
         actionItems: [],
@@ -33,7 +35,7 @@
 <div class="flex flex-grow p-4 dark:text-white">
     <div class="px-4">
         <div class="mb-4">
-            <h2 class="text-3xl font-rajdhani">Works</h2>
+            <h2 class="text-3xl font-rajdhani">{$_('works')}</h2>
             <ul class="pl-12 list-disc text-lg">
                 {#each workedItems as item (item.id)}
                     <li>
@@ -43,7 +45,7 @@
             </ul>
         </div>
         <div class="mb-4">
-            <h2 class="text-3xl font-rajdhani">Needs Improvement</h2>
+            <h2 class="text-3xl font-rajdhani">{$_('needsImprovement')}</h2>
             <ul class="pl-12 list-disc text-lg">
                 {#each improveItems as item (item.id)}
                     <li>
@@ -53,7 +55,7 @@
             </ul>
         </div>
         <div class="mb-4">
-            <h2 class="text-3xl font-rajdhani">Questions</h2>
+            <h2 class="text-3xl font-rajdhani">{$_('questions')}</h2>
             <ul class="pl-12 list-disc text-lg">
                 {#each questionItems as item (item.id)}
                     <li>
@@ -63,7 +65,7 @@
             </ul>
         </div>
         <div class="mb-4">
-            <h2 class="text-3xl font-rajdhani">Action Items</h2>
+            <h2 class="text-3xl font-rajdhani">{$_('actionItems')}</h2>
             <ul class="pl-12 list-disc text-lg">
                 {#each retro.actionItems as item (item.id)}
                     <li>{item.content}</li>

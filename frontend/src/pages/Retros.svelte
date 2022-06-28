@@ -5,7 +5,8 @@
     import CreateRetro from '../components/retro/CreateRetro.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import { warrior as user } from '../stores.js'
-    import { appRoutes } from '../config'
+    import { appRoutes } from '../config.js'
+    import { _ } from '../i18n.js'
 
     export let xfetch
     export let notifications
@@ -20,7 +21,7 @@
             retros = bs.data
         })
         .catch(function () {
-            notifications.danger('Error finding your retros')
+            notifications.danger($_('getRetrosErrorMessage'))
             eventTag('fetch_retros', 'engagement', 'failure')
         })
 
@@ -32,14 +33,14 @@
 </script>
 
 <svelte:head>
-    <title>Your Retros | Wakita</title>
+    <title>{$_('yourRetros')} | {$_('appName')}</title>
 </svelte:head>
 
 <PageLayout>
     <h1
         class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
     >
-        My Retros
+        {$_('myRetros')}
     </h1>
 
     <div class="flex flex-wrap">
@@ -59,13 +60,13 @@
                                 class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
                             >
                                 {#if $user.id === retro.ownerId}
-                                    Owner
+                                    {$_('owner')}
                                 {/if}
                             </div>
                         </div>
                         <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                             <HollowButton href="{appRoutes.retro}/{retro.id}">
-                                Join Retro
+                                {$_('joinRetro')}
                             </HollowButton>
                         </div>
                     </div>
@@ -80,7 +81,7 @@
                 <h2
                     class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
                 >
-                    Create a Retro
+                    {$_('createARetro')}
                 </h2>
                 <CreateRetro
                     notifications="{notifications}"

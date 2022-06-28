@@ -92,7 +92,7 @@
                                     ? activePageClass
                                     : pageClass}"
                             >
-                                Retros
+                                {$_('retros')}
                             </a>
                         {/if}
                         {#if FeatureStoryboard}
@@ -103,7 +103,7 @@
                                     ? activePageClass
                                     : pageClass}"
                             >
-                                Storyboards
+                                {$_('storyboards')}
                             </a>
                         {/if}
                         {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
@@ -236,7 +236,17 @@
                                 href="{appRoutes.retros}"
                                 class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
-                                Retros
+                                {$_('retros')}
+                            </a>
+                        </li>
+                    {/if}
+                    {#if FeatureStoryboard}
+                        <li>
+                            <a
+                                href="{appRoutes.storyboards}"
+                                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
+                            >
+                                {$_('storyboards')}
                             </a>
                         </li>
                     {/if}

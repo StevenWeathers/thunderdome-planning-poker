@@ -222,7 +222,7 @@
                     totalRetroActions = result.meta.count
                 })
                 .catch(function () {
-                    notifications.danger('error getting retro actions')
+                    notifications.danger($_('teamGetRetroActionsError'))
                 })
         }
     }
@@ -361,10 +361,10 @@
                 eventTag('team_action_update', 'engagement', 'success')
                 getRetrosActions()
                 toggleActionEdit(null)()
-                notifications.success('Action item updated successfully')
+                notifications.success($_('updateActionItemSuccess'))
             })
             .catch(function () {
-                notifications.danger('Error updating action item')
+                notifications.danger($_('updateActionItemError'))
                 eventTag('team_action_update', 'engagement', 'failure')
             })
     }
@@ -445,7 +445,7 @@
             <SolidButton
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 href="{`${currentPageUrl}/checkin`}"
-                >Checkins
+                >{$_('checkins')}
             </SolidButton>
         </div>
     </div>
@@ -463,7 +463,7 @@
                 <div class="flex-1 text-right">
                     {#if isTeamMember}
                         <SolidButton onClick="{toggleCreateBattle}"
-                            >Create Battle
+                            >{$_('battleCreate')}
                         </SolidButton>
                     {/if}
                 </div>
@@ -527,13 +527,13 @@
                     <h2
                         class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                     >
-                        Retros
+                        {$_('retros')}
                     </h2>
                 </div>
                 <div class="flex-1 text-right">
                     {#if isTeamMember}
                         <SolidButton onClick="{toggleCreateRetro}"
-                            >Create Retro
+                            >{$_('createRetro')}
                         </SolidButton>
                     {/if}
                 </div>
@@ -566,7 +566,7 @@
                                 <HollowButton
                                     href="{appRoutes.retro}/{retro.id}"
                                 >
-                                    Join Retro
+                                    {$_('joinRetro')}
                                 </HollowButton>
                             </div>
                         </div>
@@ -580,7 +580,7 @@
                         <h3
                             class="text-xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                         >
-                            Retro Action Items
+                            {$_('retroActionItems')}
                         </h3>
 
                         <div class="text-right mb-4">
@@ -604,15 +604,15 @@
                             <label
                                 for="completedActionItems"
                                 class="dark:text-gray-300"
-                                >Show Completed Action Items</label
+                                >{$_('showCompletedActionItems')}</label
                             >
                         </div>
                     </div>
 
                     <Table>
                         <tr slot="header">
-                            <HeadCol>Action Item</HeadCol>
-                            <HeadCol>Completed</HeadCol>
+                            <HeadCol>{$_('actionItem')}</HeadCol>
+                            <HeadCol>{$_('completed')}</HeadCol>
                             <HeadCol />
                         </tr>
                         <tbody
@@ -651,7 +651,7 @@
                                             on:click="{toggleActionEdit(
                                                 item.id,
                                             )}"
-                                            >Edit
+                                            >{$_('edit')}
                                         </button>
                                     </RowCol>
                                 </TableRow>
@@ -693,13 +693,13 @@
                     <h2
                         class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                     >
-                        Storyboards
+                        {$_('storyboards')}
                     </h2>
                 </div>
                 <div class="flex-1 text-right">
                     {#if isTeamMember}
                         <SolidButton onClick="{toggleCreateStoryboard}"
-                            >Create Storyboard
+                            >{$_('createStoryboard')}
                         </SolidButton>
                     {/if}
                 </div>
@@ -734,7 +734,7 @@
                                 <HollowButton
                                     href="{appRoutes.storyboard}/{storyboard.id}"
                                 >
-                                    Join Storyboard
+                                    {$_('joinStoryboard')}
                                 </HollowButton>
                             </div>
                         </div>
@@ -788,7 +788,7 @@
                     {$_('role')}
                 </HeadCol>
                 <HeadCol type="action">
-                    <span class="sr-only">Actions</span>
+                    <span class="sr-only">{$_('actions')}</span>
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">

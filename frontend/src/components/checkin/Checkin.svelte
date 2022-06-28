@@ -2,6 +2,7 @@
     import Modal from '../Modal.svelte'
     import SolidButton from '../SolidButton.svelte'
     import { quill } from '../../quill.js'
+    import { _ } from '../../i18n.js'
 
     export let toggleCheckin = () => {}
     export let handleCheckin = () => {}
@@ -55,7 +56,7 @@
             <div
                 class="text-gray-700 uppercase font-rajdhani text-2xl tracking-wide mb-2 dark:text-gray-400"
             >
-                Did you meet yesterday's goals?
+                {$_('checkinMeetYesterdayGoalsQuestion')}
             </div>
             <div
                 class="relative inline-block w-16 mr-2 align-middle select-none transition duration-200 ease-in"
@@ -79,13 +80,13 @@
             <div
                 class="text-blue-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
             >
-                Yesterday
+                {$_('yesterday')}
             </div>
             <div class="bg-white">
                 <div
                     class="w-full"
                     use:quill="{{
-                        placeholder: `Yesterday I...`,
+                        placeholder: `${$_('yesterdayPlaceholder')}`,
                         content: yesterday,
                     }}"
                     on:text-change="{e => (yesterday = e.detail.html)}"
@@ -98,13 +99,13 @@
             <div
                 class="text-green-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
             >
-                Today
+                {$_('today')}
             </div>
             <div class="bg-white">
                 <div
                     class="w-full"
                     use:quill="{{
-                        placeholder: `Today I will...`,
+                        placeholder: `${$_('todayPlaceholder')}`,
                         content: today,
                     }}"
                     on:text-change="{e => (today = e.detail.html)}"
@@ -117,13 +118,13 @@
             <div
                 class="text-red-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
             >
-                Blockers
+                {$_('blockers')}
             </div>
             <div class="bg-white">
                 <div
                     class="w-full"
                     use:quill="{{
-                        placeholder: `I'm blocked by...`,
+                        placeholder: `${$_('blockersPlaceholder')}`,
                         content: blockers,
                     }}"
                     on:text-change="{e => (blockers = e.detail.html)}"
@@ -136,13 +137,13 @@
             <div
                 class="text-purple-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
             >
-                Discuss
+                {$_('discuss')}
             </div>
             <div class="bg-white">
                 <div
                     class="w-full"
                     use:quill="{{
-                        placeholder: 'I would like to discuss...',
+                        placeholder: `${$_('discussPlaceholder')}`,
                         content: discuss,
                     }}"
                     on:text-change="{e => (discuss = e.detail.html)}"
@@ -153,7 +154,7 @@
 
         <div>
             <div class="text-right">
-                <SolidButton type="submit">Save</SolidButton>
+                <SolidButton type="submit">{$_('save')}</SolidButton>
             </div>
         </div>
     </form>
