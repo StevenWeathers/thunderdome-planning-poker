@@ -306,6 +306,8 @@
         teamRole !== ''
 
     $: checkStats = checkins && userCount && calculateCheckinStats()
+    $: alreadyCheckedIn =
+        checkins && checkins.find(c => c.user.id === $user.id) !== undefined
 </script>
 
 <style global>
@@ -399,7 +401,8 @@
             <SolidButton
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 onClick="{toggleCheckin}"
-                disabled="{selectedDate !== formatDayForInput(now)}"
+                disabled="{selectedDate !== formatDayForInput(now) ||
+                    alreadyCheckedIn}"
                 >{$_('checkIn')}
             </SolidButton>
         </div>
