@@ -69,6 +69,7 @@
             return prev
         }, {})
         let userVoteCount = 0
+        let result = []
 
         retro.items.map(item => {
             groupMap[item.groupId].items.push(item)
@@ -84,7 +85,14 @@
 
         voteLimitReached = userVoteCount === maxVotes
 
-        return Object.values(groupMap)
+        result = Object.values(groupMap)
+        if (retro.phase === 'action' || retro.phase === 'completed') {
+            result.sort((a, b) => {
+                return b.votes.length - a.votes.length
+            })
+        }
+
+        return result
     }
 
     const onSocketMessage = function (evt) {
