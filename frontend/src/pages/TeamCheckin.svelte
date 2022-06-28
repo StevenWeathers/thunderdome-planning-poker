@@ -288,8 +288,8 @@
         stats.participants = ucs.length
 
         stats.pPerc = Math.round((100 * stats.participants) / userCount)
-        stats.gPerc = Math.round((100 * stats.goals) / userCount)
-        stats.bPerc = Math.round((100 * stats.blocked) / userCount)
+        stats.gPerc = Math.round((100 * stats.goals) / ucs.length)
+        stats.bPerc = Math.round((100 * stats.blocked) / ucs.length)
 
         stats = stats
 
