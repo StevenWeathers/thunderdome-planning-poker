@@ -116,3 +116,85 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Com
 
 	return actions, Count, nil
 }
+
+// RetroActionCommentAdd adds a comment to a retro action
+func (d *Database) RetroActionCommentAdd(RetroID string, ActionID string, UserID string, Comment string) ([]*model.RetroAction, error) {
+	if _, err := d.db.Exec(
+		`call retro_action_comment_add($1, $2, $3, $4);`,
+		RetroID,
+		ActionID,
+		UserID,
+		Comment,
+	); err != nil {
+		d.logger.Error("call retro_action_comment_add error", zap.Error(err))
+	}
+
+	actions := d.GetRetroActions(RetroID)
+
+	return actions, nil
+}
+
+// RetroActionCommentEdit edits a retro action comment
+func (d *Database) RetroActionCommentEdit(RetroID string, ActionID string, CommentID string, Comment string) ([]*model.RetroAction, error) {
+	if _, err := d.db.Exec(
+		`call retro_action_comment_edit($1, $2, $3, $4);`,
+		RetroID,
+		ActionID,
+		CommentID,
+		Comment,
+	); err != nil {
+		d.logger.Error("call retro_action_comment_edit error", zap.Error(err))
+	}
+
+	actions := d.GetRetroActions(RetroID)
+
+	return actions, nil
+}
+
+// RetroActionCommentDelete deletes a retro action comment
+func (d *Database) RetroActionCommentDelete(RetroID string, ActionID string, CommentID string) ([]*model.RetroAction, error) {
+	if _, err := d.db.Exec(
+		`call retro_action_comment_delete($1, $2, $3);`,
+		RetroID,
+		ActionID,
+		CommentID,
+	); err != nil {
+		d.logger.Error("call retro_action_comment_delete error", zap.Error(err))
+	}
+
+	actions := d.GetRetroActions(RetroID)
+
+	return actions, nil
+}
+
+// RetroActionAssigneeAdd adds an assignee to a retro action
+func (d *Database) RetroActionAssigneeAdd(RetroID string, ActionID string, UserID string) ([]*model.RetroAction, error) {
+	if _, err := d.db.Exec(
+		`call retro_action_assignee_add($1, $2, $3);`,
+		RetroID,
+		ActionID,
+		UserID,
+	); err != nil {
+		d.logger.Error("call retro_action_assignee_add error", zap.Error(err))
+	}
+
+	actions := d.GetRetroActions(RetroID)
+
+	return actions, nil
+}
+
+// RetroActionAssigneeDelete deletes a retro action assignee
+func (d *Database) RetroActionAssigneeDelete(RetroID string, ActionID string, UserID string) ([]*model.RetroAction, error) {
+	if _, err := d.db.Exec(
+		`call retro_action_assignee_delete($1, $2, $3);`,
+		RetroID,
+		ActionID,
+		UserID,
+	); err != nil {
+		d.logger.Error("call retro_action_assignee_delete error", zap.Error(err))
+	}
+
+	actions := d.GetRetroActions(RetroID)
+
+	return actions, nil
+}
