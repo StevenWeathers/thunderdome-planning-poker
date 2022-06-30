@@ -12,6 +12,8 @@
     import SolidButton from '../components/SolidButton.svelte'
     import CountryFlag from '../components/user/CountryFlag.svelte'
     import UserAvatar from '../components/user/UserAvatar.svelte'
+    import CommentIcon from '../components/icons/CommentIcon.svelte'
+    import ActionComments from '../components/retro/ActionComments.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n.js'
     import { AppConfig, appRoutes } from '../config.js'
@@ -135,6 +137,13 @@
 
     const toggleDeleteTeam = () => {
         showDeleteTeam = !showDeleteTeam
+    }
+
+    let showRetroActionComments = false
+    let selectedRetroAction = null
+    const toggleRetroActionComments = id => () => {
+        showRetroActionComments = !showRetroActionComments
+        selectedRetroAction = id
     }
 
     function getTeam() {
@@ -342,14 +351,14 @@
         getRetrosActions()
     }
 
-    let showActionEdit = false
+    let showRetroActionEdit = false
     let selectedAction = null
-    const toggleActionEdit = id => () => {
-        showActionEdit = !showActionEdit
+    const toggleRetroActionEdit = id => () => {
+        showRetroActionEdit = !showRetroActionEdit
         selectedAction = retroActions.find(r => r.id === id)
     }
 
-    function handleActionEdit(action) {
+    function handleRetroActionEdit(action) {
         xfetch(`/api/retros/${action.retroId}/actions/${action.id}`, {
             method: 'PUT',
             body: {
@@ -360,7 +369,7 @@
             .then(function () {
                 eventTag('team_action_update', 'engagement', 'success')
                 getRetrosActions()
-                toggleActionEdit(null)()
+                toggleRetroActionEdit(null)()
                 notifications.success($_('updateActionItemSuccess'))
             })
             .catch(function () {
@@ -613,6 +622,7 @@
                         <tr slot="header">
                             <HeadCol>{$_('actionItem')}</HeadCol>
                             <HeadCol>{$_('completed')}</HeadCol>
+                            <HeadCol>{$_('comments')}</HeadCol>
                             <HeadCol />
                         </tr>
                         <tbody
@@ -646,13 +656,26 @@
                                             class="select-none"></label>
                                     </RowCol>
                                     <RowCol>
+                                        <CommentIcon width="20" height="20" />
                                         <button
-                                            class="text-blue-500"
-                                            on:click="{toggleActionEdit(
+                                            class="text-lg text-blue-400 dark:text-sky-400"
+                                            on:click="{toggleRetroActionComments(
                                                 item.id,
                                             )}"
-                                            >{$_('edit')}
+                                        >
+                                            {item.comments.length}
                                         </button>
+                                    </RowCol>
+                                    <RowCol>
+                                        <div class="text-right">
+                                            <HollowButton
+                                                color="teal"
+                                                onClick="{toggleRetroActionEdit(
+                                                    item.id,
+                                                )}"
+                                                >{$_('edit')}
+                                            </HollowButton>
+                                        </div>
                                     </RowCol>
                                 </TableRow>
                             {/each}
@@ -910,11 +933,25 @@
         />
     {/if}
 
-    {#if showActionEdit}
+    {#if showRetroActionEdit}
         <EditActionItem
-            toggleEdit="{toggleActionEdit(null)}"
-            handleEdit="{handleActionEdit}"
+            toggleEdit="{toggleRetroActionEdit(null)}"
+            handleEdit="{handleRetroActionEdit}"
             action="{selectedAction}"
+        />
+    {/if}
+
+    {#if showRetroActionComments}
+        <ActionComments
+            toggleComments="{toggleRetroActionComments(null)}"
+            actions="{retroActions}"
+            users="{users}"
+            selectedActionId="{selectedRetroAction}"
+            getRetrosActions="{getRetrosActions}"
+            xfetch="{xfetch}"
+            eventTag="{eventTag}"
+            notifications="{notifications}"
+            isAdmin="{isAdmin}"
         />
     {/if}
 </PageLayout>

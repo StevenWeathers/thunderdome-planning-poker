@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"encoding/json"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
@@ -90,9 +91,15 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Com
 	}
 
 	actionRows, err := d.db.Query(
-		`SELECT ra.id, ra.content, ra.completed, tr.retro_id FROM team_retro tr
-				INNER JOIN retro_action ra ON ra.retro_id = tr.retro_id
-				WHERE tr.team_id = $1 AND ra.completed = $2 ORDER BY ra.created_date DESC
+		`SELECT ra.id, ra.content, ra.completed, ra.retro_id,
+				COALESCE(
+					json_agg(rac ORDER BY rac.created_date) FILTER (WHERE rac.id IS NOT NULL), '[]'
+				) AS comments
+				FROM retro_action ra
+				LEFT JOIN retro_action_comment rac ON rac.action_id = ra.id
+				WHERE ra.retro_id IN (SELECT retro_id FROM team_retro WHERE team_id = $1) AND ra.completed = $2
+				GROUP BY ra.id, ra.created_date
+				ORDER BY ra.created_date DESC
 				LIMIT $3 OFFSET $4;`,
 		TeamID,
 		Completed,
@@ -102,10 +109,17 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Com
 	if err == nil && err != sql.ErrNoRows {
 		defer actionRows.Close()
 		for actionRows.Next() {
+			var comments string
 			var ri = &model.RetroAction{}
-			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed, &ri.RetroID); err != nil {
+			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed, &ri.RetroID, &comments); err != nil {
 				d.logger.Error("get retro actions error", zap.Error(err))
 			} else {
+				Comments := make([]*model.RetroActionComment, 0)
+				jsonErr := json.Unmarshal([]byte(comments), &Comments)
+				if jsonErr != nil {
+					d.logger.Error("retro action comments json error", zap.Error(jsonErr))
+				}
+				ri.Comments = Comments
 				actions = append(actions, ri)
 			}
 		}

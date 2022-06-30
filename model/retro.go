@@ -52,10 +52,21 @@ type RetroGroup struct {
 
 // RetroAction is an action the team can take based on retro feedback
 type RetroAction struct {
-	RetroID   string `json:"retroId,omitempty"`
-	ID        string `json:"id" db:"id"`
-	Content   string `json:"content" db:"content"`
-	Completed bool   `json:"completed" db:"completed"`
+	RetroID   string                `json:"retroId,omitempty"`
+	ID        string                `json:"id" db:"id"`
+	Content   string                `json:"content" db:"content"`
+	Completed bool                  `json:"completed" db:"completed"`
+	Comments  []*RetroActionComment `json:"comments"`
+}
+
+// RetroActionComment A retro action comment by a user
+type RetroActionComment struct {
+	ID          string `json:"id"`
+	RetroID     string `json:"retro_id"`
+	UserID      string `json:"user_id"`
+	Comment     string `json:"comment"`
+	CreateDate  string `json:"created_date"`
+	UpdatedDate string `json:"updated_date"`
 }
 
 // RetroVote is a users vote toward a retro item group
