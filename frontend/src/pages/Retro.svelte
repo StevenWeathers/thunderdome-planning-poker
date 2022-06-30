@@ -46,8 +46,10 @@
         groups: [],
         actionItems: [],
         votes: [],
+        facilitators: [],
+        maxVotes: 3,
+        brainstormVisibility: 'visible',
     }
-    let maxVotes = 3
     let showDeleteRetro = false
     let actionItem = ''
     let showExport = false
@@ -83,7 +85,7 @@
             }
         })
 
-        voteLimitReached = userVoteCount === maxVotes
+        voteLimitReached = userVoteCount === retro.maxVotes
 
         result = Object.values(groupMap)
         if (retro.phase === 'action' || retro.phase === 'completed') {
@@ -163,6 +165,8 @@
                 const revisedRetro = JSON.parse(parsedEvent.value)
                 retro.name = revisedRetro.retroName
                 retro.joinCode = revisedRetro.joinCode
+                retro.brainstormVisibility = revisedRetro.brainstormVisibility
+                retro.maxVotes = revisedRetro.maxVotes
                 break
             case 'conceded':
                 // retro over, goodbye.
@@ -230,7 +234,8 @@
         })
     })
 
-    $: isOwner = retro.ownerId === $user.id
+    $: isFacilitator =
+        retro.facilitators && retro.facilitators.includes($user.id)
 
     const sendSocketEvent = (type, value) => {
         ws.send(
@@ -370,6 +375,24 @@
         )
     }
 
+    const handleAddFacilitator = userId => () => {
+        sendSocketEvent(
+            'add_facilitator',
+            JSON.stringify({
+                userId,
+            }),
+        )
+    }
+
+    const handleRemoveFacilitator = userId => () => {
+        sendSocketEvent(
+            'remove_facilitator',
+            JSON.stringify({
+                userId,
+            }),
+        )
+    }
+
     function authRetro(e) {
         e.preventDefault()
 
@@ -455,9 +478,9 @@
                             {/if}
                         </SolidButton>
                     {/if}
-                    {#if isOwner}
+                    {#if isFacilitator}
                         {#if retro.phase !== 'completed'}
-                            <SolidButton color="blue" onClick="{advancePhase}">
+                            <SolidButton color="green" onClick="{advancePhase}">
                                 {$_('nextPhase')}
                             </SolidButton>
                         {/if}
@@ -546,7 +569,7 @@
             </div>
             <div class="w-1/2 text-right text-gray-600 dark:text-gray-400">
                 {#if retro.phase === 'brainstorm'}
-                    {$_('brainstormPhaseDescription"')}
+                    {$_('brainstormPhaseDescription')}
                 {:else if retro.phase === 'group'}
                     {$_('groupPhaseDescription')}
                 {:else if retro.phase === 'vote'}
@@ -605,8 +628,9 @@
                                     'retroWorkedPlaceholder',
                                 )}"
                                 phase="{retro.phase}"
-                                isOwner="{isOwner}"
+                                isFacilitator="{isFacilitator}"
                                 items="{workedItems}"
+                                feedbackVisibility="{retro.brainstormVisibility}"
                             />
                             <RetroItemForm
                                 handleSubmit="{handleItemAdd}"
@@ -616,8 +640,9 @@
                                     'retroImprovePlaceholder',
                                 )}"
                                 phase="{retro.phase}"
-                                isOwner="{isOwner}"
+                                isFacilitator="{isFacilitator}"
                                 items="{improveItems}"
+                                feedbackVisibility="{retro.brainstormVisibility}"
                             />
                             <RetroItemForm
                                 handleSubmit="{handleItemAdd}"
@@ -627,8 +652,9 @@
                                     'retroQuestionPlaceholder',
                                 )}"
                                 phase="{retro.phase}"
-                                isOwner="{isOwner}"
+                                isFacilitator="{isFacilitator}"
                                 items="{questionItems}"
+                                feedbackVisibility="{retro.brainstormVisibility}"
                             />
                         </div>
                     {/if}
@@ -687,7 +713,7 @@
                                                 name="actionItem"
                                                 type="text"
                                                 required
-                                                disabled="{!isOwner}"
+                                                disabled="{!isFacilitator}"
                                             />
                                             <button type="submit" class="hidden"
                                             ></button>
@@ -700,7 +726,7 @@
                                     >
                                         <div class="flex items-center">
                                             <div class="flex-shrink">
-                                                {#if isOwner}
+                                                {#if isFacilitator}
                                                     <button
                                                         on:click="{handleActionDelete(
                                                             item.id,
@@ -758,7 +784,10 @@
                                 <UserCard
                                     user="{usr}"
                                     votes="{retro.votes}"
-                                    maxVotes="{maxVotes}"
+                                    maxVotes="{retro.maxVotes}"
+                                    facilitators="{retro.facilitators}"
+                                    handleAddFacilitator="{handleAddFacilitator}"
+                                    handleRemoveFacilitator="{handleRemoveFacilitator}"
                                 />
                             {/if}
                         {/each}
@@ -840,6 +869,8 @@
         handleRetroEdit="{handleRetroEdit}"
         toggleEditRetro="{toggleEditRetro}"
         joinCode="{retro.joinCode}"
+        maxVotes="{retro.maxVotes}"
+        brainstormVisibility="{retro.brainstormVisibility}"
     />
 {/if}
 

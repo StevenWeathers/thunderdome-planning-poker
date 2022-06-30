@@ -41,6 +41,8 @@ func New(
 		"update_action":       rs.UpdateAction,
 		"delete_action":       rs.DeleteAction,
 		"advance_phase":       rs.AdvancePhase,
+		"add_facilitator":     rs.FacilitatorAdd,
+		"remove_facilitator":  rs.FacilitatorRemove,
 		"edit_retro":          rs.EditRetro,
 		"concede_retro":       rs.Delete,
 		"abandon_retro":       rs.Abandon,

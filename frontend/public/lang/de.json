@@ -580,5 +580,14 @@
   "storyboardEditColumn": "Edit Column",
   "storyboardAddStoryToColumn": "Add Story to Column",
   "duplicateStoryboardSession": "Duplicate storyboard session exists for your ID",
-  "storyboardDeleted": "Storyboard deleted"
+  "storyboardDeleted": "Storyboard deleted",
+  "brainstormPhaseFeedbackVisibility": "Brainstorm Phase Feedback Visibility",
+  "brainstormVisibilityLabelVisible": "Feedback Visible",
+  "brainstormVisibilityLabelConcealed": "Feedback Concealed",
+  "brainstormVisibilityLabelHidden": "Feedback Hidden",
+  "retroMaxVotesPerUserLabel": "Max Group Votes (per User)",
+  "retroFeedbackHidden": "Feedback Hidden",
+  "retroFeedbackConcealed": "Feedback Concealed",
+  "facilitator": "Facilitator",
+  "makeFacilitator": "Make Facilitator"
 }

@@ -94,7 +94,7 @@ func (sub subscription) readPump(b *Service) {
 
 		// confirm owner for any operation that requires it
 		if _, ok := ownerOnlyOperations[eventType]; ok {
-			err := b.db.RetroConfirmOwner(RetroID, UserID)
+			err := b.db.RetroConfirmFacilitator(RetroID, UserID)
 			if err != nil {
 				badEvent = true
 			}
@@ -288,7 +288,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 func (b *Service) APIEvent(arenaID string, UserID, eventType string, eventValue string) error {
 	// confirm leader for any operation that requires it
 	if _, ok := ownerOnlyOperations[eventType]; ok {
-		err := b.db.RetroConfirmOwner(arenaID, UserID)
+		err := b.db.RetroConfirmFacilitator(arenaID, UserID)
 		if err != nil {
 			return err
 		}

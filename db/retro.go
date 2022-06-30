@@ -8,7 +8,7 @@ import (
 )
 
 // RetroCreate adds a new retro to the db
-func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, JoinCode string) (*model.Retro, error) {
+func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, JoinCode string, MaxVotes int, BrainstormVisibility string) (*model.Retro, error) {
 	var encryptedJoinCode string
 
 	if JoinCode != "" {
@@ -30,11 +30,13 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 	}
 
 	e := d.db.QueryRow(
-		`SELECT * FROM create_retro($1, $2, $3, $4);`,
+		`SELECT * FROM create_retro($1, $2, $3, $4, $5, $6);`,
 		OwnerID,
 		RetroName,
 		Format,
 		encryptedJoinCode,
+		MaxVotes,
+		BrainstormVisibility,
 	).Scan(&b.Id)
 	if e != nil {
 		d.logger.Error("create retro error", zap.Error(e))
@@ -58,7 +60,7 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 }
 
 // EditRetro updates the retro by ID
-func (d *Database) EditRetro(RetroID string, RetroName string, JoinCode string) error {
+func (d *Database) EditRetro(RetroID string, RetroName string, JoinCode string, maxVotes int, brainstormVisibility string) error {
 	var encryptedJoinCode string
 
 	if JoinCode != "" {
@@ -69,8 +71,8 @@ func (d *Database) EditRetro(RetroID string, RetroName string, JoinCode string) 
 		encryptedJoinCode = EncryptedCode
 	}
 
-	if _, err := d.db.Exec(`call edit_retro($1, $2, $3);`,
-		RetroID, RetroName, encryptedJoinCode,
+	if _, err := d.db.Exec(`call edit_retro($1, $2, $3, $4, $5);`,
+		RetroID, RetroName, encryptedJoinCode, maxVotes, brainstormVisibility,
 	); err != nil {
 		d.logger.Error("update retro error", zap.Error(err))
 		return errors.New("unable to edit retro")
@@ -82,18 +84,19 @@ func (d *Database) EditRetro(RetroID string, RetroName string, JoinCode string) 
 // RetroGet gets a retro by ID
 func (d *Database) RetroGet(RetroID string) (*model.Retro, error) {
 	var b = &model.Retro{
-		Id:          RetroID,
-		Users:       make([]*model.RetroUser, 0),
-		Items:       make([]*model.RetroItem, 0),
-		Groups:      make([]*model.RetroGroup, 0),
-		ActionItems: make([]*model.RetroAction, 0),
-		Votes:       make([]*model.RetroVote, 0),
+		Id:           RetroID,
+		Users:        make([]*model.RetroUser, 0),
+		Items:        make([]*model.RetroItem, 0),
+		Groups:       make([]*model.RetroGroup, 0),
+		ActionItems:  make([]*model.RetroAction, 0),
+		Votes:        make([]*model.RetroVote, 0),
+		Facilitators: make([]string, 0),
 	}
 
 	// get retro
 	e := d.db.QueryRow(
 		`SELECT
-			id, name, owner_id, format, phase, COALESCE(join_code, ''), created_date, updated_date
+			id, name, owner_id, format, phase, COALESCE(join_code, ''), max_votes, brainstorm_visibility, created_date, updated_date
 		FROM retro WHERE id = $1`,
 		RetroID,
 	).Scan(
@@ -103,6 +106,8 @@ func (d *Database) RetroGet(RetroID string) (*model.Retro, error) {
 		&b.Format,
 		&b.Phase,
 		&b.JoinCode,
+		&b.MaxVotes,
+		&b.BrainstormVisibility,
 		&b.CreatedDate,
 		&b.UpdatedDate,
 	)
@@ -123,6 +128,7 @@ func (d *Database) RetroGet(RetroID string) (*model.Retro, error) {
 	b.Users = d.RetroGetUsers(RetroID)
 	b.ActionItems = d.GetRetroActions(RetroID)
 	b.Votes = d.GetRetroVotes(RetroID)
+	b.Facilitators = d.GetRetroFacilitators(RetroID)
 
 	return b, nil
 }
@@ -161,17 +167,19 @@ func (d *Database) RetroGetByUser(UserID string) ([]*model.Retro, error) {
 	return retros, nil
 }
 
-// RetroConfirmOwner confirms the user is infact owner of the retro
-func (d *Database) RetroConfirmOwner(RetroID string, userID string) error {
-	var ownerID string
-	err := d.db.QueryRow("SELECT owner_id FROM retro WHERE id = $1", RetroID).Scan(&ownerID)
+// RetroConfirmFacilitator confirms the user is a facilitator of the retro
+func (d *Database) RetroConfirmFacilitator(RetroID string, userID string) error {
+	var facilitatorId string
+	err := d.db.QueryRow(
+		"SELECT COALESCE(user_id, '') FROM retro_facilitator WHERE retro_id = $1 AND user_id = $2",
+		RetroID, userID).Scan(&facilitatorId)
 	if err != nil {
-		d.logger.Error("get retro owner error", zap.Error(err))
-		return errors.New("Retro Not found")
+		d.logger.Error("get RetroConfirmFacilitator error", zap.Error(err))
+		return errors.New("retro Not found")
 	}
 
-	if ownerID != userID {
-		return errors.New("Not Owner")
+	if facilitatorId == "" {
+		return errors.New("not a facilitator")
 	}
 
 	return nil
@@ -230,6 +238,28 @@ func (d *Database) RetroGetUsers(RetroID string) []*model.RetroUser {
 	return users
 }
 
+// GetRetroFacilitators gets a list of retro facilitator ids
+func (d *Database) GetRetroFacilitators(RetroID string) []string {
+	var facilitators = make([]string, 0)
+	rows, err := d.db.Query(
+		`SELECT user_id FROM retro_facilitator WHERE retro_id = $1;`,
+		RetroID,
+	)
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var facilitator string
+			if err := rows.Scan(&facilitator); err != nil {
+				d.logger.Error("get retro facilitators error", zap.Error(err))
+			} else {
+				facilitators = append(facilitators, facilitator)
+			}
+		}
+	}
+
+	return facilitators
+}
+
 // RetroAddUser adds a user by ID to the retro by ID
 func (d *Database) RetroAddUser(RetroID string, UserID string) ([]*model.RetroUser, error) {
 	if _, err := d.db.Exec(
@@ -245,6 +275,38 @@ func (d *Database) RetroAddUser(RetroID string, UserID string) ([]*model.RetroUs
 	users := d.RetroGetUsers(RetroID)
 
 	return users, nil
+}
+
+// RetroFacilitatorAdd adds a retro facilitator
+func (d *Database) RetroFacilitatorAdd(RetroID string, UserID string) (*model.Retro, error) {
+	if _, err := d.db.Exec(
+		`call retro_add_facilitator($1, $2);`, RetroID, UserID); err != nil {
+		d.logger.Error("call retro_add_facilitator error", zap.Error(err))
+		return nil, errors.New("unable to add facilitator")
+	}
+
+	retro, err := d.RetroGet(RetroID)
+	if err != nil {
+		return nil, err
+	}
+
+	return retro, nil
+}
+
+// RetroFacilitatorRemove removes a retro facilitator
+func (d *Database) RetroFacilitatorRemove(RetroID string, UserID string) (*model.Retro, error) {
+	if _, err := d.db.Exec(
+		`call retro_remove_facilitator($1, $2);`, RetroID, UserID); err != nil {
+		d.logger.Error("call retro_remove_facilitator error", zap.Error(err))
+		return nil, errors.New("unable to remove facilitator")
+	}
+
+	retro, err := d.RetroGet(RetroID)
+	if err != nil {
+		return nil, err
+	}
+
+	return retro, nil
 }
 
 // RetroRetreatUser removes a user from the current retro by ID
@@ -281,21 +343,6 @@ func (d *Database) RetroAbandon(RetroID string, UserID string) ([]*model.RetroUs
 	users := d.RetroGetUsers(RetroID)
 
 	return users, nil
-}
-
-// RetroSetOwner sets the ownerId for the retro
-func (d *Database) RetroSetOwner(RetroID string, userID string, OwnerID string) (*model.Retro, error) {
-	if _, err := d.db.Exec(
-		`call set_retro_owner($1, $2);`, RetroID, OwnerID); err != nil {
-		d.logger.Error("call set_retro_owner error", zap.Error(err))
-	}
-
-	retro, err := d.RetroGet(RetroID)
-	if err != nil {
-		return nil, errors.New("Unable to promote owner")
-	}
-
-	return retro, nil
 }
 
 // RetroAdvancePhase sets the phase for the retro

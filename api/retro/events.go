@@ -201,11 +201,49 @@ func (b *Service) AdvancePhase(RetroID string, UserID string, EventValue string)
 	return msg, nil, false
 }
 
+// FacilitatorAdd adds a user as facilitator of the retro
+func (b *Service) FacilitatorAdd(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		UserID string `json:"userId"`
+	}
+	json.Unmarshal([]byte(EventValue), &rs)
+
+	retro, err := b.db.RetroFacilitatorAdd(RetroID, rs.UserID)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedRetro, _ := json.Marshal(retro)
+	msg := createSocketEvent("retro_updated", string(updatedRetro), "")
+
+	return msg, nil, false
+}
+
+// FacilitatorRemove removes a retro facilitator
+func (b *Service) FacilitatorRemove(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		UserID string `json:"userId"`
+	}
+	json.Unmarshal([]byte(EventValue), &rs)
+
+	retro, err := b.db.RetroFacilitatorRemove(RetroID, rs.UserID)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedRetro, _ := json.Marshal(retro)
+	msg := createSocketEvent("retro_updated", string(updatedRetro), "")
+
+	return msg, nil, false
+}
+
 // EditRetro handles editing the retro settings
 func (b *Service) EditRetro(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rb struct {
-		Name     string `json:"retroName"`
-		JoinCode string `json:"joinCode"`
+		Name                 string `json:"retroName"`
+		JoinCode             string `json:"joinCode"`
+		MaxVotes             int    `json:"maxVotes"`
+		BrainstormVisibility string `json:"brainstormVisibility"`
 	}
 	json.Unmarshal([]byte(EventValue), &rb)
 
@@ -213,6 +251,8 @@ func (b *Service) EditRetro(RetroID string, UserID string, EventValue string) ([
 		RetroID,
 		rb.Name,
 		rb.JoinCode,
+		rb.MaxVotes,
+		rb.BrainstormVisibility,
 	)
 	if err != nil {
 		return nil, err, false

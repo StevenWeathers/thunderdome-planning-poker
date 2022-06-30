@@ -17,19 +17,22 @@ type RetroUser struct {
 
 // Retro A story mapping board
 type Retro struct {
-	Id          string         `json:"id" db:"id"`
-	OwnerID     string         `json:"ownerId" db:"owner_id"`
-	Name        string         `json:"name" db:"name"`
-	Users       []*RetroUser   `json:"users"`
-	Groups      []*RetroGroup  `json:"groups"`
-	Items       []*RetroItem   `json:"items"`
-	ActionItems []*RetroAction `json:"actionItems"`
-	Votes       []*RetroVote   `json:"votes"`
-	Format      string         `json:"format" db:"format"`
-	Phase       string         `json:"phase" db:"phase"`
-	JoinCode    string         `json:"joinCode" db:"join_code"`
-	CreatedDate string         `json:"createdDate" db:"created_date"`
-	UpdatedDate string         `json:"updatedDate" db:"updated_date"`
+	Id                   string         `json:"id" db:"id"`
+	OwnerID              string         `json:"ownerId" db:"owner_id"`
+	Name                 string         `json:"name" db:"name"`
+	Users                []*RetroUser   `json:"users"`
+	Groups               []*RetroGroup  `json:"groups"`
+	Items                []*RetroItem   `json:"items"`
+	ActionItems          []*RetroAction `json:"actionItems"`
+	Votes                []*RetroVote   `json:"votes"`
+	Facilitators         []string       `json:"facilitators"`
+	Format               string         `json:"format" db:"format"`
+	Phase                string         `json:"phase" db:"phase"`
+	JoinCode             string         `json:"joinCode" db:"join_code"`
+	MaxVotes             int            `json:"maxVotes" db:"max_votes"`
+	BrainstormVisibility string         `json:"brainstormVisibility" db:"brainstorm_visibility"`
+	CreatedDate          string         `json:"createdDate" db:"created_date"`
+	UpdatedDate          string         `json:"updatedDate" db:"updated_date"`
 }
 
 // RetroItem can be a pro (went well/worked), con (needs improvement), or a question

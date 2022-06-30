@@ -12,9 +12,11 @@ import (
 )
 
 type retroCreateRequestBody struct {
-	RetroName string `json:"retroName" example:"sprint 10 retro"`
-	Format    string `json:"format" example:"worked_improve_question"`
-	JoinCode  string `json:"joinCode" example:"iammadmax"`
+	RetroName            string `json:"retroName" example:"sprint 10 retro"`
+	Format               string `json:"format" example:"worked_improve_question"`
+	JoinCode             string `json:"joinCode" example:"iammadmax"`
+	MaxVotes             int    `json:"maxVotes"`
+	BrainstormVisibility string `json:"brainstormVisibility"`
 }
 
 // handleRetroCreate handles creating a retro
@@ -53,7 +55,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 
-		newRetro, err := a.db.RetroCreate(userID, nr.RetroName, nr.Format, nr.JoinCode)
+		newRetro, err := a.db.RetroCreate(userID, nr.RetroName, nr.Format, nr.JoinCode, nr.MaxVotes, nr.BrainstormVisibility)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

@@ -3,7 +3,8 @@
     import TrashIcon from '../icons/TrashIcon.svelte'
     import FrownCircle from '../icons/FrownCircle.svelte'
     import QuestionCircle from '../icons/QuestionCircle.svelte'
-    import { warrior as user } from '../../stores'
+    import { warrior as user } from '../../stores.js'
+    import { _ } from '../../i18n.js'
 
     export let handleSubmit = () => {}
     export let handleDelete = () => {}
@@ -11,8 +12,9 @@
     export let content = ''
     export let newItemPlaceholder = 'What worked well...'
     export let phase = 'brainstorm'
-    export let isOwner = false
+    export let isFacilitator = false
     export let items = []
+    export let feedbackVisibility = 'visible'
 
     const handleFormSubmit = evt => {
         evt.preventDefault()
@@ -49,7 +51,7 @@
                     name="new{itemType}"
                     type="text"
                     required
-                    disabled="{phase !== 'brainstorm' && !isOwner}"
+                    disabled="{phase !== 'brainstorm' && !isFacilitator}"
                 />
                 <button type="submit" class="hidden"></button>
             </form>
@@ -71,7 +73,21 @@
                     <div class="flex-grow">
                         <div class="flex items-center">
                             <div class="flex-grow dark:text-gray-200">
-                                {item.content}
+                                {#if feedbackVisibility === 'hidden' && item.userId !== $user.id}
+                                    <span class="italic"
+                                        >{$_('retroFeedbackHidden')}</span
+                                    >
+                                {:else if feedbackVisibility === 'concealed' && item.userId !== $user.id}
+                                    <span class="italic"
+                                        >{$_(
+                                            'retroFeedbackConcealed',
+                                        )}&nbsp;&nbsp;</span
+                                    ><span class="text-white dark:text-gray-800"
+                                        >{item.content}</span
+                                    >
+                                {:else}
+                                    {item.content}
+                                {/if}
                             </div>
                         </div>
                     </div>
