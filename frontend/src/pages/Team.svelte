@@ -656,14 +656,14 @@
                                             class="select-none"></label>
                                     </RowCol>
                                     <RowCol>
-                                        <CommentIcon width="20" height="20" />
+                                        <CommentIcon width="22" height="22" />
                                         <button
                                             class="text-lg text-blue-400 dark:text-sky-400"
                                             on:click="{toggleRetroActionComments(
                                                 item.id,
                                             )}"
                                         >
-                                            {item.comments.length}
+                                            &nbsp;{item.comments.length}
                                         </button>
                                     </RowCol>
                                     <RowCol>

@@ -63,11 +63,14 @@
 </script>
 
 <Modal closeModal="{toggleComments}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
-    <div class="mt-12">
+    <div class="mt-12 dark:text-gray-300">
+        <h3
+            class="text-xl pb-2 mb-4 border-b border-gray-600 dark:border-gray-400"
+        >
+            {$_('actionComments')}
+        </h3>
         {#each selectedAction.comments as comment}
-            <p
-                class="pb-2 mb-2 border-b border-gray-300 dark:border-gray-600 dark:text-gray-300"
-            >
+            <p class="pb-2 mb-2 border-b border-gray-300 dark:border-gray-600">
                 <span>{comment.comment}</span><br />
                 <span
                     ><UserIcon class="h-4 w-4" />
@@ -84,7 +87,7 @@
             </p>
         {/each}
         {#if selectedAction.comments.length === 0}
-            <p class="text-lg dark:text-gray-400">No comments...</p>
+            <p class="text-lg dark:text-gray-400">{$_('noComments')}</p>
         {/if}
 
         <div class="w-full mt-8">
@@ -92,7 +95,7 @@
                 class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
-                placeholder="Write a comment..."
+                placeholder="{$_('writeCommentPlaceholder')}"
                 bind:value="{userComment}"></textarea>
             <div class="text-right">
                 <HollowButton
@@ -100,7 +103,7 @@
                     onClick="{handleCommentSubmit}"
                     disabled="{userComment === ''}"
                 >
-                    Post comment
+                    {$_('postComment')}
                 </HollowButton>
             </div>
         </div>

@@ -589,5 +589,9 @@
   "retroFeedbackHidden": "Feedback Hidden",
   "retroFeedbackConcealed": "Feedback Concealed",
   "facilitator": "Facilitator",
-  "makeFacilitator": "Make Facilitator"
+  "makeFacilitator": "Make Facilitator",
+  "retroActionCommentAddError": "error adding retro action comment",
+  "retroActionCommentDeleteError": "error deleting retro action comment",
+  "noComments": "No comments...",
+  "actionComments": "Action Comments"
 }
