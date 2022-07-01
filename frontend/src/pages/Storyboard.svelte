@@ -717,7 +717,7 @@
                         {#if showPersonas}
                             <div
                                 class="origin-top-right absolute right-0 mt-1 w-64
-                            rounded-md shadow-lg text-left"
+                            rounded-md shadow-lg text-left z-10"
                             >
                                 <div
                                     class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
@@ -790,7 +790,7 @@
                         {#if showColorLegend}
                             <div
                                 class="origin-top-right absolute right-0 mt-1 w-64
-                            rounded-md shadow-lg text-left"
+                            rounded-md shadow-lg text-left z-10"
                             >
                                 <div
                                     class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
@@ -847,7 +847,7 @@
                         {#if showUsers}
                             <div
                                 class="origin-top-right absolute right-0 mt-1 w-64
-                            rounded-md shadow-lg text-left"
+                            rounded-md shadow-lg text-left z-10"
                             >
                                 <div
                                     class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
