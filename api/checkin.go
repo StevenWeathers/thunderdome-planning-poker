@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -44,16 +46,20 @@ func (a *api) handleCheckinsGet() http.HandlerFunc {
 	}
 }
 
+type checkinCreateRequestBody struct {
+	UserId    string `json:"userId"`
+	Yesterday string `json:"yesterday"`
+	Today     string `json:"today"`
+	Blockers  string `json:"blockers"`
+	Discuss   string `json:"discuss"`
+	GoalsMet  bool   `json:"goalsMet"`
+}
+
 // handleCheckinCreate handles creating a team user checkin
 // @Summary Create Team Checkin
 // @Description Creates a team user checkin
 // @Param teamId path string true "the team ID"
-// @Param userId body string true "the user ID to check in"
-// @Param yesterday body string true "what you did yesterday"
-// @Param today body string true "what you're going to do today"
-// @Param blockers body string true "any blockers"
-// @Param discuss body string true "anything to discuss"
-// @Param goalsMet body boolean true "did you meet yesterday's goals"
+// @Param checkin body checkinCreateRequestBody true "new check in object"
 // @Tags team
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
@@ -66,15 +72,20 @@ func (a *api) handleCheckinCreate() http.HandlerFunc {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 
-		keyVal := getJSONRequestBody(r, w)
-		UserId := keyVal["userId"].(string)
-		Yesterday := keyVal["yesterday"].(string)
-		Today := keyVal["today"].(string)
-		Blockers := keyVal["blockers"].(string)
-		Discuss := keyVal["discuss"].(string)
-		GoalsMet := keyVal["goalsMet"].(bool)
+		var c = checkinCreateRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
-		err := a.db.CheckinCreate(TeamId, UserId, Yesterday, Today, Blockers, Discuss, GoalsMet)
+		jsonErr := json.Unmarshal(body, &c)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := a.db.CheckinCreate(TeamId, c.UserId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -88,11 +99,20 @@ func (a *api) handleCheckinCreate() http.HandlerFunc {
 	}
 }
 
-// handleCheckinCreate handles updating a team user checkin
+type checkinUpdateRequestBody struct {
+	Yesterday string `json:"yesterday"`
+	Today     string `json:"today"`
+	Blockers  string `json:"blockers"`
+	Discuss   string `json:"discuss"`
+	GoalsMet  bool   `json:"goalsMet"`
+}
+
+// handleCheckinUpdate handles updating a team user checkin
 // @Summary Update Team Checkin
 // @Description Updates a team user checkin
 // @Param teamId path string true "the team ID"
 // @Param checkinId path string true "the checkin ID"
+// @Param checkin body checkinUpdateRequestBody true "updated check in object"
 // @Tags team
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
@@ -105,14 +125,20 @@ func (a *api) handleCheckinUpdate() http.HandlerFunc {
 		vars := mux.Vars(r)
 		CheckinId := vars["checkinId"]
 
-		keyVal := getJSONRequestBody(r, w)
-		Yesterday := keyVal["yesterday"].(string)
-		Today := keyVal["today"].(string)
-		Blockers := keyVal["blockers"].(string)
-		Discuss := keyVal["discuss"].(string)
-		GoalsMet := keyVal["goalsMet"].(bool)
+		var c = checkinUpdateRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
-		err := a.db.CheckinUpdate(CheckinId, Yesterday, Today, Blockers, Discuss, GoalsMet)
+		jsonErr := json.Unmarshal(body, &c)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := a.db.CheckinUpdate(CheckinId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -149,13 +175,17 @@ func (a *api) handleCheckinDelete() http.HandlerFunc {
 	}
 }
 
+type checkinCommentRequestBody struct {
+	UserID  string `json:"userId"`
+	Comment string `json:"comment"`
+}
+
 // handleCheckinComment handles creating a team user checkin comment
 // @Summary Create Team Checkin Comment
 // @Description Creates a team user checkin comment
 // @Param teamId path string true "the team ID"
 // @Param checkinId path string true "the checkin ID"
-// @Param userId body string true "the user ID to comment for"
-// @Param comment body string true "the comment text"
+// @Param comment body checkinCommentRequestBody true "comment object"
 // @Tags team
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
@@ -169,11 +199,20 @@ func (a *api) handleCheckinComment() http.HandlerFunc {
 		TeamId := vars["teamId"]
 		CheckinId := vars["checkinId"]
 
-		keyVal := getJSONRequestBody(r, w)
-		UserId := keyVal["userId"].(string)
-		Comment := keyVal["comment"].(string)
+		var c = checkinCommentRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
-		err := a.db.CheckinComment(TeamId, CheckinId, UserId, Comment)
+		jsonErr := json.Unmarshal(body, &c)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := a.db.CheckinComment(TeamId, CheckinId, c.UserID, c.Comment)
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
