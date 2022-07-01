@@ -2,10 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/battle"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/api/battle"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
@@ -53,6 +54,7 @@ type battleRequestBody struct {
 	Plans                []*model.Plan `json:"plans"`
 	PointAverageRounding string        `json:"pointAverageRounding"`
 	BattleLeaders        []string      `json:"battleLeaders"`
+	LeaderCode           string        `json:"leaderCode"`
 }
 
 // handleBattleCreate handles creating a battle (arena)
@@ -105,6 +107,16 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 				a.logger.Error("error adding additional battle leaders")
 			} else {
 				newBattle.Leaders = updatedLeaders
+			}
+		}
+
+		// when leaderCode string is passed add leader code to battle
+		if len(b.LeaderCode) > 0 {
+			err := a.db.ReviseBattle(newBattle.Id, newBattle.Name, newBattle.PointValuesAllowed, newBattle.AutoFinishVoting, b.PointAverageRounding, "", b.LeaderCode)
+			if err != nil {
+				a.logger.Error("error adding leader code to battle")
+			} else {
+				newBattle.LeaderCode = b.LeaderCode
 			}
 		}
 
