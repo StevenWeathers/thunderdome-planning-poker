@@ -11,8 +11,26 @@ import (
 )
 
 //CreateBattle creates a new story pointing session (battle)
-func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string) (*model.Battle, error) {
+func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) (*model.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
+	var encryptedJoinCode string
+	var encryptedLeaderCode string
+
+	if JoinCode != "" {
+		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, errors.New("unable to create battle join_code")
+		}
+		encryptedJoinCode = EncryptedCode
+	}
+
+	if LeaderCode != "" {
+		EncryptedCode, codeErr := encrypt(LeaderCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, errors.New("unable to create battle leader_code")
+		}
+		encryptedLeaderCode = EncryptedCode
+	}
 
 	var b = &model.Battle{
 		Name:               BattleName,
@@ -22,16 +40,20 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 		PointValuesAllowed: PointValuesAllowed,
 		AutoFinishVoting:   AutoFinishVoting,
 		Leaders:            make([]string, 0),
+		JoinCode:           JoinCode,
+		LeaderCode:         LeaderCode,
 	}
 	b.Leaders = append(b.Leaders, LeaderID)
 
 	e := d.db.QueryRow(
-		`SELECT battleId FROM create_battle($1, $2, $3, $4, $5);`,
+		`SELECT battleId FROM create_battle($1, $2, $3, $4, $5, $6, $7);`,
 		LeaderID,
 		BattleName,
 		string(pointValuesJSON),
 		AutoFinishVoting,
 		PointAverageRounding,
+		encryptedJoinCode,
+		encryptedLeaderCode,
 	).Scan(&b.Id)
 	if e != nil {
 		d.logger.Error("create_battle query error", zap.Error(e))

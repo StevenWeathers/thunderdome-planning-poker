@@ -23,6 +23,8 @@
     let plans = []
     let autoFinishVoting = true
     let pointAverageRounding = 'ceil'
+    let joinCode = ''
+    let leaderCode = ''
 
     let checkedPointColor =
         'border-green-500 bg-green-100 text-green-600 dark:bg-gray-900 dark:text-lime-500 dark:border-lime-500'
@@ -74,6 +76,8 @@
             plans,
             autoFinishVoting,
             pointAverageRounding,
+            joinCode,
+            leaderCode,
         }
 
         xfetch(`${apiPrefix}/users/${$warrior.id}/battles`, { body })
@@ -239,6 +243,46 @@
             />
             {$_('pages.myBattles.createBattle.fields.autoFinishVoting.label')}
         </label>
+    </div>
+
+    <div class="mb-4">
+        <label
+            class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
+            for="joinCode"
+        >
+            {$_('passCode')}
+        </label>
+        <div class="control">
+            <input
+                name="joinCode"
+                bind:value="{joinCode}"
+                placeholder="{$_('optionalPasscodePlaceholder')}"
+                class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                id="joinCode"
+            />
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label
+            class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
+            for="leaderCode"
+        >
+            {$_('leaderPasscode')}
+        </label>
+        <div class="control">
+            <input
+                name="leaderCode"
+                bind:value="{leaderCode}"
+                placeholder="{$_('optionalLeadercodePlaceholder')}"
+                class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                id="leaderCode"
+            />
+        </div>
     </div>
 
     <div class="text-right">

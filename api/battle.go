@@ -53,6 +53,8 @@ type battleRequestBody struct {
 	Plans                []*model.Plan `json:"plans"`
 	PointAverageRounding string        `json:"pointAverageRounding"`
 	BattleLeaders        []string      `json:"battleLeaders"`
+	JoinCode             string        `json:"joinCode"`
+	LeaderCode           string        `json:"leaderCode"`
 }
 
 // handleBattleCreate handles creating a battle (arena)
@@ -92,7 +94,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			return
 		}
 
-		newBattle, err := a.db.CreateBattle(UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding)
+		newBattle, err := a.db.CreateBattle(UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
