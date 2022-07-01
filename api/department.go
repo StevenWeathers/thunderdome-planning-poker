@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -101,7 +103,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param orgId path string true "the organization ID to create department for"
-// @Param name body string true "the department name"
+// @Param department body teamCreateRequestBody true "new department object"
 // @Success 200 object standardJsonResponse{data=model.Department}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -113,11 +115,22 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 			return
 		}
 		vars := mux.Vars(r)
-		keyVal := getJSONRequestBody(r, w)
-
-		OrgName := keyVal["name"].(string)
 		OrgID := vars["orgId"]
-		NewDepartment, err := a.db.DepartmentCreate(OrgID, OrgName)
+
+		var team = teamCreateRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &team)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		NewDepartment, err := a.db.DepartmentCreate(OrgID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -155,7 +168,7 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 
 // handleGetDepartmentUsers gets a list of users associated to the department
 // @Summary Get Department Users
-// @Description get a list of organization department users
+// @Description Get a list of organization department users
 // @Tags organization
 // @Produce  json
 // @Param orgId path string true "the organization ID"
@@ -186,7 +199,7 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID"
-// @Param name body string true "the team name"
+// @Param team body teamCreateRequestBody true "new team object"
 // @Success 200 object standardJsonResponse{data=model.Team}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -198,11 +211,22 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 			return
 		}
 		vars := mux.Vars(r)
-		keyVal := getJSONRequestBody(r, w)
 
-		TeamName := keyVal["name"].(string)
+		var team = teamCreateRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &team)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
 		DepartmentID := vars["departmentId"]
-		NewTeam, err := a.db.DepartmentTeamCreate(DepartmentID, TeamName)
+		NewTeam, err := a.db.DepartmentTeamCreate(DepartmentID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -219,8 +243,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID"
-// @Param email body string true "the users email"
-// @Param role body string true "the users department role" Enums(MEMBER, ADMIN)
+// @Param user body teamAddUserRequestBody true "new department user object"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -231,12 +254,24 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
-		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		DepartmentId := vars["departmentId"]
-		UserEmail := strings.ToLower(keyVal["email"].(string))
-		Role := keyVal["role"].(string)
+
+		var u = teamAddUserRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		UserEmail := strings.ToLower(u.Email)
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
@@ -244,7 +279,7 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.db.DepartmentAddUser(DepartmentId, User.Id, Role)
+		_, err := a.db.DepartmentAddUser(DepartmentId, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -294,8 +329,7 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID"
 // @Param teamId path string true "the team ID"
-// @Param email body string true "the users email"
-// @Param role body string true "the users team role" Enums(MEMBER, ADMIN)
+// @Param user body teamAddUserRequestBody true "new team user object"
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -306,14 +340,26 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
-		keyVal := getJSONRequestBody(r, w)
 
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 		TeamID := vars["teamId"]
-		UserEmail := strings.ToLower(keyVal["email"].(string))
-		Role := keyVal["role"].(string)
+
+		var u = teamAddUserRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		UserEmail := strings.ToLower(u.Email)
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
@@ -327,7 +373,7 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.db.TeamAddUser(TeamID, User.Id, Role)
+		_, err := a.db.TeamAddUser(TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
