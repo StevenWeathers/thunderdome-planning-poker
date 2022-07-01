@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -98,13 +100,17 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 	}
 }
 
-// handleCreateTeam handles creating an team with current user as admin
+type teamCreateRequestBody struct {
+	Name string `json:"name"`
+}
+
+// handleCreateTeam handles creating a team with current user as admin
 // @Summary Create Team
 // @Description Creates a team with the current user as the team admin
 // @Tags team
 // @Produce  json
 // @Param userId path string true "the user ID"
-// @Param name body string true "the team name"
+// @Param team body teamCreateRequestBody true "new team object"
 // @Success 200 object standardJsonResponse{data=model.Team}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
@@ -115,10 +121,20 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		keyVal := getJSONRequestBody(r, w)
+		var team = teamCreateRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
 
-		TeamName := keyVal["name"].(string)
-		NewTeam, err := a.db.TeamCreate(UserID, TeamName)
+		jsonErr := json.Unmarshal(body, &team)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		NewTeam, err := a.db.TeamCreate(UserID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -128,14 +144,18 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 	}
 }
 
+type teamAddUserRequestBody struct {
+	Email string `json:"email" enums:"MEMBER,ADMIN"`
+	Role  string `json:"role"`
+}
+
 // handleTeamAddUser handles adding user to a team
 // @Summary Add Team User
 // @Description Adds a user to the team
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Param email body string true "the users email"
-// @Param role body string true "the users team role" Enums(MEMBER, ADMIN)
+// @Param user body teamAddUserRequestBody true "new team user object"
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
@@ -143,12 +163,22 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 // @Router /teams/{teamId}/users [post]
 func (a *api) handleTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
-
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
-		UserEmail := strings.ToLower(keyVal["email"].(string))
-		Role := keyVal["role"].(string)
+		var u = teamAddUserRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		UserEmail := strings.ToLower(u.Email)
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
@@ -156,7 +186,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.db.TeamAddUser(TeamID, User.Id, Role)
+		_, err := a.db.TeamAddUser(TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
