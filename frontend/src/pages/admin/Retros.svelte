@@ -44,6 +44,11 @@
         getRetros()
     }
 
+    const changeActiveRetrosToggle = () => {
+        retrosPage = 1
+        getRetros()
+    }
+
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.login)
@@ -94,7 +99,7 @@
                     name="activeRetros"
                     id="activeRetros"
                     bind:checked="{activeRetros}"
-                    on:change="{getRetros}"
+                    on:change="{changeActiveRetrosToggle}"
                     class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
                 />
                 <label

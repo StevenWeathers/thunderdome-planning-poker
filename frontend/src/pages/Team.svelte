@@ -351,6 +351,11 @@
         getRetrosActions()
     }
 
+    const changeRetroActionCompletedToggle = () => {
+        retroActionsPage = 1
+        getRetrosActions()
+    }
+
     let showRetroActionEdit = false
     let selectedAction = null
     const toggleRetroActionEdit = id => () => {
@@ -601,7 +606,7 @@
                                     name="completedActionItems"
                                     id="completedActionItems"
                                     bind:checked="{completedActionItems}"
-                                    on:change="{getRetrosActions}"
+                                    on:change="{changeRetroActionCompletedToggle}"
                                     class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
                                 />
                                 <label

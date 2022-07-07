@@ -44,6 +44,11 @@
         getBattles()
     }
 
+    const changeActiveBattlesToggle = () => {
+        battlesPage = 1
+        getBattles()
+    }
+
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.login)
@@ -94,7 +99,7 @@
                     name="activeBattles"
                     id="activeBattles"
                     bind:checked="{activeBattles}"
-                    on:change="{getBattles}"
+                    on:change="{changeActiveBattlesToggle}"
                     class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
                 />
                 <label

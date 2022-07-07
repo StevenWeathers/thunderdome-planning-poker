@@ -44,6 +44,11 @@
         getStoryboards()
     }
 
+    const changeActiveStoryboardsToggle = () => {
+        storyboardsPage = 1
+        getStoryboards()
+    }
+
     onMount(() => {
         if (!$warrior.id) {
             router.route(appRoutes.login)
@@ -96,7 +101,7 @@
                     name="activeStoryboards"
                     id="activeStoryboards"
                     bind:checked="{activeStoryboards}"
-                    on:change="{getStoryboards}"
+                    on:change="{changeActiveStoryboardsToggle}"
                     class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
                 />
                 <label
