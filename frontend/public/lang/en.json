@@ -571,5 +571,7 @@
   "retroActionCommentAddError": "error adding retro action comment",
   "retroActionCommentDeleteError": "error deleting retro action comment",
   "noComments": "No comments...",
-  "actionComments": "Action Comments"
+  "actionComments": "Action Comments",
+  "deleteActionItemError": "Error deleting action item",
+  "deleteActionItemSuccess": "Action item deleted successfully"
 }

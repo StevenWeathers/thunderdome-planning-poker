@@ -1,11 +1,13 @@
 <script>
     import CheckboxIcon from '../icons/CheckboxIcon.svelte'
     import SolidButton from '../SolidButton.svelte'
+    import HollowButton from '../HollowButton.svelte'
     import Modal from '../Modal.svelte'
     import { _ } from '../../i18n.js'
 
     export let toggleEdit = () => {}
     export let handleEdit = () => {}
+    export let handleDelete = () => {}
     export let action = {
         content: '',
         completed: false,
@@ -72,8 +74,15 @@
             </div>
         </div>
 
-        <div class="text-right">
-            <SolidButton type="submit">{$_('save')}</SolidButton>
+        <div class="flex w-full pt-4">
+            <div class="w-1/2">
+                <HollowButton color="red" onClick="{handleDelete(editAction)}"
+                    >{$_('delete')}</HollowButton
+                >
+            </div>
+            <div class="w-1/2 text-right">
+                <SolidButton type="submit">{$_('save')}</SolidButton>
+            </div>
         </div>
     </form>
 </Modal>

@@ -237,6 +237,40 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 	}
 }
 
+// handleRetroActionDelete handles deleting a retro action item
+// @Summary Retro Action Item Delete
+// @Description Delete a retro action item
+// @Param retroId path string true "the retro ID"
+// @Param actionId path string true "the action ID"
+// @Tags retro
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /retros/{retroId}/actions/{actionId} [delete]
+func (a *api) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		RetroID := vars["retroId"]
+		ActionID := vars["actionId"]
+		UserID := r.Context().Value(contextKeyUserID).(string)
+
+		type actionItem struct {
+			ActionID string `json:"id"`
+		}
+		deleteItem, _ := json.Marshal(actionItem{ActionID: ActionID})
+
+		err := rs.APIEvent(RetroID, UserID, "delete_action", string(deleteItem))
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 type actionCommentRequestBody struct {
 	Comment string `json:"comment"`
 }

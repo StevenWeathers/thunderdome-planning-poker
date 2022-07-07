@@ -10,7 +10,7 @@
     import SolidButton from '../components/SolidButton.svelte'
     import CheckCircle from '../components/icons/CheckCircle.svelte'
     import CheckboxIcon from '../components/icons/CheckboxIcon.svelte'
-    import TrashIcon from '../components/icons/TrashIcon.svelte'
+    import PencilIcon from '../components/icons/PencilIcon.svelte'
     import RetroItemForm from '../components/retro/ItemForm.svelte'
     import GroupPhase from '../components/retro/GroupPhase.svelte'
     import VotePhase from '../components/retro/VotePhase.svelte'
@@ -18,6 +18,7 @@
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
     import InviteUser from '../components/retro/InviteUser.svelte'
     import EditRetro from '../components/retro/EditRetro.svelte'
+    import EditActionItem from '../components/retro/EditActionItem.svelte'
     import { AppConfig, appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
     import { _ } from '../i18n'
@@ -265,6 +266,13 @@
         showExport = !showExport
     }
 
+    let showActionEdit = false
+    let selectedAction = null
+    const toggleActionEdit = id => () => {
+        showActionEdit = !showActionEdit
+        selectedAction = retro.actionItems.find(r => r.id === id)
+    }
+
     const handleItemAdd = (type, content) => {
         sendSocketEvent(
             `create_item`,
@@ -319,7 +327,7 @@
         actionItem = ''
     }
 
-    const handleActionUpdate = (id, completed, content) => evt => {
+    const handleActionUpdate = (id, completed, content) => () => {
         sendSocketEvent(
             'update_action',
             JSON.stringify({
@@ -330,14 +338,22 @@
         )
     }
 
-    const handleActionDelete = id => () => {
-        sendSocketEvent(
-            'delete_action',
-            JSON.stringify({
-                id,
-            }),
-        )
+    const handleActionEdit = ({ id, content, completed }) => {
+        handleActionUpdate(id, !completed, content)()
+        toggleActionEdit(null)()
     }
+
+    const handleActionDelete =
+        ({ id }) =>
+        () => {
+            sendSocketEvent(
+                'delete_action',
+                JSON.stringify({
+                    id,
+                }),
+            )
+            toggleActionEdit(null)()
+        }
 
     const setPhase = phase => () => {
         if (!isFacilitator) {
@@ -749,13 +765,13 @@
                                             <div class="flex-shrink">
                                                 {#if isFacilitator}
                                                     <button
-                                                        on:click="{handleActionDelete(
+                                                        on:click="{toggleActionEdit(
                                                             item.id,
                                                         )}"
                                                         class="pr-2 pt-1 text-gray-500 dark:text-gray-400
-                                                hover:text-red-500"
+                                                hover:text-blue-500"
                                                     >
-                                                        <TrashIcon />
+                                                        <PencilIcon />
                                                     </button>
                                                 {/if}
                                             </div>
@@ -901,5 +917,14 @@
         handleDelete="{concedeRetro}"
         confirmText="{$_('confirmDeleteRetro')}"
         confirmBtnText="{$_('deleteRetro')}"
+    />
+{/if}
+
+{#if showActionEdit}
+    <EditActionItem
+        toggleEdit="{toggleActionEdit(null)}"
+        handleEdit="{handleActionEdit}"
+        handleDelete="{handleActionDelete}"
+        action="{selectedAction}"
     />
 {/if}

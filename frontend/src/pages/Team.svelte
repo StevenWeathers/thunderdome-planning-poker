@@ -372,15 +372,33 @@
             },
         })
             .then(function () {
-                eventTag('team_action_update', 'engagement', 'success')
                 getRetrosActions()
                 toggleRetroActionEdit(null)()
                 notifications.success($_('updateActionItemSuccess'))
+                eventTag('team_action_update', 'engagement', 'success')
             })
             .catch(function () {
                 notifications.danger($_('updateActionItemError'))
                 eventTag('team_action_update', 'engagement', 'failure')
             })
+    }
+
+    function handleRetroActionDelete(action) {
+        return () => {
+            xfetch(`/api/retros/${action.retroId}/actions/${action.id}`, {
+                method: 'DELETE',
+            })
+                .then(function () {
+                    getRetrosActions()
+                    toggleRetroActionEdit(null)()
+                    notifications.success($_('deleteActionItemSuccess'))
+                    eventTag('team_action_delete', 'engagement', 'success')
+                })
+                .catch(function () {
+                    notifications.danger($_('deleteActionItemError'))
+                    eventTag('team_action_delete', 'engagement', 'failure')
+                })
+        }
     }
 
     onMount(() => {
@@ -942,6 +960,7 @@
         <EditActionItem
             toggleEdit="{toggleRetroActionEdit(null)}"
             handleEdit="{handleRetroActionEdit}"
+            handleDelete="{handleRetroActionDelete}"
             action="{selectedAction}"
         />
     {/if}
