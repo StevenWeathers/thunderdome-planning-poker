@@ -93,6 +93,11 @@
                 return b.votes.length - a.votes.length
             })
         }
+        if (retro.phase === 'group') {
+            result.sort((a, b) => {
+                return b.items.length - a.items.length
+            })
+        }
 
         return result
     }
