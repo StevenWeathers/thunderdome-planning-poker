@@ -93,7 +93,7 @@
                 return b.votes.length - a.votes.length
             })
         }
-        if (retro.phase === 'group') {
+        if (retro.phase === 'group' || retro.phase === 'vote') {
             result.sort((a, b) => {
                 return b.items.length - a.items.length
             })
