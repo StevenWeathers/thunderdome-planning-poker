@@ -656,7 +656,9 @@
                             {#each retroActions as item, i}
                                 <TableRow itemIndex="{i}">
                                     <RowCol>
-                                        {item.content}
+                                        <div class="whitespace-pre-wrap">
+                                            {item.content}
+                                        </div>
                                     </RowCol>
                                     <RowCol>
                                         <input
