@@ -339,7 +339,10 @@
         )
     }
 
-    const advancePhase = () => {
+    const setPhase = phase => () => {
+        if (!isFacilitator) {
+            return
+        }
         const nextPhase = {
             intro: 'brainstorm',
             brainstorm: 'group',
@@ -348,10 +351,14 @@
             action: 'completed',
         }
 
+        if (phase === null) {
+            nextPhase[retro.phase]
+        }
+
         sendSocketEvent(
             'advance_phase',
             JSON.stringify({
-                phase: nextPhase[retro.phase],
+                phase,
             }),
         )
     }
@@ -479,7 +486,10 @@
                     {/if}
                     {#if isFacilitator}
                         {#if retro.phase !== 'completed'}
-                            <SolidButton color="green" onClick="{advancePhase}">
+                            <SolidButton
+                                color="green"
+                                onClick="{setPhase(null)}"
+                            >
                                 {$_('nextPhase')}
                             </SolidButton>
                         {/if}
@@ -516,7 +526,9 @@
                         class="flex-initial px-1 {retro.phase === 'intro' &&
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
-                        {$_('primeDirective')}
+                        <button on:click="{setPhase('intro')}"
+                            >{$_('primeDirective')}</button
+                        >
                     </div>
                     <div class="flex-initial px-1">
                         <ChevronRight />
@@ -526,7 +538,9 @@
                             'brainstorm' &&
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
-                        {$_('brainstorm')}
+                        <button on:click="{setPhase('brainstorm')}"
+                            >{$_('brainstorm')}</button
+                        >
                     </div>
                     <div class="flex-initial px-1">
                         <ChevronRight />
@@ -535,7 +549,9 @@
                         class="flex-initial px-1 {retro.phase === 'group' &&
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
-                        {$_('group')}
+                        <button on:click="{setPhase('group')}"
+                            >{$_('group')}</button
+                        >
                     </div>
                     <div class="flex-initial px-1">
                         <ChevronRight />
@@ -544,7 +560,9 @@
                         class="flex-initial px-1 {retro.phase === 'vote' &&
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
-                        {$_('vote')}
+                        <button on:click="{setPhase('vote')}"
+                            >{$_('vote')}</button
+                        >
                     </div>
                     <div class="flex-initial px-1">
                         <ChevronRight />
@@ -553,7 +571,9 @@
                         class="flex-initial px-1 {retro.phase === 'action' &&
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
-                        {$_('actionItems')}
+                        <button on:click="{setPhase('action')}"
+                            >{$_('actionItems')}</button
+                        >
                     </div>
                     <div class="flex-initial px-1">
                         <ChevronRight />
@@ -562,7 +582,9 @@
                         class="flex-initial px-1 {retro.phase === 'completed' &&
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
-                        {$_('done')}
+                        <button on:click="{setPhase('completed')}"
+                            >{$_('done')}</button
+                        >
                     </div>
                 </div>
             </div>
