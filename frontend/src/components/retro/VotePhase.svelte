@@ -30,10 +30,12 @@
                             handleVoteAction(group)
                         }}"
                         disabled="{voteLimitReached && !group.userVoted}"
-                        class="inline-block align-middle text-gray-600 dark:text-gray-300"
-                        class:text-green-500="{group.userVoted}"
-                        class:dark:text-lime-500="{group.userVoted}"
+                        class="inline-block align-middle"
                         class:text-gray-300="{voteLimitReached &&
+                            !group.userVoted}"
+                        class:dark:text-gray-600="{voteLimitReached &&
+                            !group.userVoted}"
+                        class:cursor-not-allowed="{voteLimitReached &&
                             !group.userVoted}"
                         class:hover:text-blue-500="{!(
                             voteLimitReached && !group.userVoted
@@ -41,10 +43,8 @@
                         class:dark:hover:text-sky-500="{!(
                             voteLimitReached && !group.userVoted
                         )}"
-                        class:dark:text-gray-600="{voteLimitReached &&
-                            !group.userVoted}"
-                        class:cursor-not-allowed="{voteLimitReached &&
-                            !group.userVoted}"
+                        class:text-green-500="{group.userVoted}"
+                        class:dark:text-lime-500="{group.userVoted}"
                     >
                         <ThumbsUp class="w-6 h-6 inline-block" />
                     </button>
