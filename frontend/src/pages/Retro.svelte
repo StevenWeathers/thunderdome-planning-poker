@@ -18,7 +18,7 @@
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
     import InviteUser from '../components/retro/InviteUser.svelte'
     import EditRetro from '../components/retro/EditRetro.svelte'
-    import { appRoutes, PathPrefix } from '../config'
+    import { AppConfig, appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
     import { _ } from '../i18n'
 
@@ -27,10 +27,9 @@
     export let router
     export let eventTag
 
-    const { AllowRegistration } = appConfig
-    const loginOrRegister = AllowRegistration
-        ? appRoutes.register
-        : appRoutes.login
+    const { AllowRegistration, AllowGuests } = AppConfig
+    const loginOrRegister =
+        AllowRegistration || AllowGuests ? appRoutes.register : appRoutes.login
 
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'

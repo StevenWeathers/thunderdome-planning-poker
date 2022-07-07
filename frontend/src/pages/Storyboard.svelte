@@ -22,7 +22,7 @@
     import CommentIcon from '../components/icons/CommentIcon.svelte'
     import DeleteStoryboard from '../components/storyboard/DeleteStoryboard.svelte'
     import EditStoryboard from '../components/storyboard/EditStoryboard.svelte'
-    import { appRoutes, PathPrefix } from '../config'
+    import { AppConfig, appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
     import { _ } from '../i18n.js'
 
@@ -31,10 +31,9 @@
     export let router
     export let eventTag
 
-    const { AllowRegistration } = appConfig
-    const loginOrRegister = AllowRegistration
-        ? appRoutes.register
-        : appRoutes.login
+    const { AllowRegistration, AllowGuests } = AppConfig
+    const loginOrRegister =
+        AllowRegistration || AllowGuests ? appRoutes.register : appRoutes.login
 
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
