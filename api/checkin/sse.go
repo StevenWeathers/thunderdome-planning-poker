@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"time"
 )
 
 // Message holds the message to send to connections
@@ -67,17 +68,26 @@ func (broker *Broker) Stream(w http.ResponseWriter, r *http.Request) {
 	}
 	b.register <- s
 
+	// unregister connection upon close
 	defer func() {
 		b.unregister <- s
 	}()
 
+	// send connected message to initiate
 	fmt.Fprintf(w, "data: connected\n\n")
 	flusher.Flush()
+
+	// send ping every 30 seconds to keep connection alive in browser
+	ticker := time.NewTicker(30 * time.Second)
+	defer ticker.Stop()
 
 	for {
 		select {
 		case msg := <-s.conn:
 			fmt.Fprintf(w, "data: %s\n\n", msg.Message)
+			flusher.Flush()
+		case <-ticker.C:
+			fmt.Fprintf(w, "data: ping\n\n")
 			flusher.Flush()
 		case <-ctx.Done():
 			b.unregister <- s

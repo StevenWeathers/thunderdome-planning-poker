@@ -252,11 +252,10 @@
 
     function establishSSE() {
         evtSource = new EventSource(`${teamPrefix}/checkin`)
-        evtSource.onmessage = function () {
-            getCheckins()
-        }
-        evtSource.onerror = function () {
-            notifications.danger($_('getCheckinsError'))
+        evtSource.onmessage = function (evt) {
+            if (evt.data !== 'ping') {
+                getCheckins()
+            }
         }
     }
 
