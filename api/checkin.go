@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/api/checkin"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -67,7 +68,7 @@ type checkinCreateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [post]
-func (a *api) handleCheckinCreate() http.HandlerFunc {
+func (a *api) handleCheckinCreate(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
@@ -95,6 +96,8 @@ func (a *api) handleCheckinCreate() http.HandlerFunc {
 			return
 		}
 
+		broker.BroadcastMessage(TeamId, "checkin_created")
+
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
@@ -120,9 +123,10 @@ type checkinUpdateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [put]
-func (a *api) handleCheckinUpdate() http.HandlerFunc {
+func (a *api) handleCheckinUpdate(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
+		TeamId := vars["teamId"]
 		CheckinId := vars["checkinId"]
 
 		var c = checkinUpdateRequestBody{}
@@ -144,6 +148,8 @@ func (a *api) handleCheckinUpdate() http.HandlerFunc {
 			return
 		}
 
+		broker.BroadcastMessage(TeamId, "checkin_updated")
+
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
@@ -160,9 +166,10 @@ func (a *api) handleCheckinUpdate() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [delete]
-func (a *api) handleCheckinDelete() http.HandlerFunc {
+func (a *api) handleCheckinDelete(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
+		TeamId := vars["teamId"]
 		CheckinId := vars["checkinId"]
 
 		err := a.db.CheckinDelete(CheckinId)
@@ -170,6 +177,8 @@ func (a *api) handleCheckinDelete() http.HandlerFunc {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
+
+		broker.BroadcastMessage(TeamId, "checkin_deleted")
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -193,7 +202,7 @@ type checkinCommentRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comment [post]
-func (a *api) handleCheckinComment() http.HandlerFunc {
+func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
@@ -222,6 +231,8 @@ func (a *api) handleCheckinComment() http.HandlerFunc {
 			return
 		}
 
+		broker.BroadcastMessage(TeamId, "checkin_comment_added")
+
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
@@ -239,9 +250,10 @@ func (a *api) handleCheckinComment() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments/{commentId} [delete]
-func (a *api) handleCheckinCommentDelete() http.HandlerFunc {
+func (a *api) handleCheckinCommentDelete(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
+		TeamId := vars["teamId"]
 		CommentId := vars["commentId"]
 
 		err := a.db.CheckinCommentDelete(CommentId)
@@ -249,6 +261,8 @@ func (a *api) handleCheckinCommentDelete() http.HandlerFunc {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
+
+		broker.BroadcastMessage(TeamId, "checkin_comment_deleted")
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}

@@ -151,7 +151,6 @@
         xfetch(`${teamPrefix}/checkins`, { body })
             .then(res => res.json())
             .then(function () {
-                getCheckins()
                 toggleCheckin()
                 eventTag('team_checkin_create', 'engagement', 'success')
             })
@@ -180,7 +179,6 @@
         })
             .then(res => res.json())
             .then(function () {
-                getCheckins()
                 toggleCheckin()
                 eventTag('team_checkin_edit', 'engagement', 'success')
             })
@@ -194,7 +192,6 @@
         xfetch(`${teamPrefix}/checkins/${checkinId}`, { method: 'DELETE' })
             .then(res => res.json())
             .then(function () {
-                getCheckins()
                 eventTag('team_checkin_delete', 'engagement', 'success')
             })
             .catch(function () {
@@ -216,7 +213,6 @@
         xfetch(`${teamPrefix}/checkins/${selectedCheckinId}/comments`, { body })
             .then(res => res.json())
             .then(function () {
-                getCheckins()
                 toggleCommentForm(null)()
                 eventTag('team_checkin_comment', 'engagement', 'success')
             })
@@ -244,13 +240,22 @@
         })
             .then(res => res.json())
             .then(function () {
-                getCheckins()
                 eventTag('team_checkin_comment_delete', 'engagement', 'success')
             })
             .catch(function () {
                 notifications.danger($_('checkinCommentDeleteError'))
                 eventTag('team_checkin_comment_delete', 'engagement', 'failure')
             })
+    }
+
+    function establishSSE() {
+        const evtSource = new EventSource(`${teamPrefix}/checkin`)
+        evtSource.onmessage = function () {
+            getCheckins()
+        }
+        evtSource.onerror = function () {
+            notifications.danger($_('getCheckinsError'))
+        }
     }
 
     onMount(() => {
@@ -263,8 +268,8 @@
         maxNegativeDate = formatDayForInput(subtractDays(now, 60))
 
         getTeam()
-        getCheckins()
         getUsers()
+        establishSSE()
     })
 
     function calculateCheckinStats() {
