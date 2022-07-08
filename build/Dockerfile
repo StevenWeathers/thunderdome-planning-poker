@@ -1,7 +1,7 @@
 ############################
 # STEP 1 build the ui
 ############################
-FROM node:16 as builderNode
+FROM node:18.5 as builderNode
 
 RUN mkdir /webapp
 COPY ./frontend/ /webapp/frontend/
@@ -17,7 +17,7 @@ RUN npm run build
 ############################
 # STEP 2 build executable binary
 ############################
-FROM golang:1.17-alpine as builderGo
+FROM golang:1.18-alpine as builderGo
 ARG BUILD_VERSION
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
@@ -40,7 +40,7 @@ WORKDIR $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 # Fetch dependencies.
 RUN go mod download
 # Generate swagger docs
-RUN go install github.com/swaggo/swag/cmd/swag@v1.7.4
+RUN go install github.com/swaggo/swag/cmd/swag@v1.8.3
 RUN swag init -g api/api.go -o swaggerdocs
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -ldflags "-X main.version=$BUILD_VERSION" -o /go/bin/thunderdome
