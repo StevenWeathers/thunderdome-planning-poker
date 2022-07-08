@@ -60,9 +60,12 @@ type server struct {
 }
 
 func main() {
-	logger, _ := zap.NewProduction()
+	logger, _ := zap.NewProduction(
+		zap.Fields(
+			zap.String("version", version),
+		),
+	)
 	defer logger.Sync()
-	logger.Info("Thunderdome version " + version)
 
 	embedUseOS = len(os.Args) > 1 && os.Args[1] == "live"
 
