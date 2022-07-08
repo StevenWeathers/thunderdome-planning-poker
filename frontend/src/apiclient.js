@@ -14,6 +14,7 @@ export default function (handle401) {
     return function (endpoint, customConfig = {}) {
         const headers = { 'content-type': 'application/json' }
         const customHeaders = customConfig.headers || {}
+        const skip401Redirect = customConfig.skip401Redirect || false
 
         const config = {
             method: customConfig.body ? 'POST' : 'GET',
@@ -31,7 +32,7 @@ export default function (handle401) {
 
         return fetch(`${PathPrefix}${endpoint}`, config).then(response => {
             if (response.status === 401) {
-                handle401()
+                handle401(skip401Redirect)
             }
 
             if (!response.ok) {

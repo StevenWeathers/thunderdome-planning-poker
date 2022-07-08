@@ -377,10 +377,12 @@
 
     const xfetch = apiclient(handle401)
 
-    function handle401() {
+    function handle401(skipRedirect) {
         eventTag('session_expired', 'engagement', 'unauthorized', () => {
             warrior.delete()
-            router.route(appRoutes.login)
+            if (!skipRedirect) {
+                router.route(appRoutes.login)
+            }
         })
     }
 

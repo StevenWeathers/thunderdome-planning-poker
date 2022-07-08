@@ -47,7 +47,7 @@
             password: warriorPassword,
         }
 
-        xfetch(authEndpoint, { body })
+        xfetch(authEndpoint, { body, skip401Redirect: true })
             .then(res => res.json())
             .then(function (result) {
                 const newWarrior = result.data
