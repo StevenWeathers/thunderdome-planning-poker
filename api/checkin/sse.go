@@ -111,6 +111,7 @@ func (broker *Broker) listen() {
 			if connections != nil {
 				if _, ok := connections[a.conn]; ok {
 					delete(connections, a.conn)
+					close(a.conn)
 					if len(connections) == 0 {
 						delete(b.arenas, a.arena)
 					}
@@ -122,6 +123,7 @@ func (broker *Broker) listen() {
 				select {
 				case c <- m:
 				default:
+					close(c)
 					delete(connections, c)
 					if len(connections) == 0 {
 						delete(b.arenas, m.arena)
