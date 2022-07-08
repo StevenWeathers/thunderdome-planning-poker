@@ -15,7 +15,7 @@ type Message struct {
 
 // Subscription holds the users sse connection
 type Subscription struct {
-	conn  chan Message
+	send  chan Message
 	arena string
 }
 
@@ -63,7 +63,7 @@ func (broker *Broker) Stream(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 
 	s := Subscription{
-		conn:  make(chan Message),
+		send:  make(chan Message),
 		arena: TeamId,
 	}
 	b.register <- s
@@ -83,7 +83,10 @@ func (broker *Broker) Stream(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		select {
-		case msg := <-s.conn:
+		case msg, ok := <-s.send:
+			if !ok {
+				return
+			}
 			fmt.Fprintf(w, "data: %s\n\n", msg.Message)
 			flusher.Flush()
 		case <-ticker.C:
@@ -105,13 +108,13 @@ func (broker *Broker) listen() {
 				connections = make(map[chan Message]struct{})
 				b.arenas[a.arena] = connections
 			}
-			b.arenas[a.arena][a.conn] = struct{}{}
+			b.arenas[a.arena][a.send] = struct{}{}
 		case a := <-b.unregister:
 			connections := b.arenas[a.arena]
 			if connections != nil {
-				if _, ok := connections[a.conn]; ok {
-					delete(connections, a.conn)
-					close(a.conn)
+				if _, ok := connections[a.send]; ok {
+					delete(connections, a.send)
+					close(a.send)
 					if len(connections) == 0 {
 						delete(b.arenas, a.arena)
 					}
