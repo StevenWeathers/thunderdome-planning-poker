@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte'
+    import { onDestroy, onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
@@ -248,8 +248,10 @@
             })
     }
 
+    let evtSource
+
     function establishSSE() {
-        const evtSource = new EventSource(`${teamPrefix}/checkin`)
+        evtSource = new EventSource(`${teamPrefix}/checkin`)
         evtSource.onmessage = function () {
             getCheckins()
         }
@@ -270,6 +272,10 @@
         getTeam()
         getUsers()
         establishSSE()
+    })
+
+    onDestroy(() => {
+        evtSource.close()
     })
 
     function calculateCheckinStats() {
