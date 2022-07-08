@@ -735,33 +735,38 @@
                         </div>
                         <div class="w-full md:w-1/3">
                             <div class="pl-4">
-                                <div class="flex items-center mb-4">
-                                    <div class="flex-shrink pr-2">
-                                        <CheckCircle
-                                            class="w-8 h-8 text-indigo-500 dark:text-violet-400"
-                                        />
-                                    </div>
-                                    <div class="flex-grow">
-                                        <form on:submit="{handleActionItem}">
-                                            <input
-                                                bind:value="{actionItem}"
-                                                placeholder="{$_(
-                                                    'actionItemPlaceholder',
-                                                )}"
-                                                class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
+                                {#if retro.phase === 'action'}
+                                    <div class="flex items-center mb-4">
+                                        <div class="flex-shrink pr-2">
+                                            <CheckCircle
+                                                class="w-8 h-8 text-indigo-500 dark:text-violet-400"
+                                            />
+                                        </div>
+                                        <div class="flex-grow">
+                                            <form
+                                                on:submit="{handleActionItem}"
+                                            >
+                                                <input
+                                                    bind:value="{actionItem}"
+                                                    placeholder="{$_(
+                                                        'actionItemPlaceholder',
+                                                    )}"
+                                                    class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
                     px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
                     focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
-                                                id="actionItem"
-                                                name="actionItem"
-                                                type="text"
-                                                required
-                                                disabled="{!isFacilitator}"
-                                            />
-                                            <button type="submit" class="hidden"
-                                            ></button>
-                                        </form>
+                                                    id="actionItem"
+                                                    name="actionItem"
+                                                    type="text"
+                                                    required
+                                                    disabled="{!isFacilitator}"
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    class="hidden"></button>
+                                            </form>
+                                        </div>
                                     </div>
-                                </div>
+                                {/if}
                                 {#each retro.actionItems as item, i}
                                     <div
                                         class="mb-2 p-2 bg-white dark:bg-gray-800 shadow border-l-4 border-indigo-500 dark:border-violet-400"
