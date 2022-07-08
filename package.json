@@ -44,6 +44,7 @@
     "cssnano": "^5.1.12",
     "husky": "^8.0.1",
     "jest": "^28.1.2",
+    "jest-environment-jsdom": "^28.1.2",
     "lint-staged": "^13.0.3",
     "postcss": "^8.4.14",
     "postcss-import": "^14.1.0",
