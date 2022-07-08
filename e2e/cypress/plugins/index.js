@@ -16,7 +16,7 @@ const guestUser = require('../db/guestUser.js')
 const registeredUser = require('../db/registeredUser.js')
 const verifiedUser = require('../db/verifiedUser.js')
 const adminUser = require('../db/adminUser.js')
-const { db } = require('../../cypress.json')
+const { db } = require('../../cypress.config.js')
 /**
  * @type {Cypress.PluginConfig}
  */

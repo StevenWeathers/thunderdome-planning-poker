@@ -4,13 +4,13 @@
   "description": "End to end testing for Thunderdome",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cypress open",
     "cypress:open": "cypress open"
   },
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "cypress": "^9.1.1",
-    "pg": "^8.7.1"
+    "cypress": "^10.3.0",
+    "pg": "^8.7.3"
   }
 }

@@ -1,0 +1,7 @@
+import './admin_page.cy.js'
+import './alerts_page.cy.js'
+import './apikeys_page.cy.js'
+import './battles_page.cy.js'
+import './organizations_page.cy.js'
+import './teams_page.cy.js'
+import './users_page.cy.js'
