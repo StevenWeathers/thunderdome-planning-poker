@@ -157,7 +157,8 @@
         eventTag('story_edit_closed', 'storyboard', '')
     }
 
-    const storyUpdateLink = storyId => link => {
+    const storyUpdateLink = storyId => evt => {
+        const link = evt.target.value
         sendSocketEvent(
             'update_story_link',
             JSON.stringify({
