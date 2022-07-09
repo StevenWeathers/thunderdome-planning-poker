@@ -157,6 +157,17 @@
         eventTag('story_edit_closed', 'storyboard', '')
     }
 
+    const storyUpdateLink = storyId => link => {
+        sendSocketEvent(
+            'update_story_link',
+            JSON.stringify({
+                storyId,
+                link,
+            }),
+        )
+        eventTag('story_edit_link', 'storyboard', '')
+    }
+
     const handleAddFacilitator = userId => () => {
         sendSocketEvent(
             'facilitator_add',
@@ -1235,6 +1246,7 @@
         updateName="{storyUpdateName}"
         updatePoints="{storyUpdatePoints}"
         updateClosed="{storyUpdateClosed}"
+        updateLink="{storyUpdateLink}"
         colorLegend="{storyboard.color_legend}"
         addComment="{addStoryComment}"
         editComment="{editStoryComment}"

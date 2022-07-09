@@ -93,6 +93,21 @@ func (d *Database) ReviseStoryClosed(StoryboardID string, userID string, StoryID
 	return goals, nil
 }
 
+// ReviseStoryLink updates the story link by ID
+func (d *Database) ReviseStoryLink(StoryboardID string, userID string, StoryID string, Link string) ([]*model.StoryboardGoal, error) {
+	if _, err := d.db.Exec(
+		`call sb_story_link_edit($1, $2);`,
+		StoryID,
+		Link,
+	); err != nil {
+		d.logger.Error("call sb_story_link_edit error", zap.Error(err))
+	}
+
+	goals := d.GetStoryboardGoals(StoryboardID)
+
+	return goals, nil
+}
+
 // MoveStoryboardStory moves the story by ID to Goal/Column by ID
 func (d *Database) MoveStoryboardStory(StoryboardID string, userID string, StoryID string, GoalID string, ColumnID string, PlaceBefore string) ([]*model.StoryboardGoal, error) {
 	if _, err := d.db.Exec(

@@ -196,6 +196,23 @@ func (b *Service) UpdateStoryClosed(StoryboardID string, UserID string, EventVal
 	return msg, nil, false
 }
 
+// UpdateStoryLink handles revising a storyboard story link
+func (b *Service) UpdateStoryLink(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+	goalObj := make(map[string]string)
+	json.Unmarshal([]byte(EventValue), &goalObj)
+	StoryID := goalObj["storyId"]
+	Link := goalObj["link"]
+
+	goals, err := b.db.ReviseStoryLink(StoryboardID, UserID, StoryID, Link)
+	if err != nil {
+		return nil, err, false
+	}
+	updatedGoals, _ := json.Marshal(goals)
+	msg := createSocketEvent("story_updated", string(updatedGoals), "")
+
+	return msg, nil, false
+}
+
 // MoveStory handles moving a storyboard story between columns/goals
 func (b *Service) MoveStory(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)
