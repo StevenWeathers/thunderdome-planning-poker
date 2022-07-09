@@ -22,6 +22,7 @@
     import CommentIcon from '../components/icons/CommentIcon.svelte'
     import DeleteStoryboard from '../components/storyboard/DeleteStoryboard.svelte'
     import EditStoryboard from '../components/storyboard/EditStoryboard.svelte'
+    import UpCarrotIcon from '../components/icons/ChevronUp.svelte'
     import { AppConfig, appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
     import { _ } from '../i18n.js'
@@ -58,6 +59,7 @@
     let showDeleteStoryboard = false
     let showEditStoryboard = false
     let joinPasscode = ''
+    let collapseGoals = []
 
     // event handlers
     function authStoryboard(e) {
@@ -559,6 +561,18 @@
         activeStory = activeStory != null ? null : story
     }
 
+    function toggleGoalCollapse(goalId) {
+        return () => {
+            const goalIndex = collapseGoals.indexOf(goalId)
+            if (goalIndex > -1) {
+                delete collapseGoals[goalIndex]
+            } else {
+                collapseGoals.push(goalId)
+            }
+            collapseGoals = collapseGoals
+        }
+    }
+
     $: isFacilitator =
         storyboard.facilitators && storyboard.facilitators.includes($user.id)
 
@@ -919,11 +933,22 @@
                         : ''}"
                 >
                     <div class="w-3/4 relative">
-                        <div
-                            class="inline-block align-middle font-bold dark:text-gray-200"
-                        >
-                            <DownCarrotIcon additionalClasses="mr-1" />
-                            {goal.name}
+                        <div class="font-bold dark:text-gray-200 text-xl">
+                            <h2 class="inline-block align-middle pt-1">
+                                <button
+                                    on:click="{toggleGoalCollapse(goal.id)}"
+                                >
+                                    {#if collapseGoals.includes(goal.id)}
+                                        <DownCarrotIcon
+                                            additionalClasses="mr-1"
+                                        />
+                                    {:else}
+                                        <UpCarrotIcon
+                                            additionalClasses="mr-1"
+                                        />
+                                    {/if}
+                                </button>{goal.name}
+                            </h2>
                         </div>
                     </div>
                     <div class="w-1/4 text-right">
@@ -954,207 +979,211 @@
                         {/if}
                     </div>
                 </div>
-                <section class="flex px-2" style="overflow-x: scroll">
-                    {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-                        <div class="flex-none my-4 mx-2 w-40">
-                            <div class="flex-none">
-                                <div class="w-full mb-2">
-                                    <div class="flex">
-                                        <span
-                                            class="font-bold flex-grow truncate dark:text-gray-300"
-                                            title="{goalColumn.name}"
-                                        >
-                                            {goalColumn.name}
-                                        </span>
-                                        <button
-                                            on:click="{toggleColumnEdit(
-                                                goalColumn,
-                                            )}"
-                                            class="flex-none font-bold text-xl
+                {#if !collapseGoals.includes(goal.id)}
+                    <section class="flex px-2" style="overflow-x: scroll">
+                        {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+                            <div class="flex-none my-4 mx-2 w-40">
+                                <div class="flex-none">
+                                    <div class="w-full mb-2">
+                                        <div class="flex">
+                                            <span
+                                                class="font-bold flex-grow truncate dark:text-gray-300"
+                                                title="{goalColumn.name}"
+                                            >
+                                                {goalColumn.name}
+                                            </span>
+                                            <button
+                                                on:click="{toggleColumnEdit(
+                                                    goalColumn,
+                                                )}"
+                                                class="flex-none font-bold text-xl
                                         border-dashed border-2 border-gray-400 dark:border-gray-600
                                         hover:border-green-500 text-gray-600 dark:text-gray-400
                                         hover:text-green-500 py-1 px-2"
-                                            title="{$_('storyboardEditColumn')}"
-                                        >
-                                            <EditIcon />
-                                        </button>
+                                                title="{$_(
+                                                    'storyboardEditColumn',
+                                                )}"
+                                            >
+                                                <EditIcon />
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="w-full">
-                                    <div class="flex">
-                                        <button
-                                            on:click="{addStory(
-                                                goal.id,
-                                                goalColumn.id,
-                                            )}"
-                                            class="flex-grow font-bold text-xl py-1
+                                    <div class="w-full">
+                                        <div class="flex">
+                                            <button
+                                                on:click="{addStory(
+                                                    goal.id,
+                                                    goalColumn.id,
+                                                )}"
+                                                class="flex-grow font-bold text-xl py-1
                                         px-2 border-dashed border-2
                                         border-gray-400 dark:border-gray-600 hover:border-green-500
                                         text-gray-600 dark:text-gray-400 hover:text-green-500"
-                                            title="{$_(
-                                                'storyboardAddStoryToColumn',
-                                            )}"
-                                        >
-                                            +
-                                        </button>
+                                                title="{$_(
+                                                    'storyboardAddStoryToColumn',
+                                                )}"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div
-                                class="w-full relative"
-                                style="min-height: 160px;"
-                                data-goalid="{goal.id}"
-                                data-columnid="{goalColumn.id}"
-                                data-goalIndex="{goalIndex}"
-                                data-columnindex="{columnIndex}"
-                                use:dndzone="{{
-                                    items: goalColumn.stories,
-                                    type: 'story',
-                                    dropTargetStyle: '',
-                                    dropTargetClasses: [
-                                        'outline',
-                                        'outline-2',
-                                        'outline-indigo-500',
-                                        'dark:outline-yellow-400',
-                                    ],
-                                }}"
-                                on:consider="{handleDndConsider}"
-                                on:finalize="{handleDndFinalize}"
-                            >
-                                {#each goalColumn.stories as story (story.id)}
-                                    <div
-                                        class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-l-4
+                                <div
+                                    class="w-full relative"
+                                    style="min-height: 160px;"
+                                    data-goalid="{goal.id}"
+                                    data-columnid="{goalColumn.id}"
+                                    data-goalIndex="{goalIndex}"
+                                    data-columnindex="{columnIndex}"
+                                    use:dndzone="{{
+                                        items: goalColumn.stories,
+                                        type: 'story',
+                                        dropTargetStyle: '',
+                                        dropTargetClasses: [
+                                            'outline',
+                                            'outline-2',
+                                            'outline-indigo-500',
+                                            'dark:outline-yellow-400',
+                                        ],
+                                    }}"
+                                    on:consider="{handleDndConsider}"
+                                    on:finalize="{handleDndFinalize}"
+                                >
+                                    {#each goalColumn.stories as story (story.id)}
+                                        <div
+                                            class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-l-4
                                     story-{story.color} border my-4
                                     cursor-pointer"
-                                        style="list-style: none;"
-                                        data-goalid="{goal.id}"
-                                        data-columnid="{goalColumn.id}"
-                                        data-storyid="{story.id}"
-                                        on:click="{toggleStoryForm(story)}"
-                                    >
-                                        <div>
+                                            style="list-style: none;"
+                                            data-goalid="{goal.id}"
+                                            data-columnid="{goalColumn.id}"
+                                            data-storyid="{story.id}"
+                                            on:click="{toggleStoryForm(story)}"
+                                        >
                                             <div>
-                                                <div
-                                                    class="h-20 p-1 text-sm
-                                                overflow-hidden {story.closed
-                                                        ? 'line-through'
-                                                        : ''}"
-                                                    title="{story.name}"
-                                                >
-                                                    {story.name}
-                                                </div>
-                                                <div class="h-8">
+                                                <div>
                                                     <div
-                                                        class="flex content-center
-                                                    p-1 text-sm"
+                                                        class="h-20 p-1 text-sm
+                                                overflow-hidden {story.closed
+                                                            ? 'line-through'
+                                                            : ''}"
+                                                        title="{story.name}"
                                                     >
+                                                        {story.name}
+                                                    </div>
+                                                    <div class="h-8">
                                                         <div
-                                                            class="w-1/2
+                                                            class="flex content-center
+                                                    p-1 text-sm"
+                                                        >
+                                                            <div
+                                                                class="w-1/2
                                                         text-gray-600 dark:text-gray-300"
-                                                        >
-                                                            {#if story.comments.length > 0}
-                                                                <span
-                                                                    class="inline-block
+                                                            >
+                                                                {#if story.comments.length > 0}
+                                                                    <span
+                                                                        class="inline-block
                                                                 align-middle"
-                                                                >
-                                                                    {story
-                                                                        .comments
-                                                                        .length}
-                                                                    <CommentIcon
-                                                                    />
-                                                                </span>
-                                                            {/if}
-                                                        </div>
-                                                        <div
-                                                            class="w-1/2 text-right"
-                                                        >
-                                                            {#if story.points > 0}
-                                                                <span
-                                                                    class="px-2
+                                                                    >
+                                                                        {story
+                                                                            .comments
+                                                                            .length}
+                                                                        <CommentIcon
+                                                                        />
+                                                                    </span>
+                                                                {/if}
+                                                            </div>
+                                                            <div
+                                                                class="w-1/2 text-right"
+                                                            >
+                                                                {#if story.points > 0}
+                                                                    <span
+                                                                        class="px-2
                                                                 bg-gray-300 dark:bg-gray-500
                                                                 inline-block
                                                                 align-middle"
-                                                                >
-                                                                    {story.points}
-                                                                </span>
-                                                            {/if}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-                                            <div
-                                                class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-l-4
-                                    story-{story.color} border
-                                    cursor-pointer"
-                                                style="list-style: none;"
-                                                data-goalid="{goal.id}"
-                                                data-columnid="{goalColumn.id}"
-                                                data-storyid="{story.id}"
-                                                on:click="{toggleStoryForm(
-                                                    story,
-                                                )}"
-                                            >
-                                                <div>
-                                                    <div>
-                                                        <div
-                                                            class="h-20 p-1 text-sm
-                                                overflow-hidden {story.closed
-                                                                ? 'line-through'
-                                                                : ''}"
-                                                            title="{story.name}"
-                                                        >
-                                                            {story.name}
-                                                        </div>
-                                                        <div class="h-8">
-                                                            <div
-                                                                class="flex content-center
-                                                    p-1 text-sm"
-                                                            >
-                                                                <div
-                                                                    class="w-1/2
-                                                        text-gray-600"
-                                                                >
-                                                                    {#if story.comments.length > 0}
-                                                                        <span
-                                                                            class="inline-block
-                                                                align-middle"
-                                                                        >
-                                                                            {story
-                                                                                .comments
-                                                                                .length}
-                                                                            <CommentIcon
-                                                                            />
-                                                                        </span>
-                                                                    {/if}
-                                                                </div>
-                                                                <div
-                                                                    class="w-1/2 text-right"
-                                                                >
-                                                                    {#if story.points > 0}
-                                                                        <span
-                                                                            class="px-2
-                                                                bg-gray-300
-                                                                inline-block
-                                                                align-middle"
-                                                                        >
-                                                                            {story.points}
-                                                                        </span>
-                                                                    {/if}
-                                                                </div>
+                                                                    >
+                                                                        {story.points}
+                                                                    </span>
+                                                                {/if}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        {/if}
-                                    </div>
-                                {/each}
+                                            {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+                                                <div
+                                                    class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-l-4
+                                    story-{story.color} border
+                                    cursor-pointer"
+                                                    style="list-style: none;"
+                                                    data-goalid="{goal.id}"
+                                                    data-columnid="{goalColumn.id}"
+                                                    data-storyid="{story.id}"
+                                                    on:click="{toggleStoryForm(
+                                                        story,
+                                                    )}"
+                                                >
+                                                    <div>
+                                                        <div>
+                                                            <div
+                                                                class="h-20 p-1 text-sm
+                                                overflow-hidden {story.closed
+                                                                    ? 'line-through'
+                                                                    : ''}"
+                                                                title="{story.name}"
+                                                            >
+                                                                {story.name}
+                                                            </div>
+                                                            <div class="h-8">
+                                                                <div
+                                                                    class="flex content-center
+                                                    p-1 text-sm"
+                                                                >
+                                                                    <div
+                                                                        class="w-1/2
+                                                        text-gray-600"
+                                                                    >
+                                                                        {#if story.comments.length > 0}
+                                                                            <span
+                                                                                class="inline-block
+                                                                align-middle"
+                                                                            >
+                                                                                {story
+                                                                                    .comments
+                                                                                    .length}
+                                                                                <CommentIcon
+                                                                                />
+                                                                            </span>
+                                                                        {/if}
+                                                                    </div>
+                                                                    <div
+                                                                        class="w-1/2 text-right"
+                                                                    >
+                                                                        {#if story.points > 0}
+                                                                            <span
+                                                                                class="px-2
+                                                                bg-gray-300
+                                                                inline-block
+                                                                align-middle"
+                                                                            >
+                                                                                {story.points}
+                                                                            </span>
+                                                                        {/if}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {/if}
+                                        </div>
+                                    {/each}
+                                </div>
                             </div>
-                        </div>
-                    {/each}
-                </section>
+                        {/each}
+                    </section>
+                {/if}
             </div>
         {/each}
     </div>
