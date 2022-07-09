@@ -136,8 +136,6 @@
 
     const storyUpdatePoints = storyId => evt => {
         const points = parseInt(evt.target.value, 10)
-        console.log(points)
-        console.log(evt)
         sendSocketEvent(
             'update_story_points',
             JSON.stringify({

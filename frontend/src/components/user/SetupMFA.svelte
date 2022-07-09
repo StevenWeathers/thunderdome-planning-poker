@@ -20,8 +20,7 @@
             qrCode = r.data.qrCode
             secret = r.data.secret
         })
-        .catch(err => {
-            console.log(err)
+        .catch(() => {
             notifications.danger($_('mfaGenerateFailed'))
         })
 
@@ -30,7 +29,6 @@
         xfetch('/api/auth/mfa/setup/validate', { body: { secret, passcode } })
             .then(res => res.json())
             .then(r => {
-                console.log(r.data.result)
                 if (r.data.result === 'SUCCESS') {
                     notifications.success($_('mfaSetupSuccess'))
                     handleComplete()
@@ -38,7 +36,7 @@
                     notifications.danger(`${r.data.result}`)
                 }
             })
-            .catch(err => {
+            .catch(() => {
                 notifications.danger($_('mfaSetupFailed'))
             })
     }

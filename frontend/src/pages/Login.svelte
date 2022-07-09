@@ -78,7 +78,6 @@
         xfetch(authEndpoint, { body, skip401Redirect: true })
             .then(res => res.json())
             .then(function (result) {
-                console.log(result)
                 const u = result.data.user
                 const newUser = {
                     id: u.id,
@@ -89,12 +88,10 @@
                     notificationsEnabled: u.notificationsEnabled,
                 }
                 if (result.data.mfaRequired) {
-                    console.log('a')
                     mfaRequired = true
                     mfaUser = newUser
                     mfaSessionId = result.data.sessionId
                 } else {
-                    console.log('b')
                     warrior.create(newUser)
                     eventTag('login', 'engagement', 'success', () => {
                         setupI18n({
