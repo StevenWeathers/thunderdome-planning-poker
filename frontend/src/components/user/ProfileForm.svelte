@@ -116,10 +116,10 @@
             .then(() => {
                 profile.mfaEnabled = false
                 toggleMfaRemove()
-                notifications.success('2FA/MFA successfully removed')
+                notifications.success($_('mfa2faRemoveSuccess'))
             })
             .catch(() => {
-                notifications.danger('failed to remove 2FA/MFA')
+                notifications.danger($_('mfa2faRemoveFailure'))
             })
     }
 

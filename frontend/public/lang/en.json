@@ -585,5 +585,8 @@
   "mfa2faLabel": "2FA/MFA Auth",
   "mfa2faSetup": "Setup 2FA/MFA",
   "mfa2faRemove": "Remove 2FA/MFA",
-  "mfa2faRemoveText": "Are you sure you want to remove 2FA/MFA?"
+  "mfa2faRemoveText": "Are you sure you want to remove 2FA/MFA?",
+  "mfaAuthError": "Error validating authenticator token",
+  "mfa2faRemoveSuccess": "2FA/MFA successfully removed",
+  "mfa2faRemoveFailure": "Failed to remove 2FA/MFA"
 }
