@@ -78,6 +78,20 @@ func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// registeredUserOnly validates that the request was made by a registered user
+func (a *api) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		UserType := r.Context().Value(contextKeyUserType).(string)
+
+		if UserType == guestUserType {
+			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "REGISTERED_USER_ONLY"))
+			return
+		}
+
+		h(w, r)
+	}
+}
+
 // adminOnly middleware checks if the user is an admin, otherwise reject their request
 func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

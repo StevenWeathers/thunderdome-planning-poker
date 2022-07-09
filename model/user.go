@@ -20,6 +20,7 @@ type User struct {
 	UpdatedDate          time.Time `json:"updatedDate"`
 	LastActive           time.Time `json:"lastActive"`
 	Disabled             bool      `json:"disabled"`
+	MFAEnabled           bool      `json:"mfaEnabled"`
 }
 
 // APIKey structure

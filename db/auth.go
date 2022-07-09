@@ -1,10 +1,15 @@
 package db
 
 import (
+	"bytes"
 	"database/sql"
+	"encoding/base64"
 	"errors"
+	"fmt"
+	"image/png"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"github.com/pquerna/otp/totp"
 	"go.uber.org/zap"
 )
 
@@ -14,7 +19,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 	var passHash string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled FROM users WHERE email = $1`,
+		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE email = $1`,
 		UserEmail,
 	).Scan(
 		&user.Id,
@@ -27,6 +32,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		&user.NotificationsEnabled,
 		&user.Locale,
 		&user.Disabled,
+		&user.MFAEnabled,
 	)
 	if e != nil {
 		d.logger.Error("Unable to auth user", zap.Error(e))
@@ -176,6 +182,94 @@ func (d *Database) VerifyUserAccount(VerifyID string) error {
 	if _, err := d.db.Exec(
 		`call verify_user_account($1)`, VerifyID); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+// MFASetupGenerate generates an MFA secret and QR code image base64
+func (d *Database) MFASetupGenerate(email string) (string, string, error) {
+	key, err := totp.Generate(totp.GenerateOpts{
+		Issuer:      "Thunderdome.dev",
+		AccountName: email,
+	})
+	if err != nil {
+		return "", "", fmt.Errorf("error generating MFA TOTP key: %w", err)
+	}
+
+	// Convert TOTP key into a PNG
+	var buf bytes.Buffer
+	img, err := key.Image(200, 200)
+	if err != nil {
+		return "", "", fmt.Errorf("error converting MFA TOTP key to PNG: %w", err)
+	}
+	png.Encode(&buf, img)
+
+	return key.Secret(), base64.StdEncoding.EncodeToString(buf.Bytes()), nil
+}
+
+// MFASetupValidate validates the MFA secret and authenticator token
+// if success enables the user mfa and stores the secret in db
+func (d *Database) MFASetupValidate(UserID string, secret string, passcode string) error {
+	valid := totp.Validate(passcode, secret)
+
+	if !valid {
+		return errors.New("INVALID_AUTHENTICATOR_TOKEN")
+	}
+
+	encryptedSecret, secretErr := encrypt(secret, d.config.AESHashkey)
+	if secretErr != nil {
+		return fmt.Errorf("error encrypting MFA secret: %w", secretErr)
+	}
+
+	if _, err := d.db.Exec(
+		`call user_mfa_enable($1, $2)`, UserID, encryptedSecret); err != nil {
+		return fmt.Errorf("error enabling user MFA: %w", err)
+	}
+
+	return nil
+}
+
+// MFARemove removes MFA requirement from user
+func (d *Database) MFARemove(UserID string) error {
+	if _, err := d.db.Exec(
+		`call user_mfa_remove($1)`, UserID); err != nil {
+		return fmt.Errorf("error removing user MFA: %w", err)
+	}
+
+	return nil
+}
+
+// MFATokenValidate validates the MFA secret and authenticator token for auth login
+func (d *Database) MFATokenValidate(SessionId string, passcode string) error {
+	var encryptedSecret string
+
+	e := d.db.QueryRow(
+		`SELECT um.secret FROM user_mfa um
+ 				LEFT JOIN user_session us ON us.user_id = um.user_id
+ 				WHERE us.session_id = $1`,
+		SessionId,
+	).Scan(
+		&encryptedSecret,
+	)
+	if e != nil {
+		d.logger.Error("error finding user MFA secret", zap.Error(e))
+		return errors.New("user not found")
+	}
+
+	decryptedSecret, secretErr := decrypt(encryptedSecret, d.config.AESHashkey)
+	if secretErr != nil {
+		return errors.New("unable to decode MFA secret")
+	}
+
+	valid := totp.Validate(passcode, decryptedSecret)
+	if !valid {
+		return errors.New("INVALID_AUTHENTICATOR_TOKEN")
+	}
+
+	err := d.EnableSession(SessionId)
+	if err != nil {
+		return errors.New("unable to enable user session")
 	}
 
 	return nil

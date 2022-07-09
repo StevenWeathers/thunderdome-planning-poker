@@ -15,7 +15,7 @@ func (d *Database) CreateSession(UserId string) (string, error) {
 	}
 
 	if _, sessionErr := d.db.Exec(`
-		INSERT INTO user_session (session_id, user_id) VALUES ($1, $2);
+		INSERT INTO user_session (session_id, user_id, disabled) VALUES ($1, $2, (SELECT mfa_enabled FROM users WHERE id = $2));
 		`,
 		SessionId,
 		UserId,
@@ -25,6 +25,20 @@ func (d *Database) CreateSession(UserId string) (string, error) {
 	}
 
 	return SessionId, nil
+}
+
+// EnableSession enables a user authenticated session
+func (d *Database) EnableSession(SessionId string) error {
+	if _, sessionErr := d.db.Exec(`
+		UPDATE user_session SET disabled = false WHERE session_id = $1;
+		`,
+		SessionId,
+	); sessionErr != nil {
+		d.logger.Error("Unable to enable user session", zap.Error(sessionErr))
+		return sessionErr
+	}
+
+	return nil
 }
 
 // GetSessionUser gets a user session by sessionId

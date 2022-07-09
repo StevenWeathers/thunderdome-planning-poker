@@ -60,7 +60,6 @@
     }
 
     export function danger(msg, timeout) {
-        // console.log(msg)
         show(msg, timeout, 'danger')
     }
 
@@ -69,17 +68,11 @@
     }
 
     export function info(msg, timeout) {
-        // console.log(msg)
         show(msg, timeout, 'info')
     }
 
     export function success(msg, timeout) {
-        // console.log(msg)
         show(msg, timeout, 'success')
-    }
-
-    export function hide() {
-        shown = false
     }
 </script>
 
