@@ -8,10 +8,14 @@
     export let toggleStoryForm = () => {}
     export let sendSocketEvent = () => {}
     export let eventTag = () => {}
+    export let notifications
 
     export let story = {}
     export let colorLegend = []
     export let users = []
+
+    const isAbsolute = new RegExp('^([a-z]+://|//)', 'i')
+
     let userComment = ''
     let selectedComment = null
     let selectedCommentContent = ''
@@ -97,6 +101,11 @@
 
     const updateLink = evt => {
         const link = evt.target.value
+        if (link !== '' && !isAbsolute.test(link)) {
+            notifications.danger('Link must be an absolute URL')
+            return
+        }
+
         sendSocketEvent(
             'update_story_link',
             JSON.stringify({
@@ -247,6 +256,25 @@
                         value="{story.name}"
                         placeholder="Enter a story name e.g. Ricky Bobby"
                         name="storyName"
+                    />
+                </div>
+                <div class="mb-4">
+                    <label
+                        class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
+                        for="storyLink"
+                    >
+                        Story Link
+                    </label>
+                    <input
+                        class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+        rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
+        focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                        id="storyLink"
+                        type="text"
+                        on:change="{updateLink}"
+                        value="{story.link}"
+                        placeholder="Enter a story link"
+                        name="storyLink"
                     />
                 </div>
                 <div class="mb-4">
@@ -420,25 +448,6 @@
                             Reopen story
                         </HollowButton>
                     {/if}
-                </div>
-                <div class="mb-4">
-                    <label
-                        class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
-                        for="storyLink"
-                    >
-                        Story Link
-                    </label>
-                    <input
-                        class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-        rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-        focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-                        id="storyLink"
-                        type="text"
-                        on:change="{updateLink}"
-                        value="{story.link}"
-                        placeholder="Enter a story link"
-                        name="storyLink"
-                    />
                 </div>
                 <div class="text-right">
                     <HollowButton color="red" onClick="{handleStoryDelete}">

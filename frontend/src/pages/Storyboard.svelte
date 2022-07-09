@@ -1176,6 +1176,7 @@
         story="{activeStory}"
         sendSocketEvent="{sendSocketEvent}"
         eventTag="{eventTag}"
+        notifications="{notifications}"
         colorLegend="{storyboard.color_legend}"
         users="{storyboard.users}"
     />
