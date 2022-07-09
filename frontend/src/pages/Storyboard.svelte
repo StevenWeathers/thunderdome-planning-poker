@@ -61,183 +61,6 @@
     let joinPasscode = ''
     let collapseGoals = []
 
-    // event handlers
-    function authStoryboard(e) {
-        e.preventDefault()
-
-        sendSocketEvent('auth_storyboard', joinPasscode)
-        eventTag('auth_storyboard', 'storyboard', '')
-    }
-
-    const addStory = (goalId, columnId) => () => {
-        sendSocketEvent(
-            'add_story',
-            JSON.stringify({
-                goalId,
-                columnId,
-            }),
-        )
-        eventTag('story_add', 'storyboard', '')
-    }
-
-    const deleteStory = storyId => () => {
-        sendSocketEvent('delete_story', storyId)
-        eventTag('story_delete', 'storyboard', '')
-    }
-
-    const addStoryColumn = goalId => () => {
-        sendSocketEvent(
-            'add_column',
-            JSON.stringify({
-                goalId,
-            }),
-        )
-        eventTag('column_add', 'storyboard', '')
-    }
-
-    const deleteColumn = columnId => () => {
-        sendSocketEvent('delete_column', columnId)
-        eventTag('column_delete', 'storyboard', '')
-        toggleColumnEdit()()
-    }
-
-    const changeStoryColor = (storyId, color) => () => {
-        sendSocketEvent(
-            'update_story_color',
-            JSON.stringify({
-                storyId,
-                color,
-            }),
-        )
-        eventTag('story_edit_color', 'storyboard', color)
-    }
-
-    const storyUpdateName = storyId => evt => {
-        const name = evt.target.value
-        sendSocketEvent(
-            'update_story_name',
-            JSON.stringify({
-                storyId,
-                name,
-            }),
-        )
-        eventTag('story_edit_name', 'storyboard', '')
-    }
-
-    const storyUpdateContent = storyId => content => {
-        sendSocketEvent(
-            'update_story_content',
-            JSON.stringify({
-                storyId,
-                content,
-            }),
-        )
-        eventTag('story_edit_content', 'storyboard', '')
-    }
-
-    const storyUpdatePoints = storyId => evt => {
-        const points = parseInt(evt.target.value, 10)
-        sendSocketEvent(
-            'update_story_points',
-            JSON.stringify({
-                storyId,
-                points,
-            }),
-        )
-        eventTag('story_edit_points', 'storyboard', '')
-    }
-
-    const storyUpdateClosed = storyId => closed => {
-        sendSocketEvent(
-            'update_story_closed',
-            JSON.stringify({
-                storyId,
-                closed,
-            }),
-        )
-        eventTag('story_edit_closed', 'storyboard', '')
-    }
-
-    const storyUpdateLink = storyId => evt => {
-        const link = evt.target.value
-        sendSocketEvent(
-            'update_story_link',
-            JSON.stringify({
-                storyId,
-                link,
-            }),
-        )
-        eventTag('story_edit_link', 'storyboard', '')
-    }
-
-    const handleAddFacilitator = userId => () => {
-        sendSocketEvent(
-            'facilitator_add',
-            JSON.stringify({
-                userId,
-            }),
-        )
-    }
-
-    const handleRemoveFacilitator = userId => () => {
-        sendSocketEvent(
-            'facilitator_remove',
-            JSON.stringify({
-                userId,
-            }),
-        )
-    }
-
-    function handleDndConsider(e) {
-        const goalIndex = e.target.dataset.goalindex
-        const columnIndex = e.target.dataset.columnindex
-
-        storyboard.goals[goalIndex].columns[columnIndex].stories =
-            e.detail.items
-        storyboard.goals = storyboard.goals
-    }
-
-    function handleDndFinalize(e) {
-        const goalIndex = e.target.dataset.goalindex
-        const columnIndex = e.target.dataset.columnindex
-        const storyId = e.detail.info.id
-
-        storyboard.goals[goalIndex].columns[columnIndex].stories =
-            e.detail.items
-        storyboard.goals = storyboard.goals
-
-        const matchedStory = storyboard.goals[goalIndex].columns[
-            columnIndex
-        ].stories.find(i => i.id === storyId)
-
-        if (matchedStory) {
-            const goalId = storyboard.goals[goalIndex].id
-            const columnId = storyboard.goals[goalIndex].columns[columnIndex].id
-
-            // determine what story to place story before in target column
-            const matchedStoryIndex =
-                storyboard.goals[goalIndex].columns[
-                    columnIndex
-                ].stories.indexOf(matchedStory)
-            const sibling =
-                storyboard.goals[goalIndex].columns[columnIndex].stories[
-                    matchedStoryIndex + 1
-                ]
-            const placeBefore = sibling ? sibling.id : ''
-
-            sendSocketEvent(
-                'move_story',
-                JSON.stringify({
-                    storyId,
-                    goalId,
-                    columnId,
-                    placeBefore,
-                }),
-            )
-            eventTag('story_move', 'storyboard', '')
-        }
-    }
-
     const onSocketMessage = function (evt) {
         const parsedEvent = JSON.parse(evt.data)
 
@@ -405,6 +228,109 @@
         )
     }
 
+    // event handlers
+    function handleDndConsider(e) {
+        const goalIndex = e.target.dataset.goalindex
+        const columnIndex = e.target.dataset.columnindex
+
+        storyboard.goals[goalIndex].columns[columnIndex].stories =
+            e.detail.items
+        storyboard.goals = storyboard.goals
+    }
+
+    function handleDndFinalize(e) {
+        const goalIndex = e.target.dataset.goalindex
+        const columnIndex = e.target.dataset.columnindex
+        const storyId = e.detail.info.id
+
+        storyboard.goals[goalIndex].columns[columnIndex].stories =
+            e.detail.items
+        storyboard.goals = storyboard.goals
+
+        const matchedStory = storyboard.goals[goalIndex].columns[
+            columnIndex
+        ].stories.find(i => i.id === storyId)
+
+        if (matchedStory) {
+            const goalId = storyboard.goals[goalIndex].id
+            const columnId = storyboard.goals[goalIndex].columns[columnIndex].id
+
+            // determine what story to place story before in target column
+            const matchedStoryIndex =
+                storyboard.goals[goalIndex].columns[
+                    columnIndex
+                ].stories.indexOf(matchedStory)
+            const sibling =
+                storyboard.goals[goalIndex].columns[columnIndex].stories[
+                    matchedStoryIndex + 1
+                ]
+            const placeBefore = sibling ? sibling.id : ''
+
+            sendSocketEvent(
+                'move_story',
+                JSON.stringify({
+                    storyId,
+                    goalId,
+                    columnId,
+                    placeBefore,
+                }),
+            )
+            eventTag('story_move', 'storyboard', '')
+        }
+    }
+
+    function authStoryboard(e) {
+        e.preventDefault()
+
+        sendSocketEvent('auth_storyboard', joinPasscode)
+        eventTag('auth_storyboard', 'storyboard', '')
+    }
+
+    const addStory = (goalId, columnId) => () => {
+        sendSocketEvent(
+            'add_story',
+            JSON.stringify({
+                goalId,
+                columnId,
+            }),
+        )
+        eventTag('story_add', 'storyboard', '')
+    }
+
+    const addStoryColumn = goalId => () => {
+        sendSocketEvent(
+            'add_column',
+            JSON.stringify({
+                goalId,
+            }),
+        )
+        eventTag('column_add', 'storyboard', '')
+    }
+
+    const deleteColumn = columnId => () => {
+        sendSocketEvent('delete_column', columnId)
+        eventTag('column_delete', 'storyboard', '')
+        toggleColumnEdit()()
+    }
+
+    const handleAddFacilitator = userId => () => {
+        sendSocketEvent(
+            'facilitator_add',
+            JSON.stringify({
+                userId,
+            }),
+        )
+    }
+
+    const handleRemoveFacilitator = userId => () => {
+        sendSocketEvent(
+            'facilitator_remove',
+            JSON.stringify({
+                userId,
+            }),
+        )
+    }
+
     function concedeStoryboard() {
         eventTag('concede_storyboard', 'storyboard', '', () => {
             sendSocketEvent('concede_storyboard', '')
@@ -508,27 +434,6 @@
     const handleLegendRevision = legend => {
         sendSocketEvent('revise_color_legend', JSON.stringify(legend))
         eventTag('color_legend_revise', 'storyboard', '')
-    }
-
-    const addStoryComment = (storyId, comment) => {
-        sendSocketEvent(
-            'add_story_comment',
-            JSON.stringify({ storyId, comment }),
-        )
-        eventTag('story_add_comment', 'storyboard', '')
-    }
-
-    const editStoryComment = (commentId, comment) => {
-        sendSocketEvent(
-            'edit_story_comment',
-            JSON.stringify({ commentId, comment }),
-        )
-        eventTag('story_edit_comment', 'storyboard', '')
-    }
-
-    const deleteStoryComment = commentId => {
-        sendSocketEvent('delete_story_comment', JSON.stringify({ commentId }))
-        eventTag('story_delete_comment', 'storyboard', '')
     }
 
     const handlePersonaAdd = persona => {
@@ -1269,17 +1174,9 @@
     <StoryForm
         toggleStoryForm="{toggleStoryForm()}"
         story="{activeStory}"
-        changeColor="{changeStoryColor}"
-        updateContent="{storyUpdateContent}"
-        deleteStory="{deleteStory}"
-        updateName="{storyUpdateName}"
-        updatePoints="{storyUpdatePoints}"
-        updateClosed="{storyUpdateClosed}"
-        updateLink="{storyUpdateLink}"
+        sendSocketEvent="{sendSocketEvent}"
+        eventTag="{eventTag}"
         colorLegend="{storyboard.color_legend}"
-        addComment="{addStoryComment}"
-        editComment="{editStoryComment}"
-        deleteComment="{deleteStoryComment}"
         users="{storyboard.users}"
     />
 {/if}

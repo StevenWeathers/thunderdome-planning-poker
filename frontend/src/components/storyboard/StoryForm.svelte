@@ -6,16 +6,8 @@
     import { _ } from '../../i18n.js'
 
     export let toggleStoryForm = () => {}
-    export let updateContent = () => () => {}
-    export let updateName = () => () => {}
-    export let changeColor = () => () => {}
-    export let updatePoints = () => () => {}
-    export let updateClosed = () => () => {}
-    export let updateLink = () => () => {}
-    export let deleteStory = () => () => {}
-    export let addComment = () => {}
-    export let editComment = () => {}
-    export let deleteComment = () => {}
+    export let sendSocketEvent = () => {}
+    export let eventTag = () => {}
 
     export let story = {}
     export let colorLegend = []
@@ -28,27 +20,113 @@
     }, {})
 
     function handleStoryDelete() {
-        deleteStory(story.id)()
+        sendSocketEvent('delete_story', story.id)
+        eventTag('story_delete', 'storyboard', '')
         toggleStoryForm()
     }
 
     function markClosed() {
-        updateClosed(story.id)(true)
+        sendSocketEvent(
+            'update_story_closed',
+            JSON.stringify({
+                storyId: story.id,
+                closed: true,
+            }),
+        )
+        eventTag('story_edit_closed', 'storyboard', 'true')
     }
 
     function markOpen() {
-        updateClosed(story.id)(false)
+        sendSocketEvent(
+            'update_story_closed',
+            JSON.stringify({
+                storyId: story.id,
+                closed: false,
+            }),
+        )
+        eventTag('story_edit_closed', 'storyboard', 'false')
     }
 
-    function handleCommentSubmit() {
+    const changeColor = color => () => {
+        sendSocketEvent(
+            'update_story_color',
+            JSON.stringify({
+                storyId: story.id,
+                color,
+            }),
+        )
+        eventTag('story_edit_color', 'storyboard', color)
+    }
+
+    const updateName = evt => {
+        const name = evt.target.value
+        sendSocketEvent(
+            'update_story_name',
+            JSON.stringify({
+                storyId: story.id,
+                name,
+            }),
+        )
+        eventTag('story_edit_name', 'storyboard', '')
+    }
+
+    const updateContent = () => {
+        sendSocketEvent(
+            'update_story_content',
+            JSON.stringify({
+                storyId: story.id,
+                content: story.content,
+            }),
+        )
+        eventTag('story_edit_content', 'storyboard', '')
+    }
+
+    const updatePoints = evt => {
+        const points = parseInt(evt.target.value, 10)
+        sendSocketEvent(
+            'update_story_points',
+            JSON.stringify({
+                storyId: story.id,
+                points,
+            }),
+        )
+        eventTag('story_edit_points', 'storyboard', '')
+    }
+
+    const updateLink = evt => {
+        const link = evt.target.value
+        sendSocketEvent(
+            'update_story_link',
+            JSON.stringify({
+                storyId: story.id,
+                link,
+            }),
+        )
+        eventTag('story_edit_link', 'storyboard', '')
+    }
+
+    const handleCommentSubmit = () => {
         if (userComment !== '') {
-            addComment(story.id, userComment)
+            sendSocketEvent(
+                'add_story_comment',
+                JSON.stringify({ storyId: story.id, comment: userComment }),
+            )
+            eventTag('story_add_comment', 'storyboard', '')
             userComment = ''
         }
     }
 
-    const handleCommentDelete = id => () => {
-        deleteComment(id)
+    const editComment = (commentId, comment) => {
+        sendSocketEvent(
+            'edit_story_comment',
+            JSON.stringify({ commentId, comment }),
+        )
+        eventTag('story_edit_comment', 'storyboard', '')
+    }
+
+    const handleCommentDelete = commentId => () => {
+        sendSocketEvent('delete_story_comment', JSON.stringify({ commentId }))
+        eventTag('story_delete_comment', 'storyboard', '')
     }
 </script>
 
@@ -151,7 +229,7 @@
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                         id="storyName"
                         type="text"
-                        on:change="{updateName(story.id)}"
+                        on:change="{updateName}"
                         value="{story.name}"
                         placeholder="Enter a story name e.g. Ricky Bobby"
                         name="storyName"
@@ -173,7 +251,7 @@
                             }}"
                             on:text-change="{e => {
                                 story.content = e.detail.html
-                                updateContent(story.id)(story.content)
+                                updateContent()
                             }}"
                             id="storyDescription"
                         ></div>
@@ -254,7 +332,7 @@
                         min="0"
                         max="999"
                         bind:value="{story.points}"
-                        on:change="{updatePoints(story.id)}"
+                        on:change="{updatePoints}"
                         placeholder="Enter story points e.g. 1, 2, 3, 5,
                         8"
                         name="storyPoints"
@@ -267,7 +345,7 @@
                     <div>
                         {#each colorLegend as color}
                             <button
-                                on:click="{changeColor(story.id, color.color)}"
+                                on:click="{changeColor(color.color)}"
                                 class="p-4 mr-2 mb-2 colorcard-{color.color}
                                 border-2 border-solid {story.color ===
                                 color.color
@@ -303,7 +381,7 @@
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                         id="storyLink"
                         type="text"
-                        on:change="{updateLink(story.id)}"
+                        on:change="{updateLink}"
                         value="{story.link}"
                         placeholder="Enter a story link"
                         name="storyLink"
