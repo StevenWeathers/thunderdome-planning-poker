@@ -573,5 +573,17 @@
   "noComments": "No comments...",
   "actionComments": "Action Comments",
   "deleteActionItemError": "Error deleting action item",
-  "deleteActionItemSuccess": "Action item deleted successfully"
+  "deleteActionItemSuccess": "Action item deleted successfully",
+  "mfaTokenLabel": "Authenticator Token",
+  "mfaTokenPlaceholder": "Enter token from authenticator app",
+  "mfaSecretKeyLabel": "Secret Key",
+  "mfaSetupIntro": "Scan the following QR code with an Authenticator Application (such as Google Authenticator or Authy) and enter the generated token.",
+  "mfaConfirmToken": "Confirm Token",
+  "mfaGenerateFailed": "failed to start 2FA/MFA setup",
+  "mfaSetupSuccess": "successfully enabled 2FA/MFA",
+  "mfaSetupFailed": "failed to validate 2FA/MFA setup token",
+  "mfa2faLabel": "2FA/MFA Auth",
+  "mfa2faSetup": "Setup 2FA/MFA",
+  "mfa2faRemove": "Remove 2FA/MFA",
+  "mfa2faRemoveText": "Are you sure you want to remove 2FA/MFA?"
 }

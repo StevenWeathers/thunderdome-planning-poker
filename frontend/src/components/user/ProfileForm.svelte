@@ -206,16 +206,16 @@
     {#if profile.rank !== 'GUEST'}
         <div class="mb-4">
             <p class="block text-gray-700 dark:text-gray-400 font-bold mb-2">
-                2 Factor/MFA Auth
+                {$_('mfa2faLabel')}
             </p>
             {#if !profile.mfaEnabled}
                 <HollowButton color="teal" onClick="{toggleMfaSetup}"
-                    >Setup MFA
+                    >{$_('mfa2faSetup')}
                 </HollowButton>
             {:else}
                 <HollowButton color="red" onClick="{toggleMfaRemove}"
-                    >Remove MFA</HollowButton
-                >
+                    >{$_('mfa2faRemove')}
+                </HollowButton>
             {/if}
         </div>
     {/if}
@@ -410,7 +410,7 @@
     <DeleteConfirmation
         toggleDelete="{toggleMfaRemove}"
         handleDelete="{handleMfaRemove}"
-        confirmText="Are you sure you want to remove 2FA/MFA?"
-        confirmBtnText="Remove"
+        confirmText="{$_('mfa2faRemoveText')}"
+        confirmBtnText="{$_('remove')}"
     />
 {/if}

@@ -63,7 +63,7 @@
                 })
             })
             .catch(function () {
-                notifications.danger($_('pages.login.authError'))
+                notifications.danger($_('mfaAuthError'))
                 eventTag('login_mfa', 'engagement', 'failure')
             })
     }
@@ -332,11 +332,11 @@
                             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourEmail"
                         >
-                            Authenticator Token
+                            {$_('mfaTokenLabel')}
                         </label>
                         <input
                             bind:value="{mfaToken}"
-                            placeholder="Enter token from authenticator app"
+                            placeholder="{$_('mfaTokenPlaceholder')}"
                             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
