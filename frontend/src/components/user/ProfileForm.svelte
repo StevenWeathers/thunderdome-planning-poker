@@ -4,6 +4,9 @@
     import LocaleSwitcher from '../LocaleSwitcher.svelte'
     import SolidButton from '../SolidButton.svelte'
     import VerifiedIcon from '../icons/Verified.svelte'
+    import HollowButton from '../HollowButton.svelte'
+    import SetupMFA from '../user/SetupMFA.svelte'
+    import DeleteConfirmation from '../DeleteConfirmation.svelte'
     import { countryList } from '../../country.js'
     import { AppConfig } from '../../config.js'
     import { _, locale, setupI18n } from '../../i18n.js'
@@ -22,6 +25,7 @@
         avatar: '',
         gravatarHash: '',
         verified: false,
+        mfaEnabled: false,
     }
     export let handleUpdate = () => {}
     export let toggleUpdatePassword
@@ -88,6 +92,35 @@
         } else {
             handleUpdate(p)
         }
+    }
+
+    let showMFASetup = false
+
+    function toggleMfaSetup() {
+        showMFASetup = !showMFASetup
+    }
+
+    function handleMfaSetupCompletion() {
+        profile.mfaEnabled = true
+        toggleMfaSetup()
+    }
+
+    let showMfaRemove = false
+
+    function toggleMfaRemove() {
+        showMfaRemove = !showMfaRemove
+    }
+
+    function handleMfaRemove() {
+        xfetch('/api/auth/mfa', { method: 'DELETE' })
+            .then(() => {
+                profile.mfaEnabled = false
+                toggleMfaRemove()
+                notifications.success('2FA/MFA successfully removed')
+            })
+            .catch(() => {
+                notifications.danger('failed to remove 2FA/MFA')
+            })
     }
 
     function requestVerifyEmail(e) {
@@ -169,6 +202,23 @@
             disabled="{!userIsAdmin}"
         />
     </div>
+
+    {#if profile.rank !== 'GUEST'}
+        <div class="mb-4">
+            <p class="block text-gray-700 dark:text-gray-400 font-bold mb-2">
+                2 Factor/MFA Auth
+            </p>
+            {#if !profile.mfaEnabled}
+                <HollowButton color="teal" onClick="{toggleMfaSetup}"
+                    >Setup MFA
+                </HollowButton>
+            {:else}
+                <HollowButton color="red" onClick="{toggleMfaRemove}"
+                    >Remove MFA</HollowButton
+                >
+            {/if}
+        </div>
+    {/if}
 
     <div class="mb-4">
         <label
@@ -345,3 +395,22 @@
         </div>
     </div>
 </form>
+
+{#if showMFASetup}
+    <SetupMFA
+        notifications="{notifications}"
+        xfetch="{xfetch}"
+        eventTag="{eventTag}"
+        toggleSetup="{toggleMfaSetup}"
+        handleComplete="{handleMfaSetupCompletion}"
+    />
+{/if}
+
+{#if showMfaRemove}
+    <DeleteConfirmation
+        toggleDelete="{toggleMfaRemove}"
+        handleDelete="{handleMfaRemove}"
+        confirmText="Are you sure you want to remove 2FA/MFA?"
+        confirmBtnText="Remove"
+    />
+{/if}

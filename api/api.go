@@ -80,6 +80,7 @@ const (
 	contextKeyDepartmentRole contextKey = "departmentRole"
 	contextKeyTeamRole       contextKey = "teamRole"
 	adminUserType            string     = "ADMIN"
+	guestUserType            string     = "GUEST"
 )
 
 // @title Thunderdome API
@@ -132,6 +133,9 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		apiRouter.HandleFunc("/auth/verify", a.handleAccountVerification()).Methods("PATCH")
 		apiRouter.HandleFunc("/auth/register", a.handleUserRegistration()).Methods("POST")
 	}
+	apiRouter.HandleFunc("/auth/mfa", a.userOnly(a.registeredUserOnly(a.handleMFARemove()))).Methods("DELETE")
+	apiRouter.HandleFunc("/auth/mfa/setup/generate", a.userOnly(a.registeredUserOnly(a.handleMFASetupGenerate()))).Methods("POST")
+	apiRouter.HandleFunc("/auth/mfa/setup/validate", a.userOnly(a.registeredUserOnly(a.handleMFASetupValidate()))).Methods("POST")
 	apiRouter.HandleFunc("/auth/guest", a.handleCreateGuestUser()).Methods("POST")
 	apiRouter.HandleFunc("/auth/user", a.userOnly(a.handleSessionUserProfile())).Methods("GET")
 	apiRouter.HandleFunc("/auth/logout", a.handleLogout()).Methods("DELETE")

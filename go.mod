@@ -28,6 +28,7 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/o1egl/govatar v0.4.1
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
+	github.com/pquerna/otp v1.3.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/viper v1.9.0
 	github.com/swaggo/http-swagger v1.2.6

@@ -69,7 +69,10 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 	var UserJobTitle sql.NullString
 
 	err := d.db.QueryRow(
-		"SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active, disabled FROM users WHERE id = $1",
+		`SELECT id, name, email, type, avatar, verified,
+			notifications_enabled, country, locale, company, job_title,
+			created_date, updated_date, last_active, disabled, mfa_enabled
+			FROM users WHERE id = $1`,
 		UserID,
 	).Scan(
 		&w.Id,
@@ -87,6 +90,7 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 		&w.UpdatedDate,
 		&w.LastActive,
 		&w.Disabled,
+		&w.MFAEnabled,
 	)
 	if err != nil {
 		d.logger.Error("get user query error", zap.Error(err))
