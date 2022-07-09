@@ -19,7 +19,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 	var passHash string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled FROM users WHERE email = $1`,
+		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE email = $1`,
 		UserEmail,
 	).Scan(
 		&user.Id,
@@ -32,6 +32,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		&user.NotificationsEnabled,
 		&user.Locale,
 		&user.Disabled,
+		&user.MFAEnabled,
 	)
 	if e != nil {
 		d.logger.Error("Unable to auth user", zap.Error(e))
@@ -234,6 +235,41 @@ func (d *Database) MFARemove(UserID string) error {
 	if _, err := d.db.Exec(
 		`call user_mfa_remove($1)`, UserID); err != nil {
 		return fmt.Errorf("error removing user MFA: %w", err)
+	}
+
+	return nil
+}
+
+// MFATokenValidate validates the MFA secret and authenticator token for auth login
+func (d *Database) MFATokenValidate(SessionId string, passcode string) error {
+	var encryptedSecret string
+
+	e := d.db.QueryRow(
+		`SELECT um.secret FROM user_mfa um
+ 				LEFT JOIN user_session us ON us.user_id = um.user_id
+ 				WHERE us.session_id = $1`,
+		SessionId,
+	).Scan(
+		&encryptedSecret,
+	)
+	if e != nil {
+		d.logger.Error("error finding user MFA secret", zap.Error(e))
+		return errors.New("user not found")
+	}
+
+	decryptedSecret, secretErr := decrypt(encryptedSecret, d.config.AESHashkey)
+	if secretErr != nil {
+		return errors.New("unable to decode MFA secret")
+	}
+
+	valid := totp.Validate(passcode, decryptedSecret)
+	if !valid {
+		return errors.New("INVALID_AUTHENTICATOR_TOKEN")
+	}
+
+	err := d.EnableSession(SessionId)
+	if err != nil {
+		return errors.New("unable to enable user session")
 	}
 
 	return nil

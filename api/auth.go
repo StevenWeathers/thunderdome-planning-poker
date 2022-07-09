@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -14,6 +15,12 @@ type userLoginRequestBody struct {
 	Password string `json:"password"`
 }
 
+type loginResponse struct {
+	User        *model.User `json:"user"`
+	SessionId   string      `json:"sessionId"`
+	MFARequired bool        `json:"mfaRequired"`
+}
+
 // handleLogin attempts to log in the user
 // @Summary Login
 // @Description attempts to log the user in with provided credentials
@@ -21,7 +28,7 @@ type userLoginRequestBody struct {
 // @Tags auth
 // @Produce  json
 // @Param credentials body userLoginRequestBody false "user login object"
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=loginResponse}
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth [post]
@@ -46,13 +53,24 @@ func (a *api) handleLogin() http.HandlerFunc {
 			return
 		}
 
+		res := loginResponse{
+			User:        authedUser,
+			SessionId:   sessionId,
+			MFARequired: authedUser.MFAEnabled,
+		}
+
+		if authedUser.MFAEnabled {
+			a.Success(w, r, http.StatusOK, res, nil)
+			return
+		}
+
 		cookieErr := a.createSessionCookie(w, sessionId)
 		if cookieErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, authedUser, nil)
+		a.Success(w, r, http.StatusOK, res, nil)
 	}
 }
 
@@ -64,7 +82,7 @@ func (a *api) handleLogin() http.HandlerFunc {
 // @Tags auth
 // @Produce json
 // @Param credentials body userLoginRequestBody false "user login object"
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=loginResponse}
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/ldap [post]
@@ -89,13 +107,70 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 			return
 		}
 
+		res := loginResponse{
+			User:        authedUser,
+			SessionId:   sessionId,
+			MFARequired: authedUser.MFAEnabled,
+		}
+
+		if authedUser.MFAEnabled {
+			a.Success(w, r, http.StatusOK, res, nil)
+			return
+		}
+
 		cookieErr := a.createSessionCookie(w, sessionId)
 		if cookieErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, authedUser, nil)
+		a.Success(w, r, http.StatusOK, res, nil)
+	}
+}
+
+type mfaLoginRequestBody struct {
+	Passcode  string `json:"passcode"`
+	SessionId string `json:"sessionId"`
+}
+
+// handleMFALogin attempts to log in the user with MFA token
+// @Summary MFA Login
+// @Description attempts to log the user in with provided MFA token
+// @Tags auth
+// @Produce  json
+// @Param credentials body mfaLoginRequestBody false "mfa login object"
+// @Success 200 object standardJsonResponse{}
+// @Failure 401 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /auth/mfa [post]
+func (a *api) handleMFALogin() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var u = mfaLoginRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := a.db.MFATokenValidate(u.SessionId, u.Passcode)
+		if err != nil {
+			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_AUTHENTICATOR_TOKEN"))
+			return
+		}
+
+		cookieErr := a.createSessionCookie(w, u.SessionId)
+		if cookieErr != nil {
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
