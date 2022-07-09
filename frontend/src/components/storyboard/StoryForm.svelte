@@ -1,4 +1,5 @@
 <script>
+    import { quill } from '../../quill.js'
     import Modal from '../Modal.svelte'
     import HollowButton from '../HollowButton.svelte'
     import { warrior as user } from '../../stores.js'
@@ -163,14 +164,20 @@
                     >
                         Story Content
                     </label>
-                    <textarea
-                        class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-        rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-        focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-                        placeholder="Enter story content"
-                        on:change="{updateContent(story.id)}"
-                        id="storyDescription"
-                        value="{story.content}"></textarea>
+                    <div class="bg-white">
+                        <div
+                            class="w-full bg-white"
+                            use:quill="{{
+                                placeholder: 'Enter story content',
+                                content: story.content,
+                            }}"
+                            on:text-change="{e => {
+                                story.content = e.detail.html
+                                updateContent(story.id)(story.content)
+                            }}"
+                            id="storyDescription"
+                        ></div>
+                    </div>
                 </div>
                 <div class="mb-4">
                     <div
