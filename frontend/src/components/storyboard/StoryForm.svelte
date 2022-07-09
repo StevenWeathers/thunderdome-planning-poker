@@ -13,6 +13,8 @@
     export let colorLegend = []
     export let users = []
     let userComment = ''
+    let selectedComment = null
+    let selectedCommentContent = ''
 
     $: userMap = users.reduce((prev, usr) => {
         prev[usr.id] = usr.name
@@ -116,11 +118,23 @@
         }
     }
 
-    const editComment = (commentId, comment) => {
+    const toggleCommentEdit = comment => () => {
+        selectedComment = comment
+        if (comment !== null) {
+            selectedCommentContent = comment.comment
+        }
+    }
+
+    const handleCommentEdit = () => {
         sendSocketEvent(
             'edit_story_comment',
-            JSON.stringify({ commentId, comment }),
+            JSON.stringify({
+                commentId: selectedComment.id,
+                comment: selectedCommentContent,
+            }),
         )
+        selectedComment = null
+        selectedCommentContent = ''
         eventTag('story_edit_comment', 'storyboard', '')
     }
 
@@ -259,13 +273,81 @@
                 </div>
                 <div class="mb-4">
                     <div
-                        class="text-gray-700 dark:text-gray-400 font-bold text-lg"
+                        class="text-gray-700 dark:text-gray-400 font-bold text-lg mb-2"
                     >
                         Discussion{story.comments
                             ? ` (${story.comments.length})`
                             : ''}
                     </div>
-                    <div class="mb-2 w-full">
+                    <div class="mb-2">
+                        {#if story.comments}
+                            {#each story.comments as comment}
+                                <div
+                                    class="w-full mb-4 text-gray-700 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700"
+                                    data-commentid="{comment.id}"
+                                >
+                                    <div class="text-sm">
+                                        <div class="font-bold">
+                                            {userMap[comment.user_id]}
+                                        </div>
+                                    </div>
+                                    {#if selectedComment !== null && selectedComment.id === comment.id}
+                                        <div class="w-full mb-2">
+                                            <textarea
+                                                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                            rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
+                            focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
+                                                bind:value="{selectedCommentContent}"
+                                            ></textarea>
+                                            <div class="text-right">
+                                                <HollowButton
+                                                    color="blue"
+                                                    onClick="{toggleCommentEdit(
+                                                        null,
+                                                    )}"
+                                                >
+                                                    {$_('cancel')}
+                                                </HollowButton>
+                                                <HollowButton
+                                                    color="green"
+                                                    onClick="{handleCommentEdit}"
+                                                    disabled="{selectedCommentContent ===
+                                                        ''}"
+                                                >
+                                                    Update comment
+                                                </HollowButton>
+                                            </div>
+                                        </div>
+                                    {:else}
+                                        <div class="py-2">
+                                            {comment.comment}
+                                        </div>
+                                    {/if}
+                                    {#if comment.user_id === $user.id && !(selectedComment !== null && selectedComment.id === comment.id)}
+                                        <div class="mb-2 text-right">
+                                            <button
+                                                class="text-blue-500 hover:text-blue-300 mr-1"
+                                                on:click="{toggleCommentEdit(
+                                                    comment,
+                                                )}"
+                                            >
+                                                {$_('edit')}
+                                            </button>
+                                            <button
+                                                class="text-red-500 hover:text-red-300"
+                                                on:click="{handleCommentDelete(
+                                                    comment.id,
+                                                )}"
+                                            >
+                                                {$_('delete')}
+                                            </button>
+                                        </div>
+                                    {/if}
+                                </div>
+                            {/each}
+                        {/if}
+                    </div>
+                    <div class="w-full">
                         <textarea
                             class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
@@ -281,35 +363,6 @@
                                 Post comment
                             </HollowButton>
                         </div>
-                    </div>
-                    <div>
-                        {#if story.comments}
-                            {#each story.comments as comment}
-                                <div
-                                    class="w-full mb-4 text-gray-700 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700"
-                                    data-commentid="{comment.id}"
-                                >
-                                    <div class="text-sm">
-                                        <div class="font-bold">
-                                            {userMap[comment.user_id]}
-                                        </div>
-                                    </div>
-                                    <div class="py-2">{comment.comment}</div>
-                                    {#if comment.user_id === $user.id}
-                                        <div class="mb-2">
-                                            <button
-                                                class="text-red-500 hover:text-red-300"
-                                                on:click="{handleCommentDelete(
-                                                    comment.id,
-                                                )}"
-                                            >
-                                                {$_('delete')}
-                                            </button>
-                                        </div>
-                                    {/if}
-                                </div>
-                            {/each}
-                        {/if}
                     </div>
                 </div>
             </div>
