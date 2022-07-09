@@ -20,10 +20,10 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinC
 	}
 
 	var b = &model.Storyboard{
-		StoryboardID:   "",
-		OwnerID:        OwnerID,
-		StoryboardName: StoryboardName,
-		Users:          make([]*model.StoryboardUser, 0),
+		Id:      "",
+		OwnerID: OwnerID,
+		Name:    StoryboardName,
+		Users:   make([]*model.StoryboardUser, 0),
 	}
 
 	e := d.db.QueryRow(
@@ -31,7 +31,7 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinC
 		OwnerID,
 		StoryboardName,
 		encryptedJoinCode,
-	).Scan(&b.StoryboardID)
+	).Scan(&b.Id)
 	if e != nil {
 		d.logger.Error("create_storyboard query error", zap.Error(e))
 		return nil, errors.New("error creating storyboard")
@@ -43,7 +43,7 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinC
 		if _, err := d.db.Exec(
 			`INSERT INTO storyboard_user (storyboard_id, user_id)
 		VALUES ($1, $2)`,
-			b.StoryboardID,
+			b.Id,
 			OwnerID,
 		); err != nil {
 			d.logger.Error("insert storyboard user error", zap.Error(err))
@@ -79,28 +79,36 @@ func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, Jo
 func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error) {
 	var cl string
 	var JoinCode string
+	var facilitators string
 	var b = &model.Storyboard{
-		StoryboardID:   StoryboardID,
-		OwnerID:        "",
-		StoryboardName: "",
-		Users:          make([]*model.StoryboardUser, 0),
-		Goals:          make([]*model.StoryboardGoal, 0),
-		ColorLegend:    make([]*model.Color, 0),
-		Personas:       make([]*model.StoryboardPersona, 0),
+		Id:          StoryboardID,
+		OwnerID:     "",
+		Name:        "",
+		Users:       make([]*model.StoryboardUser, 0),
+		Goals:       make([]*model.StoryboardGoal, 0),
+		ColorLegend: make([]*model.Color, 0),
+		Personas:    make([]*model.StoryboardPersona, 0),
 	}
 
 	// get storyboard
 	e := d.db.QueryRow(
-		`SELECT id, name, owner_id, color_legend, COALESCE(join_code, ''), created_date, updated_date FROM storyboard WHERE id = $1`,
+		`SELECT
+				s.id, s.name, s.owner_id, s.color_legend, COALESCE(s.join_code, ''), s.created_date, s.updated_date,
+				COALESCE(json_agg(sf.user_id) FILTER (WHERE sf.storyboard_id IS NOT NULL), '[]') AS facilitators
+				FROM storyboard s
+				LEFT JOIN storyboard_facilitator sf ON sf.storyboard_id = s.id
+				WHERE s.id = $1
+				GROUP BY s.id`,
 		StoryboardID,
 	).Scan(
-		&b.StoryboardID,
-		&b.StoryboardName,
+		&b.Id,
+		&b.Name,
 		&b.OwnerID,
 		&cl,
 		&JoinCode,
 		&b.CreatedDate,
 		&b.UpdatedDate,
+		&facilitators,
 	)
 	if e != nil {
 		d.logger.Error("get storyboard query error", zap.Error(e))
@@ -110,6 +118,11 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 	clErr := json.Unmarshal([]byte(cl), &b.ColorLegend)
 	if clErr != nil {
 		d.logger.Error("color legend json error", zap.Error(clErr))
+	}
+
+	facilError := json.Unmarshal([]byte(facilitators), &b.Facilitators)
+	if facilError != nil {
+		d.logger.Error("facilitators json error", zap.Error(facilError))
 	}
 
 	b.Users = d.GetStoryboardUsers(StoryboardID)
@@ -140,14 +153,14 @@ func (d *Database) GetStoryboardsByUser(UserID string) ([]*model.Storyboard, int
 	defer storyboardRows.Close()
 	for storyboardRows.Next() {
 		var b = &model.Storyboard{
-			StoryboardID:   "",
-			OwnerID:        "",
-			StoryboardName: "",
-			Users:          make([]*model.StoryboardUser, 0),
+			Id:      "",
+			OwnerID: "",
+			Name:    "",
+			Users:   make([]*model.StoryboardUser, 0),
 		}
 		if err := storyboardRows.Scan(
-			&b.StoryboardID,
-			&b.StoryboardName,
+			&b.Id,
+			&b.Name,
 			&b.OwnerID,
 			&b.CreatedDate,
 			&b.UpdatedDate,
@@ -161,46 +174,18 @@ func (d *Database) GetStoryboardsByUser(UserID string) ([]*model.Storyboard, int
 	return storyboards, 0, nil
 }
 
-// ConfirmStoryboardOwner confirms the user is infact owner of the storyboard
-func (d *Database) ConfirmStoryboardOwner(StoryboardID string, userID string) error {
-	var ownerID string
-	e := d.db.QueryRow("SELECT owner_id FROM storyboard WHERE id = $1", StoryboardID).Scan(&ownerID)
-	if e != nil {
-		d.logger.Error("get owner_id from storyboard query error", zap.Error(e))
-		return errors.New("Storyboard Not found")
-	}
-
-	if ownerID != userID {
-		return errors.New("Not Owner")
+// ConfirmStoryboardFacilitator confirms the user is a facilitator of the storyboard
+func (d *Database) ConfirmStoryboardFacilitator(StoryboardID string, UserID string) error {
+	var facilitatorId string
+	err := d.db.QueryRow(
+		`SELECT user_id FROM storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
+		StoryboardID, UserID).Scan(&facilitatorId)
+	if err != nil {
+		d.logger.Error("get ConfirmStoryboardFacilitator error", zap.Error(err))
+		return errors.New("storyboard facilitator not found")
 	}
 
 	return nil
-}
-
-// GetStoryboardUser gets a user from db by ID and checks storyboard active status
-func (d *Database) GetStoryboardUser(StoryboardID string, UserID string) (*model.StoryboardUser, error) {
-	var active bool
-	var w model.StoryboardUser
-
-	e := d.db.QueryRow(
-		`SELECT * FROM get_storyboard_user($1, $2);`,
-		StoryboardID,
-		UserID,
-	).Scan(
-		&w.UserID,
-		&w.UserName,
-		&active,
-	)
-	if e != nil {
-		d.logger.Error("get_storyboard_user query error", zap.Error(e))
-		return nil, errors.New("User Not found")
-	}
-
-	if active {
-		return nil, errors.New("User Already Active in Storyboard")
-	}
-
-	return &w, nil
 }
 
 // GetStoryboardUsers retrieves the users for a given storyboard from db
@@ -214,13 +199,13 @@ func (d *Database) GetStoryboardUsers(StoryboardID string) []*model.StoryboardUs
 		defer rows.Close()
 		for rows.Next() {
 			var w model.StoryboardUser
-			if err := rows.Scan(&w.UserID, &w.UserName, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
+			if err := rows.Scan(&w.Id, &w.Name, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
 				d.logger.Error("get_storyboard_users query scan error", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
 				} else {
-					w.GravatarHash = createGravatarHash(w.UserID)
+					w.GravatarHash = createGravatarHash(w.Id)
 				}
 				users = append(users, &w)
 			}
@@ -241,7 +226,7 @@ func (d *Database) GetStoryboardPersonas(StoryboardID string) []*model.Storyboar
 		defer rows.Close()
 		for rows.Next() {
 			var p model.StoryboardPersona
-			if err := rows.Scan(&p.PersonaID, &p.Name, &p.Role, &p.Description); err != nil {
+			if err := rows.Scan(&p.Id, &p.Name, &p.Role, &p.Description); err != nil {
 				d.logger.Error("get_storyboard_personas query scan error", zap.Error(err))
 			} else {
 				personas = append(personas, &p)
@@ -332,11 +317,6 @@ func (d *Database) AbandonStoryboard(StoryboardID string, UserID string) ([]*mod
 
 // SetStoryboardOwner sets the ownerId for the storyboard
 func (d *Database) SetStoryboardOwner(StoryboardID string, userID string, OwnerID string) (*model.Storyboard, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call set_storyboard_owner($1, $2);`, StoryboardID, OwnerID); err != nil {
 		d.logger.Error("call set_storyboard_owner error", zap.Error(err))
@@ -352,11 +332,6 @@ func (d *Database) SetStoryboardOwner(StoryboardID string, userID string, OwnerI
 
 // StoryboardReviseColorLegend revises the storyboard color legend by StoryboardID
 func (d *Database) StoryboardReviseColorLegend(StoryboardID string, UserID string, ColorLegend string) (*model.Storyboard, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, UserID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call revise_color_legend($1, $2);`,
 		StoryboardID,
@@ -376,11 +351,6 @@ func (d *Database) StoryboardReviseColorLegend(StoryboardID string, UserID strin
 
 // DeleteStoryboard removes all storyboard associations and the storyboard itself from DB by StoryboardID
 func (d *Database) DeleteStoryboard(StoryboardID string, userID string) error {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call delete_storyboard($1);`, StoryboardID); err != nil {
 		d.logger.Error("call delete_storyboard error", zap.Error(err))
@@ -392,11 +362,6 @@ func (d *Database) DeleteStoryboard(StoryboardID string, userID string) error {
 
 // AddStoryboardPersona adds a persona to a storyboard
 func (d *Database) AddStoryboardPersona(StoryboardID string, UserID string, Name string, Role string, Description string) ([]*model.StoryboardPersona, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, UserID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call persona_add($1, $2, $3, $4);`,
 		StoryboardID,
@@ -414,11 +379,6 @@ func (d *Database) AddStoryboardPersona(StoryboardID string, UserID string, Name
 
 // UpdateStoryboardPersona updates a storyboard persona
 func (d *Database) UpdateStoryboardPersona(StoryboardID string, UserID string, PersonaID string, Name string, Role string, Description string) ([]*model.StoryboardPersona, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, UserID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call persona_edit($1, $2, $3, $4, $5);`,
 		StoryboardID,
@@ -437,11 +397,6 @@ func (d *Database) UpdateStoryboardPersona(StoryboardID string, UserID string, P
 
 // DeleteStoryboardPersona deletes a storyboard persona
 func (d *Database) DeleteStoryboardPersona(StoryboardID string, UserID string, PersonaID string) ([]*model.StoryboardPersona, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, UserID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call persona_delete($1, $2);`,
 		StoryboardID,
@@ -485,8 +440,8 @@ func (d *Database) GetStoryboards(Limit int, Offset int) ([]*model.Storyboard, i
 			Users: make([]*model.StoryboardUser, 0),
 		}
 		if err := rows.Scan(
-			&b.StoryboardID,
-			&b.StoryboardName,
+			&b.Id,
+			&b.Name,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
@@ -530,8 +485,8 @@ func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*model.Storybo
 			Users: make([]*model.StoryboardUser, 0),
 		}
 		if err := rows.Scan(
-			&b.StoryboardID,
-			&b.StoryboardName,
+			&b.Id,
+			&b.Name,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
@@ -542,4 +497,36 @@ func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*model.Storybo
 	}
 
 	return storyboards, Count, nil
+}
+
+// StoryboardFacilitatorAdd adds a storyboard facilitator
+func (d *Database) StoryboardFacilitatorAdd(StoryboardId string, UserID string) (*model.Storyboard, error) {
+	if _, err := d.db.Exec(
+		`call sb_facilitator_add($1, $2);`, StoryboardId, UserID); err != nil {
+		d.logger.Error("call sb_facilitator_add error", zap.Error(err))
+		return nil, errors.New("unable to add facilitator")
+	}
+
+	storyboard, err := d.GetStoryboard(StoryboardId)
+	if err != nil {
+		return nil, err
+	}
+
+	return storyboard, nil
+}
+
+// StoryboardFacilitatorRemove removes a storyboard facilitator
+func (d *Database) StoryboardFacilitatorRemove(StoryboardId string, UserID string) (*model.Storyboard, error) {
+	if _, err := d.db.Exec(
+		`call sb_facilitator_remove($1, $2);`, StoryboardId, UserID); err != nil {
+		d.logger.Error("call sb_facilitator_remove error", zap.Error(err))
+		return nil, errors.New("unable to remove facilitator")
+	}
+
+	storyboard, err := d.GetStoryboard(StoryboardId)
+	if err != nil {
+		return nil, err
+	}
+
+	return storyboard, nil
 }

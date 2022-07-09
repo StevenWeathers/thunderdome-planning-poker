@@ -1,18 +1,12 @@
 package db
 
 import (
-	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
 
 // CreateStoryboardStory adds a new story to a Storyboard
 func (d *Database) CreateStoryboardStory(StoryboardID string, GoalID string, ColumnID string, userID string) ([]*model.StoryboardGoal, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call create_storyboard_story($1, $2, $3);`, StoryboardID, GoalID, ColumnID,
 	); err != nil {
@@ -26,11 +20,6 @@ func (d *Database) CreateStoryboardStory(StoryboardID string, GoalID string, Col
 
 // ReviseStoryName updates the story name by ID
 func (d *Database) ReviseStoryName(StoryboardID string, userID string, StoryID string, StoryName string) ([]*model.StoryboardGoal, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call update_story_name($1, $2);`,
 		StoryID,
@@ -46,11 +35,6 @@ func (d *Database) ReviseStoryName(StoryboardID string, userID string, StoryID s
 
 // ReviseStoryContent updates the story content by ID
 func (d *Database) ReviseStoryContent(StoryboardID string, userID string, StoryID string, StoryContent string) ([]*model.StoryboardGoal, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call update_story_content($1, $2);`,
 		StoryID,
@@ -66,11 +50,6 @@ func (d *Database) ReviseStoryContent(StoryboardID string, userID string, StoryI
 
 // ReviseStoryColor updates the story color by ID
 func (d *Database) ReviseStoryColor(StoryboardID string, userID string, StoryID string, StoryColor string) ([]*model.StoryboardGoal, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call update_story_color($1, $2);`,
 		StoryID,
@@ -86,11 +65,6 @@ func (d *Database) ReviseStoryColor(StoryboardID string, userID string, StoryID 
 
 // ReviseStoryPoints updates the story points by ID
 func (d *Database) ReviseStoryPoints(StoryboardID string, userID string, StoryID string, Points int) ([]*model.StoryboardGoal, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call update_story_points($1, $2);`,
 		StoryID,
@@ -106,11 +80,6 @@ func (d *Database) ReviseStoryPoints(StoryboardID string, userID string, StoryID
 
 // ReviseStoryClosed updates the story closed status by ID
 func (d *Database) ReviseStoryClosed(StoryboardID string, userID string, StoryID string, Closed bool) ([]*model.StoryboardGoal, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call update_story_closed($1, $2);`,
 		StoryID,
@@ -126,11 +95,6 @@ func (d *Database) ReviseStoryClosed(StoryboardID string, userID string, StoryID
 
 // MoveStoryboardStory moves the story by ID to Goal/Column by ID
 func (d *Database) MoveStoryboardStory(StoryboardID string, userID string, StoryID string, GoalID string, ColumnID string, PlaceBefore string) ([]*model.StoryboardGoal, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call move_story($1, $2, $3, $4);`,
 		StoryID,
@@ -148,11 +112,6 @@ func (d *Database) MoveStoryboardStory(StoryboardID string, userID string, Story
 
 // DeleteStoryboardStory removes a story from the current board by ID
 func (d *Database) DeleteStoryboardStory(StoryboardID string, userID string, StoryID string) ([]*model.StoryboardGoal, error) {
-	err := d.ConfirmStoryboardOwner(StoryboardID, userID)
-	if err != nil {
-		return nil, errors.New("Incorrect permissions")
-	}
-
 	if _, err := d.db.Exec(
 		`call delete_storyboard_story($1);`, StoryID); err != nil {
 		d.logger.Error("call delete_storyboard_story error", zap.Error(err))

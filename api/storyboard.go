@@ -72,7 +72,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 			}
 
 			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddStoryboard(TeamID, newStoryboard.StoryboardID)
+				err := a.db.TeamAddStoryboard(TeamID, newStoryboard.Id)
 
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)

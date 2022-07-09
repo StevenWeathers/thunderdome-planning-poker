@@ -331,9 +331,31 @@ func (b *Service) DeletePersona(StoryboardID string, UserID string, EventValue s
 	return msg, nil, false
 }
 
-// PromoteOwner handles promoting a storyboard owner
-func (b *Service) PromoteOwner(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	storyboard, err := b.db.SetStoryboardOwner(StoryboardID, UserID, EventValue)
+// FacilitatorAdd handles adding a storyboard facilitator
+func (b *Service) FacilitatorAdd(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		UserID string `json:"userId"`
+	}
+	json.Unmarshal([]byte(EventValue), &rs)
+
+	storyboard, err := b.db.StoryboardFacilitatorAdd(StoryboardID, rs.UserID)
+	if err != nil {
+		return nil, err, false
+	}
+	updatedStoryboard, _ := json.Marshal(storyboard)
+	msg := createSocketEvent("storyboard_updated", string(updatedStoryboard), "")
+
+	return msg, nil, false
+}
+
+// FacilitatorRemove handles removing a storyboard facilitator
+func (b *Service) FacilitatorRemove(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		UserID string `json:"userId"`
+	}
+	json.Unmarshal([]byte(EventValue), &rs)
+
+	storyboard, err := b.db.StoryboardFacilitatorRemove(StoryboardID, rs.UserID)
 	if err != nil {
 		return nil, err, false
 	}

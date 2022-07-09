@@ -8,8 +8,8 @@ type Color struct {
 
 // RetroUser aka user
 type RetroUser struct {
-	UserID       string `json:"id"`
-	UserName     string `json:"name"`
+	ID           string `json:"id"`
+	Name         string `json:"name"`
 	Active       bool   `json:"active"`
 	Avatar       string `json:"avatar"`
 	GravatarHash string `json:"gravatarHash"`

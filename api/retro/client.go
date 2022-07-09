@@ -28,7 +28,11 @@ const (
 
 // ownerOnlyOperations contains a map of operations that only a retro leader can execute
 var ownerOnlyOperations = map[string]struct{}{
-	"concede": {},
+	"advance_phase":      {},
+	"add_facilitator":    {},
+	"remove_facilitator": {},
+	"edit_retro":         {},
+	"concede_retro":      {},
 }
 
 var upgrader = websocket.Upgrader{

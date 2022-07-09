@@ -42,11 +42,11 @@
     let socketError = false
     let socketReconnecting = false
     let storyboard = {
-        owner_id: '',
         goals: [],
         users: [],
         colorLegend: [],
         personas: [],
+        facilitators: [],
     }
     let showUsers = false
     let showColorLegend = false
@@ -155,6 +155,24 @@
             }),
         )
         eventTag('story_edit_closed', 'storyboard', '')
+    }
+
+    const handleAddFacilitator = userId => () => {
+        sendSocketEvent(
+            'facilitator_add',
+            JSON.stringify({
+                userId,
+            }),
+        )
+    }
+
+    const handleRemoveFacilitator = userId => () => {
+        sendSocketEvent(
+            'facilitator_remove',
+            JSON.stringify({
+                userId,
+            }),
+        )
     }
 
     function handleDndConsider(e) {
@@ -529,6 +547,9 @@
         activeStory = activeStory != null ? null : story
     }
 
+    $: isFacilitator =
+        storyboard.facilitators && storyboard.facilitators.includes($user.id)
+
     onMount(() => {
         if (!$user.id) {
             router.route(`${loginOrRegister}/storyboard/${storyboardId}`)
@@ -675,7 +696,7 @@
             </div>
             <div class="w-2/3 text-right">
                 <div>
-                    {#if storyboard.owner_id === $user.id}
+                    {#if isFacilitator}
                         <HollowButton
                             color="green"
                             onClick="{toggleAddGoal()}"
@@ -726,7 +747,7 @@
                                                     <span class="font-bold">
                                                         {persona.name}
                                                     </span>
-                                                    {#if storyboard.owner_id === $user.id}
+                                                    {#if isFacilitator}
                                                         &nbsp;|&nbsp;
                                                         <button
                                                             on:click="{toggleEditPersona(
@@ -756,7 +777,7 @@
                                         {/each}
                                     </div>
 
-                                    {#if storyboard.owner_id === $user.id}
+                                    {#if isFacilitator}
                                         <div class="p-2 text-right">
                                             <HollowButton
                                                 color="green"
@@ -813,7 +834,7 @@
                                         {/each}
                                     </div>
 
-                                    {#if storyboard.owner_id === $user.id}
+                                    {#if isFacilitator}
                                         <div class="p-2 text-right">
                                             <HollowButton
                                                 color="orange"
@@ -857,6 +878,9 @@
                                                 showBorder="{index !==
                                                     storyboard.users.length -
                                                         1}"
+                                                facilitators="{storyboard.facilitators}"
+                                                handleAddFacilitator="{handleAddFacilitator}"
+                                                handleRemoveFacilitator="{handleRemoveFacilitator}"
                                             />
                                         {/if}
                                     {/each}
@@ -891,7 +915,7 @@
                         </div>
                     </div>
                     <div class="w-1/4 text-right">
-                        {#if storyboard.owner_id === $user.id}
+                        {#if isFacilitator}
                             <HollowButton
                                 color="green"
                                 onClick="{addStoryColumn(goal.id)}"

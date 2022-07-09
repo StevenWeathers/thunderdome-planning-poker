@@ -28,7 +28,10 @@ const (
 
 // ownerOnlyOperations contains a map of operations that only a storyboard leader can execute
 var ownerOnlyOperations = map[string]struct{}{
-	"concede": struct{}{},
+	"facilitator_add":    {},
+	"facilitator_remove": {},
+	"edit_storyboard":    {},
+	"concede_storyboard": {},
 }
 
 var upgrader = websocket.Upgrader{
@@ -68,7 +71,8 @@ func (sub subscription) readPump(b *Service) {
 		"add_persona":          b.AddPersona,
 		"update_persona":       b.UpdatePersona,
 		"delete_persona":       b.DeletePersona,
-		"promote_owner":        b.PromoteOwner,
+		"facilitator_add":      b.FacilitatorAdd,
+		"facilitator_remove":   b.FacilitatorRemove,
 		"revise_color_legend":  b.ReviseColorLegend,
 		"edit_storyboard":      b.EditStoryboard,
 		"concede_storyboard":   b.Delete,
@@ -122,7 +126,7 @@ func (sub subscription) readPump(b *Service) {
 
 		// confirm owner for any operation that requires it
 		if _, ok := ownerOnlyOperations[eventType]; ok {
-			err := b.db.ConfirmStoryboardOwner(StoryboardID, UserID)
+			err := b.db.ConfirmStoryboardFacilitator(StoryboardID, UserID)
 			if err != nil {
 				badEvent = true
 			}

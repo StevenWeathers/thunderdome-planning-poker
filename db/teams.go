@@ -338,8 +338,8 @@ func (d *Database) TeamStoryboardList(TeamID string, Limit int, Offset int) []*m
 			var tb model.Storyboard
 
 			if err := rows.Scan(
-				&tb.StoryboardID,
-				&tb.StoryboardName,
+				&tb.Id,
+				&tb.Name,
 			); err != nil {
 				d.logger.Error("team_storyboard_list query scan error", zap.Error(err))
 			} else {

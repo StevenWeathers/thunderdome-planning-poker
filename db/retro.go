@@ -171,44 +171,14 @@ func (d *Database) RetroGetByUser(UserID string) ([]*model.Retro, error) {
 func (d *Database) RetroConfirmFacilitator(RetroID string, userID string) error {
 	var facilitatorId string
 	err := d.db.QueryRow(
-		"SELECT COALESCE(user_id, '') FROM retro_facilitator WHERE retro_id = $1 AND user_id = $2",
+		"SELECT user_id FROM retro_facilitator WHERE retro_id = $1 AND user_id = $2",
 		RetroID, userID).Scan(&facilitatorId)
 	if err != nil {
 		d.logger.Error("get RetroConfirmFacilitator error", zap.Error(err))
-		return errors.New("retro Not found")
-	}
-
-	if facilitatorId == "" {
-		return errors.New("not a facilitator")
+		return errors.New("retro facilitator not found")
 	}
 
 	return nil
-}
-
-// RetroGetUser gets a user from db by ID and checks retro active status
-func (d *Database) RetroGetUser(RetroID string, UserID string) (*model.RetroUser, error) {
-	var active bool
-	var w model.RetroUser
-
-	err := d.db.QueryRow(
-		`SELECT * FROM get_retro_user($1, $2);`,
-		RetroID,
-		UserID,
-	).Scan(
-		&w.UserID,
-		&w.UserName,
-		&active,
-	)
-	if err != nil {
-		d.logger.Error("get retro user error", zap.Error(err))
-		return nil, errors.New("User Not found")
-	}
-
-	if active {
-		return nil, errors.New("User Already Active in Retro")
-	}
-
-	return &w, nil
 }
 
 // RetroGetUsers retrieves the users for a given retro from db
@@ -222,13 +192,13 @@ func (d *Database) RetroGetUsers(RetroID string) []*model.RetroUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w model.RetroUser
-			if err := rows.Scan(&w.UserID, &w.UserName, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
+			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
 				d.logger.Error("get retro users error", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
 				} else {
-					w.GravatarHash = createGravatarHash(w.UserID)
+					w.GravatarHash = createGravatarHash(w.ID)
 				}
 				users = append(users, &w)
 			}
