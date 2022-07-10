@@ -2,6 +2,7 @@
     import { quill } from '../../quill.js'
     import Modal from '../Modal.svelte'
     import HollowButton from '../HollowButton.svelte'
+    import UserIcon from '../icons/UserIcon.svelte'
     import { warrior as user } from '../../stores.js'
     import { _ } from '../../i18n.js'
 
@@ -314,13 +315,13 @@
                                     class="w-full mb-4 text-gray-700 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700"
                                     data-commentid="{comment.id}"
                                 >
-                                    <div class="text-sm">
-                                        <div class="font-bold">
-                                            {userMap[comment.user_id]}
-                                        </div>
+                                    <div class="font-bold">
+                                        <UserIcon
+                                            class="h-4 w-4"
+                                        />&nbsp;{userMap[comment.user_id]}
                                     </div>
                                     {#if selectedComment !== null && selectedComment.id === comment.id}
-                                        <div class="w-full mb-2">
+                                        <div class="w-full my-2">
                                             <textarea
                                                 class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                             rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
@@ -342,7 +343,7 @@
                                                     disabled="{selectedCommentContent ===
                                                         ''}"
                                                 >
-                                                    Update comment
+                                                    {$_('updateComment')}
                                                 </HollowButton>
                                             </div>
                                         </div>

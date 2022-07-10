@@ -318,6 +318,50 @@ func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
 	}
 }
 
+// handleRetroActionCommentEdit handles editing a retro action item comment
+// @Summary Retro Action Item Comment Edit
+// @Description Edit a retro action item comment
+// @Param retroId path string true "the retro ID"
+// @Param actionId path string true "the action ID"
+// @Param commentId path string true "the comment ID"
+// @Param actionItem body actionCommentRequestBody true "action comment"
+// @Tags retro
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [put]
+func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var ra = actionCommentRequestBody{}
+
+		vars := mux.Vars(r)
+		RetroID := vars["retroId"]
+		ActionID := vars["actionId"]
+		CommentID := vars["commentId"]
+
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+		jsonErr := json.Unmarshal(body, &ra)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		action, err := a.db.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, action, nil)
+	}
+}
+
 // handleRetroActionCommentDelete handles delete a comment from a retro action item
 // @Summary Retro Action Item Comment Delete
 // @Description Delete a comment from a retro action item

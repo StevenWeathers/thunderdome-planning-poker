@@ -588,5 +588,7 @@
   "mfa2faRemoveText": "Are you sure you want to remove 2FA/MFA?",
   "mfaAuthError": "Error validating authenticator token",
   "mfa2faRemoveSuccess": "2FA/MFA successfully removed",
-  "mfa2faRemoveFailure": "Failed to remove 2FA/MFA"
+  "mfa2faRemoveFailure": "Failed to remove 2FA/MFA",
+  "retroActionCommentEditError": "error editing retro action comment",
+  "updateComment": "Update Comment"
 }

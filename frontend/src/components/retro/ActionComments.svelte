@@ -21,6 +21,15 @@
     }, {})
 
     let userComment = ''
+    let selectedComment = null
+    let selectedCommentContent = ''
+
+    const toggleCommentEdit = comment => () => {
+        selectedComment = comment
+        if (comment !== null) {
+            selectedCommentContent = comment.comment
+        }
+    }
 
     function handleCommentSubmit() {
         const body = {
@@ -59,6 +68,28 @@
             })
     }
 
+    const handleCommentEdit = () => {
+        const body = {
+            comment: selectedCommentContent,
+        }
+
+        xfetch(
+            `/api/retros/${selectedAction.retroId}/actions/${selectedAction.id}/comments/${selectedComment.id}`,
+            { body, method: 'PUT' },
+        )
+            .then(res => res.json())
+            .then(function ({ data }) {
+                selectedComment = null
+                selectedCommentContent = ''
+                getRetrosActions()
+                eventTag('retro_comment_edit', 'engagement', 'success')
+            })
+            .catch(function () {
+                notifications.danger($_('retroActionCommentAddError'))
+                eventTag('retro_comment_edit', 'engagement', 'failure')
+            })
+    }
+
     $: selectedAction = actions && actions.find(a => a.id === selectedActionId)
 </script>
 
@@ -70,21 +101,60 @@
             {$_('actionComments')}
         </h3>
         {#each selectedAction.comments as comment}
-            <p class="pb-2 mb-2 border-b border-gray-300 dark:border-gray-600">
-                <span>{comment.comment}</span><br />
-                <span
-                    ><UserIcon class="h-4 w-4" />
-                    {userMap[comment.user_id] || '...'}</span
-                >
-                {#if comment.user_id === $user.id || comment.user_id === isAdmin}
-                    <button
-                        class="ml-2 text-red-500"
-                        on:click="{handleCommentDelete(comment.id)}"
-                    >
-                        {$_('delete')}
-                    </button>
+            <div
+                class="w-full mb-4 text-gray-700 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700"
+                data-commentid="{comment.id}"
+            >
+                <div class="font-bold">
+                    <UserIcon class="h-4 w-4" />&nbsp;{userMap[
+                        comment.user_id
+                    ] || '...'}
+                </div>
+                {#if selectedComment !== null && selectedComment.id === comment.id}
+                    <div class="w-full my-2">
+                        <textarea
+                            class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                            rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
+                            focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
+                            bind:value="{selectedCommentContent}"></textarea>
+                        <div class="text-right">
+                            <HollowButton
+                                color="blue"
+                                onClick="{toggleCommentEdit(null)}"
+                            >
+                                {$_('cancel')}
+                            </HollowButton>
+                            <HollowButton
+                                color="green"
+                                onClick="{handleCommentEdit}"
+                                disabled="{selectedCommentContent === ''}"
+                            >
+                                {$_('updateComment')}
+                            </HollowButton>
+                        </div>
+                    </div>
+                {:else}
+                    <div class="py-2">
+                        {comment.comment}
+                    </div>
                 {/if}
-            </p>
+                {#if (comment.user_id === $user.id || comment.user_id === isAdmin) && !(selectedComment !== null && selectedComment.id === comment.id)}
+                    <div class="mb-2 text-right">
+                        <button
+                            class="text-blue-500 hover:text-blue-300 mr-1"
+                            on:click="{toggleCommentEdit(comment)}"
+                        >
+                            {$_('edit')}
+                        </button>
+                        <button
+                            class="text-red-500"
+                            on:click="{handleCommentDelete(comment.id)}"
+                        >
+                            {$_('delete')}
+                        </button>
+                    </div>
+                {/if}
+            </div>
         {/each}
         {#if selectedAction.comments.length === 0}
             <p class="text-lg dark:text-gray-400">{$_('noComments')}</p>
