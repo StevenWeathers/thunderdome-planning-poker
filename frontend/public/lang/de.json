@@ -612,5 +612,6 @@
   "mfa2faRemoveSuccess": "2FA/MFA successfully removed",
   "mfa2faRemoveFailure": "Failed to remove 2FA/MFA",
   "retroActionCommentEditError": "error editing retro action comment",
-  "updateComment": "Update Comment"
+  "updateComment": "Update Comment",
+  "comment": "Comment"
 }

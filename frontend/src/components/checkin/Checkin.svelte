@@ -51,70 +51,74 @@
 </style>
 
 <Modal closeModal="{toggleCheckin}" widthClasses="md:w-2/3">
-    <form on:submit="{onSubmit}" name="teamCheckin">
-        <div class="mb-4">
-            <div
-                class="text-gray-700 uppercase font-rajdhani text-2xl tracking-wide mb-2 dark:text-gray-400"
-            >
-                {$_('checkinMeetYesterdayGoalsQuestion')}
+    <form on:submit="{onSubmit}" name="teamCheckin" class="flex flex-wrap mt-8">
+        <div class="w-full md:grid md:grid-cols-2 md:gap-4">
+            <div>
+                <div class="mb-2">
+                    <div
+                        class="text-gray-500 dark:text-gray-300 uppercase font-rajdhani tracking-wide text-2xl mb-2"
+                    >
+                        {$_('yesterday')}
+                    </div>
+                    <div class="bg-white">
+                        <div
+                            class="w-full"
+                            use:quill="{{
+                                placeholder: `${$_('yesterdayPlaceholder')}`,
+                                content: yesterday,
+                            }}"
+                            on:text-change="{e => (yesterday = e.detail.html)}"
+                            id="yesterday"
+                        ></div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <div
+                        class="text-gray-600 dark:text-gray-400 uppercase font-rajdhani text-xl tracking-wide mb-2"
+                    >
+                        {$_('checkinMeetYesterdayGoalsQuestion')}
+                    </div>
+                    <div
+                        class="relative inline-block w-16 mr-2 align-middle select-none transition duration-200 ease-in"
+                    >
+                        <input
+                            type="checkbox"
+                            name="goalsMet"
+                            id="goalsMet"
+                            bind:checked="{goalsMet}"
+                            class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow"
+                        />
+                        <label
+                            for="goalsMet"
+                            class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-300 cursor-pointer transition-colors duration-200 ease-in-out"
+                        >
+                        </label>
+                    </div>
+                </div>
             </div>
-            <div
-                class="relative inline-block w-16 mr-2 align-middle select-none transition duration-200 ease-in"
-            >
-                <input
-                    type="checkbox"
-                    name="goalsMet"
-                    id="goalsMet"
-                    bind:checked="{goalsMet}"
-                    class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow"
-                />
-                <label
-                    for="goalsMet"
-                    class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-300 cursor-pointer transition-colors duration-200 ease-in-out"
-                >
-                </label>
+            <div>
+                <div class="mb-4">
+                    <div
+                        class="text-gray-500 dark:text-gray-300 uppercase font-rajdhani tracking-wide text-2xl mb-2"
+                    >
+                        {$_('today')}
+                    </div>
+                    <div class="bg-white">
+                        <div
+                            class="w-full"
+                            use:quill="{{
+                                placeholder: `${$_('todayPlaceholder')}`,
+                                content: today,
+                            }}"
+                            on:text-change="{e => (today = e.detail.html)}"
+                            id="today"
+                        ></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="mb-4">
-            <div
-                class="text-blue-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
-            >
-                {$_('yesterday')}
-            </div>
-            <div class="bg-white">
-                <div
-                    class="w-full"
-                    use:quill="{{
-                        placeholder: `${$_('yesterdayPlaceholder')}`,
-                        content: yesterday,
-                    }}"
-                    on:text-change="{e => (yesterday = e.detail.html)}"
-                    id="yesterday"
-                ></div>
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <div
-                class="text-green-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
-            >
-                {$_('today')}
-            </div>
-            <div class="bg-white">
-                <div
-                    class="w-full"
-                    use:quill="{{
-                        placeholder: `${$_('todayPlaceholder')}`,
-                        content: today,
-                    }}"
-                    on:text-change="{e => (today = e.detail.html)}"
-                    id="today"
-                ></div>
-            </div>
-        </div>
-
-        <div class="mb-4">
+        <div class="w-full mb-4">
             <div
                 class="text-red-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
             >
@@ -133,9 +137,9 @@
             </div>
         </div>
 
-        <div class="mb-4">
+        <div class="w-full mb-4">
             <div
-                class="text-purple-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
+                class="text-green-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
             >
                 {$_('discuss')}
             </div>
@@ -152,7 +156,7 @@
             </div>
         </div>
 
-        <div>
+        <div class="w-full">
             <div class="text-right">
                 <SolidButton type="submit">{$_('save')}</SolidButton>
             </div>

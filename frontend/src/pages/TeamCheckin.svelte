@@ -9,6 +9,7 @@
     import PencilIcon from '../components/icons/PencilIcon.svelte'
     import TrashIcon from '../components/icons/TrashIcon.svelte'
     import BlockedPing from '../components/checkin/BlockedPing.svelte'
+    import Comments from '../components/checkin/Comments.svelte'
     import Gauge from '../components/Gauge.svelte'
     import { _ } from '../i18n.js'
     import { warrior as user } from '../stores.js'
@@ -19,12 +20,6 @@
         getTimezoneName,
         subtractDays,
     } from '../dateUtils.js'
-    import TableRow from '../components/table/TableRow.svelte'
-    import RowCol from '../components/table/RowCol.svelte'
-    import HeadCol from '../components/table/HeadCol.svelte'
-    import Table from '../components/table/Table.svelte'
-    import CommentForm from '../components/checkin/CommentForm.svelte'
-    import UserIcon from '../components/icons/UserIcon.svelte'
 
     export let xfetch
     export let router
@@ -68,10 +63,7 @@
     let departmentRole = ''
     let teamRole = ''
 
-    let showCommentForm = false
     let selectedCheckinId = null
-
-    let selectedComment = null
 
     const apiPrefix = '/api'
     $: orgPrefix = departmentId
@@ -202,21 +194,14 @@
             })
     }
 
-    const toggleCommentForm = checkinId => () => {
-        showCommentForm = !showCommentForm
-        selectedCheckinId = checkinId
-        selectedComment = null
-    }
-
-    function handleCheckinComment(comment) {
+    function handleCheckinComment(checkinId, comment) {
         const body = {
             ...comment,
         }
 
-        xfetch(`${teamPrefix}/checkins/${selectedCheckinId}/comments`, { body })
+        xfetch(`${teamPrefix}/checkins/${checkinId}/comments`, { body })
             .then(res => res.json())
             .then(function () {
-                toggleCommentForm(null)()
                 eventTag('team_checkin_comment', 'engagement', 'success')
             })
             .catch(function (error) {
@@ -237,26 +222,17 @@
             })
     }
 
-    function toggleCommentEdit(comment) {
-        return () => {
-            showCommentForm = !showCommentForm
-            selectedComment = comment
-        }
-    }
-
-    function handleCheckinCommentEdit(comment) {
+    function handleCheckinCommentEdit(checkinId, commentId, comment) {
         const body = {
             ...comment,
         }
 
-        xfetch(
-            `${teamPrefix}/checkins/${selectedCheckinId}/comments/${selectedComment.id}`,
-            { body, method: 'PUT' },
-        )
+        xfetch(`${teamPrefix}/checkins/${checkinId}/comments/${commentId}`, {
+            body,
+            method: 'PUT',
+        })
             .then(res => res.json())
             .then(function () {
-                selectedComment = null
-                toggleCommentForm(null)()
                 eventTag('team_checkin_comment_edit', 'engagement', 'success')
             })
             .catch(function (error) {
@@ -495,187 +471,155 @@
     </div>
 
     <div class="mt-8">
-        <Table>
-            <tr slot="header">
-                <HeadCol>
-                    {$_('name')}
-                </HeadCol>
-                <HeadCol>{$_('yesterday')}</HeadCol>
-                <HeadCol>{$_('today')}</HeadCol>
-                <HeadCol>{$_('blockers')}</HeadCol>
-                <HeadCol>{$_('discuss')}</HeadCol>
-                <HeadCol>{$_('comments')}</HeadCol>
-            </tr>
-            <tbody slot="body" let:class="{className}" class="{className}">
-                {#each checkins as checkin, i}
-                    <TableRow itemIndex="{i}">
-                        <RowCol>
-                            <div class="flex items-center">
-                                <div class="">
+        <div
+            class="w-full grid grid-flow-col-dense auto-cols-min grid-cols-2 gap-4"
+        >
+            {#each checkins as checkin, i}
+                <div
+                    class="w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
+                >
+                    <div class="shrink mr-8 text-center">
+                        <div class="flex justify-items-center mb-4">
+                            <div class="relative w-20 h-20">
+                                <div class="relative w-full h-full">
                                     <div
-                                        class="relative cursor-pointer w-14 h-14"
+                                        class="w-full h-full bg-gray-200 rounded-full shadow"
                                     >
-                                        <div class="relative w-full h-full">
-                                            <div
-                                                class="w-full h-full bg-gray-200 rounded-full shadow"
-                                            >
-                                                <UserAvatar
-                                                    warriorId="{checkin.user
-                                                        .id}"
-                                                    avatar="{checkin.user
-                                                        .avatar}"
-                                                    gravatarHash="{checkin.user
-                                                        .gravatarHash}"
-                                                    options="{{
-                                                        class: 'w-full h-full rounded-full',
-                                                    }}"
-                                                />
-                                            </div>
-                                            {#if checkin.goalsMet}
-                                                <div
-                                                    class="absolute bottom-0 w-1/4 h-1/4 rounded-full shadow-md"
-                                                >
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 1024 1024"
-                                                    >
-                                                        <circle
-                                                            class="text-white fill-current"
-                                                            cx="512"
-                                                            cy="512"
-                                                            r="512"></circle>
-                                                        <circle
-                                                            fill="green"
-                                                            class="fill-current text-green-500"
-                                                            cx="512"
-                                                            cy="512"
-                                                            r="384"></circle>
-                                                        <path
-                                                            class="text-white fill-current"
-                                                            d="M456.4 576.1L334.8 454.4l-81.1 81.1 121.6 121.7 81.1 81.1 81.1-81.1 243.3-243.3-81.1-81.1z"
-                                                        ></path>
-                                                    </svg>
-                                                </div>
-                                            {/if}
-                                            {#if checkin.blockers !== ''}
-                                                <BlockedPing />
-                                            {/if}
-                                            <div
-                                                class="hidden absolute top-0 right-0 w-1/4 h-1/4 bg-white rounded-full shadow-md"
-                                            >
-                                                <!-- emoji -->
-                                            </div>
-                                        </div>
+                                        <UserAvatar
+                                            warriorId="{checkin.user.id}"
+                                            avatar="{checkin.user.avatar}"
+                                            gravatarHash="{checkin.user
+                                                .gravatarHash}"
+                                            options="{{
+                                                class: 'w-full h-full rounded-full',
+                                            }}"
+                                        />
                                     </div>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium">
-                                        {checkin.user.name}
-                                    </div>
-                                    {#if checkin.user.id === $user.id || isAdmin}
-                                        <div>
-                                            <button
-                                                on:click="{() => {
-                                                    toggleCheckin(checkin)
-                                                }}"
-                                                class="text-blue-500"
-                                                title="{$_('edit')}"
+                                    {#if checkin.goalsMet}
+                                        <div
+                                            class="absolute bottom-0 w-1/4 h-1/4 rounded-full shadow-md"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 1024 1024"
                                             >
-                                                <span class="sr-only"
-                                                    >{$_('edit')}</span
-                                                >
-                                                <PencilIcon />
-                                            </button>
-                                            <button
-                                                on:click="{() => {
-                                                    handleCheckinDelete(
-                                                        checkin.id,
-                                                    )
-                                                }}"
-                                                class="text-red-500"
-                                                title="Delete"
-                                            >
-                                                <span class="sr-only"
-                                                    >{$_('delete')}</span
-                                                >
-                                                <TrashIcon />
-                                            </button>
+                                                <circle
+                                                    class="text-white fill-current"
+                                                    cx="512"
+                                                    cy="512"
+                                                    r="512"></circle>
+                                                <circle
+                                                    fill="green"
+                                                    class="fill-current text-green-500"
+                                                    cx="512"
+                                                    cy="512"
+                                                    r="384"></circle>
+                                                <path
+                                                    class="text-white fill-current"
+                                                    d="M456.4 576.1L334.8 454.4l-81.1 81.1 121.6 121.7 81.1 81.1 81.1-81.1 243.3-243.3-81.1-81.1z"
+                                                ></path>
+                                            </svg>
                                         </div>
                                     {/if}
+                                    {#if checkin.blockers !== ''}
+                                        <BlockedPing />
+                                    {/if}
+                                    <div
+                                        class="hidden absolute top-0 right-0 w-1/4 h-1/4 bg-white rounded-full shadow-md"
+                                    >
+                                        <!-- emoji -->
+                                    </div>
                                 </div>
                             </div>
-                        </RowCol>
-                        <RowCol>
+                        </div>
+                        <div class="w-20">
+                            <div
+                                class="font-bold text-blue-500 dark:text-sky-400 mb-4"
+                            >
+                                {checkin.user.name}
+                            </div>
+                            {#if checkin.user.id === $user.id || isAdmin}
+                                <div>
+                                    <button
+                                        on:click="{() => {
+                                            toggleCheckin(checkin)
+                                        }}"
+                                        class="text-blue-500"
+                                        title="{$_('edit')}"
+                                    >
+                                        <span class="sr-only">{$_('edit')}</span
+                                        >
+                                        <PencilIcon />
+                                    </button>
+                                    <button
+                                        on:click="{() => {
+                                            handleCheckinDelete(checkin.id)
+                                        }}"
+                                        class="text-red-500"
+                                        title="Delete"
+                                    >
+                                        <span class="sr-only"
+                                            >{$_('delete')}</span
+                                        >
+                                        <TrashIcon />
+                                    </button>
+                                </div>
+                            {/if}
+                        </div>
+                    </div>
+                    <div class="grow">
+                        <div>
+                            <div class="font-bold text-gray-400">
+                                {$_('yesterday')}:
+                            </div>
                             <div class="unreset whitespace-pre-wrap">
                                 {@html checkin.yesterday}
                             </div>
-                        </RowCol>
-                        <RowCol>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-400">
+                                {$_('today')}:
+                            </div>
                             <div class="unreset whitespace-pre-wrap">
                                 {@html checkin.today}
                             </div>
-                        </RowCol>
-                        <RowCol>
-                            <div class="unreset whitespace-pre-wrap">
-                                {@html checkin.blockers}
+                        </div>
+                        {#if checkin.blockers !== ''}
+                            <div>
+                                <div class="font-bold text-lg text-red-500">
+                                    {$_('blockers')}:
+                                </div>
+                                <div class="unreset whitespace-pre-wrap">
+                                    {@html checkin.blockers}
+                                </div>
                             </div>
-                        </RowCol>
-                        <RowCol>
-                            <div class="unreset whitespace-pre-wrap">
-                                {@html checkin.discuss}
+                        {/if}
+                        {#if checkin.discuss !== ''}
+                            <div>
+                                <div class="font-bold text-lg text-green-500">
+                                    {$_('discuss')}:
+                                </div>
+                                <div class="unreset whitespace-pre-wrap">
+                                    {@html checkin.discuss}
+                                </div>
                             </div>
-                        </RowCol>
-                        <RowCol>
-                            <div class="whitespace-normal">
-                                {#each checkin.comments as comment}
-                                    <div
-                                        class="w-full mb-4 text-gray-700 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700"
-                                        data-commentid="{comment.id}"
-                                    >
-                                        <div class="font-bold">
-                                            <UserIcon
-                                                class="h-4 w-4"
-                                            />&nbsp;{userMap[comment.user_id] ||
-                                                '...'}
-                                        </div>
-                                        <div class="py-2">
-                                            {comment.comment}
-                                        </div>
-                                        {#if comment.user_id === $user.id || comment.user_id === isAdmin}
-                                            <div class="mb-2 text-right">
-                                                <button
-                                                    class="text-blue-500 hover:text-blue-300 mr-1"
-                                                    on:click="{toggleCommentEdit(
-                                                        comment,
-                                                    )}"
-                                                >
-                                                    {$_('edit')}
-                                                </button>
-                                                <button
-                                                    class="text-red-500"
-                                                    on:click="{handleCommentDelete(
-                                                        checkin.id,
-                                                        comment.id,
-                                                    )}"
-                                                >
-                                                    {$_('delete')}
-                                                </button>
-                                            </div>
-                                        {/if}
-                                    </div>
-                                {/each}
-                            </div>
-                            <div class="text-right pt-2">
-                                <SolidButton
-                                    onClick="{toggleCommentForm(checkin.id)}"
-                                    >{$_('addComment')}
-                                </SolidButton>
-                            </div>
-                        </RowCol>
-                    </TableRow>
-                {/each}
-            </tbody>
-        </Table>
+                        {/if}
+                        <div
+                            class="bg-gray-200 dark:bg-gray-600 rounded py-2 px-4"
+                        >
+                            <Comments
+                                checkin="{checkin}"
+                                userMap="{userMap}"
+                                isAdmin="{isAdmin}"
+                                handleCreate="{handleCheckinComment}"
+                                handleEdit="{handleCheckinCommentEdit}"
+                                handleDelete="{handleCommentDelete}"
+                            />
+                        </div>
+                    </div>
+                </div>
+            {/each}
+        </div>
     </div>
 
     {#if showCheckin}
@@ -702,15 +646,5 @@
                 handleCheckinEdit="{handleCheckinEdit}"
             />
         {/if}
-    {/if}
-
-    {#if showCommentForm}
-        <CommentForm
-            toggleForm="{toggleCommentForm(null)}"
-            handleComment="{handleCheckinComment}"
-            handleCommentEdit="{handleCheckinCommentEdit}"
-            selectedComment="{selectedComment}"
-            comment="{selectedComment !== null ? selectedComment.comment : ''}"
-        />
     {/if}
 </PageLayout>
