@@ -441,7 +441,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 my-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 my-4">
         <div class="px-2 md:px-4">
             <Gauge
                 text="{$_('participation')}"
@@ -471,12 +471,12 @@
     </div>
 
     <div class="mt-8">
-        <div class="w-full columns-2">
+        <div class="w-full md:columns-2">
             {#each checkins as checkin, i}
                 <div
-                    class="break-inside-avoid mb-4 w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
+                    class="md:break-inside-avoid mb-4 w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
                 >
-                    <div class="shrink mr-8 text-center">
+                    <div class="shrink mr-4 lg:mr-6 text-center">
                         <div class="flex justify-items-center mb-4">
                             <div class="relative w-20 h-20">
                                 <div class="relative w-full h-full">

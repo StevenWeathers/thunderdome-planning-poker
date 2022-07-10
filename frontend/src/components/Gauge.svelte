@@ -132,7 +132,9 @@
 
 <div class="relative gauge {color}">
     {#if count !== ''}
-        <div class="absolute text-right text-lg count-text">{count}</div>
+        <div class="absolute text-right text-sm md:text-lg count-text">
+            {count}
+        </div>
     {/if}
     <svg viewBox="0 0 1000 500" bind:this="{svgElem}" class="max-w-full">
         <g class="opacity-10">
@@ -144,11 +146,13 @@
             data-ratio="0"></path>
     </svg>
     <div class="absolute w-full h-full flex flex-col items-center justify-end">
-        <h3 class="block text-5xl font-black ml-1.5 tracking-tight percentage">
+        <h3
+            class="block text-3xl md:text-5xl font-black ml-1.5 tracking-tight percentage"
+        >
             <span>{stat}</span><span class="ml-0.5 text-base font-bold">%</span>
         </h3>
         <h4
-            class="mt-0.5 font-bold text-gray-500 dark:text-gray-400 uppercase text-md tracking-wide"
+            class="mt-0.5 font-bold text-gray-500 dark:text-gray-400 uppercase text-sm md:text-md tracking-wide"
         >
             {text}
         </h4>
