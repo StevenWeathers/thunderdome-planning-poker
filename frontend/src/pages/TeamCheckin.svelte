@@ -471,10 +471,10 @@
     </div>
 
     <div class="mt-8">
-        <div class="w-full grid grid-cols-2 gap-4">
+        <div class="w-full columns-2">
             {#each checkins as checkin, i}
                 <div
-                    class="w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
+                    class="break-inside-avoid mb-4 w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
                 >
                     <div class="shrink mr-8 text-center">
                         <div class="flex justify-items-center mb-4">
