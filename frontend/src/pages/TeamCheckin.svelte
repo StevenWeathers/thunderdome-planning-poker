@@ -480,7 +480,7 @@
     </div>
 
     <div class="mt-8 relative">
-        <div class="w-full grid grid-cols-2 gap-4">
+        <div class="w-full md:grid md:grid-cols-2 md:gap-4">
             {#each checkinColumns as col}
                 <div>
                     {#each col.checkins as checkin, i}
