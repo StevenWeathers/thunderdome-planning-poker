@@ -471,9 +471,7 @@
     </div>
 
     <div class="mt-8">
-        <div
-            class="w-full grid grid-flow-col-dense auto-cols-min grid-cols-2 gap-4"
-        >
+        <div class="w-full grid grid-cols-2 gap-4">
             {#each checkins as checkin, i}
                 <div
                     class="w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
