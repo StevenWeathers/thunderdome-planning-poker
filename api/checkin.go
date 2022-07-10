@@ -201,7 +201,7 @@ type checkinCommentRequestBody struct {
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
-// @Router /teams/{teamId}/checkins/{checkinId}/comment [post]
+// @Router /teams/{teamId}/checkins/{checkinId}/comments [post]
 func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -232,6 +232,54 @@ func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 		}
 
 		broker.BroadcastMessage(TeamId, "checkin_comment_added")
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleCheckinCommentEdit handles editing a team user checkin comment
+// @Summary Edit Team Checkin Comment
+// @Description Edits a team user checkin comment
+// @Param teamId path string true "the team ID"
+// @Param checkinId path string true "the checkin ID"
+// @Param comment body checkinCommentRequestBody true "comment object"
+// @Tags team
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /teams/{teamId}/checkins/{checkinId}/comments [post]
+func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		TeamId := vars["teamId"]
+		CommentId := vars["commentId"]
+
+		var c = checkinCommentRequestBody{}
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &c)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := a.db.CheckinCommentEdit(TeamId, c.UserID, CommentId, c.Comment)
+		if err != nil {
+			if err.Error() == "REQUIRES_TEAM_USER" {
+				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		broker.BroadcastMessage(TeamId, "checkin_comment_edited")
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}

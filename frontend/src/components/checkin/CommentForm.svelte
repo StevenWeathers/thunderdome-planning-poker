@@ -6,17 +6,24 @@
 
     export let toggleForm = () => {}
     export let handleComment = () => {}
-    export let checkinId
-
-    let comment = ''
+    export let handleCommentEdit = () => {}
+    export let selectedComment = null
+    export let comment = ''
 
     function onSubmit(e) {
         e.preventDefault()
 
-        handleComment({
-            userId: $user.id,
-            comment,
-        })
+        if (selectedComment !== null) {
+            handleCommentEdit({
+                userId: $user.id,
+                comment,
+            })
+        } else {
+            handleComment({
+                userId: $user.id,
+                comment,
+            })
+        }
     }
 </script>
 
@@ -33,7 +40,13 @@
 
         <div>
             <div class="text-right">
-                <SolidButton type="submit">{$_('postComment')}</SolidButton>
+                <SolidButton type="submit">
+                    {#if selectedComment !== null}
+                        {$_('updateComment')}
+                    {:else}
+                        {$_('postComment')}
+                    {/if}
+                </SolidButton>
             </div>
         </div>
     </form>

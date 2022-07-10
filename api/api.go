@@ -183,6 +183,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.departmentTeamUserOnly(a.handleCheckinUpdate(checkinBroker)))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.departmentTeamUserOnly(a.handleCheckinDelete(checkinBroker)))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.departmentTeamUserOnly(a.handleCheckinComment(checkinBroker)))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.departmentTeamUserOnly(a.handleCheckinCommentEdit(checkinBroker)))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.departmentTeamUserOnly(a.handleCheckinCommentDelete(checkinBroker)))).Methods("DELETE")
 	// org teams
 	orgRouter.HandleFunc("/{orgId}/teams", a.userOnly(a.orgUserOnly(a.handleGetOrganizationTeams()))).Methods("GET")
@@ -197,6 +198,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.orgTeamOnly(a.handleCheckinUpdate(checkinBroker)))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}", a.userOnly(a.orgTeamOnly(a.handleCheckinDelete(checkinBroker)))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.orgTeamOnly(a.handleCheckinComment(checkinBroker)))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.orgTeamOnly(a.handleCheckinCommentEdit(checkinBroker)))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.orgTeamOnly(a.handleCheckinCommentDelete(checkinBroker)))).Methods("DELETE")
 	// org users
 	orgRouter.HandleFunc("/{orgId}/users", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUsers()))).Methods("GET")
@@ -214,6 +216,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinUpdate(checkinBroker)))).Methods("PUT")
 	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}", a.userOnly(a.teamUserOnly(a.handleCheckinDelete(checkinBroker)))).Methods("DELETE")
 	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}/comments", a.userOnly(a.teamUserOnly(a.handleCheckinComment(checkinBroker)))).Methods("POST")
+	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentEdit(checkinBroker)))).Methods("PUT")
 	teamRouter.HandleFunc("/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.teamUserOnly(a.handleCheckinCommentDelete(checkinBroker)))).Methods("DELETE")
 	// admin
 	adminRouter.HandleFunc("/stats", a.userOnly(a.adminOnly(a.handleAppStats()))).Methods("GET")

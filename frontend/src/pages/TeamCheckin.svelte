@@ -71,6 +71,8 @@
     let showCommentForm = false
     let selectedCheckinId = null
 
+    let selectedComment = null
+
     const apiPrefix = '/api'
     $: orgPrefix = departmentId
         ? `${apiPrefix}/organizations/${organizationId}/departments/${departmentId}`
@@ -203,6 +205,7 @@
     const toggleCommentForm = checkinId => () => {
         showCommentForm = !showCommentForm
         selectedCheckinId = checkinId
+        selectedComment = null
     }
 
     function handleCheckinComment(comment) {
@@ -231,6 +234,46 @@
                     notifications.danger($_('checkinCommentError'))
                 }
                 eventTag('team_checkin_comment', 'engagement', 'failure')
+            })
+    }
+
+    function toggleCommentEdit(comment) {
+        return () => {
+            showCommentForm = !showCommentForm
+            selectedComment = comment
+        }
+    }
+
+    function handleCheckinCommentEdit(comment) {
+        const body = {
+            ...comment,
+        }
+
+        xfetch(
+            `${teamPrefix}/checkins/${selectedCheckinId}/comments/${selectedComment.id}`,
+            { body, method: 'PUT' },
+        )
+            .then(res => res.json())
+            .then(function () {
+                selectedComment = null
+                toggleCommentForm(null)()
+                eventTag('team_checkin_comment_edit', 'engagement', 'success')
+            })
+            .catch(function (error) {
+                if (Array.isArray(error)) {
+                    error[1].json().then(function (result) {
+                        if (result.error === 'REQUIRES_TEAM_USER') {
+                            notifications.danger(
+                                $_('teamUserRequiredToComment'),
+                            )
+                        } else {
+                            notifications.danger($_('checkinCommentError'))
+                        }
+                    })
+                } else {
+                    notifications.danger($_('checkinCommentError'))
+                }
+                eventTag('team_checkin_comment_edit', 'engagement', 'failure')
             })
     }
 
@@ -585,27 +628,41 @@
                         <RowCol>
                             <div class="whitespace-normal">
                                 {#each checkin.comments as comment}
-                                    <p
-                                        class="pb-2 mb-2 border-b border-gray-300 dark:border-gray-600"
+                                    <div
+                                        class="w-full mb-4 text-gray-700 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700"
+                                        data-commentid="{comment.id}"
                                     >
-                                        <span>{comment.comment}</span><br />
-                                        <span
-                                            ><UserIcon class="h-4 w-4" />
-                                            {userMap[comment.user_id] ||
-                                                '...'}</span
-                                        >
+                                        <div class="font-bold">
+                                            <UserIcon
+                                                class="h-4 w-4"
+                                            />&nbsp;{userMap[comment.user_id] ||
+                                                '...'}
+                                        </div>
+                                        <div class="py-2">
+                                            {comment.comment}
+                                        </div>
                                         {#if comment.user_id === $user.id || comment.user_id === isAdmin}
-                                            <button
-                                                class="ml-2 text-red-500"
-                                                on:click="{handleCommentDelete(
-                                                    checkin.id,
-                                                    comment.id,
-                                                )}"
-                                            >
-                                                {$_('delete')}
-                                            </button>
+                                            <div class="mb-2 text-right">
+                                                <button
+                                                    class="text-blue-500 hover:text-blue-300 mr-1"
+                                                    on:click="{toggleCommentEdit(
+                                                        comment,
+                                                    )}"
+                                                >
+                                                    {$_('edit')}
+                                                </button>
+                                                <button
+                                                    class="text-red-500"
+                                                    on:click="{handleCommentDelete(
+                                                        checkin.id,
+                                                        comment.id,
+                                                    )}"
+                                                >
+                                                    {$_('delete')}
+                                                </button>
+                                            </div>
                                         {/if}
-                                    </p>
+                                    </div>
                                 {/each}
                             </div>
                             <div class="text-right pt-2">
@@ -649,9 +706,11 @@
 
     {#if showCommentForm}
         <CommentForm
-            checkinId="{selectedCheckinId}"
             toggleForm="{toggleCommentForm(null)}"
             handleComment="{handleCheckinComment}"
+            handleCommentEdit="{handleCheckinCommentEdit}"
+            selectedComment="{selectedComment}"
+            comment="{selectedComment !== null ? selectedComment.comment : ''}"
         />
     {/if}
 </PageLayout>

@@ -191,6 +191,34 @@ func (d *Database) CheckinComment(
 	return nil
 }
 
+// CheckinCommentEdit edits a team checkin comment
+func (d *Database) CheckinCommentEdit(TeamId string, UserId string, CommentId string, Comment string) error {
+	var userCount int
+	// target user must be on team to comment on checkin
+	usrErr := d.db.QueryRow(`SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
+		TeamId,
+		UserId,
+	).Scan(&userCount)
+	if usrErr != nil {
+		return usrErr
+	}
+	if userCount != 1 {
+		return errors.New("REQUIRES_TEAM_USER")
+	}
+
+	_, err := d.db.Exec(
+		`UPDATE team_checkin_comment SET comment = $2, updated_date = NOW() WHERE id = $1;`,
+		CommentId,
+		Comment,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // CheckinCommentDelete deletes a team checkin comment
 func (d *Database) CheckinCommentDelete(CommentId string) error {
 	_, err := d.db.Exec(
