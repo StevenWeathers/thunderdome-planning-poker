@@ -63,7 +63,15 @@
     let departmentRole = ''
     let teamRole = ''
 
-    let selectedCheckinId = null
+    let checkinColumns = []
+
+    function divideCheckins(checkins) {
+        const half = Math.ceil(checkins.length / 2)
+
+        const checkins1 = checkins.slice(0, half)
+        const checkins2 = checkins.slice(half)
+        checkinColumns = [{ checkins: checkins1 }, { checkins: checkins2 }]
+    }
 
     const apiPrefix = '/api'
     $: orgPrefix = departmentId
@@ -102,6 +110,7 @@
             .then(res => res.json())
             .then(function (result) {
                 checkins = result.data
+                divideCheckins(checkins)
             })
             .catch(function () {
                 notifications.danger($_('getCheckinsError'))
@@ -293,7 +302,7 @@
     })
 
     onDestroy(() => {
-        evtSource.close()
+        evtSource && evtSource.close()
     })
 
     function calculateCheckinStats() {
@@ -470,151 +479,168 @@
         </div>
     </div>
 
-    <div class="mt-8">
-        <div class="w-full md:columns-2">
-            {#each checkins as checkin, i}
-                <div
-                    class="md:break-inside-avoid mb-4 w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
-                >
-                    <div class="shrink mr-4 lg:mr-6 text-center">
-                        <div class="flex justify-items-center mb-4">
-                            <div class="relative w-20 h-20">
-                                <div class="relative w-full h-full">
-                                    <div
-                                        class="w-full h-full bg-gray-200 rounded-full shadow"
-                                    >
-                                        <UserAvatar
-                                            warriorId="{checkin.user.id}"
-                                            avatar="{checkin.user.avatar}"
-                                            gravatarHash="{checkin.user
-                                                .gravatarHash}"
-                                            options="{{
-                                                class: 'w-full h-full rounded-full',
-                                            }}"
-                                        />
-                                    </div>
-                                    {#if checkin.goalsMet}
-                                        <div
-                                            class="absolute bottom-0 w-1/4 h-1/4 rounded-full shadow-md"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 1024 1024"
+    <div class="mt-8 relative">
+        <div class="w-full grid grid-cols-2 gap-4">
+            {#each checkinColumns as col}
+                <div>
+                    {#each col.checkins as checkin, i}
+                        <div
+                            class="mb-4 w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
+                        >
+                            <div class="shrink mr-4 lg:mr-6 text-center">
+                                <div class="flex justify-items-center mb-4">
+                                    <div class="relative w-20 h-20">
+                                        <div class="relative w-full h-full">
+                                            <div
+                                                class="w-full h-full bg-gray-200 rounded-full shadow"
                                             >
-                                                <circle
-                                                    class="text-white fill-current"
-                                                    cx="512"
-                                                    cy="512"
-                                                    r="512"></circle>
-                                                <circle
-                                                    fill="green"
-                                                    class="fill-current text-green-500"
-                                                    cx="512"
-                                                    cy="512"
-                                                    r="384"></circle>
-                                                <path
-                                                    class="text-white fill-current"
-                                                    d="M456.4 576.1L334.8 454.4l-81.1 81.1 121.6 121.7 81.1 81.1 81.1-81.1 243.3-243.3-81.1-81.1z"
-                                                ></path>
-                                            </svg>
+                                                <UserAvatar
+                                                    warriorId="{checkin.user
+                                                        .id}"
+                                                    avatar="{checkin.user
+                                                        .avatar}"
+                                                    gravatarHash="{checkin.user
+                                                        .gravatarHash}"
+                                                    options="{{
+                                                        class: 'w-full h-full rounded-full',
+                                                    }}"
+                                                />
+                                            </div>
+                                            {#if checkin.goalsMet}
+                                                <div
+                                                    class="absolute bottom-0 w-1/4 h-1/4 rounded-full shadow-md"
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 1024 1024"
+                                                    >
+                                                        <circle
+                                                            class="text-white fill-current"
+                                                            cx="512"
+                                                            cy="512"
+                                                            r="512"></circle>
+                                                        <circle
+                                                            fill="green"
+                                                            class="fill-current text-green-500"
+                                                            cx="512"
+                                                            cy="512"
+                                                            r="384"></circle>
+                                                        <path
+                                                            class="text-white fill-current"
+                                                            d="M456.4 576.1L334.8 454.4l-81.1 81.1 121.6 121.7 81.1 81.1 81.1-81.1 243.3-243.3-81.1-81.1z"
+                                                        ></path>
+                                                    </svg>
+                                                </div>
+                                            {/if}
+                                            {#if checkin.blockers !== ''}
+                                                <BlockedPing />
+                                            {/if}
+                                            <div
+                                                class="hidden absolute top-0 right-0 w-1/4 h-1/4 bg-white rounded-full shadow-md"
+                                            >
+                                                <!-- emoji -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-20">
+                                    <div
+                                        class="font-bold text-blue-500 dark:text-sky-400 mb-4"
+                                    >
+                                        {checkin.user.name}
+                                    </div>
+                                    {#if checkin.user.id === $user.id || isAdmin}
+                                        <div>
+                                            <button
+                                                on:click="{() => {
+                                                    toggleCheckin(checkin)
+                                                }}"
+                                                class="text-blue-500"
+                                                title="{$_('edit')}"
+                                            >
+                                                <span class="sr-only"
+                                                    >{$_('edit')}</span
+                                                >
+                                                <PencilIcon />
+                                            </button>
+                                            <button
+                                                on:click="{() => {
+                                                    handleCheckinDelete(
+                                                        checkin.id,
+                                                    )
+                                                }}"
+                                                class="text-red-500"
+                                                title="Delete"
+                                            >
+                                                <span class="sr-only"
+                                                    >{$_('delete')}</span
+                                                >
+                                                <TrashIcon />
+                                            </button>
                                         </div>
                                     {/if}
-                                    {#if checkin.blockers !== ''}
-                                        <BlockedPing />
-                                    {/if}
-                                    <div
-                                        class="hidden absolute top-0 right-0 w-1/4 h-1/4 bg-white rounded-full shadow-md"
-                                    >
-                                        <!-- emoji -->
+                                </div>
+                            </div>
+                            <div class="grow">
+                                <div>
+                                    <div class="font-bold text-gray-400">
+                                        {$_('yesterday')}:
+                                    </div>
+                                    <div class="unreset whitespace-pre-wrap">
+                                        {@html checkin.yesterday}
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="w-20">
-                            <div
-                                class="font-bold text-blue-500 dark:text-sky-400 mb-4"
-                            >
-                                {checkin.user.name}
-                            </div>
-                            {#if checkin.user.id === $user.id || isAdmin}
                                 <div>
-                                    <button
-                                        on:click="{() => {
-                                            toggleCheckin(checkin)
-                                        }}"
-                                        class="text-blue-500"
-                                        title="{$_('edit')}"
-                                    >
-                                        <span class="sr-only">{$_('edit')}</span
+                                    <div class="font-bold text-gray-400">
+                                        {$_('today')}:
+                                    </div>
+                                    <div class="unreset whitespace-pre-wrap">
+                                        {@html checkin.today}
+                                    </div>
+                                </div>
+                                {#if checkin.blockers !== ''}
+                                    <div>
+                                        <div
+                                            class="font-bold text-lg text-red-500"
                                         >
-                                        <PencilIcon />
-                                    </button>
-                                    <button
-                                        on:click="{() => {
-                                            handleCheckinDelete(checkin.id)
-                                        }}"
-                                        class="text-red-500"
-                                        title="Delete"
-                                    >
-                                        <span class="sr-only"
-                                            >{$_('delete')}</span
+                                            {$_('blockers')}:
+                                        </div>
+                                        <div
+                                            class="unreset whitespace-pre-wrap"
                                         >
-                                        <TrashIcon />
-                                    </button>
+                                            {@html checkin.blockers}
+                                        </div>
+                                    </div>
+                                {/if}
+                                {#if checkin.discuss !== ''}
+                                    <div>
+                                        <div
+                                            class="font-bold text-lg text-green-500"
+                                        >
+                                            {$_('discuss')}:
+                                        </div>
+                                        <div
+                                            class="unreset whitespace-pre-wrap"
+                                        >
+                                            {@html checkin.discuss}
+                                        </div>
+                                    </div>
+                                {/if}
+                                <div
+                                    class="bg-gray-200 dark:bg-gray-600 rounded py-2 px-4"
+                                >
+                                    <Comments
+                                        checkin="{checkin}"
+                                        userMap="{userMap}"
+                                        isAdmin="{isAdmin}"
+                                        handleCreate="{handleCheckinComment}"
+                                        handleEdit="{handleCheckinCommentEdit}"
+                                        handleDelete="{handleCommentDelete}"
+                                    />
                                 </div>
-                            {/if}
+                            </div>
                         </div>
-                    </div>
-                    <div class="grow">
-                        <div>
-                            <div class="font-bold text-gray-400">
-                                {$_('yesterday')}:
-                            </div>
-                            <div class="unreset whitespace-pre-wrap">
-                                {@html checkin.yesterday}
-                            </div>
-                        </div>
-                        <div>
-                            <div class="font-bold text-gray-400">
-                                {$_('today')}:
-                            </div>
-                            <div class="unreset whitespace-pre-wrap">
-                                {@html checkin.today}
-                            </div>
-                        </div>
-                        {#if checkin.blockers !== ''}
-                            <div>
-                                <div class="font-bold text-lg text-red-500">
-                                    {$_('blockers')}:
-                                </div>
-                                <div class="unreset whitespace-pre-wrap">
-                                    {@html checkin.blockers}
-                                </div>
-                            </div>
-                        {/if}
-                        {#if checkin.discuss !== ''}
-                            <div>
-                                <div class="font-bold text-lg text-green-500">
-                                    {$_('discuss')}:
-                                </div>
-                                <div class="unreset whitespace-pre-wrap">
-                                    {@html checkin.discuss}
-                                </div>
-                            </div>
-                        {/if}
-                        <div
-                            class="bg-gray-200 dark:bg-gray-600 rounded py-2 px-4"
-                        >
-                            <Comments
-                                checkin="{checkin}"
-                                userMap="{userMap}"
-                                isAdmin="{isAdmin}"
-                                handleCreate="{handleCheckinComment}"
-                                handleEdit="{handleCheckinCommentEdit}"
-                                handleDelete="{handleCommentDelete}"
-                            />
-                        </div>
-                    </div>
+                    {/each}
                 </div>
             {/each}
         </div>
