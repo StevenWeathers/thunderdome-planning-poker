@@ -1,0 +1,14 @@
+{
+  "name": "thunderdome-e2e-test",
+  "version": "0.0.0",
+  "description": "End to end testing for Thunderdome",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test"
+  },
+  "author": "Steven Weathers",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@playwright/test": "^1.23.2"
+  }
+}
