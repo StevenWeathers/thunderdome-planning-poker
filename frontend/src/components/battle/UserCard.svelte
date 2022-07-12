@@ -64,6 +64,7 @@
     class="border-b border-gray-300 dark:border-gray-700 p-4 flex items-center"
     data-testid="user-card"
     data-username="{warrior.name}"
+    data-userid="{warrior.id}"
 >
     <div class="w-1/4 mr-2">
         <UserAvatar

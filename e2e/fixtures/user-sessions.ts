@@ -4,6 +4,7 @@ class AdminPage {
     page: Page;
     user: {
         id: string,
+        email: string,
     };
 
     constructor(page: Page) {
@@ -29,6 +30,7 @@ class RegisteredPage {
     page: Page;
     user: {
         id: string,
+        email: string,
     };
 
     constructor(page: Page) {
@@ -48,6 +50,14 @@ class RegisteredPage {
         const u = await this.page.request.get('/api/auth/user');
         const user = await u.json();
         this.user = user.data;
+    }
+
+    public async createBattle(battle) {
+        const b = await this.page.request.post(`/api/users/${this.user.id}/battles`, {
+            data: battle
+        });
+        const res = await b.json();
+        return res.data;
     }
 
     public async createOrg(name: string) {
@@ -105,6 +115,7 @@ class VerifiedPage {
     page: Page;
     user: {
         id: string,
+        email: string,
     };
 
     constructor(page: Page) {
@@ -123,6 +134,14 @@ class VerifiedPage {
         const u = await this.page.request.get('/api/auth/user');
         const user = await u.json();
         this.user = user.data;
+    }
+
+    public async createBattle(battle) {
+        const b = await this.page.request.post(`/api/users/${this.user.id}/battles`, {
+            data: battle
+        });
+        const res = await b.json();
+        return res.data;
     }
 }
 

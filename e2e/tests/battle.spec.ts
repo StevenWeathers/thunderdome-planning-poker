@@ -1,122 +1,148 @@
-import {test} from '@playwright/test';
+import {expect, test} from '../fixtures/user-sessions';
+import {BattlePage} from "../fixtures/battle-page";
 
-test.describe('The Battle Page', () => {
-    test.describe('Unauthenicated User', () => {
-        // it('redirects to register for unauthenticated user', function () {
-        //     cy.visit('/battle/bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa')
-        //
-        //     cy.url().should('include', '/register')
-        // })
+test.describe('Battle page', () => {
+    let battle = {
+        id: '',
+        name: ''
+    }
+    let battleWithAutoFinishVoting = {
+        id: '',
+        name: ''
+    }
+
+    test.beforeAll(async ({registeredPage, verifiedPage, adminPage}) => {
+        const b = await registeredPage.createBattle({
+            name: 'e2e battle page tests',
+            pointValuesAllowed: [
+                '0', '1,', '2', '3', '5', '8', '13', '?'
+            ],
+            pointAverageRounding: 'ceil',
+            plans: [
+                {
+                    name: 'Defeat Loki',
+                    type: 'Story'
+                }
+            ],
+            autoFinishVoting: false,
+            battleLeaders: [
+                adminPage.user.email
+            ]
+        });
+        battle = b
+
+        const bWithAutoFinishVoting = await verifiedPage.createBattle({
+            name: 'e2e battle page tests',
+            pointValuesAllowed: [
+                '0', '1,', '2', '3', '5', '8', '13', '?'
+            ],
+            pointAverageRounding: 'ceil',
+            plans: [
+                {
+                    name: 'Defeat Scarlet Witch',
+                    type: 'Story'
+                }
+            ],
+            autoFinishVoting: true,
+        });
+        battleWithAutoFinishVoting = bWithAutoFinishVoting
+    })
+
+    test.describe('Unauthenticated user', () => {
+        test('redirects to register', async ({page}) => {
+            const bp = new BattlePage(page);
+            await bp.goto(battle.id);
+
+            const title = bp.page.locator('h1');
+            await expect(title).toHaveText('Enlist to Battle');
+        })
     })
 
     test.describe('Guest User', () => {
-        // beforeEach(() => {
-        //     cy.task('db:teardown:guestUser')
-        //     cy.createGuestUser()
-        // })
-        //
-        // it('successfully loads', function () {
-        //     cy.createUserBattle(this.currentUser).then(() => {
-        //         cy.visit(`/battle/${this.currentBattle.id}`)
-        //
-        //         cy.get('h2').should('contain', 'Test Battle')
-        //     })
-        // })
+        test('successfully loads', async ({guestPage}) => {
+            const bp = new BattlePage(guestPage.page);
+            await bp.goto(battle.id);
+
+            const title = bp.page.locator('h2');
+            await expect(title).toHaveText(battle.name);
+        })
     })
 
     test.describe('Registered User', () => {
-        // beforeEach(() => {
-        //     cy.task('db:teardown:registeredUser')
-        //     cy.task('db:seed:registeredUser').as('currentUser')
-        // })
-        //
-        // it('successfully loads for authenticated registered user', function () {
-        //     cy.login(this.currentUser)
-        //     cy.createUserBattle(this.currentUser).then(() => {
-        //         cy.visit(`/battle/${this.currentBattle.id}`)
-        //
-        //         cy.get('h2').should('contain', 'Test Battle')
-        //     })
-        // })
+        test('successfully loads', async ({registeredPage}) => {
+            const bp = new BattlePage(registeredPage.page);
+            await bp.goto(battle.id);
+
+            const title = bp.page.locator('h2');
+            await expect(title).toHaveText(battle.name);
+        })
 
         test.describe('User', () => {
-            // it('can become spectator (when autoFinishVoting is true)', function () {
-            //     cy.login(this.currentUser)
-            //     cy.createUserBattle(this.currentUser, {
-            //         name: 'Test Battle',
-            //         pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
-            //         autoFinishVoting: true,
-            //         plans: [],
-            //         pointAverageRounding: 'ceil'
-            //     }).then(() => {
-            //         cy.visit(`/battle/${this.currentBattle.id}`)
-            //
-            //         cy.getByTestId('user-togglespectator').click()
-            //
-            //         cy.getByTestId('user-togglespectator').should('contain', 'Become Participant')
-            //     })
-            // })
-            //
-            // it('cannot become spectator (when autoFinishVoting is false)', function () {
-            //     cy.login(this.currentUser)
-            //     cy.createUserBattle(this.currentUser).then(() => {
-            //         cy.visit(`/battle/${this.currentBattle.id}`)
-            //
-            //         cy.getByTestId('user-togglespectator').should('not.exist')
-            //     })
-            // })
-            //
-            // it('can demote leader (when is a leader)', function () {
-            //     cy.login(this.currentUser)
-            //     cy.createUserBattle(this.currentUser, {
-            //         name: 'Test Battle',
-            //         pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
-            //         autoFinishVoting: false,
-            //         plans: [
-            //             {
-            //                 name: 'Defeat Loki',
-            //                 type: 'Story'
-            //             }
-            //         ],
-            //         pointAverageRounding: 'ceil'
-            //     }).then(() => {
-            //         cy.visit(`/battle/${this.currentBattle.id}`)
-            //
-            //         // yes you can demote yourself even
-            //         cy.getByTestId('user-demote').click()
-            //
-            //         cy.getByTestId('user-demote').should('not.exist')
-            //         cy.getByTestId('battle-delete').should('not.exist')
-            //         cy.getByTestId('plans-add').should('not.exist')
-            //         cy.getByTestId('plan-edit').should('not.exist')
-            //         cy.getByTestId('plan-delete').should('not.exist')
-            //         cy.getByTestId('plan-activate').should('not.exist')
-            //
-            //         cy.getByTestId('battle-abandon').should('exist')
-            //         cy.getByTestId('plan-view').should('exist')
-            //     })
-            // })
-            //
-            // it('can abandon battle', function () {
-            //     cy.login(this.currentUser)
-            //     cy.createUserBattle(this.currentUser).then(() => {
-            //         cy.visit(`/battle/${this.currentBattle.id}`)
-            //
-            //         // can't abandon battle if a leader
-            //         cy.getByTestId('user-demote').click()
-            //
-            //         cy.getByTestId('battle-abandon').click()
-            //
-            //         // we should be redirected to battles page
-            //         cy.location('pathname').should('equal', '/battles')
-            //
-            //         cy.getByTestId('battle-name').should('not.exist')
-            //     })
-            // })
+            test('can become spectator (when autoFinishVoting is true)', async ({registeredPage}) => {
+                const bp = new BattlePage(registeredPage.page);
+                await bp.goto(battleWithAutoFinishVoting.id);
+
+                const spectatorButton = bp.page.locator('[data-testid="user-togglespectator"]');
+
+                await spectatorButton.click();
+                await expect(spectatorButton).toHaveText('Become Participant');
+            })
+
+            test('cannot become spectator (when autoFinishVoting is false)', async ({registeredPage}) => {
+                const bp = new BattlePage(registeredPage.page);
+                await bp.goto(battle.id);
+
+                const spectatorButton = bp.page.locator('[data-testid="user-togglespectator"]');
+
+                await expect(spectatorButton).not.toBeVisible()
+            })
+
+            test('can demote leader (when is a leader)', async ({adminPage}) => {
+                const bp = new BattlePage(adminPage.page);
+                await bp.goto(battle.id);
+
+                const userDemoteBtn = bp.page.locator(`[data-testid="user-card"][data-userid="${adminPage.user.id}"] [data-testid="user-demote"]`);
+                const battleDeleteBtn = bp.page.locator('[data-testid="battle-delete"]');
+                const addPlansBtn = bp.page.locator('[data-testid="plans-add"]');
+                const editPlanBtn = bp.page.locator('[data-testid="plan-edit"]');
+                const deletePlanBtn = bp.page.locator('[data-testid="plan-delete"]');
+                const activatePlanBtn = bp.page.locator('[data-testid="plan-activate"]');
+                const abandonBattleBtn = bp.page.locator('[data-testid="battle-abandon"]');
+                const viewPlanBtn = bp.page.locator('[data-testid="plan-view"]');
+
+                await expect(userDemoteBtn).toBeVisible();
+                await expect(battleDeleteBtn).toBeVisible();
+                await expect(addPlansBtn).toBeVisible();
+                await expect(editPlanBtn).toBeVisible();
+                await expect(deletePlanBtn).toBeVisible();
+                await expect(activatePlanBtn).toBeVisible();
+                await expect(viewPlanBtn).toBeVisible();
+                await expect(abandonBattleBtn).not.toBeVisible();
+
+                // yes you can demote yourself!
+                await userDemoteBtn.click();
+
+                await expect(userDemoteBtn).not.toBeVisible();
+                await expect(battleDeleteBtn).not.toBeVisible();
+                await expect(addPlansBtn).not.toBeVisible();
+                await expect(editPlanBtn).not.toBeVisible();
+                await expect(deletePlanBtn).not.toBeVisible();
+                await expect(activatePlanBtn).not.toBeVisible();
+                await expect(viewPlanBtn).toBeVisible();
+                await expect(abandonBattleBtn).toBeVisible();
+            });
+
+            test('can abandon battle', async ({registeredPage}) => {
+                const bp = new BattlePage(registeredPage.page);
+                await bp.goto(battleWithAutoFinishVoting.id);
+
+                await bp.page.click('[data-testid="battle-abandon"]');
+                await expect(bp.page.locator('h1')).toHaveText('My Battles');
+            })
         })
 
         test.describe('Plans', () => {
-            // it('should display existing plans', function () {
+            // test('should display existing plans', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser, {
             //         name: 'Test Battle',
@@ -136,7 +162,7 @@ test.describe('The Battle Page', () => {
             //     })
             // })
             //
-            // it('should allow adding', function () {
+            // test('should allow adding', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser).then(() => {
             //         cy.visit(`/battle/${this.currentBattle.id}`)
@@ -151,7 +177,7 @@ test.describe('The Battle Page', () => {
             //     })
             // })
             //
-            // it('should allow editing plans', function () {
+            // test('should allow editing plans', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser, {
             //         name: 'Test Battle',
@@ -179,7 +205,7 @@ test.describe('The Battle Page', () => {
             //     })
             // })
             //
-            // it('should allow deleting plans', function () {
+            // test('should allow deleting plans', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser, {
             //         name: 'Test Battle',
@@ -203,7 +229,7 @@ test.describe('The Battle Page', () => {
             //     })
             // })
             //
-            // it('should allow activating plans', function () {
+            // test('should allow activating plans', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser, {
             //         name: 'Test Battle',
@@ -233,7 +259,7 @@ test.describe('The Battle Page', () => {
             //     })
             // })
             //
-            // it('should allow skipping plan voting', function () {
+            // test('should allow skipping plan voting', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser, {
             //         name: 'Test Battle',
@@ -269,7 +295,7 @@ test.describe('The Battle Page', () => {
             //     })
             // })
             //
-            // it('should allow finishing plan voting', function () {
+            // test('should allow finishing plan voting', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser, {
             //         name: 'Test Battle',
@@ -310,7 +336,7 @@ test.describe('The Battle Page', () => {
             //     })
             // })
             //
-            // it('should allow saving plan voting final points', function () {
+            // test('should allow saving plan voting final points', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser, {
             //         name: 'Test Battle',
@@ -362,7 +388,7 @@ test.describe('The Battle Page', () => {
         })
 
         test.describe('Delete Battle', () => {
-            // it('successfully deletes battle and navigates to my battles page', function () {
+            // test('successfully deletes battle and navigates to my battles page', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser).then(() => {
             //         cy.visit(`/battle/${this.currentBattle.id}`)
@@ -377,7 +403,7 @@ test.describe('The Battle Page', () => {
             //     })
             // })
             //
-            // it('cancel does not delete battle', function () {
+            // test('cancel does not delete battle', async ({} => {
             //     cy.login(this.currentUser)
             //     cy.createUserBattle(this.currentUser).then(() => {
             //         const battleUrl = `/battle/${this.currentBattle.id}`
