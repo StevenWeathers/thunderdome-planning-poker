@@ -181,7 +181,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route(appRoutes.register)
+            router.route(appRoutes.login)
             return
         }
 
