@@ -372,14 +372,10 @@
             action: 'completed',
         }
 
-        if (phase === null) {
-            nextPhase[retro.phase]
-        }
-
         sendSocketEvent(
             'advance_phase',
             JSON.stringify({
-                phase,
+                phase: phase || nextPhase[retro.phase],
             }),
         )
     }
