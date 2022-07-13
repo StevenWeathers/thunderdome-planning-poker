@@ -2,7 +2,7 @@ import {expect, test} from '../fixtures/user-sessions';
 import {BattlePage} from "../fixtures/battle-page";
 
 const allowedPointValues = [
-    '0', '1,', '2', '3', '5', '8', '13', '?'
+    '0', '1', '2', '3', '5', '8', '13', '?'
 ];
 const pointAverageRounding = 'ceil';
 const lokiPlan = {name: 'Defeat Loki', type: 'Story'};
@@ -15,8 +15,12 @@ test.describe('Battle page', () => {
     let battleAddPlan = {id: ''};
     let battleEditPlan = {id: ''};
     let battleDeletePlan = {id: ''};
+    let battleActivatePlan = {id: ''};
+    let battleSkipPlan = {id: ''};
     let battleWithoutAutoVoting = {id: ''};
     let battleWithAutoVoting = {id: '', name: ''};
+    let battleFinishVoting = {id: ''};
+    let battleSaveVoting = {id: ''};
     let battleAbandon = {id: ''};
     let battleCancelDelete = {id: ''}
     let battleDelete = {id: ''};
@@ -37,11 +41,15 @@ test.describe('Battle page', () => {
         battleAddPlan = await registeredPage.createBattle({...commonBattle});
         battleEditPlan = await registeredPage.createBattle({...commonBattle, plans: [thanosPlan]});
         battleDeletePlan = await registeredPage.createBattle({...commonBattle, plans: [scarletPlan]});
+        battleActivatePlan = await registeredPage.createBattle({...commonBattle, plans: [scarletPlan]});
+        battleSkipPlan = await registeredPage.createBattle({...commonBattle, plans: [thanosPlan]});
         battleWithoutAutoVoting = await registeredPage.createBattle({...commonBattle});
         battleWithAutoVoting = await verifiedPage.createBattle({
             ...commonBattle,
             autoFinishVoting: true,
         });
+        battleFinishVoting = await registeredPage.createBattle({...commonBattle, plans: [lokiPlan]});
+        battleSaveVoting = await registeredPage.createBattle({...commonBattle, plans: [lokiPlan]});
         battleAbandon = await verifiedPage.createBattle({...commonBattle});
         battleCancelDelete = await registeredPage.createBattle({...commonBattle});
         battleDelete = await registeredPage.createBattle({...commonBattle});
@@ -161,162 +169,91 @@ test.describe('Battle page', () => {
         await expect(bp.planName).not.toBeVisible();
     });
 
-    // test('should allow activating plans', async ({} => {
-    //     cy.login(this.currentUser)
-    //     cy.createUserBattle(this.currentUser, {
-    //         name: 'Test Battle',
-    //         pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
-    //         autoFinishVoting: false,
-    //         plans: [
-    //             {
-    //                 name: 'Defeat Loki',
-    //                 type: 'Story'
-    //             }
-    //         ],
-    //         pointAverageRounding: 'ceil'
-    //     }).then(() => {
-    //         cy.visit(`/battle/${this.currentBattle.id}`)
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
-    //
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
-    //
-    //         cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
-    //
-    //         cy.getByTestId('plan-activate').click()
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
-    //
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'false')
-    //     })
-    // })
-    //
-    // test('should allow skipping plan voting', async ({} => {
-    //     cy.login(this.currentUser)
-    //     cy.createUserBattle(this.currentUser, {
-    //         name: 'Test Battle',
-    //         pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
-    //         autoFinishVoting: false,
-    //         plans: [
-    //             {
-    //                 name: 'Defeat Loki',
-    //                 type: 'Story'
-    //             }
-    //         ],
-    //         pointAverageRounding: 'ceil'
-    //     }).then(() => {
-    //         cy.visit(`/battle/${this.currentBattle.id}`)
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
-    //
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
-    //
-    //         cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
-    //
-    //         cy.getByTestId('plan-activate').click()
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
-    //
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'false')
-    //
-    //         cy.getByTestId('voting-skip').click()
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
-    //
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
-    //     })
-    // })
-    //
-    // test('should allow finishing plan voting', async ({} => {
-    //     cy.login(this.currentUser)
-    //     cy.createUserBattle(this.currentUser, {
-    //         name: 'Test Battle',
-    //         pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
-    //         autoFinishVoting: false,
-    //         plans: [
-    //             {
-    //                 name: 'Defeat Loki',
-    //                 type: 'Story'
-    //             }
-    //         ],
-    //         pointAverageRounding: 'ceil'
-    //     }).then(() => {
-    //         cy.visit(`/battle/${this.currentBattle.id}`)
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
-    //
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
-    //
-    //         cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
-    //
-    //         cy.getByTestId('plan-activate').click()
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
-    //
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'false')
-    //
-    //         cy.getByTestId('voting-finish').click()
-    //
-    //         cy.getByTestId('voteresult-total').should('exist')
-    //         cy.getByTestId('voteresult-average').should('exist')
-    //         cy.getByTestId('voteresult-high').should('exist')
-    //         cy.getByTestId('voteresult-highcount').should('exist')
-    //
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
-    //     })
-    // })
-    //
-    // test('should allow saving plan voting final points', async ({} => {
-    //     cy.login(this.currentUser)
-    //     cy.createUserBattle(this.currentUser, {
-    //         name: 'Test Battle',
-    //         pointValuesAllowed: ['1', '2', '3', '5', '8', '13', '?'],
-    //         autoFinishVoting: false,
-    //         plans: [
-    //             {
-    //                 name: 'Defeat Loki',
-    //                 type: 'Story'
-    //             }
-    //         ],
-    //         pointAverageRounding: 'ceil'
-    //     }).then(() => {
-    //         cy.visit(`/battle/${this.currentBattle.id}`)
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
-    //
-    //         cy.getByTestId('plans-unpointed').should('contain', 'Unpointed (1)')
-    //         cy.getByTestId('plans-pointed').should('contain', 'Pointed (0)')
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'true')
-    //         cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
-    //         cy.getByTestId('plan-points').should('not.exist')
-    //
-    //         cy.getByTestId('plan-activate').click()
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', 'Defeat Loki')
-    //
-    //         cy.getByTestId('pointCard').invoke('attr', 'data-locked').should('contain', 'false')
-    //
-    //         cy.getByTestId('voting-finish').click()
-    //
-    //         cy.getByTestId('voteresult-total').should('exist')
-    //
-    //         cy.get('[name="planPoints"]').select('1')
-    //
-    //         cy.getByTestId('voting-save').click()
-    //
-    //         cy.getByTestId('currentplan-name').should('contain', '[Voting not started]')
-    //
-    //         cy.getByTestId('plan-name').should('not.exist')
-    //
-    //         cy.getByTestId('plans-unpointed').should('contain', 'Unpointed (0)')
-    //         cy.getByTestId('plans-pointed').should('contain', 'Pointed (1)')
-    //         cy.getByTestId('plans-pointed').click()
-    //         cy.getByTestId('plan-name').should('contain', 'Defeat Loki')
-    //         cy.getByTestId('plan-points').should('contain', '1')
-    //     })
-    // })
+    test('should allow activating plans', async ({registeredPage}) => {
+        const bp = new BattlePage(registeredPage.page);
+        await bp.goto(battleActivatePlan.id);
+
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText('[Voting not started]');
+        await expect(bp.page.locator('[data-testid="pointCard"][data-locked="true"]')).toHaveCount(8);
+
+        await bp.page.locator('[data-testid="plan-activate"]').click();
+
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText(scarletPlan.name);
+        await expect(bp.page.locator('[data-testid="pointCard"][data-locked="false"]')).toHaveCount(8);
+    });
+
+    test('should allow skipping plan voting', async ({registeredPage}) => {
+        const bp = new BattlePage(registeredPage.page);
+        await bp.goto(battleSkipPlan.id);
+
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText('[Voting not started]');
+        await expect(bp.page.locator('[data-testid="pointCard"][data-locked="true"]')).toHaveCount(8);
+
+        await bp.page.locator('[data-testid="plan-activate"]').click();
+
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText(thanosPlan.name);
+        await expect(bp.page.locator('[data-testid="pointCard"][data-locked="false"]')).toHaveCount(8);
+
+        await bp.page.locator('[data-testid="voting-skip"]').click();
+
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText('[Voting not started]');
+        await expect(bp.page.locator('[data-testid="pointCard"][data-locked="true"]')).toHaveCount(8);
+    });
+
+    test('should allow finishing plan voting', async ({registeredPage}) => {
+        const bp = new BattlePage(registeredPage.page);
+        await bp.goto(battleFinishVoting.id);
+
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText('[Voting not started]');
+        await expect(bp.page.locator('[data-testid="pointCard"][data-locked="true"]')).toHaveCount(8);
+
+        await bp.page.locator('[data-testid="plan-activate"]').click();
+
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText(lokiPlan.name);
+        await expect(bp.page.locator('[data-testid="pointCard"][data-locked="false"]')).toHaveCount(8);
+
+        await expect(bp.page.locator('[data-testid="voteresult-total"]')).not.toBeVisible()
+        await expect(bp.page.locator('[data-testid="voteresult-average"]')).not.toBeVisible()
+        await expect(bp.page.locator('[data-testid="voteresult-high"]')).not.toBeVisible()
+        await expect(bp.page.locator('[data-testid="voteresult-highcount"]')).not.toBeVisible()
+
+        await bp.page.locator('[data-testid="voting-finish"]').click();
+
+        await expect(bp.page.locator('[data-testid="voteresult-total"]')).toBeVisible()
+        await expect(bp.page.locator('[data-testid="voteresult-average"]')).toBeVisible()
+        await expect(bp.page.locator('[data-testid="voteresult-high"]')).toBeVisible()
+        await expect(bp.page.locator('[data-testid="voteresult-highcount"]')).toBeVisible()
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText(lokiPlan.name);
+        await expect(bp.page.locator('[data-testid="pointCard"][data-locked="true"]')).toHaveCount(8);
+    });
+
+    test('should allow saving plan voting final points', async ({registeredPage}) => {
+        const bp = new BattlePage(registeredPage.page);
+        await bp.goto(battleSaveVoting.id);
+
+        await expect(bp.page.locator('[data-testid="plans-unpointed"]')).toHaveText('Unpointed (1)');
+        await expect(bp.page.locator('[data-testid="plans-pointed"]')).toHaveText('Pointed (0)');
+        await expect(bp.page.locator('[data-testid="plan-points"]')).not.toBeVisible()
+
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText('[Voting not started]');
+        await bp.page.locator('[data-testid="plan-activate"]').click();
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText(lokiPlan.name);
+        await bp.page.locator('[data-testid="voting-finish"]').click();
+
+        await expect(bp.page.locator('[data-testid="voteresult-total"]')).toBeVisible()
+
+        await bp.page.locator('select[name="planPoints"]').selectOption('1')
+        await bp.page.locator('[data-testid="voting-save"]').click()
+
+        await expect(bp.page.locator('[data-testid="currentplan-name"]')).toContainText('[Voting not started]');
+        await expect(bp.page.locator('[data-testid="plan-name"]')).not.toBeVisible()
+
+        await expect(bp.page.locator('[data-testid="plans-unpointed"]')).toHaveText('Unpointed (0)');
+        await expect(bp.page.locator('[data-testid="plans-pointed"]')).toHaveText('Pointed (1)');
+        await bp.page.locator('[data-testid="plans-pointed"]').click()
+        await expect(bp.page.locator('[data-testid="plan-name"]')).toHaveText(lokiPlan.name);
+        await expect(bp.page.locator('[data-testid="plan-points"]')).toHaveText('1');
+    });
 
     test('delete battle confirmation cancel does not delete battle', async ({registeredPage}) => {
         const bp = new BattlePage(registeredPage.page);
