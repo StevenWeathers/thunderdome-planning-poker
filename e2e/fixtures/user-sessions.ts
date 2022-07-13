@@ -30,6 +30,7 @@ class RegisteredPage {
     page: Page;
     user: {
         id: string,
+        name: string,
         email: string,
     };
 
@@ -149,6 +150,7 @@ class GuestPage {
     page: Page;
     user: {
         id: string,
+        name: string,
     };
 
     constructor(page: Page) {

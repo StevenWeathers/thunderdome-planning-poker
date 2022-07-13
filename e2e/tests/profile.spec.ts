@@ -1,90 +1,68 @@
-import {expect, test} from '@playwright/test';
+import {expect, test} from '../fixtures/user-sessions';
 import {ProfilePage} from "../fixtures/profile-page";
 
 test.describe('User Profile page', () => {
-    test.describe('Unauthenticated user', () => {
-        test('redirects to login', async ({page}) => {
-            const profilePage = new ProfilePage(page);
-            await profilePage.goto();
+    test('Unauthenticated user redirects to login', async ({page}) => {
+        const profilePage = new ProfilePage(page);
+        await profilePage.goto();
 
-            const title = profilePage.page.locator('[data-formtitle="login"]');
-            await expect(title).toHaveText('Login');
-        })
-    })
+        const title = profilePage.page.locator('[data-formtitle="login"]');
+        await expect(title).toHaveText('Login');
+    });
 
-    test.describe('Guest User', () => {
-        // beforeEach(() => {
-        //     cy.task('db:teardown:guestUser')
-        //     cy.createGuestUser()
-        // })
-        //
-        // it('successfully loads', function () {
-        //     cy.visit('/profile')
-        //
-        //     cy.get('h2').should('contain', 'Your Profile')
-        //
-        //     cy.get('[name=yourName]').should('have.value', this.currentUser.name)
-        //
-        //     cy.getByTestId('user-verified').should('not.exist')
-        //     cy.getByTestId('request-verify').should('not.exist')
-        // })
+    test('Guest user successfully loads', async ({guestPage}) => {
+        const profilePage = new ProfilePage(guestPage.page);
+        await profilePage.goto();
 
-        test.describe('API Keys', () => {
-            // it('can not create API keys', function () {
-            //     cy.visit('/profile')
-            //
-            //     cy.get('h2').should('contain', 'API Keys')
-            //
-            //     cy.getByTestId('apikey-create').click()
-            //
-            //     cy.get('[name=keyName]').type('Create API Key Test')
-            //     cy.get('[name=createApiKey] [type=submit]').click()
-            //
-            //     cy.get('[name=keyName]').should('exist')
-            //
-            //     cy.getByTestId('notification-msg').should('contain', 'Only verified registered users can create API keys.')
-            // })
-        })
-    })
+        await expect(profilePage.page.locator('h1')).toHaveText('Your Profile');
+        await expect(profilePage.page.locator('[name=yourName]')).toHaveValue(guestPage.user.name);
+        await expect(profilePage.page.locator('[name=yourEmail]')).toHaveValue('')
+
+        await expect(profilePage.page.locator('[data-testid="user-verified"]')).not.toBeVisible();
+        await expect(profilePage.page.locator('[data-testid="request-verify"]')).not.toBeVisible();
+    });
+
+    test('Guest user cannot create API keys', async ({guestPage}) => {
+        const profilePage = new ProfilePage(guestPage.page);
+        await profilePage.goto();
+
+        await expect(profilePage.page.locator('h2')).toHaveText('API Keys');
+        await profilePage.page.locator('[data-testid="apikey-create"]').click();
+        await profilePage.page.locator('[name=keyName]').fill('Create API Key Test');
+        await profilePage.page.locator('[name=createApiKey] [type=submit]').click();
+
+        await expect(profilePage.page.locator('[data-testid="notification-msg"]'))
+            .toContainText('Only verified registered users can create API keys.');
+        await expect(profilePage.page.locator('[name=keyName]')).toBeVisible();
+    });
+
+    test('Registered user successfully loads', async ({registeredPage}) => {
+        const profilePage = new ProfilePage(registeredPage.page);
+        await profilePage.goto();
+
+        await expect(profilePage.page.locator('h1')).toHaveText('Your Profile');
+        await expect(profilePage.page.locator('[name=yourName]')).toHaveValue(registeredPage.user.name);
+        await expect(profilePage.page.locator('[name=yourEmail]')).toHaveValue(registeredPage.user.email);
+
+        await expect(profilePage.page.locator('[data-testid="user-verified"]')).not.toBeVisible();
+        await expect(profilePage.page.locator('[data-testid="request-verify"]')).toBeVisible();
+    });
+
+    test('Registered non verified user cannot create API keys', async ({registeredPage}) => {
+        const profilePage = new ProfilePage(registeredPage.page);
+        await profilePage.goto();
+
+        await expect(profilePage.page.locator('h2')).toHaveText('API Keys');
+        await profilePage.page.locator('[data-testid="apikey-create"]').click();
+        await profilePage.page.locator('[name=keyName]').fill('Create API Key Test');
+        await profilePage.page.locator('[name=createApiKey] [type=submit]').click();
+
+        await expect(profilePage.page.locator('[data-testid="notification-msg"]'))
+            .toContainText('Only verified registered users can create API keys.');
+        await expect(profilePage.page.locator('[name=keyName]')).toBeVisible();
+    });
 
     test.describe('Registered User', () => {
-        // beforeEach(() => {
-        //     cy.task('db:teardown:registeredUser')
-        //     cy.task('db:seed:registeredUser').as('currentUser')
-        // })
-        //
-        // it('successfully loads', function () {
-        //     cy.login(this.currentUser)
-        //
-        //     cy.visit('/profile')
-        //
-        //     cy.get('h2').should('contain', 'Your Profile')
-        //
-        //     cy.get('[name=yourName]').should('have.value', this.currentUser.name)
-        //
-        //     cy.getByTestId('user-verified').should('not.exist')
-        //     cy.getByTestId('request-verify').should('exist')
-        // })
-
-        test.describe('API Keys', () => {
-            // it('can not create API keys', function () {
-            //     cy.login(this.currentUser)
-            //
-            //     cy.visit('/profile')
-            //
-            //     cy.get('h2').should('contain', 'API Keys')
-            //
-            //     cy.getByTestId('apikey-create').click()
-            //
-            //     cy.get('[name=keyName]').type('Create API Key Test')
-            //     cy.get('[name=createApiKey] [type=submit]').click()
-            //
-            //     cy.get('[name=keyName]').should('exist')
-            //
-            //     cy.getByTestId('notification-msg').should('contain', 'Only verified registered users can create API keys.')
-            // })
-        })
-
         test.describe('Delete Account', function () {
             // it('successfully deletes the user', function () {
             //     cy.login(this.currentUser)
@@ -127,20 +105,35 @@ test.describe('User Profile page', () => {
         })
     })
 
-    test.describe('Verified Registered User', () => {
-        // beforeEach(() => {
-        //     cy.task('db:teardown:verifiedUser')
-        //     cy.task('db:seed:verifiedUser').as('currentUser')
-        // })
-        //
-        // it('should have verified status next to email field label', function () {
-        //     cy.login(this.currentUser)
-        //
-        //     cy.visit('/profile')
-        //
-        //     cy.getByTestId('user-verified').should('exist')
-        // })
+    test('Verified user should have verified status next to email field label', async ({verifiedPage}) => {
+        const profilePage = new ProfilePage(verifiedPage.page);
+        await profilePage.goto();
 
+        await expect(profilePage.page.locator('[name=yourEmail]')).toHaveValue(verifiedPage.user.email);
+
+        await expect(profilePage.page.locator('[data-testid="user-verified"]')).toBeVisible();
+        await expect(profilePage.page.locator('[data-testid="request-verify"]')).not.toBeVisible();
+    });
+
+    test('Verified user can create API keys', async ({verifiedPage}) => {
+        const apiKeyName = 'Create API Key Test';
+        const profilePage = new ProfilePage(verifiedPage.page);
+        await profilePage.goto();
+
+        await expect(profilePage.page.locator('h2')).toHaveText('API Keys');
+        await profilePage.page.locator('[data-testid="apikey-create"]').click();
+        await profilePage.page.locator('[name=keyName]').fill(apiKeyName);
+        await profilePage.page.locator('[name=createApiKey] [type=submit]').click();
+
+        await expect(profilePage.page.locator('[id="apiKey"]')).toBeVisible();
+        await profilePage.page.locator('[data-testid="apikey-close"]').click();
+
+        await expect(profilePage.page.locator('[data-testid="apikey-name"]', {
+            hasText: apiKeyName
+        })).toBeVisible();
+    });
+
+    test.describe('Verified Registered User', () => {
         test.describe('API Keys', () => {
             // it('displays users API keys', function () {
             //     cy.login(this.currentUser)
@@ -156,24 +149,6 @@ test.describe('User Profile page', () => {
             //     })
             // })
             //
-            // it('can create API key', function () {
-            //     cy.login(this.currentUser)
-            //
-            //     cy.visit('/profile')
-            //
-            //     cy.get('h2').should('contain', 'API Keys')
-            //
-            //     cy.getByTestId('apikey-create').click()
-            //
-            //     cy.get('[name=keyName]').type('Create API Key Test')
-            //     cy.get('[name=createApiKey] [type=submit]').click()
-            //
-            //     cy.get('[id="apiKey"]').should('exist')
-            //
-            //     cy.getByTestId('apikey-close').click()
-            //
-            //     cy.getByTestId('apikey-name').should('contain', 'Create API Key Test')
-            // })
             //
             // it('can toggle api key active status', function () {
             //     cy.login(this.currentUser)
