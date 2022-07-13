@@ -613,5 +613,6 @@
   "mfa2faRemoveFailure": "Failed to remove 2FA/MFA",
   "retroActionCommentEditError": "error editing retro action comment",
   "updateComment": "Update Comment",
-  "comment": "Comment"
+  "comment": "Comment",
+  "showBlockedCheckins": "Show only checkins requiring discussion"
 }

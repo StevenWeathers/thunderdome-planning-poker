@@ -30,7 +30,6 @@
     export let teamId
 
     let showCheckin = false
-    let checkins = []
     let now = new Date()
     let maxNegativeDate
     let selectedDate
@@ -63,7 +62,9 @@
     let departmentRole = ''
     let teamRole = ''
 
+    let checkins = []
     let checkinColumns = []
+    let showOnlyDiscussionItems = false
 
     function divideCheckins(checkins) {
         const half = Math.ceil(checkins.length / 2)
@@ -71,6 +72,18 @@
         const checkins1 = checkins.slice(0, half)
         const checkins2 = checkins.slice(half)
         checkinColumns = [{ checkins: checkins1 }, { checkins: checkins2 }]
+    }
+
+    function filterCheckins() {
+        let filteredCheckins = [...checkins]
+
+        if (showOnlyDiscussionItems === true) {
+            filteredCheckins = filteredCheckins.filter(c => {
+                return c.discuss !== '' || c.blockers !== ''
+            })
+        }
+
+        divideCheckins(filteredCheckins)
     }
 
     const apiPrefix = '/api'
@@ -110,7 +123,7 @@
             .then(res => res.json())
             .then(function (result) {
                 checkins = result.data
-                divideCheckins(checkins)
+                filterCheckins()
             })
             .catch(function () {
                 notifications.danger($_('getCheckinsError'))
@@ -357,6 +370,15 @@
         margin-left: 0px;
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%2322c55e" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
     }
+
+    .toggle-checkbox:checked {
+        @apply right-0;
+        @apply border-green-500;
+    }
+
+    .toggle-checkbox:checked + .toggle-label {
+        @apply bg-green-500;
+    }
 </style>
 
 <svelte:head>
@@ -479,7 +501,34 @@
         </div>
     </div>
 
-    <div class="mt-8 relative">
+    <div
+        class="mt-8 mb-4 w-full text-right bg-white dark:bg-gray-800 p-3 shadow-lg rounded-lg"
+    >
+        <div
+            class="inline-block align-middle mr-2 text-gray-600 dark:text-gray-400 uppercase font-rajdhani text-xl tracking-wide"
+        >
+            {$_('showBlockedCheckins')}
+        </div>
+        <div
+            class="relative inline-block w-16 align-middle select-none transition duration-200 ease-in"
+        >
+            <input
+                type="checkbox"
+                name="showOnlyDiscussionItems"
+                id="showOnlyDiscussionItems"
+                bind:checked="{showOnlyDiscussionItems}"
+                on:change="{filterCheckins}"
+                class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow"
+            />
+            <label
+                for="showOnlyDiscussionItems"
+                class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-300 cursor-pointer transition-colors duration-200 ease-in-out"
+            >
+            </label>
+        </div>
+    </div>
+
+    <div class="relative">
         <div class="w-full md:grid md:grid-cols-2 md:gap-4">
             {#each checkinColumns as col}
                 <div>
