@@ -62,49 +62,6 @@ test.describe('User Profile page', () => {
         await expect(profilePage.page.locator('[name=keyName]')).toBeVisible();
     });
 
-    test.describe('Registered User', () => {
-        test.describe('Delete Account', function () {
-            // it('successfully deletes the user', function () {
-            //     cy.login(this.currentUser)
-            //
-            //     cy.visit('/profile')
-            //
-            //     cy.get('button').contains('Delete Account').click()
-            //
-            //     // should have delete confirmation button
-            //     cy.getByTestId('confirm-confirm').click()
-            //
-            //     // we should be redirected to landing
-            //     cy.location('pathname').should('equal', '/')
-            //
-            //     // our user cookie should not be present
-            //     cy.getCookie('warrior').should('not.exist')
-            //
-            //     // UI should reflect this user being logged out
-            //     cy.getByTestId('userprofile-link').should('not.exist')
-            // })
-            //
-            // it('cancel does not delete the user and remains on profile page', function () {
-            //     cy.login(this.currentUser)
-            //
-            //     cy.visit('/profile')
-            //
-            //     cy.get('button').contains('Delete Account').click()
-            //
-            //     cy.getByTestId('confirm-cancel').click()
-            //
-            //     // we should be redirected to landing
-            //     cy.location('pathname').should('equal', '/profile')
-            //
-            //     // our user cookie should not be present
-            //     cy.getCookie('warrior').should('exist')
-            //
-            //     // UI should reflect this user being logged out
-            //     cy.getByTestId('userprofile-link').should('contain', this.currentUser.name)
-            // })
-        })
-    })
-
     test('Verified user should have verified status next to email field label', async ({verifiedPage}) => {
         const profilePage = new ProfilePage(verifiedPage.page);
         await profilePage.goto();
@@ -114,6 +71,20 @@ test.describe('User Profile page', () => {
         await expect(profilePage.page.locator('[data-testid="user-verified"]')).toBeVisible();
         await expect(profilePage.page.locator('[data-testid="request-verify"]')).not.toBeVisible();
     });
+
+    // it('Verified user should display existing API keys', function () {
+    //     cy.login(this.currentUser)
+    //
+    //     cy.createUserApikey(this.currentUser).then(() => {
+    //         cy.visit('/profile')
+    //
+    //         cy.get('h2').should('contain', 'API Keys')
+    //
+    //         cy.getByTestId('apikey-name').should('contain', this.currentAPIKey.name)
+    //         cy.getByTestId('apikey-prefix').should('contain', this.currentAPIKey.prefix)
+    //         cy.getByTestId('apikey-active').invoke('attr', 'data-active').should('eq', 'true')
+    //     })
+    // })
 
     test('Verified user can create API keys', async ({verifiedPage}) => {
         const apiKeyName = 'Create API Key Test';
@@ -133,73 +104,87 @@ test.describe('User Profile page', () => {
         })).toBeVisible();
     });
 
-    test.describe('Verified Registered User', () => {
-        test.describe('API Keys', () => {
-            // it('displays users API keys', function () {
-            //     cy.login(this.currentUser)
-            //
-            //     cy.createUserApikey(this.currentUser).then(() => {
-            //         cy.visit('/profile')
-            //
-            //         cy.get('h2').should('contain', 'API Keys')
-            //
-            //         cy.getByTestId('apikey-name').should('contain', this.currentAPIKey.name)
-            //         cy.getByTestId('apikey-prefix').should('contain', this.currentAPIKey.prefix)
-            //         cy.getByTestId('apikey-active').invoke('attr', 'data-active').should('eq', 'true')
-            //     })
-            // })
-            //
-            //
-            // it('can toggle api key active status', function () {
-            //     cy.login(this.currentUser)
-            //
-            //     cy.createUserApikey(this.currentUser).then(() => {
-            //         cy.visit('/profile')
-            //
-            //         cy.get('h2').should('contain', 'API Keys')
-            //
-            //         cy.getByTestId('apikey-active').invoke('attr', 'data-active').should('eq', 'true')
-            //
-            //         cy.getByTestId('apikey-activetoggle').click()
-            //
-            //         cy.getByTestId('apikey-active').invoke('attr', 'data-active').should('eq', 'false')
-            //     })
-            // })
-            //
-            // it('can delete api key', function () {
-            //     cy.login(this.currentUser)
-            //
-            //     cy.createUserApikey(this.currentUser).then(() => {
-            //         cy.visit('/profile')
-            //
-            //         cy.get('h2').should('contain', 'API Keys')
-            //
-            //         cy.getByTestId('apikey-name').should('contain', this.currentAPIKey.name)
-            //
-            //         cy.getByTestId('apikey-delete').click()
-            //
-            //         cy.getByTestId('apikey-name').should('not.exist')
-            //     })
-            // })
-            //
-            // it('can create no more than 5 API keys (default for config)', function () {
-            //     cy.login(this.currentUser)
-            //
-            //     cy.createUserApikey(this.currentUser, {name: 'testkey1'})
-            //     cy.createUserApikey(this.currentUser, {name: 'testkey2'})
-            //     cy.createUserApikey(this.currentUser, {name: 'testkey3'})
-            //     cy.createUserApikey(this.currentUser, {name: 'testkey4'})
-            //     cy.createUserApikey(this.currentUser, {name: 'testkey5'})
-            //
-            //     cy.visit('/profile')
-            //
-            //     cy.getByTestId('apikey-create').click()
-            //     cy.get('[name=keyName]').type('Create API Key Test')
-            //     cy.get('[name=createApiKey] [type=submit]').click()
-            //
-            //     cy.get('[name=keyName]').should('exist')
-            //     cy.getByTestId('notification-msg').should('contain', 'You have the max number of API keys allowed.')
-            // })
-        })
-    })
+    // it('can toggle api key active status', function () {
+    //     cy.login(this.currentUser)
+    //
+    //     cy.createUserApikey(this.currentUser).then(() => {
+    //         cy.visit('/profile')
+    //
+    //         cy.get('h2').should('contain', 'API Keys')
+    //
+    //         cy.getByTestId('apikey-active').invoke('attr', 'data-active').should('eq', 'true')
+    //
+    //         cy.getByTestId('apikey-activetoggle').click()
+    //
+    //         cy.getByTestId('apikey-active').invoke('attr', 'data-active').should('eq', 'false')
+    //     })
+    // })
+    //
+    // it('can delete api key', function () {
+    //     cy.login(this.currentUser)
+    //
+    //     cy.createUserApikey(this.currentUser).then(() => {
+    //         cy.visit('/profile')
+    //
+    //         cy.get('h2').should('contain', 'API Keys')
+    //
+    //         cy.getByTestId('apikey-name').should('contain', this.currentAPIKey.name)
+    //
+    //         cy.getByTestId('apikey-delete').click()
+    //
+    //         cy.getByTestId('apikey-name').should('not.exist')
+    //     })
+    // })
+    //
+    // it('can create no more than 5 API keys (default for config)', function () {
+    //     cy.login(this.currentUser)
+    //
+    //     cy.createUserApikey(this.currentUser, {name: 'testkey1'})
+    //     cy.createUserApikey(this.currentUser, {name: 'testkey2'})
+    //     cy.createUserApikey(this.currentUser, {name: 'testkey3'})
+    //     cy.createUserApikey(this.currentUser, {name: 'testkey4'})
+    //     cy.createUserApikey(this.currentUser, {name: 'testkey5'})
+    //
+    //     cy.visit('/profile')
+    //
+    //     cy.getByTestId('apikey-create').click()
+    //     cy.get('[name=keyName]').type('Create API Key Test')
+    //     cy.get('[name=createApiKey] [type=submit]').click()
+    //
+    //     cy.get('[name=keyName]').should('exist')
+    //     cy.getByTestId('notification-msg').should('contain', 'You have the max number of API keys allowed.')
+    // })
+
+    test('delete account confirmation cancel does not delete account', async ({registeredPage}) => {
+        const profilePage = new ProfilePage(registeredPage.page);
+        await profilePage.goto();
+
+        await expect(profilePage.page.locator('h1')).toHaveText('Your Profile');
+
+        await profilePage.page.locator('button', {hasText: 'Delete Account'}).click();
+        await profilePage.page.locator('data-testid=confirm-cancel').click();
+
+        await expect(profilePage.page.locator('h1')).toHaveText('Your Profile');
+        await expect(profilePage.page.locator('data-testid=userprofile-link')).toHaveText(registeredPage.user.name);
+    });
+
+    // it('can delete account', function () {
+    //     cy.login(this.currentUser)
+    //
+    //     cy.visit('/profile')
+    //
+    //     cy.get('button').contains('Delete Account').click()
+    //
+    //     // should have delete confirmation button
+    //     cy.getByTestId('confirm-confirm').click()
+    //
+    //     // we should be redirected to landing
+    //     cy.location('pathname').should('equal', '/')
+    //
+    //     // our user cookie should not be present
+    //     cy.getCookie('warrior').should('not.exist')
+    //
+    //     // UI should reflect this user being logged out
+    //     cy.getByTestId('userprofile-link').should('not.exist')
+    // })
 })
