@@ -123,7 +123,7 @@ func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 	var EncryptedLeaderCode string
 
 	if err := d.db.QueryRow(`
-		SELECT leader_code FROM battles
+		SELECT COALESCE(leader_code, '') FROM battles
 		WHERE id = $1`,
 		BattleID,
 	).Scan(&EncryptedLeaderCode); err != nil {
@@ -131,6 +131,9 @@ func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 		return "", errors.New("unable to retrieve battle leader_code")
 	}
 
+	if EncryptedLeaderCode == "" {
+		return "", errors.New("unable to retrieve battle leader_code")
+	}
 	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, d.config.AESHashkey)
 	if codeErr != nil {
 		return "", errors.New("unable to retrieve battle leader_code")

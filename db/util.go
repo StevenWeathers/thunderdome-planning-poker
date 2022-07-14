@@ -8,6 +8,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
 	"io"
 	"math/big"
 
@@ -154,6 +155,9 @@ func decrypt(data string, passphrase string) (string, error) {
 		return "", err
 	}
 	nonceSize := gcm.NonceSize()
+	if len(dataByte) != nonceSize {
+		return "", errors.New("unable to decrypt data")
+	}
 	nonce, ciphertext := dataByte[:nonceSize], dataByte[nonceSize:]
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {

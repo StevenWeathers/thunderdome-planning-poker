@@ -203,7 +203,10 @@ func (d *Database) MFASetupGenerate(email string) (string, string, error) {
 	if err != nil {
 		return "", "", fmt.Errorf("error converting MFA TOTP key to PNG: %w", err)
 	}
-	png.Encode(&buf, img)
+	err = png.Encode(&buf, img)
+	if err != nil {
+		return "", "", fmt.Errorf("error encoding MFA PNG: %w", err)
+	}
 
 	return key.Secret(), base64.StdEncoding.EncodeToString(buf.Bytes()), nil
 }
@@ -211,6 +214,9 @@ func (d *Database) MFASetupGenerate(email string) (string, string, error) {
 // MFASetupValidate validates the MFA secret and authenticator token
 // if success enables the user mfa and stores the secret in db
 func (d *Database) MFASetupValidate(UserID string, secret string, passcode string) error {
+	if passcode == "" || secret == "" {
+		return errors.New("MISSING_SECRET_OR_PASSCODE")
+	}
 	valid := totp.Validate(passcode, secret)
 
 	if !valid {
@@ -245,7 +251,7 @@ func (d *Database) MFATokenValidate(SessionId string, passcode string) error {
 	var encryptedSecret string
 
 	e := d.db.QueryRow(
-		`SELECT um.secret FROM user_mfa um
+		`SELECT COALESCE(um.secret, '') FROM user_mfa um
  				LEFT JOIN user_session us ON us.user_id = um.user_id
  				WHERE us.session_id = $1`,
 		SessionId,
@@ -257,6 +263,9 @@ func (d *Database) MFATokenValidate(SessionId string, passcode string) error {
 		return errors.New("user not found")
 	}
 
+	if encryptedSecret == "" {
+		return errors.New("no secret to validate against")
+	}
 	decryptedSecret, secretErr := decrypt(encryptedSecret, d.config.AESHashkey)
 	if secretErr != nil {
 		return errors.New("unable to decode MFA secret")

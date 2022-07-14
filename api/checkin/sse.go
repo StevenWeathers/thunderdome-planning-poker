@@ -9,8 +9,8 @@ import (
 
 // Message holds the message to send to connections
 type Message struct {
-	arena   string `json:"arena"`
-	Message string `json:"msg"`
+	arena string
+	msg   string
 }
 
 // Subscription holds the users sse connection
@@ -40,7 +40,7 @@ var b = &Broker{
 }
 
 // New returns a new checkin with sse broker
-func New() (broker *Broker) {
+func New() *Broker {
 	go b.listen()
 
 	return b
@@ -83,11 +83,11 @@ func (broker *Broker) Stream(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		select {
-		case msg, ok := <-s.send:
+		case m, ok := <-s.send:
 			if !ok {
 				return
 			}
-			fmt.Fprintf(w, "data: %s\n\n", msg.Message)
+			fmt.Fprintf(w, "data: %s\n\n", m.msg)
 			flusher.Flush()
 		case <-ticker.C:
 			fmt.Fprintf(w, "data: ping\n\n")
@@ -139,11 +139,11 @@ func (broker *Broker) listen() {
 }
 
 // BroadcastMessage sends a message to the broker for broadcasting to the connections
-func (broker *Broker) BroadcastMessage(arena string, Msg string) {
-	msg := Message{
-		arena:   arena,
-		Message: Msg,
+func (broker *Broker) BroadcastMessage(arena string, msg string) {
+	m := Message{
+		arena: arena,
+		msg:   msg,
 	}
 
-	b.broadcast <- msg
+	b.broadcast <- m
 }
