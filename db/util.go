@@ -155,7 +155,7 @@ func decrypt(data string, passphrase string) (string, error) {
 		return "", err
 	}
 	nonceSize := gcm.NonceSize()
-	if len(dataByte) != nonceSize {
+	if len(dataByte) < nonceSize {
 		return "", errors.New("unable to decrypt data")
 	}
 	nonce, ciphertext := dataByte[:nonceSize], dataByte[nonceSize:]
