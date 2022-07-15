@@ -29,6 +29,7 @@ type Retro struct {
 	Format               string         `json:"format" db:"format"`
 	Phase                string         `json:"phase" db:"phase"`
 	JoinCode             string         `json:"joinCode" db:"join_code"`
+	FacilitatorCode      string         `json:"facilitatorCode" db:"facilitator_code"`
 	MaxVotes             int            `json:"maxVotes" db:"max_votes"`
 	BrainstormVisibility string         `json:"brainstormVisibility" db:"brainstorm_visibility"`
 	CreatedDate          string         `json:"createdDate" db:"created_date"`

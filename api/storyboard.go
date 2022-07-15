@@ -10,8 +10,9 @@ import (
 )
 
 type storyboardCreateRequestBody struct {
-	StoryboardName string `json:"storyboardName"`
-	JoinCode       string `json:"joinCode"`
+	StoryboardName  string `json:"storyboardName"`
+	JoinCode        string `json:"joinCode"`
+	FacilitatorCode string `json:"facilitatorCode"`
 }
 
 // handleStoryboardCreate handles creating a storyboard (arena)
@@ -51,7 +52,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 			return
 		}
 
-		newStoryboard, err := a.db.CreateStoryboard(UserID, s.StoryboardName, s.JoinCode)
+		newStoryboard, err := a.db.CreateStoryboard(UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -103,7 +104,7 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		storyboard, err := a.db.GetStoryboard(StoryboardID)
+		storyboard, err := a.db.GetStoryboard(StoryboardID, UserId)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARD_NOT_FOUND"))
 			return

@@ -15,6 +15,7 @@ type retroCreateRequestBody struct {
 	RetroName            string `json:"retroName" example:"sprint 10 retro"`
 	Format               string `json:"format" example:"worked_improve_question"`
 	JoinCode             string `json:"joinCode" example:"iammadmax"`
+	FacilitatorCode      string `json:"facilitatorCode" example:"likeaboss"`
 	MaxVotes             int    `json:"maxVotes"`
 	BrainstormVisibility string `json:"brainstormVisibility"`
 }
@@ -55,7 +56,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 
-		newRetro, err := a.db.RetroCreate(userID, nr.RetroName, nr.Format, nr.JoinCode, nr.MaxVotes, nr.BrainstormVisibility)
+		newRetro, err := a.db.RetroCreate(userID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -104,8 +105,9 @@ func (a *api) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
+		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		re, err := a.db.RetroGet(RetroID)
+		re, err := a.db.RetroGet(RetroID, UserID)
 
 		if err != nil {
 			http.NotFound(w, r)

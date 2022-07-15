@@ -43,6 +43,7 @@ func New(
 		"advance_phase":       rs.AdvancePhase,
 		"add_facilitator":     rs.FacilitatorAdd,
 		"remove_facilitator":  rs.FacilitatorRemove,
+		"self_facilitator":    rs.FacilitatorSelf,
 		"edit_retro":          rs.EditRetro,
 		"concede_retro":       rs.Delete,
 		"abandon_retro":       rs.Abandon,

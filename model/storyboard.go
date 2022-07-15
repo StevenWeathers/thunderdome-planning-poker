@@ -12,17 +12,18 @@ type StoryboardUser struct {
 
 // Storyboard A story mapping board
 type Storyboard struct {
-	Id           string               `json:"id"`
-	OwnerID      string               `json:"owner_id"`
-	Name         string               `json:"name"`
-	Users        []*StoryboardUser    `json:"users"`
-	Facilitators []*string            `json:"facilitators"`
-	Goals        []*StoryboardGoal    `json:"goals"`
-	ColorLegend  []*Color             `json:"color_legend"`
-	Personas     []*StoryboardPersona `json:"personas"`
-	JoinCode     string               `json:"joinCode"`
-	CreatedDate  string               `json:"createdDate" db:"created_date"`
-	UpdatedDate  string               `json:"updatedDate" db:"updated_date"`
+	Id              string               `json:"id"`
+	OwnerID         string               `json:"owner_id"`
+	Name            string               `json:"name"`
+	Users           []*StoryboardUser    `json:"users"`
+	Facilitators    []string             `json:"facilitators"`
+	Goals           []*StoryboardGoal    `json:"goals"`
+	ColorLegend     []*Color             `json:"color_legend"`
+	Personas        []*StoryboardPersona `json:"personas"`
+	JoinCode        string               `json:"joinCode" db:"join_code"`
+	FacilitatorCode string               `json:"facilitatorCode" db:"facilitator_code"`
+	CreatedDate     string               `json:"createdDate" db:"created_date"`
+	UpdatedDate     string               `json:"updatedDate" db:"updated_date"`
 }
 
 // StoryboardGoal A row in a story mapping board

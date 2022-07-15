@@ -8,8 +8,9 @@ import (
 )
 
 //CreateStoryboard adds a new storyboard to the db
-func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinCode string) (*model.Storyboard, error) {
+func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*model.Storyboard, error) {
 	var encryptedJoinCode string
+	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
 		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
@@ -17,6 +18,14 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinC
 			return nil, codeErr
 		}
 		encryptedJoinCode = EncryptedCode
+	}
+
+	if FacilitatorCode != "" {
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, codeErr
+		}
+		encryptedFacilitatorCode = EncryptedCode
 	}
 
 	var b = &model.Storyboard{
@@ -27,10 +36,11 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinC
 	}
 
 	e := d.db.QueryRow(
-		`SELECT * FROM create_storyboard($1, $2, $3);`,
+		`SELECT * FROM create_storyboard($1, $2, $3, $4);`,
 		OwnerID,
 		StoryboardName,
 		encryptedJoinCode,
+		encryptedFacilitatorCode,
 	).Scan(&b.Id)
 	if e != nil {
 		d.logger.Error("create_storyboard query error", zap.Error(e))
@@ -54,8 +64,9 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinC
 }
 
 // EditStoryboard updates the storyboard by ID
-func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, JoinCode string) error {
+func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, JoinCode string, FacilitatorCode string) error {
 	var encryptedJoinCode string
+	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
 		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
@@ -65,8 +76,16 @@ func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, Jo
 		encryptedJoinCode = EncryptedCode
 	}
 
-	if _, err := d.db.Exec(`call edit_storyboard($1, $2, $3);`,
-		StoryboardID, StoryboardName, encryptedJoinCode,
+	if JoinCode != "" {
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return errors.New("unable to revise storyboard facilitator_code")
+		}
+		encryptedFacilitatorCode = EncryptedCode
+	}
+
+	if _, err := d.db.Exec(`call edit_storyboard($1, $2, $3, $4);`,
+		StoryboardID, StoryboardName, encryptedJoinCode, encryptedFacilitatorCode,
 	); err != nil {
 		d.logger.Error("update storyboard error", zap.Error(err))
 		return errors.New("unable to edit storyboard")
@@ -76,10 +95,11 @@ func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, Jo
 }
 
 // GetStoryboard gets a storyboard by ID
-func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error) {
+func (d *Database) GetStoryboard(StoryboardID string, UserID string) (*model.Storyboard, error) {
 	var cl string
 	var JoinCode string
 	var facilitators string
+	var FacilitatorCode string
 	var b = &model.Storyboard{
 		Id:          StoryboardID,
 		OwnerID:     "",
@@ -93,7 +113,8 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 	// get storyboard
 	e := d.db.QueryRow(
 		`SELECT
-				s.id, s.name, s.owner_id, s.color_legend, COALESCE(s.join_code, ''), s.created_date, s.updated_date,
+				s.id, s.name, s.owner_id, s.color_legend, COALESCE(s.join_code, ''), COALESCE(s.facilitator_code, ''),
+				 s.created_date, s.updated_date,
 				COALESCE(json_agg(sf.user_id) FILTER (WHERE sf.storyboard_id IS NOT NULL), '[]') AS facilitators
 				FROM storyboard s
 				LEFT JOIN storyboard_facilitator sf ON sf.storyboard_id = s.id
@@ -106,6 +127,7 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 		&b.OwnerID,
 		&cl,
 		&JoinCode,
+		&FacilitatorCode,
 		&b.CreatedDate,
 		&b.UpdatedDate,
 		&facilitators,
@@ -124,6 +146,7 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 	if facilError != nil {
 		d.logger.Error("facilitators json error", zap.Error(facilError))
 	}
+	isFacilitator := contains(b.Facilitators, UserID)
 
 	b.Users = d.GetStoryboardUsers(StoryboardID)
 	b.Goals = d.GetStoryboardGoals(StoryboardID)
@@ -135,6 +158,14 @@ func (d *Database) GetStoryboard(StoryboardID string) (*model.Storyboard, error)
 			return nil, errors.New("unable to decode join_code")
 		}
 		b.JoinCode = DecryptedCode
+	}
+
+	if FacilitatorCode != "" && isFacilitator {
+		DecryptedCode, codeErr := decrypt(FacilitatorCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, errors.New("unable to decode facilitator_code")
+		}
+		b.FacilitatorCode = DecryptedCode
 	}
 
 	return b, nil
@@ -322,7 +353,7 @@ func (d *Database) SetStoryboardOwner(StoryboardID string, userID string, OwnerI
 		d.logger.Error("call set_storyboard_owner error", zap.Error(err))
 	}
 
-	storyboard, err := d.GetStoryboard(StoryboardID)
+	storyboard, err := d.GetStoryboard(StoryboardID, "")
 	if err != nil {
 		return nil, errors.New("Unable to promote owner")
 	}
@@ -341,7 +372,7 @@ func (d *Database) StoryboardReviseColorLegend(StoryboardID string, UserID strin
 		return nil, err
 	}
 
-	storyboard, err := d.GetStoryboard(StoryboardID)
+	storyboard, err := d.GetStoryboard(StoryboardID, "")
 	if err != nil {
 		return nil, errors.New("Unable to promote owner")
 	}
@@ -507,7 +538,7 @@ func (d *Database) StoryboardFacilitatorAdd(StoryboardId string, UserID string) 
 		return nil, errors.New("unable to add facilitator")
 	}
 
-	storyboard, err := d.GetStoryboard(StoryboardId)
+	storyboard, err := d.GetStoryboard(StoryboardId, "")
 	if err != nil {
 		return nil, err
 	}
@@ -523,10 +554,34 @@ func (d *Database) StoryboardFacilitatorRemove(StoryboardId string, UserID strin
 		return nil, errors.New("unable to remove facilitator")
 	}
 
-	storyboard, err := d.GetStoryboard(StoryboardId)
+	storyboard, err := d.GetStoryboard(StoryboardId, "")
 	if err != nil {
 		return nil, err
 	}
 
 	return storyboard, nil
+}
+
+// GetStoryboardFacilitatorCode retrieve the storyboard facilitator code
+func (d *Database) GetStoryboardFacilitatorCode(StoryboardID string) (string, error) {
+	var EncryptedCode string
+
+	if err := d.db.QueryRow(`
+		SELECT COALESCE(facilitator_code, '') FROM storyboard
+		WHERE id = $1`,
+		StoryboardID,
+	).Scan(&EncryptedCode); err != nil {
+		d.logger.Error("get retro facilitator_code error", zap.Error(err))
+		return "", errors.New("unable to retrieve storyboard facilitator_code")
+	}
+
+	if EncryptedCode == "" {
+		return "", errors.New("unable to retrieve storyboard facilitator_code")
+	}
+	DecryptedCode, codeErr := decrypt(EncryptedCode, d.config.AESHashkey)
+	if codeErr != nil {
+		return "", errors.New("unable to retrieve storyboard facilitator_code")
+	}
+
+	return DecryptedCode, nil
 }

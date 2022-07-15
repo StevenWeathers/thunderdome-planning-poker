@@ -22,6 +22,7 @@
     import { AppConfig, appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
     import { _ } from '../i18n'
+    import BecomeFacilitator from '../components/user/BecomeFacilitator.svelte'
 
     export let retroId
     export let notifications
@@ -49,6 +50,8 @@
         facilitators: [],
         maxVotes: 3,
         brainstormVisibility: 'visible',
+        facilitatorCode: '',
+        joinCode: '',
     }
     let showDeleteRetro = false
     let actionItem = ''
@@ -141,6 +144,15 @@
                 retro = JSON.parse(parsedEvent.value)
                 groupedItems = organizeItemsByGroup()
                 break
+            case 'phase_updated':
+                let r = JSON.parse(parsedEvent.value)
+                retro.items = r.items
+                retro.groups = r.groups
+                retro.votes = r.votes
+                retro.actionItems = r.actionItems
+                retro.phase = r.phase
+                groupedItems = organizeItemsByGroup()
+                break
             case 'items_updated': {
                 const parsedValue = JSON.parse(parsedEvent.value)
                 retro.items = parsedValue
@@ -165,6 +177,9 @@
             }
             case 'action_updated':
                 retro.actionItems = JSON.parse(parsedEvent.value)
+                break
+            case 'facilitators_updated':
+                retro.facilitators = JSON.parse(parsedEvent.value)
                 break
             case 'retro_edited':
                 const revisedRetro = JSON.parse(parsedEvent.value)
@@ -433,6 +448,19 @@
         showEditRetro = !showEditRetro
     }
 
+    let showBecomeFacilitator = false
+
+    function becomeFacilitator(facilitatorCode) {
+        sendSocketEvent('self_facilitator', facilitatorCode)
+        eventTag('become_facilitator', 'retro', '')
+        toggleBecomeFacilitator()
+    }
+
+    function toggleBecomeFacilitator() {
+        showBecomeFacilitator = !showBecomeFacilitator
+        eventTag('toggle_become_facilitator', 'retro', '')
+    }
+
     onMount(() => {
         if (!$user.id) {
             router.route(`${loginOrRegister}/retro/${retroId}`)
@@ -527,6 +555,12 @@
                             {$_('deleteRetro')}
                         </HollowButton>
                     {:else}
+                        <HollowButton
+                            color="blue"
+                            onClick="{toggleBecomeFacilitator}"
+                        >
+                            {$_('becomeFacilitator')}
+                        </HollowButton>
                         <HollowButton color="red" onClick="{abandonRetro}">
                             {$_('leaveRetro')}
                         </HollowButton>
@@ -912,6 +946,7 @@
         handleRetroEdit="{handleRetroEdit}"
         toggleEditRetro="{toggleEditRetro}"
         joinCode="{retro.joinCode}"
+        facilitatorCode="{retro.facilitatorCode}"
         maxVotes="{retro.maxVotes}"
         brainstormVisibility="{retro.brainstormVisibility}"
     />
@@ -932,5 +967,12 @@
         handleEdit="{handleActionEdit}"
         handleDelete="{handleActionDelete}"
         action="{selectedAction}"
+    />
+{/if}
+
+{#if showBecomeFacilitator}
+    <BecomeFacilitator
+        handleBecomeFacilitator="{becomeFacilitator}"
+        toggleBecomeFacilitator="{toggleBecomeFacilitator}"
     />
 {/if}

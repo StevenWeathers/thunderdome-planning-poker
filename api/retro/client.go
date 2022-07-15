@@ -216,7 +216,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure retro is legit
-		retro, retroErr := b.db.RetroGet(retroID)
+		retro, retroErr := b.db.RetroGet(retroID, User.Id)
 		if retroErr != nil {
 			b.handleSocketClose(ws, 4004, "retro not found")
 			return

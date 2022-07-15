@@ -382,6 +382,28 @@ func (b *Service) FacilitatorRemove(StoryboardID string, UserID string, EventVal
 	return msg, nil, false
 }
 
+// FacilitatorSelf handles self-promoting a user to a facilitator
+func (b *Service) FacilitatorSelf(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+	facilitatorCode, err := b.db.GetStoryboardFacilitatorCode(StoryboardID)
+	if err != nil {
+		return nil, err, false
+	}
+
+	if EventValue == facilitatorCode {
+		storyboard, err := b.db.StoryboardFacilitatorAdd(StoryboardID, UserID)
+		if err != nil {
+			return nil, err, false
+		}
+		updatedStoryboard, _ := json.Marshal(storyboard)
+
+		msg := createSocketEvent("storyboard_updated", string(updatedStoryboard), "")
+
+		return msg, nil, false
+	} else {
+		return nil, errors.New("INCORRECT_FACILITATOR_CODE"), false
+	}
+}
+
 // ReviseColorLegend handles revising a storyboard color legend
 func (b *Service) ReviseColorLegend(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
 	storyboard, err := b.db.StoryboardReviseColorLegend(StoryboardID, UserID, EventValue)
@@ -397,8 +419,9 @@ func (b *Service) ReviseColorLegend(StoryboardID string, UserID string, EventVal
 // EditStoryboard handles editing the storyboard settings
 func (b *Service) EditStoryboard(StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rb struct {
-		Name     string `json:"storyboardName"`
-		JoinCode string `json:"joinCode"`
+		Name            string `json:"storyboardName"`
+		JoinCode        string `json:"joinCode"`
+		FacilitatorCode string `json:"facilitatorCode"`
 	}
 	json.Unmarshal([]byte(EventValue), &rb)
 
@@ -406,6 +429,7 @@ func (b *Service) EditStoryboard(StoryboardID string, UserID string, EventValue 
 		StoryboardID,
 		rb.Name,
 		rb.JoinCode,
+		rb.FacilitatorCode,
 	)
 	if err != nil {
 		return nil, err, false

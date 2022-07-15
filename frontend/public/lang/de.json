@@ -614,5 +614,9 @@
   "retroActionCommentEditError": "error editing retro action comment",
   "updateComment": "Update Comment",
   "comment": "Comment",
-  "showBlockedCheckins": "Show only checkins requiring discussion"
+  "showBlockedCheckins": "Show only checkins requiring discussion",
+  "facilitatorCode": "Facilitator Code",
+  "facilitatorCodeOptional": "Facilitator Code (Optional)",
+  "facilitatorCodePlaceholder": "Enter an optional facilitator code",
+  "becomeFacilitator": "Become Facilitator"
 }

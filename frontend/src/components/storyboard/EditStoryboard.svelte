@@ -7,6 +7,7 @@
     export let handleStoryboardEdit = () => {}
     export let storyboardName = ''
     export let joinCode = ''
+    export let facilitatorCode = ''
 
     function saveStoryboard(e) {
         e.preventDefault()
@@ -14,6 +15,7 @@
         const storyboard = {
             storyboardName,
             joinCode,
+            facilitatorCode,
         }
 
         handleStoryboardEdit(storyboard)
@@ -62,6 +64,26 @@
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="joinCode"
+                />
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label
+                class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
+                for="facilitatorCode"
+            >
+                {$_('facilitatorCodeOptional')}
+            </label>
+            <div class="control">
+                <input
+                    name="facilitatorCode"
+                    bind:value="{facilitatorCode}"
+                    placeholder="{$_('facilitatorCodePlaceholder')}"
+                    class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
+                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                    id="facilitatorCode"
                 />
             </div>
         </div>

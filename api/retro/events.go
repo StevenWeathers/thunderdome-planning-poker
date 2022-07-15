@@ -196,7 +196,7 @@ func (b *Service) AdvancePhase(RetroID string, UserID string, EventValue string)
 	}
 
 	updatedItems, _ := json.Marshal(retro)
-	msg := createSocketEvent("retro_updated", string(updatedItems), "")
+	msg := createSocketEvent("phase_updated", string(updatedItems), "")
 
 	return msg, nil, false
 }
@@ -208,13 +208,13 @@ func (b *Service) FacilitatorAdd(RetroID string, UserID string, EventValue strin
 	}
 	json.Unmarshal([]byte(EventValue), &rs)
 
-	retro, err := b.db.RetroFacilitatorAdd(RetroID, rs.UserID)
+	facilitators, err := b.db.RetroFacilitatorAdd(RetroID, rs.UserID)
 	if err != nil {
 		return nil, err, false
 	}
+	updatedFacilitators, _ := json.Marshal(facilitators)
 
-	updatedRetro, _ := json.Marshal(retro)
-	msg := createSocketEvent("retro_updated", string(updatedRetro), "")
+	msg := createSocketEvent("facilitators_updated", string(updatedFacilitators), "")
 
 	return msg, nil, false
 }
@@ -226,15 +226,37 @@ func (b *Service) FacilitatorRemove(RetroID string, UserID string, EventValue st
 	}
 	json.Unmarshal([]byte(EventValue), &rs)
 
-	retro, err := b.db.RetroFacilitatorRemove(RetroID, rs.UserID)
+	facilitators, err := b.db.RetroFacilitatorRemove(RetroID, rs.UserID)
+	if err != nil {
+		return nil, err, false
+	}
+	updatedFacilitators, _ := json.Marshal(facilitators)
+
+	msg := createSocketEvent("facilitators_updated", string(updatedFacilitators), "")
+
+	return msg, nil, false
+}
+
+// FacilitatorSelf handles self-promoting a user to a facilitator
+func (b *Service) FacilitatorSelf(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	facilitatorCode, err := b.db.GetRetroFacilitatorCode(RetroID)
 	if err != nil {
 		return nil, err, false
 	}
 
-	updatedRetro, _ := json.Marshal(retro)
-	msg := createSocketEvent("retro_updated", string(updatedRetro), "")
+	if EventValue == facilitatorCode {
+		facilitators, err := b.db.RetroFacilitatorAdd(RetroID, UserID)
+		if err != nil {
+			return nil, err, false
+		}
+		updatedFacilitators, _ := json.Marshal(facilitators)
 
-	return msg, nil, false
+		msg := createSocketEvent("facilitators_updated", string(updatedFacilitators), "")
+
+		return msg, nil, false
+	} else {
+		return nil, errors.New("INCORRECT_FACILITATOR_CODE"), false
+	}
 }
 
 // EditRetro handles editing the retro settings
@@ -242,6 +264,7 @@ func (b *Service) EditRetro(RetroID string, UserID string, EventValue string) ([
 	var rb struct {
 		Name                 string `json:"retroName"`
 		JoinCode             string `json:"joinCode"`
+		FacilitatorCode      string `json:"facilitatorCode"`
 		MaxVotes             int    `json:"maxVotes"`
 		BrainstormVisibility string `json:"brainstormVisibility"`
 	}
@@ -251,6 +274,7 @@ func (b *Service) EditRetro(RetroID string, UserID string, EventValue string) ([
 		RetroID,
 		rb.Name,
 		rb.JoinCode,
+		rb.FacilitatorCode,
 		rb.MaxVotes,
 		rb.BrainstormVisibility,
 	)

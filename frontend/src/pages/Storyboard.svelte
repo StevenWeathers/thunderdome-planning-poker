@@ -26,6 +26,7 @@
     import { AppConfig, appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
     import { _ } from '../i18n.js'
+    import BecomeFacilitator from '../components/user/BecomeFacilitator.svelte'
 
     export let storyboardId
     export let notifications
@@ -48,6 +49,8 @@
         colorLegend: [],
         personas: [],
         facilitators: [],
+        facilitatorCode: '',
+        joinCode: '',
     }
     let showUsers = false
     let showColorLegend = false
@@ -477,6 +480,19 @@
         }
     }
 
+    let showBecomeFacilitator = false
+
+    function becomeFacilitator(facilitatorCode) {
+        sendSocketEvent('facilitator_self', facilitatorCode)
+        eventTag('become_facilitator', 'retro', '')
+        toggleBecomeFacilitator()
+    }
+
+    function toggleBecomeFacilitator() {
+        showBecomeFacilitator = !showBecomeFacilitator
+        eventTag('toggle_become_facilitator', 'retro', '')
+    }
+
     $: isFacilitator =
         storyboard.facilitators && storyboard.facilitators.includes($user.id)
 
@@ -649,6 +665,12 @@
                             {$_('deleteStoryboard')}
                         </HollowButton>
                     {:else}
+                        <HollowButton
+                            color="blue"
+                            onClick="{toggleBecomeFacilitator}"
+                        >
+                            {$_('becomeFacilitator')}
+                        </HollowButton>
                         <HollowButton color="red" onClick="{abandonStoryboard}">
                             {$_('leaveStoryboard')}
                         </HollowButton>
@@ -1205,6 +1227,7 @@
         handleStoryboardEdit="{handleStoryboardEdit}"
         toggleEditStoryboard="{toggleEditStoryboard}"
         joinCode="{storyboard.joinCode}"
+        facilitatorCode="{storyboard.facilitatorCode}"
     />
 {/if}
 
@@ -1212,5 +1235,12 @@
     <DeleteStoryboard
         toggleDelete="{toggleDeleteStoryboard}"
         handleDelete="{concedeStoryboard}"
+    />
+{/if}
+
+{#if showBecomeFacilitator}
+    <BecomeFacilitator
+        handleBecomeFacilitator="{becomeFacilitator}"
+        toggleBecomeFacilitator="{toggleBecomeFacilitator}"
     />
 {/if}

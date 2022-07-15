@@ -74,6 +74,7 @@ func (sub subscription) readPump(b *Service) {
 		"delete_persona":       b.DeletePersona,
 		"facilitator_add":      b.FacilitatorAdd,
 		"facilitator_remove":   b.FacilitatorRemove,
+		"facilitator_self":     b.FacilitatorSelf,
 		"revise_color_legend":  b.ReviseColorLegend,
 		"edit_storyboard":      b.EditStoryboard,
 		"concede_storyboard":   b.Delete,
@@ -245,7 +246,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure storyboard is legit
-		storyboard, storyboardErr := b.db.GetStoryboard(storyboardID)
+		storyboard, storyboardErr := b.db.GetStoryboard(storyboardID, User.Id)
 		if storyboardErr != nil {
 			b.handleSocketClose(ws, 4004, "storyboard not found")
 			return
