@@ -4,13 +4,12 @@
   "description": "End to end testing for Thunderdome",
   "main": "index.js",
   "scripts": {
-    "test": "cypress open",
-    "cypress:open": "cypress open"
+    "test": "npx playwright test"
   },
-  "author": "",
+  "author": "Steven Weathers",
   "license": "Apache-2.0",
   "devDependencies": {
-    "cypress": "^10.3.0",
+    "@playwright/test": "^1.23.2",
     "pg": "^8.7.3"
   }
 }

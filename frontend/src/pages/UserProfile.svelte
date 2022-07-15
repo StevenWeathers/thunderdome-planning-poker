@@ -181,7 +181,7 @@
 
     onMount(() => {
         if (!$warrior.id) {
-            router.route(appRoutes.register)
+            router.route(appRoutes.login)
             return
         }
 
@@ -197,12 +197,12 @@
 </svelte:head>
 
 <PageLayout>
-    <h2
+    <h1
         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight dark:text-white"
     >
         {$_('pages.warriorProfile.title')}
-    </h2>
+    </h1>
 
     <div class="flex justify-center flex-wrap">
         <div class="w-full md:w-1/2 lg:w-1/3">

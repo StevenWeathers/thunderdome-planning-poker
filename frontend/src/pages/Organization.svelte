@@ -517,7 +517,7 @@
                         </RowCol>
                         <RowCol>
                             <div
-                                className="text-sm text-gray-500 dark:text-gray-300"
+                                class="text-sm text-gray-500 dark:text-gray-300"
                             >
                                 {user.role}
                             </div>

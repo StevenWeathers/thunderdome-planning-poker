@@ -18,7 +18,7 @@
 </script>
 
 <Modal closeModal="{toggleCreate}">
-    <form on:submit="{onSubmit}" name="createOrganization">
+    <form on:submit="{onSubmit}" name="createTeam">
         <div class="mb-4">
             <label
                 class="block text-gray-700 dark:text-gray-400 font-bold mb-2"

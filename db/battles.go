@@ -33,15 +33,16 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 	}
 
 	var b = &model.Battle{
-		Name:               BattleName,
-		Users:              make([]*model.BattleUser, 0),
-		Plans:              make([]*model.Plan, 0),
-		VotingLocked:       true,
-		PointValuesAllowed: PointValuesAllowed,
-		AutoFinishVoting:   AutoFinishVoting,
-		Leaders:            make([]string, 0),
-		JoinCode:           JoinCode,
-		LeaderCode:         LeaderCode,
+		Name:                 BattleName,
+		Users:                make([]*model.BattleUser, 0),
+		Plans:                make([]*model.Plan, 0),
+		VotingLocked:         true,
+		PointValuesAllowed:   PointValuesAllowed,
+		AutoFinishVoting:     AutoFinishVoting,
+		PointAverageRounding: PointAverageRounding,
+		Leaders:              make([]string, 0),
+		JoinCode:             JoinCode,
+		LeaderCode:           LeaderCode,
 	}
 	b.Leaders = append(b.Leaders, LeaderID)
 

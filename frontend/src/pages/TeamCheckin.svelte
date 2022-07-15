@@ -544,6 +544,7 @@
                                                 class="w-full h-full bg-gray-200 rounded-full shadow"
                                             >
                                                 <UserAvatar
+                                                    width="80"
                                                     warriorId="{checkin.user
                                                         .id}"
                                                     avatar="{checkin.user

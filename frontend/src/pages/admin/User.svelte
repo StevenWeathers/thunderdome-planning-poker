@@ -225,8 +225,8 @@
                 <tbody slot="body" let:class="{className}" class="{className}">
                     <TableRow itemIndex="{0}">
                         <RowCol>
-                            <div className="flex items-center flex-nowrap">
-                                <div className="flex-shrink-0 h-10 w-10">
+                            <div class="flex items-center flex-nowrap">
+                                <div class="flex-shrink-0 h-10 w-10">
                                     <UserAvatar
                                         warriorId="{user.id}"
                                         avatar="{user.avatar}"

@@ -160,6 +160,7 @@
                     <div
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight text-center dark:text-white"
+                        data-formtitle="login"
                     >
                         {$_('pages.login.title')}
                     </div>
@@ -273,6 +274,7 @@
                     <div
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight text-center dark:text-white"
+                        data-formtitle="forgotpassword"
                     >
                         {$_('forgotPassword')}
                     </div>
