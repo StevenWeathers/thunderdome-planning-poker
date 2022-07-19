@@ -2,13 +2,13 @@ name: Go
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ master ]
+    branches: [ main, master ]
 
 jobs:
   build:
-    name: Build
+    timeout-minutes: 30
     runs-on: ubuntu-latest
 
     strategy:
@@ -16,7 +16,25 @@ jobs:
         node-version: [ 18.5.0 ]
         go-version: [ 1.18 ]
 
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: thunderdome
+          POSTGRES_USER: thor
+          POSTGRES_PASSWORD: odinson
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Set up Go ${{ matrix.go-version }}
         uses: actions/setup-go@v2
@@ -27,12 +45,9 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
       - run: npm ci --no-optional
-      - run: npm run build --if-present
+      - run: npm test
+      - run: npm run build
         env:
           CI: true
 
@@ -43,9 +58,7 @@ jobs:
               curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
               dep ensure
           fi
-
-      - name: Install swag
-        run: go install github.com/swaggo/swag/cmd/swag@v1.7.4
+          go install github.com/swaggo/swag/cmd/swag@v1.7.4
 
       - name: Generate swagger docs
         run: swag init -g api/api.go -o swaggerdocs
@@ -55,3 +68,31 @@ jobs:
 
       - name: Build
         run: go build -v .
+
+      - name: Run Thunderdome application
+        run: ./thunderdome-planning-poker &
+        env:
+          DB_HOST: postgres
+          APP_DOMAIN: ".127.0.0.1"
+          COOKIE_SECURE: "false"
+
+      - name: Install Playwright dependencies
+        working-directory: ./e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        working-directory: ./e2e
+        run: npx playwright test
+        env:
+          DB_HOST: postgres
+
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: e2e/playwright-report
+          path: e2e/playwright-report/
+          retention-days: 30
+
+
