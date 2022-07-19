@@ -7,7 +7,6 @@ import {setupRegisteredUser} from "./fixtures/db/registered-user";
 import {setupVerifiedUser} from "./fixtures/db/verified-user";
 
 async function globalSetup(config: FullConfig) {
-    console.log("DB HOST: ", process.env.DB_HOST)
     const pool = setupDB({
         name: process.env.DB_NAME || 'thunderdome',
         user: process.env.DB_USER || 'thor',

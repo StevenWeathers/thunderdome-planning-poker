@@ -19,8 +19,6 @@ jobs:
     services:
       postgres:
         image: postgres:14
-        ports:
-          - 5432:5432
         env:
           POSTGRES_DB: thunderdome
           POSTGRES_USER: thor
@@ -89,7 +87,6 @@ jobs:
         run: npx playwright test
         env:
           DB_HOST: postgres
-          DB_PORT: ${{ job.services.postgres.ports[5432] }}
 
       - uses: actions/upload-artifact@v2
         if: always()
