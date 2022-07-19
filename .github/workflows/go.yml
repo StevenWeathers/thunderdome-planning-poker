@@ -15,14 +15,18 @@ jobs:
       matrix:
         node-version: [ 18.5.0 ]
         go-version: [ 1.18 ]
+        db-host:
+          - 127.0.0.1
 
     services:
       postgres:
         image: postgres:14
+        ports:
+          - 5432:5432
         env:
-          POSTGRES_DB: thunderdome
-          POSTGRES_USER: thor
-          POSTGRES_PASSWORD: odinson
+          POSTGRES_DB: "thunderdome"
+          POSTGRES_USER: "thor"
+          POSTGRES_PASSWORD: "odinson"
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -72,7 +76,7 @@ jobs:
       - name: Run Thunderdome application
         run: ./thunderdome-planning-poker &
         env:
-          DB_HOST: postgres
+          DB_HOST: ${{ matrix.db-host }}
           APP_DOMAIN: ".127.0.0.1"
           COOKIE_SECURE: "false"
 
@@ -86,7 +90,7 @@ jobs:
         working-directory: ./e2e
         run: npx playwright test
         env:
-          DB_HOST: postgres
+          DB_HOST: ${{ matrix.db-host }}
 
       - uses: actions/upload-artifact@v2
         if: always()
