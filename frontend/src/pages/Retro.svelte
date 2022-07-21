@@ -19,6 +19,7 @@
     import InviteUser from '../components/retro/InviteUser.svelte'
     import EditRetro from '../components/retro/EditRetro.svelte'
     import EditActionItem from '../components/retro/EditActionItem.svelte'
+    import GroupedItems from '../components/retro/GroupedItems.svelte'
     import { AppConfig, appRoutes, PathPrefix } from '../config'
     import { warrior as user } from '../stores.js'
     import { _ } from '../i18n'
@@ -760,7 +761,7 @@
                             <div
                                 class="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4"
                             >
-                                <VotePhase groups="{groupedItems}" />
+                                <GroupedItems groups="{groupedItems}" />
                             </div>
                         </div>
                         <div class="w-full md:w-1/3">
