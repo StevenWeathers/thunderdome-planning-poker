@@ -8,7 +8,6 @@
     export let handleComplete = () => {}
     export let xfetch
     export let notifications
-    export let eventTag
 
     let qrCode = ''
     let secret = ''
@@ -51,7 +50,11 @@
                 {$_('mfaSetupIntro')}
             </p>
             {#if qrCode !== ''}
-                <img src="data:image/png;base64,{qrCode}" class="m-auto" />
+                <img
+                    src="data:image/png;base64,{qrCode}"
+                    class="m-auto"
+                    alt="MFA QR Code"
+                />
 
                 <p class="mt-2 font-rajdhani text-xl text-red-500">
                     {$_('mfaSecretKeyLabel')}: {secret}
