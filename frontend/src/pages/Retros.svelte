@@ -55,7 +55,7 @@
                             class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight"
                         >
-                            {retro.name}
+                            <span data-testid="retro-name">{retro.name}</span>
                             <div
                                 class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
                             >

@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/test';
 import {RegisterPage} from '../fixtures/register-page';
 
-const registerPageTitle = 'Enlist to Battle';
+const registerPageTitle = 'Register';
 const battlesPageTitle = 'My Battles';
 
 test.beforeEach(async ({page}) => {

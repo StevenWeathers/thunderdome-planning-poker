@@ -126,11 +126,7 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            {#if retroId}
-                Register
-            {:else}
-                {$_('pages.createAccount.title')}
-            {/if}
+            {$_('register')}
         </h1>
         {#if battleId}
             <div

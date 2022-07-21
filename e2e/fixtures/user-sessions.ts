@@ -61,6 +61,22 @@ class RegisteredPage {
         return res.data;
     }
 
+    public async createRetro(retro) {
+        const b = await this.page.request.post(`/api/users/${this.user.id}/retros`, {
+            data: retro
+        });
+        const res = await b.json();
+        return res.data;
+    }
+
+    public async createStoryboard(storyboard) {
+        const b = await this.page.request.post(`/api/users/${this.user.id}/storyboards`, {
+            data: storyboard
+        });
+        const res = await b.json();
+        return res.data;
+    }
+
     public async createOrg(name: string) {
         const ruo = await this.page.request.post(`/api/users/${this.user.id}/organizations`, {
             data: {
@@ -140,6 +156,22 @@ class VerifiedPage {
     public async createBattle(battle) {
         const b = await this.page.request.post(`/api/users/${this.user.id}/battles`, {
             data: battle
+        });
+        const res = await b.json();
+        return res.data;
+    }
+
+    public async createRetro(retro) {
+        const b = await this.page.request.post(`/api/users/${this.user.id}/retros`, {
+            data: retro
+        });
+        const res = await b.json();
+        return res.data;
+    }
+
+    public async createStoryboard(storyboard) {
+        const b = await this.page.request.post(`/api/users/${this.user.id}/storyboards`, {
+            data: storyboard
         });
         const res = await b.json();
         return res.data;

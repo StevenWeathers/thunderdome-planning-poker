@@ -55,7 +55,9 @@
                             class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight"
                         >
-                            {storyboard.name}
+                            <span data-testid="storyboard-name"
+                                >{storyboard.name}</span
+                            >
                             <div
                                 class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
                             >

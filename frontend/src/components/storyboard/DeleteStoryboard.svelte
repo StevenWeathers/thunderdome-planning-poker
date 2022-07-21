@@ -20,10 +20,15 @@
             class="inline-block align-baseline font-bold text-sm text-blue-500
             hover:text-blue-800 mr-4"
             on:click="{toggleDelete}"
+            data-testid="confirm-cancel"
         >
             Cancel
         </button>
-        <SolidButton onClick="{handleDelete}" color="red">
+        <SolidButton
+            onClick="{handleDelete}"
+            color="red"
+            testid="confirm-confirm"
+        >
             Delete Storyboard
         </SolidButton>
     </div>

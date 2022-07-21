@@ -647,6 +647,7 @@
                             color="green"
                             onClick="{toggleAddGoal()}"
                             additionalClasses="mr-2"
+                            testid="goal-add"
                         >
                             {$_('storyboardAddGoal')}
                         </HollowButton>
@@ -661,6 +662,7 @@
                             color="red"
                             onClick="{toggleDeleteStoryboard}"
                             additionalClasses="mr-2"
+                            testid="storyboard-delete"
                         >
                             {$_('deleteStoryboard')}
                         </HollowButton>
@@ -668,10 +670,15 @@
                         <HollowButton
                             color="blue"
                             onClick="{toggleBecomeFacilitator}"
+                            testid="become-facilitator"
                         >
                             {$_('becomeFacilitator')}
                         </HollowButton>
-                        <HollowButton color="red" onClick="{abandonStoryboard}">
+                        <HollowButton
+                            color="red"
+                            onClick="{abandonStoryboard}"
+                            testid="storyboard-leave"
+                        >
                             {$_('leaveStoryboard')}
                         </HollowButton>
                     {/if}
@@ -680,6 +687,7 @@
                             color="indigo"
                             additionalClasses="transition ease-in-out duration-150"
                             onClick="{togglePersonas}"
+                            testid="personas-toggle"
                         >
                             {$_('personas')}
                             <DownCarrotIcon additionalClasses="ml-1" />
@@ -707,6 +715,7 @@
                                                             )}"
                                                             class="text-orange-500
                                                         hover:text-orange-800"
+                                                            data-testid="persona-edit"
                                                         >
                                                             {$_('edit')}
                                                         </button>
@@ -717,6 +726,7 @@
                                                             )}"
                                                             class="text-red-500
                                                         hover:text-red-800"
+                                                            data-testid="persona-delete"
                                                         >
                                                             {$_('delete')}
                                                         </button>
@@ -739,6 +749,7 @@
                                                     role: '',
                                                     description: '',
                                                 })}"
+                                                testid="persona-add"
                                             >
                                                 {$_('addPersona')}
                                             </HollowButton>
@@ -753,6 +764,7 @@
                             color="teal"
                             additionalClasses="transition ease-in-out duration-150"
                             onClick="{toggleColorLegend}"
+                            testid="colorlegend-toggle"
                         >
                             {$_('colorLegend')}
                             <DownCarrotIcon additionalClasses="ml-1" />
@@ -791,6 +803,7 @@
                                             <HollowButton
                                                 color="orange"
                                                 onClick="{toggleEditLegend}"
+                                                testid="colorlegend-edit"
                                             >
                                                 {$_('editColorLegend')}
                                             </HollowButton>
@@ -805,6 +818,7 @@
                             color="orange"
                             additionalClasses="transition ease-in-out duration-150"
                             onClick="{toggleUsersPanel}"
+                            testid="users-toggle"
                         >
                             <UsersIcon
                                 additionalClasses="mr-1"
@@ -883,6 +897,7 @@
                                 color="green"
                                 onClick="{addStoryColumn(goal.id)}"
                                 btnSize="small"
+                                testid="column-add"
                             >
                                 {$_('storyboardAddColumn')}
                             </HollowButton>
@@ -891,6 +906,7 @@
                                 onClick="{toggleAddGoal(goal.id)}"
                                 btnSize="small"
                                 additionalClasses="ml-2"
+                                testid="goal-edit"
                             >
                                 {$_('edit')}
                             </HollowButton>
@@ -899,6 +915,7 @@
                                 onClick="{handleGoalDeletion(goal.id)}"
                                 btnSize="small"
                                 additionalClasses="ml-2"
+                                testid="goal-delete"
                             >
                                 {$_('delete')}
                             </HollowButton>
@@ -915,6 +932,7 @@
                                             <span
                                                 class="font-bold flex-grow truncate dark:text-gray-300"
                                                 title="{goalColumn.name}"
+                                                data-testid="column-name"
                                             >
                                                 {goalColumn.name}
                                             </span>
@@ -929,6 +947,7 @@
                                                 title="{$_(
                                                     'storyboardEditColumn',
                                                 )}"
+                                                data-testid="column-edit"
                                             >
                                                 <EditIcon />
                                             </button>
@@ -948,6 +967,7 @@
                                                 title="{$_(
                                                     'storyboardAddStoryToColumn',
                                                 )}"
+                                                data-testid="story-add"
                                             >
                                                 +
                                             </button>
@@ -994,6 +1014,7 @@
                                                             ? 'line-through'
                                                             : ''}"
                                                         title="{story.name}"
+                                                        data-testid="story-name"
                                                     >
                                                         {story.name}
                                                     </div>

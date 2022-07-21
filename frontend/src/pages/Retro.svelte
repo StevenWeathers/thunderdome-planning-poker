@@ -522,7 +522,11 @@
             <div class="w-3/4 text-right">
                 <div>
                     {#if retro.phase === 'completed'}
-                        <SolidButton color="green" onClick="{toggleExport}">
+                        <SolidButton
+                            color="green"
+                            onClick="{toggleExport}"
+                            testid="retro-export"
+                        >
                             {#if showExport}
                                 {$_('back')}
                             {:else}
@@ -535,6 +539,7 @@
                             <SolidButton
                                 color="green"
                                 onClick="{setPhase(null)}"
+                                testid="retro-nextphase"
                             >
                                 {$_('nextPhase')}
                             </SolidButton>
@@ -552,6 +557,7 @@
                             color="red"
                             onClick="{toggleDeleteRetro}"
                             class="mr-2"
+                            testid="retro-delete"
                         >
                             {$_('deleteRetro')}
                         </HollowButton>
@@ -559,10 +565,15 @@
                         <HollowButton
                             color="blue"
                             onClick="{toggleBecomeFacilitator}"
+                            testid="become-facilitator"
                         >
                             {$_('becomeFacilitator')}
                         </HollowButton>
-                        <HollowButton color="red" onClick="{abandonRetro}">
+                        <HollowButton
+                            color="red"
+                            onClick="{abandonRetro}"
+                            testid="retro-leave"
+                        >
                             {$_('leaveRetro')}
                         </HollowButton>
                     {/if}

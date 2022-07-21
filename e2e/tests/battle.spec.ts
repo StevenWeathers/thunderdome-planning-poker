@@ -60,7 +60,7 @@ test.describe('Battle page', () => {
         await bp.goto(battle.id);
 
         const title = bp.page.locator('h1');
-        await expect(title).toHaveText('Enlist to Battle');
+        await expect(title).toHaveText('Register');
     })
 
     test('guest user successfully loads', async ({guestPage}) => {

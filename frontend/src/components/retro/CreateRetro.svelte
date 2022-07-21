@@ -136,7 +136,7 @@
         </label>
         <div class="control">
             <input
-                name="retroName"
+                name="maxVotes"
                 bind:value="{maxVotes}"
                 class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
