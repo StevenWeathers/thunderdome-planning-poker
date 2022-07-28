@@ -14,7 +14,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/securecookie v1.1.1
-	github.com/gorilla/websocket v1.4.2
+	github.com/gorilla/websocket v1.5.0
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/ipsn/go-adorable v1.0.0
 	github.com/jaytaylor/html2text v0.0.0-20211013233858-90c08c5027d3 // indirect
@@ -28,7 +28,7 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/o1egl/govatar v0.4.1
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
-	github.com/pquerna/otp v1.3.0 // indirect
+	github.com/pquerna/otp v1.3.0
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/viper v1.9.0
 	github.com/swaggo/http-swagger v1.2.6

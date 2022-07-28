@@ -249,7 +249,7 @@ func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
-// @Router /teams/{teamId}/checkins/{checkinId}/comments [post]
+// @Router /teams/{teamId}/checkins/{checkinId}/comments [put]
 func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
