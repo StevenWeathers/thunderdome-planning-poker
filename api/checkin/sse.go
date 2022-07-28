@@ -68,18 +68,18 @@ func (broker *Broker) Stream(w http.ResponseWriter, r *http.Request) {
 	}
 	b.register <- s
 
-	// unregister connection upon close
-	defer func() {
-		b.unregister <- s
-	}()
-
 	// send connected message to initiate
 	fmt.Fprintf(w, "data: connected\n\n")
 	flusher.Flush()
 
-	// send ping every 30 seconds to keep connection alive in browser
-	ticker := time.NewTicker(30 * time.Second)
-	defer ticker.Stop()
+	// send ping every 60 seconds to keep connection alive in browser
+	ticker := time.NewTicker(60 * time.Second)
+
+	// unregister connection upon close
+	defer func() {
+		b.unregister <- s
+		ticker.Stop()
+	}()
 
 	for {
 		select {
@@ -93,7 +93,6 @@ func (broker *Broker) Stream(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "data: ping\n\n")
 			flusher.Flush()
 		case <-ctx.Done():
-			b.unregister <- s
 			return
 		}
 	}
