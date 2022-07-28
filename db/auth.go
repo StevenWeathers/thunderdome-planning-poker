@@ -35,7 +35,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		&user.MFAEnabled,
 	)
 	if e != nil {
-		d.logger.Error("Unable to auth user", zap.Error(e))
+		d.logger.Error("Unable to auth user not found", zap.Error(e), zap.String("email", UserEmail))
 		return nil, "", errors.New("user not found")
 	}
 
