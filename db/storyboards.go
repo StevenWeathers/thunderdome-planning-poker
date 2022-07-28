@@ -316,7 +316,6 @@ func (d *Database) GetStoryboardUserActiveStatus(StoryboardID string, UserID str
 		&active,
 	)
 	if err != nil {
-		d.logger.Error("get storyboard user active status error", zap.Error(err))
 		return err
 	}
 

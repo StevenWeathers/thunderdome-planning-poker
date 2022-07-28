@@ -258,10 +258,11 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		UserErr := b.db.GetStoryboardUserActiveStatus(storyboardID, User.Id)
 		if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
 			usrErrMsg := UserErr.Error()
-			b.logger.Error("error finding user", zap.Error(UserErr))
-			if usrErrMsg == "DUPLICATE_RETRO_USER" {
+
+			if usrErrMsg == "DUPLICATE_STORYBOARD_USER" {
 				b.handleSocketClose(ws, 4003, "duplicate session")
 			} else {
+				b.logger.Error("error finding user", zap.Error(UserErr))
 				b.handleSocketClose(ws, 4005, "internal error")
 			}
 			return

@@ -396,7 +396,6 @@ func (d *Database) GetRetroUserActiveStatus(RetroID string, UserID string) error
 		&active,
 	)
 	if err != nil {
-		d.logger.Error("get retro user active status error", zap.Error(err))
 		return err
 	}
 
