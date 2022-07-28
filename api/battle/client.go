@@ -91,7 +91,7 @@ func (sub subscription) readPump(b *Service) {
 		var eventErr error
 		_, msg, err := c.ws.ReadMessage()
 		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				b.logger.Error("unexpected close error", zap.Error(err))
 			}
 			break
@@ -249,7 +249,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			for {
 				_, msg, err := c.ws.ReadMessage()
 				if err != nil {
-					if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
+					if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 						b.logger.Error("unexpected close error", zap.Error(err))
 					}
 					break
