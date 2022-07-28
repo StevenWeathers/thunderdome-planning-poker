@@ -155,7 +155,7 @@ func (sub *subscription) writePump() {
 				return
 			}
 		case <-ticker.C:
-			if err := c.write(websocket.PingMessage, []byte{}); err != nil {
+			if err := c.write(websocket.PingMessage, nil); err != nil {
 				return
 			}
 		}

@@ -49,7 +49,12 @@ func (a *api) handleLogin() http.HandlerFunc {
 
 		authedUser, sessionId, err := a.db.AuthUser(strings.ToLower(u.Email), u.Password)
 		if err != nil {
-			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
+			userErr := err.Error()
+			if userErr == "USER_NOT_FOUND" || userErr == "INVALID_PASSWORD" || userErr == "USER_DISABLED" {
+				a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
+			} else {
+				a.Failure(w, r, http.StatusInternalServerError, err)
+			}
 			return
 		}
 

@@ -35,16 +35,20 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		&user.MFAEnabled,
 	)
 	if e != nil {
-		d.logger.Error("Unable to auth user not found", zap.Error(e), zap.String("email", UserEmail))
-		return nil, "", errors.New("user not found")
+		if errors.Is(e, sql.ErrNoRows) {
+			d.logger.Error("Unable to auth user not found", zap.Error(e), zap.String("email", UserEmail))
+			return nil, "", errors.New("USER_NOT_FOUND")
+		} else {
+			return nil, "", e
+		}
 	}
 
 	if !comparePasswords(passHash, UserPassword) {
-		return nil, "", errors.New("password invalid")
+		return nil, "", errors.New("INVALID_PASSWORD")
 	}
 
 	if user.Disabled {
-		return nil, "", errors.New("user disabled")
+		return nil, "", errors.New("USER_DISABLED")
 	}
 
 	// check to see if the bcrypt cost has been updated, if not do so
@@ -75,7 +79,7 @@ func (d *Database) UserResetRequest(UserEmail string) (resetID string, UserName 
 		UserEmail,
 	).Scan(&ResetID, &UserID, &name)
 	if e != nil {
-		d.logger.Error("Unable to reset user", zap.Error(e))
+		d.logger.Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))
 		return "", "", e
 	}
 
