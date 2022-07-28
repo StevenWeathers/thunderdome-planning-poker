@@ -1,7 +1,9 @@
 package retro
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -224,7 +226,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		// check users retro active status
 		UserErr := b.db.GetRetroUserActiveStatus(retroID, User.Id)
-		if UserErr != nil && UserErr.Error() != "sql: no rows in result set" {
+		if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
 			usrErrMsg := UserErr.Error()
 			b.logger.Error("error finding user", zap.Error(UserErr))
 			if usrErrMsg == "DUPLICATE_RETRO_USER" {
@@ -235,7 +237,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			return
 		}
 
-		if retro.JoinCode != "" && (UserErr != nil && UserErr.Error() == "sql: no rows in result set") {
+		if retro.JoinCode != "" && (UserErr != nil && errors.Is(UserErr, sql.ErrNoRows)) {
 			jcrEvent := createSocketEvent("join_code_required", "", User.Id)
 			_ = c.write(websocket.TextMessage, jcrEvent)
 

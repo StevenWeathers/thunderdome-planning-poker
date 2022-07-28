@@ -1,7 +1,9 @@
 package battle
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -231,7 +233,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 
 		// check users battle active status
 		UserErr := b.db.GetBattleUserActiveStatus(battleID, User.Id)
-		if UserErr != nil && UserErr.Error() != "sql: no rows in result set" {
+		if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
 			usrErrMsg := UserErr.Error()
 			b.logger.Error("error finding user", zap.Error(UserErr))
 			if usrErrMsg == "DUPLICATE_BATTLE_USER" {
@@ -242,7 +244,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			return
 		}
 
-		if battle.JoinCode != "" && (UserErr != nil && UserErr.Error() == "sql: no rows in result set") {
+		if battle.JoinCode != "" && (UserErr != nil && errors.Is(UserErr, sql.ErrNoRows)) {
 			jcrEvent := createSocketEvent("join_code_required", "", User.Id)
 			_ = c.write(websocket.TextMessage, jcrEvent)
 

@@ -1,7 +1,9 @@
 package storyboard
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -254,7 +256,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		// check users storyboard active status
 		UserErr := b.db.GetStoryboardUserActiveStatus(storyboardID, User.Id)
-		if UserErr != nil && UserErr.Error() != "sql: no rows in result set" {
+		if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
 			usrErrMsg := UserErr.Error()
 			b.logger.Error("error finding user", zap.Error(UserErr))
 			if usrErrMsg == "DUPLICATE_RETRO_USER" {
@@ -265,7 +267,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			return
 		}
 
-		if storyboard.JoinCode != "" && (UserErr != nil && UserErr.Error() == "sql: no rows in result set") {
+		if storyboard.JoinCode != "" && (UserErr != nil && errors.Is(UserErr, sql.ErrNoRows)) {
 			jcrEvent := createSocketEvent("join_code_required", "", User.Id)
 			_ = c.write(websocket.TextMessage, jcrEvent)
 

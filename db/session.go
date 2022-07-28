@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"errors"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
@@ -65,7 +66,9 @@ func (d *Database) GetSessionUser(SessionId string) (*model.User, error) {
 		&User.UpdatedDate,
 		&User.LastActive)
 	if e != nil {
-		d.logger.Error("user_session_get query error", zap.Error(e))
+		if !errors.Is(e, sql.ErrNoRows) {
+			d.logger.Error("user_session_get query error", zap.Error(e))
+		}
 		return nil, errors.New("active session match not found")
 	}
 
