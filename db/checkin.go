@@ -62,7 +62,7 @@ func (d *Database) CheckinList(ctx context.Context, TeamId string, Date string, 
 				Comments := make([]*model.CheckinComment, 0)
 				jsonErr := json.Unmarshal([]byte(comments), &Comments)
 				if jsonErr != nil {
-					d.logger.Error("checkin comments json error", zap.Error(jsonErr))
+					d.logger.Ctx(ctx).Error("checkin comments json error", zap.Error(jsonErr))
 				}
 				checkin.Comments = Comments
 

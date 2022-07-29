@@ -66,7 +66,7 @@ func (d *Database) GetAppStats(ctx context.Context) (*model.ApplicationStats, er
 		&Appstats.StoryboardPersonaCount,
 	)
 	if err != nil {
-		d.logger.Error("Unable to get application stats", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
 		return nil, err
 	}
 
@@ -79,7 +79,7 @@ func (d *Database) PromoteUser(ctx context.Context, UserID string) error {
 		`call promote_user($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("call promote_user error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call promote_user error", zap.Error(err))
 		return errors.New("error attempting to promote user to admin")
 	}
 
@@ -92,7 +92,7 @@ func (d *Database) DemoteUser(ctx context.Context, UserID string) error {
 		`call demote_user($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("call demote_user error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call demote_user error", zap.Error(err))
 		return errors.New("error attempting to demote user to registered")
 	}
 
@@ -105,7 +105,7 @@ func (d *Database) DisableUser(ctx context.Context, UserID string) error {
 		`call user_disable($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("call user_disable error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call user_disable error", zap.Error(err))
 		return errors.New("error attempting to disable user")
 	}
 
@@ -118,7 +118,7 @@ func (d *Database) EnableUser(ctx context.Context, UserID string) error {
 		`call user_enable($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("call user_enable error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call user_enable error", zap.Error(err))
 		return errors.New("error attempting to enable user")
 	}
 
@@ -131,7 +131,7 @@ func (d *Database) CleanBattles(ctx context.Context, DaysOld int) error {
 		`call clean_battles($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Error("call clean_battles", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call clean_battles", zap.Error(err))
 		return errors.New("error attempting to clean battles")
 	}
 
@@ -144,7 +144,7 @@ func (d *Database) CleanRetros(ctx context.Context, DaysOld int) error {
 		`call clean_retros($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Error("call clean_retros", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call clean_retros", zap.Error(err))
 		return errors.New("error attempting to clean retros")
 	}
 
@@ -157,7 +157,7 @@ func (d *Database) CleanStoryboards(ctx context.Context, DaysOld int) error {
 		`call clean_storyboards($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Error("call clean_storyboards", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call clean_storyboards", zap.Error(err))
 		return errors.New("error attempting to clean storyboards")
 	}
 
@@ -170,7 +170,7 @@ func (d *Database) CleanGuests(ctx context.Context, DaysOld int) error {
 		`call clean_guest_users($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Error("call clean_guest_users", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call clean_guest_users", zap.Error(err))
 		return errors.New("error attempting to clean Guest Users")
 	}
 
@@ -194,14 +194,14 @@ func (d *Database) LowercaseUserEmails(ctx context.Context) ([]*model.User, erro
 				&usr.Name,
 				&usr.Email,
 			); err != nil {
-				d.logger.Error("lowercase_unique_user_emails scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("lowercase_unique_user_emails scan error", zap.Error(err))
 				return nil, err
 			} else {
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		d.logger.Error("lowercase_unique_user_emails query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("lowercase_unique_user_emails query error", zap.Error(err))
 		return nil, err
 	}
 
@@ -225,14 +225,14 @@ func (d *Database) MergeDuplicateAccounts(ctx context.Context) ([]*model.User, e
 				&usr.Name,
 				&usr.Email,
 			); err != nil {
-				d.logger.Error("merge_nonunique_user_accounts scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("merge_nonunique_user_accounts scan error", zap.Error(err))
 				return nil, err
 			} else {
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		d.logger.Error("merge_nonunique_user_accounts query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("merge_nonunique_user_accounts query error", zap.Error(err))
 		return nil, err
 	}
 
@@ -259,13 +259,13 @@ func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) 
 				&org.CreatedDate,
 				&org.UpdatedDate,
 			); err != nil {
-				d.logger.Error("organization_list scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("organization_list scan error", zap.Error(err))
 			} else {
 				organizations = append(organizations, &org)
 			}
 		}
 	} else {
-		d.logger.Error("organization_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("organization_list query error", zap.Error(err))
 	}
 
 	return organizations
@@ -291,13 +291,13 @@ func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) []*model
 				&team.CreatedDate,
 				&team.UpdatedDate,
 			); err != nil {
-				d.logger.Error("team_list scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("team_list scan error", zap.Error(err))
 			} else {
 				teams = append(teams, &team)
 			}
 		}
 	} else {
-		d.logger.Error("team_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_list query error", zap.Error(err))
 	}
 
 	return teams
@@ -326,7 +326,7 @@ func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*mod
 				&ak.CreatedDate,
 				&ak.UpdatedDate,
 			); err != nil {
-				d.logger.Error("apikeys_list scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("apikeys_list scan error", zap.Error(err))
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
@@ -335,7 +335,7 @@ func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*mod
 			}
 		}
 	} else {
-		d.logger.Error("apikeys_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("apikeys_list query error", zap.Error(err))
 	}
 
 	return APIKeys

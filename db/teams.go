@@ -19,7 +19,7 @@ func (d *Database) TeamUserRole(ctx context.Context, UserID string, TeamID strin
 		&teamRole,
 	)
 	if err != nil {
-		d.logger.Error("team_get_user_role query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_get_user_role query error", zap.Error(err))
 		return "", errors.New("error getting team users role")
 	}
 
@@ -40,7 +40,7 @@ func (d *Database) TeamGet(ctx context.Context, TeamID string) (*model.Team, err
 		&team.UpdatedDate,
 	)
 	if err != nil {
-		d.logger.Error("team_get_by_id query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_get_by_id query error", zap.Error(err))
 		return nil, errors.New("team not found")
 	}
 
@@ -68,13 +68,13 @@ func (d *Database) TeamListByUser(ctx context.Context, UserID string, Limit int,
 				&team.CreatedDate,
 				&team.UpdatedDate,
 			); err != nil {
-				d.logger.Error("team_list_by_user query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("team_list_by_user query scan error", zap.Error(err))
 			} else {
 				teams = append(teams, &team)
 			}
 		}
 	} else {
-		d.logger.Error("team_list_by_user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_list_by_user query error", zap.Error(err))
 	}
 
 	return teams
@@ -90,7 +90,7 @@ func (d *Database) TeamCreate(ctx context.Context, UserID string, TeamName strin
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
-		d.logger.Error("team_create query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_create query error", zap.Error(err))
 		return nil, err
 	}
 
@@ -107,7 +107,7 @@ func (d *Database) TeamAddUser(ctx context.Context, TeamID string, UserID string
 	)
 
 	if err != nil {
-		d.logger.Error("team_user_add query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_user_add query error", zap.Error(err))
 		return "", err
 	}
 
@@ -150,14 +150,14 @@ func (d *Database) TeamUserList(ctx context.Context, TeamID string, Limit int, O
 				&usr.Role,
 				&usr.Avatar,
 			); err != nil {
-				d.logger.Error("team_user_list query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("team_user_list query scan error", zap.Error(err))
 			} else {
 				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		d.logger.Error("team_user_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_user_list query error", zap.Error(err))
 		return nil, 0, err
 	}
 
@@ -173,7 +173,7 @@ func (d *Database) TeamRemoveUser(ctx context.Context, TeamID string, UserID str
 	)
 
 	if err != nil {
-		d.logger.Error("team_user_remove query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_user_remove query error", zap.Error(err))
 		return err
 	}
 
@@ -199,13 +199,13 @@ func (d *Database) TeamBattleList(ctx context.Context, TeamID string, Limit int,
 				&tb.Id,
 				&tb.Name,
 			); err != nil {
-				d.logger.Error("team_battle_list query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("team_battle_list query scan error", zap.Error(err))
 			} else {
 				battles = append(battles, &tb)
 			}
 		}
 	} else {
-		d.logger.Error("team_battle_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_battle_list query error", zap.Error(err))
 	}
 
 	return battles
@@ -220,7 +220,7 @@ func (d *Database) TeamAddBattle(ctx context.Context, TeamID string, BattleID st
 	)
 
 	if err != nil {
-		d.logger.Error("team_battle_add query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_battle_add query error", zap.Error(err))
 		return err
 	}
 
@@ -236,7 +236,7 @@ func (d *Database) TeamRemoveBattle(ctx context.Context, TeamID string, BattleID
 	)
 
 	if err != nil {
-		d.logger.Error("team_battle_remove query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_battle_remove query error", zap.Error(err))
 		return err
 	}
 
@@ -251,7 +251,7 @@ func (d *Database) TeamDelete(ctx context.Context, TeamID string) error {
 	)
 
 	if err != nil {
-		d.logger.Error("team_delete query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_delete query error", zap.Error(err))
 		return err
 	}
 
@@ -279,13 +279,13 @@ func (d *Database) TeamRetroList(ctx context.Context, TeamID string, Limit int, 
 				&tb.Format,
 				&tb.Phase,
 			); err != nil {
-				d.logger.Error("team_retro_list query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("team_retro_list query scan error", zap.Error(err))
 			} else {
 				retros = append(retros, &tb)
 			}
 		}
 	} else {
-		d.logger.Error("team_retro_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_retro_list query error", zap.Error(err))
 	}
 
 	return retros
@@ -300,7 +300,7 @@ func (d *Database) TeamAddRetro(ctx context.Context, TeamID string, RetroID stri
 	)
 
 	if err != nil {
-		d.logger.Error("team_retro_add query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_retro_add query error", zap.Error(err))
 		return err
 	}
 
@@ -316,7 +316,7 @@ func (d *Database) TeamRemoveRetro(ctx context.Context, TeamID string, RetroID s
 	)
 
 	if err != nil {
-		d.logger.Error("team_retro_remove query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_retro_remove query error", zap.Error(err))
 		return err
 	}
 
@@ -342,13 +342,13 @@ func (d *Database) TeamStoryboardList(ctx context.Context, TeamID string, Limit 
 				&tb.Id,
 				&tb.Name,
 			); err != nil {
-				d.logger.Error("team_storyboard_list query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("team_storyboard_list query scan error", zap.Error(err))
 			} else {
 				storyboards = append(storyboards, &tb)
 			}
 		}
 	} else {
-		d.logger.Error("team_storyboard_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_storyboard_list query error", zap.Error(err))
 	}
 
 	return storyboards
@@ -363,7 +363,7 @@ func (d *Database) TeamAddStoryboard(ctx context.Context, TeamID string, Storybo
 	)
 
 	if err != nil {
-		d.logger.Error("team_storyboard_add query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_storyboard_add query error", zap.Error(err))
 		return err
 	}
 
@@ -379,7 +379,7 @@ func (d *Database) TeamRemoveStoryboard(ctx context.Context, TeamID string, Stor
 	)
 
 	if err != nil {
-		d.logger.Error("team_storyboard_remove query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_storyboard_remove query error", zap.Error(err))
 		return err
 	}
 

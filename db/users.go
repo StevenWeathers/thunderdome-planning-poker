@@ -20,7 +20,7 @@ func (d *Database) GetRegisteredUsers(ctx context.Context, Limit int, Offset int
 		&Count,
 	)
 	if err != nil {
-		d.logger.Error("get registered users query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("get registered users query error", zap.Error(err))
 	}
 
 	rows, err := d.db.QueryContext(ctx,
@@ -50,7 +50,7 @@ func (d *Database) GetRegisteredUsers(ctx context.Context, Limit int, Offset int
 			&w.JobTitle,
 			&w.Disabled,
 		); err != nil {
-			d.logger.Error("registered_users_list query scan error", zap.Error(err))
+			d.logger.Ctx(ctx).Error("registered_users_list query scan error", zap.Error(err))
 		} else {
 			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)
@@ -94,7 +94,7 @@ func (d *Database) GetUser(ctx context.Context, UserID string) (*model.User, err
 		&w.MFAEnabled,
 	)
 	if err != nil {
-		d.logger.Error("get user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("get user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
@@ -144,7 +144,7 @@ WHERE id = $1 AND type = 'GUEST';
 		&w.LastActive,
 	)
 	if err != nil {
-		d.logger.Error("get guest user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("get guest user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
@@ -173,7 +173,7 @@ func (d *Database) GetUserByEmail(ctx context.Context, UserEmail string) (*model
 		&w.Disabled,
 	)
 	if err != nil {
-		d.logger.Error("get user by email query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("get user by email query error", zap.Error(err))
 		return nil, errors.New("user email not found")
 	}
 
@@ -187,7 +187,7 @@ func (d *Database) CreateUserGuest(ctx context.Context, UserName string) (*model
 	var UserID string
 	err := d.db.QueryRowContext(ctx, `INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
 	if err != nil {
-		d.logger.Error("create guest user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("create guest user query error", zap.Error(err))
 		return nil, errors.New("unable to create new user")
 	}
 
@@ -222,7 +222,7 @@ func (d *Database) CreateUserRegistered(ctx context.Context, UserName string, Us
 			UserType,
 		).Scan(&User.Id, &verifyID)
 		if err != nil {
-			d.logger.Error("register_existing_user query error", zap.Error(err))
+			d.logger.Ctx(ctx).Error("register_existing_user query error", zap.Error(err))
 			return nil, "", "", errors.New("a user with that email already exists")
 		}
 	} else {
@@ -234,7 +234,7 @@ func (d *Database) CreateUserRegistered(ctx context.Context, UserName string, Us
 			UserType,
 		).Scan(&User.Id, &verifyID)
 		if err != nil {
-			d.logger.Error("register_user query error", zap.Error(err))
+			d.logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
 			return nil, "", "", errors.New("a user with that email already exists")
 		}
 	}
@@ -273,7 +273,7 @@ func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail st
 		UserType,
 	).Scan(&User.Id, &verifyID)
 	if err != nil {
-		d.logger.Error("register_user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
 		return nil, "", errors.New("a user with that email already exists")
 	}
 
@@ -296,7 +296,7 @@ func (d *Database) UpdateUserProfile(ctx context.Context, UserID string, UserNam
 		Company,
 		JobTitle,
 	); err != nil {
-		d.logger.Error("user_profile_update query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("user_profile_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
 	}
 
@@ -318,7 +318,7 @@ func (d *Database) UpdateUserProfileLdap(ctx context.Context, UserID string, Use
 		Company,
 		JobTitle,
 	); err != nil {
-		d.logger.Error("user_profile_ldap_update query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("user_profile_ldap_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
 	}
 
@@ -354,7 +354,7 @@ func (d *Database) DeleteUser(ctx context.Context, UserID string) error {
 		`call delete_user($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("delete_user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("delete_user query error", zap.Error(err))
 		return errors.New("error attempting to delete user")
 	}
 
@@ -373,7 +373,7 @@ func (d *Database) GetActiveCountries(ctx context.Context) ([]string, error) {
 			if err := rows.Scan(
 				&country,
 			); err != nil {
-				d.logger.Error("countries_active query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("countries_active query scan error", zap.Error(err))
 			} else {
 				if country.String != "" {
 					countries = append(countries, country.String)
@@ -381,7 +381,7 @@ func (d *Database) GetActiveCountries(ctx context.Context) ([]string, error) {
 			}
 		}
 	} else {
-		d.logger.Error("countries_active query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("countries_active query error", zap.Error(err))
 		return nil, errors.New("error attempting to get active countries")
 	}
 
@@ -421,7 +421,7 @@ func (d *Database) SearchRegisteredUsersByEmail(ctx context.Context, Email strin
 			&w.JobTitle,
 			&count,
 		); err != nil {
-			d.logger.Error("registered_users_email_search query error", zap.Error(err))
+			d.logger.Ctx(ctx).Error("registered_users_email_search query error", zap.Error(err))
 		} else {
 			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)

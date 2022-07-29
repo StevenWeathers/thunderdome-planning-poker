@@ -34,6 +34,7 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/swaggo/http-swagger v1.2.6
 	github.com/swaggo/swag v1.7.9
+	github.com/uptrace/opentelemetry-go-extra/otelzap v0.1.15 // indirect
 	github.com/vanng822/go-premailer v1.20.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.33.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.33.0 // indirect

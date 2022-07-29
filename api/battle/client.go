@@ -192,7 +192,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			b.logger.Error("websocket upgrade error", zap.Error(err))
+			b.logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err))
 			return
 		}
 		c := &connection{send: make(chan []byte, 256), ws: ws}
@@ -240,7 +240,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			if usrErrMsg == "DUPLICATE_BATTLE_USER" {
 				b.handleSocketClose(ws, 4003, "duplicate session")
 			} else {
-				b.logger.Error("error finding user", zap.Error(UserErr))
+				b.logger.Ctx(ctx).Error("error finding user", zap.Error(UserErr))
 				b.handleSocketClose(ws, 4005, "internal error")
 			}
 			return
@@ -254,7 +254,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 				_, msg, err := c.ws.ReadMessage()
 				if err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-						b.logger.Error("unexpected close error", zap.Error(err))
+						b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
 					}
 					break
 				}

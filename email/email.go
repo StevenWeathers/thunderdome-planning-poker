@@ -4,6 +4,7 @@ package email
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/mail"
 	"net/smtp"
 	"strconv"
@@ -46,11 +47,11 @@ type Config struct {
 // Email contains all the methods to send application emails
 type Email struct {
 	config *Config
-	logger *zap.Logger
+	logger *otelzap.Logger
 }
 
 // New creates a new instance of Email
-func New(AppDomain string, PathPrefix string, logger *zap.Logger) *Email {
+func New(AppDomain string, PathPrefix string, logger *otelzap.Logger) *Email {
 	var AppURL string = "https://" + AppDomain + PathPrefix + "/"
 	var m = &Email{
 		// read environment variables and sets up mailserver configuration values

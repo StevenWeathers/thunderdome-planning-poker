@@ -23,7 +23,7 @@ func (d *Database) DepartmentUserRole(ctx context.Context, UserID string, OrgID 
 		&departmentRole,
 	)
 	if e != nil {
-		d.logger.Error("department_get_user_role query error", zap.Error(e))
+		d.logger.Ctx(ctx).Error("department_get_user_role query error", zap.Error(e))
 		return "", "", errors.New("error getting department users role")
 	}
 
@@ -44,7 +44,7 @@ func (d *Database) DepartmentGet(ctx context.Context, DepartmentID string) (*mod
 		&org.UpdatedDate,
 	)
 	if e != nil {
-		d.logger.Error("department_get_by_id query error", zap.Error(e))
+		d.logger.Ctx(ctx).Error("department_get_by_id query error", zap.Error(e))
 		return nil, errors.New("department not found")
 	}
 
@@ -72,13 +72,13 @@ func (d *Database) OrganizationDepartmentList(ctx context.Context, OrgID string,
 				&department.CreatedDate,
 				&department.UpdatedDate,
 			); err != nil {
-				d.logger.Error("department_list query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("department_list query scan error", zap.Error(err))
 			} else {
 				departments = append(departments, &department)
 			}
 		}
 	} else {
-		d.logger.Error("department_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("department_list query error", zap.Error(err))
 	}
 
 	return departments
@@ -95,7 +95,7 @@ func (d *Database) DepartmentCreate(ctx context.Context, OrgID string, OrgName s
 	).Scan(&od.Id, &od.Name, &od.CreatedDate, &od.UpdatedDate)
 
 	if err != nil {
-		d.logger.Error("Unable to create organization department", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to create organization department", zap.Error(err))
 		return nil, err
 	}
 
@@ -123,13 +123,13 @@ func (d *Database) DepartmentTeamList(ctx context.Context, DepartmentID string, 
 				&team.CreatedDate,
 				&team.UpdatedDate,
 			); err != nil {
-				d.logger.Error("department_team_list query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("department_team_list query scan error", zap.Error(err))
 			} else {
 				teams = append(teams, &team)
 			}
 		}
 	} else {
-		d.logger.Error("department_team_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("department_team_list query error", zap.Error(err))
 	}
 
 	return teams
@@ -146,7 +146,7 @@ func (d *Database) DepartmentTeamCreate(ctx context.Context, DepartmentID string
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
-		d.logger.Error("Unable to create department tea", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to create department tea", zap.Error(err))
 		return nil, err
 	}
 
@@ -175,14 +175,14 @@ func (d *Database) DepartmentUserList(ctx context.Context, DepartmentID string, 
 				&usr.Role,
 				&usr.Avatar,
 			); err != nil {
-				d.logger.Error("department_user_list query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("department_user_list query scan error", zap.Error(err))
 			} else {
 				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		d.logger.Error("department_user_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("department_user_list query error", zap.Error(err))
 	}
 
 	return users
@@ -198,7 +198,7 @@ func (d *Database) DepartmentAddUser(ctx context.Context, DepartmentID string, U
 	)
 
 	if err != nil {
-		d.logger.Error("Unable to add user to department", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to add user to department", zap.Error(err))
 		return "", err
 	}
 
@@ -214,7 +214,7 @@ func (d *Database) DepartmentRemoveUser(ctx context.Context, DepartmentID string
 	)
 
 	if err != nil {
-		d.logger.Error("Unable to remove user from department", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to remove user from department", zap.Error(err))
 		return err
 	}
 
@@ -239,7 +239,7 @@ func (d *Database) DepartmentTeamUserRole(ctx context.Context, UserID string, Or
 		&teamRole,
 	)
 	if e != nil {
-		d.logger.Error("department_team_user_role query error", zap.Error(e))
+		d.logger.Ctx(ctx).Error("department_team_user_role query error", zap.Error(e))
 		return "", "", "", errors.New("error getting department team users role")
 	}
 
@@ -254,7 +254,7 @@ func (d *Database) DepartmentDelete(ctx context.Context, DepartmentID string) er
 	)
 
 	if err != nil {
-		d.logger.Error("department_delete query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("department_delete query error", zap.Error(err))
 		return err
 	}
 

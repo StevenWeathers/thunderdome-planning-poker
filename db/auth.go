@@ -37,7 +37,7 @@ func (d *Database) AuthUser(ctx context.Context, UserEmail string, UserPassword 
 	)
 	if e != nil {
 		if errors.Is(e, sql.ErrNoRows) {
-			d.logger.Error("Unable to auth user not found", zap.Error(e), zap.String("email", UserEmail))
+			d.logger.Ctx(ctx).Error("Unable to auth user not found", zap.Error(e), zap.String("email", UserEmail))
 			return nil, "", errors.New("USER_NOT_FOUND")
 		} else {
 			return nil, "", e
@@ -80,7 +80,7 @@ func (d *Database) UserResetRequest(ctx context.Context, UserEmail string) (rese
 		UserEmail,
 	).Scan(&ResetID, &UserID, &name)
 	if e != nil {
-		d.logger.Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))
+		d.logger.Ctx(ctx).Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))
 		return "", "", e
 	}
 
@@ -107,7 +107,7 @@ func (d *Database) UserResetPassword(ctx context.Context, ResetID string, UserPa
 		ResetID,
 	).Scan(&name, &email)
 	if UserErr != nil {
-		d.logger.Error("Unable to get user for password reset confirmation email", zap.Error(UserErr))
+		d.logger.Ctx(ctx).Error("Unable to get user for password reset confirmation email", zap.Error(UserErr))
 		return "", "", UserErr
 	}
 
@@ -133,7 +133,7 @@ func (d *Database) UserUpdatePassword(ctx context.Context, UserID string, UserPa
 		UserID,
 	).Scan(&UserName, &UserEmail)
 	if UserErr != nil {
-		d.logger.Error("Unable to get user for password update", zap.Error(UserErr))
+		d.logger.Ctx(ctx).Error("Unable to get user for password update", zap.Error(UserErr))
 		return "", "", UserErr
 	}
 
@@ -165,7 +165,7 @@ func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*model
 		&user.Email,
 	)
 	if e != nil {
-		d.logger.Error("error finding user verify id", zap.Error(e))
+		d.logger.Ctx(ctx).Error("error finding user verify id", zap.Error(e))
 		return nil, "", errors.New("user not found")
 	}
 
@@ -175,7 +175,7 @@ func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*model
 		user.Id,
 	).Scan(&VerifyId)
 	if err != nil {
-		d.logger.Error("Unable to insert user verification", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to insert user verification", zap.Error(err))
 		return nil, VerifyId, err
 	}
 
@@ -264,7 +264,7 @@ func (d *Database) MFATokenValidate(ctx context.Context, SessionId string, passc
 		&encryptedSecret,
 	)
 	if e != nil {
-		d.logger.Error("error finding user MFA secret", zap.Error(e))
+		d.logger.Ctx(ctx).Error("error finding user MFA secret", zap.Error(e))
 		return errors.New("user not found")
 	}
 

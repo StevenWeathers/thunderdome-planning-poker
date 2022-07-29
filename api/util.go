@@ -223,11 +223,12 @@ func (a *api) Success(w http.ResponseWriter, r *http.Request, code int, data int
 
 // Failure responds with an error and its associated status code header
 func (a *api) Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
+	ctx := r.Context()
 	// Extract error message.
 	errCode, errMessage := ErrorCode(err), ErrorMessage(err)
 
 	if errCode == EINTERNAL {
-		a.logger.Error(
+		a.logger.Ctx(ctx).Error(
 			"[http] error",
 			zap.String("method", r.Method),
 			zap.String("url_path", sanitizeUserInputForLogs(r.URL.Path)),
@@ -310,14 +311,14 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 
 	l, err := ldap.DialURL(viper.GetString("auth.ldap.url"))
 	if err != nil {
-		a.logger.Error("Failed connecting to ldap server at " + viper.GetString("auth.ldap.url"))
+		a.logger.Ctx(ctx).Error("Failed connecting to ldap server at " + viper.GetString("auth.ldap.url"))
 		return AuthedUser, SessionId, err
 	}
 	defer l.Close()
 	if viper.GetBool("auth.ldap.use_tls") {
 		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 		if err != nil {
-			a.logger.Error("Failed securing ldap connection", zap.Error(err))
+			a.logger.Ctx(ctx).Error("Failed securing ldap connection", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 	}
@@ -325,7 +326,7 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 	if viper.GetString("auth.ldap.bindname") != "" {
 		err = l.Bind(viper.GetString("auth.ldap.bindname"), viper.GetString("auth.ldap.bindpass"))
 		if err != nil {
-			a.logger.Error("Failed binding for authentication", zap.Error(err))
+			a.logger.Ctx(ctx).Error("Failed binding for authentication", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 	}
@@ -339,12 +340,12 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		a.logger.Error("Failed performing ldap search query", zap.String("username", sanitizeUserInputForLogs(UserName)), zap.Error(err))
+		a.logger.Ctx(ctx).Error("Failed performing ldap search query", zap.String("username", sanitizeUserInputForLogs(UserName)), zap.Error(err))
 		return AuthedUser, SessionId, err
 	}
 
 	if len(sr.Entries) != 1 {
-		a.logger.Error("User does not exist or too many entries returned", zap.String("username", sanitizeUserInputForLogs(UserName)))
+		a.logger.Ctx(ctx).Error("User does not exist or too many entries returned", zap.String("username", sanitizeUserInputForLogs(UserName)))
 		return AuthedUser, SessionId, errors.New("user not found")
 	}
 
@@ -354,22 +355,22 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 
 	err = l.Bind(userdn, UserPassword)
 	if err != nil {
-		a.logger.Error("Failed authenticating user", zap.String("username", sanitizeUserInputForLogs(UserName)))
+		a.logger.Ctx(ctx).Error("Failed authenticating user", zap.String("username", sanitizeUserInputForLogs(UserName)))
 		return AuthedUser, SessionId, err
 	}
 
 	AuthedUser, err = a.db.GetUserByEmail(ctx, useremail)
 
 	if AuthedUser == nil {
-		a.logger.Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
+		a.logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
 		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(ctx, usercn, useremail, "", "")
 		if err != nil {
-			a.logger.Error("Failed auto-creating new user", zap.Error(err))
+			a.logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 		err = a.db.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
-			a.logger.Error("Failed verifying new user", zap.Error(err))
+			a.logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 		AuthedUser = newUser
@@ -381,7 +382,7 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 
 		SessionId, sessErr = a.db.CreateSession(ctx, AuthedUser.Id)
 		if sessErr != nil {
-			a.logger.Error("Failed creating user session", zap.Error(err))
+			a.logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err
 		}
 	}

@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
 // InitConfig initializes the application configuration
-func InitConfig(logger *zap.Logger) {
+func InitConfig(logger *otelzap.Logger) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
@@ -150,7 +151,7 @@ func InitConfig(logger *zap.Logger) {
 	err := viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			logger.Fatal(err.Error())
+			logger.Ctx(context.Background()).Fatal(err.Error())
 		}
 	}
 }

@@ -1,16 +1,16 @@
 package retro
 
 import (
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/http"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
-	"go.uber.org/zap"
 )
 
 // Service provides retro service
 type Service struct {
 	db                    *db.Database
-	logger                *zap.Logger
+	logger                *otelzap.Logger
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(string, string, string) ([]byte, error, bool)
@@ -19,7 +19,7 @@ type Service struct {
 // New returns a new retro with websocket hub/client and event handlers
 func New(
 	db *db.Database,
-	logger *zap.Logger,
+	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 ) *Service {

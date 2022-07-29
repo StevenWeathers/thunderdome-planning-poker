@@ -22,7 +22,7 @@ func (d *Database) CreateSession(ctx context.Context, UserId string) (string, er
 		SessionId,
 		UserId,
 	); sessionErr != nil {
-		d.logger.Error("Unable to create a user session", zap.Error(sessionErr))
+		d.logger.Ctx(ctx).Error("Unable to create a user session", zap.Error(sessionErr))
 		return "", sessionErr
 	}
 
@@ -36,7 +36,7 @@ func (d *Database) EnableSession(ctx context.Context, SessionId string) error {
 		`,
 		SessionId,
 	); sessionErr != nil {
-		d.logger.Error("Unable to enable user session", zap.Error(sessionErr))
+		d.logger.Ctx(ctx).Error("Unable to enable user session", zap.Error(sessionErr))
 		return sessionErr
 	}
 
@@ -68,7 +68,7 @@ func (d *Database) GetSessionUser(ctx context.Context, SessionId string) (*model
 		&User.LastActive)
 	if e != nil {
 		if !errors.Is(e, sql.ErrNoRows) {
-			d.logger.Error("user_session_get query error", zap.Error(e))
+			d.logger.Ctx(ctx).Error("user_session_get query error", zap.Error(e))
 		}
 		return nil, errors.New("active session match not found")
 	}
@@ -85,7 +85,7 @@ func (d *Database) DeleteSession(ctx context.Context, SessionId string) error {
 		`,
 		SessionId,
 	); sessionErr != nil {
-		d.logger.Error("Unable to delete user session", zap.Error(sessionErr))
+		d.logger.Ctx(ctx).Error("Unable to delete user session", zap.Error(sessionErr))
 		return sessionErr
 	}
 

@@ -22,7 +22,7 @@ func (d *Database) OrganizationGet(ctx context.Context, OrgID string) (*model.Or
 		&org.UpdatedDate,
 	)
 	if e != nil {
-		d.logger.Error("organization_get_by_id query error", zap.Error(e))
+		d.logger.Ctx(ctx).Error("organization_get_by_id query error", zap.Error(e))
 		return nil, errors.New("error getting organization")
 	}
 
@@ -41,7 +41,7 @@ func (d *Database) OrganizationUserRole(ctx context.Context, UserID string, OrgI
 		&role,
 	)
 	if e != nil {
-		d.logger.Error("organization_get_user_role query error", zap.Error(e))
+		d.logger.Ctx(ctx).Error("organization_get_user_role query error", zap.Error(e))
 		return "", errors.New("error getting organization users role")
 	}
 
@@ -69,13 +69,13 @@ func (d *Database) OrganizationListByUser(ctx context.Context, UserID string, Li
 				&org.CreatedDate,
 				&org.UpdatedDate,
 			); err != nil {
-				d.logger.Error("organization_list_by_user query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("organization_list_by_user query scan error", zap.Error(err))
 			} else {
 				organizations = append(organizations, &org)
 			}
 		}
 	} else {
-		d.logger.Error("organization_list_by_user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("organization_list_by_user query error", zap.Error(err))
 	}
 
 	return organizations
@@ -92,7 +92,7 @@ func (d *Database) OrganizationCreate(ctx context.Context, UserID string, OrgNam
 	).Scan(&o.Id, &o.Name, &o.CreatedDate, &o.UpdatedDate)
 
 	if err != nil {
-		d.logger.Error("Unable to create organization", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to create organization", zap.Error(err))
 		return nil, err
 	}
 
@@ -121,14 +121,14 @@ func (d *Database) OrganizationUserList(ctx context.Context, OrgID string, Limit
 				&usr.Role,
 				&usr.Avatar,
 			); err != nil {
-				d.logger.Error("organization_user_list query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("organization_user_list query scan error", zap.Error(err))
 			} else {
 				usr.GravatarHash = createGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		d.logger.Error("organization_user_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("organization_user_list query error", zap.Error(err))
 	}
 
 	return users
@@ -144,7 +144,7 @@ func (d *Database) OrganizationAddUser(ctx context.Context, OrgID string, UserID
 	)
 
 	if err != nil {
-		d.logger.Error("Unable to add user to organization", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to add user to organization", zap.Error(err))
 		return "", err
 	}
 
@@ -160,7 +160,7 @@ func (d *Database) OrganizationRemoveUser(ctx context.Context, OrganizationID st
 	)
 
 	if err != nil {
-		d.logger.Error("Unable to remove user from organization", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to remove user from organization", zap.Error(err))
 		return err
 	}
 
@@ -188,13 +188,13 @@ func (d *Database) OrganizationTeamList(ctx context.Context, OrgID string, Limit
 				&team.CreatedDate,
 				&team.UpdatedDate,
 			); err != nil {
-				d.logger.Error("organization_team_list query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("organization_team_list query scan error", zap.Error(err))
 			} else {
 				teams = append(teams, &team)
 			}
 		}
 	} else {
-		d.logger.Error("organization_team_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("organization_team_list query error", zap.Error(err))
 	}
 
 	return teams
@@ -211,7 +211,7 @@ func (d *Database) OrganizationTeamCreate(ctx context.Context, OrgID string, Tea
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
-		d.logger.Error("Unable to create organization team", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to create organization team", zap.Error(err))
 		return nil, err
 	}
 
@@ -233,7 +233,7 @@ func (d *Database) OrganizationTeamUserRole(ctx context.Context, UserID string, 
 		&teamRole,
 	)
 	if e != nil {
-		d.logger.Error("organization_team_user_role query error", zap.Error(e))
+		d.logger.Ctx(ctx).Error("organization_team_user_role query error", zap.Error(e))
 		return "", "", errors.New("error getting organization team users role")
 	}
 
@@ -248,7 +248,7 @@ func (d *Database) OrganizationDelete(ctx context.Context, OrgID string) error {
 	)
 
 	if err != nil {
-		d.logger.Error("organization_delete query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("organization_delete query error", zap.Error(err))
 		return err
 	}
 

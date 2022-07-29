@@ -30,7 +30,7 @@ func (d *Database) GetActiveAlerts(ctx context.Context) []interface{} {
 				&a.AllowDismiss,
 				&a.RegisteredOnly,
 			); err != nil {
-				d.logger.Error("query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("query scan error", zap.Error(err))
 			} else {
 				Alerts = append(Alerts, &a)
 			}
@@ -51,7 +51,7 @@ func (d *Database) AlertsList(ctx context.Context, Limit int, Offset int) ([]*mo
 		&AlertCount,
 	)
 	if e != nil {
-		d.logger.Error("query scan error", zap.Error(e))
+		d.logger.Ctx(ctx).Error("query scan error", zap.Error(e))
 	}
 
 	rows, err := d.db.QueryContext(ctx,
@@ -80,7 +80,7 @@ func (d *Database) AlertsList(ctx context.Context, Limit int, Offset int) ([]*mo
 				&a.CreatedDate,
 				&a.UpdatedDate,
 			); err != nil {
-				d.logger.Error("query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("query scan error", zap.Error(err))
 				return nil, AlertCount, err
 			} else {
 				Alerts = append(Alerts, &a)
@@ -104,7 +104,7 @@ func (d *Database) AlertsCreate(ctx context.Context, Name string, Type string, C
 		AllowDismiss,
 		RegisteredOnly,
 	); err != nil {
-		d.logger.Error("insert error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("insert error", zap.Error(err))
 		return errors.New("error attempting to add new alert")
 	}
 
@@ -127,7 +127,7 @@ func (d *Database) AlertsUpdate(ctx context.Context, ID string, Name string, Typ
 		AllowDismiss,
 		RegisteredOnly,
 	); err != nil {
-		d.logger.Error("update error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("update error", zap.Error(err))
 		return errors.New("error attempting to update alert")
 	}
 
@@ -142,7 +142,7 @@ func (d *Database) AlertDelete(ctx context.Context, AlertID string) error {
 	)
 
 	if err != nil {
-		d.logger.Error("Unable to delete alert", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to delete alert", zap.Error(err))
 		return err
 	}
 

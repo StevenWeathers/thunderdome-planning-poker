@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/http"
 	"os"
 	"time"
@@ -67,16 +68,17 @@ type server struct {
 	email  *email.Email
 	cookie *securecookie.SecureCookie
 	db     *db.Database
-	logger *zap.Logger
+	logger *otelzap.Logger
 }
 
 func main() {
-	logger, _ := zap.NewProduction(
+	zlog, _ := zap.NewProduction(
 		zap.Fields(
 			zap.String("version", version),
 		),
 	)
-	defer logger.Sync()
+	defer zlog.Sync()
+	logger := otelzap.New(zlog)
 
 	embedUseOS = len(os.Args) > 1 && os.Args[1] == "live"
 
@@ -149,8 +151,8 @@ func main() {
 	}
 }
 
-func initTracer(logger *zap.Logger, serviceName string, collectorURL string, insecure bool) func(context.Context) error {
-	logger.Info("initializing open telemetry")
+func initTracer(logger *otelzap.Logger, serviceName string, collectorURL string, insecure bool) func(context.Context) error {
+	logger.Ctx(context.Background()).Info("initializing open telemetry")
 	secureOption := otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, ""))
 	if insecure {
 		secureOption = otlptracegrpc.WithInsecure()
@@ -165,7 +167,7 @@ func initTracer(logger *zap.Logger, serviceName string, collectorURL string, ins
 	)
 
 	if err != nil {
-		logger.Fatal("error initializing tracer", zap.Error(err))
+		logger.Ctx(context.Background()).Fatal("error initializing tracer", zap.Error(err))
 	}
 	resources, err := resource.New(
 		context.Background(),
@@ -175,7 +177,7 @@ func initTracer(logger *zap.Logger, serviceName string, collectorURL string, ins
 		),
 	)
 	if err != nil {
-		logger.Error("Could not set resources: ", zap.Error(err))
+		logger.Ctx(context.Background()).Error("Could not set resources: ", zap.Error(err))
 	}
 
 	otel.SetTracerProvider(
