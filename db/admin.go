@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"errors"
 	"strings"
 
@@ -9,10 +10,10 @@ import (
 )
 
 // GetAppStats gets counts of common application metrics such as users and battles
-func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
+func (d *Database) GetAppStats(ctx context.Context) (*model.ApplicationStats, error) {
 	var Appstats model.ApplicationStats
 
-	err := d.db.QueryRow(`
+	err := d.db.QueryRowContext(ctx, `
 		SELECT
 			unregistered_user_count,
 			registered_user_count,

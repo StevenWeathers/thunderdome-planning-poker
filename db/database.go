@@ -2,9 +2,11 @@
 package db
 
 import (
-	"database/sql"
 	"embed"
 	"fmt"
+
+	"github.com/XSAM/otelsql"
+	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"go.uber.org/zap"
@@ -48,11 +50,20 @@ func New(AdminEmail string, config *Config, logger *zap.Logger) *Database {
 		d.config.SSLMode,
 	)
 
-	pdb, err := sql.Open("postgres", psqlInfo)
+	pdb, err := otelsql.Open("postgres", psqlInfo, otelsql.WithAttributes(
+		semconv.DBSystemPostgreSQL,
+	))
 	if err != nil {
 		d.logger.Fatal("error connecting to the database: ", zap.Error(err))
 	}
 	d.db = pdb
+
+	err = otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
+		semconv.DBSystemPostgreSQL,
+	))
+	if err != nil {
+		d.logger.Error("RegisterDBStatsMetrics error", zap.Error(err))
+	}
 
 	driver, err := postgres.WithInstance(pdb, &postgres.Config{})
 	if err != nil {

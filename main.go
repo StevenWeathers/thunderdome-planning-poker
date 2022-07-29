@@ -1,11 +1,22 @@
 package main
 
 import (
+	"context"
 	_ "embed"
 	"fmt"
 	"net/http"
 	"os"
 	"time"
+
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/email"
@@ -71,6 +82,16 @@ func main() {
 
 	InitConfig(logger)
 
+	if viper.GetBool("otel.enabled") {
+		cleanup := initTracer(
+			logger,
+			viper.GetString("otel.service_name"),
+			viper.GetString("otel.collector_url"),
+			viper.GetBool("otel.insecure_mode"),
+		)
+		defer cleanup(context.Background())
+	}
+
 	cookieHashkey := viper.GetString("http.cookie_hashkey")
 	pathPrefix := viper.GetString("http.path_prefix")
 	router := mux.NewRouter()
@@ -78,6 +99,8 @@ func main() {
 	if pathPrefix != "" {
 		router = router.PathPrefix(pathPrefix).Subrouter()
 	}
+
+	router.Use(otelmux.Middleware("thunderdome"))
 
 	s := &server{
 		config: &Config{
@@ -124,4 +147,43 @@ func main() {
 	if err != nil {
 		s.logger.Fatal(err.Error())
 	}
+}
+
+func initTracer(logger *zap.Logger, serviceName string, collectorURL string, insecure bool) func(context.Context) error {
+	logger.Info("initializing open telemetry")
+	secureOption := otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, ""))
+	if insecure {
+		secureOption = otlptracegrpc.WithInsecure()
+	}
+
+	exporter, err := otlptrace.New(
+		context.Background(),
+		otlptracegrpc.NewClient(
+			secureOption,
+			otlptracegrpc.WithEndpoint(collectorURL),
+		),
+	)
+
+	if err != nil {
+		logger.Fatal("error initializing tracer", zap.Error(err))
+	}
+	resources, err := resource.New(
+		context.Background(),
+		resource.WithAttributes(
+			attribute.String("service.name", serviceName),
+			attribute.String("library.language", "go"),
+		),
+	)
+	if err != nil {
+		logger.Error("Could not set resources: ", zap.Error(err))
+	}
+
+	otel.SetTracerProvider(
+		sdktrace.NewTracerProvider(
+			sdktrace.WithSampler(sdktrace.AlwaysSample()),
+			sdktrace.WithBatcher(exporter),
+			sdktrace.WithResource(resources),
+		),
+	)
+	return exporter.Shutdown
 }

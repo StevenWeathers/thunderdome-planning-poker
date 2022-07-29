@@ -26,6 +26,11 @@ func InitConfig(logger *zap.Logger) {
 	viper.SetDefault("analytics.enabled", true)
 	viper.SetDefault("analytics.id", "UA-140245309-1")
 
+	viper.SetDefault("otel.enabled", true)
+	viper.SetDefault("otel.service_name", "thunderdome")
+	viper.SetDefault("otel.collector_url", "localhost:4317")
+	viper.SetDefault("otel.insecure_mode", true)
+
 	viper.SetDefault("db.host", "db")
 	viper.SetDefault("db.port", 5432)
 	viper.SetDefault("db.user", "thor")
@@ -87,6 +92,11 @@ func InitConfig(logger *zap.Logger) {
 	viper.BindEnv("analytics.enabled", "ANALYTICS_ENABLED")
 	viper.BindEnv("analytics.id", "ANALYTICS_ID")
 	viper.BindEnv("admin.email", "ADMIN_EMAIL")
+
+	viper.BindEnv("otel.enabled", "OTEL_ENABLED")
+	viper.BindEnv("otel.service_name", "OTEL_SERVICE_NAME")
+	viper.BindEnv("otel.collector_url", "OTEL_COLLECTOR_URL")
+	viper.BindEnv("otel.insecure_mode", "OTEL_INSECURE_MODE")
 
 	viper.BindEnv("db.host", "DB_HOST")
 	viper.BindEnv("db.port", "DB_PORT")

@@ -20,7 +20,7 @@ import (
 // @Router /admin/stats [get]
 func (a *api) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		AppStats, err := a.db.GetAppStats()
+		AppStats, err := a.db.GetAppStats(r.Context())
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
