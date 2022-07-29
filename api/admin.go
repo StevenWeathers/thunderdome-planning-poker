@@ -245,7 +245,7 @@ func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(UserID, UserPassword)
+		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(r.Context(), UserID, UserPassword)
 		if updateErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
@@ -346,7 +346,7 @@ func (a *api) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 			return
 		}
 
-		Users, Count, err := a.db.SearchRegisteredUsersByEmail(Search, Limit, Offset)
+		Users, Count, err := a.db.SearchRegisteredUsersByEmail(r.Context(), Search, Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

@@ -24,7 +24,7 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		APIKeys, keysErr := a.db.GetUserApiKeys(UserID)
+		APIKeys, keysErr := a.db.GetUserApiKeys(r.Context(), UserID)
 		if keysErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -54,6 +54,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		ctx := r.Context()
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -68,7 +69,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := a.db.GetUserApiKeys(UserID)
+		APIKeys, keysErr := a.db.GetUserApiKeys(ctx, UserID)
 		if keysErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -79,7 +80,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		APIKey, keyErr := a.db.GenerateApiKey(UserID, k.Name)
+		APIKey, keyErr := a.db.GenerateApiKey(ctx, UserID, k.Name)
 		if keyErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
@@ -125,7 +126,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := a.db.UpdateUserApiKey(UserID, APK, k.Active)
+		APIKeys, keysErr := a.db.UpdateUserApiKey(r.Context(), UserID, APK, k.Active)
 		if keysErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -153,7 +154,7 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 		UserID := vars["userId"]
 		APK := vars["keyID"]
 
-		APIKeys, keysErr := a.db.DeleteUserApiKey(UserID, APK)
+		APIKeys, keysErr := a.db.DeleteUserApiKey(r.Context(), UserID, APK)
 		if keysErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return

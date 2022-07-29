@@ -208,6 +208,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		storyboardID := vars["storyboardId"]
+		ctx := r.Context()
 		var User *model.User
 		var UserAuthed bool
 
@@ -227,7 +228,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		if SessionId != "" {
 			var userErr error
-			User, userErr = b.db.GetSessionUser(SessionId)
+			User, userErr = b.db.GetSessionUser(ctx, SessionId)
 			if userErr != nil {
 				b.handleSocketClose(ws, 4001, "unauthorized")
 				return
@@ -240,7 +241,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			User, userErr = b.db.GetGuestUser(UserID)
+			User, userErr = b.db.GetGuestUser(ctx, UserID)
 			if userErr != nil {
 				b.handleSocketClose(ws, 4001, "unauthorized")
 				return

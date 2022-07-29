@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -302,7 +303,7 @@ func sanitizeUserInputForLogs(unescapedInput string) string {
 }
 
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user
-func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*model.User, string, error) {
+func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPassword string) (*model.User, string, error) {
 	var AuthedUser *model.User
 	var SessionId string
 	var sessErr error
@@ -357,16 +358,16 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 		return AuthedUser, SessionId, err
 	}
 
-	AuthedUser, err = a.db.GetUserByEmail(useremail)
+	AuthedUser, err = a.db.GetUserByEmail(ctx, useremail)
 
 	if AuthedUser == nil {
 		a.logger.Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(usercn, useremail, "", "")
+		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(ctx, usercn, useremail, "", "")
 		if err != nil {
 			a.logger.Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		err = a.db.VerifyUserAccount(verifyID)
+		err = a.db.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
 			a.logger.Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
@@ -378,7 +379,7 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = a.db.CreateSession(AuthedUser.Id)
+		SessionId, sessErr = a.db.CreateSession(ctx, AuthedUser.Id)
 		if sessErr != nil {
 			a.logger.Error("Failed creating user session", zap.Error(err))
 			return nil, "", err

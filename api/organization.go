@@ -265,7 +265,7 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		User, UserErr := a.db.GetUserByEmail(UserEmail)
+		User, UserErr := a.db.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
@@ -402,7 +402,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		User, UserErr := a.db.GetUserByEmail(UserEmail)
+		User, UserErr := a.db.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return

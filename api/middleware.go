@@ -20,7 +20,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		if apiKey != "" && a.config.ExternalAPIEnabled == true {
 			var apiKeyErr error
-			User, apiKeyErr = a.db.GetApiKeyUser(apiKey)
+			User, apiKeyErr = a.db.GetApiKeyUser(ctx, apiKey)
 			if apiKeyErr != nil {
 				a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
@@ -34,7 +34,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 
 			if SessionId != "" {
 				var userErr error
-				User, userErr = a.db.GetSessionUser(SessionId)
+				User, userErr = a.db.GetSessionUser(ctx, SessionId)
 				if userErr != nil {
 					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
@@ -47,7 +47,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 				}
 
 				var userErr error
-				User, userErr = a.db.GetGuestUser(UserID)
+				User, userErr = a.db.GetGuestUser(ctx, UserID)
 				if userErr != nil {
 					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
@@ -122,7 +122,7 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		EntityUser, EntityUserErr := a.db.GetUser(EntityUserID)
+		EntityUser, EntityUserErr := a.db.GetUser(ctx, EntityUserID)
 		if EntityUserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
 			return
