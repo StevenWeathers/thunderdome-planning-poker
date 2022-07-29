@@ -15,6 +15,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
+		ctx := r.Context()
 		var User *model.User
 
 		if apiKey != "" && a.config.ExternalAPIEnabled == true {
@@ -54,7 +55,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyUserID, User.Id)
+		ctx = context.WithValue(ctx, contextKeyUserID, User.Id)
 		ctx = context.WithValue(ctx, contextKeyUserType, User.Type)
 
 		h(w, r.WithContext(ctx))
@@ -65,8 +66,9 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		EntityUserID := vars["userId"]
 
 		if UserType != adminUserType && EntityUserID != UserID {
@@ -110,8 +112,9 @@ func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		EntityUserID := vars["userId"]
 
 		if UserType != adminUserType && (EntityUserID != UserID) {
@@ -138,17 +141,18 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
 
-		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
+		Role, UserErr := a.db.OrganizationUserRole(ctx, UserID, OrgID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyOrgRole, Role)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, Role)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -158,11 +162,12 @@ func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
 
-		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
+		Role, UserErr := a.db.OrganizationUserRole(ctx, UserID, OrgID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
@@ -172,7 +177,7 @@ func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyOrgRole, Role)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, Role)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -182,18 +187,19 @@ func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
+		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyOrgRole, OrgRole)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
 		ctx = context.WithValue(ctx, contextKeyTeamRole, TeamRole)
 
 		h(w, r.WithContext(ctx))
@@ -204,12 +210,13 @@ func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
+		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
@@ -219,7 +226,7 @@ func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyOrgRole, OrgRole)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
 		ctx = context.WithValue(ctx, contextKeyTeamRole, TeamRole)
 
 		h(w, r.WithContext(ctx))
@@ -230,18 +237,19 @@ func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 
-		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
+		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyOrgRole, OrgRole)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
 		ctx = context.WithValue(ctx, contextKeyDepartmentRole, DepartmentRole)
 
 		h(w, r.WithContext(ctx))
@@ -252,12 +260,13 @@ func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 
-		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
+		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 			return
@@ -267,7 +276,7 @@ func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyOrgRole, OrgRole)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
 		ctx = context.WithValue(ctx, contextKeyDepartmentRole, DepartmentRole)
 
 		h(w, r.WithContext(ctx))
@@ -278,19 +287,20 @@ func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 		TeamID := vars["teamId"]
 
-		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
+		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyOrgRole, OrgRole)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
 		ctx = context.WithValue(ctx, contextKeyDepartmentRole, DepartmentRole)
 		ctx = context.WithValue(ctx, contextKeyTeamRole, TeamRole)
 
@@ -302,13 +312,14 @@ func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 		TeamID := vars["teamId"]
 
-		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
+		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
@@ -319,7 +330,7 @@ func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyOrgRole, OrgRole)
+		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
 		ctx = context.WithValue(ctx, contextKeyDepartmentRole, DepartmentRole)
 		ctx = context.WithValue(ctx, contextKeyTeamRole, TeamRole)
 
@@ -331,8 +342,9 @@ func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		TeamID := vars["teamId"]
 
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
@@ -341,7 +353,7 @@ func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyTeamRole, Role)
+		ctx = context.WithValue(ctx, contextKeyTeamRole, Role)
 
 		h(w, r.WithContext(ctx))
 	}
@@ -351,8 +363,9 @@ func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		UserID := r.Context().Value(contextKeyUserID).(string)
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
 		TeamID := vars["teamId"]
 
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
@@ -365,7 +378,7 @@ func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), contextKeyTeamRole, Role)
+		ctx = context.WithValue(ctx, contextKeyTeamRole, Role)
 
 		h(w, r.WithContext(ctx))
 	}
