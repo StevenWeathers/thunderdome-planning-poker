@@ -465,6 +465,7 @@
             <SolidButton
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 onClick="{toggleCheckin}"
+                testid="check-in"
                 disabled="{selectedDate !== formatDayForInput(now) ||
                     alreadyCheckedIn}"
                 >{$_('checkIn')}
@@ -535,6 +536,7 @@
                     {#each col.checkins as checkin, i}
                         <div
                             class="mb-4 w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
+                            data-testid="checkin"
                         >
                             <div class="shrink mr-4 lg:mr-6 text-center">
                                 <div class="flex justify-items-center mb-4">
@@ -596,6 +598,7 @@
                                 <div class="w-20">
                                     <div
                                         class="font-bold text-blue-500 dark:text-sky-400 mb-4"
+                                        data-testid="checkin-username"
                                     >
                                         {checkin.user.name}
                                     </div>
@@ -607,6 +610,7 @@
                                                 }}"
                                                 class="text-blue-500"
                                                 title="{$_('edit')}"
+                                                data-testid="checkin-edit"
                                             >
                                                 <span class="sr-only"
                                                     >{$_('edit')}</span
@@ -621,6 +625,7 @@
                                                 }}"
                                                 class="text-red-500"
                                                 title="Delete"
+                                                data-testid="checkin-delete"
                                             >
                                                 <span class="sr-only"
                                                     >{$_('delete')}</span
@@ -636,7 +641,10 @@
                                     <div class="font-bold text-gray-400">
                                         {$_('yesterday')}:
                                     </div>
-                                    <div class="unreset whitespace-pre-wrap">
+                                    <div
+                                        class="unreset whitespace-pre-wrap"
+                                        data-testid="checkin-yesterday"
+                                    >
                                         {@html checkin.yesterday}
                                     </div>
                                 </div>
@@ -644,7 +652,10 @@
                                     <div class="font-bold text-gray-400">
                                         {$_('today')}:
                                     </div>
-                                    <div class="unreset whitespace-pre-wrap">
+                                    <div
+                                        class="unreset whitespace-pre-wrap"
+                                        data-testid="checkin-today"
+                                    >
                                         {@html checkin.today}
                                     </div>
                                 </div>
@@ -657,6 +668,7 @@
                                         </div>
                                         <div
                                             class="unreset whitespace-pre-wrap"
+                                            data-testid="checkin-blockers"
                                         >
                                             {@html checkin.blockers}
                                         </div>
@@ -671,6 +683,7 @@
                                         </div>
                                         <div
                                             class="unreset whitespace-pre-wrap"
+                                            data-testid="checkin-discuss"
                                         >
                                             {@html checkin.discuss}
                                         </div>

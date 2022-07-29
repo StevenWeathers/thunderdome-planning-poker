@@ -158,7 +158,9 @@
 
         <div class="w-full">
             <div class="text-right">
-                <SolidButton type="submit">{$_('save')}</SolidButton>
+                <SolidButton type="submit" testid="save"
+                    >{$_('save')}</SolidButton
+                >
             </div>
         </div>
     </form>

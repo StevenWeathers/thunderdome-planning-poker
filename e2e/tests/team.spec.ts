@@ -23,18 +23,19 @@ test.describe('Team page', () => {
         })
 
         test('loads organization team page', async ({registeredPage}) => {
-            const testTeamName = 'E2E TEST ORGANIZATION TEAM'
+            const testTeamName = 'E2E TEST TEAM'
             const testOrgName = 'E2E TEST ORGANIZATION'
             const teamPage = new TeamPage(registeredPage.page);
             const org = await registeredPage.createOrg(testOrgName)
             const team = await registeredPage.createTeam(testTeamName)
 
             await teamPage.gotoOrgTeam(org.id, team.id);
+            await expect(teamPage.page.locator('a', {hasText: testOrgName})).toBeVisible();
             await expect(teamPage.page.locator('h1')).toContainText(testTeamName)
         })
 
         test('loads department team page', async ({registeredPage}) => {
-            const testTeamName = 'E2E TEST ORGANIZATION TEAM'
+            const testTeamName = 'E2E TEST TEAM'
             const testDepartmentName = 'E2E TEST DEPARTMENT'
             const testOrgName = 'E2E TEST ORGANIZATION'
             const teamPage = new TeamPage(registeredPage.page);
@@ -42,8 +43,10 @@ test.describe('Team page', () => {
             const dept = await registeredPage.createOrgDepartment(org.id, testDepartmentName)
             const team = await registeredPage.createDepartmentTeam(org.id, dept.id, testTeamName)
 
-            await teamPage.gotoOrgTeam(org.id, team.id);
-            await expect(teamPage.page.locator('h1')).toContainText(testTeamName)
+            await teamPage.gotoOrgDeptTeam(org.id, dept.id, team.id);
+            await expect(teamPage.page.locator('a', {hasText: testOrgName})).toBeVisible();
+            await expect(teamPage.page.locator('a', {hasText: testDepartmentName})).toBeVisible();
+            await expect(teamPage.page.locator('h1')).toContainText(testTeamName);
         })
     })
 })
