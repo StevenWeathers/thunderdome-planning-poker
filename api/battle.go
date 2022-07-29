@@ -251,7 +251,7 @@ func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 			return
 		}
 
-		err := b.APIEvent(BattleID, UserID, "add_plan", string(body))
+		err := b.APIEvent(r.Context(), BattleID, UserID, "add_plan", string(body))
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

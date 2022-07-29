@@ -1,12 +1,13 @@
 package battle
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 )
 
 // UserNudge handles notifying user that they need to vote
-func (b *Service) UserNudge(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UserNudge(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	msg := createSocketEvent("jab_warrior", EventValue, UserID)
 
 	return msg, nil, false
@@ -14,7 +15,7 @@ func (b *Service) UserNudge(BattleID string, UserID string, EventValue string) (
 
 // UserVote handles the participants vote event by setting their vote
 // and checks if AutoFinishVoting && AllVoted if so ends voting
-func (b *Service) UserVote(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UserVote(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var msg []byte
 	var wv struct {
 		VoteValue        string `json:"voteValue"`
@@ -41,7 +42,7 @@ func (b *Service) UserVote(BattleID string, UserID string, EventValue string) ([
 }
 
 // UserVoteRetract handles retracting a user vote
-func (b *Service) UserVoteRetract(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UserVoteRetract(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	PlanID := EventValue
 
 	plans, err := b.db.RetractVote(BattleID, UserID, PlanID)
@@ -56,7 +57,7 @@ func (b *Service) UserVoteRetract(BattleID string, UserID string, EventValue str
 }
 
 // UserPromote handles promoting a user to a leader
-func (b *Service) UserPromote(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UserPromote(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	leaders, err := b.db.SetBattleLeader(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
@@ -69,7 +70,7 @@ func (b *Service) UserPromote(BattleID string, UserID string, EventValue string)
 }
 
 // UserDemote handles demoting a user from a leader
-func (b *Service) UserDemote(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UserDemote(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	leaders, err := b.db.DemoteBattleLeader(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
@@ -82,7 +83,7 @@ func (b *Service) UserDemote(BattleID string, UserID string, EventValue string) 
 }
 
 // UserPromoteSelf handles self-promoting a user to a leader
-func (b *Service) UserPromoteSelf(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UserPromoteSelf(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	leaderCode, err := b.db.GetBattleLeaderCode(BattleID)
 	if err != nil {
 		return nil, err, false
@@ -104,7 +105,7 @@ func (b *Service) UserPromoteSelf(BattleID string, UserID string, EventValue str
 }
 
 // UserSpectatorToggle handles toggling user spectator status
-func (b *Service) UserSpectatorToggle(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UserSpectatorToggle(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var st struct {
 		Spectator bool `json:"spectator"`
 	}
@@ -121,7 +122,7 @@ func (b *Service) UserSpectatorToggle(BattleID string, UserID string, EventValue
 }
 
 // PlanVoteEnd handles ending plan voting
-func (b *Service) PlanVoteEnd(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) PlanVoteEnd(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	plans, err := b.db.EndPlanVoting(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
@@ -133,7 +134,7 @@ func (b *Service) PlanVoteEnd(BattleID string, UserID string, EventValue string)
 }
 
 // Revise handles editing the battle settings
-func (b *Service) Revise(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) Revise(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rb struct {
 		BattleName           string   `json:"battleName"`
 		PointValuesAllowed   []string `json:"pointValuesAllowed"`
@@ -166,7 +167,7 @@ func (b *Service) Revise(BattleID string, UserID string, EventValue string) ([]b
 }
 
 // Delete handles deleting the battle
-func (b *Service) Delete(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) Delete(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	err := b.db.DeleteBattle(BattleID)
 	if err != nil {
 		return nil, err, false
@@ -177,7 +178,7 @@ func (b *Service) Delete(BattleID string, UserID string, EventValue string) ([]b
 }
 
 // PlanAdd adds a new plan to the battle
-func (b *Service) PlanAdd(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) PlanAdd(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var p struct {
 		Name               string `json:"planName"`
 		Type               string `json:"type"`
@@ -199,7 +200,7 @@ func (b *Service) PlanAdd(BattleID string, UserID string, EventValue string) ([]
 }
 
 // PlanRevise handles editing a battle plan
-func (b *Service) PlanRevise(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) PlanRevise(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var p struct {
 		Id                 string `json:"planId"`
 		Name               string `json:"planName"`
@@ -222,7 +223,7 @@ func (b *Service) PlanRevise(BattleID string, UserID string, EventValue string) 
 }
 
 // PlanDelete handles deleting a plan
-func (b *Service) PlanDelete(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) PlanDelete(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	plans, err := b.db.BurnPlan(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
@@ -234,7 +235,7 @@ func (b *Service) PlanDelete(BattleID string, UserID string, EventValue string) 
 }
 
 // PlanActivate handles activating a plan for voting
-func (b *Service) PlanActivate(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) PlanActivate(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	plans, err := b.db.ActivatePlanVoting(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
@@ -246,7 +247,7 @@ func (b *Service) PlanActivate(BattleID string, UserID string, EventValue string
 }
 
 // PlanSkip handles skipping a plan voting
-func (b *Service) PlanSkip(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) PlanSkip(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	plans, err := b.db.SkipPlan(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
@@ -258,7 +259,7 @@ func (b *Service) PlanSkip(BattleID string, UserID string, EventValue string) ([
 }
 
 // PlanFinalize handles setting a plan point value
-func (b *Service) PlanFinalize(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) PlanFinalize(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var p struct {
 		Id     string `json:"planId"`
 		Points string `json:"planPoints"`
@@ -276,7 +277,7 @@ func (b *Service) PlanFinalize(BattleID string, UserID string, EventValue string
 }
 
 // Abandon handles setting abandoned true so battle doesn't show up in users battle list, then leaves battle
-func (b *Service) Abandon(BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) Abandon(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	b.db.AbandonBattle(BattleID, UserID)
 
 	return nil, errors.New("ABANDONED_BATTLE"), true

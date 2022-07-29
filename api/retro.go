@@ -230,7 +230,7 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 		ra.ActionID = ActionID
 		updatedActionJson, _ := json.Marshal(ra)
 
-		err := rs.APIEvent(RetroID, UserID, "update_action", string(updatedActionJson))
+		err := rs.APIEvent(r.Context(), RetroID, UserID, "update_action", string(updatedActionJson))
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -264,7 +264,7 @@ func (a *api) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 		}
 		deleteItem, _ := json.Marshal(actionItem{ActionID: ActionID})
 
-		err := rs.APIEvent(RetroID, UserID, "delete_action", string(deleteItem))
+		err := rs.APIEvent(r.Context(), RetroID, UserID, "delete_action", string(deleteItem))
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

@@ -1,12 +1,13 @@
 package retro
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 )
 
 // CreateItem creates a retro item
-func (b *Service) CreateItem(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) CreateItem(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		Type    string `json:"type"`
 		Content string `json:"content"`
@@ -26,7 +27,7 @@ func (b *Service) CreateItem(RetroID string, UserID string, EventValue string) (
 }
 
 // GroupItem changes a retro item's group_id
-func (b *Service) GroupItem(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) GroupItem(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		ItemId  string `json:"itemId"`
 		GroupId string `json:"groupId"`
@@ -45,7 +46,7 @@ func (b *Service) GroupItem(RetroID string, UserID string, EventValue string) ([
 }
 
 // DeleteItem deletes a retro item
-func (b *Service) DeleteItem(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) DeleteItem(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		ItemID string `json:"id"`
 		Phase  string `json:"phase"`
@@ -65,7 +66,7 @@ func (b *Service) DeleteItem(RetroID string, UserID string, EventValue string) (
 }
 
 // GroupNameChange changes a retro group's name
-func (b *Service) GroupNameChange(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) GroupNameChange(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		GroupId string `json:"groupId"`
 		Name    string `json:"name"`
@@ -84,7 +85,7 @@ func (b *Service) GroupNameChange(RetroID string, UserID string, EventValue stri
 }
 
 // GroupUserVote handles a users vote for an item group
-func (b *Service) GroupUserVote(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) GroupUserVote(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		GroupId string `json:"groupId"`
 	}
@@ -110,7 +111,7 @@ func (b *Service) GroupUserVote(RetroID string, UserID string, EventValue string
 }
 
 // GroupUserSubtractVote handles removing a users vote from an item group
-func (b *Service) GroupUserSubtractVote(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) GroupUserSubtractVote(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		GroupId string `json:"groupId"`
 	}
@@ -128,7 +129,7 @@ func (b *Service) GroupUserSubtractVote(RetroID string, UserID string, EventValu
 }
 
 // CreateAction creates a retro action
-func (b *Service) CreateAction(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) CreateAction(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		Content string `json:"content"`
 	}
@@ -146,7 +147,7 @@ func (b *Service) CreateAction(RetroID string, UserID string, EventValue string)
 }
 
 // UpdateAction updates a retro action
-func (b *Service) UpdateAction(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) UpdateAction(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		ActionID  string `json:"id"`
 		Completed bool   `json:"completed"`
@@ -166,7 +167,7 @@ func (b *Service) UpdateAction(RetroID string, UserID string, EventValue string)
 }
 
 // DeleteAction deletes a retro action
-func (b *Service) DeleteAction(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) DeleteAction(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		ActionID string `json:"id"`
 	}
@@ -184,7 +185,7 @@ func (b *Service) DeleteAction(RetroID string, UserID string, EventValue string)
 }
 
 // AdvancePhase updates a retro phase
-func (b *Service) AdvancePhase(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) AdvancePhase(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		Phase string `json:"phase"`
 	}
@@ -202,7 +203,7 @@ func (b *Service) AdvancePhase(RetroID string, UserID string, EventValue string)
 }
 
 // FacilitatorAdd adds a user as facilitator of the retro
-func (b *Service) FacilitatorAdd(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) FacilitatorAdd(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		UserID string `json:"userId"`
 	}
@@ -220,7 +221,7 @@ func (b *Service) FacilitatorAdd(RetroID string, UserID string, EventValue strin
 }
 
 // FacilitatorRemove removes a retro facilitator
-func (b *Service) FacilitatorRemove(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) FacilitatorRemove(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
 		UserID string `json:"userId"`
 	}
@@ -238,7 +239,7 @@ func (b *Service) FacilitatorRemove(RetroID string, UserID string, EventValue st
 }
 
 // FacilitatorSelf handles self-promoting a user to a facilitator
-func (b *Service) FacilitatorSelf(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) FacilitatorSelf(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	facilitatorCode, err := b.db.GetRetroFacilitatorCode(RetroID)
 	if err != nil {
 		return nil, err, false
@@ -260,7 +261,7 @@ func (b *Service) FacilitatorSelf(RetroID string, UserID string, EventValue stri
 }
 
 // EditRetro handles editing the retro settings
-func (b *Service) EditRetro(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) EditRetro(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rb struct {
 		Name                 string `json:"retroName"`
 		JoinCode             string `json:"joinCode"`
@@ -289,7 +290,7 @@ func (b *Service) EditRetro(RetroID string, UserID string, EventValue string) ([
 }
 
 // Delete handles deleting the retro
-func (b *Service) Delete(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) Delete(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	err := b.db.RetroDelete(RetroID)
 	if err != nil {
 		return nil, err, false
@@ -300,7 +301,7 @@ func (b *Service) Delete(RetroID string, UserID string, EventValue string) ([]by
 }
 
 // Abandon handles setting abandoned true so retro doesn't show up in users retro list, then leaves retro
-func (b *Service) Abandon(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+func (b *Service) Abandon(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	b.db.RetroAbandon(RetroID, UserID)
 
 	return nil, errors.New("ABANDONED_RETRO"), true
