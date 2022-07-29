@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
@@ -8,10 +9,10 @@ import (
 )
 
 // CheckinList gets a list of team checkins by day
-func (d *Database) CheckinList(TeamId string, Date string, TimeZone string) ([]*model.TeamCheckin, error) {
+func (d *Database) CheckinList(ctx context.Context, TeamId string, Date string, TimeZone string) ([]*model.TeamCheckin, error) {
 	Checkins := make([]*model.TeamCheckin, 0)
 
-	rows, err := d.db.Query(`SELECT
+	rows, err := d.db.QueryContext(ctx, `SELECT
  		tc.id, u.id, u.name, u.email, u.avatar,
  		COALESCE(tc.yesterday, ''), COALESCE(tc.today, ''),
  		COALESCE(tc.blockers, ''), coalesce(tc.discuss, ''),
@@ -75,13 +76,14 @@ func (d *Database) CheckinList(TeamId string, Date string, TimeZone string) ([]*
 
 // CheckinCreate creates a team checkin
 func (d *Database) CheckinCreate(
+	ctx context.Context,
 	TeamId string, UserId string,
 	Yesterday string, Today string, Blockers string, Discuss string,
 	GoalsMet bool,
 ) error {
 	var userCount int
 	// target user must be on team to check in
-	usrErr := d.db.QueryRow(`SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
+	usrErr := d.db.QueryRowContext(ctx, `SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
 		TeamId,
 		UserId,
 	).Scan(&userCount)
@@ -117,6 +119,7 @@ func (d *Database) CheckinCreate(
 
 // CheckinUpdate updates a team checkin
 func (d *Database) CheckinUpdate(
+	ctx context.Context,
 	CheckinId string,
 	Yesterday string, Today string, Blockers string, Discuss string,
 	GoalsMet bool,
@@ -126,7 +129,7 @@ func (d *Database) CheckinUpdate(
 	SanitizedBlockers := d.htmlSanitizerPolicy.Sanitize(Blockers)
 	SanitizedDiscuss := d.htmlSanitizerPolicy.Sanitize(Discuss)
 
-	if _, err := d.db.Exec(`
+	if _, err := d.db.ExecContext(ctx, `
 		UPDATE team_checkin
 		SET Yesterday = $2, today = $3, blockers = $4, discuss = $5, goals_met = $6
 		WHERE id = $1;
@@ -145,8 +148,8 @@ func (d *Database) CheckinUpdate(
 }
 
 // CheckinDelete deletes a team checkin
-func (d *Database) CheckinDelete(CheckinId string) error {
-	_, err := d.db.Exec(
+func (d *Database) CheckinDelete(ctx context.Context, CheckinId string) error {
+	_, err := d.db.ExecContext(ctx,
 		`DELETE FROM team_checkin WHERE id = $1;`,
 		CheckinId,
 	)
@@ -160,6 +163,7 @@ func (d *Database) CheckinDelete(CheckinId string) error {
 
 // CheckinComment comments on a team checkin
 func (d *Database) CheckinComment(
+	ctx context.Context,
 	TeamId string,
 	CheckinId string,
 	UserId string,
@@ -167,7 +171,7 @@ func (d *Database) CheckinComment(
 ) error {
 	var userCount int
 	// target user must be on team to comment on checkin
-	usrErr := d.db.QueryRow(`SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
+	usrErr := d.db.QueryRowContext(ctx, `SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
 		TeamId,
 		UserId,
 	).Scan(&userCount)
@@ -178,7 +182,7 @@ func (d *Database) CheckinComment(
 		return errors.New("REQUIRES_TEAM_USER")
 	}
 
-	if _, err := d.db.Exec(`
+	if _, err := d.db.ExecContext(ctx, `
 		INSERT INTO team_checkin_comment (checkin_id, user_id, comment) VALUES ($1, $2, $3);
 		`,
 		CheckinId,
@@ -192,10 +196,10 @@ func (d *Database) CheckinComment(
 }
 
 // CheckinCommentEdit edits a team checkin comment
-func (d *Database) CheckinCommentEdit(TeamId string, UserId string, CommentId string, Comment string) error {
+func (d *Database) CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error {
 	var userCount int
 	// target user must be on team to comment on checkin
-	usrErr := d.db.QueryRow(`SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
+	usrErr := d.db.QueryRowContext(ctx, `SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
 		TeamId,
 		UserId,
 	).Scan(&userCount)
@@ -206,7 +210,7 @@ func (d *Database) CheckinCommentEdit(TeamId string, UserId string, CommentId st
 		return errors.New("REQUIRES_TEAM_USER")
 	}
 
-	_, err := d.db.Exec(
+	_, err := d.db.ExecContext(ctx,
 		`UPDATE team_checkin_comment SET comment = $2, updated_date = NOW() WHERE id = $1;`,
 		CommentId,
 		Comment,
@@ -220,8 +224,8 @@ func (d *Database) CheckinCommentEdit(TeamId string, UserId string, CommentId st
 }
 
 // CheckinCommentDelete deletes a team checkin comment
-func (d *Database) CheckinCommentDelete(CommentId string) error {
-	_, err := d.db.Exec(
+func (d *Database) CheckinCommentDelete(ctx context.Context, CommentId string) error {
+	_, err := d.db.ExecContext(ctx,
 		`DELETE FROM team_checkin_comment WHERE id = $1;`,
 		CommentId,
 	)

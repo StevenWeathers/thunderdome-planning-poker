@@ -37,7 +37,7 @@ func (a *api) handleCheckinsGet() http.HandlerFunc {
 			tz = "America/New_York"
 		}
 
-		Checkins, err := a.db.CheckinList(TeamID, date, tz)
+		Checkins, err := a.db.CheckinList(r.Context(), TeamID, date, tz)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -86,7 +86,7 @@ func (a *api) handleCheckinCreate(broker *checkin.Broker) http.HandlerFunc {
 			return
 		}
 
-		err := a.db.CheckinCreate(TeamId, c.UserId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+		err := a.db.CheckinCreate(r.Context(), TeamId, c.UserId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -142,7 +142,7 @@ func (a *api) handleCheckinUpdate(broker *checkin.Broker) http.HandlerFunc {
 			return
 		}
 
-		err := a.db.CheckinUpdate(CheckinId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+		err := a.db.CheckinUpdate(r.Context(), CheckinId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -172,7 +172,7 @@ func (a *api) handleCheckinDelete(broker *checkin.Broker) http.HandlerFunc {
 		TeamId := vars["teamId"]
 		CheckinId := vars["checkinId"]
 
-		err := a.db.CheckinDelete(CheckinId)
+		err := a.db.CheckinDelete(r.Context(), CheckinId)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -221,7 +221,7 @@ func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 			return
 		}
 
-		err := a.db.CheckinComment(TeamId, CheckinId, c.UserID, c.Comment)
+		err := a.db.CheckinComment(r.Context(), TeamId, CheckinId, c.UserID, c.Comment)
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -269,7 +269,7 @@ func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc 
 			return
 		}
 
-		err := a.db.CheckinCommentEdit(TeamId, c.UserID, CommentId, c.Comment)
+		err := a.db.CheckinCommentEdit(r.Context(), TeamId, c.UserID, CommentId, c.Comment)
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -304,7 +304,7 @@ func (a *api) handleCheckinCommentDelete(broker *checkin.Broker) http.HandlerFun
 		TeamId := vars["teamId"]
 		CommentId := vars["commentId"]
 
-		err := a.db.CheckinCommentDelete(CommentId)
+		err := a.db.CheckinCommentDelete(r.Context(), CommentId)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
