@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 
@@ -9,11 +10,11 @@ import (
 )
 
 // GetRegisteredUsers gets a list of registered users
-func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int, error) {
+func (d *Database) GetRegisteredUsers(ctx context.Context, Limit int, Offset int) ([]*model.User, int, error) {
 	var users = make([]*model.User, 0)
 	var Count int
 
-	err := d.db.QueryRow(
+	err := d.db.QueryRowContext(ctx,
 		"SELECT COUNT(*) FROM users WHERE email IS NOT NULL;",
 	).Scan(
 		&Count,
@@ -247,7 +248,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 }
 
 // CreateUser adds a new registered user
-func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword string) (NewUser *model.User, VerifyID string, RegisterErr error) {
+func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *model.User, VerifyID string, RegisterErr error) {
 	hashedPassword, hashErr := hashSaltPassword(UserPassword)
 	if hashErr != nil {
 		return nil, "", hashErr
@@ -264,7 +265,7 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 		GravatarHash: createGravatarHash(UserEmail),
 	}
 
-	err := d.db.QueryRow(
+	err := d.db.QueryRowContext(ctx,
 		`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 		UserName,
 		UserEmail,

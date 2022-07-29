@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"html/template"
 	"image"
@@ -171,7 +172,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AppConfig:        appConfig,
 	}
 
-	api.ActiveAlerts = s.db.GetActiveAlerts() // prime the active alerts cache
+	api.ActiveAlerts = s.db.GetActiveAlerts(context.Background()) // prime the active alerts cache
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		data.ActiveAlerts = api.ActiveAlerts // get latest alerts from memory

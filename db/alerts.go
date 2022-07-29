@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"errors"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
@@ -8,10 +9,10 @@ import (
 )
 
 // GetActiveAlerts gets a list of active global alerts
-func (d *Database) GetActiveAlerts() []interface{} {
+func (d *Database) GetActiveAlerts(ctx context.Context) []interface{} {
 	Alerts := make([]interface{}, 0)
 
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, type, content, active, allow_dismiss, registered_only FROM alert WHERE active IS TRUE;`,
 	)
 
@@ -40,11 +41,11 @@ func (d *Database) GetActiveAlerts() []interface{} {
 }
 
 // AlertsList gets a list of global alerts
-func (d *Database) AlertsList(Limit int, Offset int) ([]*model.Alert, int, error) {
+func (d *Database) AlertsList(ctx context.Context, Limit int, Offset int) ([]*model.Alert, int, error) {
 	Alerts := make([]*model.Alert, 0)
 	var AlertCount int
 
-	e := d.db.QueryRow(
+	e := d.db.QueryRowContext(ctx,
 		"SELECT COUNT(*) FROM alert;",
 	).Scan(
 		&AlertCount,
@@ -53,7 +54,7 @@ func (d *Database) AlertsList(Limit int, Offset int) ([]*model.Alert, int, error
 		d.logger.Error("query scan error", zap.Error(e))
 	}
 
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, type, content, active, allow_dismiss, registered_only, created_date, updated_date
 		FROM alert
 		LIMIT $1
@@ -91,8 +92,8 @@ func (d *Database) AlertsList(Limit int, Offset int) ([]*model.Alert, int, error
 }
 
 // AlertsCreate creates a global alert
-func (d *Database) AlertsCreate(Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
-	if _, err := d.db.Exec(
+func (d *Database) AlertsCreate(ctx context.Context, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
+	if _, err := d.db.ExecContext(ctx,
 		`INSERT INTO alert (name, type, content, active, allow_dismiss, registered_only)
 		VALUES ($1, $2, $3, $4, $5, $6);
 		`,
@@ -111,8 +112,8 @@ func (d *Database) AlertsCreate(Name string, Type string, Content string, Active
 }
 
 // AlertsUpdate updates a global alert
-func (d *Database) AlertsUpdate(ID string, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
-	if _, err := d.db.Exec(
+func (d *Database) AlertsUpdate(ctx context.Context, ID string, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
+	if _, err := d.db.ExecContext(ctx,
 		`
 		UPDATE alert
 		SET name = $2, type = $3, content = $4, active = $5, allow_dismiss = $6, registered_only = $7
@@ -134,8 +135,8 @@ func (d *Database) AlertsUpdate(ID string, Name string, Type string, Content str
 }
 
 // AlertDelete deletes a global alert
-func (d *Database) AlertDelete(AlertID string) error {
-	_, err := d.db.Exec(
+func (d *Database) AlertDelete(ctx context.Context, AlertID string) error {
+	_, err := d.db.ExecContext(ctx,
 		`DELETE FROM alert WHERE id = $1;`,
 		AlertID,
 	)

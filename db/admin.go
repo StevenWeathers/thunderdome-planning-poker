@@ -74,8 +74,8 @@ func (d *Database) GetAppStats(ctx context.Context) (*model.ApplicationStats, er
 }
 
 // PromoteUser promotes a user to admin type
-func (d *Database) PromoteUser(UserID string) error {
-	if _, err := d.db.Exec(
+func (d *Database) PromoteUser(ctx context.Context, UserID string) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call promote_user($1);`,
 		UserID,
 	); err != nil {
@@ -87,8 +87,8 @@ func (d *Database) PromoteUser(UserID string) error {
 }
 
 // DemoteUser demotes a user to registered type
-func (d *Database) DemoteUser(UserID string) error {
-	if _, err := d.db.Exec(
+func (d *Database) DemoteUser(ctx context.Context, UserID string) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call demote_user($1);`,
 		UserID,
 	); err != nil {
@@ -100,8 +100,8 @@ func (d *Database) DemoteUser(UserID string) error {
 }
 
 // DisableUser disables a user from logging in
-func (d *Database) DisableUser(UserID string) error {
-	if _, err := d.db.Exec(
+func (d *Database) DisableUser(ctx context.Context, UserID string) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call user_disable($1);`,
 		UserID,
 	); err != nil {
@@ -113,8 +113,8 @@ func (d *Database) DisableUser(UserID string) error {
 }
 
 // EnableUser enables a user allowing login
-func (d *Database) EnableUser(UserID string) error {
-	if _, err := d.db.Exec(
+func (d *Database) EnableUser(ctx context.Context, UserID string) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call user_enable($1);`,
 		UserID,
 	); err != nil {
@@ -126,8 +126,8 @@ func (d *Database) EnableUser(UserID string) error {
 }
 
 // CleanBattles deletes battles older than {DaysOld} days
-func (d *Database) CleanBattles(DaysOld int) error {
-	if _, err := d.db.Exec(
+func (d *Database) CleanBattles(ctx context.Context, DaysOld int) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call clean_battles($1);`,
 		DaysOld,
 	); err != nil {
@@ -139,8 +139,8 @@ func (d *Database) CleanBattles(DaysOld int) error {
 }
 
 // CleanRetros deletes retros older than {DaysOld} days
-func (d *Database) CleanRetros(DaysOld int) error {
-	if _, err := d.db.Exec(
+func (d *Database) CleanRetros(ctx context.Context, DaysOld int) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call clean_retros($1);`,
 		DaysOld,
 	); err != nil {
@@ -152,8 +152,8 @@ func (d *Database) CleanRetros(DaysOld int) error {
 }
 
 // CleanStoryboards deletes storyboards older than {DaysOld} days
-func (d *Database) CleanStoryboards(DaysOld int) error {
-	if _, err := d.db.Exec(
+func (d *Database) CleanStoryboards(ctx context.Context, DaysOld int) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call clean_storyboards($1);`,
 		DaysOld,
 	); err != nil {
@@ -165,8 +165,8 @@ func (d *Database) CleanStoryboards(DaysOld int) error {
 }
 
 // CleanGuests deletes guest users older than {DaysOld} days
-func (d *Database) CleanGuests(DaysOld int) error {
-	if _, err := d.db.Exec(
+func (d *Database) CleanGuests(ctx context.Context, DaysOld int) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call clean_guest_users($1);`,
 		DaysOld,
 	); err != nil {
@@ -179,9 +179,9 @@ func (d *Database) CleanGuests(DaysOld int) error {
 
 // LowercaseUserEmails goes through and lower cases any user email that has uppercase letters
 // returning the list of updated users
-func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
+func (d *Database) LowercaseUserEmails(ctx context.Context) ([]*model.User, error) {
 	var users = make([]*model.User, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT name, email FROM lowercase_unique_user_emails();`,
 	)
 
@@ -210,9 +210,9 @@ func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
 
 // MergeDuplicateAccounts goes through and merges user accounts with duplicate emails that has uppercase letters
 // returning the list of merged users
-func (d *Database) MergeDuplicateAccounts() ([]*model.User, error) {
+func (d *Database) MergeDuplicateAccounts(ctx context.Context) ([]*model.User, error) {
 	var users = make([]*model.User, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT name, email FROM merge_nonunique_user_accounts();`,
 	)
 
@@ -240,9 +240,9 @@ func (d *Database) MergeDuplicateAccounts() ([]*model.User, error) {
 }
 
 // OrganizationList gets a list of organizations
-func (d *Database) OrganizationList(Limit int, Offset int) []*model.Organization {
+func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) []*model.Organization {
 	var organizations = make([]*model.Organization, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM organization_list($1, $2);`,
 		Limit,
 		Offset,
@@ -272,9 +272,9 @@ func (d *Database) OrganizationList(Limit int, Offset int) []*model.Organization
 }
 
 // TeamList gets a list of teams
-func (d *Database) TeamList(Limit int, Offset int) []*model.Team {
+func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) []*model.Team {
 	var teams = make([]*model.Team, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
 		Limit,
 		Offset,
@@ -304,9 +304,9 @@ func (d *Database) TeamList(Limit int, Offset int) []*model.Team {
 }
 
 // GetAPIKeys gets a list of api keys
-func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
+func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*model.APIKey {
 	var APIKeys = make([]*model.APIKey, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, email, active, created_date, updated_date
 		FROM apikeys_list($1, $2);`,
 		Limit,
