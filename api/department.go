@@ -374,7 +374,7 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.db.TeamAddUser(TeamID, User.Id, u.Role)
+		_, err := a.db.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -402,9 +402,10 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
-		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
-		DepartmentRole := r.Context().Value(contextKeyDepartmentRole).(string)
-		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+		ctx := r.Context()
+		OrgRole := ctx.Value(contextKeyOrgRole).(string)
+		DepartmentRole := ctx.Value(contextKeyDepartmentRole).(string)
+		TeamRole := ctx.Value(contextKeyTeamRole).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
@@ -422,7 +423,7 @@ func (a *api) handleDepartmentTeamByUser() http.HandlerFunc {
 			return
 		}
 
-		Team, err := a.db.TeamGet(TeamID)
+		Team, err := a.db.TeamGet(ctx, TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

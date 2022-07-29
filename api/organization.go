@@ -332,8 +332,9 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
-		OrgRole := r.Context().Value(contextKeyOrgRole).(string)
-		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+		ctx := r.Context()
+		OrgRole := ctx.Value(contextKeyOrgRole).(string)
+		TeamRole := ctx.Value(contextKeyTeamRole).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
@@ -344,7 +345,7 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			return
 		}
 
-		Team, err := a.db.TeamGet(TeamID)
+		Team, err := a.db.TeamGet(ctx, TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -381,6 +382,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 			return
 		}
 
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
@@ -412,7 +414,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.db.TeamAddUser(TeamID, User.Id, u.Role)
+		_, err := a.db.TeamAddUser(ctx, TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

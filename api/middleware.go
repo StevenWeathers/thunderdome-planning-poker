@@ -347,7 +347,7 @@ func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserType := ctx.Value(contextKeyUserType).(string)
 		TeamID := vars["teamId"]
 
-		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
+		Role, UserErr := a.db.TeamUserRole(ctx, UserID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return
@@ -368,7 +368,7 @@ func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserType := ctx.Value(contextKeyUserType).(string)
 		TeamID := vars["teamId"]
 
-		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
+		Role, UserErr := a.db.TeamUserRole(ctx, UserID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 			return

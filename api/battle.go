@@ -79,7 +79,8 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserType := ctx.Value(contextKeyUserType).(string)
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -113,9 +114,9 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		// if battle created with team association
 		TeamID, ok := vars["teamId"]
 		if ok {
-			OrgRole := r.Context().Value(contextKeyOrgRole)
-			DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
-			TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+			OrgRole := ctx.Value(contextKeyOrgRole)
+			DepartmentRole := ctx.Value(contextKeyDepartmentRole)
+			TeamRole := ctx.Value(contextKeyTeamRole).(string)
 			var isAdmin bool
 			if UserType != adminUserType || (DepartmentRole != nil && DepartmentRole.(string) == "ADMIN") {
 				isAdmin = true
@@ -125,7 +126,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			}
 
 			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddBattle(TeamID, newBattle.Id)
+				err := a.db.TeamAddBattle(ctx, TeamID, newBattle.Id)
 
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)

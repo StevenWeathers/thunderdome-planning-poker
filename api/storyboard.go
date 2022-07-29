@@ -37,7 +37,8 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		UserType := ctx.Value(contextKeyUserType).(string)
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
@@ -61,9 +62,9 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 		// if storyboard created with team association
 		TeamID, ok := vars["teamId"]
 		if ok {
-			OrgRole := r.Context().Value(contextKeyOrgRole)
-			DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
-			TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+			OrgRole := ctx.Value(contextKeyOrgRole)
+			DepartmentRole := ctx.Value(contextKeyDepartmentRole)
+			TeamRole := ctx.Value(contextKeyTeamRole).(string)
 			var isAdmin bool
 			if UserType != adminUserType || (DepartmentRole != nil && DepartmentRole.(string) == "ADMIN") {
 				isAdmin = true
@@ -73,7 +74,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 			}
 
 			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddStoryboard(TeamID, newStoryboard.Id)
+				err := a.db.TeamAddStoryboard(ctx, TeamID, newStoryboard.Id)
 
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)

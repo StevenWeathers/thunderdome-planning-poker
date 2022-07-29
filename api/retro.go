@@ -40,7 +40,8 @@ type retroCreateRequestBody struct {
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
 func (a *api) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userID := r.Context().Value(contextKeyUserID).(string)
+		ctx := r.Context()
+		userID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -65,9 +66,9 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 		// if retro created with team association
 		TeamID, ok := vars["teamId"]
 		if ok {
-			OrgRole := r.Context().Value(contextKeyOrgRole)
-			DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
-			TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+			OrgRole := ctx.Value(contextKeyOrgRole)
+			DepartmentRole := ctx.Value(contextKeyDepartmentRole)
+			TeamRole := ctx.Value(contextKeyTeamRole).(string)
 			var isAdmin bool
 			if DepartmentRole != nil && DepartmentRole.(string) == "ADMIN" {
 				isAdmin = true
@@ -77,7 +78,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			}
 
 			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddRetro(TeamID, newRetro.Id)
+				err := a.db.TeamAddRetro(ctx, TeamID, newRetro.Id)
 
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
