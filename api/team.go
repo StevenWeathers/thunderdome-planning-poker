@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
@@ -178,7 +177,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := strings.ToLower(u.Email)
+		UserEmail := u.Email
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {

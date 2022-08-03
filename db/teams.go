@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )

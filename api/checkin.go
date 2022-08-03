@@ -2,10 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/checkin"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/api/checkin"
 
 	"github.com/gorilla/mux"
 )

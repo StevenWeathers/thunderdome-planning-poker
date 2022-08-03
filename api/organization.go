@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
@@ -262,7 +261,7 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := strings.ToLower(u.Email)
+		UserEmail := u.Email
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {
@@ -397,7 +396,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := strings.ToLower(u.Email)
+		UserEmail := u.Email
 
 		User, UserErr := a.db.GetUserByEmail(UserEmail)
 		if UserErr != nil {

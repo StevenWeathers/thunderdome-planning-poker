@@ -2,10 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"

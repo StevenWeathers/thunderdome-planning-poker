@@ -11,9 +11,20 @@ import (
 	"errors"
 	"io"
 	"math/big"
+	"regexp"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
+
+// sanitizeEmail removes any non-valid email characters and lowercase's email
+func sanitizeEmail(email string) string {
+	emailRegExp := regexp.MustCompile(`[^a-zA-Z0-9-_.@+]`)
+
+	return string(emailRegExp.ReplaceAll(
+		[]byte(strings.ToLower(email)), []byte("")),
+	)
+}
 
 // contains checks if a string is present in a slice
 func contains(s []string, str string) bool {

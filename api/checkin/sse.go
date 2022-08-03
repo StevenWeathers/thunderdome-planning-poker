@@ -2,9 +2,10 @@ package checkin
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 // Message holds the message to send to connections

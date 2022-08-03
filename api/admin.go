@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -96,7 +95,7 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
 			user.Name,
-			strings.ToLower(user.Email),
+			user.Email,
 			user.Password1,
 			user.Password2,
 		)

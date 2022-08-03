@@ -457,7 +457,10 @@
             <div class="w-1/5">
                 <div class="text-right">
                     {#if isAdmin}
-                        <SolidButton onClick="{toggleAddUser}">
+                        <SolidButton
+                            onClick="{toggleAddUser}"
+                            testid="user-add"
+                        >
                             {$_('userAdd')}
                         </SolidButton>
                     {/if}
@@ -498,7 +501,9 @@
                                     <div
                                         class="font-medium text-gray-900 dark:text-gray-200"
                                     >
-                                        {user.name}
+                                        <span data-testid="user-name"
+                                            >{user.name}</span
+                                        >
                                         {#if user.country}
                                             &nbsp;
                                             <CountryFlag
@@ -513,7 +518,7 @@
                             </div>
                         </RowCol>
                         <RowCol>
-                            {user.email}
+                            <span data-testid="user-email">{user.email}</span>
                         </RowCol>
                         <RowCol>
                             <div

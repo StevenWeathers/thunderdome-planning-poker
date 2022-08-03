@@ -161,8 +161,8 @@ WHERE id = $1 AND type = 'GUEST';
 func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 	var w model.User
 	err := d.db.QueryRow(
-		"SELECT id, name, email, type, verified, disabled FROM users WHERE email = $1",
-		UserEmail,
+		"SELECT id, name, email, type, verified, disabled FROM users WHERE LOWER(email) = $1",
+		sanitizeEmail(UserEmail),
 	).Scan(
 		&w.Id,
 		&w.Name,
@@ -203,9 +203,10 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 	var verifyID string
 	UserType := "REGISTERED"
 	UserAvatar := "robohash"
+	sanitizedEmail := sanitizeEmail(UserEmail)
 	User := &model.User{
 		Name:         UserName,
-		Email:        UserEmail,
+		Email:        sanitizedEmail,
 		Type:         UserType,
 		Avatar:       UserAvatar,
 		GravatarHash: createGravatarHash(UserEmail),
@@ -216,7 +217,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 			`SELECT userId, verifyId FROM register_existing_user($1, $2, $3, $4, $5);`,
 			ActiveUserID,
 			UserName,
-			UserEmail,
+			sanitizedEmail,
 			hashedPassword,
 			UserType,
 		).Scan(&User.Id, &verifyID)
@@ -228,7 +229,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 		err := d.db.QueryRow(
 			`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 			UserName,
-			UserEmail,
+			sanitizedEmail,
 			hashedPassword,
 			UserType,
 		).Scan(&User.Id, &verifyID)
@@ -256,9 +257,10 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 	var verifyID string
 	UserType := "REGISTERED"
 	UserAvatar := "robohash"
+	sanitizedEmail := sanitizeEmail(UserEmail)
 	User := &model.User{
 		Name:         UserName,
-		Email:        UserEmail,
+		Email:        sanitizedEmail,
 		Type:         UserType,
 		Avatar:       UserAvatar,
 		GravatarHash: createGravatarHash(UserEmail),
@@ -267,7 +269,7 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 	err := d.db.QueryRow(
 		`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 		UserName,
-		UserEmail,
+		sanitizedEmail,
 		hashedPassword,
 		UserType,
 	).Scan(&User.Id, &verifyID)
@@ -333,7 +335,7 @@ func (d *Database) UpdateUserAccount(UserID string, UserName string, UserEmail s
 		`call user_account_update($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
 		UserID,
 		UserName,
-		UserEmail,
+		sanitizeEmail(UserEmail),
 		UserAvatar,
 		NotificationsEnabled,
 		Country,
@@ -396,7 +398,7 @@ func (d *Database) SearchRegisteredUsersByEmail(Email string, Limit int, Offset 
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title, count
 		FROM registered_users_email_search($1, $2, $3);`,
-		Email,
+		sanitizeEmail(Email),
 		Limit,
 		Offset,
 	)

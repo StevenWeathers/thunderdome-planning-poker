@@ -2,11 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"github.com/gorilla/mux"
 )
 
 type storyboardCreateRequestBody struct {

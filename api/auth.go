@@ -2,10 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 
 	"github.com/spf13/viper"
 )
@@ -296,7 +297,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
 			u.Name,
-			strings.ToLower(u.Email),
+			u.Email,
 			u.Password1,
 			u.Password2,
 		)
