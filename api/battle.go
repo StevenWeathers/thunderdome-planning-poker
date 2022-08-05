@@ -48,11 +48,11 @@ func (a *api) handleGetUserBattles() http.HandlerFunc {
 }
 
 type battleRequestBody struct {
-	BattleName           string        `json:"name"`
-	PointValuesAllowed   []string      `json:"pointValuesAllowed"`
+	BattleName           string        `json:"name" validate:"required"`
+	PointValuesAllowed   []string      `json:"pointValuesAllowed" validate:"required"`
 	AutoFinishVoting     bool          `json:"autoFinishVoting"`
 	Plans                []*model.Plan `json:"plans"`
-	PointAverageRounding string        `json:"pointAverageRounding"`
+	PointAverageRounding string        `json:"pointAverageRounding" validate:"required,oneof=ceil round floor"`
 	BattleLeaders        []string      `json:"battleLeaders"`
 	JoinCode             string        `json:"joinCode"`
 	LeaderCode           string        `json:"leaderCode"`
@@ -92,6 +92,12 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &b)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(b)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
