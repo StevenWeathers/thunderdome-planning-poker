@@ -76,7 +76,7 @@ func (d *Database) UserResetRequest(UserEmail string) (resetID string, UserName 
 	e := d.db.QueryRow(`
 		SELECT resetId, userId, userName FROM insert_user_reset($1);
 		`,
-		UserEmail,
+		sanitizeEmail(UserEmail),
 	).Scan(&ResetID, &UserID, &name)
 	if e != nil {
 		d.logger.Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))
