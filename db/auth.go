@@ -20,7 +20,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 
 	e := d.db.QueryRow(
 		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE LOWER(email) = $1`,
-		UserEmail,
+		sanitizeEmail(UserEmail),
 	).Scan(
 		&user.Id,
 		&user.Name,
