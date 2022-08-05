@@ -5,6 +5,7 @@ import {setupDB} from './fixtures/db/setup'
 import {setupAdminUser} from './fixtures/db/admin-user'
 import {setupRegisteredUser} from "./fixtures/db/registered-user";
 import {setupVerifiedUser} from "./fixtures/db/verified-user";
+import {setupAPIUser} from "./fixtures/db/api-user";
 
 async function globalSetup(config: FullConfig) {
     const pool = setupDB({
@@ -17,6 +18,9 @@ async function globalSetup(config: FullConfig) {
 
     const baseUrl = config.projects[0].use.baseURL;
     const browser = await chromium.launch();
+
+    await setupAPIUser.teardown(pool)
+    await setupAPIUser.seed(pool)
 
     const adminPage = await browser.newPage({
         baseURL: baseUrl
