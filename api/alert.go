@@ -11,9 +11,9 @@ import (
 var ActiveAlerts []interface{}
 
 type alertRequestBody struct {
-	Name           string `json:"name"`
-	Type           string `json:"type" enums:"ERROR, INFO, NEW, SUCCESS, WARNING"`
-	Content        string `json:"content"`
+	Name           string `json:"name" validate:"required"`
+	Type           string `json:"type" enums:"ERROR, INFO, NEW, SUCCESS, WARNING" validate:"required,oneof=ERROR INFO NEW SUCCESS WARNING"`
+	Content        string `json:"content" validate:"required"`
 	Active         bool   `json:"active"`
 	AllowDismiss   bool   `json:"allowDismiss"`
 	RegisteredOnly bool   `json:"registeredOnly"`
@@ -74,6 +74,12 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 			return
 		}
 
+		inputErr := validate.Struct(alert)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
 		err := a.db.AlertsCreate(alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
@@ -99,6 +105,14 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Router /alerts/{alertId} [put]
 func (a *api) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ID := vars["alertId"]
+		idErr := validate.Var(ID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
 		var alert = alertRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -111,9 +125,12 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
-		vars := mux.Vars(r)
 
-		ID := vars["alertId"]
+		inputErr := validate.Struct(alert)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
 
 		err := a.db.AlertsUpdate(ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
@@ -141,6 +158,11 @@ func (a *api) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		AlertID := vars["alertId"]
+		idErr := validate.Var(AlertID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.AlertDelete(AlertID)
 		if err != nil {

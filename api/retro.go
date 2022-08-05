@@ -13,12 +13,12 @@ import (
 )
 
 type retroCreateRequestBody struct {
-	RetroName            string `json:"retroName" example:"sprint 10 retro"`
-	Format               string `json:"format" example:"worked_improve_question"`
+	RetroName            string `json:"retroName" example:"sprint 10 retro" validate:"required"`
+	Format               string `json:"format" example:"worked_improve_question" validate:"required,oneof=worked_improve_question"`
 	JoinCode             string `json:"joinCode" example:"iammadmax"`
 	FacilitatorCode      string `json:"facilitatorCode" example:"likeaboss"`
-	MaxVotes             int    `json:"maxVotes"`
-	BrainstormVisibility string `json:"brainstormVisibility"`
+	MaxVotes             int    `json:"maxVotes" validate:"required,min=1,max=9"`
+	BrainstormVisibility string `json:"brainstormVisibility" validate:"required,oneof=visible concealed hidden"`
 }
 
 // handleRetroCreate handles creating a retro
@@ -41,8 +41,8 @@ type retroCreateRequestBody struct {
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
 func (a *api) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userID := r.Context().Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
+		UserID := vars["userId"]
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -57,7 +57,13 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 
-		newRetro, err := a.db.RetroCreate(userID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+		inputErr := validate.Struct(nr)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		newRetro, err := a.db.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -189,9 +195,9 @@ func (a *api) handleGetRetros() http.HandlerFunc {
 }
 
 type actionUpdateRequestBody struct {
-	ActionID  string `json:"id" swaggerignore:"true"`
-	Completed bool   `json:"completed" example:"false"`
-	Content   string `json:"content" example:"update documentation"`
+	ActionID  string `json:"id" swaggerignore:"true" validate:"required,uuid"`
+	Completed bool   `json:"completed" example:"false" validate:"required,boolean"`
+	Content   string `json:"content" example:"update documentation" validate:"required"`
 }
 
 // handleRetroActionUpdate handles updating a retro action item
@@ -213,6 +219,11 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
+		idErr := validate.Var(RetroID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		ActionID := vars["actionId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
@@ -228,6 +239,11 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 		}
 
 		ra.ActionID = ActionID
+		inputErr := validate.Struct(ra)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
 		updatedActionJson, _ := json.Marshal(ra)
 
 		err := rs.APIEvent(RetroID, UserID, "update_action", string(updatedActionJson))
@@ -256,7 +272,17 @@ func (a *api) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
+		idErr := validate.Var(RetroID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		ActionID := vars["actionId"]
+		idErr = validate.Var(ActionID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		type actionItem struct {
@@ -275,7 +301,7 @@ func (a *api) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 }
 
 type actionCommentRequestBody struct {
-	Comment string `json:"comment"`
+	Comment string `json:"comment" validate:"required"`
 }
 
 // handleRetroActionCommentAdd handles adding a comment to a retro action item
@@ -297,7 +323,17 @@ func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
 
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
+		idErr := validate.Var(RetroID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		ActionID := vars["actionId"]
+		idErr = validate.Var(ActionID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -308,6 +344,12 @@ func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &ra)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(ra)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -341,8 +383,23 @@ func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
 
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
+		idErr := validate.Var(RetroID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		ActionID := vars["actionId"]
+		idErr = validate.Var(ActionID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		CommentID := vars["commentId"]
+		idErr = validate.Var(CommentID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -352,6 +409,12 @@ func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &ra)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(ra)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -382,8 +445,23 @@ func (a *api) handleRetroActionCommentDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
+		idErr := validate.Var(RetroID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		ActionID := vars["actionId"]
+		idErr = validate.Var(ActionID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		CommentID := vars["commentId"]
+		idErr = validate.Var(CommentID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		action, err := a.db.RetroActionCommentDelete(RetroID, ActionID, CommentID)
 		if err != nil {

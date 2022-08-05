@@ -196,6 +196,11 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleId := vars["battleId"]
+		idErr := validate.Var(BattleId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
@@ -243,6 +248,11 @@ func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]
+		idErr := validate.Var(BattleID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := ioutil.ReadAll(r.Body)

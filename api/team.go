@@ -28,8 +28,8 @@ type teamResponse struct {
 func (a *api) handleGetTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 		TeamID := vars["teamId"]
+		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 
 		Team, err := a.db.TeamGet(TeamID)
 		if err != nil {
@@ -100,7 +100,7 @@ func (a *api) handleGetTeamUsers() http.HandlerFunc {
 }
 
 type teamCreateRequestBody struct {
-	Name string `json:"name"`
+	Name string `json:"name" validate:"required"`
 }
 
 // handleCreateTeam handles creating a team with current user as admin
@@ -133,6 +133,11 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 			return
 		}
 
+		inputErr := validate.Struct(team)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+		}
+
 		NewTeam, err := a.db.TeamCreate(UserID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
@@ -144,8 +149,8 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 }
 
 type teamAddUserRequestBody struct {
-	Email string `json:"email" enums:"MEMBER,ADMIN"`
-	Role  string `json:"role"`
+	Email string `json:"email" validate:"required,email"`
+	Role  string `json:"role" enums:"MEMBER,ADMIN" validate:"required,oneof=MEMBER ADMIN"`
 }
 
 // handleTeamAddUser handles adding user to a team
@@ -164,6 +169,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+
 		var u = teamAddUserRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -175,6 +181,11 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
+		}
+
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 		}
 
 		UserEmail := u.Email
@@ -212,6 +223,11 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.TeamRemoveUser(TeamID, UserID)
 		if err != nil {
@@ -236,6 +252,7 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
 		Battles := a.db.TeamBattleList(TeamID, Limit, Offset)
@@ -261,6 +278,11 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		BattleID := vars["battleId"]
+		idErr := validate.Var(BattleID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.TeamRemoveBattle(TeamID, BattleID)
 		if err != nil {
@@ -287,6 +309,11 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.TeamDelete(TeamID)
 		if err != nil {
@@ -336,6 +363,11 @@ func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		RetrospectiveID := vars["retroId"]
+		idErr := validate.Var(RetrospectiveID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.TeamRemoveRetro(TeamID, RetrospectiveID)
 		if err != nil {
@@ -385,6 +417,11 @@ func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		StoryboardID := vars["storyboardId"]
+		idErr := validate.Var(StoryboardID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.TeamRemoveStoryboard(TeamID, StoryboardID)
 		if err != nil {

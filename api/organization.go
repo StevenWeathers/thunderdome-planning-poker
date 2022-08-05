@@ -23,7 +23,7 @@ type orgTeamResponse struct {
 
 // handleGetOrganizationsByUser gets a list of organizations the user is a part of
 // @Summary Get Users Organizations
-// @Description get list of organizations for the authenticated user
+// @Description Get list of organizations for the authenticated user
 // @Tags organization
 // @Produce  json
 // @Param userId path string true "the user ID to get organizations for"
@@ -52,7 +52,7 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 
 // handleGetOrganizationByUser gets an organization with user role
 // @Summary Get Organization
-// @Description get an organization with user role
+// @Description Get an organization with user role
 // @Tags organization
 // @Produce  json
 // @Param orgId path string true "organization id"
@@ -300,6 +300,11 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.OrganizationRemoveUser(OrgID, UserID)
 		if err != nil {
@@ -435,6 +440,11 @@ func (a *api) handleDeleteOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.OrganizationDelete(OrgID)
 		if err != nil {

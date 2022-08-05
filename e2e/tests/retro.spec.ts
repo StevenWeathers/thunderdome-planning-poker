@@ -14,7 +14,8 @@ test.describe('Retro page', () => {
             brainstormVisibility: 'visible',
             retroFacilitators: [
                 `${adminPage.user.email}`
-            ]
+            ],
+            format: 'worked_improve_question'
         };
         retro = await registeredPage.createRetro({...commonRetro});
         retroLeave = await verifiedPage.createRetro({...commonRetro});

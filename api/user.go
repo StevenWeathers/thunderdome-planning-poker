@@ -59,14 +59,14 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 }
 
 type userprofileUpdateRequestBody struct {
-	Name                 string `json:"name"`
-	Avatar               string `json:"avatar"`
+	Name                 string `json:"name" validate:"required,max=64"`
+	Avatar               string `json:"avatar" validate:"max=128"`
 	NotificationsEnabled bool   `json:"notificationsEnabled"`
-	Country              string `json:"country"`
-	Locale               string `json:"locale"`
-	Company              string `json:"company"`
-	JobTitle             string `json:"jobTitle"`
-	Email                string `json:"email"`
+	Country              string `json:"country" validate:"len=2"`
+	Locale               string `json:"locale" validate:"len=2"`
+	Company              string `json:"company" validate:"max=256"`
+	JobTitle             string `json:"jobTitle" validate:"max=128"`
+	Email                string `json:"email" validate:"email"`
 }
 
 // handleUserProfileUpdate attempts to update users profile
@@ -85,6 +85,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		SessionUserType := r.Context().Value(contextKeyUserType).(string)
 		vars := mux.Vars(r)
+		UserID := vars["userId"]
 
 		var profile = userprofileUpdateRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -99,7 +100,11 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		UserID := vars["userId"]
+		inputErr := validate.Struct(profile)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
 
 		if SessionUserType == adminUserType {
 			_, _, vErr := validateUserAccount(profile.Name, profile.Email)
@@ -153,7 +158,6 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 func (a *api) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-
 		UserID := vars["userId"]
 		UserCookieID := r.Context().Value(contextKeyUserID).(string)
 
