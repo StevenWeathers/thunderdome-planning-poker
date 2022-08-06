@@ -140,9 +140,10 @@ func (a *api) handleRetroGet() http.HandlerFunc {
 // @Router /users/{userId}/retros [get]
 func (a *api) handleRetrosGetByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userID := r.Context().Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
 
-		retros, err := a.db.RetroGetByUser(userID)
+		retros, err := a.db.RetroGetByUser(UserID)
 		if err != nil {
 			http.NotFound(w, r)
 			return

@@ -39,9 +39,7 @@ test.afterAll(async ({}) => {
 })
 
 test.describe('registered user', () => {
-    test(`GET /users/{userId}/battles should return empty array when no battles associated to user`, async ({
-        request,
-    }) => {
+    test(`GET /users/{userId}/battles should return empty array when no battles associated to user`, async () => {
         const b = await adminApiContext.get(`users/${adminUser.id}/battles`)
         expect(b.ok()).toBeTruthy()
 
