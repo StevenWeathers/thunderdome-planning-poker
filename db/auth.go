@@ -20,8 +20,8 @@ func (d *Database) AuthUser(ctx context.Context, UserEmail string, UserPassword 
 	var passHash string
 
 	e := d.db.QueryRowContext(ctx,
-		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE email = $1`,
-		UserEmail,
+		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE LOWER(email) = $1`,
+		sanitizeEmail(UserEmail),
 	).Scan(
 		&user.Id,
 		&user.Name,
@@ -77,7 +77,7 @@ func (d *Database) UserResetRequest(ctx context.Context, UserEmail string) (rese
 	e := d.db.QueryRowContext(ctx, `
 		SELECT resetId, userId, userName FROM insert_user_reset($1);
 		`,
-		UserEmail,
+		sanitizeEmail(UserEmail),
 	).Scan(&ResetID, &UserID, &name)
 	if e != nil {
 		d.logger.Ctx(ctx).Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))

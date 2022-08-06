@@ -1,13 +1,13 @@
-import {Page} from '@playwright/test';
+import { Page } from '@playwright/test'
 
 export class AdminBattlesPage {
-    readonly page: Page;
+    readonly page: Page
 
     constructor(page: Page) {
-        this.page = page;
+        this.page = page
     }
 
     async goto() {
-        await this.page.goto(`/admin/battles`);
+        await this.page.goto(`/admin/battles`)
     }
 }

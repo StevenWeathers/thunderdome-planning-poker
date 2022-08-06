@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
 
 // handleAppStats gets the applications stats
 // @Summary Get Application Stats
-// @Description get application stats such as count of registered users
+// @Description Get application stats such as count of registered users
 // @Tags admin
 // @Produce  json
 // @Success 200 object standardJsonResponse{data=[]model.ApplicationStats}
@@ -32,7 +31,7 @@ func (a *api) handleAppStats() http.HandlerFunc {
 
 // handleGetRegisteredUsers gets a list of registered users
 // @Summary Get Registered Users
-// @Description get list of registered users
+// @Description Get list of registered users
 // @Tags admin
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
@@ -62,10 +61,10 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 }
 
 type userCreateRequestBody struct {
-	Name      string `json:"name"`
-	Email     string `json:"email"`
-	Password1 string `json:"password1"`
-	Password2 string `json:"password2"`
+	Name      string `json:"name" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password1 string `json:"password1" validate:"required,min=6,max=72"`
+	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
 
 // handleUserCreate registers a new authenticated user
@@ -94,25 +93,20 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
-			user.Name,
-			strings.ToLower(user.Email),
-			user.Password1,
-			user.Password2,
-		)
+		accountErr := validate.Struct(user)
 
 		if accountErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, accountErr.Error()))
 			return
 		}
 
-		newUser, VerifyID, err := a.db.CreateUser(r.Context(), UserName, UserEmail, UserPassword)
+		newUser, VerifyID, err := a.db.CreateUser(r.Context(), user.Name, user.Email, user.Password1)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.email.SendWelcome(UserName, UserEmail, VerifyID)
+		a.email.SendWelcome(user.Name, user.Email, VerifyID)
 
 		a.Success(w, r, http.StatusOK, newUser, nil)
 	}
@@ -133,6 +127,11 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.PromoteUser(r.Context(), UserID)
 		if err != nil {
@@ -158,6 +157,11 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.DemoteUser(r.Context(), UserID)
 		if err != nil {
@@ -183,6 +187,11 @@ func (a *api) handleUserDisable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.DisableUser(r.Context(), UserID)
 		if err != nil {
@@ -208,6 +217,11 @@ func (a *api) handleUserEnable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.EnableUser(r.Context(), UserID)
 		if err != nil {
@@ -219,11 +233,12 @@ func (a *api) handleUserEnable() http.HandlerFunc {
 	}
 }
 
-// handleAdminUpdateUserPassword attempts to update a users password
+// handleAdminUpdateUserPassword attempts to update a user's password
 // @Summary Update Password
-// @Description Updates the users password
+// @Description Updates the user's password
 // @Tags admin
 // @Param userId path string true "the user ID to update password for"
+// @Param passwords body updatePasswordRequestBody false "update password object"
 // @Success 200 object standardJsonResponse{}
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
@@ -231,21 +246,34 @@ func (a *api) handleUserEnable() http.HandlerFunc {
 // @Router /admin/users/{userId}/password [patch]
 func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		keyVal := getJSONRequestBody(r, w)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
-
-		UserPassword, passwordErr := validateUserPassword(
-			keyVal["password1"].(string),
-			keyVal["password2"].(string),
-		)
-
-		if passwordErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, passwordErr)
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(r.Context(), UserID, UserPassword)
+		body, bodyErr := ioutil.ReadAll(r.Body)
+		if bodyErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var u = updatePasswordRequestBody{}
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
@@ -259,7 +287,7 @@ func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
 
 // handleGetOrganizations gets a list of organizations
 // @Summary Get Organizations
-// @Description get a list of organizations
+// @Description Get a list of organizations
 // @Tags admin
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
@@ -284,7 +312,7 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 
 // handleGetTeams gets a list of teams
 // @Summary Get Teams
-// @Description get a list of teams
+// @Description Get a list of teams
 // @Tags admin
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
@@ -305,7 +333,7 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 
 // handleGetAPIKeys gets a list of APIKeys
 // @Summary Get API Keys
-// @Description get a list of users API Keys
+// @Description Get a list of users API Keys
 // @Tags admin
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
@@ -326,7 +354,7 @@ func (a *api) handleGetAPIKeys() http.HandlerFunc {
 
 // handleSearchRegisteredUsersByEmail gets a list of registered users filtered by email likeness
 // @Summary Search Registered Users by Email
-// @Description get list of registered users filtered by email likeness
+// @Description Get list of registered users filtered by email likeness
 // @Tags admin
 // @Produce  json
 // @Param search query string true "The user email to search for"

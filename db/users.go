@@ -161,9 +161,10 @@ WHERE id = $1 AND type = 'GUEST';
 // GetUserByEmail gets the user by email
 func (d *Database) GetUserByEmail(ctx context.Context, UserEmail string) (*model.User, error) {
 	var w model.User
+
 	err := d.db.QueryRowContext(ctx,
-		"SELECT id, name, email, type, verified, disabled FROM users WHERE email = $1",
-		UserEmail,
+		"SELECT id, name, email, type, verified, disabled FROM users WHERE LOWER(email) = $1",
+		sanitizeEmail(UserEmail),
 	).Scan(
 		&w.Id,
 		&w.Name,
@@ -204,9 +205,10 @@ func (d *Database) CreateUserRegistered(ctx context.Context, UserName string, Us
 	var verifyID string
 	UserType := "REGISTERED"
 	UserAvatar := "robohash"
+	sanitizedEmail := sanitizeEmail(UserEmail)
 	User := &model.User{
 		Name:         UserName,
-		Email:        UserEmail,
+		Email:        sanitizedEmail,
 		Type:         UserType,
 		Avatar:       UserAvatar,
 		GravatarHash: createGravatarHash(UserEmail),
@@ -217,7 +219,7 @@ func (d *Database) CreateUserRegistered(ctx context.Context, UserName string, Us
 			`SELECT userId, verifyId FROM register_existing_user($1, $2, $3, $4, $5);`,
 			ActiveUserID,
 			UserName,
-			UserEmail,
+			sanitizedEmail,
 			hashedPassword,
 			UserType,
 		).Scan(&User.Id, &verifyID)
@@ -229,7 +231,7 @@ func (d *Database) CreateUserRegistered(ctx context.Context, UserName string, Us
 		err := d.db.QueryRow(
 			`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 			UserName,
-			UserEmail,
+			sanitizedEmail,
 			hashedPassword,
 			UserType,
 		).Scan(&User.Id, &verifyID)
@@ -257,9 +259,10 @@ func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail st
 	var verifyID string
 	UserType := "REGISTERED"
 	UserAvatar := "robohash"
+	sanitizedEmail := sanitizeEmail(UserEmail)
 	User := &model.User{
 		Name:         UserName,
-		Email:        UserEmail,
+		Email:        sanitizedEmail,
 		Type:         UserType,
 		Avatar:       UserAvatar,
 		GravatarHash: createGravatarHash(UserEmail),
@@ -268,7 +271,7 @@ func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail st
 	err := d.db.QueryRowContext(ctx,
 		`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 		UserName,
-		UserEmail,
+		sanitizedEmail,
 		hashedPassword,
 		UserType,
 	).Scan(&User.Id, &verifyID)
@@ -334,7 +337,7 @@ func (d *Database) UpdateUserAccount(ctx context.Context, UserID string, UserNam
 		`call user_account_update($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
 		UserID,
 		UserName,
-		UserEmail,
+		sanitizeEmail(UserEmail),
 		UserAvatar,
 		NotificationsEnabled,
 		Country,
@@ -397,7 +400,7 @@ func (d *Database) SearchRegisteredUsersByEmail(ctx context.Context, Email strin
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title, count
 		FROM registered_users_email_search($1, $2, $3);`,
-		Email,
+		sanitizeEmail(Email),
 		Limit,
 		Offset,
 	)

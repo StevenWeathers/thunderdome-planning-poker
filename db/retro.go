@@ -30,13 +30,15 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 	}
 
 	var b = &model.Retro{
-		OwnerID:     OwnerID,
-		Name:        RetroName,
-		Format:      "worked_improve_question",
-		Phase:       "intro",
-		Users:       make([]*model.RetroUser, 0),
-		Items:       make([]*model.RetroItem, 0),
-		ActionItems: make([]*model.RetroAction, 0),
+		OwnerID:              OwnerID,
+		Name:                 RetroName,
+		Format:               Format,
+		Phase:                "intro",
+		Users:                make([]*model.RetroUser, 0),
+		Items:                make([]*model.RetroItem, 0),
+		ActionItems:          make([]*model.RetroAction, 0),
+		BrainstormVisibility: BrainstormVisibility,
+		MaxVotes:             MaxVotes,
 	}
 
 	e := d.db.QueryRow(

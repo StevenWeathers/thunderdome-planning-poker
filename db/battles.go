@@ -541,6 +541,10 @@ func (d *Database) DeleteBattle(BattleID string) error {
 func (d *Database) AddBattleLeadersByEmail(BattleID string, LeaderEmails []string) ([]string, error) {
 	var leaders string
 	var newLeaders []string
+
+	for i, email := range LeaderEmails {
+		LeaderEmails[i] = sanitizeEmail(email)
+	}
 	emails := strings.Join(LeaderEmails[:], ",")
 
 	e := d.db.QueryRow(

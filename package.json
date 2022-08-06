@@ -17,6 +17,7 @@
     "build": "rollup --config build/rollup.config.js",
     "autobuild": "rollup --config build/rollup.config.js -w",
     "format": "prettier --write 'frontend/**/*.{js,svelte,css,html}'",
+    "format:e2e": "prettier --write 'e2e/**/*.ts'",
     "test": "jest frontend/src",
     "test:watch": "npm run test -- --watch",
     "test:snapshot": "npm test -- -u"
@@ -115,6 +116,10 @@
   "lint-staged": {
     "frontend/**/*.{js, svelte, css, html}": [
       "npm run format",
+      "git add"
+    ],
+    "e2e/**/*.ts": [
+      "npm run format:e2e",
       "git add"
     ]
   }

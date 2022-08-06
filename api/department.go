@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
@@ -212,6 +211,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 			return
 		}
 		vars := mux.Vars(r)
+		DepartmentID := vars["departmentId"]
 
 		var team = teamCreateRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -226,7 +226,6 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 			return
 		}
 
-		DepartmentID := vars["departmentId"]
 		NewTeam, err := a.db.DepartmentTeamCreate(r.Context(), DepartmentID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
@@ -272,7 +271,7 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := strings.ToLower(u.Email)
+		UserEmail := u.Email
 
 		User, UserErr := a.db.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
@@ -311,6 +310,11 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.DepartmentRemoveUser(r.Context(), DepartmentID, UserID)
 		if err != nil {
@@ -360,7 +364,7 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := strings.ToLower(u.Email)
+		UserEmail := u.Email
 
 		User, UserErr := a.db.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
@@ -457,6 +461,11 @@ func (a *api) handleDeleteDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
+		idErr := validate.Var(DepartmentID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.DepartmentDelete(r.Context(), DepartmentID)
 		if err != nil {

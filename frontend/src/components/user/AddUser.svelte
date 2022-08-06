@@ -73,7 +73,11 @@
 
         <div>
             <div class="text-right">
-                <SolidButton type="submit" disabled="{createDisabled}">
+                <SolidButton
+                    type="submit"
+                    disabled="{createDisabled}"
+                    testid="useradd-confirm"
+                >
                     {$_('userAdd')}
                 </SolidButton>
             </div>

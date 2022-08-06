@@ -2,17 +2,18 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 
 	"github.com/spf13/viper"
 )
 
 type userLoginRequestBody struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=6,max=72"`
 }
 
 type loginResponse struct {
@@ -47,7 +48,13 @@ func (a *api) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		authedUser, sessionId, err := a.db.AuthUser(r.Context(), strings.ToLower(u.Email), u.Password)
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		authedUser, sessionId, err := a.db.AuthUser(r.Context(), u.Email, u.Password)
 		if err != nil {
 			userErr := err.Error()
 			if userErr == "USER_NOT_FOUND" || userErr == "INVALID_PASSWORD" || userErr == "USER_DISABLED" {
@@ -106,7 +113,13 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 			return
 		}
 
-		authedUser, sessionId, err := a.authAndCreateUserLdap(r.Context(), strings.ToLower(u.Email), u.Password)
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		authedUser, sessionId, err := a.authAndCreateUserLdap(r.Context(), u.Email, u.Password)
 		if err != nil {
 			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
@@ -134,8 +147,8 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 }
 
 type mfaLoginRequestBody struct {
-	Passcode  string `json:"passcode"`
-	SessionId string `json:"sessionId"`
+	Passcode  string `json:"passcode" validate:"required"`
+	SessionId string `json:"sessionId" validate:"required"`
 }
 
 // handleMFALogin attempts to log in the user with MFA token
@@ -160,6 +173,12 @@ func (a *api) handleMFALogin() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -205,7 +224,7 @@ func (a *api) handleLogout() http.HandlerFunc {
 }
 
 type guestUserCreateRequestBody struct {
-	Name string `json:"name"`
+	Name string `json:"name" validate:"required"`
 }
 
 // handleCreateGuestUser registers a user as a guest user
@@ -239,6 +258,12 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 			return
 		}
 
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
 		newUser, err := a.db.CreateUserGuest(r.Context(), u.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
@@ -256,10 +281,10 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 }
 
 type userRegisterRequestBody struct {
-	Name      string `json:"name"`
-	Email     string `json:"email"`
-	Password1 string `json:"password1"`
-	Password2 string `json:"password2"`
+	Name      string `json:"name" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password1 string `json:"password1" validate:"required,min=6,max=72"`
+	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
 
 // handleUserRegistration registers a new authenticated user
@@ -292,11 +317,17 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 			return
 		}
 
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
 		ActiveUserID, _ := a.validateUserCookie(w, r)
 
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
 			u.Name,
-			strings.ToLower(u.Email),
+			u.Email,
 			u.Password1,
 			u.Password2,
 		)
@@ -329,7 +360,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 }
 
 type forgotPasswordRequestBody struct {
-	Email string `json:"email"`
+	Email string `json:"email" validate:"required,email"`
 }
 
 // handleForgotPassword attempts to send a password reset email
@@ -355,6 +386,12 @@ func (a *api) handleForgotPassword() http.HandlerFunc {
 			return
 		}
 
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
 		UserEmail := strings.ToLower(u.Email)
 
 		ResetID, UserName, resetErr := a.db.UserResetRequest(r.Context(), UserEmail)
@@ -367,9 +404,9 @@ func (a *api) handleForgotPassword() http.HandlerFunc {
 }
 
 type resetPasswordRequestBody struct {
-	ResetID   string `json:"resetId"`
-	Password1 string `json:"password1"`
-	Password2 string `json:"password2"`
+	ResetID   string `json:"resetId" validate:"required"`
+	Password1 string `json:"password1" validate:"required,min=6,max=72"`
+	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
 
 // handleResetPassword attempts to reset a user's password
@@ -397,17 +434,13 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		UserPassword, passwordErr := validateUserPassword(
-			u.Password1,
-			u.Password2,
-		)
-
-		if passwordErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, passwordErr)
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		UserName, UserEmail, resetErr := a.db.UserResetPassword(r.Context(), u.ResetID, UserPassword)
+		UserName, UserEmail, resetErr := a.db.UserResetPassword(r.Context(), u.ResetID, u.Password1)
 		if resetErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, resetErr)
 			return
@@ -420,8 +453,8 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 }
 
 type updatePasswordRequestBody struct {
-	Password1 string `json:"password1"`
-	Password2 string `json:"password2"`
+	Password1 string `json:"password1" validate:"required,min=6,max=72"`
+	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
 
 // handleUpdatePassword attempts to update a user's password
@@ -451,17 +484,13 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		UserPassword, passwordErr := validateUserPassword(
-			u.Password1,
-			u.Password2,
-		)
-
-		if passwordErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, passwordErr)
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(r.Context(), UserID, UserPassword)
+		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
@@ -474,7 +503,7 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 }
 
 type verificationRequestBody struct {
-	VerifyID string `json:"verifyId"`
+	VerifyID string `json:"verifyId" validate:"required"`
 }
 
 // handleAccountVerification attempts to verify a users account
@@ -498,6 +527,12 @@ func (a *api) handleAccountVerification() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -540,8 +575,8 @@ func (a *api) handleMFASetupGenerate() http.HandlerFunc {
 }
 
 type mfaSetupValidateRequestBody struct {
-	Secret   string `json:"secret"`
-	Passcode string `json:"passcode"`
+	Secret   string `json:"secret" validate:"required"`
+	Passcode string `json:"passcode" validate:"required"`
 }
 
 // handleMFASetupValidate validates the passcode for MFA secret during setup
@@ -566,6 +601,12 @@ func (a *api) handleMFASetupValidate() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &v)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(v)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 

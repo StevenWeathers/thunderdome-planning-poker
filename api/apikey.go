@@ -23,6 +23,11 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		APIKeys, keysErr := a.db.GetUserApiKeys(r.Context(), UserID)
 		if keysErr != nil {
@@ -35,7 +40,7 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 }
 
 type apikeyGenerateRequestBody struct {
-	Name string `json:"name"`
+	Name string `json:"name" validate:"required"`
 }
 
 // handleAPIKeyGenerate handles generating an API key for a user
@@ -55,6 +60,11 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		ctx := r.Context()
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -66,6 +76,12 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &k)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(k)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -91,7 +107,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 }
 
 type apikeyUpdateRequestBody struct {
-	Active bool `json:"active"`
+	Active bool `json:"active" validate:"required,boolean"`
 }
 
 // handleUserAPIKeyUpdate handles updating a users API key
@@ -111,6 +127,11 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		APK := vars["keyID"]
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -123,6 +144,12 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &k)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(k)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -152,6 +179,11 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		APK := vars["keyID"]
 
 		APIKeys, keysErr := a.db.DeleteUserApiKey(r.Context(), UserID, APK)

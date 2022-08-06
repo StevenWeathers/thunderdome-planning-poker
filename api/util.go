@@ -15,7 +15,6 @@ import (
 	"github.com/go-ldap/ldap/v3"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 type userAccount struct {
@@ -30,12 +29,11 @@ type userPassword struct {
 
 // validateUserAccount makes sure user's name, email are valid before creating the account
 func validateUserAccount(name string, email string) (UserName string, UserEmail string, validateErr error) {
-	v := validator.New()
 	a := userAccount{
 		Name:  name,
 		Email: email,
 	}
-	aErr := v.Struct(a)
+	aErr := validate.Struct(a)
 	if aErr != nil {
 		return "", "", aErr
 	}
@@ -45,7 +43,6 @@ func validateUserAccount(name string, email string) (UserName string, UserEmail 
 
 // validateUserAccountWithPasswords makes sure user's name, email, and password are valid before creating the account
 func validateUserAccountWithPasswords(name string, email string, pwd1 string, pwd2 string) (UserName string, UserEmail string, UpdatedPassword string, validateErr error) {
-	v := validator.New()
 	a := userAccount{
 		Name:  name,
 		Email: email,
@@ -54,11 +51,11 @@ func validateUserAccountWithPasswords(name string, email string, pwd1 string, pw
 		Password1: pwd1,
 		Password2: pwd2,
 	}
-	aErr := v.Struct(a)
+	aErr := validate.Struct(a)
 	if aErr != nil {
 		return "", "", "", aErr
 	}
-	pErr := v.Struct(p)
+	pErr := validate.Struct(p)
 	if pErr != nil {
 		return "", "", "", pErr
 	}
@@ -68,12 +65,11 @@ func validateUserAccountWithPasswords(name string, email string, pwd1 string, pw
 
 // validateUserPassword makes sure user password is valid before updating the password
 func validateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, validateErr error) {
-	v := validator.New()
 	a := userPassword{
 		Password1: pwd1,
 		Password2: pwd2,
 	}
-	err := v.Struct(a)
+	err := validate.Struct(a)
 
 	return pwd1, err
 }
@@ -285,10 +281,9 @@ func getLimitOffsetFromRequest(r *http.Request) (limit int, offset int) {
 
 // getSearchFromRequest gets the search query parameter from the request
 func getSearchFromRequest(r *http.Request) (search string, err error) {
-	v := validator.New()
 	query := r.URL.Query()
 	Search := query.Get("search")
-	searchErr := v.Var(Search, "required,min=3")
+	searchErr := validate.Var(Search, "required,min=3")
 	if searchErr != nil {
 		return "", searchErr
 	}

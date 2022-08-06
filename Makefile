@@ -6,6 +6,7 @@ GOBUILD=$(GOCMD) build
 SWAGGERGEN=swag init -g api/api.go -o swaggerdocs
 SWAGGERDOCS=swaggerdocs
 GOFMT=gofmt
+GOIMPORTS=goimports
 BINARY_NAME=thunderdome-planning-poker
 BINARY_UNIX=$(BINARY_NAME)_unix
 BINARY_WINDOWS=thunderdome-planning-poker.exe
@@ -31,6 +32,7 @@ clean:
 
 format:
 	$(GOFMT) -s -w */*.go
+	$(GOIMPORTS) -w */*.go
 
 testgo:
 	go test `go list ./... | grep -v swaggerdocs`
