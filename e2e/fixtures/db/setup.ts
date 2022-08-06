@@ -1,4 +1,4 @@
-import {Pool} from 'pg'
+import { Pool } from 'pg'
 
 export const setupDB = function (db) {
     return new Pool({
@@ -7,5 +7,5 @@ export const setupDB = function (db) {
         database: db.name,
         password: db.pass,
         port: db.port,
-    });
+    })
 }

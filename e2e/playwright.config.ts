@@ -1,7 +1,7 @@
-import type { PlaywrightTestConfig } from '@playwright/test';
-import { devices } from '@playwright/test';
+import type { PlaywrightTestConfig } from '@playwright/test'
+import { devices } from '@playwright/test'
 
-export const baseUrl = 'http://localhost:8080';
+export const baseUrl = 'http://localhost:8080'
 
 /**
  * Read environment variables from file.
@@ -106,6 +106,6 @@ const config: PlaywrightTestConfig = {
     //   command: 'npm run start',
     //   port: 3000,
     // },
-};
+}
 
-export default config;
+export default config
