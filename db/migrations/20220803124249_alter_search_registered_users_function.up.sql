@@ -31,7 +31,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP FUNCTION add_battle_leaders_by_email(UUID,TEXT,JSONB);
 CREATE OR REPLACE FUNCTION add_battle_leaders_by_email(
     IN battleId UUID,
     IN leaderEmails TEXT,
