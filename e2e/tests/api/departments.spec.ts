@@ -40,7 +40,7 @@ test.afterAll(async ({}) => {
 
 test.describe('registered user', () => {
     test(`GET /organizations/{orgId}/departments should return empty array when no departments associated to user`, async () => {
-        const o = await apiContext.post(`users/${user.id}/organizations`, {
+        const o = await adminApiContext.post(`users/${user.id}/organizations`, {
             data: {
                 name: 'Test API Create Organization',
             },
