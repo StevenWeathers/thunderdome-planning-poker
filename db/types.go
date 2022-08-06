@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"github.com/microcosm-cc/bluemonday"

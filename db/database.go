@@ -5,6 +5,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"github.com/XSAM/otelsql"

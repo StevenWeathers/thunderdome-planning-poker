@@ -4,11 +4,12 @@ package email
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/mail"
 	"net/smtp"
 	"strconv"
 	"time"
+
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"github.com/matcornic/hermes/v2"
 	"github.com/spf13/viper"
