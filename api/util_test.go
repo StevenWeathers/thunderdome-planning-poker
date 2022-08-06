@@ -2,7 +2,13 @@ package api
 
 import (
 	"testing"
+
+	"github.com/go-playground/validator/v10"
 )
+
+func TestMain(m *testing.M) {
+	validate = validator.New()
+}
 
 // TestValidUserAccount calls validateUserAccountWithPasswords with valid user inputs for name, email, password1, and password2
 func TestValidUserAccount(t *testing.T) {

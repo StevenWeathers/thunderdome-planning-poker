@@ -19,8 +19,8 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 	var passHash string
 
 	e := d.db.QueryRow(
-		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE email = $1`,
-		UserEmail,
+		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE LOWER(email) = $1`,
+		sanitizeEmail(UserEmail),
 	).Scan(
 		&user.Id,
 		&user.Name,
@@ -76,7 +76,7 @@ func (d *Database) UserResetRequest(UserEmail string) (resetID string, UserName 
 	e := d.db.QueryRow(`
 		SELECT resetId, userId, userName FROM insert_user_reset($1);
 		`,
-		UserEmail,
+		sanitizeEmail(UserEmail),
 	).Scan(&ResetID, &UserID, &name)
 	if e != nil {
 		d.logger.Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))

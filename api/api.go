@@ -9,12 +9,15 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/email"
 	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"github.com/spf13/viper"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 )
+
+var validate *validator.Validate
 
 // Config contains configuration values used by the APIs
 type Config struct {
@@ -109,6 +112,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	sb := storyboard.New(database, logger, a.validateSessionCookie, a.validateUserCookie)
 	checkinBroker := checkin.New()
 	swaggerJsonPath := "/" + a.config.PathPrefix + "swagger/doc.json"
+	validate = validator.New()
 
 	swaggerdocs.SwaggerInfo.BasePath = a.config.PathPrefix + "/api"
 	// swagger docs for external API when enabled
@@ -248,10 +252,10 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.departmentTeamUserOnly(a.handleBattleCreate()))).Methods("POST")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles", a.userOnly(a.orgTeamOnly(a.handleGetTeamBattles()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.orgTeamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.orgTeamOnly(a.handleBattleCreate()))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.orgTeamOnly(a.entityUserOnly(a.handleBattleCreate())))).Methods("POST")
 		teamRouter.HandleFunc("/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
 		teamRouter.HandleFunc("/{teamId}/battles/{battleId}", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
-		teamRouter.HandleFunc("/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.handleBattleCreate()))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleBattleCreate())))).Methods("POST")
 		apiRouter.HandleFunc("/maintenance/clean-battles", a.userOnly(a.adminOnly(a.handleCleanBattles()))).Methods("DELETE")
 		apiRouter.HandleFunc("/battles", a.userOnly(a.adminOnly(a.handleGetBattles()))).Methods("GET")
 		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetBattle())).Methods("GET")
@@ -269,11 +273,11 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retros", a.userOnly(a.orgTeamOnly(a.handleGetTeamRetros()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retro-actions", a.userOnly(a.orgTeamOnly(a.handleGetTeamRetroActions()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/retros/{retroId}", a.userOnly(a.orgTeamAdminOnly(a.handleTeamRemoveRetro()))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/retros", a.userOnly(a.orgTeamOnly(a.handleRetroCreate()))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/retros", a.userOnly(a.orgTeamOnly(a.entityUserOnly(a.handleRetroCreate())))).Methods("POST")
 		teamRouter.HandleFunc("/{teamId}/retros", a.userOnly(a.teamUserOnly(a.handleGetTeamRetros()))).Methods("GET")
 		teamRouter.HandleFunc("/{teamId}/retros/{retroId}", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveRetro()))).Methods("DELETE")
 		teamRouter.HandleFunc("/{teamId}/retro-actions", a.userOnly(a.teamUserOnly(a.handleGetTeamRetroActions()))).Methods("GET")
-		teamRouter.HandleFunc("/{teamId}/users/{userId}/retros", a.userOnly(a.teamUserOnly(a.handleRetroCreate()))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/users/{userId}/retros", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleRetroCreate())))).Methods("POST")
 		apiRouter.HandleFunc("/maintenance/clean-retros", a.userOnly(a.adminOnly(a.handleCleanRetros()))).Methods("DELETE")
 		apiRouter.HandleFunc("/retros", a.userOnly(a.adminOnly(a.handleGetRetros()))).Methods("GET")
 		apiRouter.HandleFunc("/retros/{retroId}", a.userOnly(a.handleRetroGet())).Methods("GET")
@@ -293,10 +297,10 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.departmentTeamUserOnly(a.handleStoryboardCreate()))).Methods("POST")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/storyboards", a.userOnly(a.orgTeamOnly(a.handleGetTeamStoryboards()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/storyboards/{storyboardId}", a.userOnly(a.orgTeamAdminOnly(a.handleTeamRemoveStoryboard()))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.orgTeamOnly(a.handleStoryboardCreate()))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/storyboards", a.userOnly(a.orgTeamOnly(a.entityUserOnly(a.handleStoryboardCreate())))).Methods("POST")
 		teamRouter.HandleFunc("/{teamId}/storyboards", a.userOnly(a.teamUserOnly(a.handleGetTeamStoryboards()))).Methods("GET")
 		teamRouter.HandleFunc("/{teamId}/storyboards/{storyboardId}", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveStoryboard()))).Methods("DELETE")
-		teamRouter.HandleFunc("/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.handleStoryboardCreate()))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/users/{userId}/storyboards", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleStoryboardCreate())))).Methods("POST")
 		apiRouter.HandleFunc("/maintenance/clean-storyboards", a.userOnly(a.adminOnly(a.handleCleanStoryboards()))).Methods("DELETE")
 		apiRouter.HandleFunc("/storyboards", a.userOnly(a.adminOnly(a.handleGetStoryboards()))).Methods("GET")
 		apiRouter.HandleFunc("/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardGet())).Methods("GET")

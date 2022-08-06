@@ -26,6 +26,11 @@ func (a *api) handleCheckinsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		query := r.URL.Query()
 		date := query.Get("date")
 		tz := query.Get("tz")
@@ -49,7 +54,7 @@ func (a *api) handleCheckinsGet() http.HandlerFunc {
 }
 
 type checkinCreateRequestBody struct {
-	UserId    string `json:"userId"`
+	UserId    string `json:"userId" validate:"required,uuid"`
 	Yesterday string `json:"yesterday"`
 	Today     string `json:"today"`
 	Blockers  string `json:"blockers"`
@@ -73,6 +78,11 @@ func (a *api) handleCheckinCreate(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
+		idErr := validate.Var(TeamId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var c = checkinCreateRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -84,6 +94,12 @@ func (a *api) handleCheckinCreate(broker *checkin.Broker) http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &c)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(c)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -128,7 +144,17 @@ func (a *api) handleCheckinUpdate(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
+		idErr := validate.Var(TeamId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		CheckinId := vars["checkinId"]
+		idErr = validate.Var(CheckinId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var c = checkinUpdateRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -171,7 +197,17 @@ func (a *api) handleCheckinDelete(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
+		idErr := validate.Var(TeamId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		CheckinId := vars["checkinId"]
+		idErr = validate.Var(CheckinId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.CheckinDelete(CheckinId)
 		if err != nil {
@@ -186,8 +222,8 @@ func (a *api) handleCheckinDelete(broker *checkin.Broker) http.HandlerFunc {
 }
 
 type checkinCommentRequestBody struct {
-	UserID  string `json:"userId"`
-	Comment string `json:"comment"`
+	UserID  string `json:"userId" validate:"required,uuid"`
+	Comment string `json:"comment" validate:"required"`
 }
 
 // handleCheckinComment handles creating a team user checkin comment
@@ -207,7 +243,17 @@ func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
+		idErr := validate.Var(TeamId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		CheckinId := vars["checkinId"]
+		idErr = validate.Var(CheckinId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var c = checkinCommentRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -219,6 +265,12 @@ func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &c)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(c)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -255,7 +307,17 @@ func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc 
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
+		idErr := validate.Var(TeamId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		CommentId := vars["commentId"]
+		idErr = validate.Var(CommentId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		var c = checkinCommentRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -267,6 +329,12 @@ func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc 
 		jsonErr := json.Unmarshal(body, &c)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(c)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -303,7 +371,17 @@ func (a *api) handleCheckinCommentDelete(broker *checkin.Broker) http.HandlerFun
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
+		idErr := validate.Var(TeamId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		CommentId := vars["commentId"]
+		idErr = validate.Var(CommentId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.CheckinCommentDelete(CommentId)
 		if err != nil {

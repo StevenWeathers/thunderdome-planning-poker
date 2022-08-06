@@ -11,7 +11,7 @@ import (
 )
 
 type storyboardCreateRequestBody struct {
-	StoryboardName  string `json:"storyboardName"`
+	StoryboardName  string `json:"storyboardName" validate:"required"`
 	JoinCode        string `json:"joinCode"`
 	FacilitatorCode string `json:"facilitatorCode"`
 }
@@ -50,6 +50,12 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &s)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(s)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -102,6 +108,11 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		StoryboardID := vars["storyboardId"]
+		idErr := validate.Var(StoryboardID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 

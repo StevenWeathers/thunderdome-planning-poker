@@ -48,11 +48,11 @@ func (a *api) handleGetUserBattles() http.HandlerFunc {
 }
 
 type battleRequestBody struct {
-	BattleName           string        `json:"name"`
-	PointValuesAllowed   []string      `json:"pointValuesAllowed"`
+	BattleName           string        `json:"name" validate:"required"`
+	PointValuesAllowed   []string      `json:"pointValuesAllowed" validate:"required"`
 	AutoFinishVoting     bool          `json:"autoFinishVoting"`
 	Plans                []*model.Plan `json:"plans"`
-	PointAverageRounding string        `json:"pointAverageRounding"`
+	PointAverageRounding string        `json:"pointAverageRounding" validate:"required,oneof=ceil round floor"`
 	BattleLeaders        []string      `json:"battleLeaders"`
 	JoinCode             string        `json:"joinCode"`
 	LeaderCode           string        `json:"leaderCode"`
@@ -92,6 +92,12 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		jsonErr := json.Unmarshal(body, &b)
 		if jsonErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(b)
+		if inputErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -196,6 +202,11 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleId := vars["battleId"]
+		idErr := validate.Var(BattleId, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
@@ -243,6 +254,11 @@ func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]
+		idErr := validate.Var(BattleID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := ioutil.ReadAll(r.Body)

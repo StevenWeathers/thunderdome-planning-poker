@@ -68,6 +68,11 @@ func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		EntityUserID := vars["userId"]
+		idErr := validate.Var(EntityUserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		if UserType != adminUserType && EntityUserID != UserID {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
@@ -113,6 +118,11 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		EntityUserID := vars["userId"]
+		idErr := validate.Var(EntityUserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		if UserType != adminUserType && (EntityUserID != UserID) {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
@@ -141,6 +151,11 @@ func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserType != adminUserType && UserErr != nil {
@@ -161,6 +176,11 @@ func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Role, UserErr := a.db.OrganizationUserRole(UserID, OrgID)
 		if UserType != adminUserType && UserErr != nil {
@@ -185,7 +205,17 @@ func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamID := vars["teamId"]
+		idErr = validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
@@ -207,7 +237,17 @@ func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamID := vars["teamId"]
+		idErr = validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(UserID, OrgID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
@@ -233,7 +273,17 @@ func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		DepartmentID := vars["departmentId"]
+		idErr = validate.Var(DepartmentID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserType != adminUserType && UserErr != nil {
@@ -255,7 +305,17 @@ func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		DepartmentID := vars["departmentId"]
+		idErr = validate.Var(DepartmentID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(UserID, OrgID, DepartmentID)
 		if UserType != adminUserType && UserErr != nil {
@@ -281,8 +341,23 @@ func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		DepartmentID := vars["departmentId"]
+		idErr = validate.Var(DepartmentID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamID := vars["teamId"]
+		idErr = validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
@@ -305,8 +380,23 @@ func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		OrgID := vars["orgId"]
+		idErr := validate.Var(OrgID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		DepartmentID := vars["departmentId"]
+		idErr = validate.Var(DepartmentID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 		TeamID := vars["teamId"]
+		idErr = validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		OrgRole, DepartmentRole, TeamRole, UserErr := a.db.DepartmentTeamUserRole(UserID, OrgID, DepartmentID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
@@ -334,6 +424,11 @@ func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserType != adminUserType && UserErr != nil {
@@ -354,6 +449,11 @@ func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 		TeamID := vars["teamId"]
+		idErr := validate.Var(TeamID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		Role, UserErr := a.db.TeamUserRole(UserID, TeamID)
 		if UserType != adminUserType && UserErr != nil {

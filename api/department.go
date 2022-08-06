@@ -210,6 +210,7 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 			return
 		}
 		vars := mux.Vars(r)
+		DepartmentID := vars["departmentId"]
 
 		var team = teamCreateRequestBody{}
 		body, bodyErr := ioutil.ReadAll(r.Body)
@@ -224,7 +225,6 @@ func (a *api) handleCreateDepartmentTeam() http.HandlerFunc {
 			return
 		}
 
-		DepartmentID := vars["departmentId"]
 		NewTeam, err := a.db.DepartmentTeamCreate(DepartmentID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
@@ -309,6 +309,11 @@ func (a *api) handleDepartmentRemoveUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		UserID := vars["userId"]
+		idErr := validate.Var(UserID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.DepartmentRemoveUser(DepartmentID, UserID)
 		if err != nil {
@@ -454,6 +459,11 @@ func (a *api) handleDeleteDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
+		idErr := validate.Var(DepartmentID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
 
 		err := a.db.DepartmentDelete(DepartmentID)
 		if err != nil {
