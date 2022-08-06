@@ -116,6 +116,10 @@ func (m *Email) generateBody(Body hermes.Body) (emailBody string, generateErr er
 
 // Send - utility function to send emails
 func (m *Email) Send(UserName string, UserEmail string, Subject string, Body string) error {
+	if !viper.GetBool("smtp.enabled") {
+		return nil
+	}
+
 	to := mail.Address{
 		Name:    UserName,
 		Address: UserEmail,
