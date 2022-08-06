@@ -89,7 +89,6 @@ test.describe('registered user', () => {
         const bs = await apiContext.get(`users/${user.id}/retros`)
         expect(bs.ok()).toBeTruthy()
         const retros = await bs.json()
-        console.log(retros)
         expect(retros.data).toContainEqual(
             expect.objectContaining({
                 name: retroName,
