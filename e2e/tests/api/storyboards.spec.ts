@@ -62,7 +62,7 @@ test.describe('registered user', () => {
         })
     })
 
-    test.only(`GET /users/{userId}/storyboards should return object in array when storyboards associated to user`, async () => {
+    test(`GET /users/{userId}/storyboards should return object in array when storyboards associated to user`, async () => {
         const storyboardName = 'Test API Storyboards'
 
         const b = await apiContext.post(`users/${user.id}/storyboards`, {

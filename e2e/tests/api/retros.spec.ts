@@ -70,7 +70,7 @@ test.describe('registered user', () => {
         })
     })
 
-    test.only(`GET /users/{userId}/retros should return object in array when retros associated to user`, async () => {
+    test(`GET /users/{userId}/retros should return object in array when retros associated to user`, async () => {
         const retroName = 'Test API Retros'
         const brainstormVisibility = 'hidden'
         const maxVotes = 3
