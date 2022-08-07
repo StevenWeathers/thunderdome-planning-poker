@@ -4,7 +4,7 @@
     import SolidButton from '../SolidButton.svelte'
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import { warrior as user } from '../../stores.js'
-    import { appRoutes } from '../../config.js'
+    import { AppConfig, appRoutes } from '../../config.js'
     import { _ } from '../../i18n.js'
 
     export let xfetch
@@ -97,7 +97,7 @@
 <form on:submit="{createRetro}" name="createRetro">
     <div class="mb-4">
         <label
-            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
             for="retroName"
         >
             {$_('retroName')}
@@ -119,10 +119,11 @@
     {#if apiPrefix === '/api'}
         <div class="mb-4">
             <label
-                class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
+                class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
                 for="selectedTeam"
             >
-                Associate Team (optional)
+                {$_('associateTeam')}
+                {#if !AppConfig.RequireTeams}{$_('optional')}{/if}
             </label>
             <div class="relative">
                 <select
@@ -133,7 +134,7 @@
                     id="selectedTeam"
                     name="selectedTeam"
                 >
-                    <option value="" disabled> Select a team</option>
+                    <option value="" disabled>{$_('selectTeam')}</option>
                     {#each teams as team}
                         <option value="{team.id}">
                             {team.name}
@@ -152,7 +153,7 @@
 
     <div class="mb-4">
         <label
-            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
             for="joinCode"
         >
             {$_('joinCodeLabelOptional')}
@@ -172,7 +173,7 @@
 
     <div class="mb-4">
         <label
-            class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
+            class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
             for="facilitatorCode"
         >
             {$_('facilitatorCodeOptional')}

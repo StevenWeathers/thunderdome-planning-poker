@@ -156,6 +156,41 @@
         </div>
     </div>
 
+    {#if apiPrefix === '/api'}
+        <div class="mb-4">
+            <label
+                class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
+                for="selectedTeam"
+            >
+                {$_('associateTeam')}
+                {#if !AppConfig.RequireTeams}{$_('optional')}{/if}
+            </label>
+            <div class="relative">
+                <select
+                    bind:value="{selectedTeam}"
+                    class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
+                    id="selectedTeam"
+                    name="selectedTeam"
+                >
+                    <option value="" disabled>{$_('selectTeam')}</option>
+                    {#each teams as team}
+                        <option value="{team.id}">
+                            {team.name}
+                        </option>
+                    {/each}
+                </select>
+                <div
+                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                items-center px-2 text-gray-700 dark:text-gray-400"
+                >
+                    <DownCarrotIcon />
+                </div>
+            </div>
+        </div>
+    {/if}
+
     <div class="mb-4">
         <h3
             class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
@@ -182,40 +217,6 @@
             {/each}
         </div>
     </div>
-
-    {#if apiPrefix === '/api'}
-        <div class="mb-4">
-            <label
-                class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-                for="selectedTeam"
-            >
-                Associate Team (optional)
-            </label>
-            <div class="relative">
-                <select
-                    bind:value="{selectedTeam}"
-                    class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
-                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
-                    id="selectedTeam"
-                    name="selectedTeam"
-                >
-                    <option value="" disabled> Select a team</option>
-                    {#each teams as team}
-                        <option value="{team.id}">
-                            {team.name}
-                        </option>
-                    {/each}
-                </select>
-                <div
-                    class="pointer-events-none absolute inset-y-0 right-0 flex
-                items-center px-2 text-gray-700 dark:text-gray-400"
-                >
-                    <DownCarrotIcon />
-                </div>
-            </div>
-        </div>
-    {/if}
 
     <div class="mb-4">
         <h3
@@ -263,7 +264,7 @@
 
     <div class="mb-4">
         <label
-            class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
+            class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
             for="averageRounding"
         >
             {$_('pages.myBattles.createBattle.fields.averageRounding.label')}
