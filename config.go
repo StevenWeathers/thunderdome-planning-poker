@@ -60,6 +60,7 @@ func InitConfig(logger *zap.Logger) {
 	viper.SetDefault("config.cleanup_retros_days_old", 180)
 	viper.SetDefault("config.cleanup_storyboards_days_old", 180)
 	viper.SetDefault("config.organizations_enabled", true)
+	viper.SetDefault("config.require_teams", false)
 
 	// feature flags
 	viper.SetDefault("feature.poker", true)
@@ -124,6 +125,7 @@ func InitConfig(logger *zap.Logger) {
 	viper.BindEnv("config.cleanup_retros_days_old", "CONFIG_CLEANUP_RETROS_DAYS_OLD")
 	viper.BindEnv("config.cleanup_storyboards_days_old", "CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD")
 	viper.BindEnv("config.organizations_enabled", "CONFIG_ORGANIZATIONS_ENABLED")
+	viper.BindEnv("config.require_teams", "CONFIG_REQUIRE_TEAMS")
 
 	viper.BindEnv("feature.poker", "FEATURE_POKER")
 	viper.BindEnv("feature.retro", "FEATURE_RETRO")

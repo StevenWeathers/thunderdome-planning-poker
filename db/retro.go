@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// RetroCreate adds a new retro to the db
+// RetroCreate adds a new retro
 func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*model.Retro, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
@@ -52,21 +52,60 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 		BrainstormVisibility,
 	).Scan(&b.Id)
 	if e != nil {
-		d.logger.Error("create retro error", zap.Error(e))
-		return nil, e
+		d.logger.Error("create_retro query error", zap.Error(e))
+		return nil, errors.New("error creating retro")
 	}
 
-	// if a join code is set than add owner to retro_user
-	// this prevents them from having to enter join code on initial create to enter
+	return b, nil
+}
+
+// TeamRetroCreate adds a new retro associated to a team
+func (d *Database) TeamRetroCreate(TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*model.Retro, error) {
+	var encryptedJoinCode string
+	var encryptedFacilitatorCode string
+
 	if JoinCode != "" {
-		if _, err := d.db.Exec(
-			`INSERT INTO retro_user (retro_id, user_id)
-		VALUES ($1, $2)`,
-			b.Id,
-			OwnerID,
-		); err != nil {
-			d.logger.Error("insert retro user error", zap.Error(err))
+		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, codeErr
 		}
+		encryptedJoinCode = EncryptedCode
+	}
+
+	if FacilitatorCode != "" {
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, codeErr
+		}
+		encryptedFacilitatorCode = EncryptedCode
+	}
+
+	var b = &model.Retro{
+		OwnerID:              OwnerID,
+		Name:                 RetroName,
+		Format:               Format,
+		Phase:                "intro",
+		Users:                make([]*model.RetroUser, 0),
+		Items:                make([]*model.RetroItem, 0),
+		ActionItems:          make([]*model.RetroAction, 0),
+		BrainstormVisibility: BrainstormVisibility,
+		MaxVotes:             MaxVotes,
+	}
+
+	e := d.db.QueryRow(
+		`SELECT * FROM team_create_retro($1, $2, $3, $4, $5, $6, $7, $8);`,
+		TeamID,
+		OwnerID,
+		RetroName,
+		Format,
+		encryptedJoinCode,
+		encryptedFacilitatorCode,
+		MaxVotes,
+		BrainstormVisibility,
+	).Scan(&b.Id)
+	if e != nil {
+		d.logger.Error("team_create_retro query error", zap.Error(e))
+		return nil, errors.New("error creating retro")
 	}
 
 	return b, nil

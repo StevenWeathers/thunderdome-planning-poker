@@ -382,3 +382,21 @@ func (a *api) authAndCreateUserLdap(UserName string, UserPassword string) (*mode
 
 	return AuthedUser, SessionId, nil
 }
+
+// isTeamUserOrAnAdmin determines if the request user is a team user
+// or team admin, or department admin (if applicable), or organization admin (if applicable), or application admin
+func isTeamUserOrAnAdmin(r *http.Request) bool {
+	UserType := r.Context().Value(contextKeyUserType).(string)
+	OrgRole := r.Context().Value(contextKeyOrgRole)
+	DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
+	TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+	var isAdmin = UserType == adminUserType
+	if DepartmentRole != nil && DepartmentRole.(string) == adminUserType {
+		isAdmin = true
+	}
+	if OrgRole != nil && OrgRole.(string) == adminUserType {
+		isAdmin = true
+	}
+
+	return isAdmin == true || TeamRole != ""
+}

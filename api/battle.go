@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -80,7 +81,12 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		TeamID, teamIdExists := vars["teamId"]
+
+		if !teamIdExists && viper.GetBool("config.require_teams") {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "BATTLE_CREATION_REQUIRES_TEAM"))
+			return
+		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -101,10 +107,26 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			return
 		}
 
-		newBattle, err := a.db.CreateBattle(UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
-		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
-			return
+		var newBattle *model.Battle
+		var err error
+		// if battle created with team association
+		if teamIdExists {
+			if isTeamUserOrAnAdmin(r) {
+				newBattle, err = a.db.TeamCreateBattle(TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
+				if err != nil {
+					a.Failure(w, r, http.StatusInternalServerError, err)
+					return
+				}
+			} else {
+				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				return
+			}
+		} else {
+			newBattle, err = a.db.CreateBattle(UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
+			if err != nil {
+				a.Failure(w, r, http.StatusInternalServerError, err)
+				return
+			}
 		}
 
 		// when battleLeaders array is passed add additional leaders to battle
@@ -114,30 +136,6 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 				a.logger.Error("error adding additional battle leaders")
 			} else {
 				newBattle.Leaders = updatedLeaders
-			}
-		}
-
-		// if battle created with team association
-		TeamID, ok := vars["teamId"]
-		if ok {
-			OrgRole := r.Context().Value(contextKeyOrgRole)
-			DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
-			TeamRole := r.Context().Value(contextKeyTeamRole).(string)
-			var isAdmin bool
-			if UserType != adminUserType || (DepartmentRole != nil && DepartmentRole.(string) == "ADMIN") {
-				isAdmin = true
-			}
-			if UserType != adminUserType || (OrgRole != nil && OrgRole.(string) == "ADMIN") {
-				isAdmin = true
-			}
-
-			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddBattle(TeamID, newBattle.Id)
-
-				if err != nil {
-					a.Failure(w, r, http.StatusInternalServerError, err)
-					return
-				}
 			}
 		}
 

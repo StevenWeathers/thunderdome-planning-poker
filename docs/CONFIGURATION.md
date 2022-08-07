@@ -47,15 +47,16 @@ Thunderdome uses a Postgres database to store all data, the following configurat
 
 Thunderdome sends emails for user registration related activities, the following configuration options exist:
 
-| Option                     | Environment Variable | Description                                | Default Value           |
-| -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
-| `smtp.host`                | SMTP_HOST            | Smtp server hostname.                      | localhost |
-| `smtp.port`                | SMTP_PORT            | Smtp server port number.                   | 25 |
-| `smtp.user`                | SMTP_USER            | Smtp server user.                          | |
-| `smtp.pass`                | SMTP_PASS            | Smtp server password.                      | |
-| `smtp.secure`              | SMTP_SECURE          | Set to authenticate with the Smtp server.  | true |
-| `smtp.identity`            | SMTP_IDENTITY        | Smtp server authorization identity. Usually unset. | |
-| `smtp.sender`              | SMTP_SENDER          | From address in emails sent by Thunderdome. | no-reply@thunderdome.dev |
+| Option          | Environment Variable | Description                                                              | Default Value            |
+|-----------------|----------------------|--------------------------------------------------------------------------|--------------------------|
+| `smtp.enabled`  | SMTP_ENABLED         | Whether or not sending emails (e.g. welcome, forgot password) is enabled | true                     |
+| `smtp.host`     | SMTP_HOST            | Smtp server hostname.                                                    | localhost                |
+| `smtp.port`     | SMTP_PORT            | Smtp server port number.                                                 | 25                       |
+| `smtp.user`     | SMTP_USER            | Smtp server user.                                                        |                          |
+| `smtp.pass`     | SMTP_PASS            | Smtp server password.                                                    |                          |
+| `smtp.secure`   | SMTP_SECURE          | Set to authenticate with the Smtp server.                                | true                     |
+| `smtp.identity` | SMTP_IDENTITY        | Smtp server authorization identity. Usually unset.                       |                          |
+| `smtp.sender`   | SMTP_SENDER          | From address in emails sent by Thunderdome.                              | no-reply@thunderdome.dev |
 
 ## Configure Admin Email
 
@@ -91,7 +92,8 @@ set that user as ADMIN role.
 | `config.cleanup_retros_days_old`      | CONFIG_CLEANUP_RETROS_DAYS_OLD      | How many days back to clean up old retros, e.g. retros older than 180 days. Triggered manually by Admins .           | 180                                    |
 | `config.cleanup_storyboards_days_old` | CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD | How many days back to clean up old storyboards, e.g. storyboards older than 180 days. Triggered manually by Admins . | 180                                    |
 | `config.cleanup_guests_days_old`      | CONFIG_CLEANUP_GUESTS_DAYS_OLD      | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins.            | 180                                    |
-| `config.organizations_enabled`        | CONFIG_ORGANIZATIONS_ENABLED        | Whether or not creating organizations (with departments) are enabled                                                 | true                                    |
+| `config.organizations_enabled`        | CONFIG_ORGANIZATIONS_ENABLED        | Whether or not creating organizations (with departments) are enabled                                                 | true                                   |
+| `config.require_teams`                | CONFIG_REQUIRE_TEAMS                | Whether or not creating battles, retros, and storyboards require being associated to a Team                          | false                                  |
 | `auth.method`                         | AUTH_METHOD                         | Choose `normal` or `ldap` as authentication method. See separate section on LDAP configuration.                      | normal                                 |
 | `feature.poker`                       | FEATURE_POKER                       | Enable or Disable Agile Story Pointing (Poker) feature                                                               | true                                   |
 | `feature.retro`                       | FEATURE_RETRO                       | Enable or Disable Agile Retrospectives feature                                                                       | true                                   |

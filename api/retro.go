@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -43,6 +44,12 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		TeamID, teamIdExists := vars["teamId"]
+
+		if !teamIdExists && viper.GetBool("config.require_teams") {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "RETRO_CREATION_REQUIRES_TEAM"))
+			return
+		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -63,33 +70,25 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 
-		newRetro, err := a.db.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
+		var newRetro *model.Retro
+		var err error
 		// if retro created with team association
-		TeamID, ok := vars["teamId"]
-		if ok {
-			OrgRole := r.Context().Value(contextKeyOrgRole)
-			DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
-			TeamRole := r.Context().Value(contextKeyTeamRole).(string)
-			var isAdmin bool
-			if DepartmentRole != nil && DepartmentRole.(string) == "ADMIN" {
-				isAdmin = true
-			}
-			if OrgRole != nil && OrgRole.(string) == "ADMIN" {
-				isAdmin = true
-			}
-
-			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddRetro(TeamID, newRetro.Id)
-
+		if teamIdExists {
+			if isTeamUserOrAnAdmin(r) {
+				newRetro, err = a.db.TeamRetroCreate(TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
+			} else {
+				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				return
+			}
+		} else {
+			newRetro, err = a.db.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
 		}
 
