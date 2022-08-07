@@ -5,7 +5,7 @@
     import HollowButton from '../HollowButton.svelte'
     import JiraImport from './JiraImport.svelte'
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
-    import { warrior } from '../../stores.js'
+    import { warrior as user } from '../../stores.js'
     import { _ } from '../../i18n.js'
     import { AppConfig, appRoutes } from '../../config.js'
 
@@ -25,6 +25,8 @@
     let pointAverageRounding = 'ceil'
     let joinCode = ''
     let leaderCode = ''
+    let selectedTeam = ''
+    let teams = []
 
     let checkedPointColor =
         'border-green-500 bg-green-100 text-green-600 dark:bg-gray-900 dark:text-lime-500 dark:border-lime-500'
@@ -65,6 +67,7 @@
 
     function createBattle(e) {
         e.preventDefault()
+        let endpoint = `${apiPrefix}/users/${$user.id}/battles`
 
         const pointValuesAllowed = allowedPointValues.filter(pv => {
             return points.includes(pv)
@@ -80,7 +83,11 @@
             leaderCode,
         }
 
-        xfetch(`${apiPrefix}/users/${$warrior.id}/battles`, { body })
+        if (selectedTeam !== '') {
+            endpoint = `/api/teams/${selectedTeam}/users/${$user.id}/battles`
+        }
+
+        xfetch(endpoint, { body })
             .then(res => res.json())
             .then(function (result) {
                 const battle = result.data
@@ -106,10 +113,22 @@
             })
     }
 
+    function getTeams() {
+        xfetch(`/api/users/${$user.id}/teams?limit=100`)
+            .then(res => res.json())
+            .then(function (result) {
+                teams = result.data
+            })
+            .catch(function () {
+                notifications.danger($_('getTeamsError'))
+            })
+    }
+
     onMount(() => {
-        if (!$warrior.id) {
+        if (!$user.id) {
             router.route(appRoutes.register)
         }
+        getTeams()
     })
 </script>
 
@@ -163,6 +182,40 @@
             {/each}
         </div>
     </div>
+
+    {#if apiPrefix === '/api'}
+        <div class="mb-4">
+            <label
+                class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
+                for="selectedTeam"
+            >
+                Associate Team (optional)
+            </label>
+            <div class="relative">
+                <select
+                    bind:value="{selectedTeam}"
+                    class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
+                    id="selectedTeam"
+                    name="selectedTeam"
+                >
+                    <option value="" disabled> Select a team</option>
+                    {#each teams as team}
+                        <option value="{team.id}">
+                            {team.name}
+                        </option>
+                    {/each}
+                </select>
+                <div
+                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                items-center px-2 text-gray-700 dark:text-gray-400"
+                >
+                    <DownCarrotIcon />
+                </div>
+            </div>
+        </div>
+    {/if}
 
     <div class="mb-4">
         <h3

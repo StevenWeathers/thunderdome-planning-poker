@@ -18,6 +18,8 @@
     let facilitatorCode = ''
     let maxVotes = 3
     let brainstormVisibility = 'visible'
+    let teams = []
+    let selectedTeam = ''
 
     const brainstormVisibilityOptions = [
         {
@@ -36,6 +38,7 @@
 
     function createRetro(e) {
         e.preventDefault()
+        let endpoint = `${apiPrefix}/users/${$user.id}/retros`
         const body = {
             retroName,
             format: 'worked_improve_question',
@@ -45,7 +48,11 @@
             brainstormVisibility,
         }
 
-        xfetch(`${apiPrefix}/users/${$user.id}/retros`, { body })
+        if (selectedTeam !== '') {
+            endpoint = `/api/teams/${selectedTeam}/users/${$user.id}/retros`
+        }
+
+        xfetch(endpoint, { body })
             .then(res => res.json())
             .then(function ({ data }) {
                 eventTag('create_retro', 'engagement', 'success', () => {
@@ -68,10 +75,22 @@
             })
     }
 
+    function getTeams() {
+        xfetch(`/api/users/${$user.id}/teams?limit=100`)
+            .then(res => res.json())
+            .then(function (result) {
+                teams = result.data
+            })
+            .catch(function () {
+                notifications.danger($_('getTeamsError'))
+            })
+    }
+
     onMount(() => {
         if (!$user.id) {
             router.route(appRoutes.register)
         }
+        getTeams()
     })
 </script>
 
@@ -96,6 +115,40 @@
             />
         </div>
     </div>
+
+    {#if apiPrefix === '/api'}
+        <div class="mb-4">
+            <label
+                class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
+                for="selectedTeam"
+            >
+                Associate Team (optional)
+            </label>
+            <div class="relative">
+                <select
+                    bind:value="{selectedTeam}"
+                    class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
+                    id="selectedTeam"
+                    name="selectedTeam"
+                >
+                    <option value="" disabled> Select a team</option>
+                    {#each teams as team}
+                        <option value="{team.id}">
+                            {team.name}
+                        </option>
+                    {/each}
+                </select>
+                <div
+                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                items-center px-2 text-gray-700 dark:text-gray-400"
+                >
+                    <DownCarrotIcon />
+                </div>
+            </div>
+        </div>
+    {/if}
 
     <div class="mb-4">
         <label
