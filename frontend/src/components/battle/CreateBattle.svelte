@@ -88,10 +88,20 @@
                     router.route(`${appRoutes.battle}/${battle.id}`)
                 })
             })
-            .catch(function () {
-                notifications.danger(
-                    $_('pages.myBattles.createBattle.createError'),
-                )
+            .catch(function (error) {
+                if (Array.isArray(error)) {
+                    error[1].json().then(function (result) {
+                        notifications.danger(
+                            `${$_(
+                                'pages.myBattles.createBattle.createError',
+                            )} : ${result.error}`,
+                        )
+                    })
+                } else {
+                    notifications.danger(
+                        $_('pages.myBattles.createBattle.createError'),
+                    )
+                }
                 eventTag('create_battle', 'engagement', 'failure')
             })
     }

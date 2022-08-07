@@ -53,7 +53,17 @@
                 })
             })
             .catch(function (error) {
-                notifications.danger($_('createRetroErrorMessage'))
+                if (Array.isArray(error)) {
+                    error[1].json().then(function (result) {
+                        notifications.danger(
+                            `${$_('createRetroErrorMessage')} : ${
+                                result.error
+                            }`,
+                        )
+                    })
+                } else {
+                    notifications.danger($_('createRetroErrorMessage'))
+                }
                 eventTag('create_retro', 'engagement', 'failure')
             })
     }
