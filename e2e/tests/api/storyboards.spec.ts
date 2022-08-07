@@ -81,4 +81,38 @@ test.describe('registered user', () => {
             }),
         )
     })
+
+    test(`POST /teams/{teamId}/users/{userId}/storyboards should create storyboard`, async () => {
+        const storyboardName = 'Test API Create Team Storyboard'
+
+        const t = await apiContext.post(`users/${user.id}/teams`, {
+            data: {
+                name: 'test team create retro',
+            },
+        })
+        const { data: team } = await t.json()
+
+        const b = await apiContext.post(
+            `teams/${team.id}/users/${user.id}/storyboards`,
+            {
+                data: {
+                    storyboardName,
+                },
+            },
+        )
+        expect(b.ok()).toBeTruthy()
+        const storyboard = await b.json()
+        expect(storyboard.data).toMatchObject({
+            name: storyboardName,
+        })
+
+        const bs = await apiContext.get(`teams/${team.id}/storyboards`)
+        expect(bs.ok()).toBeTruthy()
+        const storyboards = await bs.json()
+        expect(storyboards.data).toContainEqual(
+            expect.objectContaining({
+                name: storyboardName,
+            }),
+        )
+    })
 })

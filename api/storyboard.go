@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -38,7 +39,12 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
-		UserType := r.Context().Value(contextKeyUserType).(string)
+		TeamID, teamIdExists := vars["teamId"]
+
+		if !teamIdExists && viper.GetBool("config.require_teams") {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "STORYBOARD_CREATION_REQUIRES_TEAM"))
+			return
+		}
 
 		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
@@ -59,33 +65,25 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 			return
 		}
 
-		newStoryboard, err := a.db.CreateStoryboard(UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
-		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
+		var newStoryboard *model.Storyboard
+		var err error
 		// if storyboard created with team association
-		TeamID, ok := vars["teamId"]
-		if ok {
-			OrgRole := r.Context().Value(contextKeyOrgRole)
-			DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
-			TeamRole := r.Context().Value(contextKeyTeamRole).(string)
-			var isAdmin bool
-			if UserType != adminUserType || (DepartmentRole != nil && DepartmentRole.(string) == "ADMIN") {
-				isAdmin = true
-			}
-			if UserType != adminUserType || (OrgRole != nil && OrgRole.(string) == "ADMIN") {
-				isAdmin = true
-			}
-
-			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddStoryboard(TeamID, newStoryboard.Id)
-
+		if teamIdExists {
+			if isTeamUserOrAnAdmin(r) {
+				newStoryboard, err = a.db.TeamCreateStoryboard(TeamID, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
 					return
 				}
+			} else {
+				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				return
+			}
+		} else {
+			newStoryboard, err = a.db.CreateStoryboard(UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+			if err != nil {
+				a.Failure(w, r, http.StatusInternalServerError, err)
+				return
 			}
 		}
 

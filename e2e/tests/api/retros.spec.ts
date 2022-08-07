@@ -95,4 +95,44 @@ test.describe('registered user', () => {
             }),
         )
     })
+
+    test(`POST /teams/{teamId}/users/{userId}/retros should create retro`, async () => {
+        const retroName = 'Test API Create Team Retro'
+        const brainstormVisibility = 'hidden'
+        const maxVotes = 3
+        const format = 'worked_improve_question'
+
+        const t = await apiContext.post(`users/${user.id}/teams`, {
+            data: {
+                name: 'test team create retro',
+            },
+        })
+        const { data: team } = await t.json()
+
+        const b = await apiContext.post(
+            `teams/${team.id}/users/${user.id}/retros`,
+            {
+                data: {
+                    retroName,
+                    brainstormVisibility,
+                    maxVotes,
+                    format,
+                },
+            },
+        )
+        expect(b.ok()).toBeTruthy()
+        const retro = await b.json()
+        expect(retro.data).toMatchObject({
+            name: retroName,
+        })
+
+        const bs = await apiContext.get(`teams/${team.id}/retros`)
+        expect(bs.ok()).toBeTruthy()
+        const retros = await bs.json()
+        expect(retros.data).toContainEqual(
+            expect.objectContaining({
+                name: retroName,
+            }),
+        )
+    })
 })

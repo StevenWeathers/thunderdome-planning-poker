@@ -84,6 +84,81 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 	return b, nil
 }
 
+//TeamCreateBattle creates a new story pointing session (battle) associated to a team
+func (d *Database) TeamCreateBattle(TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) (*model.Battle, error) {
+	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
+	var encryptedJoinCode string
+	var encryptedLeaderCode string
+
+	if JoinCode != "" {
+		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, errors.New("unable to create battle join_code")
+		}
+		encryptedJoinCode = EncryptedCode
+	}
+
+	if LeaderCode != "" {
+		EncryptedCode, codeErr := encrypt(LeaderCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, errors.New("unable to create battle leader_code")
+		}
+		encryptedLeaderCode = EncryptedCode
+	}
+
+	var b = &model.Battle{
+		Name:                 BattleName,
+		Users:                make([]*model.BattleUser, 0),
+		Plans:                make([]*model.Plan, 0),
+		VotingLocked:         true,
+		PointValuesAllowed:   PointValuesAllowed,
+		AutoFinishVoting:     AutoFinishVoting,
+		PointAverageRounding: PointAverageRounding,
+		Leaders:              make([]string, 0),
+		JoinCode:             JoinCode,
+		LeaderCode:           LeaderCode,
+	}
+	b.Leaders = append(b.Leaders, LeaderID)
+
+	e := d.db.QueryRow(
+		`SELECT battleId FROM team_create_battle($1, $2, $3, $4, $5, $6, $7, $8);`,
+		TeamID,
+		LeaderID,
+		BattleName,
+		string(pointValuesJSON),
+		AutoFinishVoting,
+		PointAverageRounding,
+		encryptedJoinCode,
+		encryptedLeaderCode,
+	).Scan(&b.Id)
+	if e != nil {
+		d.logger.Error("team_create_battle query error", zap.Error(e))
+		return nil, errors.New("error creating battle")
+	}
+
+	for _, plan := range Plans {
+		plan.Votes = make([]*model.Vote, 0)
+
+		e := d.db.QueryRow(
+			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+			b.Id,
+			plan.Name,
+			plan.Type,
+			plan.ReferenceId,
+			plan.Link,
+			plan.Description,
+			plan.AcceptanceCriteria,
+		).Scan(&plan.Id)
+		if e != nil {
+			d.logger.Error("insert plans error", zap.Error(e))
+		}
+	}
+
+	b.Plans = Plans
+
+	return b, nil
+}
+
 // ReviseBattle updates the battle by ID
 func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) error {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
