@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -81,7 +81,7 @@ type userCreateRequestBody struct {
 func (a *api) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user = userCreateRequestBody{}
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 			return
@@ -254,7 +254,7 @@ func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
 			return
 		}
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"github.com/spf13/viper"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -88,7 +88,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			return
 		}
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -259,7 +259,7 @@ func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

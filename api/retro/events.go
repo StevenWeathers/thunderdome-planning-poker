@@ -12,7 +12,10 @@ func (b *Service) CreateItem(RetroID string, UserID string, EventValue string) (
 		Content string `json:"content"`
 		Phase   string `json:"phase"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	items, err := b.db.CreateRetroItem(RetroID, UserID, rs.Type, rs.Content)
 	if err != nil {
@@ -31,7 +34,10 @@ func (b *Service) GroupItem(RetroID string, UserID string, EventValue string) ([
 		ItemId  string `json:"itemId"`
 		GroupId string `json:"groupId"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	items, err := b.db.GroupRetroItem(RetroID, rs.ItemId, rs.GroupId)
 	if err != nil {
@@ -51,7 +57,10 @@ func (b *Service) DeleteItem(RetroID string, UserID string, EventValue string) (
 		Phase  string `json:"phase"`
 		Type   string `json:"type"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	items, err := b.db.DeleteRetroItem(RetroID, UserID, rs.Type, rs.ItemID)
 	if err != nil {
@@ -70,7 +79,10 @@ func (b *Service) GroupNameChange(RetroID string, UserID string, EventValue stri
 		GroupId string `json:"groupId"`
 		Name    string `json:"name"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	groups, err := b.db.GroupNameChange(RetroID, rs.GroupId, rs.Name)
 	if err != nil {
@@ -88,7 +100,10 @@ func (b *Service) GroupUserVote(RetroID string, UserID string, EventValue string
 	var rs struct {
 		GroupId string `json:"groupId"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	vc, vcErr := b.db.RetroUserVoteCount(RetroID, UserID)
 	if vcErr != nil {
@@ -114,7 +129,10 @@ func (b *Service) GroupUserSubtractVote(RetroID string, UserID string, EventValu
 	var rs struct {
 		GroupId string `json:"groupId"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	votes, err := b.db.GroupUserSubtractVote(RetroID, rs.GroupId, UserID)
 	if err != nil {
@@ -132,7 +150,10 @@ func (b *Service) CreateAction(RetroID string, UserID string, EventValue string)
 	var rs struct {
 		Content string `json:"content"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	items, err := b.db.CreateRetroAction(RetroID, UserID, rs.Content)
 	if err != nil {
@@ -152,7 +173,10 @@ func (b *Service) UpdateAction(RetroID string, UserID string, EventValue string)
 		Completed bool   `json:"completed"`
 		Content   string `json:"content"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	items, err := b.db.UpdateRetroAction(RetroID, rs.ActionID, rs.Content, rs.Completed)
 	if err != nil {
@@ -170,7 +194,10 @@ func (b *Service) DeleteAction(RetroID string, UserID string, EventValue string)
 	var rs struct {
 		ActionID string `json:"id"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	items, err := b.db.DeleteRetroAction(RetroID, UserID, rs.ActionID)
 	if err != nil {
@@ -188,7 +215,10 @@ func (b *Service) AdvancePhase(RetroID string, UserID string, EventValue string)
 	var rs struct {
 		Phase string `json:"phase"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	retro, err := b.db.RetroAdvancePhase(RetroID, rs.Phase)
 	if err != nil {
@@ -206,7 +236,10 @@ func (b *Service) FacilitatorAdd(RetroID string, UserID string, EventValue strin
 	var rs struct {
 		UserID string `json:"userId"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	facilitators, err := b.db.RetroFacilitatorAdd(RetroID, rs.UserID)
 	if err != nil {
@@ -224,7 +257,10 @@ func (b *Service) FacilitatorRemove(RetroID string, UserID string, EventValue st
 	var rs struct {
 		UserID string `json:"userId"`
 	}
-	json.Unmarshal([]byte(EventValue), &rs)
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
 
 	facilitators, err := b.db.RetroFacilitatorRemove(RetroID, rs.UserID)
 	if err != nil {
@@ -268,9 +304,12 @@ func (b *Service) EditRetro(RetroID string, UserID string, EventValue string) ([
 		MaxVotes             int    `json:"maxVotes"`
 		BrainstormVisibility string `json:"brainstormVisibility"`
 	}
-	json.Unmarshal([]byte(EventValue), &rb)
+	err := json.Unmarshal([]byte(EventValue), &rb)
+	if err != nil {
+		return nil, err, false
+	}
 
-	err := b.db.EditRetro(
+	err = b.db.EditRetro(
 		RetroID,
 		rb.Name,
 		rb.JoinCode,
@@ -301,7 +340,10 @@ func (b *Service) Delete(RetroID string, UserID string, EventValue string) ([]by
 
 // Abandon handles setting abandoned true so retro doesn't show up in users retro list, then leaves retro
 func (b *Service) Abandon(RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
-	b.db.RetroAbandon(RetroID, UserID)
+	_, err := b.db.RetroAbandon(RetroID, UserID)
+	if err != nil {
+		return nil, err, false
+	}
 
 	return nil, errors.New("ABANDONED_RETRO"), true
 }

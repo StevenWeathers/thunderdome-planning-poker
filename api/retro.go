@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"github.com/spf13/viper"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -51,7 +51,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -227,7 +227,7 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 		ActionID := vars["actionId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -336,7 +336,7 @@ func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
 		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -401,7 +401,7 @@ func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
 			return
 		}
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

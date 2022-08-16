@@ -5,19 +5,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// FilterItemsByUser filters the list of items by userId
-func (d *Database) FilterItemsByUser(UserID string, Items []*model.RetroItem) []*model.RetroItem {
-	filteredItems := make([]*model.RetroItem, 0)
-
-	for _, item := range Items {
-		if item.UserID == UserID {
-			filteredItems = append(filteredItems, item)
-		}
-	}
-
-	return filteredItems
-}
-
 // CreateRetroItem adds a feedback item to the retro
 func (d *Database) CreateRetroItem(RetroID string, UserID string, ItemType string, Content string) ([]*model.RetroItem, error) {
 	var groupId string

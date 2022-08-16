@@ -63,6 +63,9 @@ func New(AdminEmail string, config *Config, logger *zap.Logger) *Database {
 		dms,
 		"postgres",
 		driver)
+	if err != nil {
+		d.logger.Error("new db migration instance", zap.Error(err))
+	}
 	if err := m.Up(); err != nil && err.Error() != "no change" {
 		d.logger.Error("db migration up error", zap.Error(err))
 	}

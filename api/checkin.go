@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -85,7 +85,7 @@ func (a *api) handleCheckinCreate(broker *checkin.Broker) http.HandlerFunc {
 		}
 
 		var c = checkinCreateRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -157,7 +157,7 @@ func (a *api) handleCheckinUpdate(broker *checkin.Broker) http.HandlerFunc {
 		}
 
 		var c = checkinUpdateRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -256,7 +256,7 @@ func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 		}
 
 		var c = checkinCommentRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -320,7 +320,7 @@ func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc 
 		}
 
 		var c = checkinCommentRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

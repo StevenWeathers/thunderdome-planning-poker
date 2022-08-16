@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -88,7 +88,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 		UserID := vars["userId"]
 
 		var profile = userprofileUpdateRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -119,7 +119,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 			}
 		} else {
 			var updateErr error
-			if a.config.LdapEnabled == false {
+			if !a.config.LdapEnabled {
 				if profile.Name == "" {
 					a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 					return
