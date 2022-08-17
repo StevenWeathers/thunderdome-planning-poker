@@ -73,10 +73,10 @@ jobs:
       - name: Build
         run: go build -v .
 
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.29
+      #      - name: golangci-lint
+      #        uses: golangci/golangci-lint-action@v3
+      #        with:
+      #          version: v1.29
 
       - name: Run Thunderdome application
         run: ./thunderdome-planning-poker &
