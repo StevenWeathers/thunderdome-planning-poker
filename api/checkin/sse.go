@@ -16,15 +16,21 @@ type Message struct {
 
 // Subscription holds the users sse connection
 type Subscription struct {
-	send  chan Message
+	conn  *connection
 	arena string
+}
+
+// connection is a middleman between the sse connection and the hub.
+type connection struct {
+	// Buffered channel of outbound messages.
+	send chan Message
 }
 
 // Broker maintains the set of active connections and broadcasts messages to the
 // connections.
 type Broker struct {
 	// Registered connections.
-	arenas map[string]map[chan Message]struct{}
+	arenas map[string]map[*connection]struct{}
 	// Inbound messages from the connections.
 	broadcast chan Message
 	// Register requests from the connections.
@@ -37,7 +43,7 @@ var b = &Broker{
 	broadcast:  make(chan Message),
 	register:   make(chan Subscription),
 	unregister: make(chan Subscription),
-	arenas:     make(map[string]map[chan Message]struct{}),
+	arenas:     make(map[string]map[*connection]struct{}),
 }
 
 // New returns a new checkin with sse broker
@@ -64,7 +70,9 @@ func (broker *Broker) Stream(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 
 	s := Subscription{
-		send:  make(chan Message),
+		conn: &connection{
+			send: make(chan Message),
+		},
 		arena: TeamId,
 	}
 	b.register <- s
@@ -84,7 +92,7 @@ func (broker *Broker) Stream(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		select {
-		case m, ok := <-s.send:
+		case m, ok := <-s.conn.send:
 			if !ok {
 				return
 			}
@@ -105,16 +113,16 @@ func (broker *Broker) listen() {
 		case a := <-b.register:
 			connections := b.arenas[a.arena]
 			if connections == nil {
-				connections = make(map[chan Message]struct{})
+				connections = make(map[*connection]struct{})
 				b.arenas[a.arena] = connections
 			}
-			b.arenas[a.arena][a.send] = struct{}{}
+			b.arenas[a.arena][a.conn] = struct{}{}
 		case a := <-b.unregister:
 			connections := b.arenas[a.arena]
 			if connections != nil {
-				if _, ok := connections[a.send]; ok {
-					delete(connections, a.send)
-					close(a.send)
+				if _, ok := connections[a.conn]; ok {
+					delete(connections, a.conn)
+					close(a.conn.send)
 					if len(connections) == 0 {
 						delete(b.arenas, a.arena)
 					}
@@ -124,9 +132,9 @@ func (broker *Broker) listen() {
 			connections := b.arenas[m.arena]
 			for c := range connections {
 				select {
-				case c <- m:
+				case c.send <- m:
 				default:
-					close(c)
+					close(c.send)
 					delete(connections, c)
 					if len(connections) == 0 {
 						delete(b.arenas, m.arena)
