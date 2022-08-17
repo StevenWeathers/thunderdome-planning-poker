@@ -34,14 +34,17 @@ For Thunderdome to work correctly the following configuration items are required
 
 Thunderdome uses a Postgres database to store all data, the following configuration options exist:
 
-| Option                     | Environment Variable | Description                                | Default Value           |
-| -------------------------- | -------------------- | ------------------------------------------ | ------------------------|
-| `db.host`                  | DB_HOST              | Database host name.                        | db |
-| `db.port`                  | DB_PORT              | Database port number.                      | 5432 |
-| `db.user`                  | DB_USER              | Database user id.                          | thor |
-| `db.pass`                  | DB_PASS              | Database user password.                    | odinson |
-| `db.name`                  | DB_NAME              | Database instance name.                    | thunderdome |
-| `db.sslmode`               | DB_SSLMODE           | Database SSL Mode (disable, allow, prefer, require, verify-ca, verify-full). | disable |
+| Option                     | Environment Variable | Description                                                                  | Default Value |
+| -------------------------- | -------------------- |------------------------------------------------------------------------------|---------------|
+| `db.host`                  | DB_HOST              | Database host name.                                                          | db            |
+| `db.port`                  | DB_PORT              | Database port number.                                                        | 5432          |
+| `db.user`                  | DB_USER              | Database user id.                                                            | thor          |
+| `db.pass`                  | DB_PASS              | Database user password.                                                      | odinson       |
+| `db.name`                  | DB_NAME              | Database instance name.                                                      | thunderdome   |
+| `db.sslmode`               | DB_SSLMODE           | Database SSL Mode (disable, allow, prefer, require, verify-ca, verify-full). | disable       |
+| `db.max_open_conns`        | DB_MAX_OPEN_CONNS    | Max open db connections                                                      | 25            |
+| `db.max_idle_conns`        | DB_MAX_IDLE_CONNS    | Max idle db connections in pool                                              | 25            |
+| `db.conn_max_lifetime`     | DB_CONN_MAX_LIFETIME | DB Connection max lifetime in minutes                                        | 5             |
 
 ### SMTP (Mail) server configuration
 

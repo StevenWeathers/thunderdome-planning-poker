@@ -62,9 +62,9 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
 		d.logger.Ctx(ctx).Fatal("error connecting to the database: ", zap.Error(err))
 	}
 	d.db = pdb
-	d.db.SetMaxOpenConns(25)
-	d.db.SetMaxIdleConns(25)
-	d.db.SetConnMaxLifetime(5 * time.Minute)
+	d.db.SetMaxOpenConns(d.config.MaxOpenConns)
+	d.db.SetMaxIdleConns(d.config.MaxIdleConns)
+	d.db.SetConnMaxLifetime(time.Duration(d.config.ConnMaxLifetime) * time.Minute)
 
 	err = otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
 		semconv.DBSystemPostgreSQL,

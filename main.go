@@ -126,13 +126,16 @@ func main() {
 
 	s.email = email.New(s.config.AppDomain, s.config.PathPrefix, s.logger)
 	s.db = db.New(s.config.AdminEmail, &db.Config{
-		Host:       viper.GetString("db.host"),
-		Port:       viper.GetInt("db.port"),
-		User:       viper.GetString("db.user"),
-		Password:   viper.GetString("db.pass"),
-		Name:       viper.GetString("db.name"),
-		SSLMode:    viper.GetString("db.sslmode"),
-		AESHashkey: viper.GetString("config.aes_hashkey"),
+		Host:            viper.GetString("db.host"),
+		Port:            viper.GetInt("db.port"),
+		User:            viper.GetString("db.user"),
+		Password:        viper.GetString("db.pass"),
+		Name:            viper.GetString("db.name"),
+		SSLMode:         viper.GetString("db.sslmode"),
+		AESHashkey:      viper.GetString("config.aes_hashkey"),
+		MaxIdleConns:    viper.GetInt("db.max_idle_conns"),
+		MaxOpenConns:    viper.GetInt("db.max_open_conns"),
+		ConnMaxLifetime: viper.GetInt("db.conn_max_lifetime"),
 	}, s.logger)
 
 	s.routes()

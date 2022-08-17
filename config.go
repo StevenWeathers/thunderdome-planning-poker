@@ -38,6 +38,9 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("db.pass", "odinson")
 	viper.SetDefault("db.name", "thunderdome")
 	viper.SetDefault("db.sslmode", "disable")
+	viper.SetDefault("db.max_open_conns", 25)
+	viper.SetDefault("db.max_idle_conns", 25)
+	viper.SetDefault("db.conn_max_lifetime", 5)
 
 	viper.SetDefault("smtp.enabled", true)
 	viper.SetDefault("smtp.host", "localhost")
@@ -107,6 +110,9 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.BindEnv("db.pass", "DB_PASS")
 	viper.BindEnv("db.name", "DB_NAME")
 	viper.BindEnv("db.sslmode", "DB_SSLMODE")
+	viper.BindEnv("db.max_open_conns", "DB_MAX_OPEN_CONNS")
+	viper.BindEnv("db.max_idle_conns", "DB_MAX_IDLE_CONNS")
+	viper.BindEnv("db.conn_max_lifetime", "DB_CONN_MAX_LIFETIME")
 
 	viper.BindEnv("smtp.enabled", "SMTP_ENABLED")
 	viper.BindEnv("smtp.host", "SMTP_HOST")
