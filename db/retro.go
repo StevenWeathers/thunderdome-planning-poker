@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 
@@ -60,7 +61,7 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 }
 
 // TeamRetroCreate adds a new retro associated to a team
-func (d *Database) TeamRetroCreate(TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*model.Retro, error) {
+func (d *Database) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*model.Retro, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -92,7 +93,7 @@ func (d *Database) TeamRetroCreate(TeamID string, OwnerID string, RetroName stri
 		MaxVotes:             MaxVotes,
 	}
 
-	e := d.db.QueryRow(
+	e := d.db.QueryRowContext(ctx,
 		`SELECT * FROM team_create_retro($1, $2, $3, $4, $5, $6, $7, $8);`,
 		TeamID,
 		OwnerID,

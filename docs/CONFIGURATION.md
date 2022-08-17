@@ -99,6 +99,17 @@ set that user as ADMIN role.
 | `feature.retro`                       | FEATURE_RETRO                       | Enable or Disable Agile Retrospectives feature                                                                       | true                                   |
 | `feature.storyboard`                  | FEATURE_STORYBOARD                  | Enable or Disable Agile Storyboard feature                                                                           | true                                   |
 
+### Open Telemetry Tracing
+
+Thunderdome features [Open Telemetry](https://opentelemetry.io/) tracing to aid in monitoring application performance.
+
+| Option               | Environment Variable | Description                                                           | Default Value  |
+|----------------------|----------------------|-----------------------------------------------------------------------|----------------|
+| `otel.enabled`       | OTEL_ENABLED         | Whether or not Open Telemetry tracing is enabled                      | false          |
+| `otel.service_name`  | OTEL_SERVICE_NAME    | Service name of Thunderdome                                           | thunderdome    |
+| `otel.collector_url` | OTEL_COLLECTOR_URL   | Open Telemetry supported tracing tool e.g. Uptrace, DataDog           | localhost:4317 |
+| `otel.insecure_mode` | OTEL_INSECURE_MODE   | Disables client transport security for the exporter's gRPC connection | false          |
+
 ### Avatar Service configuration
 
 Use the name from table below to configure a service - if not set, `goadorable` is used. Each service provides further

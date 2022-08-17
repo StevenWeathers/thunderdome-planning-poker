@@ -79,6 +79,7 @@ type battleRequestBody struct {
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles [post]
 func (a *api) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		TeamID, teamIdExists := vars["teamId"]
@@ -112,7 +113,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		// if battle created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newBattle, err = a.db.TeamCreateBattle(TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
+				newBattle, err = a.db.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
 					return
@@ -122,7 +123,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newBattle, err = a.db.CreateBattle(UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
+			newBattle, err = a.db.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
 			if err != nil {
 				a.Failure(w, r, http.StatusInternalServerError, err)
 				return
@@ -131,7 +132,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		// when battleLeaders array is passed add additional leaders to battle
 		if len(b.BattleLeaders) > 0 {
-			updatedLeaders, err := a.db.AddBattleLeadersByEmail(newBattle.Id, b.BattleLeaders)
+			updatedLeaders, err := a.db.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
 			if err != nil {
 				a.logger.Error("error adding additional battle leaders")
 			} else {
@@ -265,7 +266,7 @@ func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 			return
 		}
 
-		err := b.APIEvent(BattleID, UserID, "add_plan", string(body))
+		err := b.APIEvent(r.Context(), BattleID, UserID, "add_plan", string(body))
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

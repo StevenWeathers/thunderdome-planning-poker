@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -11,7 +12,7 @@ import (
 )
 
 //CreateBattle creates a new story pointing session (battle)
-func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) (*model.Battle, error) {
+func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) (*model.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -46,7 +47,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 	}
 	b.Leaders = append(b.Leaders, LeaderID)
 
-	e := d.db.QueryRow(
+	e := d.db.QueryRowContext(ctx,
 		`SELECT battleId FROM create_battle($1, $2, $3, $4, $5, $6, $7);`,
 		LeaderID,
 		BattleName,
@@ -64,7 +65,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 	for _, plan := range Plans {
 		plan.Votes = make([]*model.Vote, 0)
 
-		e := d.db.QueryRow(
+		e := d.db.QueryRowContext(ctx,
 			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 			b.Id,
 			plan.Name,
@@ -85,7 +86,7 @@ func (d *Database) CreateBattle(LeaderID string, BattleName string, PointValuesA
 }
 
 //TeamCreateBattle creates a new story pointing session (battle) associated to a team
-func (d *Database) TeamCreateBattle(TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) (*model.Battle, error) {
+func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) (*model.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -120,7 +121,7 @@ func (d *Database) TeamCreateBattle(TeamID string, LeaderID string, BattleName s
 	}
 	b.Leaders = append(b.Leaders, LeaderID)
 
-	e := d.db.QueryRow(
+	e := d.db.QueryRowContext(ctx,
 		`SELECT battleId FROM team_create_battle($1, $2, $3, $4, $5, $6, $7, $8);`,
 		TeamID,
 		LeaderID,
@@ -139,7 +140,7 @@ func (d *Database) TeamCreateBattle(TeamID string, LeaderID string, BattleName s
 	for _, plan := range Plans {
 		plan.Votes = make([]*model.Vote, 0)
 
-		e := d.db.QueryRow(
+		e := d.db.QueryRowContext(ctx,
 			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 			b.Id,
 			plan.Name,
@@ -613,7 +614,7 @@ func (d *Database) DeleteBattle(BattleID string) error {
 }
 
 // AddBattleLeadersByEmail adds additional battle leaders using provided emails for matches
-func (d *Database) AddBattleLeadersByEmail(BattleID string, LeaderEmails []string) ([]string, error) {
+func (d *Database) AddBattleLeadersByEmail(ctx context.Context, BattleID string, LeaderEmails []string) ([]string, error) {
 	var leaders string
 	var newLeaders []string
 
@@ -622,7 +623,7 @@ func (d *Database) AddBattleLeadersByEmail(BattleID string, LeaderEmails []strin
 	}
 	emails := strings.Join(LeaderEmails[:], ",")
 
-	e := d.db.QueryRow(
+	e := d.db.QueryRowContext(ctx,
 		`select leaders FROM add_battle_leaders_by_email($1, $2);`, BattleID, emails,
 	).Scan(&leaders)
 	if e != nil {

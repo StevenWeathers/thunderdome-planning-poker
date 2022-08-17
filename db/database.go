@@ -2,9 +2,14 @@
 package db
 
 import (
-	"database/sql"
+	"context"
 	"embed"
 	"fmt"
+
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
+
+	"github.com/XSAM/otelsql"
+	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"go.uber.org/zap"
@@ -21,10 +26,11 @@ var fs embed.FS
 
 // New runs db migrations, sets up a db connection pool
 // and sets previously active users to false during startup
-func New(AdminEmail string, config *Config, logger *zap.Logger) *Database {
+func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
+	ctx := context.Background()
 	dms, err := iofs.New(fs, "migrations")
 	if err != nil {
-		logger.Fatal("error loading db migrations", zap.Error(err))
+		logger.Ctx(ctx).Fatal("error loading db migrations", zap.Error(err))
 	}
 
 	// Do this once for each unique policy, and use the policy for the life of the program
@@ -48,15 +54,24 @@ func New(AdminEmail string, config *Config, logger *zap.Logger) *Database {
 		d.config.SSLMode,
 	)
 
-	pdb, err := sql.Open("postgres", psqlInfo)
+	pdb, err := otelsql.Open("postgres", psqlInfo, otelsql.WithAttributes(
+		semconv.DBSystemPostgreSQL,
+	))
 	if err != nil {
-		d.logger.Fatal("error connecting to the database: ", zap.Error(err))
+		d.logger.Ctx(ctx).Fatal("error connecting to the database: ", zap.Error(err))
 	}
 	d.db = pdb
 
+	err = otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
+		semconv.DBSystemPostgreSQL,
+	))
+	if err != nil {
+		d.logger.Ctx(ctx).Error("RegisterDBStatsMetrics error", zap.Error(err))
+	}
+
 	driver, err := postgres.WithInstance(pdb, &postgres.Config{})
 	if err != nil {
-		d.logger.Error("db driver error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("db driver error", zap.Error(err))
 	}
 	m, err := migrate.NewWithInstance(
 		"iofs",
@@ -67,13 +82,13 @@ func New(AdminEmail string, config *Config, logger *zap.Logger) *Database {
 		d.logger.Error("new db migration instance", zap.Error(err))
 	}
 	if err := m.Up(); err != nil && err.Error() != "no change" {
-		d.logger.Error("db migration up error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("db migration up error", zap.Error(err))
 	}
 
 	// on server start reset all users to active false for battles
 	if _, err := d.db.Exec(
 		`call deactivate_all_users();`); err != nil {
-		d.logger.Error("call deactivate_all_users error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call deactivate_all_users error", zap.Error(err))
 	}
 
 	// on server start if admin email is specified set that user to admin type
@@ -82,7 +97,7 @@ func New(AdminEmail string, config *Config, logger *zap.Logger) *Database {
 			`call promote_user_by_email($1);`,
 			AdminEmail,
 		); err != nil {
-			d.logger.Error("call promote_user_by_email error", zap.Error(err), zap.String("admin_email", AdminEmail))
+			d.logger.Ctx(ctx).Error("call promote_user_by_email error", zap.Error(err), zap.String("admin_email", AdminEmail))
 		}
 	}
 

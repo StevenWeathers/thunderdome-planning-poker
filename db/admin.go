@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"errors"
 	"strings"
 
@@ -9,10 +10,10 @@ import (
 )
 
 // GetAppStats gets counts of common application metrics such as users and battles
-func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
+func (d *Database) GetAppStats(ctx context.Context) (*model.ApplicationStats, error) {
 	var Appstats model.ApplicationStats
 
-	err := d.db.QueryRow(`
+	err := d.db.QueryRowContext(ctx, `
 		SELECT
 			unregistered_user_count,
 			registered_user_count,
@@ -65,7 +66,7 @@ func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 		&Appstats.StoryboardPersonaCount,
 	)
 	if err != nil {
-		d.logger.Error("Unable to get application stats", zap.Error(err))
+		d.logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
 		return nil, err
 	}
 
@@ -73,12 +74,12 @@ func (d *Database) GetAppStats() (*model.ApplicationStats, error) {
 }
 
 // PromoteUser promotes a user to admin type
-func (d *Database) PromoteUser(UserID string) error {
-	if _, err := d.db.Exec(
+func (d *Database) PromoteUser(ctx context.Context, UserID string) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call promote_user($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("call promote_user error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call promote_user error", zap.Error(err))
 		return errors.New("error attempting to promote user to admin")
 	}
 
@@ -86,12 +87,12 @@ func (d *Database) PromoteUser(UserID string) error {
 }
 
 // DemoteUser demotes a user to registered type
-func (d *Database) DemoteUser(UserID string) error {
-	if _, err := d.db.Exec(
+func (d *Database) DemoteUser(ctx context.Context, UserID string) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call demote_user($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("call demote_user error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call demote_user error", zap.Error(err))
 		return errors.New("error attempting to demote user to registered")
 	}
 
@@ -99,12 +100,12 @@ func (d *Database) DemoteUser(UserID string) error {
 }
 
 // DisableUser disables a user from logging in
-func (d *Database) DisableUser(UserID string) error {
-	if _, err := d.db.Exec(
+func (d *Database) DisableUser(ctx context.Context, UserID string) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call user_disable($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("call user_disable error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call user_disable error", zap.Error(err))
 		return errors.New("error attempting to disable user")
 	}
 
@@ -112,12 +113,12 @@ func (d *Database) DisableUser(UserID string) error {
 }
 
 // EnableUser enables a user allowing login
-func (d *Database) EnableUser(UserID string) error {
-	if _, err := d.db.Exec(
+func (d *Database) EnableUser(ctx context.Context, UserID string) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call user_enable($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("call user_enable error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call user_enable error", zap.Error(err))
 		return errors.New("error attempting to enable user")
 	}
 
@@ -125,12 +126,12 @@ func (d *Database) EnableUser(UserID string) error {
 }
 
 // CleanBattles deletes battles older than {DaysOld} days
-func (d *Database) CleanBattles(DaysOld int) error {
-	if _, err := d.db.Exec(
+func (d *Database) CleanBattles(ctx context.Context, DaysOld int) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call clean_battles($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Error("call clean_battles", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call clean_battles", zap.Error(err))
 		return errors.New("error attempting to clean battles")
 	}
 
@@ -138,12 +139,12 @@ func (d *Database) CleanBattles(DaysOld int) error {
 }
 
 // CleanRetros deletes retros older than {DaysOld} days
-func (d *Database) CleanRetros(DaysOld int) error {
-	if _, err := d.db.Exec(
+func (d *Database) CleanRetros(ctx context.Context, DaysOld int) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call clean_retros($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Error("call clean_retros", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call clean_retros", zap.Error(err))
 		return errors.New("error attempting to clean retros")
 	}
 
@@ -151,12 +152,12 @@ func (d *Database) CleanRetros(DaysOld int) error {
 }
 
 // CleanStoryboards deletes storyboards older than {DaysOld} days
-func (d *Database) CleanStoryboards(DaysOld int) error {
-	if _, err := d.db.Exec(
+func (d *Database) CleanStoryboards(ctx context.Context, DaysOld int) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call clean_storyboards($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Error("call clean_storyboards", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call clean_storyboards", zap.Error(err))
 		return errors.New("error attempting to clean storyboards")
 	}
 
@@ -164,12 +165,12 @@ func (d *Database) CleanStoryboards(DaysOld int) error {
 }
 
 // CleanGuests deletes guest users older than {DaysOld} days
-func (d *Database) CleanGuests(DaysOld int) error {
-	if _, err := d.db.Exec(
+func (d *Database) CleanGuests(ctx context.Context, DaysOld int) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call clean_guest_users($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Error("call clean_guest_users", zap.Error(err))
+		d.logger.Ctx(ctx).Error("call clean_guest_users", zap.Error(err))
 		return errors.New("error attempting to clean Guest Users")
 	}
 
@@ -178,9 +179,9 @@ func (d *Database) CleanGuests(DaysOld int) error {
 
 // LowercaseUserEmails goes through and lower cases any user email that has uppercase letters
 // returning the list of updated users
-func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
+func (d *Database) LowercaseUserEmails(ctx context.Context) ([]*model.User, error) {
 	var users = make([]*model.User, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT name, email FROM lowercase_unique_user_emails();`,
 	)
 
@@ -193,14 +194,14 @@ func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
 				&usr.Name,
 				&usr.Email,
 			); err != nil {
-				d.logger.Error("lowercase_unique_user_emails scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("lowercase_unique_user_emails scan error", zap.Error(err))
 				return nil, err
 			} else {
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		d.logger.Error("lowercase_unique_user_emails query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("lowercase_unique_user_emails query error", zap.Error(err))
 		return nil, err
 	}
 
@@ -209,9 +210,9 @@ func (d *Database) LowercaseUserEmails() ([]*model.User, error) {
 
 // MergeDuplicateAccounts goes through and merges user accounts with duplicate emails that has uppercase letters
 // returning the list of merged users
-func (d *Database) MergeDuplicateAccounts() ([]*model.User, error) {
+func (d *Database) MergeDuplicateAccounts(ctx context.Context) ([]*model.User, error) {
 	var users = make([]*model.User, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT name, email FROM merge_nonunique_user_accounts();`,
 	)
 
@@ -224,14 +225,14 @@ func (d *Database) MergeDuplicateAccounts() ([]*model.User, error) {
 				&usr.Name,
 				&usr.Email,
 			); err != nil {
-				d.logger.Error("merge_nonunique_user_accounts scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("merge_nonunique_user_accounts scan error", zap.Error(err))
 				return nil, err
 			} else {
 				users = append(users, &usr)
 			}
 		}
 	} else {
-		d.logger.Error("merge_nonunique_user_accounts query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("merge_nonunique_user_accounts query error", zap.Error(err))
 		return nil, err
 	}
 
@@ -239,9 +240,9 @@ func (d *Database) MergeDuplicateAccounts() ([]*model.User, error) {
 }
 
 // OrganizationList gets a list of organizations
-func (d *Database) OrganizationList(Limit int, Offset int) []*model.Organization {
+func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) []*model.Organization {
 	var organizations = make([]*model.Organization, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM organization_list($1, $2);`,
 		Limit,
 		Offset,
@@ -258,22 +259,22 @@ func (d *Database) OrganizationList(Limit int, Offset int) []*model.Organization
 				&org.CreatedDate,
 				&org.UpdatedDate,
 			); err != nil {
-				d.logger.Error("organization_list scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("organization_list scan error", zap.Error(err))
 			} else {
 				organizations = append(organizations, &org)
 			}
 		}
 	} else {
-		d.logger.Error("organization_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("organization_list query error", zap.Error(err))
 	}
 
 	return organizations
 }
 
 // TeamList gets a list of teams
-func (d *Database) TeamList(Limit int, Offset int) []*model.Team {
+func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) []*model.Team {
 	var teams = make([]*model.Team, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
 		Limit,
 		Offset,
@@ -290,22 +291,22 @@ func (d *Database) TeamList(Limit int, Offset int) []*model.Team {
 				&team.CreatedDate,
 				&team.UpdatedDate,
 			); err != nil {
-				d.logger.Error("team_list scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("team_list scan error", zap.Error(err))
 			} else {
 				teams = append(teams, &team)
 			}
 		}
 	} else {
-		d.logger.Error("team_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("team_list query error", zap.Error(err))
 	}
 
 	return teams
 }
 
 // GetAPIKeys gets a list of api keys
-func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
+func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*model.APIKey {
 	var APIKeys = make([]*model.APIKey, 0)
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, email, active, created_date, updated_date
 		FROM apikeys_list($1, $2);`,
 		Limit,
@@ -325,7 +326,7 @@ func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
 				&ak.CreatedDate,
 				&ak.UpdatedDate,
 			); err != nil {
-				d.logger.Error("apikeys_list scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("apikeys_list scan error", zap.Error(err))
 			} else {
 				splitKey := strings.Split(key, ".")
 				ak.Prefix = splitKey[0]
@@ -334,7 +335,7 @@ func (d *Database) GetAPIKeys(Limit int, Offset int) []*model.APIKey {
 			}
 		}
 	} else {
-		d.logger.Error("apikeys_list query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("apikeys_list query error", zap.Error(err))
 	}
 
 	return APIKeys

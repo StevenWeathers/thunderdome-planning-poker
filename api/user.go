@@ -20,9 +20,10 @@ import (
 // @Router /auth/user [get]
 func (a *api) handleSessionUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := a.db.GetUser(UserID)
+		User, UserErr := a.db.GetUser(ctx, UserID)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
@@ -48,7 +49,7 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, UserErr := a.db.GetUser(UserID)
+		User, UserErr := a.db.GetUser(r.Context(), UserID)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
@@ -83,7 +84,8 @@ type userprofileUpdateRequestBody struct {
 // @Router /users/{userId} [put]
 func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		SessionUserType := r.Context().Value(contextKeyUserType).(string)
+		ctx := r.Context()
+		SessionUserType := ctx.Value(contextKeyUserType).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
@@ -112,7 +114,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 				a.Failure(w, r, http.StatusBadRequest, vErr)
 				return
 			}
-			updateErr := a.db.UpdateUserAccount(UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+			updateErr := a.db.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			if updateErr != nil {
 				a.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
@@ -124,9 +126,9 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 					a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 					return
 				}
-				updateErr = a.db.UpdateUserProfile(UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = a.db.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			} else {
-				updateErr = a.db.UpdateUserProfileLdap(UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = a.db.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			}
 			if updateErr != nil {
 				a.Failure(w, r, http.StatusInternalServerError, updateErr)
@@ -134,7 +136,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 			}
 		}
 
-		user, UserErr := a.db.GetUser(UserID)
+		user, UserErr := a.db.GetUser(ctx, UserID)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
@@ -159,15 +161,16 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
-		UserCookieID := r.Context().Value(contextKeyUserID).(string)
+		ctx := r.Context()
+		UserCookieID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := a.db.GetUser(UserID)
+		User, UserErr := a.db.GetUser(ctx, UserID)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		updateErr := a.db.DeleteUser(UserID)
+		updateErr := a.db.DeleteUser(ctx, UserID)
 		if updateErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
@@ -198,7 +201,7 @@ func (a *api) handleVerifyRequest() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, VerifyId, err := a.db.UserVerifyRequest(UserID)
+		User, VerifyId, err := a.db.UserVerifyRequest(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -219,7 +222,7 @@ func (a *api) handleVerifyRequest() http.HandlerFunc {
 // @Router /active-countries [get]
 func (a *api) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		countries, err := a.db.GetActiveCountries()
+		countries, err := a.db.GetActiveCountries(r.Context())
 
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)

@@ -20,7 +20,7 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_battles_days_old")
 
-		err := a.db.CleanBattles(DaysOld)
+		err := a.db.CleanBattles(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -43,7 +43,7 @@ func (a *api) handleCleanRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_retros_days_old")
 
-		err := a.db.CleanRetros(DaysOld)
+		err := a.db.CleanRetros(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -66,7 +66,7 @@ func (a *api) handleCleanStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_storyboards_days_old")
 
-		err := a.db.CleanStoryboards(DaysOld)
+		err := a.db.CleanStoryboards(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -89,7 +89,7 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_guests_days_old")
 
-		err := a.db.CleanGuests(DaysOld)
+		err := a.db.CleanGuests(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -110,7 +110,7 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 // @Router /maintenance/lowercase-emails [patch]
 func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		lowercasedUsers, err := a.db.LowercaseUserEmails()
+		lowercasedUsers, err := a.db.LowercaseUserEmails(r.Context())
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -121,7 +121,7 @@ func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
 			a.email.SendEmailUpdate(u.Name, u.Email)
 		}
 
-		mergedUsers, err := a.db.MergeDuplicateAccounts()
+		mergedUsers, err := a.db.MergeDuplicateAccounts(r.Context())
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

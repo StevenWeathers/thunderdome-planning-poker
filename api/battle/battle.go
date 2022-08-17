@@ -2,25 +2,26 @@
 package battle
 
 import (
+	"context"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/http"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
-	"go.uber.org/zap"
 )
 
 // Service provides battle service
 type Service struct {
 	db                    *db.Database
-	logger                *zap.Logger
+	logger                *otelzap.Logger
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
-	eventHandlers         map[string]func(string, string, string) ([]byte, error, bool)
+	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 }
 
 // New returns a new battle with websocket hub/client and event handlers
 func New(
 	db *db.Database,
-	logger *zap.Logger,
+	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 ) *Service {
@@ -31,7 +32,7 @@ func New(
 		validateUserCookie:    validateUserCookie,
 	}
 
-	b.eventHandlers = map[string]func(string, string, string) ([]byte, error, bool){
+	b.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){
 		"jab_warrior":      b.UserNudge,
 		"vote":             b.UserVote,
 		"retract_vote":     b.UserVoteRetract,

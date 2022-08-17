@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"html/template"
 	"image"
@@ -74,21 +75,22 @@ func (s *server) routes() {
 
 // get the index template from embedded filesystem
 func (s *server) getIndexTemplate(FSS fs.FS) *template.Template {
+	ctx := context.Background()
 	// get the html template from dist, have it ready for requests
 	tmplContent, ioErr := fs.ReadFile(FSS, "static/index.html")
 	if ioErr != nil {
-		s.logger.Error("Error opening index template")
+		s.logger.Ctx(ctx).Error("Error opening index template")
 		if !embedUseOS {
-			s.logger.Fatal(ioErr.Error())
+			s.logger.Ctx(ctx).Fatal(ioErr.Error())
 		}
 	}
 
 	tmplString := string(tmplContent)
 	tmpl, tmplErr := template.New("index").Parse(tmplString)
 	if tmplErr != nil {
-		s.logger.Error("Error parsing index template")
+		s.logger.Ctx(ctx).Error("Error parsing index template")
 		if !embedUseOS {
-			s.logger.Fatal(tmplErr.Error())
+			s.logger.Ctx(ctx).Fatal(tmplErr.Error())
 		}
 	}
 
@@ -173,7 +175,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AppConfig:        appConfig,
 	}
 
-	api.ActiveAlerts = s.db.GetActiveAlerts() // prime the active alerts cache
+	api.ActiveAlerts = s.db.GetActiveAlerts(context.Background()) // prime the active alerts cache
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		data.ActiveAlerts = api.ActiveAlerts // get latest alerts from memory
@@ -190,6 +192,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 func (s *server) handleUserAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
+		ctx := r.Context()
 
 		Width, _ := strconv.Atoi(vars["width"])
 		UserID := vars["id"]
@@ -208,7 +211,7 @@ func (s *server) handleUserAvatar() http.HandlerFunc {
 			var err error
 			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(UserID))))
 			if err != nil {
-				s.logger.Fatal(err.Error())
+				s.logger.Ctx(ctx).Fatal(err.Error())
 			}
 		}
 
@@ -216,7 +219,7 @@ func (s *server) handleUserAvatar() http.HandlerFunc {
 		buffer := new(bytes.Buffer)
 
 		if err := png.Encode(buffer, img); err != nil {
-			s.logger.Error("unable to encode image.")
+			s.logger.Ctx(ctx).Error("unable to encode image.")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -225,7 +228,7 @@ func (s *server) handleUserAvatar() http.HandlerFunc {
 		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
 
 		if _, err := w.Write(buffer.Bytes()); err != nil {
-			s.logger.Error("unable to write image.")
+			s.logger.Ctx(ctx).Error("unable to write image.")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

@@ -33,7 +33,7 @@ type alertRequestBody struct {
 func (a *api) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
-		Alerts, Count, err := a.db.AlertsList(Limit, Offset)
+		Alerts, Count, err := a.db.AlertsList(r.Context(), Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -80,13 +80,13 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.AlertsCreate(alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := a.db.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.db.GetActiveAlerts()
+		ActiveAlerts = a.db.GetActiveAlerts(r.Context())
 
 		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -132,13 +132,13 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.AlertsUpdate(ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := a.db.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.db.GetActiveAlerts()
+		ActiveAlerts = a.db.GetActiveAlerts(r.Context())
 
 		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -164,13 +164,13 @@ func (a *api) handleAlertDelete() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.AlertDelete(AlertID)
+		err := a.db.AlertDelete(r.Context(), AlertID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.db.GetActiveAlerts()
+		ActiveAlerts = a.db.GetActiveAlerts(r.Context())
 
 		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}

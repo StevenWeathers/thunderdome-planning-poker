@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
 // InitConfig initializes the application configuration
-func InitConfig(logger *zap.Logger) {
+func InitConfig(logger *otelzap.Logger) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
@@ -25,6 +26,11 @@ func InitConfig(logger *zap.Logger) {
 
 	viper.SetDefault("analytics.enabled", true)
 	viper.SetDefault("analytics.id", "UA-140245309-1")
+
+	viper.SetDefault("otel.enabled", false)
+	viper.SetDefault("otel.service_name", "thunderdome")
+	viper.SetDefault("otel.collector_url", "localhost:4317")
+	viper.SetDefault("otel.insecure_mode", false)
 
 	viper.SetDefault("db.host", "db")
 	viper.SetDefault("db.port", 5432)
@@ -90,6 +96,11 @@ func InitConfig(logger *zap.Logger) {
 	viper.BindEnv("analytics.id", "ANALYTICS_ID")
 	viper.BindEnv("admin.email", "ADMIN_EMAIL")
 
+	viper.BindEnv("otel.enabled", "OTEL_ENABLED")
+	viper.BindEnv("otel.service_name", "OTEL_SERVICE_NAME")
+	viper.BindEnv("otel.collector_url", "OTEL_COLLECTOR_URL")
+	viper.BindEnv("otel.insecure_mode", "OTEL_INSECURE_MODE")
+
 	viper.BindEnv("db.host", "DB_HOST")
 	viper.BindEnv("db.port", "DB_PORT")
 	viper.BindEnv("db.user", "DB_USER")
@@ -144,7 +155,7 @@ func InitConfig(logger *zap.Logger) {
 	err := viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			logger.Fatal(err.Error())
+			logger.Ctx(context.Background()).Fatal(err.Error())
 		}
 	}
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/spf13/viper"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"go.uber.org/zap"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
 var validate *validator.Validate
@@ -55,7 +55,7 @@ type api struct {
 	email  *email.Email
 	cookie *securecookie.SecureCookie
 	db     *db.Database
-	logger *zap.Logger
+	logger *otelzap.Logger
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -98,7 +98,7 @@ const (
 // @in header
 // @name X-API-Key
 // @version BETA
-func Init(config *Config, router *mux.Router, database *db.Database, email *email.Email, cookie *securecookie.SecureCookie, logger *zap.Logger) *api {
+func Init(config *Config, router *mux.Router, database *db.Database, email *email.Email, cookie *securecookie.SecureCookie, logger *otelzap.Logger) *api {
 	var a = &api{
 		config: config,
 		router: router,

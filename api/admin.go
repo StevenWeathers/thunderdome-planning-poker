@@ -19,7 +19,7 @@ import (
 // @Router /admin/stats [get]
 func (a *api) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		AppStats, err := a.db.GetAppStats()
+		AppStats, err := a.db.GetAppStats(r.Context())
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -44,7 +44,7 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users, Count, err := a.db.GetRegisteredUsers(Limit, Offset)
+		Users, Count, err := a.db.GetRegisteredUsers(r.Context(), Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -100,7 +100,7 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, err := a.db.CreateUser(user.Name, user.Email, user.Password1)
+		newUser, VerifyID, err := a.db.CreateUser(r.Context(), user.Name, user.Email, user.Password1)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -133,7 +133,7 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.PromoteUser(UserID)
+		err := a.db.PromoteUser(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -163,7 +163,7 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.DemoteUser(UserID)
+		err := a.db.DemoteUser(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -193,7 +193,7 @@ func (a *api) handleUserDisable() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.DisableUser(UserID)
+		err := a.db.DisableUser(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -223,7 +223,7 @@ func (a *api) handleUserEnable() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.EnableUser(UserID)
+		err := a.db.EnableUser(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -273,7 +273,7 @@ func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(UserID, u.Password1)
+		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
@@ -304,7 +304,7 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := a.db.OrganizationList(Limit, Offset)
+		Organizations := a.db.OrganizationList(r.Context(), Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Organizations, nil)
 	}
@@ -325,7 +325,7 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.TeamList(Limit, Offset)
+		Teams := a.db.TeamList(r.Context(), Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -346,7 +346,7 @@ func (a *api) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.GetAPIKeys(Limit, Offset)
+		Teams := a.db.GetAPIKeys(r.Context(), Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -374,7 +374,7 @@ func (a *api) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 			return
 		}
 
-		Users, Count, err := a.db.SearchRegisteredUsersByEmail(Search, Limit, Offset)
+		Users, Count, err := a.db.SearchRegisteredUsersByEmail(r.Context(), Search, Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

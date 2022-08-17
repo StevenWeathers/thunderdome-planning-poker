@@ -7,6 +7,7 @@ require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
+	github.com/XSAM/otelsql v0.15.0
 	github.com/anthonynsimon/bild v0.13.0
 	github.com/go-asn1-ber/asn1-ber v1.5.3 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.1
@@ -32,10 +33,16 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/swaggo/http-swagger v1.2.6
 	github.com/swaggo/swag v1.7.9
+	github.com/uptrace/opentelemetry-go-extra/otelzap v0.1.15
 	github.com/vanng822/go-premailer v1.20.1 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
-	go.uber.org/multierr v1.8.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.33.0
+	go.opentelemetry.io/otel v1.8.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.8.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.8.0
+	go.opentelemetry.io/otel/sdk v1.8.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
+	golang.org/x/sys v0.0.0-20220319134239-a9b59b0215f8 // indirect
+	google.golang.org/grpc v1.46.2
 
 )

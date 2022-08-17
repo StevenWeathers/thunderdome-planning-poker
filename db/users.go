@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 
@@ -9,20 +10,20 @@ import (
 )
 
 // GetRegisteredUsers gets a list of registered users
-func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int, error) {
+func (d *Database) GetRegisteredUsers(ctx context.Context, Limit int, Offset int) ([]*model.User, int, error) {
 	var users = make([]*model.User, 0)
 	var Count int
 
-	err := d.db.QueryRow(
+	err := d.db.QueryRowContext(ctx,
 		"SELECT COUNT(*) FROM users WHERE email IS NOT NULL;",
 	).Scan(
 		&Count,
 	)
 	if err != nil {
-		d.logger.Error("get registered users query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("get registered users query error", zap.Error(err))
 	}
 
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title, disabled
 		FROM registered_users_list($1, $2);`,
@@ -49,7 +50,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int
 			&w.JobTitle,
 			&w.Disabled,
 		); err != nil {
-			d.logger.Error("registered_users_list query scan error", zap.Error(err))
+			d.logger.Ctx(ctx).Error("registered_users_list query scan error", zap.Error(err))
 		} else {
 			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)
@@ -60,7 +61,7 @@ func (d *Database) GetRegisteredUsers(Limit int, Offset int) ([]*model.User, int
 }
 
 // GetUser gets a user by ID
-func (d *Database) GetUser(UserID string) (*model.User, error) {
+func (d *Database) GetUser(ctx context.Context, UserID string) (*model.User, error) {
 	var w model.User
 	var UserEmail sql.NullString
 	var UserCountry sql.NullString
@@ -68,7 +69,7 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 	var UserCompany sql.NullString
 	var UserJobTitle sql.NullString
 
-	err := d.db.QueryRow(
+	err := d.db.QueryRowContext(ctx,
 		`SELECT id, name, email, type, avatar, verified,
 			notifications_enabled, country, locale, company, job_title,
 			created_date, updated_date, last_active, disabled, mfa_enabled
@@ -93,7 +94,7 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 		&w.MFAEnabled,
 	)
 	if err != nil {
-		d.logger.Error("get user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("get user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
@@ -112,7 +113,7 @@ func (d *Database) GetUser(UserID string) (*model.User, error) {
 }
 
 // GetGuestUser gets a guest user by ID
-func (d *Database) GetGuestUser(UserID string) (*model.User, error) {
+func (d *Database) GetGuestUser(ctx context.Context, UserID string) (*model.User, error) {
 	var w model.User
 	var UserEmail sql.NullString
 	var UserCountry sql.NullString
@@ -120,7 +121,7 @@ func (d *Database) GetGuestUser(UserID string) (*model.User, error) {
 	var UserCompany sql.NullString
 	var UserJobTitle sql.NullString
 
-	err := d.db.QueryRow(`
+	err := d.db.QueryRowContext(ctx, `
 SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active
 FROM users
 WHERE id = $1 AND type = 'GUEST';
@@ -143,7 +144,7 @@ WHERE id = $1 AND type = 'GUEST';
 		&w.LastActive,
 	)
 	if err != nil {
-		d.logger.Error("get guest user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("get guest user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
@@ -158,9 +159,10 @@ WHERE id = $1 AND type = 'GUEST';
 }
 
 // GetUserByEmail gets the user by email
-func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
+func (d *Database) GetUserByEmail(ctx context.Context, UserEmail string) (*model.User, error) {
 	var w model.User
-	err := d.db.QueryRow(
+
+	err := d.db.QueryRowContext(ctx,
 		"SELECT id, name, email, type, verified, disabled FROM users WHERE LOWER(email) = $1",
 		sanitizeEmail(UserEmail),
 	).Scan(
@@ -172,7 +174,7 @@ func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 		&w.Disabled,
 	)
 	if err != nil {
-		d.logger.Error("get user by email query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("get user by email query error", zap.Error(err))
 		return nil, errors.New("user email not found")
 	}
 
@@ -182,11 +184,11 @@ func (d *Database) GetUserByEmail(UserEmail string) (*model.User, error) {
 }
 
 // CreateUserGuest adds a new guest user
-func (d *Database) CreateUserGuest(UserName string) (*model.User, error) {
+func (d *Database) CreateUserGuest(ctx context.Context, UserName string) (*model.User, error) {
 	var UserID string
-	err := d.db.QueryRow(`INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
+	err := d.db.QueryRowContext(ctx, `INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
 	if err != nil {
-		d.logger.Error("create guest user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("create guest user query error", zap.Error(err))
 		return nil, errors.New("unable to create new user")
 	}
 
@@ -194,7 +196,7 @@ func (d *Database) CreateUserGuest(UserName string) (*model.User, error) {
 }
 
 // CreateUserRegistered adds a new registered user
-func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *model.User, VerifyID string, SessionID string, RegisterErr error) {
+func (d *Database) CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *model.User, VerifyID string, SessionID string, RegisterErr error) {
 	hashedPassword, hashErr := hashSaltPassword(UserPassword)
 	if hashErr != nil {
 		return nil, "", "", hashErr
@@ -213,7 +215,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 	}
 
 	if ActiveUserID != "" {
-		err := d.db.QueryRow(
+		err := d.db.QueryRowContext(ctx,
 			`SELECT userId, verifyId FROM register_existing_user($1, $2, $3, $4, $5);`,
 			ActiveUserID,
 			UserName,
@@ -222,7 +224,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 			UserType,
 		).Scan(&User.Id, &verifyID)
 		if err != nil {
-			d.logger.Error("register_existing_user query error", zap.Error(err))
+			d.logger.Ctx(ctx).Error("register_existing_user query error", zap.Error(err))
 			return nil, "", "", errors.New("a user with that email already exists")
 		}
 	} else {
@@ -234,12 +236,12 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 			UserType,
 		).Scan(&User.Id, &verifyID)
 		if err != nil {
-			d.logger.Error("register_user query error", zap.Error(err))
+			d.logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
 			return nil, "", "", errors.New("a user with that email already exists")
 		}
 	}
 
-	sessionId, sessErr := d.CreateSession(User.Id)
+	sessionId, sessErr := d.CreateSession(ctx, User.Id)
 	if sessErr != nil {
 		return nil, "", "", sessErr
 	}
@@ -248,7 +250,7 @@ func (d *Database) CreateUserRegistered(UserName string, UserEmail string, UserP
 }
 
 // CreateUser adds a new registered user
-func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword string) (NewUser *model.User, VerifyID string, RegisterErr error) {
+func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *model.User, VerifyID string, RegisterErr error) {
 	hashedPassword, hashErr := hashSaltPassword(UserPassword)
 	if hashErr != nil {
 		return nil, "", hashErr
@@ -266,7 +268,7 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 		GravatarHash: createGravatarHash(UserEmail),
 	}
 
-	err := d.db.QueryRow(
+	err := d.db.QueryRowContext(ctx,
 		`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 		UserName,
 		sanitizedEmail,
@@ -274,7 +276,7 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 		UserType,
 	).Scan(&User.Id, &verifyID)
 	if err != nil {
-		d.logger.Error("register_user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
 		return nil, "", errors.New("a user with that email already exists")
 	}
 
@@ -282,11 +284,11 @@ func (d *Database) CreateUser(UserName string, UserEmail string, UserPassword st
 }
 
 // UpdateUserProfile updates the users profile (excludes: email, password)
-func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *Database) UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
 	}
-	if _, err := d.db.Exec(
+	if _, err := d.db.ExecContext(ctx,
 		`call user_profile_update($1, $2, $3, $4, $5, $6, $7, $8);`,
 		UserID,
 		UserName,
@@ -297,7 +299,7 @@ func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar 
 		Company,
 		JobTitle,
 	); err != nil {
-		d.logger.Error("user_profile_update query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("user_profile_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
 	}
 
@@ -305,11 +307,11 @@ func (d *Database) UpdateUserProfile(UserID string, UserName string, UserAvatar 
 }
 
 // UpdateUserProfileLdap updates the users profile (excludes: username, email, password)
-func (d *Database) UpdateUserProfileLdap(UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *Database) UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
 	}
-	if _, err := d.db.Exec(
+	if _, err := d.db.ExecContext(ctx,
 		`call user_profile_ldap_update($1, $2, $3, $4, $5, $6, $7);`,
 		UserID,
 		UserAvatar,
@@ -319,7 +321,7 @@ func (d *Database) UpdateUserProfileLdap(UserID string, UserAvatar string, Notif
 		Company,
 		JobTitle,
 	); err != nil {
-		d.logger.Error("user_profile_ldap_update query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("user_profile_ldap_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
 	}
 
@@ -327,11 +329,11 @@ func (d *Database) UpdateUserProfileLdap(UserID string, UserAvatar string, Notif
 }
 
 // UpdateUserAccount updates the users profile including email (excludes: password)
-func (d *Database) UpdateUserAccount(UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *Database) UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
 	}
-	if _, err := d.db.Exec(
+	if _, err := d.db.ExecContext(ctx,
 		`call user_account_update($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
 		UserID,
 		UserName,
@@ -350,12 +352,12 @@ func (d *Database) UpdateUserAccount(UserID string, UserName string, UserEmail s
 }
 
 // DeleteUser deletes a user
-func (d *Database) DeleteUser(UserID string) error {
-	if _, err := d.db.Exec(
+func (d *Database) DeleteUser(ctx context.Context, UserID string) error {
+	if _, err := d.db.ExecContext(ctx,
 		`call delete_user($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Error("delete_user query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("delete_user query error", zap.Error(err))
 		return errors.New("error attempting to delete user")
 	}
 
@@ -363,10 +365,10 @@ func (d *Database) DeleteUser(UserID string) error {
 }
 
 // GetActiveCountries gets a list of user countries
-func (d *Database) GetActiveCountries() ([]string, error) {
+func (d *Database) GetActiveCountries(ctx context.Context) ([]string, error) {
 	var countries = make([]string, 0)
 
-	rows, err := d.db.Query(`SELECT * FROM countries_active();`)
+	rows, err := d.db.QueryContext(ctx, `SELECT * FROM countries_active();`)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
@@ -374,7 +376,7 @@ func (d *Database) GetActiveCountries() ([]string, error) {
 			if err := rows.Scan(
 				&country,
 			); err != nil {
-				d.logger.Error("countries_active query scan error", zap.Error(err))
+				d.logger.Ctx(ctx).Error("countries_active query scan error", zap.Error(err))
 			} else {
 				if country.String != "" {
 					countries = append(countries, country.String)
@@ -382,7 +384,7 @@ func (d *Database) GetActiveCountries() ([]string, error) {
 			}
 		}
 	} else {
-		d.logger.Error("countries_active query error", zap.Error(err))
+		d.logger.Ctx(ctx).Error("countries_active query error", zap.Error(err))
 		return nil, errors.New("error attempting to get active countries")
 	}
 
@@ -390,11 +392,11 @@ func (d *Database) GetActiveCountries() ([]string, error) {
 }
 
 // SearchRegisteredUsersByEmail retrieves the registered users filtered by email likeness
-func (d *Database) SearchRegisteredUsersByEmail(Email string, Limit int, Offset int) ([]*model.User, int, error) {
+func (d *Database) SearchRegisteredUsersByEmail(ctx context.Context, Email string, Limit int, Offset int) ([]*model.User, int, error) {
 	var users = make([]*model.User, 0)
 	var count int
 
-	rows, err := d.db.Query(
+	rows, err := d.db.QueryContext(ctx,
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title, count
 		FROM registered_users_email_search($1, $2, $3);`,
@@ -422,7 +424,7 @@ func (d *Database) SearchRegisteredUsersByEmail(Email string, Limit int, Offset 
 			&w.JobTitle,
 			&count,
 		); err != nil {
-			d.logger.Error("registered_users_email_search query error", zap.Error(err))
+			d.logger.Ctx(ctx).Error("registered_users_email_search query error", zap.Error(err))
 		} else {
 			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)

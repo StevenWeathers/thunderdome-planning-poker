@@ -37,6 +37,7 @@ type storyboardCreateRequestBody struct {
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards [post]
 func (a *api) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		TeamID, teamIdExists := vars["teamId"]
@@ -70,7 +71,8 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 		// if storyboard created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newStoryboard, err = a.db.TeamCreateStoryboard(TeamID, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+				newStoryboard, err = a.db.TeamCreateStoryboard(ctx, TeamID, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
 					return
@@ -80,7 +82,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newStoryboard, err = a.db.CreateStoryboard(UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+			newStoryboard, err = a.db.CreateStoryboard(ctx, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
 			if err != nil {
 				a.Failure(w, r, http.StatusInternalServerError, err)
 				return

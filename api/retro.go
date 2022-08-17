@@ -42,6 +42,7 @@ type retroCreateRequestBody struct {
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
 func (a *api) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		TeamID, teamIdExists := vars["teamId"]
@@ -73,9 +74,10 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 		var newRetro *model.Retro
 		var err error
 		// if retro created with team association
+
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newRetro, err = a.db.TeamRetroCreate(TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+				newRetro, err = a.db.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -246,7 +248,7 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 		}
 		updatedActionJson, _ := json.Marshal(ra)
 
-		err := rs.APIEvent(RetroID, UserID, "update_action", string(updatedActionJson))
+		err := rs.APIEvent(r.Context(), RetroID, UserID, "update_action", string(updatedActionJson))
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -290,7 +292,7 @@ func (a *api) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 		}
 		deleteItem, _ := json.Marshal(actionItem{ActionID: ActionID})
 
-		err := rs.APIEvent(RetroID, UserID, "delete_action", string(deleteItem))
+		err := rs.APIEvent(r.Context(), RetroID, UserID, "delete_action", string(deleteItem))
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
