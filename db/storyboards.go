@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 
@@ -9,7 +10,7 @@ import (
 )
 
 //CreateStoryboard adds a new storyboard
-func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*model.Storyboard, error) {
+func (d *Database) CreateStoryboard(ctx context.Context, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*model.Storyboard, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -36,7 +37,7 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinC
 		Users:   make([]*model.StoryboardUser, 0),
 	}
 
-	e := d.db.QueryRow(
+	e := d.db.QueryRowContext(ctx,
 		`SELECT * FROM create_storyboard($1, $2, $3, $4);`,
 		OwnerID,
 		StoryboardName,
@@ -52,7 +53,7 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinC
 }
 
 //TeamCreateStoryboard adds a new storyboard associated to a team
-func (d *Database) TeamCreateStoryboard(TeamID string, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*model.Storyboard, error) {
+func (d *Database) TeamCreateStoryboard(ctx context.Context, TeamID string, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*model.Storyboard, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
@@ -79,7 +80,7 @@ func (d *Database) TeamCreateStoryboard(TeamID string, OwnerID string, Storyboar
 		Users:   make([]*model.StoryboardUser, 0),
 	}
 
-	e := d.db.QueryRow(
+	e := d.db.QueryRowContext(ctx,
 		`SELECT * FROM team_create_storyboard($1, $2, $3, $4, $5);`,
 		TeamID,
 		OwnerID,
