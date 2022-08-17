@@ -129,6 +129,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		FeaturePoker              bool
 		FeatureRetro              bool
 		FeatureStoryboard         bool
+		RequireTeams              bool
 	}
 	type UIConfig struct {
 		AnalyticsEnabled bool
@@ -165,6 +166,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		FeaturePoker:              viper.GetBool("feature.poker"),
 		FeatureRetro:              viper.GetBool("feature.retro"),
 		FeatureStoryboard:         viper.GetBool("feature.storyboard"),
+		RequireTeams:              viper.GetBool("config.require_teams"),
 	}
 
 	data := UIConfig{

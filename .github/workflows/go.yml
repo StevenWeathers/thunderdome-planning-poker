@@ -41,13 +41,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Set up Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
         id: go
 
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - run: npm ci --no-optional
       - run: npm test
@@ -72,6 +72,11 @@ jobs:
 
       - name: Build
         run: go build -v .
+
+      #      - name: golangci-lint
+      #        uses: golangci/golangci-lint-action@v3
+      #        with:
+      #          version: v1.29
 
       - name: Run Thunderdome application
         run: ./thunderdome-planning-poker &

@@ -124,13 +124,17 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		}
 
 		keyVal := make(map[string]string)
-		json.Unmarshal(msg, &keyVal) // check for errors
+		err = json.Unmarshal(msg, &keyVal)
+		if err != nil {
+			badEvent = true
+			b.logger.Error("unexpected storyboard event json error", zap.Error(err))
+		}
 
 		eventType := keyVal["type"]
 		eventValue := keyVal["value"]
 
 		// confirm owner for any operation that requires it
-		if _, ok := ownerOnlyOperations[eventType]; ok {
+		if _, ok := ownerOnlyOperations[eventType]; ok && !badEvent {
 			err := b.db.ConfirmStoryboardFacilitator(StoryboardID, UserID)
 			if err != nil {
 				badEvent = true
@@ -284,7 +288,10 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				}
 
 				keyVal := make(map[string]string)
-				json.Unmarshal(msg, &keyVal)
+				err = json.Unmarshal(msg, &keyVal)
+				if err != nil {
+					b.logger.Error("unexpected storyboard message error", zap.Error(err))
+				}
 
 				if keyVal["type"] == "auth_storyboard" && keyVal["value"] == storyboard.JoinCode {
 					UserAuthed = true
@@ -299,7 +306,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		for {
-			if UserAuthed == true {
+			if UserAuthed {
 				ss := subscription{c, storyboardID, User.Id}
 				h.register <- ss
 

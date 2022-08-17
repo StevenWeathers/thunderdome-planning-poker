@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
@@ -109,7 +109,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 		UserID := vars["userId"]
 
 		var team = teamCreateRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -205,7 +205,7 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 		OrgID := vars["orgId"]
 
 		var team = teamCreateRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -250,7 +250,7 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 
 		var u = teamAddUserRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -392,7 +392,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 		TeamID := vars["teamId"]
 
 		var u = teamAddUserRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

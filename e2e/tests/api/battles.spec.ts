@@ -99,4 +99,47 @@ test.describe('registered user', () => {
             }),
         )
     })
+
+    test(`POST /teams/{teamId}/users/{userId}/battles should create battle`, async () => {
+        const pointValuesAllowed = ['0', '0.5', '1', '2', '3', '5', '8', '13']
+        const battleName = 'Test API Create Battle'
+        const pointAverageRounding = 'floor'
+        const autoFinishVoting = false
+
+        const t = await apiContext.post(`users/${user.id}/teams`, {
+            data: {
+                name: 'test team create battle',
+            },
+        })
+        const { data: team } = await t.json()
+
+        const b = await apiContext.post(
+            `teams/${team.id}/users/${user.id}/battles`,
+            {
+                data: {
+                    name: battleName,
+                    pointValuesAllowed,
+                    pointAverageRounding,
+                    autoFinishVoting,
+                },
+            },
+        )
+        expect(b.ok()).toBeTruthy()
+        const battle = await b.json()
+        expect(battle.data).toMatchObject({
+            name: battleName,
+            pointValuesAllowed,
+            pointAverageRounding,
+            autoFinishVoting,
+        })
+
+        const bs = await apiContext.get(`teams/${team.id}/battles`)
+        expect(bs.ok()).toBeTruthy()
+        const battles = await bs.json()
+        expect(battles.data).toContainEqual(
+            expect.objectContaining({
+                name: battleName,
+            }),
+        )
+    })
 })

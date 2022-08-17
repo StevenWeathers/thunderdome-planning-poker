@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -66,7 +66,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -134,7 +134,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 		}
 		APK := vars["keyID"]
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

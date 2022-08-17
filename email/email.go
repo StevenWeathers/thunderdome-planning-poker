@@ -118,6 +118,10 @@ func (m *Email) generateBody(Body hermes.Body) (emailBody string, generateErr er
 
 // Send - utility function to send emails
 func (m *Email) Send(UserName string, UserEmail string, Subject string, Body string) error {
+	if !viper.GetBool("smtp.enabled") {
+		return nil
+	}
+
 	to := mail.Address{
 		Name:    UserName,
 		Address: UserEmail,
@@ -144,7 +148,10 @@ func (m *Email) Send(UserName string, UserEmail string, Subject string, Body str
 		return err
 	}
 
-	c.StartTLS(tlsConfig)
+	tlsErr := c.StartTLS(tlsConfig)
+	if tlsErr != nil {
+		m.logger.Error("Error starting TLS", zap.Error(tlsErr))
+	}
 
 	// Auth
 	if m.config.smtpSecure {
@@ -184,7 +191,10 @@ func (m *Email) Send(UserName string, UserEmail string, Subject string, Body str
 		return err
 	}
 
-	c.Quit()
+	quitErr := c.Quit()
+	if quitErr != nil {
+		m.logger.Error("Error quitting smtp server connection", zap.Error(quitErr))
+	}
 
 	return nil
 }

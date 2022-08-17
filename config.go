@@ -39,6 +39,7 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("db.name", "thunderdome")
 	viper.SetDefault("db.sslmode", "disable")
 
+	viper.SetDefault("smtp.enabled", true)
 	viper.SetDefault("smtp.host", "localhost")
 	viper.SetDefault("smtp.port", "25")
 	viper.SetDefault("smtp.secure", true)
@@ -65,6 +66,7 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("config.cleanup_retros_days_old", 180)
 	viper.SetDefault("config.cleanup_storyboards_days_old", 180)
 	viper.SetDefault("config.organizations_enabled", true)
+	viper.SetDefault("config.require_teams", false)
 
 	// feature flags
 	viper.SetDefault("feature.poker", true)
@@ -106,6 +108,7 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.BindEnv("db.name", "DB_NAME")
 	viper.BindEnv("db.sslmode", "DB_SSLMODE")
 
+	viper.BindEnv("smtp.enabled", "SMTP_ENABLED")
 	viper.BindEnv("smtp.host", "SMTP_HOST")
 	viper.BindEnv("smtp.port", "SMTP_PORT")
 	viper.BindEnv("smtp.secure", "SMTP_SECURE")
@@ -133,6 +136,7 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.BindEnv("config.cleanup_retros_days_old", "CONFIG_CLEANUP_RETROS_DAYS_OLD")
 	viper.BindEnv("config.cleanup_storyboards_days_old", "CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD")
 	viper.BindEnv("config.organizations_enabled", "CONFIG_ORGANIZATIONS_ENABLED")
+	viper.BindEnv("config.require_teams", "CONFIG_REQUIRE_TEAMS")
 
 	viper.BindEnv("feature.poker", "FEATURE_POKER")
 	viper.BindEnv("feature.retro", "FEATURE_RETRO")

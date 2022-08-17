@@ -596,5 +596,8 @@
   "facilitatorCode": "Facilitator Code",
   "facilitatorCodeOptional": "Facilitator Code (Optional)",
   "facilitatorCodePlaceholder": "Enter an optional facilitator code",
-  "becomeFacilitator": "Become Facilitator"
+  "becomeFacilitator": "Become Facilitator",
+  "associateTeam": "Associate Team",
+  "optional": "(Optional)",
+  "selectTeam": "Select a Team"
 }

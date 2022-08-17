@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//CreateStoryboard adds a new storyboard to the db
+//CreateStoryboard adds a new storyboard
 func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*model.Storyboard, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
@@ -48,17 +48,48 @@ func (d *Database) CreateStoryboard(OwnerID string, StoryboardName string, JoinC
 		return nil, errors.New("error creating storyboard")
 	}
 
-	// if a join code is set than add owner to retro_user
-	// this prevents them from having to enter join code on initial create to enter
+	return b, nil
+}
+
+//TeamCreateStoryboard adds a new storyboard associated to a team
+func (d *Database) TeamCreateStoryboard(TeamID string, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*model.Storyboard, error) {
+	var encryptedJoinCode string
+	var encryptedFacilitatorCode string
+
 	if JoinCode != "" {
-		if _, err := d.db.Exec(
-			`INSERT INTO storyboard_user (storyboard_id, user_id)
-		VALUES ($1, $2)`,
-			b.Id,
-			OwnerID,
-		); err != nil {
-			d.logger.Error("insert storyboard user error", zap.Error(err))
+		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, codeErr
 		}
+		encryptedJoinCode = EncryptedCode
+	}
+
+	if FacilitatorCode != "" {
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		if codeErr != nil {
+			return nil, codeErr
+		}
+		encryptedFacilitatorCode = EncryptedCode
+	}
+
+	var b = &model.Storyboard{
+		Id:      "",
+		OwnerID: OwnerID,
+		Name:    StoryboardName,
+		Users:   make([]*model.StoryboardUser, 0),
+	}
+
+	e := d.db.QueryRow(
+		`SELECT * FROM team_create_storyboard($1, $2, $3, $4, $5);`,
+		TeamID,
+		OwnerID,
+		StoryboardName,
+		encryptedJoinCode,
+		encryptedFacilitatorCode,
+	).Scan(&b.Id)
+	if e != nil {
+		d.logger.Error("team_create_storyboard query error", zap.Error(e))
+		return nil, errors.New("error creating storyboard")
 	}
 
 	return b, nil

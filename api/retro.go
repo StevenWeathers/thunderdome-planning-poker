@@ -2,7 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"github.com/spf13/viper"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -44,8 +45,14 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		TeamID, teamIdExists := vars["teamId"]
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		if !teamIdExists && viper.GetBool("config.require_teams") {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "RETRO_CREATION_REQUIRES_TEAM"))
+			return
+		}
+
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -64,33 +71,26 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 
-		newRetro, err := a.db.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
+		var newRetro *model.Retro
+		var err error
 		// if retro created with team association
-		TeamID, ok := vars["teamId"]
-		if ok {
-			OrgRole := ctx.Value(contextKeyOrgRole)
-			DepartmentRole := ctx.Value(contextKeyDepartmentRole)
-			TeamRole := ctx.Value(contextKeyTeamRole).(string)
-			var isAdmin bool
-			if DepartmentRole != nil && DepartmentRole.(string) == "ADMIN" {
-				isAdmin = true
-			}
-			if OrgRole != nil && OrgRole.(string) == "ADMIN" {
-				isAdmin = true
-			}
 
-			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddRetro(ctx, TeamID, newRetro.Id)
-
+		if teamIdExists {
+			if isTeamUserOrAnAdmin(r) {
+				newRetro, err = a.db.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
+			} else {
+				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				return
+			}
+		} else {
+			newRetro, err = a.db.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
 		}
 
@@ -229,7 +229,7 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 		ActionID := vars["actionId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -338,7 +338,7 @@ func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
 		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -403,7 +403,7 @@ func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
 			return
 		}
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

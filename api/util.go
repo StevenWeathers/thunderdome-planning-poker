@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -246,20 +245,6 @@ func (a *api) Failure(w http.ResponseWriter, r *http.Request, code int, err erro
 	w.Write(response)
 }
 
-// getJSONRequestBody gets a JSON request body broken into a key/value map
-func getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[string]interface{} {
-	body, _ := ioutil.ReadAll(r.Body) // check for errors
-	keyVal := make(map[string]interface{})
-	jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-
-	if jsonErr != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return nil
-	}
-
-	return keyVal
-}
-
 // getLimitOffsetFromRequest gets the limit and offset query parameters from the request
 // defaulting to 20 for limit and 0 for offset
 func getLimitOffsetFromRequest(r *http.Request) (limit int, offset int) {
@@ -383,4 +368,22 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 	}
 
 	return AuthedUser, SessionId, nil
+}
+
+// isTeamUserOrAnAdmin determines if the request user is a team user
+// or team admin, or department admin (if applicable), or organization admin (if applicable), or application admin
+func isTeamUserOrAnAdmin(r *http.Request) bool {
+	UserType := r.Context().Value(contextKeyUserType).(string)
+	OrgRole := r.Context().Value(contextKeyOrgRole)
+	DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
+	TeamRole := r.Context().Value(contextKeyTeamRole).(string)
+	var isAdmin = UserType == adminUserType
+	if DepartmentRole != nil && DepartmentRole.(string) == adminUserType {
+		isAdmin = true
+	}
+	if OrgRole != nil && OrgRole.(string) == adminUserType {
+		isAdmin = true
+	}
+
+	return isAdmin || TeamRole != ""
 }

@@ -2,7 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"github.com/spf13/viper"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -78,12 +79,17 @@ type battleRequestBody struct {
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles [post]
 func (a *api) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
-		ctx := r.Context()
-		UserType := ctx.Value(contextKeyUserType).(string)
+		TeamID, teamIdExists := vars["teamId"]
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		if !teamIdExists && viper.GetBool("config.require_teams") {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "BATTLE_CREATION_REQUIRES_TEAM"))
+			return
+		}
+
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -102,43 +108,35 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			return
 		}
 
-		newBattle, err := a.db.CreateBattle(UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
-		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		// when battleLeaders array is passed add additional leaders to battle
-		if len(b.BattleLeaders) > 0 {
-			updatedLeaders, err := a.db.AddBattleLeadersByEmail(newBattle.Id, b.BattleLeaders)
-			if err != nil {
-				a.logger.Error("error adding additional battle leaders")
-			} else {
-				newBattle.Leaders = updatedLeaders
-			}
-		}
-
+		var newBattle *model.Battle
+		var err error
 		// if battle created with team association
-		TeamID, ok := vars["teamId"]
-		if ok {
-			OrgRole := ctx.Value(contextKeyOrgRole)
-			DepartmentRole := ctx.Value(contextKeyDepartmentRole)
-			TeamRole := ctx.Value(contextKeyTeamRole).(string)
-			var isAdmin bool
-			if UserType != adminUserType || (DepartmentRole != nil && DepartmentRole.(string) == "ADMIN") {
-				isAdmin = true
-			}
-			if UserType != adminUserType || (OrgRole != nil && OrgRole.(string) == "ADMIN") {
-				isAdmin = true
-			}
-
-			if isAdmin == true || TeamRole != "" {
-				err := a.db.TeamAddBattle(ctx, TeamID, newBattle.Id)
-
+		if teamIdExists {
+			if isTeamUserOrAnAdmin(r) {
+				newBattle, err = a.db.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
 					return
 				}
+			} else {
+				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				return
+			}
+		} else {
+			newBattle, err = a.db.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
+			if err != nil {
+				a.Failure(w, r, http.StatusInternalServerError, err)
+				return
+			}
+		}
+
+		// when battleLeaders array is passed add additional leaders to battle
+		if len(b.BattleLeaders) > 0 {
+			updatedLeaders, err := a.db.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
+			if err != nil {
+				a.logger.Error("error adding additional battle leaders")
+			} else {
+				newBattle.Leaders = updatedLeaders
 			}
 		}
 
@@ -262,7 +260,7 @@ func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

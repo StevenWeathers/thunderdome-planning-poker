@@ -22,7 +22,10 @@ func (b *Service) UserVote(ctx context.Context, BattleID string, UserID string, 
 		PlanID           string `json:"planId"`
 		AutoFinishVoting bool   `json:"autoFinishVoting"`
 	}
-	json.Unmarshal([]byte(EventValue), &wv)
+	err := json.Unmarshal([]byte(EventValue), &wv)
+	if err != nil {
+		return nil, err, false
+	}
 
 	Plans, AllVoted := b.db.SetVote(BattleID, UserID, wv.PlanID, wv.VoteValue)
 
@@ -109,7 +112,10 @@ func (b *Service) UserSpectatorToggle(ctx context.Context, BattleID string, User
 	var st struct {
 		Spectator bool `json:"spectator"`
 	}
-	json.Unmarshal([]byte(EventValue), &st)
+	err := json.Unmarshal([]byte(EventValue), &st)
+	if err != nil {
+		return nil, err, false
+	}
 	users, err := b.db.ToggleSpectator(BattleID, UserID, st.Spectator)
 	if err != nil {
 		return nil, err, false
@@ -143,9 +149,12 @@ func (b *Service) Revise(ctx context.Context, BattleID string, UserID string, Ev
 		JoinCode             string   `json:"joinCode"`
 		LeaderCode           string   `json:"leaderCode"`
 	}
-	json.Unmarshal([]byte(EventValue), &rb)
+	err := json.Unmarshal([]byte(EventValue), &rb)
+	if err != nil {
+		return nil, err, false
+	}
 
-	err := b.db.ReviseBattle(
+	err = b.db.ReviseBattle(
 		BattleID,
 		rb.BattleName,
 		rb.PointValuesAllowed,
@@ -187,7 +196,10 @@ func (b *Service) PlanAdd(ctx context.Context, BattleID string, UserID string, E
 		Description        string `json:"description"`
 		AcceptanceCriteria string `json:"acceptanceCriteria"`
 	}
-	json.Unmarshal([]byte(EventValue), &p)
+	err := json.Unmarshal([]byte(EventValue), &p)
+	if err != nil {
+		return nil, err, false
+	}
 
 	plans, err := b.db.CreatePlan(BattleID, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria)
 	if err != nil {
@@ -210,7 +222,10 @@ func (b *Service) PlanRevise(ctx context.Context, BattleID string, UserID string
 		Description        string `json:"description"`
 		AcceptanceCriteria string `json:"acceptanceCriteria"`
 	}
-	json.Unmarshal([]byte(EventValue), &p)
+	err := json.Unmarshal([]byte(EventValue), &p)
+	if err != nil {
+		return nil, err, false
+	}
 
 	plans, err := b.db.RevisePlan(BattleID, p.Id, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria)
 	if err != nil {
@@ -264,7 +279,10 @@ func (b *Service) PlanFinalize(ctx context.Context, BattleID string, UserID stri
 		Id     string `json:"planId"`
 		Points string `json:"planPoints"`
 	}
-	json.Unmarshal([]byte(EventValue), &p)
+	err := json.Unmarshal([]byte(EventValue), &p)
+	if err != nil {
+		return nil, err, false
+	}
 
 	plans, err := b.db.FinalizePlan(BattleID, p.Id, p.Points)
 	if err != nil {
@@ -278,7 +296,10 @@ func (b *Service) PlanFinalize(ctx context.Context, BattleID string, UserID stri
 
 // Abandon handles setting abandoned true so battle doesn't show up in users battle list, then leaves battle
 func (b *Service) Abandon(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	b.db.AbandonBattle(BattleID, UserID)
+	_, err := b.db.AbandonBattle(BattleID, UserID)
+	if err != nil {
+		return nil, err, false
+	}
 
 	return nil, errors.New("ABANDONED_BATTLE"), true
 }

@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -62,7 +62,7 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 func (a *api) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var alert = alertRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -114,7 +114,7 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 		}
 
 		var alert = alertRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
