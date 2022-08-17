@@ -27,10 +27,10 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("analytics.enabled", true)
 	viper.SetDefault("analytics.id", "UA-140245309-1")
 
-	viper.SetDefault("otel.enabled", true)
+	viper.SetDefault("otel.enabled", false)
 	viper.SetDefault("otel.service_name", "thunderdome")
 	viper.SetDefault("otel.collector_url", "localhost:4317")
-	viper.SetDefault("otel.insecure_mode", true)
+	viper.SetDefault("otel.insecure_mode", false)
 
 	viper.SetDefault("db.host", "db")
 	viper.SetDefault("db.port", 5432)
