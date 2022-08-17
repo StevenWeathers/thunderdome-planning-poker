@@ -17,10 +17,11 @@ import (
 func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User, string, error) {
 	var user model.User
 	var passHash string
+	sanitizedEmail := sanitizeEmail(UserEmail)
 
 	err := d.db.QueryRow(
 		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE LOWER(email) = $1`,
-		sanitizeEmail(UserEmail),
+		sanitizedEmail,
 	).Scan(
 		&user.Id,
 		&user.Name,
@@ -36,7 +37,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			d.logger.Error("Unable to auth user not found", zap.Error(err), zap.String("email", UserEmail))
+			d.logger.Error("Unable to auth user not found", zap.Error(err), zap.String("email", sanitizedEmail))
 			return nil, "", errors.New("USER_NOT_FOUND")
 		} else {
 			return nil, "", err
@@ -57,7 +58,7 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		if hashErr == nil {
 			_, updateErr := d.db.Exec(`call update_user_password($1, $2)`, user.Id, hashedPassword)
 			if updateErr != nil {
-				d.logger.Error("Unable to update password cost", zap.Error(updateErr), zap.String("email", UserEmail))
+				d.logger.Error("Unable to update password cost", zap.Error(updateErr), zap.String("email", sanitizedEmail))
 			}
 		}
 	}
