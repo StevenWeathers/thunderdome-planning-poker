@@ -5,6 +5,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"time"
 
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
@@ -61,6 +62,9 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
 		d.logger.Ctx(ctx).Fatal("error connecting to the database: ", zap.Error(err))
 	}
 	d.db = pdb
+	d.db.SetMaxOpenConns(25)
+	d.db.SetMaxIdleConns(25)
+	d.db.SetConnMaxLifetime(5 * time.Minute)
 
 	err = otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
 		semconv.DBSystemPostgreSQL,
