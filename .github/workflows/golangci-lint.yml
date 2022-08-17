@@ -24,13 +24,12 @@ jobs:
         run: |
           go mod download
           if [ -f Gopkg.toml ]; then
-           curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-           dep ensure
+          curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+          dep ensure
           fi
           go install github.com/swaggo/swag/cmd/swag@v1.7.4
-
-          - name: Generate swagger docs
-            run: swag init -g api/api.go -o swaggerdocs
+      - name: Generate swagger docs
+        run: swag init -g api/api.go -o swaggerdocs
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
