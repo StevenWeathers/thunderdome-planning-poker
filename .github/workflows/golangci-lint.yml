@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.18
+      - uses: actions/checkout@v3
       - name: Get dependencies
         run: |
           go mod download
@@ -30,7 +31,6 @@ jobs:
 
           - name: Generate swagger docs
             run: swag init -g api/api.go -o swaggerdocs
-      - uses: actions/checkout@v3
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
