@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"github.com/spf13/viper"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -46,7 +46,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 			return
 		}
 
-		body, bodyErr := ioutil.ReadAll(r.Body) // check for errors
+		body, bodyErr := io.ReadAll(r.Body) // check for errors
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -244,20 +243,6 @@ func (a *api) Failure(w http.ResponseWriter, r *http.Request, code int, err erro
 	w.Write(response)
 }
 
-// getJSONRequestBody gets a JSON request body broken into a key/value map
-func getJSONRequestBody(r *http.Request, w http.ResponseWriter) map[string]interface{} {
-	body, _ := ioutil.ReadAll(r.Body) // check for errors
-	keyVal := make(map[string]interface{})
-	jsonErr := json.Unmarshal(body, &keyVal) // check for errors
-
-	if jsonErr != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return nil
-	}
-
-	return keyVal
-}
-
 // getLimitOffsetFromRequest gets the limit and offset query parameters from the request
 // defaulting to 20 for limit and 0 for offset
 func getLimitOffsetFromRequest(r *http.Request) (limit int, offset int) {
@@ -398,5 +383,5 @@ func isTeamUserOrAnAdmin(r *http.Request) bool {
 		isAdmin = true
 	}
 
-	return isAdmin == true || TeamRole != ""
+	return isAdmin || TeamRole != ""
 }

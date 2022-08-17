@@ -146,7 +146,10 @@ func (m *Email) Send(UserName string, UserEmail string, Subject string, Body str
 		return err
 	}
 
-	c.StartTLS(tlsConfig)
+	tlsErr := c.StartTLS(tlsConfig)
+	if tlsErr != nil {
+		m.logger.Error("Error starting TLS", zap.Error(tlsErr))
+	}
 
 	// Auth
 	if m.config.smtpSecure {
@@ -186,7 +189,10 @@ func (m *Email) Send(UserName string, UserEmail string, Subject string, Body str
 		return err
 	}
 
-	c.Quit()
+	quitErr := c.Quit()
+	if quitErr != nil {
+		m.logger.Error("Error quitting smtp server connection", zap.Error(quitErr))
+	}
 
 	return nil
 }

@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -121,7 +121,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 		UserID := vars["userId"]
 
 		var team = teamCreateRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -171,7 +171,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 		TeamID := vars["teamId"]
 
 		var u = teamAddUserRequestBody{}
-		body, bodyErr := ioutil.ReadAll(r.Body)
+		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
@@ -374,8 +374,6 @@ func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-
-		return
 	}
 }
 
@@ -428,8 +426,6 @@ func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-
-		return
 	}
 }
 

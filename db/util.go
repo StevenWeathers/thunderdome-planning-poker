@@ -108,11 +108,8 @@ func comparePasswords(hashedPwd string, password string) bool {
 	byteHash := []byte(hashedPwd)
 	SubmittedPassword := []byte(password)
 	err := bcrypt.CompareHashAndPassword(byteHash, SubmittedPassword)
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
 
 // checkPasswordCost checks the passwords stored hash for bcrypt cost

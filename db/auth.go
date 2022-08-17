@@ -17,10 +17,11 @@ import (
 func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User, string, error) {
 	var user model.User
 	var passHash string
+	sanitizedEmail := sanitizeEmail(UserEmail)
 
-	e := d.db.QueryRow(
+	err := d.db.QueryRow(
 		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE LOWER(email) = $1`,
-		sanitizeEmail(UserEmail),
+		sanitizedEmail,
 	).Scan(
 		&user.Id,
 		&user.Name,
@@ -34,12 +35,12 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 		&user.Disabled,
 		&user.MFAEnabled,
 	)
-	if e != nil {
-		if errors.Is(e, sql.ErrNoRows) {
-			d.logger.Error("Unable to auth user not found", zap.Error(e), zap.String("email", UserEmail))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			d.logger.Error("Unable to auth user not found", zap.Error(err), zap.String("email", sanitizedEmail))
 			return nil, "", errors.New("USER_NOT_FOUND")
 		} else {
-			return nil, "", e
+			return nil, "", err
 		}
 	}
 
@@ -52,10 +53,13 @@ func (d *Database) AuthUser(UserEmail string, UserPassword string) (*model.User,
 	}
 
 	// check to see if the bcrypt cost has been updated, if not do so
-	if checkPasswordCost(passHash) == true {
+	if checkPasswordCost(passHash) {
 		hashedPassword, hashErr := hashSaltPassword(UserPassword)
 		if hashErr == nil {
-			d.db.Exec(`call update_user_password($1, $2)`, user.Id, hashedPassword)
+			_, updateErr := d.db.Exec(`call update_user_password($1, $2)`, user.Id, hashedPassword)
+			if updateErr != nil {
+				d.logger.Error("Unable to update password cost", zap.Error(updateErr), zap.String("email", sanitizedEmail))
+			}
 		}
 	}
 

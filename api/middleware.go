@@ -17,7 +17,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 		apiKey = strings.TrimSpace(apiKey)
 		var User *model.User
 
-		if apiKey != "" && a.config.ExternalAPIEnabled == true {
+		if apiKey != "" && a.config.ExternalAPIEnabled {
 			var apiKeyErr error
 			User, apiKeyErr = a.db.GetApiKeyUser(apiKey)
 			if apiKeyErr != nil {
@@ -135,7 +135,7 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if EntityUser.Verified == false {
+		if !EntityUser.Verified {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
 			return
 		}
