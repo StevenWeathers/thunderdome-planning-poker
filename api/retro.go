@@ -198,7 +198,7 @@ func (a *api) handleGetRetros() http.HandlerFunc {
 
 type actionUpdateRequestBody struct {
 	ActionID  string `json:"id" swaggerignore:"true" validate:"required,uuid"`
-	Completed bool   `json:"completed" example:"false" validate:"required,boolean"`
+	Completed bool   `json:"completed" example:"false"`
 	Content   string `json:"content" example:"update documentation" validate:"required"`
 }
 

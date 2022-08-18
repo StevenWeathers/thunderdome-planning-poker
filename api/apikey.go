@@ -107,7 +107,7 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 }
 
 type apikeyUpdateRequestBody struct {
-	Active bool `json:"active" validate:"required,boolean"`
+	Active bool `json:"active"`
 }
 
 // handleUserAPIKeyUpdate handles updating a users API key
