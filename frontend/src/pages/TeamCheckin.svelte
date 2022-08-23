@@ -1,5 +1,6 @@
 <script>
     import { onDestroy, onMount } from 'svelte'
+    import Sockette from 'sockette'
 
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
@@ -13,7 +14,7 @@
     import Gauge from '../components/Gauge.svelte'
     import { _ } from '../i18n.js'
     import { warrior as user } from '../stores.js'
-    import { appRoutes } from '../config.js'
+    import { appRoutes, PathPrefix } from '../config.js'
     import { validateUserIsRegistered } from '../validationUtils.js'
     import {
         formatDayForInput,
@@ -28,6 +29,9 @@
     export let organizationId
     export let departmentId
     export let teamId
+
+    const hostname = window.location.origin
+    const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
 
     let showCheckin = false
     let now = new Date()
@@ -289,15 +293,67 @@
             })
     }
 
-    let evtSource
+    const onSocketMessage = function (evt) {
+        const parsedEvent = JSON.parse(evt.data)
 
-    function establishSSE() {
-        evtSource = new EventSource(`${teamPrefix}/checkin`)
-        evtSource.onmessage = function (evt) {
-            if (evt.data !== 'ping') {
+        switch (parsedEvent.type) {
+            case 'init':
+            case 'checkin_added':
+            case 'checkin_updated':
+            case 'checkin_deleted':
+            case 'comment_added':
+            case 'comment_updated':
+            case 'comment_deleted':
                 getCheckins()
-            }
+                break
+            default:
+                break
         }
+    }
+
+    const ws = new Sockette(
+        `${socketExtension}://${window.location.host}${PathPrefix}/api/teams/${teamId}/checkin`,
+        {
+            timeout: 2e3,
+            maxAttempts: 15,
+            onmessage: onSocketMessage,
+            onerror: () => {
+                eventTag('socket_error', 'checkin', '')
+            },
+            onclose: e => {
+                if (e.code === 4004) {
+                    eventTag('not_found', 'checkin', '', () => {
+                        router.route(appRoutes.teams)
+                    })
+                } else if (e.code === 4001) {
+                    eventTag('socket_unauthorized', 'checkin', '', () => {
+                        user.delete()
+                        router.route(`${appRoutes.register}/checkin/${teamId}`)
+                    })
+                } else {
+                    eventTag('socket_close', 'checkin', '')
+                }
+            },
+            onopen: () => {
+                eventTag('socket_open', 'checkin', '')
+            },
+            onmaximum: () => {
+                eventTag(
+                    'socket_error',
+                    'retro',
+                    'Socket Reconnect Max Reached',
+                )
+            },
+        },
+    )
+
+    const sendSocketEvent = (type, value) => {
+        ws.send(
+            JSON.stringify({
+                type,
+                value,
+            }),
+        )
     }
 
     onMount(() => {
@@ -311,11 +367,12 @@
 
         getTeam()
         getUsers()
-        establishSSE()
     })
 
     onDestroy(() => {
-        evtSource && evtSource.close()
+        eventTag('leave', 'checkin', '', () => {
+            ws.close()
+        })
     })
 
     function calculateCheckinStats() {

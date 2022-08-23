@@ -74,7 +74,7 @@ type checkinCreateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [post]
-func (a *api) handleCheckinCreate(broker *checkin.Broker) http.HandlerFunc {
+func (a *api) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
@@ -103,7 +103,7 @@ func (a *api) handleCheckinCreate(broker *checkin.Broker) http.HandlerFunc {
 			return
 		}
 
-		err := a.db.CheckinCreate(r.Context(), TeamId, c.UserId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+		err := tc.APIEvent(r.Context(), TeamId, c.UserId, "checkin_create", string(body))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -113,13 +113,12 @@ func (a *api) handleCheckinCreate(broker *checkin.Broker) http.HandlerFunc {
 			return
 		}
 
-		broker.BroadcastMessage(TeamId, "checkin_created")
-
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
 type checkinUpdateRequestBody struct {
+	CheckinId string `json:"checkinId" swaggerignore:"true"`
 	Yesterday string `json:"yesterday"`
 	Today     string `json:"today"`
 	Blockers  string `json:"blockers"`
@@ -140,8 +139,10 @@ type checkinUpdateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [put]
-func (a *api) handleCheckinUpdate(broker *checkin.Broker) http.HandlerFunc {
+func (a *api) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		userId := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -169,13 +170,18 @@ func (a *api) handleCheckinUpdate(broker *checkin.Broker) http.HandlerFunc {
 			return
 		}
 
-		err := a.db.CheckinUpdate(r.Context(), CheckinId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+		c.CheckinId = CheckinId
+		cu, jsonErr := json.Marshal(c)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := tc.APIEvent(ctx, TeamId, userId, "checkin_update", string(cu))
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
-
-		broker.BroadcastMessage(TeamId, "checkin_updated")
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -193,8 +199,10 @@ func (a *api) handleCheckinUpdate(broker *checkin.Broker) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [delete]
-func (a *api) handleCheckinDelete(broker *checkin.Broker) http.HandlerFunc {
+func (a *api) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		userId := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -209,21 +217,33 @@ func (a *api) handleCheckinDelete(broker *checkin.Broker) http.HandlerFunc {
 			return
 		}
 
-		err := a.db.CheckinDelete(r.Context(), CheckinId)
+		type checkinDeleteRequest struct {
+			CheckinId string `json:"checkinId"`
+		}
+		var c = checkinDeleteRequest{
+			CheckinId: CheckinId,
+		}
+		cu, jsonErr := json.Marshal(c)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := tc.APIEvent(ctx, TeamId, userId, "checkin_delete", string(cu))
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
-
-		broker.BroadcastMessage(TeamId, "checkin_deleted")
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
 type checkinCommentRequestBody struct {
-	UserID  string `json:"userId" validate:"required,uuid"`
-	Comment string `json:"comment" validate:"required"`
+	CheckinId string `json:"checkinId" swaggerignore:"true"`
+	CommentId string `json:"commentId" swaggerignore:"true"`
+	UserID    string `json:"userId" validate:"required,uuid"`
+	Comment   string `json:"comment" validate:"required"`
 }
 
 // handleCheckinComment handles creating a team user checkin comment
@@ -239,8 +259,9 @@ type checkinCommentRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments [post]
-func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
+func (a *api) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -274,7 +295,14 @@ func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 			return
 		}
 
-		err := a.db.CheckinComment(r.Context(), TeamId, CheckinId, c.UserID, c.Comment)
+		c.CheckinId = CheckinId
+		cu, jsonErr := json.Marshal(c)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := tc.APIEvent(ctx, TeamId, c.UserID, "comment_create", string(cu))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -283,8 +311,6 @@ func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
-
-		broker.BroadcastMessage(TeamId, "checkin_comment_added")
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -303,8 +329,9 @@ func (a *api) handleCheckinComment(broker *checkin.Broker) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments [put]
-func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc {
+func (a *api) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -338,7 +365,14 @@ func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc 
 			return
 		}
 
-		err := a.db.CheckinCommentEdit(r.Context(), TeamId, c.UserID, CommentId, c.Comment)
+		c.CommentId = CommentId
+		cu, jsonErr := json.Marshal(c)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := tc.APIEvent(ctx, TeamId, c.UserID, "comment_update", string(cu))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
@@ -347,8 +381,6 @@ func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc 
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
-
-		broker.BroadcastMessage(TeamId, "checkin_comment_edited")
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -367,8 +399,10 @@ func (a *api) handleCheckinCommentEdit(broker *checkin.Broker) http.HandlerFunc 
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments/{commentId} [delete]
-func (a *api) handleCheckinCommentDelete(broker *checkin.Broker) http.HandlerFunc {
+func (a *api) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		userId := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -383,13 +417,20 @@ func (a *api) handleCheckinCommentDelete(broker *checkin.Broker) http.HandlerFun
 			return
 		}
 
-		err := a.db.CheckinCommentDelete(r.Context(), CommentId)
+		c := checkinCommentRequestBody{
+			CommentId: CommentId,
+		}
+		cu, jsonErr := json.Marshal(c)
+		if jsonErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		err := tc.APIEvent(ctx, TeamId, userId, "comment_delete", string(cu))
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
-
-		broker.BroadcastMessage(TeamId, "checkin_comment_deleted")
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
