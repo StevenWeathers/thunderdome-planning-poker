@@ -17,8 +17,10 @@ jobs:
         AWS_DEFAULT_REGION: us-east-1
         AWS_DEFAULT_OUTPUT: json
       run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 908947218138.dkr.ecr.us-east-1.amazonaws.com
-    - name: git checkout 
+    - name: Checkout
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: build &push
       #uses: docker/build-push-action@v2
