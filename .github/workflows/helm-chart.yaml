@@ -1,6 +1,9 @@
 name: helm-chart-releaser
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   helm-installer:
