@@ -1,0 +1,22 @@
+name: helm-chart-releaser
+
+on: [push]
+
+jobs:
+  helm-installer:
+    runs-on: ubuntu-latest
+    steps:
+    # - name: install_dependencies
+    - name: Configure AWS Credentials
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-east-1
+        AWS_DEFAULT_OUTPUT: json
+      run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 908947218138.dkr.ecr.us-east-1.amazonaws.com
+    
+    - name: build &push
+      uses: docker/build-push-action@v2
+      run: docker build . -f build/Dockerfile -t thunderdome:latest
+      run: docker tag thunderdome:latest 908947218138.dkr.ecr.us-east-1.amazonaws.com/thunderdome:latest 
+      run: docker push 908947218138.dkr.ecr.us-east-1.amazonaws.com/thunderdome:latest
