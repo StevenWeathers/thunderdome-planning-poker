@@ -16,7 +16,7 @@ jobs:
       run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 908947218138.dkr.ecr.us-east-1.amazonaws.com
     
     - name: build &push
-      uses: docker/build-push-action@v2
+      #uses: docker/build-push-action@v2
       run: |
         docker build . -f build/Dockerfile -t thunderdome:latest
         docker tag thunderdome:latest 908947218138.dkr.ecr.us-east-1.amazonaws.com/thunderdome:latest 
