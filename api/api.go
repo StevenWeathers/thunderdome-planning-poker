@@ -39,6 +39,8 @@ type Config struct {
 	SecureCookieFlag bool
 	// Whether LDAP is enabled for authentication
 	LdapEnabled bool
+	// Whether header authentication is enabled
+	HeaderAuthEnabled bool
 	// Feature flag for Poker Planning
 	FeaturePoker bool
 	// Feature flag for Retrospectives
@@ -129,6 +131,8 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 	// user authentication, profile
 	if a.config.LdapEnabled {
 		apiRouter.HandleFunc("/auth/ldap", a.handleLdapLogin()).Methods("POST")
+	} else if a.config.HeaderAuthEnabled {
+		apiRouter.HandleFunc("/auth", a.handleHeaderLogin()).Methods("GET")
 	} else {
 		apiRouter.HandleFunc("/auth", a.handleLogin()).Methods("POST")
 		apiRouter.HandleFunc("/auth/forgot-password", a.handleForgotPassword()).Methods("POST")

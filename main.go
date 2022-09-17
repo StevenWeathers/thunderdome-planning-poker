@@ -60,6 +60,8 @@ type Config struct {
 	UserAPIKeyLimit int
 	// Whether LDAP is enabled for authentication
 	LdapEnabled bool
+	// Whether header authentication is enabled
+	HeaderAuthEnabled bool
 }
 
 type server struct {
@@ -118,6 +120,7 @@ func main() {
 			ExternalAPIEnabled: viper.GetBool("config.allow_external_api"),
 			UserAPIKeyLimit:    viper.GetInt("config.user_apikey_limit"),
 			LdapEnabled:        viper.GetString("auth.method") == "ldap",
+			HeaderAuthEnabled:  viper.GetString("auth.method") == "header",
 		},
 		router: router,
 		cookie: securecookie.New([]byte(cookieHashkey), nil),

@@ -85,6 +85,8 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("auth.ldap.filter", "(&(objectClass=posixAccount)(mail=%s))")
 	viper.SetDefault("auth.ldap.mail_attr", "mail")
 	viper.SetDefault("auth.ldap.cn_attr", "cn")
+	viper.SetDefault("auth.header.usernameHeader", "Remote-User")
+	viper.SetDefault("auth.header.emailHeader", "Remote-Email")
 
 	viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	viper.BindEnv("http.port", "PORT")
@@ -157,6 +159,8 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.BindEnv("auth.ldap.filter", "AUTH_LDAP_FILTER")
 	viper.BindEnv("auth.ldap.mail_attr", "AUTH_LDAP_MAIL_ATTR")
 	viper.BindEnv("auth.ldap.cn_attr", "AUTH_LDAP_CN_ATTR")
+	viper.BindEnv("auth.header.usernameHeader", "AUTH_HEADER_USERNAME_HEADER")
+	viper.BindEnv("auth.header.emailHeader", "AUTH_HEADER_EMAIL_HEADER")
 
 	err := viper.ReadInConfig()
 	if err != nil {

@@ -370,6 +370,43 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 	return AuthedUser, SessionId, nil
 }
 
+// Authenticate using HTTP headers and if user does not exist, automatically add user as a verified user
+func (a *api) authAndCreateUserHeader(ctx context.Context, username string, useremail string) (*model.User, string, error) {
+	var AuthedUser *model.User
+	var SessionId string
+	var sessErr error
+
+	AuthedUser, err := a.db.GetUserByEmail(ctx, useremail)
+
+	if AuthedUser == nil {
+		a.logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
+		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(ctx, username, useremail, "", "")
+		if err != nil {
+			a.logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
+			return AuthedUser, SessionId, err
+		}
+		err = a.db.VerifyUserAccount(ctx, verifyID)
+		if err != nil {
+			a.logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
+			return AuthedUser, SessionId, err
+		}
+		AuthedUser = newUser
+		SessionId = sessionId
+	} else {
+		if AuthedUser.Disabled {
+			return nil, "", fmt.Errorf("user is disabled")
+		}
+
+		SessionId, sessErr = a.db.CreateSession(ctx, AuthedUser.Id)
+		if sessErr != nil {
+			a.logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
+			return nil, "", err
+		}
+	}
+
+	return AuthedUser, SessionId, nil
+}
+
 // isTeamUserOrAnAdmin determines if the request user is a team user
 // or team admin, or department admin (if applicable), or organization admin (if applicable), or application admin
 func isTeamUserOrAnAdmin(r *http.Request) bool {

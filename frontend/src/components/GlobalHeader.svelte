@@ -21,6 +21,7 @@
         FeatureRetro,
         FeatureStoryboard,
         OrganizationsEnabled,
+        HeaderAuthEnabled,
     } = AppConfig
 
     const activePageClass =
@@ -46,6 +47,39 @@
             .catch(function () {
                 notifications.danger($_('logoutError'))
                 eventTag('logout', 'engagement', 'failure')
+            })
+    }
+
+    function headerLogin() {
+        xfetch('/api/auth', { skip401Redirect: true })
+            .then(res => res.json())
+            .then(function (result) {
+                const u = result.data.user
+                const newUser = {
+                    id: u.id,
+                    name: u.name,
+                    email: u.email,
+                    rank: u.rank,
+                    locale: u.locale,
+                    notificationsEnabled: u.notificationsEnabled,
+                }
+                if (result.data.mfaRequired) {
+                    mfaRequired = true
+                    mfaUser = newUser
+                    mfaSessionId = result.data.sessionId
+                } else {
+                    warrior.create(newUser)
+                    eventTag('login', 'engagement', 'success', () => {
+                        setupI18n({
+                            withLocale: newUser.locale,
+                        })
+                        router.route(appRoutes.battles, true)
+                    })
+                }
+            })
+            .catch(function (err) {
+                notifications.danger($_('pages.login.authError'))
+                eventTag('login', 'engagement', 'failure')
             })
     }
 </script>
@@ -136,11 +170,19 @@
             >
                 {#if !$warrior.name}
                     <div class="uppercase">
-                        <a
-                            href="{appRoutes.login}"
-                            class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 text-lg lg:text-xl"
-                            >{$_('pages.login.nav')}</a
-                        >
+                        {#if HeaderAuthEnabled}
+                            <SolidButton
+                                additionalClasses="uppercase text-md lg:text-lg"
+                                onClick="{headerLogin}"
+                                >{$_('pages.login.nav')}</SolidButton
+                            >
+                        {:else}
+                            <a
+                                href="{appRoutes.login}"
+                                class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 text-lg lg:text-xl"
+                                >{$_('pages.login.nav')}</a
+                            >
+                        {/if}
                         {#if AllowRegistration}
                             <SolidButton
                                 href="{appRoutes.register}"

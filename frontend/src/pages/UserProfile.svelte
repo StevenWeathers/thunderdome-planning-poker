@@ -24,7 +24,7 @@
 
     let updatePassword = false
 
-    const { ExternalAPIEnabled, LdapEnabled } = AppConfig
+    const { ExternalAPIEnabled, LdapEnabled, HeaderAuthEnabled } = AppConfig
 
     function toggleUpdatePassword() {
         updatePassword = !updatePassword
@@ -218,6 +218,7 @@
                         notifications="{notifications}"
                         eventTag="{eventTag}"
                         ldapEnabled="{LdapEnabled}"
+                        headerAuthEnabled="{HeaderAuthEnabled}"
                     />
                 </div>
             {/if}
@@ -416,7 +417,7 @@
             {/if}
         </div>
 
-        {#if !LdapEnabled}
+        {#if !LdapEnabled && !HeaderAuthEnabled}
             <div class="w-full text-center mt-8">
                 <HollowButton onClick="{toggleDeleteAccount}" color="red">
                     {$_('pages.warriorProfile.delete.deleteButton')}
