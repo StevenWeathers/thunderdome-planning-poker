@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
@@ -150,7 +151,24 @@ func (d *Database) GetRetroVotes(RetroID string) []*model.RetroVote {
 
 // GroupUserVote inserts a user vote for the retro item group
 func (d *Database) GroupUserVote(RetroID string, GroupID string, UserID string) ([]*model.RetroVote, error) {
-	if _, err := d.db.Exec(
+	var voteCount int
+	var maxVotes int
+	err := d.db.QueryRow(
+		`SELECT count(rgv.group_id), max(r.max_votes)
+				FROM retro_group_vote rgv
+				LEFT JOIN retro r on rgv.retro_id = r.id
+				WHERE rgv.retro_id = $1 AND rgv.user_id = $2;`,
+		RetroID, UserID,
+	).Scan(&voteCount, &maxVotes)
+	if err != nil {
+		d.logger.Error("retro group vote count query error", zap.Error(err))
+	}
+
+	if voteCount == maxVotes {
+		return nil, errors.New("VOTE_LIMIT_REACHED")
+	}
+
+	if _, err = d.db.Exec(
 		`INSERT INTO retro_group_vote
 		(retro_id, group_id, user_id)
 		VALUES ($1, $2, $3);`,
@@ -177,21 +195,4 @@ func (d *Database) GroupUserSubtractVote(RetroID string, GroupID string, UserID 
 	votes := d.GetRetroVotes(RetroID)
 
 	return votes, nil
-}
-
-// RetroUserVoteCount gets a count of user's votes for the retro
-func (d *Database) RetroUserVoteCount(RetroID string, UserID string) (int, error) {
-	var voteCount int
-
-	err := d.db.QueryRow(
-		`SELECT count(group_id) FROM retro_group_vote WHERE retro_id = $1 AND user_id = $2;`,
-		RetroID,
-		UserID,
-	).Scan(&voteCount)
-	if err != nil {
-		d.logger.Error("retro group vote count query error", zap.Error(err))
-		return voteCount, err
-	}
-
-	return voteCount, nil
 }

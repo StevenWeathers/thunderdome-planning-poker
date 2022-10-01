@@ -106,14 +106,6 @@ func (b *Service) GroupUserVote(ctx context.Context, RetroID string, UserID stri
 		return nil, err, false
 	}
 
-	vc, vcErr := b.db.RetroUserVoteCount(RetroID, UserID)
-	if vcErr != nil {
-		return nil, vcErr, false
-	}
-	if vc == 3 {
-		return nil, errors.New("VOTE_LIMIT_REACHED"), false
-	}
-
 	votes, err := b.db.GroupUserVote(RetroID, rs.GroupId, UserID)
 	if err != nil {
 		return nil, err, false
