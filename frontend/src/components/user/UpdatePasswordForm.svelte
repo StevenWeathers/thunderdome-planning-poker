@@ -8,7 +8,7 @@
     export let toggleForm = () => {}
     export let notifications
 
-    const { LdapEnabled } = AppConfig
+    const { LdapEnabled, HeaderAuthEnabled } = AppConfig
 
     let warriorPassword1 = ''
     let warriorPassword2 = ''
@@ -34,7 +34,7 @@
     }
 
     $: updatePasswordDisabled =
-        warriorPassword1 === '' || warriorPassword2 === '' || LdapEnabled
+        warriorPassword1 === '' || warriorPassword2 === '' || LdapEnabled || HeaderAuthEnabled
 </script>
 
 <form on:submit="{updateWarriorPassword}" name="updateWarriorPassword">

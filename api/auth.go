@@ -25,7 +25,7 @@ type loginResponse struct {
 // handleLogin attempts to log in the user
 // @Summary Login
 // @Description attempts to log the user in with provided credentials
-// @Description *Endpoint only available when LDAP is not enabled
+// @Description *Endpoint only available when LDAP and header auth are not enabled
 // @Tags auth
 // @Produce  json
 // @Param credentials body userLoginRequestBody false "user login object"
@@ -120,6 +120,56 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 		}
 
 		authedUser, sessionId, err := a.authAndCreateUserLdap(r.Context(), u.Email, u.Password)
+		if err != nil {
+			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
+			return
+		}
+
+		res := loginResponse{
+			User:        authedUser,
+			SessionId:   sessionId,
+			MFARequired: authedUser.MFAEnabled,
+		}
+
+		if authedUser.MFAEnabled {
+			a.Success(w, r, http.StatusOK, res, nil)
+			return
+		}
+
+		cookieErr := a.createSessionCookie(w, sessionId)
+		if cookieErr != nil {
+			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, res, nil)
+	}
+}
+
+// handleHeaderLogin authenticates the user by looking at configurable headers
+// and then creates the user if one does not exist and logs them in
+// @Summary Login Header
+// @Description attempts to log the user in with provided credentials
+// @Description *Endpoint only available when Header auth is enabled
+// @Tags auth
+// @Produce json
+// @Success 200 object standardJsonResponse{data=loginResponse}
+// @Failure 401 object standardJsonResponse{}
+// @Failure 500 object standardJsonResponse{}
+// @Router /auth [get]
+func (a *api) handleHeaderLogin() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		viper.GetString("auth.ldap.url")
+
+		username := r.Header.Get(viper.GetString("auth.header.usernameHeader"))
+		useremail := r.Header.Get(viper.GetString("auth.header.emailHeader"))
+
+		if username == "" {
+			a.Failure(w, r, http.StatusUnauthorized, Errorf(EUNAUTHORIZED, "MISSING_AUTH_HEADER"))
+			return
+		}
+
+		authedUser, sessionId, err := a.authAndCreateUserHeader(r.Context(), username, useremail)
 		if err != nil {
 			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return

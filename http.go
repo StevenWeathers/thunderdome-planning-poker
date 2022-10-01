@@ -52,6 +52,7 @@ func (s *server) routes() {
 		ExternalAPIEnabled:   s.config.ExternalAPIEnabled,
 		UserAPIKeyLimit:      s.config.UserAPIKeyLimit,
 		LdapEnabled:          s.config.LdapEnabled,
+		HeaderAuthEnabled:    s.config.HeaderAuthEnabled,
 		FeaturePoker:         viper.GetBool("feature.poker"),
 		FeatureRetro:         viper.GetBool("feature.retro"),
 		FeatureStoryboard:    viper.GetBool("feature.storyboard"),
@@ -126,6 +127,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		CleanupStoryboardsDaysOld int
 		ShowActiveCountries       bool
 		LdapEnabled               bool
+		HeaderAuthEnabled         bool
 		FeaturePoker              bool
 		FeatureRetro              bool
 		FeatureStoryboard         bool
@@ -163,6 +165,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		CleanupStoryboardsDaysOld: viper.GetInt("config.cleanup_storyboards_days_old"),
 		ShowActiveCountries:       viper.GetBool("config.show_active_countries"),
 		LdapEnabled:               s.config.LdapEnabled,
+		HeaderAuthEnabled:         s.config.HeaderAuthEnabled,
 		FeaturePoker:              viper.GetBool("feature.poker"),
 		FeatureRetro:              viper.GetBool("feature.retro"),
 		FeatureStoryboard:         viper.GetBool("feature.storyboard"),

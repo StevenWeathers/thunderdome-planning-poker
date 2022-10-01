@@ -33,6 +33,7 @@
     export let notifications
     export let xfetch
     export let ldapEnabled
+    export let headerAuthEnabled
 
     const { AvatarService } = AppConfig
 
@@ -158,7 +159,7 @@
             id="yourName"
             name="yourName"
             type="text"
-            disabled="{ldapEnabled}"
+            disabled="{ldapEnabled || headerAuthEnabled}"
             required
         />
     </div>
@@ -379,7 +380,7 @@
 
     <div>
         <div class="text-right">
-            {#if !ldapEnabled && toggleUpdatePassword}
+            {#if !ldapEnabled && !headerAuthEnabled && toggleUpdatePassword}
                 <button
                     type="button"
                     class="inline-block align-baseline font-bold

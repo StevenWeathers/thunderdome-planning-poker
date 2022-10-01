@@ -97,7 +97,7 @@ set that user as ADMIN role.
 | `config.cleanup_guests_days_old`      | CONFIG_CLEANUP_GUESTS_DAYS_OLD      | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins.            | 180                                    |
 | `config.organizations_enabled`        | CONFIG_ORGANIZATIONS_ENABLED        | Whether or not creating organizations (with departments) are enabled                                                 | true                                   |
 | `config.require_teams`                | CONFIG_REQUIRE_TEAMS                | Whether or not creating battles, retros, and storyboards require being associated to a Team                          | false                                  |
-| `auth.method`                         | AUTH_METHOD                         | Choose `normal` or `ldap` as authentication method. See separate section on LDAP configuration.                      | normal                                 |
+| `auth.method`                         | AUTH_METHOD                         | Choose `normal`, `header` or `ldap` as authentication method. See separate sections on LDAP/header configurations.   | normal                                 |
 | `feature.poker`                       | FEATURE_POKER                       | Enable or Disable Agile Story Pointing (Poker) feature                                                               | true                                   |
 | `feature.retro`                       | FEATURE_RETRO                       | Enable or Disable Agile Retrospectives feature                                                                       | true                                   |
 | `feature.storyboard`                  | FEATURE_STORYBOARD                  | Enable or Disable Agile Storyboard feature                                                                           | true                                   |
@@ -164,3 +164,15 @@ ldapsearch -H auth.ldap.url [-Z] -x [-D auth.ldap.bindname -W] -b auth.ldap.base
 
 The `-Z` is only used if `auth.ldap.use_tls` is set, the `-D` and `-W` parameter is only used if `auth.ldap.bindname` is
 set.
+
+### Header auth Configuration
+
+If `auth.method` is set to `header`, then the Create Account function is disabled and authentication is done using headers.
+The assumption being that the only access to thunderdome is via a reverseproxy
+
+The following configuration options are specific to the LDAP authentication method:
+
+| Option                      | Environment Variable        | Default        | Description                               |
+| --------------------------- | --------------------------- | -------------- | ----------------------------------------- |
+| `auth.header.usernameHeader`| AUTH_HEADER_USERNAME_HEADER | `Remote-User`  | The header to use for the user's username |
+| `auth.header.emailHeader`   | AUTH_HEADER_EMAIL_HEADER    | `Remote-Email` |The header to use for the user's email     |
