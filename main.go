@@ -141,9 +141,12 @@ func main() {
 	s.routes()
 
 	srv := &http.Server{
-		Handler:     s.router,
-		Addr:        fmt.Sprintf(":%s", s.config.ListenPort),
-		ReadTimeout: 15 * time.Second,
+		Handler:           s.router,
+		Addr:              fmt.Sprintf(":%s", s.config.ListenPort),
+		WriteTimeout:      5 * time.Second,
+		ReadTimeout:       5 * time.Second,
+		IdleTimeout:       30 * time.Second,
+		ReadHeaderTimeout: 2 * time.Second,
 	}
 
 	s.logger.Info("Access the WebUI via 127.0.0.1:" + s.config.ListenPort)
