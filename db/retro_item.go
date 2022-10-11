@@ -154,12 +154,21 @@ func (d *Database) GroupUserVote(RetroID string, GroupID string, UserID string) 
 	var voteCount int
 	var maxVotes int
 	err := d.db.QueryRow(
-		`SELECT count(rgv.group_id), max(r.max_votes)
+		`SELECT r.max_votes
+				FROM retro r
+				WHERE r.id = $1;`,
+		RetroID,
+	).Scan(&maxVotes)
+	if err != nil {
+		d.logger.Error("retro max votes query error", zap.Error(err))
+	}
+
+	err = d.db.QueryRow(
+		`SELECT count(rgv.group_id)
 				FROM retro_group_vote rgv
-				LEFT JOIN retro r on rgv.retro_id = r.id
 				WHERE rgv.retro_id = $1 AND rgv.user_id = $2;`,
 		RetroID, UserID,
-	).Scan(&voteCount, &maxVotes)
+	).Scan(&voteCount)
 	if err != nil {
 		d.logger.Error("retro group vote count query error", zap.Error(err))
 	}
