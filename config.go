@@ -23,6 +23,10 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("http.frontend_cookie_name", "warrior")
 	viper.SetDefault("http.domain", "thunderdome.dev")
 	viper.SetDefault("http.path_prefix", "")
+	viper.SetDefault("http.write_timeout", 5)
+	viper.SetDefault("http.read_timeout", 5)
+	viper.SetDefault("http.idle_timeout", 30)
+	viper.SetDefault("http.read_header_timeout", 2)
 
 	viper.SetDefault("analytics.enabled", true)
 	viper.SetDefault("analytics.id", "UA-140245309-1")
@@ -96,6 +100,10 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.BindEnv("http.frontend_cookie_name", "FRONTEND_COOKIE_NAME")
 	viper.BindEnv("http.domain", "APP_DOMAIN")
 	viper.BindEnv("http.path_prefix", "PATH_PREFIX")
+	viper.BindEnv("http.write_timeout", "HTTP_WRITE_TIMEOUT")
+	viper.BindEnv("http.read_timeout", "HTTP_READ_TIMEOUT")
+	viper.BindEnv("http.idle_timeout", "HTTP_IDLE_TIMEOUT")
+	viper.BindEnv("http.read_header_timeout", "HTTP_READ_HEADER_TIMEOUT")
 
 	viper.BindEnv("analytics.enabled", "ANALYTICS_ENABLED")
 	viper.BindEnv("analytics.id", "ANALYTICS_ID")

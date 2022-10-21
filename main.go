@@ -146,10 +146,10 @@ func main() {
 	srv := &http.Server{
 		Handler:           s.router,
 		Addr:              fmt.Sprintf(":%s", s.config.ListenPort),
-		WriteTimeout:      5 * time.Second,
-		ReadTimeout:       5 * time.Second,
-		IdleTimeout:       30 * time.Second,
-		ReadHeaderTimeout: 2 * time.Second,
+		WriteTimeout:      time.Duration(viper.GetInt("http.write_timeout")) * time.Second,
+		ReadTimeout:       time.Duration(viper.GetInt("http.read_timeout")) * time.Second,
+		IdleTimeout:       time.Duration(viper.GetInt("http.idle_timeout")) * time.Second,
+		ReadHeaderTimeout: time.Duration(viper.GetInt("http.read_header_timeout")) * time.Second,
 	}
 
 	s.logger.Info("Access the WebUI via 127.0.0.1:" + s.config.ListenPort)

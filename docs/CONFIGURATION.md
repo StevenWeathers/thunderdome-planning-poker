@@ -76,6 +76,10 @@ set that user as ADMIN role.
 | `http.secure_cookie`                  | COOKIE_SECURE                       | Use secure cookies or not.                                                                                           | true                                   |
 | `http.backend_cookie_name`            | BACKEND_COOKIE_NAME                 | The name of the backend cookie utilized for actual auth/validation                                                   | warriorId                              |
 | `http.frontend_cookie_name`           | FRONTEND_COOKIE_NAME                | The name of the cookie utilized by the UI (purely for convenience not auth)                                          | warrior                                |
+| `http.write_tiemout`                  | HTTP_WRITE_TIMEOUT                  | HTTP response write timeout in seconds                                                                               | 5                                      |
+| `http.read_tiemout`                   | HTTP_READ_TIMEOUT                   | HTTP request read timeout in seconds                                                                                 | 5                                      |
+| `http.idle_tiemout`                   | HTTP_IDLE_TIMEOUT                   | HTTP request idle timeout in seconds                                                                                 | 30                                     |
+| `http.read_header_tiemout`            | HTTP_READ_HEADER_TIMEOUT            | HTTP read header timeout in seconds                                                                             | 2                                      |
 | `analytics.enabled`                   | ANALYTICS_ENABLED                   | Enable/disable google analytics.                                                                                     | true                                   |
 | `analytics.id`                        | ANALYTICS_ID                        | Google analytics identifier.                                                                                         | UA-140245309-1                         |
 | `config.allowedPointValues`           | CONFIG_POINTS_ALLOWED               | List of available point values for creating battles.                                                                 | 0, 1/2, 2, 3, 5, 8, 13, 20, 40, 100, ? |
@@ -167,7 +171,8 @@ set.
 
 ### Header auth Configuration
 
-If `auth.method` is set to `header`, then the Create Account function is disabled and authentication is done using headers.
+If `auth.method` is set to `header`, then the Create Account function is disabled and authentication is done using
+headers.
 The assumption being that the only access to thunderdome is via a reverseproxy
 
 The following configuration options are specific to the LDAP authentication method:
