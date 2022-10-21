@@ -305,27 +305,23 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			UserAuthed = true
 		}
 
-		for {
-			if UserAuthed {
-				ss := subscription{c, storyboardID, User.Id}
-				h.register <- ss
+		if UserAuthed {
+			ss := subscription{c, storyboardID, User.Id}
+			h.register <- ss
 
-				Users, _ := b.db.AddUserToStoryboard(ss.arena, User.Id)
-				UpdatedUsers, _ := json.Marshal(Users)
+			Users, _ := b.db.AddUserToStoryboard(ss.arena, User.Id)
+			UpdatedUsers, _ := json.Marshal(Users)
 
-				Storyboard, _ := json.Marshal(storyboard)
-				initEvent := createSocketEvent("init", string(Storyboard), User.Id)
-				_ = c.write(websocket.TextMessage, initEvent)
+			Storyboard, _ := json.Marshal(storyboard)
+			initEvent := createSocketEvent("init", string(Storyboard), User.Id)
+			_ = c.write(websocket.TextMessage, initEvent)
 
-				joinedEvent := createSocketEvent("user_joined", string(UpdatedUsers), User.Id)
-				m := message{joinedEvent, ss.arena}
-				h.broadcast <- m
+			joinedEvent := createSocketEvent("user_joined", string(UpdatedUsers), User.Id)
+			m := message{joinedEvent, ss.arena}
+			h.broadcast <- m
 
-				go ss.writePump()
-				go ss.readPump(b, ctx)
-
-				break
-			}
+			go ss.writePump()
+			go ss.readPump(b, ctx)
 		}
 	}
 }

@@ -282,27 +282,23 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			UserAuthed = true
 		}
 
-		for {
-			if UserAuthed {
-				ss := subscription{c, battleID, User.Id}
-				h.register <- ss
+		if UserAuthed {
+			ss := subscription{c, battleID, User.Id}
+			h.register <- ss
 
-				Users, _ := b.db.AddUserToBattle(ss.arena, User.Id)
-				UpdatedUsers, _ := json.Marshal(Users)
+			Users, _ := b.db.AddUserToBattle(ss.arena, User.Id)
+			UpdatedUsers, _ := json.Marshal(Users)
 
-				Battle, _ := json.Marshal(battle)
-				initEvent := createSocketEvent("init", string(Battle), User.Id)
-				_ = c.write(websocket.TextMessage, initEvent)
+			Battle, _ := json.Marshal(battle)
+			initEvent := createSocketEvent("init", string(Battle), User.Id)
+			_ = c.write(websocket.TextMessage, initEvent)
 
-				joinedEvent := createSocketEvent("warrior_joined", string(UpdatedUsers), User.Id)
-				m := message{joinedEvent, ss.arena}
-				h.broadcast <- m
+			joinedEvent := createSocketEvent("warrior_joined", string(UpdatedUsers), User.Id)
+			m := message{joinedEvent, ss.arena}
+			h.broadcast <- m
 
-				go ss.writePump()
-				go ss.readPump(b, ctx)
-
-				break
-			}
+			go ss.writePump()
+			go ss.readPump(b, ctx)
 		}
 	}
 }

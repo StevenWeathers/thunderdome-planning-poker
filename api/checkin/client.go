@@ -211,18 +211,14 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			return
 		}
 
-		for {
-			ss := subscription{c, teamID, User.Id}
-			h.register <- ss
+		ss := subscription{c, teamID, User.Id}
+		h.register <- ss
 
-			initEvent := createSocketEvent("init", "", User.Id)
-			_ = c.write(websocket.TextMessage, initEvent)
+		initEvent := createSocketEvent("init", "", User.Id)
+		_ = c.write(websocket.TextMessage, initEvent)
 
-			go ss.writePump()
-			go ss.readPump(b, ctx)
-
-			break
-		}
+		go ss.writePump()
+		go ss.readPump(b, ctx)
 	}
 }
 
