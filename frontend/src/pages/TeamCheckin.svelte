@@ -34,8 +34,6 @@
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
 
     const { AllowRegistration, AllowGuests } = AppConfig
-    const loginOrRegister =
-        AllowRegistration || AllowGuests ? appRoutes.register : appRoutes.login
 
     let showCheckin = false
     let now = new Date()
@@ -332,7 +330,7 @@
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'checkin', '', () => {
                         user.delete()
-                        router.route(loginOrRegister)
+                        router.route(appRoutes.login)
                     })
                 } else {
                     eventTag('socket_close', 'checkin', '')
@@ -362,7 +360,7 @@
 
     onMount(() => {
         if (!$user.id || !validateUserIsRegistered($user)) {
-            router.route(loginOrRegister)
+            router.route(appRoutes.login)
             return
         }
 
