@@ -217,7 +217,7 @@
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'retro', '', () => {
                         user.delete()
-                        router.route(`${appRoutes.register}/retro/${retroId}`)
+                        router.route(`${loginOrRegister}/retro/${retroId}`)
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'retro', '', () => {

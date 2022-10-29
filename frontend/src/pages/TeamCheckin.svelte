@@ -14,7 +14,7 @@
     import Gauge from '../components/Gauge.svelte'
     import { _ } from '../i18n.js'
     import { warrior as user } from '../stores.js'
-    import { appRoutes, PathPrefix } from '../config.js'
+    import { AppConfig, appRoutes, PathPrefix } from '../config.js'
     import { validateUserIsRegistered } from '../validationUtils.js'
     import {
         formatDayForInput,
@@ -32,6 +32,10 @@
 
     const hostname = window.location.origin
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
+
+    const { AllowRegistration, AllowGuests } = AppConfig
+    const loginOrRegister =
+        AllowRegistration || AllowGuests ? appRoutes.register : appRoutes.login
 
     let showCheckin = false
     let now = new Date()
@@ -328,7 +332,7 @@
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'checkin', '', () => {
                         user.delete()
-                        router.route(`${appRoutes.register}/checkin/${teamId}`)
+                        router.route(loginOrRegister)
                     })
                 } else {
                     eventTag('socket_close', 'checkin', '')
@@ -358,7 +362,7 @@
 
     onMount(() => {
         if (!$user.id || !validateUserIsRegistered($user)) {
-            router.route(appRoutes.login)
+            router.route(loginOrRegister)
             return
         }
 

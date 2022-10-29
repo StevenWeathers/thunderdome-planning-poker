@@ -179,7 +179,9 @@
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'storyboard', '', () => {
                         user.delete()
-                        router.route(`${appRoutes.login}/${storyboardId}`)
+                        router.route(
+                            `${loginOrRegister}/storyboard/${storyboardId}`,
+                        )
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'storyboard', '', () => {

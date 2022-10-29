@@ -265,7 +265,7 @@
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'battle', '', () => {
                         warrior.delete()
-                        router.route(`${appRoutes.register}/battle/${battleId}`)
+                        router.route(`${loginOrRegister}/battle/${battleId}`)
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'battle', '', () => {

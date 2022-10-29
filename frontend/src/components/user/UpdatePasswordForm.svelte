@@ -34,7 +34,10 @@
     }
 
     $: updatePasswordDisabled =
-        warriorPassword1 === '' || warriorPassword2 === '' || LdapEnabled || HeaderAuthEnabled
+        warriorPassword1 === '' ||
+        warriorPassword2 === '' ||
+        LdapEnabled ||
+        HeaderAuthEnabled
 </script>
 
 <form on:submit="{updateWarriorPassword}" name="updateWarriorPassword">
