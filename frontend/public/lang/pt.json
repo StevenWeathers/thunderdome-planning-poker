@@ -1,50 +1,50 @@
 {
   "appName": "Thunderdome",
-  "appVersion": "Version {version}",
+  "appVersion": "Versão {version}",
   "avatarAltText": "Placeholder Avatar",
-  "logout": "Logout",
-  "battleEditPointsDisabled": "Voting is active, cannot modify allowed points.",
-  "save": "Save",
-  "warriorNudge": "Nudge",
-  "promote": "Promote",
-  "demote": "Demote",
-  "planTypePlaceholder": "Types",
+  "logout": "Sair",
+  "battleEditPointsDisabled": "A votação está ativa, não é possível modificar os pontos permitidos.",
+  "save": "Salvar",
+  "warriorNudge": "Cutucar",
+  "promote": "Promover",
+  "demote": "Rebaixar",
+  "planTypePlaceholder": "Tipos",
   "planLink": "Link",
-  "planLinkInvalid": "Link isn't a valid absolute URL, e.g. includes protocol (HTTP/HTTPS)",
-  "planReferenceId": "Reference ID",
-  "planReferenceIdPlaceholder": "Enter a reference ID",
-  "planDescription": "Description",
-  "planDescriptionPlaceholder": "Enter a description",
-  "planAcceptanceCriteria": "Acceptance Criteria",
-  "planAcceptanceCriteriaPlaceholder": "Enter acceptance criteria",
-  "pointed": "Pointed ({count})",
-  "unpointed": "Unpointed ({count})",
+  "planLinkInvalid": "O link não é um URL absoluto válido. Ex. deve incluir protocolo (HTTP/HTTPS)",
+  "planReferenceId": "ID de referência",
+  "planReferenceIdPlaceholder": "Insira um ID de referência",
+  "planDescription": "Descrição",
+  "planDescriptionPlaceholder": "Digite uma descrição",
+  "planAcceptanceCriteria": "Critérios de Aceitação",
+  "planAcceptanceCriteriaPlaceholder": "Insira os critérios de aceitação",
+  "pointed": "Pontuado ({count})",
+  "unpointed": "Sem pontuação ({count})",
   "view": "View",
-  "activate": "Activate",
-  "votingFinish": "Finish Voting",
-  "votingRestart": "Restart Voting",
-  "importJiraXMLBadFileTypeError": "Error bad file type",
-  "importJiraXMLReadFileError": "Error reading file",
-  "planTypeStory": "Story",
+  "activate": "Ativar",
+  "votingFinish": "Encerrar votação",
+  "votingRestart": "Recomeçar votação",
+  "importJiraXMLBadFileTypeError": "Erro tipo de arquivo incorreto",
+  "importJiraXMLReadFileError": "Erro ao ler o arquivo",
+  "planTypeStory": "História",
   "planTypeBug": "Bug",
   "planTypeSpike": "Spike",
-  "planTypeEpic": "Epic",
-  "planTypeTask": "Task",
-  "planTypeSubtask": "Subtask",
-  "landingFeatureOpenSourceTitle": "Open Source",
+  "planTypeEpic": "Épico",
+  "planTypeTask": "Tarefa",
+  "planTypeSubtask": "Subtarefa",
+  "landingFeatureOpenSourceTitle": "Código aberto",
   "landingFeatureOpenSourceText": "Check out the {repoOpen}Github repository{repoClose} to request or contribute enhancements, locale translations and bug fixes or to {donateOpen}Donate{donateClose}.",
   "pages": {
     "myBattles": {
       "createBattle": {
         "fields": {
           "allowedPointValues": {
-            "label": "Allowed Point Values"
+            "label": "Valores de pontos permitidos"
           },
           "plans": {
-            "removeButton": "Remove"
+            "removeButton": "Remover"
           },
           "averageRounding": {
-            "label": "Method of Point Average Rounding",
+            "label": "Método de Arredondamento da Média de Pontos",
             "ceil": "Ceil",
             "floor": "Floor",
             "round": "Round"
@@ -53,16 +53,16 @@
       }
     },
     "createAccount": {
-      "nav": "Create Account",
-      "title": "Enlist to Battle",
+      "nav": "Criar conta",
+      "title": "Alistem-se para a Batalha",
       "registrationDisabled": "Registration is disabled.",
       "guestForm": {
-        "title": "Register as Guest",
-        "saveButton": "Register",
+        "title": "Registre-se como convidado",
+        "saveButton": "Registrar",
         "fields": {
           "name": {
-            "label": "Name",
-            "placeholder": "Enter your name"
+            "label": "Nome",
+            "placeholder": "Digite seu nome"
           }
         }
       },
