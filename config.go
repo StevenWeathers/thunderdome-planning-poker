@@ -54,7 +54,7 @@ func InitConfig(logger *otelzap.Logger) {
 
 	viper.SetDefault("config.aes_hashkey", "therevengers")
 	viper.SetDefault("config.allowedPointValues",
-		[]string{"0", "1/2", "1", "2", "3", "5", "8", "13", "20", "40", "100", "?"})
+		[]string{"0", "1/2", "1", "2", "3", "5", "8", "13", "20", "21", "34", "40", "55", "100", "?", "☕️"})
 	viper.SetDefault("config.defaultPointValues",
 		[]string{"1", "2", "3", "5", "8", "13", "?"})
 	viper.SetDefault("config.show_warrior_rank", false)
