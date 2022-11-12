@@ -1,116 +1,116 @@
 {
-  "logoutError": "Error encountered attempting to logout warrior",
-  "battleDelete": "Delete Battle",
-  "battleAbandon": "Abandon Battle",
-  "battleCreate": "Create Battle",
-  "battleEdit": "Edit Battle",
-  "warriorCreate": "Create Warrior",
-  "planAdd": "Add Plan",
-  "planSkip": "Skip Plan",
-  "planName": "Plan Name",
-  "planNamePlaceholder": "Enter a plan name",
-  "planType": "Plan Type",
-  "planLinkPlaceholder": "Enter a link to plan",
-  "importJiraXML": "Import plans from Jira XML",
-  "landingTitle": "Thunderdome is an Agile Planning Poker app with a fun theme",
-  "landingCountries": "Warriors in over {count} countries",
+  "logoutError": "Erro encontrado ao tentar sair",
+  "battleDelete": "Excluir Batalha",
+  "battleAbandon": "Abandonar Batalha",
+  "battleCreate": "Criar batalha",
+  "battleEdit": "Editar Batata",
+  "warriorCreate": "Criar Guerreiro",
+  "planAdd": "Adicionar Plano",
+  "planSkip": "Ignorar Plano",
+  "planName": "Nome do Plano",
+  "planNamePlaceholder": "Digite o nome do plano",
+  "planType": "Tipo de Plano",
+  "planLinkPlaceholder": "Insira um link para o plano",
+  "importJiraXML": "Importar planos do XML Jira",
+  "landingTitle": "Thunderdome é um aplicativo ágil de Planning Poker com um tema divertido",
+  "landingCountries": "Guerreiros em mais de {count} países",
   "pages": {
     "myBattles": {
-      "nav": "My Battles",
-      "title": "My Battles",
-      "battlesError": "Error finding your battles",
-      "countPlansPointed": "{totalPointed} of {totalPlans} plans pointed",
+      "nav": "Minhas Batalhas",
+      "title": "Minhas Batalhas",
+      "battlesError": "Erro ao encontrar suas batalhas",
+      "countPlansPointed": "{totalPointed} de {totalPlans} planos apontados",
       "createBattle": {
-        "title": "Create a Battle",
-        "createError": "Error encountered creating battle",
+        "title": "Criar uma batalha",
+        "createError": "Erro encontrado ao criar batalha",
         "fields": {
           "name": {
-            "label": "Battle Name",
-            "placeholder": "Enter a battle name"
+            "label": "Nome da Batalha",
+            "placeholder": "Digite um nome de batalha"
           },
           "plans": {
-            "label": "Plans",
-            "addButton": "Add Plan",
+            "label": "Planos",
+            "addButton": "Adicionar Plano",
             "fields": {
               "name": {
-                "placeholder": "Enter a plan name"
+                "placeholder": "Digite um nome do plano"
               }
             }
           },
           "autoFinishVoting": {
-            "label": "Auto Finish Voting when all Warriors have voted"
+            "label": "Terminar a votação automaticamente quando todos os jogadores tiverem votado"
           }
         }
       }
     },
     "createAccount": {
-      "title": "Enlist to Battle",
-      "loginForBattle": "or {loginOpen}Login{loginClose} to join the Battle",
+      "title": "Aliste-se para a batalha",
+      "loginForBattle": "ou {loginOpen}Login{loginClose} para entrar na batalha",
       "guestForm": {
-        "createError": "Error encountered registering warrior as guest"
+        "createError": "Erro encontrado ao registrar guerreiro como convidado"
       },
       "createAccountForm": {
-        "createError": "Error encountered creating warrior"
+        "createError": "Erro encontrado ao criar guerreiro"
       }
     },
     "warriorProfile": {
       "fields": {
         "enable_notifications": {
-          "label": "Enable battle notifications"
+          "label": "Ativar notificações de batalha"
         }
       }
     },
     "admin": {
       "counts": {
-        "registered": "Registered Warriors",
-        "unregistered": "Unregistered Warriors",
-        "battles": "Battles",
-        "plans": "Plans"
+        "registered": "Guerreiros Registrados",
+        "unregistered": "Guerreiros não registrados",
+        "battles": "Batalhas",
+        "plans": "Planos"
       },
       "registeredWarriors": {
-        "title": "Registered Warriors"
+        "title": "Guerreiros Registrados"
       },
       "maintenance": {
-        "cleanBattles": "Clean Battles older than {daysOld} days"
+        "cleanBattles": "Limpar batalhas com mais de {daysOld} dias"
       }
     },
     "login": {
-      "registerForBattle": "or {registerOpen}Register{registerClose} to join the Battle",
-      "authError": "Error encountered attempting to authenticate warrior"
+      "registerForBattle": "ou {registerOpen}Registre-se{registerClose} para entrar na batalha",
+      "authError": "Erro encontrado ao tentar autenticar o guerreiro"
     },
     "battle": {
-      "title": "Battle",
-      "warriors": "Warriors",
-      "socketReconnecting": "Ooops, reloading Battle Plans...",
-      "socketError": "Error joining battle, refresh and try again.",
-      "loading": "Loading Battle Plans...",
-      "warriorJoined": "{name} has joined the battle",
-      "warriorRetreated": "{name} has retreated from the battle",
-      "warriorInvite": "Invite a Warrior",
-      "planSkipped": "Plan skipped",
+      "title": "Batalha",
+      "warriors": "Guerreiros",
+      "socketReconnecting": "Ooops, recarregando planos de batalha...",
+      "socketError": "Erro ao entrar na batalha, atualize e tente novamente.",
+      "loading": "Carregando planos de batalha...",
+      "warriorJoined": "{name} juntou-se à batalha",
+      "warriorRetreated": "{name} recuou da batalha",
+      "warriorInvite": "Convide um Guerreiro",
+      "planSkipped": "Plano ignorado",
       "voteResults": {
-        "unknownWarrior": "Unknown Warrior"
+        "unknownWarrior": "Guerreiro Desconhecido"
       },
-      "battleDeleted": "Battle deleted"
+      "battleDeleted": "Batalha excluída"
     }
   },
-  "plans": "Plans",
-  "battle": "Battle",
-  "battles": "Battles",
-  "battlesActive": "Active Battles",
-  "battlesActiveUsers": "Active Battle Users",
-  "battleJoin": "Join Battle",
-  "battleRemoveSuccess": "Battle removed successfully.",
-  "battleRemoveError": "Error attempting to remove battle.",
-  "teamGetBattlesError": "Error getting team battles",
-  "sessionDuplicate": "Duplicate battle session exists for your ID",
-  "removeBattleConfirmText": "Are you sure you want to remove this battle?",
-  "removeBattle": "Remove Battle",
-  "deleteBattleConfirmText": "Are you sure you want to delete this battle?",
-  "deleteBattle": "Delete Battle",
-  "oldBattleCleanError": "Error encountered cleaning battles",
-  "getBattleError": "Error getting battle",
-  "getBattlesError": "Error getting battles",
-  "showActiveBattles": "Show Active Battles",
-  "customizableBattleOptions": "Customizable Battle Options"
+  "plans": "Planos",
+  "battle": "Batalha",
+  "battles": "Batalhas",
+  "battlesActive": "Batalhas ativas",
+  "battlesActiveUsers": "Usuários ativos da batalha",
+  "battleJoin": "Junte-se à Batalha",
+  "battleRemoveSuccess": "Batalha removida com sucesso.",
+  "battleRemoveError": "Erro ao tentar remover a batalha.",
+  "teamGetBattlesError": "Erro ao obter batalhas de equipe",
+  "sessionDuplicate": "Existe uma sessão de batalha duplicada para o seu ID",
+  "removeBattleConfirmText": "Tem certeza de que deseja remover esta batalha?",
+  "removeBattle": "Remover batalha",
+  "deleteBattleConfirmText": "Tem certeza de que deseja excluir esta batalha?",
+  "deleteBattle": "Excluir batalha",
+  "oldBattleCleanError": "Erro encontrado ao limpar batalhas",
+  "getBattleError": "Erro ao obter batalha",
+  "getBattlesError": "Erro ao obter batalhas",
+  "showActiveBattles": "Mostrar batalhas ativas",
+  "customizableBattleOptions": "Opções de batalha personalizáveis"
 }
