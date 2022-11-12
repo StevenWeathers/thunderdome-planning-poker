@@ -23,7 +23,7 @@
                     const { spectator = false } = warriors.find(
                         w => w.id === v.warriorId,
                     )
-                    return !spectator && v.vote !== '?'
+                    return !spectator && v.vote !== '?' && v.vote !== '☕️'
                 })
                 .map(v => {
                     const vote = v.vote === '1/2' ? 0.5 : parseInt(v.vote)
