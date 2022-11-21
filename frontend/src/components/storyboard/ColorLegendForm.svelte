@@ -1,6 +1,7 @@
 <script>
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
+    import { _ } from '../i18n.js'
 
     export let handleLegendRevision = () => {}
     export let toggleEditLegend = () => {}
@@ -70,7 +71,7 @@
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                         type="text"
                         bind:value="{colorLegend[i].legend}"
-                        placeholder="Enter a color legend"
+                        placeholder="{$_('legendRetroPlaceholder')}"
                         name="legend-{color.color}"
                     />
                 </div>
@@ -78,7 +79,7 @@
         </div>
         <div class="text-right">
             <div>
-                <SolidButton type="submit">Save</SolidButton>
+                <SolidButton type="submit">{$_('save')}</SolidButton>
             </div>
         </div>
     </form>

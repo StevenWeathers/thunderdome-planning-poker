@@ -3,7 +3,7 @@
   "battleDelete": "Excluir Batalha",
   "battleAbandon": "Abandonar Batalha",
   "battleCreate": "Criar batalha",
-  "battleEdit": "Editar Batata",
+  "battleEdit": "Editar Batalha",
   "warriorCreate": "Criar Guerreiro",
   "planAdd": "Adicionar Plano",
   "planSkip": "Ignorar Plano",
@@ -11,7 +11,7 @@
   "planNamePlaceholder": "Digite o nome do plano",
   "planType": "Tipo de Plano",
   "planLinkPlaceholder": "Insira um link para o plano",
-  "importJiraXML": "Importar planos do XML Jira",
+  "importJiraXML": "Importar planos de XML do Jira",
   "landingTitle": "Thunderdome é um aplicativo ágil de Planning Poker com um tema divertido",
   "landingCountries": "Guerreiros em mais de {count} países",
   "pages": {
@@ -26,14 +26,14 @@
         "fields": {
           "name": {
             "label": "Nome da Batalha",
-            "placeholder": "Digite um nome de batalha"
+            "placeholder": "Digite um nome para a batalha"
           },
           "plans": {
             "label": "Planos",
             "addButton": "Adicionar Plano",
             "fields": {
               "name": {
-                "placeholder": "Digite um nome do plano"
+                "placeholder": "Digite um nome para o plano"
               }
             }
           },
