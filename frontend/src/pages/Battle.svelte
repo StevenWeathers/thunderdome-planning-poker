@@ -366,7 +366,9 @@
         const activePlan = battle.plans.find(p => p.id === battle.activePlanId)
 
         if (activePlan.votes.length > 0) {
-            const reversedPoints = [...points].filter(v => (v !== '?' && v !== '☕️')).reverse()
+            const reversedPoints = [...points]
+                .filter(v => v !== '?' && v !== '☕️')
+                .reverse()
             reversedPoints.push('?')
             reversedPoints.push('☕️')
 

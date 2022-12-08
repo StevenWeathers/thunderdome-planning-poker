@@ -7,6 +7,7 @@
     export let votes = []
     export let maxVotes = 3
     export let facilitators = []
+    export let phase = ''
     export let handleAddFacilitator = () => {}
     export let handleRemoveFacilitator = () => {}
 
@@ -51,10 +52,17 @@
                 >
             </div>
         {/if}
-        {#if reachedMaxVotes}
-            <div class="text-green-600 dark:text-green-400">
-                {$_('allVotesIn')}
-            </div>
+        {#if phase === 'vote'}
+            {#if reachedMaxVotes}
+                <div class="text-green-600 dark:text-green-400">
+                    {$_('allVotesIn')}
+                </div>
+            {:else}
+                <div class="text-blue-600 dark:text-blue-400">
+                    {maxVotes - votes.filter(v => v.userId === user.id).length} votes
+                    left
+                </div>
+            {/if}
         {/if}
     </div>
 </div>

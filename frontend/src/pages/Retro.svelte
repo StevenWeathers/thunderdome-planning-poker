@@ -877,6 +877,7 @@
                                     facilitators="{retro.facilitators}"
                                     handleAddFacilitator="{handleAddFacilitator}"
                                     handleRemoveFacilitator="{handleRemoveFacilitator}"
+                                    phase="{retro.phase}"
                                 />
                             {/if}
                         {/each}
