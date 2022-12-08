@@ -1,6 +1,7 @@
 <script>
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
+    import { _ } from '../../i18n.js'
 
     export let handleGoalAdd = () => {}
     export let toggleAddGoal = () => {}
@@ -31,7 +32,7 @@
                 class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
                 for="goalName"
             >
-                Goal Name
+                {$_('storyboardGoalName')}
             </label>
             <input
                 class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
@@ -40,13 +41,13 @@
                 id="goalName"
                 type="text"
                 bind:value="{goalName}"
-                placeholder="Enter a goal name"
+                placeholder="{$_('storyboardGoalNamePlaceholder')}"
                 name="goalName"
             />
         </div>
         <div class="text-right">
             <div>
-                <SolidButton type="submit">Save</SolidButton>
+                <SolidButton type="submit">{$_('save')}</SolidButton>
             </div>
         </div>
     </form>

@@ -11,7 +11,7 @@
   "planNamePlaceholder": "Digite o nome da história",
   "planType": "Tipo de História",
   "planLinkPlaceholder": "Insira um link para a história",
-  "importJiraXML": "Importar histórias de um XML do Jira",
+  "importJiraXML": "Importar histórias de XML do Jira",
   "landingTitle": "Thunderdome é um aplicativo ágil de Planning Poker com um tema divertido",
   "landingCountries": "Usuários em mais de {count} países",
   "pages": {
