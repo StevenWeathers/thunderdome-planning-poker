@@ -27,6 +27,8 @@ type Config struct {
 	PathPrefix string
 	// Whether the external API is enabled
 	ExternalAPIEnabled bool
+	// Whether the external API requires user verified email
+	ExternalAPIVerifyRequired bool
 	// Number of API keys a user can create
 	UserAPIKeyLimit int
 	// name of the cookie used exclusively by the UI

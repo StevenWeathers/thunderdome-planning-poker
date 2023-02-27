@@ -43,20 +43,21 @@ func (s *server) routes() {
 
 	// api (used by the webapp but can be enabled for external use)
 	apiConfig := &api.Config{
-		AppDomain:            s.config.AppDomain,
-		FrontendCookieName:   s.config.FrontendCookieName,
-		SecureCookieName:     viper.GetString("http.backend_cookie_name"),
-		SecureCookieFlag:     viper.GetBool("http.secure_cookie"),
-		SessionCookieName:    viper.GetString("http.session_cookie_name"),
-		PathPrefix:           s.config.PathPrefix,
-		ExternalAPIEnabled:   s.config.ExternalAPIEnabled,
-		UserAPIKeyLimit:      s.config.UserAPIKeyLimit,
-		LdapEnabled:          s.config.LdapEnabled,
-		HeaderAuthEnabled:    s.config.HeaderAuthEnabled,
-		FeaturePoker:         viper.GetBool("feature.poker"),
-		FeatureRetro:         viper.GetBool("feature.retro"),
-		FeatureStoryboard:    viper.GetBool("feature.storyboard"),
-		OrganizationsEnabled: viper.GetBool("config.organizations_enabled"),
+		AppDomain:                 s.config.AppDomain,
+		FrontendCookieName:        s.config.FrontendCookieName,
+		SecureCookieName:          viper.GetString("http.backend_cookie_name"),
+		SecureCookieFlag:          viper.GetBool("http.secure_cookie"),
+		SessionCookieName:         viper.GetString("http.session_cookie_name"),
+		PathPrefix:                s.config.PathPrefix,
+		ExternalAPIEnabled:        s.config.ExternalAPIEnabled,
+		ExternalAPIVerifyRequired: viper.GetBool("config.external_api_verify_required"),
+		UserAPIKeyLimit:           s.config.UserAPIKeyLimit,
+		LdapEnabled:               s.config.LdapEnabled,
+		HeaderAuthEnabled:         s.config.HeaderAuthEnabled,
+		FeaturePoker:              viper.GetBool("feature.poker"),
+		FeatureRetro:              viper.GetBool("feature.retro"),
+		FeatureStoryboard:         viper.GetBool("feature.storyboard"),
+		OrganizationsEnabled:      viper.GetBool("config.organizations_enabled"),
 	}
 	api.Init(apiConfig, s.router, s.db, s.email, s.cookie, s.logger)
 

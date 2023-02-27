@@ -138,7 +138,7 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if !EntityUser.Verified {
+		if a.config.ExternalAPIVerifyRequired && !EntityUser.Verified {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
 			return
 		}
