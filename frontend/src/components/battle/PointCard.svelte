@@ -12,6 +12,7 @@
         count: 0,
         voters: [],
     }
+    export let hideVoterIdentity = false
 
     let showVoters = false
 
@@ -51,8 +52,16 @@
         >
             {results.count}
             <button
-                on:mouseenter="{() => (showVoters = true)}"
-                on:mouseleave="{() => (showVoters = false)}"
+                on:mouseenter="{() => {
+                    if (!hideVoterIdentity) {
+                        showVoters = true
+                    }
+                }}"
+                on:mouseleave="{() => {
+                    if (!hideVoterIdentity) {
+                        showVoters = false
+                    }
+                }}"
                 title="{$_('pages.battle.voteResults.showVoters')}"
                 class="text-green-500 dark:text-lime-400 relative leading-none"
             >

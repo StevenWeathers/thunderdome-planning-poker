@@ -54,6 +54,7 @@ type battleRequestBody struct {
 	AutoFinishVoting     bool          `json:"autoFinishVoting"`
 	Plans                []*model.Plan `json:"plans"`
 	PointAverageRounding string        `json:"pointAverageRounding" validate:"required,oneof=ceil round floor"`
+	HideVoterIdentity    bool          `json:"hideVoterIdentity"`
 	BattleLeaders        []string      `json:"battleLeaders"`
 	JoinCode             string        `json:"joinCode"`
 	LeaderCode           string        `json:"leaderCode"`
@@ -113,7 +114,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		// if battle created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newBattle, err = a.db.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
+				newBattle, err = a.db.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
 					return
@@ -123,7 +124,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newBattle, err = a.db.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode)
+			newBattle, err = a.db.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 			if err != nil {
 				a.Failure(w, r, http.StatusInternalServerError, err)
 				return

@@ -146,6 +146,7 @@ func (b *Service) Revise(ctx context.Context, BattleID string, UserID string, Ev
 		PointValuesAllowed   []string `json:"pointValuesAllowed"`
 		AutoFinishVoting     bool     `json:"autoFinishVoting"`
 		PointAverageRounding string   `json:"pointAverageRounding"`
+		HideVoterIdentity    bool     `json:"hideVoterIdentity"`
 		JoinCode             string   `json:"joinCode"`
 		LeaderCode           string   `json:"leaderCode"`
 	}
@@ -160,6 +161,7 @@ func (b *Service) Revise(ctx context.Context, BattleID string, UserID string, Ev
 		rb.PointValuesAllowed,
 		rb.AutoFinishVoting,
 		rb.PointAverageRounding,
+		rb.HideVoterIdentity,
 		rb.JoinCode,
 		rb.LeaderCode,
 	)
