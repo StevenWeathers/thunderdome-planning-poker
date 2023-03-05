@@ -27,6 +27,7 @@
     let leaderCode = ''
     let selectedTeam = ''
     let teams = []
+    let hideVoterIdentity = false
 
     let checkedPointColor =
         'border-green-500 bg-green-100 text-green-600 dark:bg-gray-900 dark:text-lime-500 dark:border-lime-500'
@@ -79,6 +80,7 @@
             plans,
             autoFinishVoting,
             pointAverageRounding,
+            hideVoterIdentity,
             joinCode,
             leaderCode,
         }
@@ -306,6 +308,19 @@
                 class="w-4 h-4 dark:accent-lime-400 mr-1"
             />
             {$_('pages.myBattles.createBattle.fields.autoFinishVoting.label')}
+        </label>
+    </div>
+
+    <div class="mb-4">
+        <label class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">
+            <input
+                type="checkbox"
+                bind:checked="{hideVoterIdentity}"
+                id="hideVoterIdentity"
+                name="hideVoterIdentity"
+                class="w-4 h-4 dark:accent-lime-400 mr-1"
+            />
+            Hide Voter Identity
         </label>
     </div>
 

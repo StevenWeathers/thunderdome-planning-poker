@@ -12,7 +12,7 @@ import (
 )
 
 //CreateBattle creates a new story pointing session (battle)
-func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) (*model.Battle, error) {
+func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*model.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -41,6 +41,7 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 		PointValuesAllowed:   PointValuesAllowed,
 		AutoFinishVoting:     AutoFinishVoting,
 		PointAverageRounding: PointAverageRounding,
+		HideVoterIdentity:    HideVoterIdentity,
 		Leaders:              make([]string, 0),
 		JoinCode:             JoinCode,
 		LeaderCode:           LeaderCode,
@@ -48,12 +49,13 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 	b.Leaders = append(b.Leaders, LeaderID)
 
 	e := d.db.QueryRowContext(ctx,
-		`SELECT battleId FROM create_battle($1, $2, $3, $4, $5, $6, $7);`,
+		`SELECT battleId FROM create_battle($1, $2, $3, $4, $5, $6, $7, $8);`,
 		LeaderID,
 		BattleName,
 		string(pointValuesJSON),
 		AutoFinishVoting,
 		PointAverageRounding,
+		HideVoterIdentity,
 		encryptedJoinCode,
 		encryptedLeaderCode,
 	).Scan(&b.Id)
@@ -86,7 +88,7 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 }
 
 //TeamCreateBattle creates a new story pointing session (battle) associated to a team
-func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) (*model.Battle, error) {
+func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*model.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -115,6 +117,7 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 		PointValuesAllowed:   PointValuesAllowed,
 		AutoFinishVoting:     AutoFinishVoting,
 		PointAverageRounding: PointAverageRounding,
+		HideVoterIdentity:    HideVoterIdentity,
 		Leaders:              make([]string, 0),
 		JoinCode:             JoinCode,
 		LeaderCode:           LeaderCode,
@@ -122,13 +125,14 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 	b.Leaders = append(b.Leaders, LeaderID)
 
 	e := d.db.QueryRowContext(ctx,
-		`SELECT battleId FROM team_create_battle($1, $2, $3, $4, $5, $6, $7, $8);`,
+		`SELECT battleId FROM team_create_battle($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
 		TeamID,
 		LeaderID,
 		BattleName,
 		string(pointValuesJSON),
 		AutoFinishVoting,
 		PointAverageRounding,
+		HideVoterIdentity,
 		encryptedJoinCode,
 		encryptedLeaderCode,
 	).Scan(&b.Id)
@@ -161,7 +165,7 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 }
 
 // ReviseBattle updates the battle by ID
-func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string) error {
+func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, LeaderCode string) error {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -184,9 +188,9 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 
 	if _, err := d.db.Exec(`
 		UPDATE battles
-		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, join_code = $6, leader_code = $7, updated_date = NOW()
+		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, hide_voter_identity = $6, join_code = $7, leader_code = $8, updated_date = NOW()
 		WHERE id = $1`,
-		BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding, encryptedJoinCode, encryptedLeaderCode,
+		BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding, HideVoterIdentity, encryptedJoinCode, encryptedLeaderCode,
 	); err != nil {
 		d.logger.Error("update battle error", zap.Error(err))
 		return errors.New("unable to revise battle")
@@ -239,7 +243,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 	var LeaderCode string
 	e := d.db.QueryRow(
 		`
-		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''), b.created_date, b.updated_date,
+		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.hide_voter_identity, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''), b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM battles b
 		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
@@ -254,6 +258,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 		&pv,
 		&b.AutoFinishVoting,
 		&b.PointAverageRounding,
+		&b.HideVoterIdentity,
 		&JoinCode,
 		&LeaderCode,
 		&b.CreatedDate,

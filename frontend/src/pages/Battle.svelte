@@ -37,6 +37,7 @@
         link: '',
         description: '',
         acceptanceCriteria: '',
+        hideVoterIdentity: false,
     }
 
     let JoinPassRequired = false
@@ -226,6 +227,7 @@
                 battle.autoFinishVoting = revisedBattle.autoFinishVoting
                 battle.pointAverageRounding = revisedBattle.pointAverageRounding
                 battle.joinCode = revisedBattle.joinCode
+                battle.hideVoterIdentity = revisedBattle.hideVoterIdentity
                 break
             case 'battle_conceded':
                 // battle over, goodbye.
@@ -333,7 +335,10 @@
 
     // Determine if the warrior has voted on active Plan yet
     function didVote(warriorId) {
-        if (battle.activePlanId === '') {
+        if (
+            battle.activePlanId === '' ||
+            (battle.votingLocked && battle.hideVoterIdentity)
+        ) {
             return false
         }
         const plan = battle.plans.find(p => p.id === battle.activePlanId)
@@ -344,7 +349,11 @@
 
     // Determine if we are showing warriors vote
     function showVote(warriorId) {
-        if (battle.activePlanId === '' || battle.votingLocked === false) {
+        if (
+            battle.hideVoterIdentity ||
+            battle.activePlanId === '' ||
+            battle.votingLocked === false
+        ) {
             return ''
         }
         const plan = battle.plans.find(p => p.id === battle.activePlanId)
@@ -545,6 +554,7 @@
                         points="{points}"
                         highestVote="{highestVoteCount}"
                         averageRounding="{battle.pointAverageRounding}"
+                        hideVoterIdentity="{battle.hideVoterIdentity}"
                     />
                 {:else}
                     <div class="flex flex-wrap mb-4 -mx-2 mb-4 lg:mb-6">
@@ -658,6 +668,7 @@
                 votingLocked="{battle.votingLocked}"
                 autoFinishVoting="{battle.autoFinishVoting}"
                 pointAverageRounding="{battle.pointAverageRounding}"
+                hideVoterIdentity="{battle.hideVoterIdentity}"
                 handleBattleEdit="{handleBattleEdit}"
                 toggleEditBattle="{toggleEditBattle}"
                 joinCode="{battle.joinCode}"

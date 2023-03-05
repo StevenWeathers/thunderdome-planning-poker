@@ -9,6 +9,7 @@
     export let warriors = []
     export let highestVote = ''
     export let averageRounding = 'ceil'
+    export let hideVoterIdentity = false
 
     let totalVotes = plans.find(p => p.id === activePlanId).votes.length
 
@@ -118,8 +119,16 @@
             >
             <span class="relative">
                 <button
-                    on:mouseenter="{() => (showHighestVoters = true)}"
-                    on:mouseleave="{() => (showHighestVoters = false)}"
+                    on:mouseenter="{() => {
+                        if (!hideVoterIdentity) {
+                            showHighestVoters = true
+                        }
+                    }}"
+                    on:mouseleave="{() => {
+                        if (!hideVoterIdentity) {
+                            showHighestVoters = false
+                        }
+                    }}"
                     class="relative leading-none"
                     title="{$_('pages.battle.voteResults.showVoters')}"
                 >
@@ -149,6 +158,7 @@
                 results="{counts[point] || { count: 0 }}"
                 isLocked="{true}"
                 point="{point}"
+                hideVoterIdentity="{hideVoterIdentity}"
             />
         </div>
     {/each}

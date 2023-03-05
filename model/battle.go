@@ -26,6 +26,7 @@ type Battle struct {
 	AutoFinishVoting     bool          `json:"autoFinishVoting"`
 	Leaders              []string      `json:"leaders"`
 	PointAverageRounding string        `json:"pointAverageRounding"`
+	HideVoterIdentity    bool          `json:"hideVoterIdentity"`
 	JoinCode             string        `json:"joinCode"`
 	LeaderCode           string        `json:"leaderCode,omitempty"`
 	CreatedDate          time.Time     `json:"createdDate"`
