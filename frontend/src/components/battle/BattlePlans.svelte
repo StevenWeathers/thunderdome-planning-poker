@@ -5,6 +5,12 @@
     import ViewPlan from './ViewPlan.svelte'
     import JiraImport from './JiraImport.svelte'
     import { _ } from '../../i18n.js'
+    import NoSymbolIcon from '../icons/NoSymbol.svelte'
+    import DoubleChevronUp from '../icons/DoubleChevronUp.svelte'
+    import ChevronUp from '../icons/ChevronUp.svelte'
+    import Bars2 from '../icons/Bars2.svelte'
+    import ChevronDown from '../icons/ChevronDown.svelte'
+    import DoubleChevronDown from '../icons/DoubleChevronDown.svelte'
 
     export let plans = []
     export let isLeader = false
@@ -20,6 +26,38 @@
         link: '',
         description: '',
         acceptanceCriteria: '',
+        priority: 99,
+    }
+
+    const priorities = {
+        99: {
+            name: '',
+            icon: false,
+        },
+        1: {
+            name: $_('planPriorityBlocker'),
+            icon: NoSymbolIcon,
+        },
+        2: {
+            name: $_('planPriorityHighest'),
+            icon: DoubleChevronUp,
+        },
+        3: {
+            name: $_('planPriorityHigh'),
+            icon: ChevronUp,
+        },
+        4: {
+            name: $_('planPriorityMedium'),
+            icon: Bars2,
+        },
+        5: {
+            name: $_('planPriorityLow'),
+            icon: ChevronDown,
+        },
+        6: {
+            name: $_('planPriorityLowest'),
+            icon: DoubleChevronDown,
+        },
     }
 
     let showAddPlan = false
@@ -173,6 +211,7 @@
                     </div>
                     &nbsp;
                     {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
+                    <svelte:component this="{priorities[plan.priority].icon}" />
                     <span data-testid="plan-name">{plan.name}</span>
                 </div>
                 &nbsp;
@@ -257,6 +296,7 @@
         planLink="{selectedPlan.link}"
         description="{selectedPlan.description}"
         acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
+        priority="{selectedPlan.priority}"
         notifications="{notifications}"
         eventTag="{eventTag}"
     />
@@ -271,5 +311,6 @@
         planLink="{selectedPlan.link}"
         description="{selectedPlan.description}"
         acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
+        priority="{selectedPlan.priority}"
     />
 {/if}

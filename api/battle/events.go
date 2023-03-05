@@ -195,13 +195,14 @@ func (b *Service) PlanAdd(ctx context.Context, BattleID string, UserID string, E
 		Link               string `json:"link"`
 		Description        string `json:"description"`
 		AcceptanceCriteria string `json:"acceptanceCriteria"`
+		Priority           int32  `json:"priority"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &p)
 	if err != nil {
 		return nil, err, false
 	}
 
-	plans, err := b.db.CreatePlan(BattleID, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria)
+	plans, err := b.db.CreatePlan(BattleID, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
 	if err != nil {
 		return nil, err, false
 	}
@@ -221,13 +222,14 @@ func (b *Service) PlanRevise(ctx context.Context, BattleID string, UserID string
 		Link               string `json:"link"`
 		Description        string `json:"description"`
 		AcceptanceCriteria string `json:"acceptanceCriteria"`
+		Priority           int32  `json:"priority"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &p)
 	if err != nil {
 		return nil, err, false
 	}
 
-	plans, err := b.db.RevisePlan(BattleID, p.Id, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria)
+	plans, err := b.db.RevisePlan(BattleID, p.Id, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
 	if err != nil {
 		return nil, err, false
 	}

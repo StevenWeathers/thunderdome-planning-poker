@@ -14,5 +14,5 @@
     <path
         stroke-linecap="round"
         stroke-linejoin="round"
-        d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
+        d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5"></path>
 </svg>

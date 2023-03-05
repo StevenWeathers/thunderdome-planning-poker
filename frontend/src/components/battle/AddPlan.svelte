@@ -2,7 +2,12 @@
     import { quill } from '../../quill.js'
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
-    import DownCarrotIcon from '../icons/ChevronDown.svelte'
+    import NoSymbol from '../icons/NoSymbol.svelte'
+    import DoubleChevronUp from '../icons/DoubleChevronUp.svelte'
+    import ChevronUp from '../icons/ChevronUp.svelte'
+    import Bars2 from '../icons/Bars2.svelte'
+    import ChevronDown from '../icons/ChevronDown.svelte'
+    import DoubleChevronDown from '../icons/DoubleChevronDown.svelte'
     import { _ } from '../../i18n.js'
 
     export let handlePlanAdd = () => {}
@@ -21,6 +26,24 @@
         $_('planTypeSubtask'),
     ]
 
+    // going by common Jira issue priorities for now
+    const priorities = [
+        { name: $_('planPriorityBlocker'), value: 1, icon: NoSymbol },
+        {
+            name: $_('planPriorityHighest'),
+            value: 2,
+            icon: DoubleChevronUp,
+        },
+        { name: $_('planPriorityHigh'), value: 3, icon: ChevronUp },
+        { name: $_('planPriorityMedium'), value: 4, icon: Bars2 },
+        { name: $_('planPriorityLow'), value: 5, icon: ChevronDown },
+        {
+            name: $_('planPriorityLowest'),
+            value: 6,
+            icon: DoubleChevronDown,
+        },
+    ]
+
     export let planId = ''
     export let planName = ''
     export let planType = $_('planTypeStory')
@@ -28,6 +51,7 @@
     export let planLink = ''
     export let description = ''
     export let acceptanceCriteria = ''
+    export let priority = 99
 
     const isAbsolute = new RegExp('^([a-z]+://|//)', 'i')
     let descriptionExpanded = false
@@ -50,6 +74,7 @@
             link: planLink,
             description,
             acceptanceCriteria,
+            priority,
         }
 
         if (!invalidPlan) {
@@ -70,13 +95,14 @@
         <div class="mb-4">
             <label
                 class="block font-bold mb-2 dark:text-gray-400"
-                for="planName"
+                for="planType"
             >
                 {$_('planType')}
             </label>
             <div class="relative">
                 <select
                     name="planType"
+                    id="planType"
                     bind:value="{planType}"
                     required
                     class="block appearance-none w-full border-2 dark:bg-gray-900 border-gray-300 dark:border-gray-600
@@ -94,7 +120,7 @@
                     class="pointer-events-none absolute inset-y-0 right-0 flex
                     items-center px-2 text-gray-700 dark:text-gray-300"
                 >
-                    <DownCarrotIcon />
+                    <ChevronDown />
                 </div>
             </div>
         </div>
@@ -151,6 +177,39 @@
                 bind:value="{planLink}"
                 placeholder="{$_('planLinkPlaceholder')}"
             />
+        </div>
+        <div class="mb-4">
+            <label
+                class="block font-bold mb-2 dark:text-gray-400"
+                for="priority"
+            >
+                {$_('planPriority')}
+            </label>
+            <div class="relative">
+                <select
+                    name="priority"
+                    id="priority"
+                    bind:value="{priority}"
+                    class="block appearance-none w-full border-2 dark:bg-gray-900 border-gray-300 dark:border-gray-600
+                    text-gray-700 dark:text-gray-400 py-3 px-4 pr-8 rounded leading-tight
+                    focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                >
+                    <option value="{99}" disabled>
+                        {$_('planPriorityPlaceholder')}
+                    </option>
+                    {#each priorities as p}
+                        <option value="{p.value}">
+                            <svelte:component this="{p.icon}" />{p.name}</option
+                        >
+                    {/each}
+                </select>
+                <div
+                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                    items-center px-2 text-gray-700 dark:text-gray-300"
+                >
+                    <ChevronDown />
+                </div>
+            </div>
         </div>
         <div>
             <div class="font-bold mb-2">
