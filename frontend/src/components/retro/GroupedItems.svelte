@@ -11,7 +11,9 @@
         >
             <div class="dark:text-gray-200 w-full text-center text-lg mb-2">
                 <div class="flex content-center justify-center">
-                    <div class="inline-block align-middle text-2xl ml-2">
+                    <div
+                        class="inline-block align-middle text-2xl rtl:mr-2 ltr:ml-2"
+                    >
                         <ThumbsUp class="w-6 h-6 inline-block" />
                         {group.votes.length}
                     </div>

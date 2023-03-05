@@ -238,7 +238,7 @@
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="text-right">
+                <div class="ltr:text-right rtl:text-left">
                     {#if isAdmin}
                         <SolidButton onClick="{toggleCreateTeam}">
                             {$_('teamCreate')}
@@ -308,7 +308,7 @@
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="text-right">
+                <div class="ltr:text-right rtl:text-left">
                     {#if isAdmin}
                         <SolidButton
                             onClick="{toggleAddUser}"
@@ -350,7 +350,7 @@
                                         class="h-10 w-10 rounded-full"
                                     />
                                 </div>
-                                <div class="ml-4">
+                                <div class="rtl:mr-4 ltr:ml-4">
                                     <div
                                         class="font-medium text-gray-900 dark:text-gray-200"
                                     >

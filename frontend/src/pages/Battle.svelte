@@ -489,7 +489,9 @@
 <PageLayout>
     {#if battle.name && !socketReconnecting && !socketError}
         <div class="mb-6 flex flex-wrap">
-            <div class="w-full text-center md:w-2/3 md:text-left">
+            <div
+                class="w-full text-center md:w-2/3 md:ltr:text-left md:rtl:text-right"
+            >
                 <h1
                     class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center"
                 >
@@ -529,7 +531,7 @@
                 </h2>
             </div>
             <div
-                class="w-full md:w-1/3 text-center md:text-right font-semibold
+                class="w-full md:w-1/3 text-center md:ltr:text-right md:rtl:text-left font-semibold
                 text-3xl md:text-4xl text-gray-700 dark:text-gray-300"
                 data-testid="vote-timer"
             >
@@ -631,7 +633,7 @@
                         notifications="{notifications}"
                     />
                     {#if isLeader}
-                        <div class="mt-4 text-right">
+                        <div class="mt-4 ltr:text-right rtl:text-left">
                             <HollowButton
                                 color="blue"
                                 onClick="{toggleEditBattle}"
@@ -648,7 +650,7 @@
                             </HollowButton>
                         </div>
                     {:else}
-                        <div class="mt-4 text-right">
+                        <div class="mt-4 ltr:text-right rtl:text-left">
                             <HollowButton
                                 color="red"
                                 onClick="{abandonBattle}"
@@ -703,7 +705,7 @@
                         />
                     </div>
 
-                    <div class="text-right">
+                    <div class="ltr:text-right rtl:text-left">
                         <SolidButton type="submit"
                             >{$_('battleJoin')}</SolidButton
                         >

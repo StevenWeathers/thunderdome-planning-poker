@@ -48,7 +48,9 @@
                     >
                         <ThumbsUp class="w-6 h-6 inline-block" />
                     </button>
-                    <div class="inline-block align-middle text-2xl ml-2">
+                    <div
+                        class="inline-block align-middle text-2xl rtl:mr-2 ltr:ml-2"
+                    >
                         {group.votes.length}
                     </div>
                 </div>

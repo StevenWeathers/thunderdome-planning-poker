@@ -117,7 +117,7 @@
                             rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                             focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
                             bind:value="{selectedCommentContent}"></textarea>
-                        <div class="text-right">
+                        <div class="ltr:text-right rtl:text-left">
                             <HollowButton
                                 color="blue"
                                 onClick="{toggleCommentEdit(null)}"
@@ -139,9 +139,9 @@
                     </div>
                 {/if}
                 {#if (comment.user_id === $user.id || comment.user_id === isAdmin) && !(selectedComment !== null && selectedComment.id === comment.id)}
-                    <div class="mb-2 text-right">
+                    <div class="mb-2 ltr:text-right rtl:text-left">
                         <button
-                            class="text-blue-500 hover:text-blue-300 mr-1"
+                            class="text-blue-500 hover:text-blue-300 rtl:ml-1 ltr:mr-1"
                             on:click="{toggleCommentEdit(comment)}"
                         >
                             {$_('edit')}
@@ -167,7 +167,7 @@
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
                 placeholder="{$_('writeCommentPlaceholder')}"
                 bind:value="{userComment}"></textarea>
-            <div class="text-right">
+            <div class="ltr:text-right rtl:text-left">
                 <HollowButton
                     color="teal"
                     onClick="{handleCommentSubmit}"

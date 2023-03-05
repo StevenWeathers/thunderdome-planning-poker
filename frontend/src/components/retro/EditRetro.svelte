@@ -139,7 +139,7 @@
                 <select
                     bind:value="{brainstormVisibility}"
                     class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                     id="brainstormVisibility"
                     name="brainstormVisibility"
@@ -151,7 +151,7 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                    class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
                 items-center px-2 text-gray-700 dark:text-gray-400"
                 >
                     <DownCarrotIcon />
@@ -159,7 +159,7 @@
             </div>
         </div>
 
-        <div class="text-right">
+        <div class="ltr:text-right rtl:text-left">
             <SolidButton type="submit">{$_('save')}</SolidButton>
         </div>
     </form>

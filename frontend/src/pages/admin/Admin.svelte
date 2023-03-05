@@ -174,12 +174,12 @@
             class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
         >
             <div class="flex flex-row items-center">
-                <div class="flex-shrink pr-4">
+                <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                     <div class="rounded p-3 bg-blue-400 text-white">
                         <UserRankGuest width="28" height="28" />
                     </div>
                 </div>
-                <div class="flex-1 text-right md:text-center">
+                <div class="flex-1 ltr:text-right rtl:text-left md:text-center">
                     <h5
                         class="font-bold uppercase text-gray-500 dark:text-gray-400"
                     >
@@ -195,12 +195,12 @@
             class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
         >
             <div class="flex flex-row items-center">
-                <div class="flex-shrink pr-4">
+                <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                     <div class="rounded p-3 bg-indigo-500 text-white">
                         <UserRankRegistered width="28" height="28" />
                     </div>
                 </div>
-                <div class="flex-1 text-right md:text-center">
+                <div class="flex-1 ltr:text-right rtl:text-left md:text-center">
                     <h5
                         class="font-bold uppercase text-gray-500 dark:text-gray-400"
                     >
@@ -217,12 +217,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-cyan-500 text-white">
                             <KeyIcon />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -240,12 +242,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-red-500 text-white">
                             <ShieldExclamationIcon />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -261,12 +265,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-teal-500 text-white">
                             <DocumentTextIcon />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -282,12 +288,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-yellow-500 text-white">
                             <LightingBolt />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -303,12 +311,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-green-500 text-white">
                             <UserIcon width="28" height="28" />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -326,12 +336,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-orange-500 text-white">
                             <OfficeBuildingIcon />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -347,12 +359,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-rose-500 text-white">
                             <UserGroupIcon />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -369,12 +383,12 @@
             class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
         >
             <div class="flex flex-row items-center">
-                <div class="flex-shrink pr-4">
+                <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                     <div class="rounded p-3 bg-purple-500 text-white">
                         <UsersIcon />
                     </div>
                 </div>
-                <div class="flex-1 text-right md:text-center">
+                <div class="flex-1 ltr:text-right rtl:text-left md:text-center">
                     <h5
                         class="font-bold uppercase text-gray-500 dark:text-gray-400"
                     >
@@ -390,12 +404,12 @@
             class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
         >
             <div class="flex flex-row items-center">
-                <div class="flex-shrink pr-4">
+                <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                     <div class="rounded p-3 bg-lime-500 text-white">
                         <CheckIcon />
                     </div>
                 </div>
-                <div class="flex-1 text-right md:text-center">
+                <div class="flex-1 ltr:text-right rtl:text-left md:text-center">
                     <h5
                         class="font-bold uppercase text-gray-500 dark:text-gray-400"
                     >
@@ -412,12 +426,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-fuchsia-500 text-white">
                             <FrownCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -433,12 +449,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-amber-500 text-white">
                             <QuestionCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -454,12 +472,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-pink-500 text-white">
                             <UserIcon />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -475,12 +495,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-emerald-500 text-white">
                             <SmileCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -496,12 +518,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-violet-500 text-white">
                             <CheckCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -519,12 +543,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-fuchsia-500 text-white">
                             <CheckCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -540,12 +566,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-amber-500 text-white">
                             <CheckCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -561,12 +589,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-pink-500 text-white">
                             <UserIcon />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -582,12 +612,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-emerald-500 text-white">
                             <CheckCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -603,12 +635,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-violet-500 text-white">
                             <CheckCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -624,12 +658,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-violet-500 text-white">
                             <CheckCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >
@@ -645,12 +681,14 @@
                 class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
             >
                 <div class="flex flex-row items-center">
-                    <div class="flex-shrink pr-4">
+                    <div class="flex-shrink ltr:pr-4 rtl:pl-4">
                         <div class="rounded p-3 bg-violet-500 text-white">
                             <CheckCircle />
                         </div>
                     </div>
-                    <div class="flex-1 text-right md:text-center">
+                    <div
+                        class="flex-1 ltr:text-right rtl:text-left md:text-center"
+                    >
                         <h5
                             class="font-bold uppercase text-gray-500 dark:text-gray-400"
                         >

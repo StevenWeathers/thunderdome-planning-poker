@@ -79,7 +79,7 @@
                         {$_('checkinMeetYesterdayGoalsQuestion')}
                     </div>
                     <div
-                        class="relative inline-block w-16 mr-2 align-middle select-none transition duration-200 ease-in"
+                        class="relative inline-block w-16 rtl:ml-2 ltr:mr-2 align-middle select-none transition duration-200 ease-in"
                     >
                         <input
                             type="checkbox"
@@ -157,7 +157,7 @@
         </div>
 
         <div class="w-full">
-            <div class="text-right">
+            <div class="ltr:text-right rtl:text-left">
                 <SolidButton type="submit" testid="save"
                     >{$_('save')}</SolidButton
                 >

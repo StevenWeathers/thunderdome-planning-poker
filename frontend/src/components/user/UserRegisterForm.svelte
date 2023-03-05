@@ -1,7 +1,6 @@
 <script>
     import SolidButton from '../SolidButton.svelte'
     import { validateName, validatePasswords } from '../../validationUtils.js'
-    import { AppConfig } from '../../config.js'
     import { _ } from '../../i18n.js'
 
     export let notifications
@@ -142,7 +141,7 @@
     </div>
 
     <div>
-        <div class="text-right">
+        <div class="ltr:text-right rtl:text-left">
             <SolidButton type="submit" disabled="{createDisabled}">
                 {$_('pages.createAccount.createAccountForm.saveButton')}
             </SolidButton>

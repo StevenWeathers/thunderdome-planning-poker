@@ -20,11 +20,11 @@
             {/if}
         </p>
     </div>
-    <div class="text-right">
+    <div class="ltr:text-right rtl:text-left">
         <button
             type="button"
             class="inline-block align-baseline font-bold text-sm text-blue-500
-            hover:text-blue-800 mr-4"
+            hover:text-blue-800 rtl:ml-4 ltr:mr-4"
             on:click="{toggleDelete}"
             data-testid="confirm-cancel"
         >

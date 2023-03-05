@@ -172,9 +172,9 @@
             {$_('pages.warriorProfile.fields.email.label')}
             {#if profile.verified}
                 <span
-                    class="font-bold text-green-600
+                    class="inline-block font-bold text-green-600
                                     border-green-500 border py-1 px-2 rounded
-                                    ml-1"
+                                    ltr:ml-1 rtl:mr-1"
                     data-testid="user-verified"
                 >
                     {$_('pages.warriorProfile.fields.email.verified')}
@@ -233,7 +233,7 @@
             <select
                 bind:value="{profile.country}"
                 class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 id="yourCountry"
                 name="yourCountry"
@@ -249,7 +249,7 @@
             </select>
             <div
                 class="pointer-events-none absolute inset-y-0
-                                right-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
+                                ltr:right-0 rtl:left-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
             >
                 <DownCarrotIcon />
             </div>
@@ -316,7 +316,7 @@
             <input
                 bind:checked="{profile.notificationsEnabled}"
                 type="checkbox"
-                class="w-4 h-4 dark:accent-lime-400 mr-1"
+                class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
             />
             <span>
                 {$_('pages.warriorProfile.fields.enable_notifications.label')}
@@ -343,7 +343,7 @@
                         <select
                             bind:value="{profile.avatar}"
                             class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                             id="yourAvatar"
                             name="yourAvatar"
@@ -356,14 +356,14 @@
                         </select>
                         <div
                             class="pointer-events-none absolute
-                                            inset-y-0 right-0 flex items-center
+                                            inset-y-0 ltr:right-0 rtl:left-0 flex items-center
                                             px-2 text-gray-700 dark:text-gray-300"
                         >
                             <DownCarrotIcon />
                         </div>
                     </div>
                 </div>
-                <div class="md:w-1/3 lg:w-1/4 ml-1">
+                <div class="md:w-1/3 lg:w-1/4 rtl:mr-1 ltr:ml-1">
                     <span class="float-right">
                         <WarriorAvatar
                             warriorId="{profile.id}"
@@ -379,12 +379,12 @@
     {/if}
 
     <div>
-        <div class="text-right">
+        <div class="ltr:text-right rtl:text-left">
             {#if !ldapEnabled && !headerAuthEnabled && toggleUpdatePassword}
                 <button
                     type="button"
                     class="inline-block align-baseline font-bold
-                                    text-sm text-blue-500 hover:text-blue-800 mr-4"
+                                    text-sm text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
                     on:click="{toggleUpdatePassword}"
                 >
                     {$_('pages.warriorProfile.updatePasswordButton')}

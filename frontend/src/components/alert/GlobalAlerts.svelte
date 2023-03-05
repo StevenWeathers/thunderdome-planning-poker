@@ -157,12 +157,12 @@
                     <div class="w-0 flex-1 flex items-center">
                         <span
                             class="{alert.type}Alert-type flex rounded-lg uppercase
-                        px-2 py-1 text-xs font-bold mr-3"
+                        px-2 py-1 text-xs font-bold rtl:ml-3 ltr:mr-3"
                         >
                             {alert.type}
                         </span>
                         <p
-                            class="ml-3 font-medium {alert.type}Alert-body truncate"
+                            class="rtl:mr-3 ltr:ml-3 font-medium {alert.type}Alert-body truncate"
                         >
                             {alert.content}
                         </p>
@@ -172,7 +172,7 @@
                             <button
                                 type="button"
                                 on:click="{dismissAlert(alert.id)}"
-                                class="-mr-1 flex p-2 rounded-md {alert.type}Alert-dismiss focus:outline-none focus:ring-2 focus:ring-white sm:-mr-2"
+                                class="rtl:-ml-1 ltr:-mr-1 flex p-2 rounded-md {alert.type}Alert-dismiss focus:outline-none focus:ring-2 focus:ring-white sm:rtl:-ml-2 sm:ltr:-mr-2"
                             >
                                 <CloseIcon />
                             </button>

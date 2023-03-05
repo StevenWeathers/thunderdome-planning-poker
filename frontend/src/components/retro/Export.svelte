@@ -36,7 +36,7 @@
     <div class="px-4">
         <div class="mb-4">
             <h2 class="text-3xl font-rajdhani">{$_('works')}</h2>
-            <ul class="pl-12 list-disc text-lg">
+            <ul class="ltr:pl-12 rtl:pr-12 list-disc text-lg">
                 {#each workedItems as item (item.id)}
                     <li>
                         {item.content}
@@ -46,7 +46,7 @@
         </div>
         <div class="mb-4">
             <h2 class="text-3xl font-rajdhani">{$_('needsImprovement')}</h2>
-            <ul class="pl-12 list-disc text-lg">
+            <ul class="ltr:pl-12 rtl:pr-12 list-disc text-lg">
                 {#each improveItems as item (item.id)}
                     <li>
                         {item.content}
@@ -56,7 +56,7 @@
         </div>
         <div class="mb-4">
             <h2 class="text-3xl font-rajdhani">{$_('questions')}</h2>
-            <ul class="pl-12 list-disc text-lg">
+            <ul class="ltr:pl-12 rtl:pr-12 list-disc text-lg">
                 {#each questionItems as item (item.id)}
                     <li>
                         {item.content}
@@ -66,7 +66,7 @@
         </div>
         <div class="mb-4">
             <h2 class="text-3xl font-rajdhani">{$_('actionItems')}</h2>
-            <ul class="pl-12 list-disc text-lg">
+            <ul class="ltr:pl-12 rtl:pr-12 list-disc text-lg">
                 {#each retro.actionItems as item (item.id)}
                     <li>{item.content}</li>
                 {/each}

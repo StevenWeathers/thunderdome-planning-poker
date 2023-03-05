@@ -355,7 +355,7 @@
                                     {#if comment.user_id === $user.id && !(selectedComment !== null && selectedComment.id === comment.id)}
                                         <div class="mb-2 text-right">
                                             <button
-                                                class="text-blue-500 hover:text-blue-300 mr-1"
+                                                class="text-blue-500 hover:text-blue-300 rtl:ml-1 ltr:mr-1"
                                                 on:click="{toggleCommentEdit(
                                                     comment,
                                                 )}"
@@ -428,7 +428,7 @@
                         {#each colorLegend as color}
                             <button
                                 on:click="{changeColor(color.color)}"
-                                class="p-4 mr-2 mb-2 colorcard-{color.color}
+                                class="p-4 rtl:ml-2 ltr:mr-2 mb-2 colorcard-{color.color}
                                 border-2 border-solid {story.color ===
                                 color.color
                                     ? `border-${color.color}-800`

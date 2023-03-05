@@ -520,7 +520,7 @@
                 </div>
             {/if}
         </div>
-        <div class="md:pl-2 md:shrink text-right">
+        <div class="md:pl-2 md:shrink ltr:text-right rtl:text-left">
             <SolidButton
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 onClick="{toggleCheckin}"
@@ -562,10 +562,10 @@
     </div>
 
     <div
-        class="mt-8 mb-4 w-full text-right bg-white dark:bg-gray-800 p-3 shadow-lg rounded-lg"
+        class="mt-8 mb-4 w-full ltr:text-right rtl:text-left bg-white dark:bg-gray-800 p-3 shadow-lg rounded-lg"
     >
         <div
-            class="inline-block align-middle mr-2 text-gray-600 dark:text-gray-400 uppercase font-rajdhani text-xl tracking-wide"
+            class="inline-block align-middle rtl:ml-2 ltr:mr-2 text-gray-600 dark:text-gray-400 uppercase font-rajdhani text-xl tracking-wide"
         >
             {$_('showBlockedCheckins')}
         </div>
@@ -597,7 +597,9 @@
                             class="mb-4 w-full flex dark:text-gray-300 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-xl border-gray-300 dark:border-gray-700 border-b"
                             data-testid="checkin"
                         >
-                            <div class="shrink mr-4 lg:mr-6 text-center">
+                            <div
+                                class="shrink rtl:ml-4 ltr:mr-4 lg:rtl:ml-6 lg:mr-6 text-center"
+                            >
                                 <div class="flex justify-items-center mb-4">
                                     <div class="relative w-20 h-20">
                                         <div class="relative w-full h-full">
@@ -647,7 +649,7 @@
                                                 <BlockedPing />
                                             {/if}
                                             <div
-                                                class="hidden absolute top-0 right-0 w-1/4 h-1/4 bg-white rounded-full shadow-md"
+                                                class="hidden absolute top-0 ltr:right-0 rtl:left-0 w-1/4 h-1/4 bg-white rounded-full shadow-md"
                                             >
                                                 <!-- emoji -->
                                             </div>

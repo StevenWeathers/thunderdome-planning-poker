@@ -95,7 +95,10 @@
         <div class="flex justify-between">
             <div class="flex space-x-7">
                 <div>
-                    <a href="{appRoutes.landing}" class="block my-3 mr-10">
+                    <a
+                        href="{appRoutes.landing}"
+                        class="block my-3 rtl:ml-10 ltr:mr-10"
+                    >
                         <img
                             src="{PathPrefix}/img/logo.svg"
                             alt="Thunderdome"
@@ -193,7 +196,7 @@
                     </div>
                 {:else}
                     <span
-                        class="font-bold mr-2 text-lg lg:text-xl inline-block max-w-48 truncate"
+                        class="font-bold rtl:ml-2 ltr:mr-2 text-lg lg:text-xl inline-block max-w-48 truncate"
                     >
                         <UserIcon class="h-5 w-5" />
                         <a
@@ -225,7 +228,7 @@
                     {/if}
                 {/if}
                 <LocaleSwitcher
-                    class="ml-2 text-lg lg:text-xl"
+                    class="rtl:mr-2 ltr:ml-2 text-lg lg:text-xl"
                     selectedLocale="{$locale}"
                     on:locale-changed="{e =>
                         setupI18n({
@@ -335,7 +338,9 @@
             </ul>
             <div class="font-rajdhani font-semibold mx-4 my-2 dark:text-white">
                 {#if $warrior.name}
-                    <span class="font-bold mr-2 text-lg lg:text-xl">
+                    <span
+                        class="font-bold rtl:ml-2 ltr:mr-2 text-lg lg:text-xl"
+                    >
                         <UserIcon class="h-5 w-5" />
                         <a
                             href="{appRoutes.profile}"

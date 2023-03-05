@@ -92,9 +92,9 @@
     </div>
 
     <div class="w-full">
-        <div class="text-right mb-4">
+        <div class="ltr:text-right rtl:text-left mb-4">
             <div
-                class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+                class="relative inline-block w-10 rtl:ml-2 ltr:mr-2 align-middle select-none transition duration-200 ease-in"
             >
                 <input
                     type="checkbox"

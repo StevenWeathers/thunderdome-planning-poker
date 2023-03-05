@@ -26,7 +26,7 @@
 
 <div class="">
     <div class="flex items-center mb-4">
-        <div class="flex-shrink pr-2">
+        <div class="flex-shrink ltr:pr-2 rtl:pl-2">
             {#if itemType === 'worked'}
                 <SmileCircle
                     class="w-8 h-8 text-green-500 dark:text-lime-400"
@@ -91,11 +91,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex-shrink pl-2">
+                    <div class="flex-shrink ltr:pl-2 rtl:pr-2">
                         {#if phase === 'brainstorm'}
                             <button
                                 on:click="{handleDelete(itemType, item.id)}"
-                                class="pr-2 pt-1 {item.userId !== $user.id
+                                class="ltr:pr-2 rtl:pl-2 pt-1 {item.userId !==
+                                $user.id
                                     ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
                                     : 'text-gray-500 dark:text-gray-400 hover:text-red-500'}"
                                 disabled="{item.userId !== $user.id}"

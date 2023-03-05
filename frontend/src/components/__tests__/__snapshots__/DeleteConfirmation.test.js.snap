@@ -51,7 +51,7 @@ exports[`DeleteConfirmation component should match snapshot 1`] = `
             </div>
              
             <div
-              class="mt-2"
+              class="mt-8"
             >
               <div
                 class="mt-8 mb-4"
@@ -71,7 +71,7 @@ exports[`DeleteConfirmation component should match snapshot 1`] = `
                 class="text-right"
               >
                 <button
-                  class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 mr-4"
+                  class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
                   data-testid="confirm-cancel"
                   type="button"
                 >
@@ -147,7 +147,7 @@ exports[`DeleteConfirmation component should match snapshot when permanent=false
             </div>
              
             <div
-              class="mt-2"
+              class="mt-8"
             >
               <div
                 class="mt-8 mb-4"
@@ -164,7 +164,7 @@ exports[`DeleteConfirmation component should match snapshot when permanent=false
                 class="text-right"
               >
                 <button
-                  class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 mr-4"
+                  class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
                   data-testid="confirm-cancel"
                   type="button"
                 >

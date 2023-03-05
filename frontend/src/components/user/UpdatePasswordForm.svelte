@@ -89,11 +89,11 @@ focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500
         />
     </div>
 
-    <div class="text-right">
+    <div class="ltr:text-right rtl:text-left">
         <button
             type="button"
             class="inline-block align-baseline font-bold text-sm
-            text-blue-500 hover:text-blue-800 mr-4"
+            text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
             on:click="{toggleForm}"
         >
             {$_('pages.warriorProfile.updatePasswordForm.cancelButton')}

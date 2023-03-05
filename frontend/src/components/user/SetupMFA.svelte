@@ -83,7 +83,7 @@
             </div>
 
             <div>
-                <div class="text-right">
+                <div class="ltr:text-right rtl:text-left">
                     <SolidButton type="submit" disabled="{submitDisabled}">
                         {$_('mfaConfirmToken')}
                     </SolidButton>

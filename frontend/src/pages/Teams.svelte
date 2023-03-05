@@ -131,7 +131,7 @@
                     </h2>
                 </div>
                 <div class="w-1/5">
-                    <div class="text-right">
+                    <div class="ltr:text-right rtl:text-left">
                         <SolidButton onClick="{toggleCreateOrganization}">
                             {$_('organizationCreate')}
                         </SolidButton>
@@ -189,7 +189,7 @@
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="text-right">
+                <div class="ltr:text-right rtl:text-left">
                     <SolidButton onClick="{toggleCreateTeam}">
                         {$_('teamCreate')}
                     </SolidButton>
