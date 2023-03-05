@@ -53,7 +53,7 @@
     let isSpectator = false
     let joinPasscode = ''
 
-    $: countdown =
+    $: voteDuration =
         battle.currentPlanId !== '' && battle.votingLocked === false
             ? timeUnitsBetween(voteStartTime, currentTime)
             : {}
@@ -524,12 +524,12 @@
                 text-3xl md:text-4xl text-gray-700 dark:text-gray-300"
                 data-testid="vote-timer"
             >
-                {#if countdown.seconds !== undefined}
-                    {#if countdown.hours !== 0}
-                        {addTimeLeadZero(countdown.hours)}:
+                {#if voteDuration.seconds !== undefined}
+                    {#if voteDuration.hours !== 0}
+                        {addTimeLeadZero(voteDuration.hours)}:
                     {/if}
-                    {addTimeLeadZero(countdown.minutes)}:{addTimeLeadZero(
-                        countdown.seconds,
+                    {addTimeLeadZero(voteDuration.minutes)}:{addTimeLeadZero(
+                        voteDuration.seconds,
                     )}
                 {/if}
             </div>
