@@ -66,7 +66,10 @@ const isLocaleLoaded = derived(
         Object.keys($dictionary[_activeLocale]).length > 0,
 )
 
-const dir = derived(locale, $locale => ($locale === 'ar' ? 'rtl' : 'ltr'))
+const rtlLanguages = ['ar', 'fa']
+const dir = derived(locale, $locale =>
+    rtlLanguages.includes($locale) ? 'rtl' : 'ltr',
+)
 
 function loadJson(url) {
     return fetch(url).then(response => response.json())

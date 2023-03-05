@@ -1,0 +1,116 @@
+{
+  "logoutError": "Error encountered attempting to logout warrior",
+  "battleDelete": "Delete Battle",
+  "battleAbandon": "Abandon Battle",
+  "battleCreate": "Create Battle",
+  "battleEdit": "Edit Battle",
+  "warriorCreate": "Create Warrior",
+  "planAdd": "Add Plan",
+  "planSkip": "Skip Plan",
+  "planName": "Plan Name",
+  "planNamePlaceholder": "Enter a plan name",
+  "planType": "Plan Type",
+  "planLinkPlaceholder": "Enter a link to plan",
+  "importJiraXML": "Import plans from Jira XML",
+  "landingTitle": "Thunderdome is an Agile Planning Poker app with a fun theme",
+  "landingCountries": "Warriors in over {count} countries",
+  "pages": {
+    "myBattles": {
+      "nav": "My Battles",
+      "title": "My Battles",
+      "battlesError": "Error finding your battles",
+      "countPlansPointed": "{totalPointed} of {totalPlans} plans pointed",
+      "createBattle": {
+        "title": "Create a Battle",
+        "createError": "Error encountered creating battle",
+        "fields": {
+          "name": {
+            "label": "Battle Name",
+            "placeholder": "Enter a battle name"
+          },
+          "plans": {
+            "label": "Plans",
+            "addButton": "Add Plan",
+            "fields": {
+              "name": {
+                "placeholder": "Enter a plan name"
+              }
+            }
+          },
+          "autoFinishVoting": {
+            "label": "Auto Finish Voting when all Warriors have voted"
+          }
+        }
+      }
+    },
+    "createAccount": {
+      "title": "Enlist to Battle",
+      "loginForBattle": "or {loginOpen}Login{loginClose} to join the Battle",
+      "guestForm": {
+        "createError": "Error encountered registering warrior as guest"
+      },
+      "createAccountForm": {
+        "createError": "Error encountered creating warrior"
+      }
+    },
+    "warriorProfile": {
+      "fields": {
+        "enable_notifications": {
+          "label": "Enable battle notifications"
+        }
+      }
+    },
+    "admin": {
+      "counts": {
+        "registered": "Registered Warriors",
+        "unregistered": "Unregistered Warriors",
+        "battles": "Battles",
+        "plans": "Plans"
+      },
+      "registeredWarriors": {
+        "title": "Registered Warriors"
+      },
+      "maintenance": {
+        "cleanBattles": "Clean Battles older than {daysOld} days"
+      }
+    },
+    "login": {
+      "registerForBattle": "or {registerOpen}Register{registerClose} to join the Battle",
+      "authError": "Error encountered attempting to authenticate warrior"
+    },
+    "battle": {
+      "title": "Battle",
+      "warriors": "Warriors",
+      "socketReconnecting": "Ooops, reloading Battle Plans...",
+      "socketError": "Error joining battle, refresh and try again.",
+      "loading": "Loading Battle Plans...",
+      "warriorJoined": "{name} has joined the battle",
+      "warriorRetreated": "{name} has retreated from the battle",
+      "warriorInvite": "Invite a Warrior",
+      "planSkipped": "Plan skipped",
+      "voteResults": {
+        "unknownWarrior": "Unknown Warrior"
+      },
+      "battleDeleted": "Battle deleted"
+    }
+  },
+  "plans": "Plans",
+  "battle": "Battle",
+  "battles": "Battles",
+  "battlesActive": "Active Battles",
+  "battlesActiveUsers": "Active Battle Users",
+  "battleJoin": "Join Battle",
+  "battleRemoveSuccess": "Battle removed successfully.",
+  "battleRemoveError": "Error attempting to remove battle.",
+  "teamGetBattlesError": "Error getting team battles",
+  "sessionDuplicate": "Duplicate battle session exists for your ID",
+  "removeBattleConfirmText": "Are you sure you want to remove this battle?",
+  "removeBattle": "Remove Battle",
+  "deleteBattleConfirmText": "Are you sure you want to delete this battle?",
+  "deleteBattle": "Delete Battle",
+  "oldBattleCleanError": "Error encountered cleaning battles",
+  "getBattleError": "Error getting battle",
+  "getBattlesError": "Error getting battles",
+  "showActiveBattles": "Show Active Battles",
+  "customizableBattleOptions": "Customizable Battle Options"
+}

@@ -6,7 +6,7 @@
     import Navaid from 'navaid'
     import { onDestroy } from 'svelte'
 
-    import { isLocaleLoaded, setupI18n } from './i18n.js'
+    import { dir, isLocaleLoaded, setupI18n } from './i18n.js'
     import { AppConfig, appRoutes } from './config.js'
     import apiclient from './apiclient.js'
     import { warrior } from './stores.js'
@@ -59,6 +59,9 @@
     setupI18n({
         withLocale: activeWarrior ? activeWarrior.locale : 'en',
     })
+    $: if (document.dir !== $dir) {
+        document.dir = $dir
+    }
 
     let currentPage = {
         route: Landing,
