@@ -47,6 +47,7 @@ type Plan struct {
 	Link               string    `json:"link"`
 	Description        string    `json:"description"`
 	AcceptanceCriteria string    `json:"acceptanceCriteria"`
+	Priority           int32     `json:"priority"`
 	Votes              []*Vote   `json:"votes"`
 	Points             string    `json:"points"`
 	Active             bool      `json:"active"`

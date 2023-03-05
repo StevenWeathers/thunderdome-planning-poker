@@ -13,7 +13,7 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 	var plans = make([]*model.Plan, 0)
 	planRows, plansErr := d.db.Query(
 		`SELECT
-			id, name, type, reference_id, link, description, acceptance_criteria, points, active, skipped, votestart_time, voteend_time, votes
+			id, name, type, reference_id, link, description, acceptance_criteria, priority, points, active, skipped, votestart_time, voteend_time, votes
 			FROM plans WHERE battle_id = $1 ORDER BY created_date
 		`,
 		BattleID,
@@ -32,7 +32,7 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 				Skipped: false,
 			}
 			if err := planRows.Scan(
-				&p.Id, &p.Name, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Points, &p.Active, &p.Skipped, &p.VoteStartTime, &p.VoteEndTime, &v,
+				&p.Id, &p.Name, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Priority, &p.Points, &p.Active, &p.Skipped, &p.VoteStartTime, &p.VoteEndTime, &v,
 			); err != nil {
 				d.logger.Error("get battle plans query error", zap.Error(err))
 			} else {
@@ -61,11 +61,11 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 }
 
 // CreatePlan adds a new plan to a battle
-func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*model.Plan, error) {
+func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*model.Plan, error) {
 	SanitizedDescription := d.htmlSanitizerPolicy.Sanitize(Description)
 	SanitizedAcceptanceCriteria := d.htmlSanitizerPolicy.Sanitize(AcceptanceCriteria)
 	if _, err := d.db.Exec(
-		`call create_plan($1, $2, $3, $4, $5, $6, $7);`, BattleID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria,
+		`call create_plan($1, $2, $3, $4, $5, $6, $7, $8);`, BattleID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority,
 	); err != nil {
 		d.logger.Error("call create_plan error", zap.Error(err))
 	}
@@ -159,12 +159,12 @@ func (d *Database) SkipPlan(BattleID string, PlanID string) ([]*model.Plan, erro
 }
 
 // RevisePlan updates the plan by ID
-func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string) ([]*model.Plan, error) {
+func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*model.Plan, error) {
 	SanitizedDescription := d.htmlSanitizerPolicy.Sanitize(Description)
 	SanitizedAcceptanceCriteria := d.htmlSanitizerPolicy.Sanitize(AcceptanceCriteria)
 	// set PlanID to true
 	if _, err := d.db.Exec(
-		`call revise_plan($1, $2, $3, $4, $5, $6, $7);`, PlanID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria); err != nil {
+		`call revise_plan($1, $2, $3, $4, $5, $6, $7, $8);`, PlanID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority); err != nil {
 		d.logger.Error("call revise_plan error", zap.Error(err))
 	}
 

@@ -1,5 +1,5 @@
 <script>
-    let klass = 'w-6 h-6'
+    let klass = 'h-6 w-6'
     export { klass as class }
 </script>
 
@@ -14,5 +14,6 @@
     <path
         stroke-linecap="round"
         stroke-linejoin="round"
-        d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
+        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+    ></path>
 </svg>
