@@ -240,7 +240,7 @@
                 </h2>
             </div>
             <div class="w-3/5">
-                <div class="text-right flex w-full">
+                <div class="ltr:text-right rtl:text-left flex w-full">
                     <div class="w-3/4">
                         <form on:submit="{onSearchSubmit}" name="searchUsers">
                             <div class="mb-4">
@@ -302,7 +302,7 @@
                                         class="h-10 w-10 rounded-full"
                                     />
                                 </div>
-                                <div class="ml-4">
+                                <div class="rtl:mr-4 ltr:ml-4">
                                     <div
                                         class="text-sm font-medium text-gray-900"
                                     >

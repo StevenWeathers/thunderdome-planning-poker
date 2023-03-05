@@ -190,7 +190,7 @@
                     {user.name}
                 </h1>
             </div>
-            <div class="flex-1 text-right">
+            <div class="flex-1 ltr:text-right rtl:text-left">
                 <SolidButton onClick="{toggleUpdatePassword}"
                     >{$_('pages.warriorProfile.updatePasswordButton')}
                 </SolidButton>

@@ -5,7 +5,7 @@
 {#if type === 'default'}
     <th
         scope="col"
-        class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+        class="px-6 py-3 ltr:text-left rtl:text-right text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
     >
         <slot />
     </th>

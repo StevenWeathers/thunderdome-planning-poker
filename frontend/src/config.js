@@ -5,6 +5,7 @@ const locales = {
     fr: 'Français',
     pt: 'Português',
     ru: 'Русский',
+    fa: 'Persian',
 }
 
 const AppConfig =

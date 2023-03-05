@@ -103,7 +103,7 @@
 {#if allowJiraImport}
     <HollowButton
         type="label"
-        additionalClasses="mr-2"
+        additionalClasses="rtl:ml-2 ltr:mr-2"
         color="blue"
         labelFor="jiraimport"
     >

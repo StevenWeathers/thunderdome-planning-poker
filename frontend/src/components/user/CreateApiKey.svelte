@@ -112,7 +112,7 @@
                     required
                 />
             </div>
-            <div class="text-right">
+            <div class="ltr:text-right rtl:text-left">
                 <div>
                     <SolidButton type="submit">
                         {$_('pages.warriorProfile.apiKeys.fields.submitButton')}
@@ -157,7 +157,7 @@
                 {$_('pages.warriorProfile.apiKeys.storeWarning')}
             </p>
         </div>
-        <div class="text-right">
+        <div class="ltr:text-right rtl:text-left">
             <div>
                 <SolidButton
                     onClick="{toggleCreateApiKey}"

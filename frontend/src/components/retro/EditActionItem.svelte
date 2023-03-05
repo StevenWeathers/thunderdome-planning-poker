@@ -64,7 +64,7 @@
                     <div
                         class="bg-white dark:bg-gray-800 border-2 rounded-md
                                                 border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                                justify-center items-center mr-2
+                                                justify-center items-center rtl:ml-2 ltr:mr-2
                                                 focus-within:border-blue-500 dark:focus-within:border-sky-500"
                     >
                         <CheckboxIcon />
@@ -80,7 +80,7 @@
                     >{$_('delete')}</HollowButton
                 >
             </div>
-            <div class="w-1/2 text-right">
+            <div class="w-1/2 ltr:text-right rtl:text-left">
                 <SolidButton type="submit">{$_('save')}</SolidButton>
             </div>
         </div>

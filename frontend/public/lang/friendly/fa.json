@@ -1,0 +1,116 @@
+{
+  "logoutError": "Error encountered attempting to logout user",
+  "battleDelete": "Delete Game",
+  "battleAbandon": "Abandon Game",
+  "battleCreate": "Create Game",
+  "battleEdit": "Edit Game",
+  "warriorCreate": "Create User",
+  "planAdd": "Add Story",
+  "planSkip": "Skip Story",
+  "planName": "Story Name",
+  "planNamePlaceholder": "Enter a story name",
+  "planType": "Story Type",
+  "planLinkPlaceholder": "Enter a link to story",
+  "importJiraXML": "Import stories from Jira XML",
+  "landingTitle": "Thunderdome is an Agile Planning Poker app",
+  "landingCountries": "Users in over {count} countries",
+  "pages": {
+    "myBattles": {
+      "nav": "My Games",
+      "title": "My Games",
+      "battlesError": "Error finding your games",
+      "countPlansPointed": "{totalPointed} of {totalPlans} stories pointed",
+      "createBattle": {
+        "title": "Create a Game",
+        "createError": "Error encountered creating game",
+        "fields": {
+          "name": {
+            "label": "Game Name",
+            "placeholder": "Enter a game name"
+          },
+          "plans": {
+            "label": "Stories",
+            "addButton": "Add Story",
+            "fields": {
+              "name": {
+                "placeholder": "Enter a story name"
+              }
+            }
+          },
+          "autoFinishVoting": {
+            "label": "Auto Finish Voting when all Players have voted"
+          }
+        }
+      }
+    },
+    "createAccount": {
+      "title": "Register to join pointing games",
+      "loginForBattle": "or {loginOpen}Login{loginClose} to join the Game",
+      "guestForm": {
+        "createError": "Error encountered registering player as guest"
+      },
+      "createAccountForm": {
+        "createError": "Error encountered creating player"
+      }
+    },
+    "warriorProfile": {
+      "fields": {
+        "enable_notifications": {
+          "label": "Enable game notifications"
+        }
+      }
+    },
+    "admin": {
+      "counts": {
+        "registered": "Registered Players",
+        "unregistered": "Unregistered Players",
+        "battles": "Games",
+        "plans": "Stories"
+      },
+      "registeredWarriors": {
+        "title": "Registered Players"
+      },
+      "maintenance": {
+        "cleanBattles": "Clean Games older than {daysOld} days"
+      }
+    },
+    "login": {
+      "registerForBattle": "or {registerOpen}Register{registerClose} to join the Game",
+      "authError": "Error encountered attempting to authenticate player"
+    },
+    "battle": {
+      "title": "Game",
+      "warriors": "Players",
+      "socketReconnecting": "Ooops, reloading Game...",
+      "socketError": "Error joining game, refresh and try again.",
+      "loading": "Loading Game...",
+      "warriorJoined": "{name} has joined the game",
+      "warriorRetreated": "{name} has left the game",
+      "warriorInvite": "Invite a Player",
+      "planSkipped": "Story skipped",
+      "voteResults": {
+        "unknownWarrior": "Unknown Player"
+      },
+      "battleDeleted": "Game deleted"
+    }
+  },
+  "plans": "Stories",
+  "battle": "Game",
+  "battles": "Games",
+  "battlesActive": "Active Games",
+  "battlesActiveUsers": "Active Game Users",
+  "battleJoin": "Join Game",
+  "battleRemoveSuccess": "Game removed successfully.",
+  "battleRemoveError": "Error attempting to remove game.",
+  "teamGetBattlesError": "Error getting team games",
+  "sessionDuplicate": "Duplicate game session exists for your ID",
+  "removeBattleConfirmText": "Are you sure you want to remove this game?",
+  "removeBattle": "Remove Game",
+  "deleteBattleConfirmText": "Are you sure you want to delete this game?",
+  "deleteBattle": "Delete Game",
+  "oldBattleCleanError": "Error encountered cleaning games",
+  "getBattleError": "Error getting games",
+  "getBattlesError": "Error getting games",
+  "showActiveBattles": "Show Active Games",
+  "customizableBattleOptions": "Customizable Game Options"
+}

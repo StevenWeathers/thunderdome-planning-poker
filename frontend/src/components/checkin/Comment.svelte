@@ -64,7 +64,7 @@
     {#if (comment.user_id === $user.id || comment.user_id === isAdmin) && !showEdit}
         <div class="mb-2 text-right">
             <button
-                class="text-blue-500 hover:text-blue-300 dark:text-sky-300 dark:hover:text-sky-100 mr-1"
+                class="text-blue-500 hover:text-blue-300 dark:text-sky-300 dark:hover:text-sky-100 rtl:ml-1 ltr:mr-1"
                 on:click="{toggleEdit}"
             >
                 {$_('edit')}

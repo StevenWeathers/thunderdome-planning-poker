@@ -245,7 +245,7 @@
 
         <div class="w-full md:w-1/2 lg:w-2/3">
             {#if ExternalAPIEnabled}
-                <div class="ml-8">
+                <div class="rtl:mr-8 ltr:ml-8">
                     <div class="flex w-full">
                         <div class="flex-1">
                             <h2
@@ -255,7 +255,7 @@
                             </h2>
                         </div>
                         <div class="flex-1">
-                            <div class="text-right">
+                            <div class="ltr:text-right rtl:text-left">
                                 <HollowButton
                                     href="/swagger/index.html"
                                     options="{{ target: '_blank' }}"
@@ -292,13 +292,13 @@
                                             <tr>
                                                 <th
                                                     scope="col"
-                                                    class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                                    class="px-6 py-3 ltr:text-left rtl:text-right text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                                 >
                                                     {$_('name')}
                                                 </th>
                                                 <th
                                                     scope="col"
-                                                    class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                                    class="px-6 py-3 ltr:text-left rtl:text-right text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                                 >
                                                     {$_(
                                                         'pages.warriorProfile.apiKeys.prefix',
@@ -306,7 +306,7 @@
                                                 </th>
                                                 <th
                                                     scope="col"
-                                                    class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                                    class="px-6 py-3 ltr:text-left rtl:text-right text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                                 >
                                                     {$_(
                                                         'pages.warriorProfile.apiKeys.active',
@@ -314,7 +314,7 @@
                                                 </th>
                                                 <th
                                                     scope="col"
-                                                    class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                                                    class="px-6 py-3 ltr:text-left rtl:text-right text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                                 >
                                                     {$_(
                                                         'pages.warriorProfile.apiKeys.updated',
@@ -374,7 +374,7 @@
                                                         ).toLocaleString()}
                                                     </td>
                                                     <td
-                                                        class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                                                        class="px-6 py-4 whitespace-nowrap ltr:text-right rtl:text-left text-sm font-medium"
                                                     >
                                                         <HollowButton
                                                             onClick="{toggleApiKeyActiveStatus(

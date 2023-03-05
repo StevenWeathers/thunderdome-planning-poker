@@ -152,7 +152,7 @@
     </div>
 
     <div class="w-full">
-        <div class="text-right mb-4">
+        <div class="ltr:text-right rtl:text-left mb-4">
             <HollowButton onClick="{toggleCreateAlert}">
                 {$_('alertCreate')}
             </HollowButton>

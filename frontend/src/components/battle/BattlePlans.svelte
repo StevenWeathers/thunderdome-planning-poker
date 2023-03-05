@@ -157,7 +157,7 @@
     <ul
         class="flex border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 "
     >
-        <li class="-mb-px {showCompleted ? '' : 'mr-1'}">
+        <li class="-mb-px {showCompleted ? '' : 'rtl:ml-1 ltr:mr-1'}">
             <button
                 class="{showCompleted
                     ? 'hover:text-blue-600 text-blue-400 dark:hover:text-sky-300 dark:text-sky-600'
@@ -169,7 +169,9 @@
                 {$_('unpointed', { values: { count: unpointedPlans.length } })}
             </button>
         </li>
-        <li class="mr-1 {showCompleted ? 'mr-1' : ''}">
+        <li
+            class="rtl:ml-1 ltr:mr-1 {showCompleted ? 'rtl:ml-1 ltr:mr-1' : ''}"
+        >
             <button
                 class="{showCompleted
                     ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
@@ -218,7 +220,7 @@
                 {#if plan.points !== ''}
                     <div
                         class="inline-block font-bold text-green-600 dark:text-lime-400
-                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ml-2"
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded rtl:mr-2 ltr:ml-2"
                         data-testid="plan-points"
                     >
                         {plan.points}
@@ -275,7 +277,7 @@
                 &nbsp;
                 <div
                     class="inline-block font-bold text-green-600 dark:text-lime-400
-                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ml-2"
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded rtl:mr-2 ltr:ml-2"
                 >
                     {totalPoints}
                 </div>

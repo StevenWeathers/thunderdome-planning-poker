@@ -23,7 +23,7 @@
         gravatarHash="{user.gravatarHash}"
     />
     <p
-        class="ml-2 text-l font-bold leading-tight truncate"
+        class="rtl:mr-2 ltr:ml-2 text-l font-bold leading-tight truncate"
         data-testId="userName"
         title="{user.name}"
     >

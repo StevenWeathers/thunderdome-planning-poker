@@ -473,7 +473,7 @@
                 </div>
             {/if}
         </div>
-        <div class="flex-1 text-right">
+        <div class="flex-1 ltr:text-right rtl:text-left">
             <SolidButton
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 href="{`${currentPageUrl}/checkin`}"
@@ -492,7 +492,7 @@
                         {$_('battles')}
                     </h2>
                 </div>
-                <div class="flex-1 text-right">
+                <div class="flex-1 ltr:text-right rtl:text-left">
                     {#if isTeamMember}
                         <SolidButton onClick="{toggleCreateBattle}"
                             >{$_('battleCreate')}
@@ -516,7 +516,9 @@
                                     >{battle.name}</span
                                 >
                             </div>
-                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
+                            <div
+                                class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
+                            >
                                 {#if isAdmin}
                                     <HollowButton
                                         onClick="{toggleRemoveBattle(
@@ -562,7 +564,7 @@
                         {$_('retros')}
                     </h2>
                 </div>
-                <div class="flex-1 text-right">
+                <div class="flex-1 ltr:text-right rtl:text-left">
                     {#if isTeamMember}
                         <SolidButton onClick="{toggleCreateRetro}"
                             >{$_('createRetro')}
@@ -586,7 +588,9 @@
                                     >{retro.name}</span
                                 >
                             </div>
-                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
+                            <div
+                                class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
+                            >
                                 {#if isAdmin}
                                     <HollowButton
                                         onClick="{toggleRemoveRetro(retro.id)}"
@@ -615,9 +619,9 @@
                             {$_('retroActionItems')}
                         </h3>
 
-                        <div class="text-right mb-4">
+                        <div class="ltr:text-right rtl:text-left mb-4">
                             <div
-                                class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+                                class="relative inline-block w-10 rtl:ml-2 ltr:mr-2 align-middle select-none transition duration-200 ease-in"
                             >
                                 <input
                                     type="checkbox"
@@ -671,7 +675,7 @@
                                         <div
                                             class="bg-white dark:bg-gray-800 border-2 rounded-md
                                             border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                            justify-center items-center mr-2
+                                            justify-center items-center rtl:ml-2 ltr:mr-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
                                         >
                                             <CheckboxIcon />
@@ -692,7 +696,9 @@
                                         </button>
                                     </RowCol>
                                     <RowCol>
-                                        <div class="text-right">
+                                        <div
+                                            class="ltr:text-right rtl:text-left"
+                                        >
                                             <HollowButton
                                                 color="teal"
                                                 onClick="{toggleRetroActionEdit(
@@ -744,7 +750,7 @@
                         {$_('storyboards')}
                     </h2>
                 </div>
-                <div class="flex-1 text-right">
+                <div class="flex-1 ltr:text-right rtl:text-left">
                     {#if isTeamMember}
                         <SolidButton onClick="{toggleCreateStoryboard}"
                             >{$_('createStoryboard')}
@@ -768,7 +774,9 @@
                                     >{storyboard.name}</span
                                 >
                             </div>
-                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
+                            <div
+                                class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
+                            >
                                 {#if isAdmin}
                                     <HollowButton
                                         onClick="{toggleRemoveStoryboard(
@@ -814,7 +822,7 @@
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="text-right">
+                <div class="ltr:text-right rtl:text-left">
                     {#if isAdmin}
                         <SolidButton
                             onClick="{toggleAddUser}"
@@ -856,7 +864,7 @@
                                         class="h-10 w-10 rounded-full"
                                     />
                                 </div>
-                                <div class="ml-4">
+                                <div class="rtl:mr-4 ltr:ml-4">
                                     <div
                                         class="font-medium text-gray-900 dark:text-gray-200"
                                     >

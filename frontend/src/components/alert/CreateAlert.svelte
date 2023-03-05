@@ -83,7 +83,7 @@
                     bind:value="{alertType}"
                     required
                     class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pr-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 >
                     <option value="" disabled>
@@ -94,7 +94,7 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0 right-0 flex
+                    class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
                     items-center px-2 text-gray-700"
                 >
                     <DownCarrotIcon />
@@ -128,7 +128,7 @@
                     bind:checked="{active}"
                     id="active"
                     name="active"
-                    class="w-4 h-4 dark:accent-lime-400 mr-1"
+                    class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
                 />
                 {$_('active')}
             </label>
@@ -140,7 +140,7 @@
                     bind:checked="{registeredOnly}"
                     id="registeredOnly"
                     name="registeredOnly"
-                    class="w-4 h-4 dark:accent-lime-400 mr-1"
+                    class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
                 />
                 {$_('alertRegisteredOnly')}
             </label>
@@ -152,14 +152,14 @@
                     bind:checked="{allowDismiss}"
                     id="allowDismiss"
                     name="allowDismiss"
-                    class="w-4 h-4 dark:accent-lime-400 mr-1"
+                    class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
                 />
                 {$_('alertAllowDismiss')}
             </label>
         </div>
 
         <div>
-            <div class="text-right">
+            <div class="ltr:text-right rtl:text-left">
                 <SolidButton type="submit" disabled="{createDisabled}">
                     {$_('alertSave')}
                 </SolidButton>

@@ -41,7 +41,7 @@
             />
         </div>
         <div class="flex">
-            <div class="md:w-1/2 text-left">
+            <div class="md:w-1/2 ltr:text-left rtl:text-right">
                 <HollowButton color="red" onClick="{deleteColumn(column.id)}">
                     Delete Column
                 </HollowButton>

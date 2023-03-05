@@ -519,7 +519,7 @@
                     {retro.name}
                 </h1>
             </div>
-            <div class="w-3/4 text-right">
+            <div class="w-3/4 ltr:text-right rtl:text-left">
                 <div>
                     {#if retro.phase === 'completed'}
                         <SolidButton
@@ -556,7 +556,7 @@
                         <HollowButton
                             color="red"
                             onClick="{toggleDeleteRetro}"
-                            class="mr-2"
+                            class="rtl:ml-2 ltr:mr-2"
                             testid="retro-delete"
                         >
                             {$_('deleteRetro')}
@@ -651,7 +651,9 @@
                     </div>
                 </div>
             </div>
-            <div class="w-1/2 text-right text-gray-600 dark:text-gray-400">
+            <div
+                class="w-1/2 ltr:text-right rtl:text-left text-gray-600 dark:text-gray-400"
+            >
                 {#if retro.phase === 'brainstorm'}
                     {$_('brainstormPhaseDescription')}
                 {:else if retro.phase === 'group'}
@@ -776,10 +778,12 @@
                             </div>
                         </div>
                         <div class="w-full md:w-1/3">
-                            <div class="pl-4">
+                            <div class="ltr:pl-4 rtl:pr-4">
                                 {#if retro.phase === 'action'}
                                     <div class="flex items-center mb-4">
-                                        <div class="flex-shrink pr-2">
+                                        <div
+                                            class="flex-shrink ltr:pr-2 rtl:pl-2"
+                                        >
                                             <CheckCircle
                                                 class="w-8 h-8 text-indigo-500 dark:text-violet-400"
                                             />
@@ -818,7 +822,7 @@
                                                     on:click="{toggleActionEdit(
                                                         item.id,
                                                     )}"
-                                                    class="pr-2 pt-1 text-gray-500 dark:text-gray-400
+                                                    class="ltr:pr-2 rtl:pl-2 pt-1 text-gray-500 dark:text-gray-400
                                                 hover:text-blue-500"
                                                 >
                                                     <PencilIcon />
@@ -827,7 +831,7 @@
                                             <div
                                                 class="flex-grow dark:text-white"
                                             >
-                                                <div class="pr-2">
+                                                <div class="ltr:pr-2 rtl:pl-2">
                                                     {item.content}
                                                 </div>
                                             </div>
@@ -846,7 +850,7 @@
                                                 <div
                                                     class="bg-white dark:bg-gray-800 border-2 rounded-md
                                             border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                            justify-center items-center mr-2
+                                            justify-center items-center rtl:ml-2 ltr:mr-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
                                                 >
                                                     <CheckboxIcon />
@@ -922,7 +926,7 @@
                                     />
                                 </div>
 
-                                <div class="text-right">
+                                <div class="ltr:text-right rtl:text-left">
                                     <SolidButton type="submit"
                                         >{$_('joinRetro')}</SolidButton
                                     >

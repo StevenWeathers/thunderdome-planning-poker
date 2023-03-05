@@ -247,12 +247,12 @@
                         />
                     </div>
 
-                    <div class="text-right">
+                    <div class="ltr:text-right rtl:text-left">
                         {#if !LdapEnabled}
                             <button
                                 type="button"
                                 class="inline-block align-baseline font-bold
-                                text-sm text-blue-500 hover:text-blue-800 mr-4"
+                                text-sm text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
                                 on:click="{toggleForgotPassword}"
                             >
                                 {$_('pages.login.fields.password.forgotLabel')}
@@ -298,11 +298,11 @@
                         />
                     </div>
 
-                    <div class="text-right">
+                    <div class="ltr:text-right rtl:text-left">
                         <button
                             type="button"
                             class="inline-block align-baseline font-bold text-sm
-                            text-blue-500 hover:text-blue-800 mr-4"
+                            text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
                             on:click="{toggleForgotPassword}"
                         >
                             {$_('cancel')}
@@ -346,7 +346,7 @@
                         />
                     </div>
 
-                    <div class="text-right">
+                    <div class="ltr:text-right rtl:text-left">
                         <SolidButton
                             type="submit"
                             disabled="{mfaLoginDisabled}"
