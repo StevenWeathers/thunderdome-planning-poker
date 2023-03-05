@@ -17,7 +17,7 @@
     export let planLink = ''
     export let description = ''
     export let acceptanceCriteria = ''
-    export let priority = null
+    export let priority = 99
 
     const priorities = {
         99: {

@@ -26,7 +26,7 @@
         link: '',
         description: '',
         acceptanceCriteria: '',
-        priority: '',
+        priority: 99,
     }
 
     const priorities = {

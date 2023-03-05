@@ -51,7 +51,7 @@
     export let planLink = ''
     export let description = ''
     export let acceptanceCriteria = ''
-    export let priority = ''
+    export let priority = 99
 
     const isAbsolute = new RegExp('^([a-z]+://|//)', 'i')
     let descriptionExpanded = false
@@ -190,12 +190,11 @@
                     name="priority"
                     id="priority"
                     bind:value="{priority}"
-                    required
                     class="block appearance-none w-full border-2 dark:bg-gray-900 border-gray-300 dark:border-gray-600
                     text-gray-700 dark:text-gray-400 py-3 px-4 pr-8 rounded leading-tight
                     focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 >
-                    <option value="" disabled>
+                    <option value="{99}" disabled>
                         {$_('planPriorityPlaceholder')}
                     </option>
                     {#each priorities as p}
