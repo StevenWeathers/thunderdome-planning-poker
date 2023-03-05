@@ -800,7 +800,6 @@
                                                     name="actionItem"
                                                     type="text"
                                                     required
-                                                    disabled="{!isFacilitator}"
                                                 />
                                                 <button
                                                     type="submit"
@@ -815,17 +814,15 @@
                                     >
                                         <div class="flex items-center">
                                             <div class="flex-shrink">
-                                                {#if isFacilitator}
-                                                    <button
-                                                        on:click="{toggleActionEdit(
-                                                            item.id,
-                                                        )}"
-                                                        class="pr-2 pt-1 text-gray-500 dark:text-gray-400
+                                                <button
+                                                    on:click="{toggleActionEdit(
+                                                        item.id,
+                                                    )}"
+                                                    class="pr-2 pt-1 text-gray-500 dark:text-gray-400
                                                 hover:text-blue-500"
-                                                    >
-                                                        <PencilIcon />
-                                                    </button>
-                                                {/if}
+                                                >
+                                                    <PencilIcon />
+                                                </button>
                                             </div>
                                             <div
                                                 class="flex-grow dark:text-white"
