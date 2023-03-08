@@ -64,6 +64,10 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*model.Plan, error) {
 	SanitizedDescription := d.htmlSanitizerPolicy.Sanitize(Description)
 	SanitizedAcceptanceCriteria := d.htmlSanitizerPolicy.Sanitize(AcceptanceCriteria)
+	// default priority should be 99 for sort order purposes
+	if Priority == 0 {
+		Priority = 99
+	}
 	if _, err := d.db.Exec(
 		`call create_plan($1, $2, $3, $4, $5, $6, $7, $8);`, BattleID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority,
 	); err != nil {
@@ -162,6 +166,10 @@ func (d *Database) SkipPlan(BattleID string, PlanID string) ([]*model.Plan, erro
 func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*model.Plan, error) {
 	SanitizedDescription := d.htmlSanitizerPolicy.Sanitize(Description)
 	SanitizedAcceptanceCriteria := d.htmlSanitizerPolicy.Sanitize(AcceptanceCriteria)
+	// default priority should be 99 for sort order purposes
+	if Priority == 0 {
+		Priority = 99
+	}
 	// set PlanID to true
 	if _, err := d.db.Exec(
 		`call revise_plan($1, $2, $3, $4, $5, $6, $7, $8);`, PlanID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority); err != nil {
