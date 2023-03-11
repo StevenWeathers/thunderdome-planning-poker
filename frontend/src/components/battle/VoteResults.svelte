@@ -97,7 +97,7 @@
         <div class="mb-2">{$_('pages.battle.voteResults.average')}</div>
         <span
             class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500 border p-2 rounded
-            ml-2 inline-block"
+            ltr:ml-2 rtl:mr-2 inline-block"
             data-testid="voteresult-average"
         >
             {average}
@@ -135,7 +135,7 @@
                     <WarriorIcon class="h-5 w-5" />
                     <span
                         class="text-sm ltr:text-right rtl:text-left text-gray-900 font-normal w-48
-                        absolute left-0 top-0 -mt-2 rtl:mr-4 ltr:ml-4 bg-white p-2 rounded
+                        absolute ltr:left-0 rtl:right-0 top-0 -mt-2 rtl:mr-4 ltr:ml-4 bg-white p-2 rounded
                         shadow-lg {showHighestVoters ? '' : 'hidden'}"
                     >
                         {#if counts[highestVote]}

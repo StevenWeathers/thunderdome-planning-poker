@@ -77,7 +77,7 @@
                 </div>
             {/each}
         </div>
-        <div class="text-right">
+        <div class="ltr:text-right rtl:text-left">
             <div>
                 <SolidButton type="submit">{$_('save')}</SolidButton>
             </div>

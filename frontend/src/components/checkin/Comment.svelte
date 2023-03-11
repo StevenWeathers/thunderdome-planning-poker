@@ -46,7 +46,7 @@
     rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
     focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
                     bind:value="{editcomment}"></textarea>
-                <div class="text-right">
+                <div class="ltr:text-right rtl:text-left">
                     <HollowButton color="blue" onClick="{toggleEdit}">
                         {$_('cancel')}
                     </HollowButton>
@@ -62,7 +62,7 @@
         </div>
     {/if}
     {#if (comment.user_id === $user.id || comment.user_id === isAdmin) && !showEdit}
-        <div class="mb-2 text-right">
+        <div class="mb-2 ltr:text-right rtl:text-left">
             <button
                 class="text-blue-500 hover:text-blue-300 dark:text-sky-300 dark:hover:text-sky-100 rtl:ml-1 ltr:mr-1"
                 on:click="{toggleEdit}"

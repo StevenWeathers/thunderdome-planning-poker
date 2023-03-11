@@ -1009,7 +1009,7 @@
                                 >
                                     {#each goalColumn.stories as story (story.id)}
                                         <div
-                                            class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-l-4
+                                            class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white ltr:border-l-4 rtl:border-r-4
                                     story-{story.color} border my-4
                                     cursor-pointer"
                                             style="list-style: none;"
@@ -1072,7 +1072,7 @@
                                             </div>
                                             {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
                                                 <div
-                                                    class="opacity-50 absolute top-0 left-0 ltr:right-0 rtl:left-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-l-4
+                                                    class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white ltr:border-l-4 rtl:border-r-4
                                     story-{story.color} border
                                     cursor-pointer"
                                                     style="list-style: none;"

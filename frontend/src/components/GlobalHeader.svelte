@@ -93,7 +93,7 @@
 <nav class="bg-white dark:bg-gray-800" aria-label="main navigation">
     <div class="px-8">
         <div class="flex justify-between">
-            <div class="flex space-x-7">
+            <div class="flex space-x-7 rtl:space-x-reverse">
                 <div>
                     <a
                         href="{appRoutes.landing}"
@@ -107,7 +107,7 @@
                     </a>
                 </div>
                 <nav
-                    class="hidden lg:flex items-center space-x-1 font-semibold font-rajdhani uppercase text-lg lg:text-xl"
+                    class="hidden lg:flex items-center space-x-1 rtl:space-x-reverse font-semibold font-rajdhani uppercase text-lg lg:text-xl"
                 >
                     {#if $warrior.name}
                         {#if FeaturePoker}
@@ -169,7 +169,7 @@
                 </nav>
             </div>
             <div
-                class="hidden lg:flex items-center space-x-3 font-rajdhani font-semibold dark:text-gray-300"
+                class="hidden lg:flex items-center space-x-3 rtl:space-x-reverse font-rajdhani font-semibold dark:text-gray-300"
             >
                 {#if !$warrior.name}
                     <div class="uppercase">

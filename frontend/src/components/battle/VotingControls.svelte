@@ -103,7 +103,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="w-1/2 text-right px-2">
+                    <div class="w-1/2 ltr:text-right rtl:text-left px-2">
                         <SolidButton
                             additionalClasses="w-full h-full"
                             type="submit"

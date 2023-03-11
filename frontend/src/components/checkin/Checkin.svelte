@@ -41,7 +41,7 @@
 
 <style>
     .toggle-checkbox:checked {
-        @apply right-0;
+        @apply ltr:right-0 rtl:left-0;
         @apply border-green-500;
     }
 

@@ -328,7 +328,7 @@
                             focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
                                                 bind:value="{selectedCommentContent}"
                                             ></textarea>
-                                            <div class="text-right">
+                                            <div class="ltr:text-right rtl:text-left">
                                                 <HollowButton
                                                     color="blue"
                                                     onClick="{toggleCommentEdit(
@@ -353,7 +353,7 @@
                                         </div>
                                     {/if}
                                     {#if comment.user_id === $user.id && !(selectedComment !== null && selectedComment.id === comment.id)}
-                                        <div class="mb-2 text-right">
+                                        <div class="mb-2 ltr:text-right rtl:text-left">
                                             <button
                                                 class="text-blue-500 hover:text-blue-300 rtl:ml-1 ltr:mr-1"
                                                 on:click="{toggleCommentEdit(
@@ -383,7 +383,7 @@
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
                             placeholder="Write a comment..."
                             bind:value="{userComment}"></textarea>
-                        <div class="text-right">
+                        <div class="ltr:text-right rtl:text-left">
                             <HollowButton
                                 color="teal"
                                 onClick="{handleCommentSubmit}"
@@ -450,7 +450,7 @@
                         </HollowButton>
                     {/if}
                 </div>
-                <div class="text-right">
+                <div class="ltr:text-right rtl:text-left">
                     <HollowButton color="red" onClick="{handleStoryDelete}">
                         Delete Story
                     </HollowButton>

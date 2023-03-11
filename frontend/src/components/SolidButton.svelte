@@ -66,7 +66,7 @@
 
     .btn-blue-copy {
         @apply bg-blue-500;
-        @apply rounded-l-none;
+        @apply ltr:rounded-l-none rtl:rounded-r-none;
         @apply border-blue-800;
     }
 
