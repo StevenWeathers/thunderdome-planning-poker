@@ -60,7 +60,7 @@
     <div>
         {#each items as item}
             <div
-                class="p-2 mb-2 bg-white dark:bg-gray-800 shadow item-list-item border-l-4"
+                class="p-2 mb-2 bg-white dark:bg-gray-800 shadow item-list-item ltr:border-l-4 rtl:border-r-4"
                 class:border-green-400="{item.type === 'worked'}"
                 class:dark:border-lime-400="{item.type === 'worked'}"
                 class:border-red-500="{item.type === 'improve'}"

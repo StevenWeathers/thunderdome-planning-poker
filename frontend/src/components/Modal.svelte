@@ -20,7 +20,7 @@
             <div
                 class="relative shadow-xl bg-white dark:bg-gray-800 rounded-lg p-4 xl:p-6 max-h-full"
             >
-                <div class="absolute top-4 right-4">
+                <div class="absolute top-4 ltr:right-4 rtl:left-4">
                     <button
                         aria-label="close"
                         on:click="{closeModal}"

@@ -39,17 +39,6 @@
     }
 </script>
 
-<style>
-    .toggle-checkbox:checked {
-        @apply right-0;
-        @apply border-green-500;
-    }
-
-    .toggle-checkbox:checked + .toggle-label {
-        @apply bg-green-500;
-    }
-</style>
-
 <Modal closeModal="{toggleCheckin}" widthClasses="md:w-2/3">
     <form on:submit="{onSubmit}" name="teamCheckin" class="flex flex-wrap mt-8">
         <div class="w-full md:grid md:grid-cols-2 md:gap-4">

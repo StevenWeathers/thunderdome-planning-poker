@@ -83,7 +83,7 @@
                 placeholder="Enter a persona description"
                 name="personaDescription"></textarea>
         </div>
-        <div class="text-right">
+        <div class="ltr:text-right rtl:text-left">
             <div>
                 <SolidButton type="submit">Save</SolidButton>
             </div>

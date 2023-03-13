@@ -814,7 +814,7 @@
                                 {/if}
                                 {#each retro.actionItems as item, i}
                                     <div
-                                        class="mb-2 p-2 bg-white dark:bg-gray-800 shadow border-l-4 border-indigo-500 dark:border-violet-400"
+                                        class="mb-2 p-2 bg-white dark:bg-gray-800 shadow ltr:border-l-4 rtl:border-r-4 border-indigo-500 dark:border-violet-400"
                                     >
                                         <div class="flex items-center">
                                             <div class="flex-shrink">

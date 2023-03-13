@@ -281,7 +281,7 @@
                 </div>
             {/if}
         </div>
-        <div class="text-right">
+        <div class="ltr:text-right rtl:text-left">
             <div>
                 <SolidButton type="submit" testid="plan-save"
                     >{$_('save')}</SolidButton

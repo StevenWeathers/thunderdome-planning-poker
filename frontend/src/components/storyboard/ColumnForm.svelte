@@ -46,7 +46,7 @@
                     Delete Column
                 </HollowButton>
             </div>
-            <div class="md:w-1/2 text-right">
+            <div class="md:w-1/2 ltr:text-right rtl:text-left">
                 <SolidButton type="submit">Save</SolidButton>
             </div>
         </div>

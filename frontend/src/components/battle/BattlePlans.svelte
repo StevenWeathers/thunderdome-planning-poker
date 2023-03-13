@@ -139,7 +139,7 @@
                 {$_('plans')}
             </h3>
         </div>
-        <div class="w-1/2 text-right">
+        <div class="w-1/2 ltr:text-right rtl:text-left">
             {#if isLeader}
                 <JiraImport
                     handlePlanAdd="{handlePlanAdd}"
@@ -227,7 +227,7 @@
                     </div>
                 {/if}
             </div>
-            <div class="w-full lg:w-1/3 text-right">
+            <div class="w-full lg:w-1/3 ltr:text-right rtl:text-left">
                 <HollowButton
                     color="blue"
                     onClick="{togglePlanView(plan.id)}"
