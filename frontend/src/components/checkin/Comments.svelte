@@ -47,7 +47,7 @@
             />
         {/each}
     </div>
-    <div class="text-right mb-2">
+    <div class="ltr:text-right rtl:text-left mb-2">
         <form on:submit="{onSubmit}" name="checkinComment">
             <div class="mb-2 w-full">
                 <textarea
@@ -59,7 +59,7 @@
             </div>
 
             <div>
-                <div class="text-right">
+                <div class="ltr:text-right rtl:text-left">
                     <SolidButton type="submit">
                         {$_('postComment')}
                     </SolidButton>

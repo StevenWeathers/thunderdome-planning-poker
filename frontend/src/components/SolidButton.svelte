@@ -66,8 +66,15 @@
 
     .btn-blue-copy {
         @apply bg-blue-500;
-        @apply rounded-l-none;
         @apply border-blue-800;
+    }
+
+    [dir='ltr'] .btn-blue-copy {
+        @apply rounded-l-none;
+    }
+
+    [dir='rtl'] .btn-blue-copy {
+        @apply rounded-r-none;
     }
 
     .btn-blue-copy:hover {

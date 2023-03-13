@@ -182,7 +182,7 @@
                 </span>
             {:else if profile.rank !== 'GUEST'}
                 <button
-                    class=" float-right inline-block align-baseline font-bold text-sm text-blue-500
+                    class="ltr:float-right rtl:float-left inline-block align-baseline font-bold text-sm text-blue-500
                                         hover:text-blue-800"
                     on:click="{requestVerifyEmail}"
                     data-testid="request-verify"
@@ -364,7 +364,7 @@
                     </div>
                 </div>
                 <div class="md:w-1/3 lg:w-1/4 rtl:mr-1 ltr:ml-1">
-                    <span class="float-right">
+                    <span class="ltr:float-right rtl:float-left">
                         <WarriorAvatar
                             warriorId="{profile.id}"
                             avatar="{profile.avatar}"

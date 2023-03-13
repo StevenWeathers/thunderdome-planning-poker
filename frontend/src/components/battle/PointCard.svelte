@@ -70,7 +70,7 @@
                 <WarriorIcon class="h-5 w-5" />
                 <span
                     class="ltr:text-right rtl:text-left text-sm text-gray-900 font-normal w-48
-                    absolute left-0 top-0 mt-0 rtl:mr-6 ltr:ml-6 bg-white p-2 rounded
+                    absolute ltr:left-0 rtl:right-0 top-0 mt-0 rtl:mr-6 ltr:ml-6 bg-white p-2 rounded
                     shadow-lg {showVoters ? '' : 'hidden'}"
                 >
                     {#each results.voters as voter}
