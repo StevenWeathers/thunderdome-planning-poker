@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/api/storyboard"
 	"github.com/spf13/viper"
 	"io"
 	"net/http"
@@ -209,5 +210,37 @@ func (a *api) handleGetStoryboards() http.HandlerFunc {
 		}
 
 		a.Success(w, r, http.StatusOK, storyboards, Meta)
+	}
+}
+
+// handleStoryboardDelete handles deleting a storyboard
+// @Summary Storyboard Delete
+// @Description Delete a storyboard
+// @Param storyboardId path string true "the storyboard ID"
+// @Tags storyboard
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /storyboards/{storyboardId} [delete]
+func (a *api) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		Id := vars["storyboardId"]
+		idErr := validate.Var(Id, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		UserID := r.Context().Value(contextKeyUserID).(string)
+
+		err := sb.APIEvent(r.Context(), Id, UserID, "concede_storyboard", "")
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

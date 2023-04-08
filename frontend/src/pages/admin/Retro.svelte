@@ -13,11 +13,15 @@
     import HeadCol from '../../components/table/HeadCol.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
 
     export let xfetch
     export let router
     export let notifications
     export let retroId
+
+    let showDeleteRetro = false
 
     let retro = {
         name: '',
@@ -36,6 +40,21 @@
             .catch(function () {
                 notifications.danger($_('getRetroErrorMessage'))
             })
+    }
+
+    function deleteRetro() {
+        xfetch(`/api/retros/${retroId}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(function () {
+                router.route(appRoutes.adminRetros)
+            })
+            .catch(function () {
+                notifications.danger($_('deleteRetroErrorMessage'))
+            })
+    }
+
+    function toggleDeleteRetro() {
+        showDeleteRetro = !showDeleteRetro
     }
 
     onMount(() => {
@@ -171,6 +190,25 @@
                     {/each}
                 </tbody>
             </Table>
+
+            <div class="text-center mt-4">
+                <HollowButton
+                    color="red"
+                    onClick="{toggleDeleteRetro}"
+                    testid="retro-delete"
+                >
+                    {$_('deleteRetro')}
+                </HollowButton>
+            </div>
+
+            {#if showDeleteRetro}
+                <DeleteConfirmation
+                    toggleDelete="{toggleDeleteRetro}"
+                    handleDelete="{deleteRetro}"
+                    confirmText="{$_('confirmDeleteRetro')}"
+                    confirmBtnText="{$_('deleteRetro')}"
+                />
+            {/if}
         </div>
     </div>
 </AdminPageLayout>

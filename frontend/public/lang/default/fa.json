@@ -112,5 +112,6 @@
   "getBattleError": "Error getting battle",
   "getBattlesError": "Error getting battles",
   "showActiveBattles": "Show Active Battles",
-  "customizableBattleOptions": "Customizable Battle Options"
+  "customizableBattleOptions": "Customizable Battle Options",
+  "deleteBattleError": "error deleting battle"
 }

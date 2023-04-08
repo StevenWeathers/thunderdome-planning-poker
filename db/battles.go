@@ -373,8 +373,15 @@ func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*mo
 // ConfirmLeader confirms the user is a leader of the battle
 func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 	var leaderID string
+	var role string
+	err := d.db.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
+	if err != nil {
+		d.logger.Error("error getting user role", zap.Error(err))
+		return errors.New("unable to get user role")
+	}
+
 	e := d.db.QueryRow("SELECT user_id FROM battles_leaders WHERE battle_id = $1 AND user_id = $2", BattleID, UserID).Scan(&leaderID)
-	if e != nil {
+	if e != nil && role != "ADMIN" {
 		d.logger.Error("error confirming battle leader", zap.Error(e))
 		return errors.New("not a battle leader")
 	}

@@ -641,5 +641,7 @@
   "becomeFacilitator": "Become Facilitator",
   "associateTeam": "Associate Team",
   "optional": "(Optional)",
-  "selectTeam": "Select a Team"
+  "selectTeam": "Select a Team",
+  "deleteStoryboardErrorMessage": "error deleting storyboard",
+  "deleteRetroErrorMessage": "error deleting retro"
 }

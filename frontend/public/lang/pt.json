@@ -609,5 +609,7 @@
   "becomeFacilitator": "Tornar-se Facilitador",
   "associateTeam": "Equipe Associada",
   "optional": "(Opcional)",
-  "selectTeam": "Selecione uma Equipe"
+  "selectTeam": "Selecione uma Equipe",
+  "deleteStoryboardErrorMessage": "error deleting storyboard",
+  "deleteRetroErrorMessage": "error deleting retro"
 }

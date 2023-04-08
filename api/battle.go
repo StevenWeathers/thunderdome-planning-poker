@@ -276,3 +276,35 @@ func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
+
+// handleBattleDelete handles deleting a battle
+// @Summary Delete Battle
+// @Description Deletes a battle
+// @Param battleId path string true "the battle ID"
+// @Tags battle
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /battles/{battleId} [delete]
+func (a *api) handleBattleDelete(b *battle.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		BattleID := vars["battleId"]
+		idErr := validate.Var(BattleID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		UserID := r.Context().Value(contextKeyUserID).(string)
+
+		err := b.APIEvent(r.Context(), BattleID, UserID, "concede_battle", "")
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}

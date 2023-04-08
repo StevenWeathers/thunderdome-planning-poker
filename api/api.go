@@ -265,6 +265,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		apiRouter.HandleFunc("/maintenance/clean-battles", a.userOnly(a.adminOnly(a.handleCleanBattles()))).Methods("DELETE")
 		apiRouter.HandleFunc("/battles", a.userOnly(a.adminOnly(a.handleGetBattles()))).Methods("GET")
 		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetBattle())).Methods("GET")
+		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleBattleDelete(b))).Methods("DELETE")
 		apiRouter.HandleFunc("/battles/{battleId}/plans", a.userOnly(a.handleBattlePlanAdd(b))).Methods("POST")
 		apiRouter.HandleFunc("/arena/{battleId}", b.ServeBattleWs())
 	}
@@ -287,6 +288,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		apiRouter.HandleFunc("/maintenance/clean-retros", a.userOnly(a.adminOnly(a.handleCleanRetros()))).Methods("DELETE")
 		apiRouter.HandleFunc("/retros", a.userOnly(a.adminOnly(a.handleGetRetros()))).Methods("GET")
 		apiRouter.HandleFunc("/retros/{retroId}", a.userOnly(a.handleRetroGet())).Methods("GET")
+		apiRouter.HandleFunc("/retros/{retroId}", a.userOnly(a.handleRetroDelete(rs))).Methods("DELETE")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}", a.userOnly(a.handleRetroActionUpdate(rs))).Methods("PUT")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}", a.userOnly(a.handleRetroActionDelete(rs))).Methods("DELETE")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments", a.userOnly(a.handleRetroActionCommentAdd())).Methods("POST")
@@ -310,6 +312,7 @@ func Init(config *Config, router *mux.Router, database *db.Database, email *emai
 		apiRouter.HandleFunc("/maintenance/clean-storyboards", a.userOnly(a.adminOnly(a.handleCleanStoryboards()))).Methods("DELETE")
 		apiRouter.HandleFunc("/storyboards", a.userOnly(a.adminOnly(a.handleGetStoryboards()))).Methods("GET")
 		apiRouter.HandleFunc("/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardGet())).Methods("GET")
+		apiRouter.HandleFunc("/storyboards/{storyboardId}", a.userOnly(a.handleStoryboardDelete(sb))).Methods("DELETE")
 		apiRouter.HandleFunc("/storyboard/{storyboardId}", sb.ServeWs())
 	}
 

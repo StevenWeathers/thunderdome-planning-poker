@@ -13,12 +13,16 @@
     import HeadCol from '../../components/table/HeadCol.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
 
     export let xfetch
     export let router
     export let notifications
     // export let eventTag
     export let battleId
+
+    let showDeleteBattle = false
 
     let battle = {
         name: '',
@@ -42,6 +46,21 @@
             .catch(function () {
                 notifications.danger($_('getBattleError'))
             })
+    }
+
+    function deleteBattle() {
+        xfetch(`/api/battles/${battleId}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(function () {
+                router.route(appRoutes.adminBattles)
+            })
+            .catch(function () {
+                notifications.danger($_('deleteBattleError'))
+            })
+    }
+
+    const toggleDeleteBattle = () => {
+        showDeleteBattle = !showDeleteBattle
     }
 
     onMount(() => {
@@ -292,6 +311,25 @@
                     {/each}
                 </tbody>
             </Table>
+
+            <div class="text-center mt-4">
+                <HollowButton
+                    color="red"
+                    onClick="{toggleDeleteBattle}"
+                    testid="battle-delete"
+                >
+                    {$_('battleDelete')}
+                </HollowButton>
+            </div>
+
+            {#if showDeleteBattle}
+                <DeleteConfirmation
+                    toggleDelete="{toggleDeleteBattle}"
+                    handleDelete="{deleteBattle}"
+                    confirmText="{$_('deleteBattleConfirmText')}"
+                    confirmBtnText="{$_('deleteBattle')}"
+                />
+            {/if}
         </div>
     </div>
 </AdminPageLayout>

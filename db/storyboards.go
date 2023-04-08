@@ -241,10 +241,17 @@ func (d *Database) GetStoryboardsByUser(UserID string) ([]*model.Storyboard, int
 // ConfirmStoryboardFacilitator confirms the user is a facilitator of the storyboard
 func (d *Database) ConfirmStoryboardFacilitator(StoryboardID string, UserID string) error {
 	var facilitatorId string
-	err := d.db.QueryRow(
+	var role string
+	err := d.db.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
+	if err != nil {
+		d.logger.Error("error getting user role", zap.Error(err))
+		return errors.New("unable to get user role")
+	}
+
+	err = d.db.QueryRow(
 		`SELECT user_id FROM storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
 		StoryboardID, UserID).Scan(&facilitatorId)
-	if err != nil {
+	if err != nil && role != "ADMIN" {
 		d.logger.Error("get ConfirmStoryboardFacilitator error", zap.Error(err))
 		return errors.New("storyboard facilitator not found")
 	}

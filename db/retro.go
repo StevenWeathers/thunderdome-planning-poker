@@ -255,10 +255,17 @@ func (d *Database) RetroGetByUser(UserID string) ([]*model.Retro, error) {
 // RetroConfirmFacilitator confirms the user is a facilitator of the retro
 func (d *Database) RetroConfirmFacilitator(RetroID string, userID string) error {
 	var facilitatorId string
-	err := d.db.QueryRow(
+	var role string
+	err := d.db.QueryRow("SELECT type FROM users WHERE id = $1", userID).Scan(&role)
+	if err != nil {
+		d.logger.Error("error getting user role", zap.Error(err))
+		return errors.New("unable to get user role")
+	}
+
+	err = d.db.QueryRow(
 		"SELECT user_id FROM retro_facilitator WHERE retro_id = $1 AND user_id = $2",
 		RetroID, userID).Scan(&facilitatorId)
-	if err != nil {
+	if err != nil && role != "ADMIN" {
 		d.logger.Error("get RetroConfirmFacilitator error", zap.Error(err))
 		return errors.New("retro facilitator not found")
 	}
