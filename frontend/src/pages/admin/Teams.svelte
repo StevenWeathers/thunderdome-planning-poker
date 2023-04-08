@@ -103,7 +103,11 @@
                 {#each teams as team, i}
                     <TableRow itemIndex="{i}">
                         <RowCol>
-                            {team.name}
+                            <a
+                                href="{appRoutes.adminTeams}/{team.id}"
+                                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                >{team.name}</a
+                            >
                         </RowCol>
                         <RowCol>
                             {new Date(team.createdDate).toLocaleString()}

@@ -37,6 +37,11 @@ const defaultAppRoutes = {
     adminBattles: `${PathPrefix}/admin/battles`,
     adminRetros: `${PathPrefix}/admin/retros`,
     adminStoryboards: `${PathPrefix}/admin/storyboards`,
+    adminTeams: `${PathPrefix}/admin/teams`,
+    adminOrganizations: `${PathPrefix}/admin/organizations`,
+    adminApiKeys: `${PathPrefix}/admin/apikeys`,
+    adminAlerts: `${PathPrefix}/admin/alerts`,
+    adminUsers: `${PathPrefix}/admin/users`,
 }
 const friendlyAppRoutes = {
     ...defaultAppRoutes,

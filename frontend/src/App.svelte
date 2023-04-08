@@ -38,6 +38,7 @@
     import AdminUser from './pages/admin/User.svelte'
     import AdminOrganizations from './pages/admin/Organizations.svelte'
     import AdminTeams from './pages/admin/Teams.svelte'
+    import AdminTeam from './pages/admin/Team.svelte'
     import AdminApikeys from './pages/admin/ApiKeys.svelte'
     import AdminAlerts from './pages/admin/Alerts.svelte'
     import AdminBattles from './pages/admin/Battles.svelte'
@@ -198,42 +199,49 @@
             name: 'admin',
         }
     })
-    router.on(`${appRoutes.admin}/users/:userId`, params => {
+    router.on(`${appRoutes.adminUsers}/:userId`, params => {
         currentPage = {
             route: AdminUser,
             params: params,
             name: 'admin',
         }
     })
-    router.on(`${appRoutes.admin}/users`, () => {
+    router.on(`${appRoutes.adminUsers}`, () => {
         currentPage = {
             route: AdminUsers,
             params: {},
             name: 'admin',
         }
     })
-    router.on(`${appRoutes.admin}/organizations`, () => {
+    router.on(`${appRoutes.adminOrganizations}`, () => {
         currentPage = {
             route: AdminOrganizations,
             params: {},
             name: 'admin',
         }
     })
-    router.on(`${appRoutes.admin}/teams`, () => {
+    router.on(`${appRoutes.adminTeams}`, () => {
         currentPage = {
             route: AdminTeams,
             params: {},
             name: 'admin',
         }
     })
-    router.on(`${appRoutes.admin}/apikeys`, () => {
+    router.on(`${appRoutes.adminTeams}/:teamId`, params => {
+        currentPage = {
+            route: AdminTeam,
+            params: params,
+            name: 'admin',
+        }
+    })
+    router.on(`${appRoutes.adminApiKeys}`, () => {
         currentPage = {
             route: AdminApikeys,
             params: {},
             name: 'admin',
         }
     })
-    router.on(`${appRoutes.admin}/alerts`, () => {
+    router.on(`${appRoutes.adminAlerts}`, () => {
         currentPage = {
             route: AdminAlerts,
             params: {},
@@ -256,14 +264,14 @@
                 name: 'battle',
             }
         })
-        router.on(`${appRoutes.admin}/battles`, () => {
+        router.on(`${appRoutes.adminBattles}`, () => {
             currentPage = {
                 route: AdminBattles,
                 params: {},
                 name: 'admin',
             }
         })
-        router.on(`${appRoutes.admin}/battles/:battleId`, params => {
+        router.on(`${appRoutes.adminBattles}/:battleId`, params => {
             currentPage = {
                 route: AdminBattle,
                 params: params,
@@ -301,14 +309,14 @@
                 name: 'retro',
             }
         })
-        router.on(`${appRoutes.admin}/retros`, () => {
+        router.on(`${appRoutes.adminRetros}`, () => {
             currentPage = {
                 route: AdminRetros,
                 params: {},
                 name: 'admin',
             }
         })
-        router.on(`${appRoutes.admin}/retros/:retroId`, params => {
+        router.on(`${appRoutes.adminRetros}/:retroId`, params => {
             currentPage = {
                 route: AdminRetro,
                 params: params,
@@ -346,14 +354,14 @@
                 name: 'storyboard',
             }
         })
-        router.on(`${appRoutes.admin}/storyboards`, () => {
+        router.on(`${appRoutes.adminStoryboards}`, () => {
             currentPage = {
                 route: AdminStoryboards,
                 params: {},
                 name: 'admin',
             }
         })
-        router.on(`${appRoutes.admin}/storyboards/:storyboardId`, params => {
+        router.on(`${appRoutes.adminStoryboards}/:storyboardId`, params => {
             currentPage = {
                 route: AdminStoryboard,
                 params: params,
