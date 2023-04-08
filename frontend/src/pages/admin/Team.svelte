@@ -17,6 +17,7 @@
     import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte'
     import CommentIcon from '../../components/icons/CommentIcon.svelte'
     import Pagination from '../../components/Pagination.svelte'
+    import ChevronRight from '../../components/icons/ChevronRight.svelte'
 
     const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig
 
@@ -67,12 +68,6 @@
     $: teamPrefix = organizationId
         ? `${orgPrefix}/teams/${teamId}`
         : `${apiPrefix}/teams/${teamId}`
-
-    $: currentPageUrl = teamPrefix
-        .replace('/api', '')
-        .replace('organizations', 'organization')
-        .replace('departments', 'department')
-        .replace('teams', 'team')
 
     let showRetroActionComments = false
     let selectedRetroAction = null
@@ -189,7 +184,17 @@
         xfetch(`${teamPrefix}`, { method: 'DELETE' })
             .then(res => res.json())
             .then(function () {
-                router.route(appRoutes.adminTeams)
+                if (departmentId) {
+                    router.route(
+                        `${appRoutes.adminOrganizations}/${organizationId}/department/${departmentId}`,
+                    )
+                } else if (organizationId) {
+                    router.route(
+                        `${appRoutes.adminOrganizations}/${organizationId}`,
+                    )
+                } else {
+                    router.route(appRoutes.adminTeams)
+                }
             })
             .catch(function () {
                 notifications.danger($_('teamDeleteError'))
@@ -229,16 +234,41 @@
 </svelte:head>
 
 <AdminPageLayout activePage="teams">
-    <div class="text-center px-2 mb-4">
+    <div class="px-2 mb-4">
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
         >
             {team.name}
         </h1>
+
+        {#if organizationId}
+            <div class="text-xl font-semibold font-rajdhani dark:text-white">
+                <span class="uppercase">{$_('organization')}</span>
+                <ChevronRight />
+                <a
+                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                    href="{appRoutes.adminOrganizations}/{organization.id}"
+                >
+                    {organization.name}
+                </a>
+                {#if departmentId}
+                    &nbsp;
+                    <ChevronRight />
+                    <span class="uppercase">{$_('department')}</span>
+                    <ChevronRight />
+                    <a
+                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                        href="{appRoutes.adminOrganizations}/{organization.id}/department/{department.id}"
+                    >
+                        {department.name}
+                    </a>
+                {/if}
+            </div>
+        {/if}
     </div>
 
     <div class="w-full">
-        <div class="p-4 md:p-6">
+        <div class="mb-4">
             <Table>
                 <tr slot="header">
                     <HeadCol>
@@ -260,7 +290,7 @@
                 </tbody>
             </Table>
         </div>
-        <div class="p-4 md:p-6">
+        <div>
             {#if FeaturePoker}
                 <div class="w-full mb-6 lg:mb-8">
                     <div class="flex w-full">
@@ -576,15 +606,17 @@
                 </Table>
             </div>
 
-            <div class="text-center mt-4">
-                <HollowButton
-                    color="red"
-                    onClick="{toggleDeleteTeam}"
-                    testid="team-delete"
-                >
-                    {$_('deleteTeam')}
-                </HollowButton>
-            </div>
+            {#if !organizationId}
+                <div class="text-center mt-4">
+                    <HollowButton
+                        color="red"
+                        onClick="{toggleDeleteTeam}"
+                        testid="team-delete"
+                    >
+                        {$_('deleteTeam')}
+                    </HollowButton>
+                </div>
+            {/if}
 
             {#if showDeleteTeam}
                 <DeleteConfirmation

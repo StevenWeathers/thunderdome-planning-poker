@@ -325,9 +325,15 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.TeamList(r.Context(), Limit, Offset)
+		Teams, Count := a.db.TeamList(r.Context(), Limit, Offset)
 
-		a.Success(w, r, http.StatusOK, Teams, nil)
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		a.Success(w, r, http.StatusOK, Teams, Meta)
 	}
 }
 

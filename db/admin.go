@@ -272,8 +272,16 @@ func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) 
 }
 
 // TeamList gets a list of teams
-func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) []*model.Team {
+func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) ([]*model.Team, int) {
 	var teams = make([]*model.Team, 0)
+	var count = 0
+
+	err := d.db.QueryRowContext(ctx, `SELECT count FROM team_list_count();`).Scan(&count)
+	if err != nil {
+		d.logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
+		return teams, count
+	}
+
 	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
 		Limit,
@@ -300,7 +308,7 @@ func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) []*model
 		d.logger.Ctx(ctx).Error("team_list query error", zap.Error(err))
 	}
 
-	return teams
+	return teams, count
 }
 
 // GetAPIKeys gets a list of api keys

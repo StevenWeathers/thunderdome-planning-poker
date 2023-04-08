@@ -37,6 +37,8 @@
     import AdminUsers from './pages/admin/Users.svelte'
     import AdminUser from './pages/admin/User.svelte'
     import AdminOrganizations from './pages/admin/Organizations.svelte'
+    import AdminOrganization from './pages/admin/Organization.svelte'
+    import AdminDepartment from './pages/admin/Department.svelte'
     import AdminTeams from './pages/admin/Teams.svelte'
     import AdminTeam from './pages/admin/Team.svelte'
     import AdminApikeys from './pages/admin/ApiKeys.svelte'
@@ -220,6 +222,43 @@
             name: 'admin',
         }
     })
+    router.on(`${appRoutes.adminOrganizations}/:organizationId`, params => {
+        currentPage = {
+            route: AdminOrganization,
+            params: params,
+            name: 'admin',
+        }
+    })
+    router.on(
+        `${appRoutes.adminOrganizations}/:organizationId/team/:teamId`,
+        params => {
+            currentPage = {
+                route: AdminTeam,
+                params: params,
+                name: 'admin',
+            }
+        },
+    )
+    router.on(
+        `${appRoutes.adminOrganizations}/:organizationId/department/:departmentId`,
+        params => {
+            currentPage = {
+                route: AdminDepartment,
+                params: params,
+                name: 'admin',
+            }
+        },
+    )
+    router.on(
+        `${appRoutes.adminOrganizations}/:organizationId/department/:departmentId/team/:teamId`,
+        params => {
+            currentPage = {
+                route: AdminTeam,
+                params: params,
+                name: 'admin',
+            }
+        },
+    )
     router.on(`${appRoutes.adminTeams}`, () => {
         currentPage = {
             route: AdminTeams,
