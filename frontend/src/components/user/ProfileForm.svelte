@@ -82,10 +82,7 @@
             notificationsEnabled: profile.notificationsEnabled,
             avatar: profile.avatar,
             locale: $locale,
-        }
-
-        if (userIsAdmin) {
-            p.email = profile.email
+            email: profile.email,
         }
 
         if (!validName.valid) {
