@@ -572,8 +572,11 @@
                                             <div
                                                 class="font-medium text-gray-900 dark:text-gray-200"
                                             >
-                                                <span data-testid="user-name"
-                                                    >{user.name}</span
+                                                <a
+                                                    data-testid="user-name"
+                                                    href="{appRoutes.adminUsers}/{user.id}"
+                                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                                    >{user.name}</a
                                                 >
                                                 {#if user.country}
                                                     &nbsp;

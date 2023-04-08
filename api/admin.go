@@ -344,7 +344,7 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Success 200 object standardJsonResponse{data=[]model.UserAPIKey}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/apikeys [get]

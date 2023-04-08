@@ -12,6 +12,7 @@
     import HeadCol from '../../components/table/HeadCol.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
 
     export let xfetch
     export let router
@@ -58,6 +59,52 @@
             })
     }
 
+    function deleteApiKey(userId, apk) {
+        return function () {
+            xfetch(`/api/users/${userId}/apikeys/${apk}`, {
+                method: 'DELETE',
+            })
+                .then(res => res.json())
+                .then(function () {
+                    notifications.success(
+                        $_('pages.warriorProfile.apiKeys.deleteSuccess'),
+                    )
+                    getAppStats()
+                    getApiKeys()
+                })
+                .catch(function () {
+                    notifications.danger(
+                        $_('pages.warriorProfile.apiKeys.deleteFailed'),
+                    )
+                })
+        }
+    }
+
+    function toggleApiKeyActiveStatus(userId, apk, active) {
+        return function () {
+            const body = {
+                active: !active,
+            }
+
+            xfetch(`/api/users/${userId}/apikeys/${apk}`, {
+                body,
+                method: 'PUT',
+            })
+                .then(res => res.json())
+                .then(function () {
+                    notifications.success(
+                        $_('pages.warriorProfile.apiKeys.updateSuccess'),
+                    )
+                    getApiKeys()
+                })
+                .catch(function () {
+                    notifications.danger(
+                        $_('pages.warriorProfile.apiKeys.updateFailed'),
+                    )
+                })
+        }
+    }
+
     const changePage = evt => {
         apikeysPage = evt.detail
         getApiKeys()
@@ -101,7 +148,7 @@
                     {$_('prefix')}
                 </HeadCol>
                 <HeadCol>
-                    {$_('email')}
+                    {$_('userName')}
                 </HeadCol>
                 <HeadCol>
                     {$_('active')}
@@ -111,6 +158,9 @@
                 </HeadCol>
                 <HeadCol>
                     {$_('dateUpdated')}
+                </HeadCol>
+                <HeadCol>
+                    {$_('actions')}
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
@@ -123,7 +173,12 @@
                             {apikey.prefix}
                         </RowCol>
                         <RowCol>
-                            {apikey.userId}
+                            <a
+                                href="{appRoutes.adminUsers}/{apikey.userId}"
+                                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                            >
+                                {apikey.userName}
+                            </a>
                         </RowCol>
                         <RowCol>
                             {#if apikey.active}
@@ -136,6 +191,38 @@
                         </RowCol>
                         <RowCol>
                             {new Date(apikey.updatedDate).toLocaleString()}
+                        </RowCol>
+                        <RowCol>
+                            <HollowButton
+                                onClick="{toggleApiKeyActiveStatus(
+                                    apikey.userId,
+                                    apikey.id,
+                                    apikey.active,
+                                )}"
+                                testid="apikey-activetoggle"
+                            >
+                                {#if !apikey.active}
+                                    {$_(
+                                        'pages.warriorProfile.apiKeys.activateButton',
+                                    )}
+                                {:else}
+                                    {$_(
+                                        'pages.warriorProfile.apiKeys.deactivateButton',
+                                    )}
+                                {/if}
+                            </HollowButton>
+                            <HollowButton
+                                color="red"
+                                onClick="{deleteApiKey(
+                                    apikey.userId,
+                                    apikey.id,
+                                )}"
+                                testid="apikey-delete"
+                            >
+                                {$_(
+                                    'pages.warriorProfile.apiKeys.deleteButton',
+                                )}
+                            </HollowButton>
                         </RowCol>
                     </TableRow>
                 {/each}

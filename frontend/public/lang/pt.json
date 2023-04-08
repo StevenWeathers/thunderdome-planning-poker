@@ -611,5 +611,6 @@
   "optional": "(Opcional)",
   "selectTeam": "Selecione uma Equipe",
   "deleteStoryboardErrorMessage": "error deleting storyboard",
-  "deleteRetroErrorMessage": "error deleting retro"
+  "deleteRetroErrorMessage": "error deleting retro",
+  "userName": "User Name"
 }
