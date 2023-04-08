@@ -13,6 +13,8 @@
     import HeadCol from '../../components/table/HeadCol.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
+    import DeleteStoryboard from '../../components/storyboard/DeleteStoryboard.svelte'
 
     export let xfetch
     export let router
@@ -27,6 +29,8 @@
         updatedDate: '',
     }
 
+    let showDeleteStoryboard = false
+
     function getStoryboard() {
         xfetch(`/api/storyboards/${storyboardId}`)
             .then(res => res.json())
@@ -36,6 +40,21 @@
             .catch(function () {
                 notifications.danger($_('getStoryboardErrorMessage'))
             })
+    }
+
+    function deleteStoryboard() {
+        xfetch(`/api/storyboards/${storyboardId}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(function () {
+                router.route(appRoutes.adminStoryboards)
+            })
+            .catch(function () {
+                notifications.danger($_('deleteStoryboardErrorMessage'))
+            })
+    }
+
+    function toggleDeleteStoryboard() {
+        showDeleteStoryboard = !showDeleteStoryboard
     }
 
     onMount(() => {
@@ -130,7 +149,7 @@
                                             class="text-sm font-medium text-gray-900"
                                         >
                                             <a
-                                                href="{appRoutes.admin}/users/{user.id}"
+                                                href="{appRoutes.adminUsers}/{user.id}"
                                                 class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                                 >{user.name}</a
                                             >
@@ -174,6 +193,23 @@
                     {/each}
                 </tbody>
             </Table>
+
+            <div class="text-center mt-4">
+                <HollowButton
+                    color="red"
+                    onClick="{toggleDeleteStoryboard}"
+                    testid="storyboard-delete"
+                >
+                    {$_('deleteStoryboard')}
+                </HollowButton>
+            </div>
+
+            {#if showDeleteStoryboard}
+                <DeleteStoryboard
+                    toggleDelete="{toggleDeleteStoryboard}"
+                    handleDelete="{deleteStoryboard}"
+                />
+            {/if}
         </div>
     </div>
 </AdminPageLayout>

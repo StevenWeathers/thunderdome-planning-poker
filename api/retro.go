@@ -474,3 +474,35 @@ func (a *api) handleRetroActionCommentDelete() http.HandlerFunc {
 		a.Success(w, r, http.StatusOK, action, nil)
 	}
 }
+
+// handleRetroDelete handles deleting a retro
+// @Summary Retro Delete
+// @Description Delete a retro
+// @Param retroId path string true "the retro ID"
+// @Tags retro
+// @Produce  json
+// @Success 200 object standardJsonResponse{}
+// @Success 403 object standardJsonResponse{}
+// @Success 500 object standardJsonResponse{}
+// @Security ApiKeyAuth
+// @Router /retros/{retroId} [delete]
+func (a *api) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		RetroID := vars["retroId"]
+		idErr := validate.Var(RetroID, "required,uuid")
+		if idErr != nil {
+			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		UserID := r.Context().Value(contextKeyUserID).(string)
+
+		err := rs.APIEvent(r.Context(), RetroID, UserID, "concede_retro", "")
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		a.Success(w, r, http.StatusOK, nil, nil)
+	}
+}

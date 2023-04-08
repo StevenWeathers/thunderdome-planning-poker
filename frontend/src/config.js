@@ -24,7 +24,6 @@ const defaultAppRoutes = {
     resetPwd: `${PathPrefix}/reset-password`,
     verifyAct: `${PathPrefix}/verify-account`,
     profile: `${PathPrefix}/profile`,
-    admin: `${PathPrefix}/admin`,
     battles: `${PathPrefix}/battles`,
     battle: `${PathPrefix}/battle`,
     retros: `${PathPrefix}/retros`,
@@ -34,6 +33,15 @@ const defaultAppRoutes = {
     teams: `${PathPrefix}/teams`,
     organization: `${PathPrefix}/organization`,
     team: `${PathPrefix}/team`,
+    admin: `${PathPrefix}/admin`,
+    adminBattles: `${PathPrefix}/admin/battles`,
+    adminRetros: `${PathPrefix}/admin/retros`,
+    adminStoryboards: `${PathPrefix}/admin/storyboards`,
+    adminTeams: `${PathPrefix}/admin/teams`,
+    adminOrganizations: `${PathPrefix}/admin/organizations`,
+    adminApiKeys: `${PathPrefix}/admin/apikeys`,
+    adminAlerts: `${PathPrefix}/admin/alerts`,
+    adminUsers: `${PathPrefix}/admin/users`,
 }
 const friendlyAppRoutes = {
     ...defaultAppRoutes,

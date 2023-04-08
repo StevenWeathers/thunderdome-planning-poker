@@ -272,8 +272,16 @@ func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) 
 }
 
 // TeamList gets a list of teams
-func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) []*model.Team {
+func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) ([]*model.Team, int) {
 	var teams = make([]*model.Team, 0)
+	var count = 0
+
+	err := d.db.QueryRowContext(ctx, `SELECT count FROM team_list_count();`).Scan(&count)
+	if err != nil {
+		d.logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
+		return teams, count
+	}
+
 	rows, err := d.db.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
 		Limit,
@@ -300,14 +308,14 @@ func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) []*model
 		d.logger.Ctx(ctx).Error("team_list query error", zap.Error(err))
 	}
 
-	return teams
+	return teams, count
 }
 
 // GetAPIKeys gets a list of api keys
-func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*model.APIKey {
-	var APIKeys = make([]*model.APIKey, 0)
+func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*model.UserAPIKey {
+	var APIKeys = make([]*model.UserAPIKey, 0)
 	rows, err := d.db.QueryContext(ctx,
-		`SELECT id, name, email, active, created_date, updated_date
+		`SELECT id, name, user_id, user_name, user_email, active, created_date, updated_date
 		FROM apikeys_list($1, $2);`,
 		Limit,
 		Offset,
@@ -315,13 +323,15 @@ func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*mod
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var ak model.APIKey
+			var ak model.UserAPIKey
 			var key string
 
 			if err := rows.Scan(
 				&key,
 				&ak.Name,
 				&ak.UserId,
+				&ak.UserName,
+				&ak.UserEmail,
 				&ak.Active,
 				&ak.CreatedDate,
 				&ak.UpdatedDate,

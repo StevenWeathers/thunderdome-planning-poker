@@ -53,37 +53,6 @@ type connection struct {
 
 // readPump pumps messages from the websocket connection to the hub.
 func (sub subscription) readPump(b *Service, ctx context.Context) {
-	eventHandlers := map[string]func(context.Context, string, string, string) ([]byte, error, bool){
-		"add_goal":             b.AddGoal,
-		"revise_goal":          b.ReviseGoal,
-		"delete_goal":          b.DeleteGoal,
-		"add_column":           b.AddColumn,
-		"revise_column":        b.ReviseColumn,
-		"delete_column":        b.DeleteColumn,
-		"add_story":            b.AddStory,
-		"update_story_name":    b.UpdateStoryName,
-		"update_story_content": b.UpdateStoryContent,
-		"update_story_color":   b.UpdateStoryColor,
-		"update_story_points":  b.UpdateStoryPoints,
-		"update_story_closed":  b.UpdateStoryClosed,
-		"update_story_link":    b.UpdateStoryLink,
-		"move_story":           b.MoveStory,
-		"add_story_comment":    b.AddStoryComment,
-		"edit_story_comment":   b.EditStoryComment,
-		"delete_story_comment": b.DeleteStoryComment,
-		"delete_story":         b.DeleteStory,
-		"add_persona":          b.AddPersona,
-		"update_persona":       b.UpdatePersona,
-		"delete_persona":       b.DeletePersona,
-		"facilitator_add":      b.FacilitatorAdd,
-		"facilitator_remove":   b.FacilitatorRemove,
-		"facilitator_self":     b.FacilitatorSelf,
-		"revise_color_legend":  b.ReviseColorLegend,
-		"edit_storyboard":      b.EditStoryboard,
-		"concede_storyboard":   b.Delete,
-		"abandon_storyboard":   b.Abandon,
-	}
-
 	var forceClosed bool
 	c := sub.conn
 	UserID := sub.UserID
@@ -142,8 +111,8 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		}
 
 		// find event handler and execute otherwise invalid event
-		if _, ok := eventHandlers[eventType]; ok && !badEvent {
-			msg, eventErr, forceClosed = eventHandlers[eventType](ctx, StoryboardID, UserID, eventValue)
+		if _, ok := b.eventHandlers[eventType]; ok && !badEvent {
+			msg, eventErr, forceClosed = b.eventHandlers[eventType](ctx, StoryboardID, UserID, eventValue)
 			if eventErr != nil {
 				badEvent = true
 
@@ -324,4 +293,30 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			go ss.readPump(b, ctx)
 		}
 	}
+}
+
+// APIEvent handles api driven events into the arena (if active)
+func (b *Service) APIEvent(ctx context.Context, arenaID string, UserID, eventType string, eventValue string) error {
+	// confirm leader for any operation that requires it
+	if _, ok := ownerOnlyOperations[eventType]; ok {
+		err := b.db.ConfirmStoryboardFacilitator(arenaID, UserID)
+		if err != nil {
+			return err
+		}
+	}
+
+	// find event handler and execute otherwise invalid event
+	if _, ok := b.eventHandlers[eventType]; ok {
+		msg, eventErr, _ := b.eventHandlers[eventType](ctx, arenaID, UserID, eventValue)
+		if eventErr != nil {
+			return eventErr
+		}
+
+		if _, ok := h.arenas[arenaID]; ok {
+			m := message{msg, arenaID}
+			h.broadcast <- m
+		}
+	}
+
+	return nil
 }

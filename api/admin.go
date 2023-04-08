@@ -325,9 +325,15 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.TeamList(r.Context(), Limit, Offset)
+		Teams, Count := a.db.TeamList(r.Context(), Limit, Offset)
 
-		a.Success(w, r, http.StatusOK, Teams, nil)
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		a.Success(w, r, http.StatusOK, Teams, Meta)
 	}
 }
 
@@ -338,7 +344,7 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Success 200 object standardJsonResponse{data=[]model.UserAPIKey}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/apikeys [get]

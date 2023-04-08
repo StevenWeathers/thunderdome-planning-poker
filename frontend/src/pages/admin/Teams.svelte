@@ -18,28 +18,9 @@
 
     const teamsPageLimit = 100
 
-    let appStats = {
-        unregisteredUserCount: 0,
-        registeredUserCount: 0,
-        battleCount: 0,
-        planCount: 0,
-        organizationCount: 0,
-        departmentCount: 0,
-        teamCount: 0,
-    }
+    let teamCount = 0
     let teams = []
     let teamsPage = 1
-
-    function getAppStats() {
-        xfetch('/api/admin/stats')
-            .then(res => res.json())
-            .then(function (result) {
-                appStats = result.data
-            })
-            .catch(function () {
-                notifications.danger($_('applicationStatsError'))
-            })
-    }
 
     function getTeams() {
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
@@ -47,6 +28,7 @@
             .then(res => res.json())
             .then(function (result) {
                 teams = result.data
+                teamCount = result.meta.count
             })
             .catch(function () {
                 notifications.danger($_('getTeamsError'))
@@ -68,7 +50,6 @@
             return
         }
 
-        getAppStats()
         getTeams()
     })
 </script>
@@ -103,7 +84,11 @@
                 {#each teams as team, i}
                     <TableRow itemIndex="{i}">
                         <RowCol>
-                            {team.name}
+                            <a
+                                href="{appRoutes.adminTeams}/{team.id}"
+                                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                >{team.name}</a
+                            >
                         </RowCol>
                         <RowCol>
                             {new Date(team.createdDate).toLocaleString()}
@@ -116,11 +101,11 @@
             </tbody>
         </Table>
 
-        {#if appStats.teamCount > teamsPageLimit}
+        {#if teamCount > teamsPageLimit}
             <div class="pt-6 flex justify-center">
                 <Pagination
                     bind:current="{teamsPage}"
-                    num_items="{appStats.teamCount}"
+                    num_items="{teamCount}"
                     per_page="{teamsPageLimit}"
                     on:navigate="{changePage}"
                 />

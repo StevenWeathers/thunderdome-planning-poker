@@ -112,5 +112,6 @@
   "getBattleError": "Erro ao obter jogo",
   "getBattlesError": "Erro ao obter jogos",
   "showActiveBattles": "Mostrar jogos ativos",
-  "customizableBattleOptions": "Opções de jogo personalizáveis"
+  "customizableBattleOptions": "Opções de jogo personalizáveis",
+  "deleteBattleError": "error deleting game"
 }

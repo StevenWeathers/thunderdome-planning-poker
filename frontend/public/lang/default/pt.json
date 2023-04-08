@@ -112,5 +112,6 @@
   "getBattleError": "Erro ao obter batalha",
   "getBattlesError": "Erro ao obter batalhas",
   "showActiveBattles": "Mostrar batalhas ativas",
-  "customizableBattleOptions": "Opções de batalha personalizáveis"
+  "customizableBattleOptions": "Opções de batalha personalizáveis",
+  "deleteBattleError": "error deleting battle"
 }

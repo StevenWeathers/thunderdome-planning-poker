@@ -307,7 +307,7 @@
                                         class="text-sm font-medium text-gray-900"
                                     >
                                         <a
-                                            href="{appRoutes.admin}/users/{user.id}"
+                                            href="{appRoutes.adminUsers}/{user.id}"
                                             class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                             >{user.name}</a
                                         >
