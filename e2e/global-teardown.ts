@@ -1,4 +1,4 @@
-import { chromium, FullConfig } from '@playwright/test'
+import {chromium, FullConfig} from '@playwright/test'
 
 async function globalTeardown(config: FullConfig) {
     const baseUrl = config.projects[0].use.baseURL
@@ -39,6 +39,24 @@ async function globalTeardown(config: FullConfig) {
     const gu = await guestPage.request.get(`/api/auth/user`)
     const guestUser = await gu.json()
     await guestPage.request.delete(`/api/users/${guestUser.data.id}`)
+
+    const deleteGuestContext = await browser.newContext({
+        storageState: 'storage/deleteGuestStorageState.json',
+        baseURL: baseUrl,
+    })
+    const deleteGuestPage = await deleteGuestContext.newPage()
+    const dgu = await deleteGuestPage.request.get(`/api/auth/user`)
+    const deleteGuestUser = await dgu.json()
+    await deleteGuestPage.request.delete(`/api/users/${deleteGuestUser.data.id}`)
+
+    const deleteRegisteredContext = await browser.newContext({
+        storageState: 'storage/deleteRegisteredStorageState.json',
+        baseURL: baseUrl,
+    })
+    const deleteRegisteredPage = await deleteRegisteredContext.newPage()
+    const dru = await deleteRegisteredPage.request.get(`/api/auth/user`)
+    const deleteRegisteredUser = await dru.json()
+    await deleteRegisteredPage.request.delete(`/api/users/${deleteRegisteredUser.data.id}`)
 
     await browser.close()
 }

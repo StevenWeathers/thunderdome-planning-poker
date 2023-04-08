@@ -26,16 +26,19 @@ func (d *Database) GenerateApiKey(ctx context.Context, UserID string, KeyName st
 		return nil, err
 	}
 
+	key := apiPrefix + "." + apiSecret
+	hashedKey := hashString(key)
+	keyID := apiPrefix + "." + hashedKey
+
 	APIKEY := &model.APIKey{
+		Id:          keyID,
 		Name:        KeyName,
-		Key:         apiPrefix + "." + apiSecret,
+		Key:         key,
 		UserId:      UserID,
 		Prefix:      apiPrefix,
 		Active:      true,
 		CreatedDate: time.Now(),
 	}
-	hashedKey := hashString(APIKEY.Key)
-	keyID := apiPrefix + "." + hashedKey
 
 	e := d.db.QueryRowContext(ctx,
 		`SELECT createdDate FROM user_apikey_add($1, $2, $3);`,
