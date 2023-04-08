@@ -341,6 +341,8 @@
                                                     class:dark:bg-gray-800="{i %
                                                         2 !==
                                                         0}"
+                                                    data-testid="apikey"
+                                                    data-apikeyid="{apk.id}"
                                                 >
                                                     <td
                                                         class="px-6 py-4 whitespace-nowrap"

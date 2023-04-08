@@ -1,34 +1,6 @@
-import { Browser, Page, test as base } from '@playwright/test'
+import {Browser, Page, test as base} from '@playwright/test'
 
-class AdminPage {
-    page: Page
-    user: {
-        id: string
-        email: string
-    }
-
-    constructor(page: Page) {
-        this.page = page
-    }
-
-    static async create(browser: Browser) {
-        const context = await browser.newContext({
-            storageState: 'storage/adminStorageState.json',
-        })
-        const page = await context.newPage()
-        const adminPage = new AdminPage(page)
-        await adminPage.loadUser()
-        return adminPage
-    }
-
-    public async loadUser() {
-        const u = await this.page.request.get('/api/auth/user')
-        const user = await u.json()
-        this.user = user.data
-    }
-}
-
-class RegisteredPage {
+class UserPage {
     page: Page
     user: {
         id: string
@@ -40,12 +12,12 @@ class RegisteredPage {
         this.page = page
     }
 
-    static async create(browser: Browser) {
+    static async create(browser: Browser, storageState: string) {
         const context = await browser.newContext({
-            storageState: 'storage/registeredStorageState.json',
+            storageState,
         })
         const page = await context.newPage()
-        const regPage = new RegisteredPage(page)
+        const regPage = new UserPage(page)
         await regPage.loadUser() // bootstrap the user info
 
         return regPage
@@ -154,117 +126,49 @@ class RegisteredPage {
         const team = await dt.json()
         return team.data
     }
-}
 
-class VerifiedPage {
-    page: Page
-    user: {
-        id: string
-        email: string
-    }
-
-    constructor(page: Page) {
-        this.page = page
-    }
-
-    static async create(browser: Browser) {
-        const context = await browser.newContext({
-            storageState: 'storage/verifiedStorageState.json',
-        })
-        const page = await context.newPage()
-        const vPage = new VerifiedPage(page)
-        await vPage.loadUser()
-        return vPage
-    }
-
-    public async loadUser() {
-        const u = await this.page.request.get('/api/auth/user')
-        const user = await u.json()
-        this.user = user.data
-    }
-
-    public async createBattle(battle) {
-        const b = await this.page.request.post(
-            `/api/users/${this.user.id}/battles`,
+    public async createApikey(name) {
+        const k = await this.page.request.post(
+            `/api/users/${this.user.id}/apikeys`,
             {
-                data: battle,
-            },
+                data: {
+                    name
+                }
+            }
         )
-        const res = await b.json()
+        const res = await k.json()
         return res.data
-    }
-
-    public async createRetro(retro) {
-        const b = await this.page.request.post(
-            `/api/users/${this.user.id}/retros`,
-            {
-                data: retro,
-            },
-        )
-        const res = await b.json()
-        return res.data
-    }
-
-    public async createStoryboard(storyboard) {
-        const b = await this.page.request.post(
-            `/api/users/${this.user.id}/storyboards`,
-            {
-                data: storyboard,
-            },
-        )
-        const res = await b.json()
-        return res.data
-    }
-}
-
-class GuestPage {
-    page: Page
-    user: {
-        id: string
-        name: string
-    }
-
-    constructor(page: Page) {
-        this.page = page
-    }
-
-    public async loadUser() {
-        const u = await this.page.request.get('/api/auth/user')
-        const user = await u.json()
-        this.user = user.data
-    }
-
-    static async create(browser: Browser) {
-        const context = await browser.newContext({
-            storageState: 'storage/guestStorageState.json',
-        })
-        const page = await context.newPage()
-        const guestPage = new GuestPage(page)
-        await guestPage.loadUser()
-        return guestPage
     }
 }
 
 type MyFixtures = {
-    adminPage: AdminPage
-    registeredPage: RegisteredPage
-    verifiedPage: VerifiedPage
-    guestPage: GuestPage
+    adminPage: UserPage
+    registeredPage: UserPage
+    verifiedPage: UserPage
+    guestPage: UserPage,
+    deleteGuestPage: UserPage,
+    deleteRegisteredPage: UserPage,
 }
 
 export const test = base.extend<MyFixtures>({
-    adminPage: async ({ browser }, use) => {
-        await use(await AdminPage.create(browser))
+    adminPage: async ({browser}, use) => {
+        await use(await UserPage.create(browser, 'storage/adminStorageState.json'))
     },
-    registeredPage: async ({ browser }, use) => {
-        await use(await RegisteredPage.create(browser))
+    registeredPage: async ({browser}, use) => {
+        await use(await UserPage.create(browser, 'storage/registeredStorageState.json'))
     },
-    verifiedPage: async ({ browser }, use) => {
-        await use(await VerifiedPage.create(browser))
+    verifiedPage: async ({browser}, use) => {
+        await use(await UserPage.create(browser, 'storage/verifiedStorageState.json'))
     },
-    guestPage: async ({ browser }, use) => {
-        await use(await GuestPage.create(browser))
+    guestPage: async ({browser}, use) => {
+        await use(await UserPage.create(browser, 'storage/guestStorageState.json'))
+    },
+    deleteGuestPage: async ({browser}, use) => {
+        await use(await UserPage.create(browser, 'storage/deleteGuestStorageState.json'))
+    },
+    deleteRegisteredPage: async ({browser}, use) => {
+        await use(await UserPage.create(browser, 'storage/deleteRegisteredStorageState.json'))
     },
 })
 
-export { expect } from '@playwright/test'
+export {expect} from '@playwright/test'
