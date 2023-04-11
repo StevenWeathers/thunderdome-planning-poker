@@ -46,7 +46,7 @@
   "verifyAccountVerifiedTitle": "Account Verified",
   "verifyAccountVerifiedThanks": "Thanks for verifying your email.",
   "verifyAccountFailedTitle": "Verification Failed",
-  "verifyAccountFailedError": "Something went wrong verifying your account, perhaps this link expired or was already used."
+  "verifyAccountFailedError": "Something went wrong verifying your account, perhaps this link expired or was already used.",
   "pages": {
     "myBattles": {
       "createBattle": {
