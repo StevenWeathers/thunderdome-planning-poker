@@ -28,6 +28,10 @@ test.describe('User Profile page', () => {
         await expect(
             profilePage.page.locator('[data-testid="request-verify"]'),
         ).not.toBeVisible()
+
+        await expect(
+            profilePage.page.locator('[data-testid="toggle-updatepassword"]'),
+        ).not.toBeVisible()
     })
 
     test('Guest user cannot create API keys', async ({guestPage}) => {
@@ -66,6 +70,10 @@ test.describe('User Profile page', () => {
         ).not.toBeVisible()
         await expect(
             profilePage.page.locator('[data-testid="request-verify"]'),
+        ).toBeVisible()
+
+        await expect(
+            profilePage.page.locator('[data-testid="toggle-updatepassword"]'),
         ).toBeVisible()
     })
 

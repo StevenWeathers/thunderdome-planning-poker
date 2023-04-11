@@ -377,12 +377,13 @@
 
     <div>
         <div class="ltr:text-right rtl:text-left">
-            {#if !ldapEnabled && !headerAuthEnabled && toggleUpdatePassword}
+            {#if !ldapEnabled && !headerAuthEnabled && profile.rank !== 'GUEST' && toggleUpdatePassword}
                 <button
                     type="button"
                     class="inline-block align-baseline font-bold
                                     text-sm text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
                     on:click="{toggleUpdatePassword}"
+                    data-testid="toggle-updatepassword"
                 >
                     {$_('pages.warriorProfile.updatePasswordButton')}
                 </button>
