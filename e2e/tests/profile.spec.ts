@@ -108,6 +108,58 @@ test.describe('User Profile page', () => {
         ).not.toBeVisible()
     })
 
+    test('Guest User can update profile', async ({
+                                                     guestPage,
+                                                 }) => {
+        const testCompanyName = "Test Update Company Guest"
+        const testJobTitle = "Test Engineer Guest"
+        const profilePage = new ProfilePage(guestPage.page)
+        await profilePage.goto()
+
+        await expect(profilePage.page.locator('[name=yourCompany]')).toHaveValue("")
+
+        await profilePage.page.locator('[name=yourCountry]').selectOption("US")
+        await profilePage.page.locator('[name=yourCompany]').fill(testCompanyName)
+        await profilePage.page.locator('[name=yourJobTitle]').fill(testJobTitle)
+
+        await profilePage.page
+            .locator('[name=updateProfile] [type=submit]')
+            .click()
+
+        await expect(profilePage.page.locator('[name=yourCountry]')).toHaveValue("US")
+        await expect(profilePage.page.locator('[name=yourCompany]')).toHaveValue(testCompanyName)
+        await expect(profilePage.page.locator('[name=yourJobTitle]')).toHaveValue(testJobTitle)
+
+        await expect(profilePage.page.locator(`[data-testid="notification-msg"]`))
+            .toHaveText("Profile updated")
+    })
+
+    test('Registered User can update profile', async ({
+                                                          registeredPage,
+                                                      }) => {
+        const testCompanyName = "Test Update Company"
+        const testJobTitle = "Test Engineer"
+        const profilePage = new ProfilePage(registeredPage.page)
+        await profilePage.goto()
+
+        await expect(profilePage.page.locator('[name=yourCompany]')).toHaveValue("")
+
+        await profilePage.page.locator('[name=yourCountry]').selectOption("US")
+        await profilePage.page.locator('[name=yourCompany]').fill(testCompanyName)
+        await profilePage.page.locator('[name=yourJobTitle]').fill(testJobTitle)
+
+        await profilePage.page
+            .locator('[name=updateProfile] [type=submit]')
+            .click()
+
+        await expect(profilePage.page.locator('[name=yourCountry]')).toHaveValue("US")
+        await expect(profilePage.page.locator('[name=yourCompany]')).toHaveValue(testCompanyName)
+        await expect(profilePage.page.locator('[name=yourJobTitle]')).toHaveValue(testJobTitle)
+
+        await expect(profilePage.page.locator(`[data-testid="notification-msg"]`))
+            .toHaveText("Profile updated")
+    })
+
     test('Verified user should display existing API keys', async ({verifiedPage}) => {
         const apiKeyName = 'Display API Keys Test'
         const profilePage = new ProfilePage(verifiedPage.page)

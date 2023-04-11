@@ -67,7 +67,7 @@ type userprofileUpdateRequestBody struct {
 	Locale               string `json:"locale" validate:"len=2"`
 	Company              string `json:"company" validate:"max=256"`
 	JobTitle             string `json:"jobTitle" validate:"max=128"`
-	Email                string `json:"email" validate:"email"`
+	Email                string `json:"email" validate:"omitempty,email"`
 }
 
 // handleUserProfileUpdate attempts to update users profile
