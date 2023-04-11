@@ -41,6 +41,11 @@
   "planTypeSubtask": "Subtarefa",
   "landingFeatureOpenSourceTitle": "Código aberto",
   "landingFeatureOpenSourceText": "Confira o {repoOpen}repositório no GitHub{repoClose} para solicitar ou contribuir com melhorias, traduções de localidades e correções de bugs ou para {donateOpen}Doar{donateClose}.",
+  "verifyAccountLoading": "Verificando conta...",
+  "verifyAccountVerifiedTitle": "Conta verificada",
+  "verifyAccountVerifiedThanks": "Obrigado por verificar seu e-mail.",
+  "verifyAccountFailedTitle": "Falha na verificação",
+  "verifyAccountFailedError": "Ocorreu um erro ao verificar sua conta, talvez este link tenha expirado ou já tenha sido usado.",
   "pages": {
     "myBattles": {
       "createBattle": {
@@ -96,17 +101,6 @@
             "placeholder": "Confirme sua senha"
           }
         }
-      }
-    },
-    "verifyAccount": {
-      "loading": "Verificando conta...",
-      "verified": {
-        "title": "Conta verificada",
-        "thanks": "Obrigado por verificar seu e-mail."
-      },
-      "failed": {
-        "title": "Falha na verificação",
-        "error": "Ocorreu um erro ao verificar sua conta, talvez este link tenha expirado ou já tenha sido usado."
       }
     },
     "warriorProfile": {

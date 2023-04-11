@@ -47,6 +47,11 @@
   "planTypeSubtask": "подзадача",
   "landingFeatureOpenSourceTitle": "Open Source",
   "landingFeatureOpenSourceText": "Check out the {repoOpen}Github repository{repoClose} to request or contribute enhancements, locale translations and bug fixes or to {donateOpen}Donate{donateClose}.",
+  "verifyAccountLoading": "Подтверждение профиля...",
+  "verifyAccountVerifiedTitle": "Профиль подтвержден",
+  "verifyAccountVerifiedThanks": "Спасибо за подтверждение почты.",
+  "verifyAccountFailedTitle": "Верификация завершилась ошибкой",
+  "verifyAccountFailedError": "Произошла ошибка верификации.",
   "pages": {
     "myBattles": {
       "countPlansPointed": "{totalPointed} из {totalPlans} задач оценено",
@@ -113,17 +118,6 @@
             "placeholder": "Повторите пароль"
           }
         }
-      }
-    },
-    "verifyAccount": {
-      "loading": "Подтверждение профиля...",
-      "verified": {
-        "title": "Профиль подтвержден",
-        "thanks": "Спасибо за подтверждение почты."
-      },
-      "failed": {
-        "title": "Верификация завершилась ошибкой",
-        "error": "Произошла ошибка верификации."
       }
     },
     "warriorProfile": {

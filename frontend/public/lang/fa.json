@@ -42,6 +42,11 @@
   "planTypeSubtask": "Subtask",
   "landingFeatureOpenSourceTitle": "Open Source",
   "landingFeatureOpenSourceText": "Check out the {repoOpen}Github repository{repoClose} to request or contribute enhancements, locale translations and bug fixes or to {donateOpen}Donate{donateClose}.",
+  "verifyAccountLoading": "Verifying Account...",
+  "verifyAccountVerifiedTitle": "Account Verified",
+  "verifyAccountVerifiedThanks": "Thanks for verifying your email.",
+  "verifyAccountFailedTitle": "Verification Failed",
+  "verifyAccountFailedError": "Something went wrong verifying your account, perhaps this link expired or was already used.",
   "pages": {
     "myBattles": {
       "createBattle": {
@@ -97,17 +102,6 @@
             "placeholder": "Confirm your password"
           }
         }
-      }
-    },
-    "verifyAccount": {
-      "loading": "Verifying Account...",
-      "verified": {
-        "title": "Account Verified",
-        "thanks": "Thanks for verifying your email."
-      },
-      "failed": {
-        "title": "Verification Failed",
-        "error": "Something went wrong verifying your account, perhaps this link expired or was already used."
       }
     },
     "warriorProfile": {

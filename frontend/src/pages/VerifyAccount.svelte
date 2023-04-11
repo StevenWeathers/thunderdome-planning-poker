@@ -34,9 +34,9 @@
                     role="alert"
                 >
                     <strong class="font-bold">
-                        {$_('pages.verifyAccount.verified.title')}
+                        {$_('verifyAccountVerifiedTitle')}
                     </strong>
-                    <p>{$_('pages.verifyAccount.verified.thanks')}</p>
+                    <p>{$_('verifyAccountVerifiedThanks')}</p>
                 </div>
             {:else if verficationError}
                 <div
@@ -45,14 +45,14 @@
                     role="alert"
                 >
                     <strong class="font-bold">
-                        {$_('pages.verifyAccount.failed.title')}
+                        {$_('verifyAccountFailedTitle')}
                     </strong>
-                    <p>{$_('pages.verifyAccount.failed.error')}</p>
+                    <p>{$_('verifyAccountFailedError')}</p>
                 </div>
             {:else}
                 <div class="text-center">
                     <h1 class="text-4xl text-teal-500 leading-tight font-bold">
-                        {$_('pages.verifyAccount.loading')}
+                        {$_('verifyAccountLoading')}
                     </h1>
                 </div>
             {/if}

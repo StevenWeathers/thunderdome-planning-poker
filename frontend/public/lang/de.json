@@ -50,6 +50,11 @@
   "landingTitle": "Thunderdome ist eine Agile Planning Poker App mit einem lustigen Thema",
   "landingFeatureOpenSourceTitle": "Open Source",
   "landingFeatureOpenSourceText": "Check out the {repoOpen}Github repository{repoClose} to request or contribute enhancements, locale translations and bug fixes or to {donateOpen}Donate{donateClose}.",
+  "verifyAccountLoading": "Kontoüberprüfung...",
+  "verifyAccountVerifiedTitle": "Konto überprüft",
+  "verifyAccountVerifiedThanks": "Vielen Dank für die Bestätigung der E-Mail-Adresse.",
+  "verifyAccountFailedTitle": "Überprüfung fehlgeschlagen",
+  "verifyAccountFailedError": "Bei der Überprüfung des Kontos ist ein Fehler aufgetreten. Möglicherweise ist dieser Link abgelaufen oder wurde bereits verwendet.",
   "pages": {
     "myBattles": {
       "countPlansPointed": "{totalPointed} von {totalPlans} Pl\u00E4nen gesch\u00E4tzt",
@@ -111,17 +116,6 @@
             "placeholder": "Passwort best\u00E4tigen"
           }
         }
-      }
-    },
-    "verifyAccount": {
-      "loading": "Konto\u00FCberpr\u00FCfung...",
-      "verified": {
-        "title": "Konto \u00FCberpr\u00FCft",
-        "thanks": "Vielen Dank f\u00FCr die Best\u00E4tigung der E-Mail-Adresse."
-      },
-      "failed": {
-        "title": "\u00DCberpr\u00FCfung fehlgeschlagen",
-        "error": "Bei der \u00DCberpr\u00FCfung des Kontos ist ein Fehler aufgetreten. M\u00F6glicherweise ist dieser Link abgelaufen oder wurde bereits verwendet."
       }
     },
     "warriorProfile": {

@@ -41,6 +41,11 @@
   "planTypeSubtask": "Sous-tâche",
   "landingFeatureOpenSourceTitle": "Open Source",
   "landingFeatureOpenSourceText": "Allez voir {repoOpen}le repository{repoClose} pour demander ou contribuer à des améliorations, traductions et corrections de bugs ou pour {donateOpen}Donner{donateClose}.",
+  "verifyAccountLoading": "Vérification du Compte...",
+  "verifyAccountVerifiedTitle": "Compte Vérifié",
+  "verifyAccountVerifiedThanks": "Merci d'avoir vérifié votre email.",
+  "verifyAccountFailedTitle": "Echec de la vérification",
+  "verifyAccountFailedError": "Quelque chose s'est mal passé pendant la vérification de votre compte, peut-être ce lien a expiré ou a déjà été utilisé.",
   "pages": {
     "myBattles": {
       "createBattle": {
@@ -96,17 +101,6 @@
             "placeholder": "Confirmer votre mot de passe"
           }
         }
-      }
-    },
-    "verifyAccount": {
-      "loading": "Vérification du Compte...",
-      "verified": {
-        "title": "Compte Vérifié",
-        "thanks": "Merci d'avoir vérifié votre email."
-      },
-      "failed": {
-        "title": "Echec de la vérification",
-        "error": "Quelque chose s'est mal passé pendant la vérification de votre compte, peut-être ce lien a expiré ou a déjà été utilisé."
       }
     },
     "warriorProfile": {
