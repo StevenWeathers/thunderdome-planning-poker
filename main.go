@@ -69,7 +69,7 @@ type server struct {
 	router *mux.Router
 	email  *email.Email
 	cookie *securecookie.SecureCookie
-	db     *db.Database
+	db     db.Repository
 	logger *otelzap.Logger
 }
 

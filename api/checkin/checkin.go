@@ -10,7 +10,7 @@ import (
 
 // Service provides retro service
 type Service struct {
-	db                    *db.Database
+	db                    db.Repository
 	logger                *otelzap.Logger
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
@@ -19,7 +19,7 @@ type Service struct {
 
 // New returns a new retro with websocket hub/client and event handlers
 func New(
-	db *db.Database,
+	db db.Repository,
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),

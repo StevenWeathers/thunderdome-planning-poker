@@ -52,7 +52,7 @@
     "postcss-nesting": "^10.1.10",
     "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.7.0",
-    "rollup": "^2.76.0",
+    "rollup": "^2.79.1",
     "rollup-plugin-bundle-html": "^0.2.2",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-delete": "^2.0.0",

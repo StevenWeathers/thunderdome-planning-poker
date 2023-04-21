@@ -58,7 +58,7 @@ type api struct {
 	router *mux.Router
 	email  *email.Email
 	cookie *securecookie.SecureCookie
-	db     *db.Database
+	db     db.Repository
 	logger *otelzap.Logger
 }
 
@@ -102,7 +102,7 @@ const (
 // @in header
 // @name X-API-Key
 // @version BETA
-func Init(config *Config, router *mux.Router, database *db.Database, email *email.Email, cookie *securecookie.SecureCookie, logger *otelzap.Logger) *api {
+func Init(config *Config, router *mux.Router, database db.Repository, email *email.Email, cookie *securecookie.SecureCookie, logger *otelzap.Logger) *api {
 	var a = &api{
 		config: config,
 		router: router,
