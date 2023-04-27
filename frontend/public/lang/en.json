@@ -34,6 +34,8 @@
   "votingRestart": "Restart Voting",
   "importJiraXMLBadFileTypeError": "Error bad file type",
   "importJiraXMLReadFileError": "Error reading file",
+  "importCsvFileBadFileTypeError": "Error bad file type",
+  "importCsvFileReadFileError": "Error reading file",
   "planTypeStory": "Story",
   "planTypeBug": "Bug",
   "planTypeSpike": "Spike",

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/spf13/viper"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
@@ -63,6 +64,7 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("config.allow_guests", true)
 	viper.SetDefault("config.allow_registration", true)
 	viper.SetDefault("config.allow_jira_import", true)
+	viper.SetDefault("config.allow_csv_import",true)
 	viper.SetDefault("config.default_locale", "en")
 	viper.SetDefault("config.friendly_ui_verbs", false)
 	viper.SetDefault("config.allow_external_api", true)
@@ -143,6 +145,7 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.BindEnv("config.allow_guests", "CONFIG_ALLOW_GUESTS")
 	viper.BindEnv("config.allow_registration", "CONFIG_ALLOW_REGISTRATION")
 	viper.BindEnv("config.allow_jira_import", "CONFIG_ALLOW_JIRA_IMPORT")
+	viper.BindEnv("config.allow_CSV_import", "CONFIG_ALLOW_CSV_IMPORT")
 	viper.BindEnv("config.default_locale", "CONFIG_DEFAULT_LOCALE")
 	viper.BindEnv("config.friendly_ui_verbs", "CONFIG_FRIENDLY_UI_VERBS")
 	viper.BindEnv("config.allow_external_api", "CONFIG_ALLOW_EXTERNAL_API")

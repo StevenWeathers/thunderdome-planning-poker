@@ -114,6 +114,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AllowGuests               bool
 		AllowRegistration         bool
 		AllowJiraImport           bool
+		AllowCsvImport			  bool
 		DefaultLocale             string
 		FriendlyUIVerbs           bool
 		OrganizationsEnabled      bool
@@ -152,6 +153,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AllowGuests:               viper.GetBool("config.allow_guests"),
 		AllowRegistration:         viper.GetBool("config.allow_registration") && viper.GetString("auth.method") == "normal",
 		AllowJiraImport:           viper.GetBool("config.allow_jira_import"),
+		AllowCsvImport:			   viper.GetBool("config.allow_csv_import"),
 		DefaultLocale:             viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:           viper.GetBool("config.friendly_ui_verbs"),
 		OrganizationsEnabled:      viper.GetBool("config.organizations_enabled"),

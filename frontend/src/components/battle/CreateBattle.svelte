@@ -4,6 +4,7 @@
     import SolidButton from '../SolidButton.svelte'
     import HollowButton from '../HollowButton.svelte'
     import JiraImport from './JiraImport.svelte'
+    import CsvImport from './CsvImport.svelte'
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import { warrior as user } from '../../stores.js'
     import { _ } from '../../i18n.js'
@@ -238,6 +239,14 @@
                 {$_('pages.myBattles.createBattle.fields.plans.addButton')}
             </HollowButton>
         </div>
+        <div class="control mb-4">
+            <CsvImport
+            handlePlanAdd="{handlePlanImport}"
+            notifications="{notifications}"
+            eventTag="{eventTag}"
+            />
+        </div>
+
         {#each plans as plan, i}
             <div class="flex flex-wrap mb-2">
                 <div class="w-3/4">

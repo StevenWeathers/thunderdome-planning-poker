@@ -1,0 +1,117 @@
+{
+    "logoutError": "Si è verificato un errore durante il logout dell'utente",
+    "battleDelete": "Elimina Gioco",
+    "battleAbandon": "Abbandona Gioco",
+    "battleCreate": "Crea Gioco",
+    "battleEdit": "Modifica Gioco",
+    "warriorCreate": "Crea Utente",
+    "planAdd": "Aggiungi Storia",
+    "planSkip": "Salta Storia",
+    "planName": "Nome Storia",
+    "planNamePlaceholder": "Inserisci un nome per la storia",
+    "planType": "Tipo Storia",
+    "planLinkPlaceholder": "Inserisci un link alla storia",
+    "importJiraXML": "Importa storie da Jira XML",
+    "landingTitle": "Thunderdome è un'app di Agile Planning Poker",
+    "landingCountries": "Utenti in oltre {count} paesi",
+    "pages": {
+      "myBattles": {
+        "nav": "Mie partite",
+        "title": "Mie partite",
+        "battlesError": "Errore durante la ricerca delle tue partite",
+        "countPlansPointed": "{totalPointed} di {totalPlans} storie puntate",
+        "createBattle": {
+          "title": "Crea una partita",
+          "createError": "Errore durante la creazione della partita",
+          "fields": {
+            "name": {
+              "label": "Nome partita",
+              "placeholder": "Inserisci il nome della partita"
+            },
+            "plans": {
+              "label": "Storie",
+              "addButton": "Aggiungi storia",
+              "fields": {
+                "name": {
+                  "placeholder": "Inserisci il nome della storia"
+                }
+              }
+            },
+            "autoFinishVoting": {
+              "label": "Termina automaticamente il voto quando tutti i giocatori hanno votato"
+            }
+          }
+        }
+      },
+      "createAccount": {
+        "title": "Registrati per partecipare alle partite di punteggio",
+        "loginForBattle": "o {loginOpen}Accedi{loginClose} per partecipare alla partita",
+        "guestForm": {
+          "createError": "Errore durante la registrazione del giocatore come ospite"
+        },
+        "createAccountForm": {
+          "createError": "Errore durante la creazione del giocatore"
+        }
+      },
+      "warriorProfile": {
+        "fields": {
+          "enable_notifications": {
+            "label": "Abilita le notifiche di gioco"
+          }
+        }
+      },
+      "admin": {
+        "counts": {
+          "registered": "Giocatori registrati",
+          "unregistered": "Giocatori non registrati",
+          "battles": "Partite",
+          "plans": "Storie"
+        },
+        "registeredWarriors": {
+          "title": "Giocatori registrati"
+        },
+        "maintenance": {
+          "cleanBattles": "Pulisci le partite più vecchie di {daysOld} giorni"
+        }
+      },
+      "login": {
+        "registerForBattle": "o {registerOpen}Registrati{registerClose} per partecipare alla partita",
+        "authError": "Errore durante l'autenticazione del giocatore"
+      },
+      "battle": {
+        "title": "Partita",
+        "warriors": "Giocatori",
+        "socketReconnecting": "Ops, ricaricando la partita...",
+        "socketError": "Errore durante la connessione alla partita, ricaricare e riprovare.",
+        "loading": "Caricamento partita...",
+        "warriorJoined": "{name} si è unito alla partita",
+        "warriorRetreated": "{name} ha lasciato la partita",
+        "warriorInvite": "Invita un giocatore",
+        "planSkipped": "Storia saltata",
+        "voteResults": {
+          "unknownWarrior": "Giocatore sconosciuto"
+        },
+        "battleDeleted": "Partita eliminata"
+      }
+    },
+    "plans": "Storie",
+    "battle": "Partita",
+    "battles": "Partite",
+        "battlesActive": "Partite attive",
+        "battlesActiveUsers": "Utenti attivi in partite",
+        "battleJoin": "Unisciti alla partita",
+        "battleRemoveSuccess": "Partita rimossa con successo.",
+        "battleRemoveError": "Errore durante la rimozione della partita.",
+        "teamGetBattlesError": "Errore durante il recupero delle partite del team",
+        "sessionDuplicate": "Esiste una sessione di gioco duplicata per il tuo ID",
+        "removeBattleConfirmText": "Sei sicuro di voler rimuovere questa partita?",
+        "removeBattle": "Rimuovi partita",
+        "deleteBattleConfirmText": "Sei sicuro di voler eliminare questa partita?",
+        "deleteBattle": "Elimina partita",
+        "oldBattleCleanError": "Errore durante la pulizia delle partite",
+        "getBattleError": "Errore durante il recupero delle partite",
+        "getBattlesError": "Errore durante il recupero delle partite",
+        "showActiveBattles": "Mostra partite attive",
+        "customizableBattleOptions": "Opzioni di gioco personalizzabili",
+    "deleteBattleError": "Errore durante l'eliminazione della partita"
+    }
