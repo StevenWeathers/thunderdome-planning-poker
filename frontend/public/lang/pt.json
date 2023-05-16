@@ -27,6 +27,7 @@
   "planAcceptanceCriteriaPlaceholder": "Insira os critérios de aceitação",
   "pointed": "Pontuado ({count})",
   "unpointed": "Sem pontuação ({count})",
+  "totalPoints": "Total",
   "Visualizar": "Visualizar",
   "activate": "Ativar",
   "votingFinish": "Encerrar votação",
