@@ -81,7 +81,7 @@
       "battle": {
         "title": "Partita",
         "warriors": "Giocatori",
-        "socketReconnecting": "Ops, ricaricando la partita...",
+        "socketReconnecting": "Ops, caricamento della partita...",
         "socketError": "Errore durante la connessione alla partita, ricaricare e riprovare.",
         "loading": "Caricamento partita...",
         "warriorJoined": "{name} si è unito alla partita",
