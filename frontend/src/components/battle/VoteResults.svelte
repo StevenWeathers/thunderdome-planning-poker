@@ -21,9 +21,9 @@
         if (activePlan.votes.length > 0) {
             const votesToAverage = activePlan.votes
                 .filter(v => {
-                    const { spectator = false } = warriors.find(
-                        w => w.id === v.warriorId,
-                    )
+                    const voteWarrior =
+                        warriors.find(w => w.id === v.warriorId) || {}
+                    const { spectator = false } = voteWarrior
                     return !spectator && v.vote !== '?' && v.vote !== '☕️'
                 })
                 .map(v => {
@@ -63,8 +63,11 @@
             let warriorName = $_('pages.battle.voteResults.unknownWarrior')
 
             if (warriors.length) {
-                const warrior = warriors.find(w => w.id === v.warriorId)
-                warriorName = warrior ? warrior.name : warriorName
+                const warrior = warriors.find(w => w.id === v.warriorId) || {
+                    name: warriorName,
+                    spectator: false,
+                }
+                warriorName = warrior.name
                 if (warrior.spectator) {
                     return obj
                 }
