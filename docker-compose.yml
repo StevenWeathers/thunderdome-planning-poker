@@ -19,6 +19,7 @@ services:
       COOKIE_SECURE: "false"
       SMTP_SECURE: "false"
       SMTP_HOST: mail
+      SMTP_PORT: 1025
       DB_NAME: thunderdome
       DB_USER: thor
       DB_PASS: odinson
@@ -38,11 +39,11 @@ services:
     networks:
       - asgard
   mail:
-    image: djfarrelly/maildev:1.1.0
+    image: maildev/maildev:2.0.5
     restart: always
     ports:
-      - 1080:80
-      - 1025:25
+      - 1080:1080
+      - 1025:1025
     networks:
       - asgard
 
