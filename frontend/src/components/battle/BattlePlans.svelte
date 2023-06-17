@@ -11,6 +11,7 @@
     import Bars2 from '../icons/Bars2.svelte'
     import ChevronDown from '../icons/ChevronDown.svelte'
     import DoubleChevronDown from '../icons/DoubleChevronDown.svelte'
+    import CsvImport from './CsvImport.svelte'
 
     export let plans = []
     export let isLeader = false
@@ -132,14 +133,14 @@
     <div
         class="flex items-center bg-gray-200 dark:bg-gray-700 p-4 rounded-t-lg"
     >
-        <div class="w-1/2">
+        <div class="w-1/3">
             <h3
                 class="text-3xl leading-tight font-semibold font-rajdhani uppercase dark:text-white"
             >
                 {$_('plans')}
             </h3>
         </div>
-        <div class="w-1/2 ltr:text-right rtl:text-left">
+        <div class="w-2/3 ltr:text-right rtl:text-left">
             {#if isLeader}
                 <JiraImport
                     handlePlanAdd="{handlePlanAdd}"
@@ -150,6 +151,13 @@
                 <HollowButton onClick="{toggleAddPlan()}" testid="plans-add">
                     {$_('planAdd')}
                 </HollowButton>
+
+                <CsvImport
+                    handlePlanAdd="{handlePlanAdd}"
+                    notifications="{notifications}"
+                    eventTag="{eventTag}"
+                    testid="plans-Csvimport"
+                 />
             {/if}
         </div>
     </div>
@@ -190,7 +198,7 @@
             class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 "
             data-testid="plan"
         >
-            <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
+            <div class="w-full lg:w-1/3 mb-4 lg:mb-0">
                 <div
                     class="inline-block font-bold align-middle dark:text-white"
                 >
@@ -227,7 +235,7 @@
                     </div>
                 {/if}
             </div>
-            <div class="w-full lg:w-1/3 ltr:text-right rtl:text-left">
+            <div class="w-full lg:w-2/3 ltr:text-right rtl:text-left">
                 <HollowButton
                     color="blue"
                     onClick="{togglePlanView(plan.id)}"
