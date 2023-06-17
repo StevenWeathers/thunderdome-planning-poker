@@ -241,9 +241,9 @@
         </div>
         <div class="control mb-4">
             <CsvImport
-            handlePlanAdd="{handlePlanImport}"
-            notifications="{notifications}"
-            eventTag="{eventTag}"
+                handlePlanAdd="{handlePlanImport}"
+                notifications="{notifications}"
+                eventTag="{eventTag}"
             />
         </div>
 

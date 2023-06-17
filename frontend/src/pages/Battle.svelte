@@ -383,9 +383,10 @@
 
             // build a count of each vote
             activePlan.votes.forEach(v => {
-                const { spectator = false } = battle.users.find(
-                    w => w.id === v.warriorId,
-                )
+                const voteWarrior =
+                    battle.users.find(w => w.id === v.warriorId) || {}
+                const { spectator = false } = voteWarrior
+
                 if (typeof voteCounts[v.vote] !== 'undefined' && !spectator) {
                     ++voteCounts[v.vote]
                 }
