@@ -38,15 +38,19 @@
                 : 0
 
             const preAverage = sum / votesToAverage.length || 0
-            switch (averageRounding) {
-                case 'round':
-                    average = Math.round(preAverage)
-                    break
-                case 'floor':
-                    average = Math.floor(preAverage)
-                    break
-                default:
-                    average = Math.ceil(preAverage)
+            if (preAverage !== 0.5) {
+                switch (averageRounding) {
+                    case 'round':
+                        average = Math.round(preAverage)
+                        break
+                    case 'floor':
+                        average = Math.floor(preAverage)
+                        break
+                    default:
+                        average = Math.ceil(preAverage)
+                }
+            } else {
+                average = preAverage
             }
         }
 
