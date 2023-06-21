@@ -113,6 +113,7 @@
             on:change="{uploadFile}"
             class="hidden"
             id="jiraimport"
+            accept=".xml"
         />
     </HollowButton>
 {/if}
