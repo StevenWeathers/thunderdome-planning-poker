@@ -142,6 +142,12 @@
         </div>
         <div class="w-2/3 ltr:text-right rtl:text-left">
             {#if isLeader}
+                <CsvImport
+                    handlePlanAdd="{handlePlanAdd}"
+                    notifications="{notifications}"
+                    eventTag="{eventTag}"
+                    testid="plans-Csvimport"
+                />
                 <JiraImport
                     handlePlanAdd="{handlePlanAdd}"
                     notifications="{notifications}"
@@ -151,13 +157,6 @@
                 <HollowButton onClick="{toggleAddPlan()}" testid="plans-add">
                     {$_('planAdd')}
                 </HollowButton>
-
-                <CsvImport
-                    handlePlanAdd="{handlePlanAdd}"
-                    notifications="{notifications}"
-                    eventTag="{eventTag}"
-                    testid="plans-Csvimport"
-                />
             {/if}
         </div>
     </div>

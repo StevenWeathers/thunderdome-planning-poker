@@ -12,7 +12,7 @@
   "planType": "Plan Type",
   "planLinkPlaceholder": "Enter a link to plan",
   "importJiraXML": "Import plans from Jira XML",
-  "importCsv": "Import plans from a Csv file",
+  "importCsv": "Import plans from a CSV file",
   "landingTitle": "Thunderdome is an Agile Planning Poker app with a fun theme",
   "landingCountries": "Warriors in over {count} countries",
   "pages": {
