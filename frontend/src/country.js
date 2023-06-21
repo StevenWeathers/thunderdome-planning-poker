@@ -36,14 +36,6 @@ export const countryList = [
         name: 'Anguilla',
     },
     {
-        abbrev: 'AH',
-        name: '',
-    },
-    {
-        abbrev: 'AK',
-        name: '',
-    },
-    {
         abbrev: 'AL',
         name: 'Albania',
     },
@@ -304,10 +296,6 @@ export const countryList = [
         name: 'Ethiopia',
     },
     {
-        abbrev: 'EU',
-        name: '',
-    },
-    {
         abbrev: 'FI',
         name: 'Finland',
     },
@@ -430,10 +418,6 @@ export const countryList = [
     {
         abbrev: 'HU',
         name: 'Hungary',
-    },
-    {
-        abbrev: 'IC',
-        name: '',
     },
     {
         abbrev: 'ID',
@@ -714,10 +698,6 @@ export const countryList = [
     {
         abbrev: 'NU',
         name: 'Niue',
-    },
-    {
-        abbrev: 'NY',
-        name: '',
     },
     {
         abbrev: 'NZ',
@@ -1014,10 +994,6 @@ export const countryList = [
     {
         abbrev: 'WS',
         name: 'Samoa',
-    },
-    {
-        abbrev: 'XK',
-        name: '',
     },
     {
         abbrev: 'YE',
