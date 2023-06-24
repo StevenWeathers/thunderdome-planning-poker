@@ -74,7 +74,7 @@ func validateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, val
 }
 
 // createUserCookie creates the users Cookie
-func (a *APIService) createUserCookie(w http.ResponseWriter, UserID string) error {
+func (a *Service) createUserCookie(w http.ResponseWriter, UserID string) error {
 	encoded, err := a.Cookie.Encode(a.Config.SecureCookieName, UserID)
 	if err != nil {
 		return err
@@ -97,7 +97,7 @@ func (a *APIService) createUserCookie(w http.ResponseWriter, UserID string) erro
 }
 
 // createSessionCookie creates the user's session Cookie
-func (a *APIService) createSessionCookie(w http.ResponseWriter, SessionID string) error {
+func (a *Service) createSessionCookie(w http.ResponseWriter, SessionID string) error {
 	encoded, err := a.Cookie.Encode(a.Config.SessionCookieName, SessionID)
 	if err != nil {
 		return err
@@ -121,7 +121,7 @@ func (a *APIService) createSessionCookie(w http.ResponseWriter, SessionID string
 
 // clearUserCookies wipes the frontend and backend cookies
 // used in the event of bad Cookie reads
-func (a *APIService) clearUserCookies(w http.ResponseWriter) {
+func (a *Service) clearUserCookies(w http.ResponseWriter) {
 	feCookie := &http.Cookie{
 		Name:   a.Config.FrontendCookieName,
 		Value:  "",
@@ -155,7 +155,7 @@ func (a *APIService) clearUserCookies(w http.ResponseWriter) {
 }
 
 // validateUserCookie returns the UserID from secure cookies or errors if failures getting it
-func (a *APIService) validateUserCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+func (a *Service) validateUserCookie(w http.ResponseWriter, r *http.Request) (string, error) {
 	var UserID string
 
 	if cookie, err := r.Cookie(a.Config.SecureCookieName); err == nil {
@@ -174,7 +174,7 @@ func (a *APIService) validateUserCookie(w http.ResponseWriter, r *http.Request) 
 }
 
 // validateSessionCookie returns the SessionID from secure cookies or errors if failures getting it
-func (a *APIService) validateSessionCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+func (a *Service) validateSessionCookie(w http.ResponseWriter, r *http.Request) (string, error) {
 	var SessionID string
 
 	if cookie, err := r.Cookie(a.Config.SessionCookieName); err == nil {
@@ -193,7 +193,7 @@ func (a *APIService) validateSessionCookie(w http.ResponseWriter, r *http.Reques
 }
 
 // Success returns the successful response including any data and meta
-func (a *APIService) Success(w http.ResponseWriter, r *http.Request, code int, data interface{}, meta interface{}) {
+func (a *Service) Success(w http.ResponseWriter, r *http.Request, code int, data interface{}, meta interface{}) {
 	result := &standardJsonResponse{
 		Success: true,
 		Error:   "",
@@ -217,7 +217,7 @@ func (a *APIService) Success(w http.ResponseWriter, r *http.Request, code int, d
 }
 
 // Failure responds with an error and its associated status code header
-func (a *APIService) Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
+func (a *Service) Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
 	ctx := r.Context()
 	// Extract error message.
 	errCode, errMessage := ErrorCode(err), ErrorMessage(err)
@@ -284,7 +284,7 @@ func sanitizeUserInputForLogs(unescapedInput string) string {
 }
 
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user
-func (a *APIService) authAndCreateUserLdap(ctx context.Context, UserName string, UserPassword string) (*thunderdome.User, string, error) {
+func (a *Service) authAndCreateUserLdap(ctx context.Context, UserName string, UserPassword string) (*thunderdome.User, string, error) {
 	var AuthedUser *thunderdome.User
 	var SessionId string
 	var sessErr error
@@ -374,7 +374,7 @@ func (a *APIService) authAndCreateUserLdap(ctx context.Context, UserName string,
 }
 
 // Authenticate using HTTP headers and if user does not exist, automatically add user as a verified user
-func (a *APIService) authAndCreateUserHeader(ctx context.Context, username string, useremail string) (*thunderdome.User, string, error) {
+func (a *Service) authAndCreateUserHeader(ctx context.Context, username string, useremail string) (*thunderdome.User, string, error) {
 	var AuthedUser *thunderdome.User
 	var SessionId string
 	var sessErr error

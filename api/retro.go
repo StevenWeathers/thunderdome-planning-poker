@@ -40,7 +40,7 @@ type retroCreateRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/retros [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/retros [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
-func (a *APIService) handleRetroCreate() http.HandlerFunc {
+func (a *Service) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -109,7 +109,7 @@ func (a *APIService) handleRetroCreate() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId} [get]
-func (a *APIService) handleRetroGet() http.HandlerFunc {
+func (a *Service) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
@@ -139,7 +139,7 @@ func (a *APIService) handleRetroGet() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/retros [get]
-func (a *APIService) handleRetrosGetByUser() http.HandlerFunc {
+func (a *Service) handleRetrosGetByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -166,7 +166,7 @@ func (a *APIService) handleRetrosGetByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros [get]
-func (a *APIService) handleGetRetros() http.HandlerFunc {
+func (a *Service) handleGetRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
@@ -215,7 +215,7 @@ type actionUpdateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId} [put]
-func (a *APIService) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
+func (a *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionUpdateRequestBody{}
 
@@ -270,7 +270,7 @@ func (a *APIService) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId} [delete]
-func (a *APIService) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
+func (a *Service) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
@@ -319,7 +319,7 @@ type actionCommentRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments [post]
-func (a *APIService) handleRetroActionCommentAdd() http.HandlerFunc {
+func (a *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
 
@@ -379,7 +379,7 @@ func (a *APIService) handleRetroActionCommentAdd() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [put]
-func (a *APIService) handleRetroActionCommentEdit() http.HandlerFunc {
+func (a *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
 
@@ -443,7 +443,7 @@ func (a *APIService) handleRetroActionCommentEdit() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [post]
-func (a *APIService) handleRetroActionCommentDelete() http.HandlerFunc {
+func (a *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
@@ -486,7 +486,7 @@ func (a *APIService) handleRetroActionCommentDelete() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId} [delete]
-func (a *APIService) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
+func (a *Service) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]

@@ -36,7 +36,7 @@ type storyboardCreateRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/storyboards [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/storyboards [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards [post]
-func (a *APIService) handleStoryboardCreate() http.HandlerFunc {
+func (a *Service) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -105,7 +105,7 @@ func (a *APIService) handleStoryboardCreate() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards/{storyboardId} [get]
-func (a *APIService) handleStoryboardGet() http.HandlerFunc {
+func (a *Service) handleStoryboardGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		StoryboardID := vars["storyboardId"]
@@ -149,7 +149,7 @@ func (a *APIService) handleStoryboardGet() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/storyboards [get]
-func (a *APIService) handleGetUserStoryboards() http.HandlerFunc {
+func (a *Service) handleGetUserStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
@@ -183,7 +183,7 @@ func (a *APIService) handleGetUserStoryboards() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards [get]
-func (a *APIService) handleGetStoryboards() http.HandlerFunc {
+func (a *Service) handleGetStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
@@ -224,7 +224,7 @@ func (a *APIService) handleGetStoryboards() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards/{storyboardId} [delete]
-func (a *APIService) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
+func (a *Service) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		Id := vars["storyboardId"]

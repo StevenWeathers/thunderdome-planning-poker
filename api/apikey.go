@@ -19,7 +19,7 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys [get]
-func (a *APIService) handleUserAPIKeys() http.HandlerFunc {
+func (a *Service) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -55,7 +55,7 @@ type apikeyGenerateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys [post]
-func (a *APIService) handleAPIKeyGenerate() http.HandlerFunc {
+func (a *Service) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -123,7 +123,7 @@ type apikeyUpdateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys/{keyID} [put]
-func (a *APIService) handleUserAPIKeyUpdate() http.HandlerFunc {
+func (a *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -175,7 +175,7 @@ func (a *APIService) handleUserAPIKeyUpdate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys/{keyID} [delete]
-func (a *APIService) handleUserAPIKeyDelete() http.HandlerFunc {
+func (a *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]

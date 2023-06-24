@@ -35,7 +35,7 @@ func (s *server) getFileSystem(useOS bool) (http.FileSystem, fs.FS) {
 		panic(err)
 	}
 
-	return http.FS(fsys), fs.FS(fsys)
+	return http.FS(fsys), fsys
 }
 
 func (s *server) routes() {
@@ -64,7 +64,7 @@ func (s *server) routes() {
 	// Create services.
 	us := &db.UserService{DB: s.db.DB, Logger: s.logger}
 	apk := &db.APIKeyService{DB: s.db.DB, Logger: s.logger}
-	a := api.APIService{
+	a := api.Service{
 		Config:        apiConfig,
 		Router:        s.router,
 		DB:            s.db,

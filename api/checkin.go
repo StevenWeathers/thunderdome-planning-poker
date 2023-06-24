@@ -22,7 +22,7 @@ import (
 // @Success 200 object standardJsonResponse{data=[]thunderdome.TeamCheckin}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [get]
-func (a *APIService) handleCheckinsGet() http.HandlerFunc {
+func (a *Service) handleCheckinsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
@@ -74,7 +74,7 @@ type checkinCreateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [post]
-func (a *APIService) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
@@ -139,7 +139,7 @@ type checkinUpdateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [put]
-func (a *APIService) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userId := ctx.Value(contextKeyUserID).(string)
@@ -199,7 +199,7 @@ func (a *APIService) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [delete]
-func (a *APIService) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userId := ctx.Value(contextKeyUserID).(string)
@@ -259,7 +259,7 @@ type checkinCommentRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments [post]
-func (a *APIService) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -329,7 +329,7 @@ func (a *APIService) handleCheckinComment(tc *checkin.Service) http.HandlerFunc 
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments [put]
-func (a *APIService) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -399,7 +399,7 @@ func (a *APIService) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerF
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments/{commentId} [delete]
-func (a *APIService) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userId := ctx.Value(contextKeyUserID).(string)

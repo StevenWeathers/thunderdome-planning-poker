@@ -10,7 +10,7 @@ import (
 )
 
 // userOnly validates that the request was made by a valid user
-func (a *APIService) userOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
@@ -62,7 +62,7 @@ func (a *APIService) userOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // entityUserOnly validates that the request was made by the session user matching the {userId} of the entity (or ADMIN)
-func (a *APIService) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -85,7 +85,7 @@ func (a *APIService) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // registeredUserOnly validates that the request was made by a registered user
-func (a *APIService) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
@@ -99,7 +99,7 @@ func (a *APIService) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // adminOnly middleware checks if the user is an admin, otherwise reject their request
-func (a *APIService) adminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
@@ -113,7 +113,7 @@ func (a *APIService) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // verifiedUserOnly validates that the request was made by a verified registered user
-func (a *APIService) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -147,7 +147,7 @@ func (a *APIService) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgUserOnly validates that the request was made by a valid user of the organization
-func (a *APIService) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -179,7 +179,7 @@ func (a *APIService) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgAdminOnly validates that the request was made by an ADMIN of the organization
-func (a *APIService) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -215,7 +215,7 @@ func (a *APIService) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgTeamOnly validates that the request was made by an user of the organization team (or organization)
-func (a *APIService) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -256,7 +256,7 @@ func (a *APIService) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgTeamAdminOnly validates that the request was made by an ADMIN of the organization team (or organization)
-func (a *APIService) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -301,7 +301,7 @@ func (a *APIService) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentUserOnly validates that the request was made by a valid user of the organization (with department role)
-func (a *APIService) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -342,7 +342,7 @@ func (a *APIService) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentAdminOnly validates that the request was made by an ADMIN of the organization (with department role)
-func (a *APIService) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -387,7 +387,7 @@ func (a *APIService) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentTeamUserOnly validates that the request was made by an user of the department team (or organization)
-func (a *APIService) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -437,7 +437,7 @@ func (a *APIService) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc
 }
 
 // departmentTeamAdminOnly validates that the request was made by an ADMIN of the department team (or organization)
-func (a *APIService) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -492,7 +492,7 @@ func (a *APIService) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFun
 }
 
 // teamUserOnly validates that the request was made by a valid user of the team
-func (a *APIService) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -524,7 +524,7 @@ func (a *APIService) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // teamAdminOnly validates that the request was made by an ADMIN of the team
-func (a *APIService) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()

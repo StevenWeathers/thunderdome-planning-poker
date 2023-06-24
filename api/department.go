@@ -34,7 +34,7 @@ type departmentTeamResponse struct {
 // @Success 200 object standardJsonResponse{data=[]thunderdome.Department}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments [get]
-func (a *APIService) handleGetOrganizationDepartments() http.HandlerFunc {
+func (a *Service) handleGetOrganizationDepartments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -61,7 +61,7 @@ func (a *APIService) handleGetOrganizationDepartments() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId} [get]
-func (a *APIService) handleGetDepartmentByUser() http.HandlerFunc {
+func (a *Service) handleGetDepartmentByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -108,7 +108,7 @@ func (a *APIService) handleGetDepartmentByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments [post]
-func (a *APIService) handleCreateDepartment() http.HandlerFunc {
+func (a *Service) handleCreateDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -150,7 +150,7 @@ func (a *APIService) handleCreateDepartment() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=[]thunderdome.Team}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [get]
-func (a *APIService) handleGetDepartmentTeams() http.HandlerFunc {
+func (a *Service) handleGetDepartmentTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -176,7 +176,7 @@ func (a *APIService) handleGetDepartmentTeams() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=[]thunderdome.DepartmentUser}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users [get]
-func (a *APIService) handleGetDepartmentUsers() http.HandlerFunc {
+func (a *Service) handleGetDepartmentUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -204,7 +204,7 @@ func (a *APIService) handleGetDepartmentUsers() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
-func (a *APIService) handleCreateDepartmentTeam() http.HandlerFunc {
+func (a *Service) handleCreateDepartmentTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -248,7 +248,7 @@ func (a *APIService) handleCreateDepartmentTeam() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users [post]
-func (a *APIService) handleDepartmentAddUser() http.HandlerFunc {
+func (a *Service) handleDepartmentAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -301,7 +301,7 @@ func (a *APIService) handleDepartmentAddUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users/{userId} [delete]
-func (a *APIService) handleDepartmentRemoveUser() http.HandlerFunc {
+func (a *Service) handleDepartmentRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -339,7 +339,7 @@ func (a *APIService) handleDepartmentRemoveUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users [post]
-func (a *APIService) handleDepartmentTeamAddUser() http.HandlerFunc {
+func (a *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -400,7 +400,7 @@ func (a *APIService) handleDepartmentTeamAddUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId} [get]
-func (a *APIService) handleDepartmentTeamByUser() http.HandlerFunc {
+func (a *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -457,7 +457,7 @@ func (a *APIService) handleDepartmentTeamByUser() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId} [delete]
-func (a *APIService) handleDeleteDepartment() http.HandlerFunc {
+func (a *Service) handleDeleteDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]

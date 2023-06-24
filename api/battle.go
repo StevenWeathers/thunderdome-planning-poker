@@ -26,7 +26,7 @@ import (
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/battles [get]
-func (a *APIService) handleGetUserBattles() http.HandlerFunc {
+func (a *Service) handleGetUserBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
@@ -78,7 +78,7 @@ type battleRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/battles [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/battles [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles [post]
-func (a *APIService) handleBattleCreate() http.HandlerFunc {
+func (a *Service) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -157,7 +157,7 @@ func (a *APIService) handleBattleCreate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles [get]
-func (a *APIService) handleGetBattles() http.HandlerFunc {
+func (a *Service) handleGetBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
@@ -198,7 +198,7 @@ func (a *APIService) handleGetBattles() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId} [get]
-func (a *APIService) handleGetBattle() http.HandlerFunc {
+func (a *Service) handleGetBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleId := vars["battleId"]
@@ -250,7 +250,7 @@ type planRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId}/plans [post]
-func (a *APIService) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
+func (a *Service) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]
@@ -288,7 +288,7 @@ func (a *APIService) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId} [delete]
-func (a *APIService) handleBattleDelete(b *battle.Service) http.HandlerFunc {
+func (a *Service) handleBattleDelete(b *battle.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]

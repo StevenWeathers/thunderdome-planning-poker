@@ -32,7 +32,7 @@ type loginResponse struct {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth [post]
-func (a *APIService) handleLogin() http.HandlerFunc {
+func (a *Service) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -97,7 +97,7 @@ func (a *APIService) handleLogin() http.HandlerFunc {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/ldap [post]
-func (a *APIService) handleLdapLogin() http.HandlerFunc {
+func (a *Service) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -156,7 +156,7 @@ func (a *APIService) handleLdapLogin() http.HandlerFunc {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth [get]
-func (a *APIService) handleHeaderLogin() http.HandlerFunc {
+func (a *Service) handleHeaderLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		viper.GetString("auth.ldap.url")
 
@@ -210,7 +210,7 @@ type mfaLoginRequestBody struct {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/mfa [post]
-func (a *APIService) handleMFALogin() http.HandlerFunc {
+func (a *Service) handleMFALogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -253,7 +253,7 @@ func (a *APIService) handleMFALogin() http.HandlerFunc {
 // @Tags auth
 // @Success 200
 // @Router /auth/logout [delete]
-func (a *APIService) handleLogout() http.HandlerFunc {
+func (a *Service) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		SessionId, cookieErr := a.validateSessionCookie(w, r)
 		if cookieErr != nil {
@@ -286,7 +286,7 @@ type guestUserCreateRequestBody struct {
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/guest [post]
-func (a *APIService) handleCreateGuestUser() http.HandlerFunc {
+func (a *Service) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
 		if !AllowGuests {
@@ -346,7 +346,7 @@ type userRegisterRequestBody struct {
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/register [post]
-func (a *APIService) handleUserRegistration() http.HandlerFunc {
+func (a *Service) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
 		if !AllowRegistration {
@@ -426,7 +426,7 @@ type forgotPasswordRequestBody struct {
 // @Param user body forgotPasswordRequestBody false "forgot password object"
 // @Success 200 object standardJsonResponse{}
 // @Router /auth/forgot-password [post]
-func (a *APIService) handleForgotPassword() http.HandlerFunc {
+func (a *Service) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -474,7 +474,7 @@ type resetPasswordRequestBody struct {
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /auth/reset-password [patch]
-func (a *APIService) handleResetPassword() http.HandlerFunc {
+func (a *Service) handleResetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -523,7 +523,7 @@ type updatePasswordRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /auth/update-password [patch]
-func (a *APIService) handleUpdatePassword() http.HandlerFunc {
+func (a *Service) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		body, bodyErr := io.ReadAll(r.Body)
@@ -570,7 +570,7 @@ type verificationRequestBody struct {
 // @Success 200 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /auth/verify [patch]
-func (a *APIService) handleAccountVerification() http.HandlerFunc {
+func (a *Service) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -607,7 +607,7 @@ func (a *APIService) handleAccountVerification() http.HandlerFunc {
 // @Tags auth
 // @Success 200
 // @Router /auth/mfa/setup/generate [post]
-func (a *APIService) handleMFASetupGenerate() http.HandlerFunc {
+func (a *Service) handleMFASetupGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
@@ -645,7 +645,7 @@ type mfaSetupValidateRequestBody struct {
 // @Tags auth
 // @Success 200
 // @Router /auth/mfa/setup/validate [post]
-func (a *APIService) handleMFASetupValidate() http.HandlerFunc {
+func (a *Service) handleMFASetupValidate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
@@ -689,7 +689,7 @@ func (a *APIService) handleMFASetupValidate() http.HandlerFunc {
 // @Tags auth
 // @Success 200
 // @Router /auth/mfa [delete]
-func (a *APIService) handleMFARemove() http.HandlerFunc {
+func (a *Service) handleMFARemove() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)

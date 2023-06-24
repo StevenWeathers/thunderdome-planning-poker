@@ -33,7 +33,7 @@ type orgTeamResponse struct {
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/organizations [get]
-func (a *APIService) handleGetOrganizationsByUser() http.HandlerFunc {
+func (a *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -61,7 +61,7 @@ func (a *APIService) handleGetOrganizationsByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId} [get]
-func (a *APIService) handleGetOrganizationByUser() http.HandlerFunc {
+func (a *Service) handleGetOrganizationByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -99,7 +99,7 @@ func (a *APIService) handleGetOrganizationByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/organizations [post]
-func (a *APIService) handleCreateOrganization() http.HandlerFunc {
+func (a *Service) handleCreateOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -141,7 +141,7 @@ func (a *APIService) handleCreateOrganization() http.HandlerFunc {
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams [get]
-func (a *APIService) handleGetOrganizationTeams() http.HandlerFunc {
+func (a *Service) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -167,7 +167,7 @@ func (a *APIService) handleGetOrganizationTeams() http.HandlerFunc {
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users [get]
-func (a *APIService) handleGetOrganizationUsers() http.HandlerFunc {
+func (a *Service) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -195,7 +195,7 @@ func (a *APIService) handleGetOrganizationUsers() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams [post]
-func (a *APIService) handleCreateOrganizationTeam() http.HandlerFunc {
+func (a *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -239,7 +239,7 @@ func (a *APIService) handleCreateOrganizationTeam() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users [post]
-func (a *APIService) handleOrganizationAddUser() http.HandlerFunc {
+func (a *Service) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -292,7 +292,7 @@ func (a *APIService) handleOrganizationAddUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users/{userId} [delete]
-func (a *APIService) handleOrganizationRemoveUser() http.HandlerFunc {
+func (a *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -329,7 +329,7 @@ func (a *APIService) handleOrganizationRemoveUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams/{teamId} [get]
-func (a *APIService) handleGetOrganizationTeamByUser() http.HandlerFunc {
+func (a *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
@@ -379,7 +379,7 @@ func (a *APIService) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams/{teamId}/users [post]
-func (a *APIService) handleOrganizationTeamAddUser() http.HandlerFunc {
+func (a *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -439,7 +439,7 @@ func (a *APIService) handleOrganizationTeamAddUser() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId} [delete]
-func (a *APIService) handleDeleteOrganization() http.HandlerFunc {
+func (a *Service) handleDeleteOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]

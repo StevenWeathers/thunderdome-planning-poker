@@ -17,7 +17,7 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/stats [get]
-func (a *APIService) handleAppStats() http.HandlerFunc {
+func (a *Service) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AppStats, err := a.DB.GetAppStats(r.Context())
 		if err != nil {
@@ -40,7 +40,7 @@ func (a *APIService) handleAppStats() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users [get]
-func (a *APIService) handleGetRegisteredUsers() http.HandlerFunc {
+func (a *Service) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
@@ -78,7 +78,7 @@ type userCreateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users [post]
-func (a *APIService) handleUserCreate() http.HandlerFunc {
+func (a *Service) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user = userCreateRequestBody{}
 		body, err := io.ReadAll(r.Body)
@@ -123,7 +123,7 @@ func (a *APIService) handleUserCreate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/promote/ [patch]
-func (a *APIService) handleUserPromote() http.HandlerFunc {
+func (a *Service) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -153,7 +153,7 @@ func (a *APIService) handleUserPromote() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/demote [patch]
-func (a *APIService) handleUserDemote() http.HandlerFunc {
+func (a *Service) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -183,7 +183,7 @@ func (a *APIService) handleUserDemote() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/disable [patch]
-func (a *APIService) handleUserDisable() http.HandlerFunc {
+func (a *Service) handleUserDisable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -213,7 +213,7 @@ func (a *APIService) handleUserDisable() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/enable [patch]
-func (a *APIService) handleUserEnable() http.HandlerFunc {
+func (a *Service) handleUserEnable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -244,7 +244,7 @@ func (a *APIService) handleUserEnable() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/password [patch]
-func (a *APIService) handleAdminUpdateUserPassword() http.HandlerFunc {
+func (a *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -296,7 +296,7 @@ func (a *APIService) handleAdminUpdateUserPassword() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/organizations [get]
-func (a *APIService) handleGetOrganizations() http.HandlerFunc {
+func (a *Service) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
@@ -321,7 +321,7 @@ func (a *APIService) handleGetOrganizations() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/teams [get]
-func (a *APIService) handleGetTeams() http.HandlerFunc {
+func (a *Service) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
@@ -348,7 +348,7 @@ func (a *APIService) handleGetTeams() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/apikeys [get]
-func (a *APIService) handleGetAPIKeys() http.HandlerFunc {
+func (a *Service) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
@@ -371,7 +371,7 @@ func (a *APIService) handleGetAPIKeys() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/search/users/email [get]
-func (a *APIService) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
+func (a *Service) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		Search, err := getSearchFromRequest(r)

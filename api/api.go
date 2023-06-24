@@ -54,7 +54,7 @@ type Config struct {
 	OrganizationsEnabled bool
 }
 
-type APIService struct {
+type Service struct {
 	Config        *Config
 	Router        *mux.Router
 	Email         *email.Email
@@ -105,7 +105,7 @@ const (
 // @in header
 // @name X-API-Key
 // @version BETA
-func Init(apiService APIService) *APIService {
+func Init(apiService Service) *Service {
 	var a = &apiService
 	b := battle.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService)
 	rs := retro.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService)

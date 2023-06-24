@@ -16,7 +16,7 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-battles [delete]
-func (a *APIService) handleCleanBattles() http.HandlerFunc {
+func (a *Service) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_battles_days_old")
 
@@ -39,7 +39,7 @@ func (a *APIService) handleCleanBattles() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-retros [delete]
-func (a *APIService) handleCleanRetros() http.HandlerFunc {
+func (a *Service) handleCleanRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_retros_days_old")
 
@@ -62,7 +62,7 @@ func (a *APIService) handleCleanRetros() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-storyboards [delete]
-func (a *APIService) handleCleanStoryboards() http.HandlerFunc {
+func (a *Service) handleCleanStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_storyboards_days_old")
 
@@ -85,7 +85,7 @@ func (a *APIService) handleCleanStoryboards() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-guests [delete]
-func (a *APIService) handleCleanGuests() http.HandlerFunc {
+func (a *Service) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_guests_days_old")
 
@@ -108,7 +108,7 @@ func (a *APIService) handleCleanGuests() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/lowercase-emails [patch]
-func (a *APIService) handleLowercaseUserEmails() http.HandlerFunc {
+func (a *Service) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		lowercasedUsers, err := a.DB.LowercaseUserEmails(r.Context())
 		if err != nil {

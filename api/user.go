@@ -18,7 +18,7 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /auth/user [get]
-func (a *APIService) handleSessionUserProfile() http.HandlerFunc {
+func (a *Service) handleSessionUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
@@ -44,7 +44,7 @@ func (a *APIService) handleSessionUserProfile() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId} [get]
-func (a *APIService) handleUserProfile() http.HandlerFunc {
+func (a *Service) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -82,7 +82,7 @@ type userprofileUpdateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId} [put]
-func (a *APIService) handleUserProfileUpdate() http.HandlerFunc {
+func (a *Service) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		SessionUserType := ctx.Value(contextKeyUserType).(string)
@@ -157,7 +157,7 @@ func (a *APIService) handleUserProfileUpdate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId} [delete]
-func (a *APIService) handleUserDelete() http.HandlerFunc {
+func (a *Service) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -196,7 +196,7 @@ func (a *APIService) handleUserDelete() http.HandlerFunc {
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /users/{userId}/request-verify [post]
-func (a *APIService) handleVerifyRequest() http.HandlerFunc {
+func (a *Service) handleVerifyRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -220,7 +220,7 @@ func (a *APIService) handleVerifyRequest() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{[]string}
 // @Failure 500 object standardJsonResponse{}
 // @Router /active-countries [get]
-func (a *APIService) handleGetActiveCountries() http.HandlerFunc {
+func (a *Service) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		countries, err := a.DB.GetActiveCountries(r.Context())
 

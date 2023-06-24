@@ -30,7 +30,7 @@ type alertRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [get]
-func (a *APIService) handleGetAlerts() http.HandlerFunc {
+func (a *Service) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		Alerts, Count, err := a.DB.AlertsList(r.Context(), Limit, Offset)
@@ -59,7 +59,7 @@ func (a *APIService) handleGetAlerts() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [post]
-func (a *APIService) handleAlertCreate() http.HandlerFunc {
+func (a *Service) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var alert = alertRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -103,7 +103,7 @@ func (a *APIService) handleAlertCreate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [put]
-func (a *APIService) handleAlertUpdate() http.HandlerFunc {
+func (a *Service) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ID := vars["alertId"]
@@ -154,7 +154,7 @@ func (a *APIService) handleAlertUpdate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [delete]
-func (a *APIService) handleAlertDelete() http.HandlerFunc {
+func (a *Service) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		AlertID := vars["alertId"]
