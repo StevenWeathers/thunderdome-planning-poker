@@ -107,7 +107,6 @@ func (s *server) routes() {
 	a := api.Service{
 		Config:              httpConfig,
 		Router:              s.router,
-		DB:                  s.db,
 		Email:               s.email,
 		Cookie:              s.cookie,
 		Logger:              s.logger,

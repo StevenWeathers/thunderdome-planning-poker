@@ -3,7 +3,6 @@ package http
 
 import (
 	"context"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/battle"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/checkin"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/retro"
@@ -66,7 +65,6 @@ type Service struct {
 	Router              *mux.Router
 	Email               thunderdome.EmailService
 	Cookie              *securecookie.SecureCookie
-	DB                  *db.Database
 	Logger              *otelzap.Logger
 	UserService         thunderdome.UserService
 	APIKeyService       thunderdome.APIKeyService
@@ -125,10 +123,10 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	staticHandler := http.FileServer(HFS)
 
 	var a = &apiService
-	b := battle.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.BattleService)
-	rs := retro.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.RetroService)
-	sb := storyboard.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.StoryboardService)
-	tc := checkin.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.CheckinService, a.TeamService)
+	b := battle.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.BattleService)
+	rs := retro.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.RetroService)
+	sb := storyboard.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.StoryboardService)
+	tc := checkin.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.CheckinService, a.TeamService)
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
 
