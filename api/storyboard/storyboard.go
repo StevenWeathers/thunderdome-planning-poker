@@ -11,12 +11,13 @@ import (
 
 // Service provides storyboard service
 type Service struct {
-	db                    *db.Database
-	logger                *otelzap.Logger
-	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
-	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
-	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
+	DB                    *db.Database
+	Logger                *otelzap.Logger
+	ValidateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
+	ValidateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
+	EventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           thunderdome.UserService
+	AuthService           thunderdome.AuthService
 }
 
 // New returns a new storyboard with websocket hub/client and event handlers
@@ -25,17 +26,18 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserService,
+	userService thunderdome.UserService, authService thunderdome.AuthService,
 ) *Service {
 	sb := &Service{
-		db:                    db,
-		logger:                logger,
-		validateSessionCookie: validateSessionCookie,
-		validateUserCookie:    validateUserCookie,
+		DB:                    db,
+		Logger:                logger,
+		ValidateSessionCookie: validateSessionCookie,
+		ValidateUserCookie:    validateUserCookie,
 		UserService:           userService,
+		AuthService:           authService,
 	}
 
-	sb.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){
+	sb.EventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){
 		"add_goal":             sb.AddGoal,
 		"revise_goal":          sb.ReviseGoal,
 		"delete_goal":          sb.DeleteGoal,

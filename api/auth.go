@@ -53,7 +53,7 @@ func (a *Service) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		authedUser, sessionId, err := a.DB.AuthUser(r.Context(), u.Email, u.Password)
+		authedUser, sessionId, err := a.AuthService.AuthUser(r.Context(), u.Email, u.Password)
 		if err != nil {
 			userErr := err.Error()
 			if userErr == "USER_NOT_FOUND" || userErr == "INVALID_PASSWORD" || userErr == "USER_DISABLED" {
@@ -231,7 +231,7 @@ func (a *Service) handleMFALogin() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.MFATokenValidate(r.Context(), u.SessionId, u.Passcode)
+		err := a.AuthService.MFATokenValidate(r.Context(), u.SessionId, u.Passcode)
 		if err != nil {
 			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_AUTHENTICATOR_TOKEN"))
 			return
@@ -261,7 +261,7 @@ func (a *Service) handleLogout() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.DeleteSession(r.Context(), SessionId)
+		err := a.AuthService.DeleteSession(r.Context(), SessionId)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -398,7 +398,7 @@ func (a *Service) handleUserRegistration() http.HandlerFunc {
 			a.clearUserCookies(w)
 		}
 
-		SessionID, err := a.DB.CreateSession(r.Context(), newUser.Id)
+		SessionID, err := a.AuthService.CreateSession(r.Context(), newUser.Id)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -449,7 +449,7 @@ func (a *Service) handleForgotPassword() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		ResetID, UserName, resetErr := a.DB.UserResetRequest(r.Context(), UserEmail)
+		ResetID, UserName, resetErr := a.AuthService.UserResetRequest(r.Context(), UserEmail)
 		if resetErr == nil {
 			a.Email.SendForgotPassword(UserName, UserEmail, ResetID)
 		}
@@ -495,7 +495,7 @@ func (a *Service) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, resetErr := a.DB.UserResetPassword(r.Context(), u.ResetID, u.Password1)
+		UserName, UserEmail, resetErr := a.AuthService.UserResetPassword(r.Context(), u.ResetID, u.Password1)
 		if resetErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, resetErr)
 			return
@@ -545,7 +545,7 @@ func (a *Service) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := a.DB.UserUpdatePassword(r.Context(), UserID, u.Password1)
+		UserName, UserEmail, updateErr := a.AuthService.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
@@ -591,7 +591,7 @@ func (a *Service) handleAccountVerification() http.HandlerFunc {
 			return
 		}
 
-		verifyErr := a.DB.VerifyUserAccount(r.Context(), u.VerifyID)
+		verifyErr := a.AuthService.VerifyUserAccount(r.Context(), u.VerifyID)
 		if verifyErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, verifyErr)
 			return
@@ -618,7 +618,7 @@ func (a *Service) handleMFASetupGenerate() http.HandlerFunc {
 			return
 		}
 
-		secret, png64, err := a.DB.MFASetupGenerate(u.Email)
+		secret, png64, err := a.AuthService.MFASetupGenerate(u.Email)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -674,7 +674,7 @@ func (a *Service) handleMFASetupValidate() http.HandlerFunc {
 		}
 		res := result{Result: "SUCCESS"}
 
-		err := a.DB.MFASetupValidate(ctx, UserID, v.Secret, v.Passcode)
+		err := a.AuthService.MFASetupValidate(ctx, UserID, v.Secret, v.Passcode)
 		if err != nil {
 			res.Result = err.Error()
 		}
@@ -694,7 +694,7 @@ func (a *Service) handleMFARemove() http.HandlerFunc {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		err := a.DB.MFARemove(ctx, UserID)
+		err := a.AuthService.MFARemove(ctx, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

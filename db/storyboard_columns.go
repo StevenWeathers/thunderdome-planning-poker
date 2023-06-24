@@ -10,7 +10,7 @@ func (d *Database) CreateStoryboardColumn(StoryboardID string, GoalID string, us
 	if _, err := d.DB.Exec(
 		`call create_storyboard_column($1, $2);`, StoryboardID, GoalID,
 	); err != nil {
-		d.logger.Error("call create_storyboard_column error", zap.Error(err))
+		d.Logger.Error("call create_storyboard_column error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -26,7 +26,7 @@ func (d *Database) ReviseStoryboardColumn(StoryboardID string, UserID string, Co
 		ColumnID,
 		ColumnName,
 	); err != nil {
-		d.logger.Error("call revise_storyboard_column error", zap.Error(err))
+		d.Logger.Error("call revise_storyboard_column error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -38,7 +38,7 @@ func (d *Database) ReviseStoryboardColumn(StoryboardID string, UserID string, Co
 func (d *Database) DeleteStoryboardColumn(StoryboardID string, userID string, ColumnID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`call delete_storyboard_column($1);`, ColumnID); err != nil {
-		d.logger.Error("call delete_storyboard_column error", zap.Error(err))
+		d.Logger.Error("call delete_storyboard_column error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)

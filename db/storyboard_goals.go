@@ -12,7 +12,7 @@ func (d *Database) CreateStoryboardGoal(StoryboardID string, userID string, Goal
 	if _, err := d.DB.Exec(
 		`call create_storyboard_goal($1, $2);`, StoryboardID, GoalName,
 	); err != nil {
-		d.logger.Error("call create_storyboard_goal error", zap.Error(err))
+		d.Logger.Error("call create_storyboard_goal error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -27,7 +27,7 @@ func (d *Database) ReviseGoalName(StoryboardID string, userID string, GoalID str
 		GoalID,
 		GoalName,
 	); err != nil {
-		d.logger.Error("call update_storyboard_goal error", zap.Error(err))
+		d.Logger.Error("call update_storyboard_goal error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -39,7 +39,7 @@ func (d *Database) ReviseGoalName(StoryboardID string, userID string, GoalID str
 func (d *Database) DeleteStoryboardGoal(StoryboardID string, userID string, GoalID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`call delete_storyboard_goal($1);`, GoalID); err != nil {
-		d.logger.Error("call delete_storyboard_goal error", zap.Error(err))
+		d.Logger.Error("call delete_storyboard_goal error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -67,18 +67,18 @@ func (d *Database) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storyb
 				Columns:   make([]*thunderdome.StoryboardColumn, 0),
 			}
 			if err := goalRows.Scan(&sg.Id, &sg.SortOrder, &sg.Name, &columns, &personas); err != nil {
-				d.logger.Error("get_storyboard_goals query scan error", zap.Error(err))
+				d.Logger.Error("get_storyboard_goals query scan error", zap.Error(err))
 			} else {
 				goalColumns := make([]*thunderdome.StoryboardColumn, 0)
 				jsonErr := json.Unmarshal([]byte(columns), &goalColumns)
 				if jsonErr != nil {
-					d.logger.Error("storyboard goals json error", zap.Error(jsonErr))
+					d.Logger.Error("storyboard goals json error", zap.Error(jsonErr))
 				}
 				sg.Columns = goalColumns
 				goalPersonas := make([]*thunderdome.StoryboardPersona, 0)
 				pJsonErr := json.Unmarshal([]byte(personas), &goalPersonas)
 				if jsonErr != nil {
-					d.logger.Error("storyboard goals json error", zap.Error(pJsonErr))
+					d.Logger.Error("storyboard goals json error", zap.Error(pJsonErr))
 				}
 				sg.Personas = goalPersonas
 				goals = append(goals, sg)

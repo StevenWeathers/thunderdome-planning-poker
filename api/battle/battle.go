@@ -18,6 +18,7 @@ type Service struct {
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           thunderdome.UserService
+	AuthService           thunderdome.AuthService
 }
 
 // New returns a new battle with websocket hub/client and event handlers
@@ -26,7 +27,7 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserService,
+	userService thunderdome.UserService, authService thunderdome.AuthService,
 ) *Service {
 	b := &Service{
 		db:                    db,
@@ -34,6 +35,7 @@ func New(
 		validateSessionCookie: validateSessionCookie,
 		validateUserCookie:    validateUserCookie,
 		UserService:           userService,
+		AuthService:           authService,
 	}
 
 	b.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){

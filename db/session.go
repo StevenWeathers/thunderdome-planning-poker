@@ -10,7 +10,7 @@ import (
 )
 
 // CreateSession creates a new user authenticated session
-func (d *Database) CreateSession(ctx context.Context, UserId string) (string, error) {
+func (d *AuthService) CreateSession(ctx context.Context, UserId string) (string, error) {
 	SessionId, err := randomBase64String(32)
 	if err != nil {
 		return "", err
@@ -22,7 +22,7 @@ func (d *Database) CreateSession(ctx context.Context, UserId string) (string, er
 		SessionId,
 		UserId,
 	); sessionErr != nil {
-		d.logger.Ctx(ctx).Error("Unable to create a user session", zap.Error(sessionErr))
+		d.Logger.Ctx(ctx).Error("Unable to create a user session", zap.Error(sessionErr))
 		return "", sessionErr
 	}
 
@@ -30,13 +30,13 @@ func (d *Database) CreateSession(ctx context.Context, UserId string) (string, er
 }
 
 // EnableSession enables a user authenticated session
-func (d *Database) EnableSession(ctx context.Context, SessionId string) error {
+func (d *AuthService) EnableSession(ctx context.Context, SessionId string) error {
 	if _, sessionErr := d.DB.ExecContext(ctx, `
 		UPDATE user_session SET disabled = false WHERE session_id = $1;
 		`,
 		SessionId,
 	); sessionErr != nil {
-		d.logger.Ctx(ctx).Error("Unable to enable user session", zap.Error(sessionErr))
+		d.Logger.Ctx(ctx).Error("Unable to enable user session", zap.Error(sessionErr))
 		return sessionErr
 	}
 
@@ -44,7 +44,7 @@ func (d *Database) EnableSession(ctx context.Context, SessionId string) error {
 }
 
 // GetSessionUser gets a user session by sessionId
-func (d *Database) GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error) {
+func (d *AuthService) GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error) {
 	User := &thunderdome.User{}
 
 	e := d.DB.QueryRowContext(ctx, `
@@ -68,7 +68,7 @@ func (d *Database) GetSessionUser(ctx context.Context, SessionId string) (*thund
 		&User.LastActive)
 	if e != nil {
 		if !errors.Is(e, sql.ErrNoRows) {
-			d.logger.Ctx(ctx).Error("user_session_get query error", zap.Error(e))
+			d.Logger.Ctx(ctx).Error("user_session_get query error", zap.Error(e))
 		}
 		return nil, errors.New("active session match not found")
 	}
@@ -79,13 +79,13 @@ func (d *Database) GetSessionUser(ctx context.Context, SessionId string) (*thund
 }
 
 // DeleteSession deletes a user authenticated session
-func (d *Database) DeleteSession(ctx context.Context, SessionId string) error {
+func (d *AuthService) DeleteSession(ctx context.Context, SessionId string) error {
 	if _, sessionErr := d.DB.ExecContext(ctx, `
 		DELETE FROM user_session WHERE session_id = $1;
 		`,
 		SessionId,
 	); sessionErr != nil {
-		d.logger.Ctx(ctx).Error("Unable to delete user session", zap.Error(sessionErr))
+		d.Logger.Ctx(ctx).Error("Unable to delete user session", zap.Error(sessionErr))
 		return sessionErr
 	}
 

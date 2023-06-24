@@ -63,7 +63,7 @@ func (d *Database) GetAppStats(ctx context.Context) (*thunderdome.ApplicationSta
 		&Appstats.StoryboardPersonaCount,
 	)
 	if err != nil {
-		d.logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
 		return nil, err
 	}
 

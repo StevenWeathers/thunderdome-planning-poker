@@ -10,7 +10,7 @@ func (d *Database) CreateStoryboardStory(StoryboardID string, GoalID string, Col
 	if _, err := d.DB.Exec(
 		`call create_storyboard_story($1, $2, $3);`, StoryboardID, GoalID, ColumnID,
 	); err != nil {
-		d.logger.Error("call create_storyboard_story error", zap.Error(err))
+		d.Logger.Error("call create_storyboard_story error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -25,7 +25,7 @@ func (d *Database) ReviseStoryName(StoryboardID string, userID string, StoryID s
 		StoryID,
 		StoryName,
 	); err != nil {
-		d.logger.Error("call update_story_name error", zap.Error(err))
+		d.Logger.Error("call update_story_name error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -40,7 +40,7 @@ func (d *Database) ReviseStoryContent(StoryboardID string, userID string, StoryI
 		StoryID,
 		StoryContent,
 	); err != nil {
-		d.logger.Error("call update_story_content error", zap.Error(err))
+		d.Logger.Error("call update_story_content error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -55,7 +55,7 @@ func (d *Database) ReviseStoryColor(StoryboardID string, userID string, StoryID 
 		StoryID,
 		StoryColor,
 	); err != nil {
-		d.logger.Error("call update_story_color error", zap.Error(err))
+		d.Logger.Error("call update_story_color error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -70,7 +70,7 @@ func (d *Database) ReviseStoryPoints(StoryboardID string, userID string, StoryID
 		StoryID,
 		Points,
 	); err != nil {
-		d.logger.Error("call update_story_points error", zap.Error(err))
+		d.Logger.Error("call update_story_points error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -85,7 +85,7 @@ func (d *Database) ReviseStoryClosed(StoryboardID string, userID string, StoryID
 		StoryID,
 		Closed,
 	); err != nil {
-		d.logger.Error("call update_story_closed error", zap.Error(err))
+		d.Logger.Error("call update_story_closed error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -100,7 +100,7 @@ func (d *Database) ReviseStoryLink(StoryboardID string, userID string, StoryID s
 		StoryID,
 		Link,
 	); err != nil {
-		d.logger.Error("call sb_story_link_edit error", zap.Error(err))
+		d.Logger.Error("call sb_story_link_edit error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -117,7 +117,7 @@ func (d *Database) MoveStoryboardStory(StoryboardID string, userID string, Story
 		ColumnID,
 		PlaceBefore,
 	); err != nil {
-		d.logger.Error("call move_story error", zap.Error(err))
+		d.Logger.Error("call move_story error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -129,7 +129,7 @@ func (d *Database) MoveStoryboardStory(StoryboardID string, userID string, Story
 func (d *Database) DeleteStoryboardStory(StoryboardID string, userID string, StoryID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`call delete_storyboard_story($1);`, StoryID); err != nil {
-		d.logger.Error("call delete_storyboard_story error", zap.Error(err))
+		d.Logger.Error("call delete_storyboard_story error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -146,7 +146,7 @@ func (d *Database) AddStoryComment(StoryboardID string, UserID string, StoryID s
 		UserID,
 		Comment,
 	); err != nil {
-		d.logger.Error("call story_comment_add error", zap.Error(err))
+		d.Logger.Error("call story_comment_add error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -162,7 +162,7 @@ func (d *Database) EditStoryComment(StoryboardID string, CommentID string, Comme
 		CommentID,
 		Comment,
 	); err != nil {
-		d.logger.Error("call story_comment_edit error", zap.Error(err))
+		d.Logger.Error("call story_comment_edit error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -177,7 +177,7 @@ func (d *Database) DeleteStoryComment(StoryboardID string, CommentID string) ([]
 		StoryboardID,
 		CommentID,
 	); err != nil {
-		d.logger.Error("call story_comment_delete error", zap.Error(err))
+		d.Logger.Error("call story_comment_delete error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)

@@ -348,12 +348,12 @@ func (a *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 			a.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		err = a.DB.VerifyUserAccount(ctx, verifyID)
+		err = a.AuthService.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
 			a.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		SessionId, err = a.DB.CreateSession(ctx, AuthedUser.Id)
+		SessionId, err = a.AuthService.CreateSession(ctx, AuthedUser.Id)
 		if err != nil {
 			a.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return AuthedUser, SessionId, err
@@ -363,7 +363,7 @@ func (a *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = a.DB.CreateSession(ctx, AuthedUser.Id)
+		SessionId, sessErr = a.AuthService.CreateSession(ctx, AuthedUser.Id)
 		if sessErr != nil {
 			a.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err
@@ -388,12 +388,12 @@ func (a *Service) authAndCreateUserHeader(ctx context.Context, username string, 
 			a.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		err = a.DB.VerifyUserAccount(ctx, verifyID)
+		err = a.AuthService.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
 			a.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		SessionId, err = a.DB.CreateSession(ctx, AuthedUser.Id)
+		SessionId, err = a.AuthService.CreateSession(ctx, AuthedUser.Id)
 		if err != nil {
 			a.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return AuthedUser, SessionId, err
@@ -403,7 +403,7 @@ func (a *Service) authAndCreateUserHeader(ctx context.Context, username string, 
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = a.DB.CreateSession(ctx, AuthedUser.Id)
+		SessionId, sessErr = a.AuthService.CreateSession(ctx, AuthedUser.Id)
 		if sessErr != nil {
 			a.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err

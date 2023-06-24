@@ -201,7 +201,7 @@ func (a *Service) handleVerifyRequest() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, VerifyId, err := a.DB.UserVerifyRequest(r.Context(), UserID)
+		User, VerifyId, err := a.AuthService.UserVerifyRequest(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

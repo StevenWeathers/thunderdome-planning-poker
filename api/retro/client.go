@@ -203,7 +203,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		if SessionId != "" {
 			var userErr error
-			User, userErr = b.db.GetSessionUser(ctx, SessionId)
+			User, userErr = b.AuthService.GetSessionUser(ctx, SessionId)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return

@@ -8,7 +8,7 @@ import (
 
 // AddGoal handles adding a goal to storyboard
 func (b *Service) AddGoal(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.db.CreateStoryboardGoal(StoryboardID, UserID, EventValue)
+	goals, err := b.DB.CreateStoryboardGoal(StoryboardID, UserID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -28,7 +28,7 @@ func (b *Service) ReviseGoal(ctx context.Context, StoryboardID string, UserID st
 	GoalID := goalObj["goalId"]
 	GoalName := goalObj["name"]
 
-	goals, err := b.db.ReviseGoalName(StoryboardID, UserID, GoalID, GoalName)
+	goals, err := b.DB.ReviseGoalName(StoryboardID, UserID, GoalID, GoalName)
 	if err != nil {
 		return nil, err, false
 	}
@@ -40,7 +40,7 @@ func (b *Service) ReviseGoal(ctx context.Context, StoryboardID string, UserID st
 
 // DeleteGoal handles deleting a storyboard goal
 func (b *Service) DeleteGoal(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.db.DeleteStoryboardGoal(StoryboardID, UserID, EventValue)
+	goals, err := b.DB.DeleteStoryboardGoal(StoryboardID, UserID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -59,7 +59,7 @@ func (b *Service) AddColumn(ctx context.Context, StoryboardID string, UserID str
 	}
 	GoalID := goalObj["goalId"]
 
-	goals, err := b.db.CreateStoryboardColumn(StoryboardID, GoalID, UserID)
+	goals, err := b.DB.CreateStoryboardColumn(StoryboardID, GoalID, UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -80,7 +80,7 @@ func (b *Service) ReviseColumn(ctx context.Context, StoryboardID string, UserID 
 		return nil, err, false
 	}
 
-	goals, err := b.db.ReviseStoryboardColumn(StoryboardID, UserID, rs.ColumnID, rs.Name)
+	goals, err := b.DB.ReviseStoryboardColumn(StoryboardID, UserID, rs.ColumnID, rs.Name)
 	if err != nil {
 		return nil, err, false
 	}
@@ -92,7 +92,7 @@ func (b *Service) ReviseColumn(ctx context.Context, StoryboardID string, UserID 
 
 // DeleteColumn handles deleting a storyboard goal column
 func (b *Service) DeleteColumn(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.db.DeleteStoryboardColumn(StoryboardID, UserID, EventValue)
+	goals, err := b.DB.DeleteStoryboardColumn(StoryboardID, UserID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -112,7 +112,7 @@ func (b *Service) AddStory(ctx context.Context, StoryboardID string, UserID stri
 	GoalID := goalObj["goalId"]
 	ColumnID := goalObj["columnId"]
 
-	goals, err := b.db.CreateStoryboardStory(StoryboardID, GoalID, ColumnID, UserID)
+	goals, err := b.DB.CreateStoryboardStory(StoryboardID, GoalID, ColumnID, UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -132,7 +132,7 @@ func (b *Service) UpdateStoryName(ctx context.Context, StoryboardID string, User
 	StoryID := goalObj["storyId"]
 	StoryName := goalObj["name"]
 
-	goals, err := b.db.ReviseStoryName(StoryboardID, UserID, StoryID, StoryName)
+	goals, err := b.DB.ReviseStoryName(StoryboardID, UserID, StoryID, StoryName)
 	if err != nil {
 		return nil, err, false
 	}
@@ -152,7 +152,7 @@ func (b *Service) UpdateStoryContent(ctx context.Context, StoryboardID string, U
 	StoryID := goalObj["storyId"]
 	StoryContent := goalObj["content"]
 
-	goals, err := b.db.ReviseStoryContent(StoryboardID, UserID, StoryID, StoryContent)
+	goals, err := b.DB.ReviseStoryContent(StoryboardID, UserID, StoryID, StoryContent)
 	if err != nil {
 		return nil, err, false
 	}
@@ -172,7 +172,7 @@ func (b *Service) UpdateStoryColor(ctx context.Context, StoryboardID string, Use
 	StoryID := goalObj["storyId"]
 	StoryColor := goalObj["color"]
 
-	goals, err := b.db.ReviseStoryColor(StoryboardID, UserID, StoryID, StoryColor)
+	goals, err := b.DB.ReviseStoryColor(StoryboardID, UserID, StoryID, StoryColor)
 	if err != nil {
 		return nil, err, false
 	}
@@ -193,7 +193,7 @@ func (b *Service) UpdateStoryPoints(ctx context.Context, StoryboardID string, Us
 		return nil, err, false
 	}
 
-	goals, err := b.db.ReviseStoryPoints(StoryboardID, UserID, rs.StoryID, rs.Points)
+	goals, err := b.DB.ReviseStoryPoints(StoryboardID, UserID, rs.StoryID, rs.Points)
 	if err != nil {
 		return nil, err, false
 	}
@@ -214,7 +214,7 @@ func (b *Service) UpdateStoryClosed(ctx context.Context, StoryboardID string, Us
 		return nil, err, false
 	}
 
-	goals, err := b.db.ReviseStoryClosed(StoryboardID, UserID, rs.StoryID, rs.Closed)
+	goals, err := b.DB.ReviseStoryClosed(StoryboardID, UserID, rs.StoryID, rs.Closed)
 	if err != nil {
 		return nil, err, false
 	}
@@ -234,7 +234,7 @@ func (b *Service) UpdateStoryLink(ctx context.Context, StoryboardID string, User
 	StoryID := goalObj["storyId"]
 	Link := goalObj["link"]
 
-	goals, err := b.db.ReviseStoryLink(StoryboardID, UserID, StoryID, Link)
+	goals, err := b.DB.ReviseStoryLink(StoryboardID, UserID, StoryID, Link)
 	if err != nil {
 		return nil, err, false
 	}
@@ -256,7 +256,7 @@ func (b *Service) MoveStory(ctx context.Context, StoryboardID string, UserID str
 	ColumnID := goalObj["columnId"]
 	PlaceBefore := goalObj["placeBefore"]
 
-	goals, err := b.db.MoveStoryboardStory(StoryboardID, UserID, StoryID, GoalID, ColumnID, PlaceBefore)
+	goals, err := b.DB.MoveStoryboardStory(StoryboardID, UserID, StoryID, GoalID, ColumnID, PlaceBefore)
 	if err != nil {
 		return nil, err, false
 	}
@@ -268,7 +268,7 @@ func (b *Service) MoveStory(ctx context.Context, StoryboardID string, UserID str
 
 // DeleteStory handles deleting a storyboard story
 func (b *Service) DeleteStory(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.db.DeleteStoryboardStory(StoryboardID, UserID, EventValue)
+	goals, err := b.DB.DeleteStoryboardStory(StoryboardID, UserID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -289,7 +289,7 @@ func (b *Service) AddStoryComment(ctx context.Context, StoryboardID string, User
 		return nil, err, false
 	}
 
-	goals, err := b.db.AddStoryComment(StoryboardID, UserID, rs.StoryID, rs.Comment)
+	goals, err := b.DB.AddStoryComment(StoryboardID, UserID, rs.StoryID, rs.Comment)
 	if err != nil {
 		return nil, err, false
 	}
@@ -310,7 +310,7 @@ func (b *Service) EditStoryComment(ctx context.Context, StoryboardID string, Use
 		return nil, err, false
 	}
 
-	goals, err := b.db.EditStoryComment(StoryboardID, rs.CommentID, rs.Comment)
+	goals, err := b.DB.EditStoryComment(StoryboardID, rs.CommentID, rs.Comment)
 	if err != nil {
 		return nil, err, false
 	}
@@ -330,7 +330,7 @@ func (b *Service) DeleteStoryComment(ctx context.Context, StoryboardID string, U
 		return nil, err, false
 	}
 
-	goals, err := b.db.DeleteStoryComment(StoryboardID, rs.CommentID)
+	goals, err := b.DB.DeleteStoryComment(StoryboardID, rs.CommentID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -352,7 +352,7 @@ func (b *Service) AddPersona(ctx context.Context, StoryboardID string, UserID st
 		return nil, err, false
 	}
 
-	personas, err := b.db.AddStoryboardPersona(StoryboardID, UserID, rs.Name, rs.Role, rs.Description)
+	personas, err := b.DB.AddStoryboardPersona(StoryboardID, UserID, rs.Name, rs.Role, rs.Description)
 	if err != nil {
 		return nil, err, false
 	}
@@ -375,7 +375,7 @@ func (b *Service) UpdatePersona(ctx context.Context, StoryboardID string, UserID
 		return nil, err, false
 	}
 
-	personas, err := b.db.UpdateStoryboardPersona(StoryboardID, UserID, rs.PersonaID, rs.Name, rs.Role, rs.Description)
+	personas, err := b.DB.UpdateStoryboardPersona(StoryboardID, UserID, rs.PersonaID, rs.Name, rs.Role, rs.Description)
 	if err != nil {
 		return nil, err, false
 	}
@@ -387,7 +387,7 @@ func (b *Service) UpdatePersona(ctx context.Context, StoryboardID string, UserID
 
 // DeletePersona handles deleting a storyboard persona
 func (b *Service) DeletePersona(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	goals, err := b.db.DeleteStoryboardPersona(StoryboardID, UserID, EventValue)
+	goals, err := b.DB.DeleteStoryboardPersona(StoryboardID, UserID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -407,7 +407,7 @@ func (b *Service) FacilitatorAdd(ctx context.Context, StoryboardID string, UserI
 		return nil, err, false
 	}
 
-	storyboard, err := b.db.StoryboardFacilitatorAdd(StoryboardID, rs.UserID)
+	storyboard, err := b.DB.StoryboardFacilitatorAdd(StoryboardID, rs.UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -427,7 +427,7 @@ func (b *Service) FacilitatorRemove(ctx context.Context, StoryboardID string, Us
 		return nil, err, false
 	}
 
-	storyboard, err := b.db.StoryboardFacilitatorRemove(StoryboardID, rs.UserID)
+	storyboard, err := b.DB.StoryboardFacilitatorRemove(StoryboardID, rs.UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -439,13 +439,13 @@ func (b *Service) FacilitatorRemove(ctx context.Context, StoryboardID string, Us
 
 // FacilitatorSelf handles self-promoting a user to a facilitator
 func (b *Service) FacilitatorSelf(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	facilitatorCode, err := b.db.GetStoryboardFacilitatorCode(StoryboardID)
+	facilitatorCode, err := b.DB.GetStoryboardFacilitatorCode(StoryboardID)
 	if err != nil {
 		return nil, err, false
 	}
 
 	if EventValue == facilitatorCode {
-		storyboard, err := b.db.StoryboardFacilitatorAdd(StoryboardID, UserID)
+		storyboard, err := b.DB.StoryboardFacilitatorAdd(StoryboardID, UserID)
 		if err != nil {
 			return nil, err, false
 		}
@@ -461,7 +461,7 @@ func (b *Service) FacilitatorSelf(ctx context.Context, StoryboardID string, User
 
 // ReviseColorLegend handles revising a storyboard color legend
 func (b *Service) ReviseColorLegend(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	storyboard, err := b.db.StoryboardReviseColorLegend(StoryboardID, UserID, EventValue)
+	storyboard, err := b.DB.StoryboardReviseColorLegend(StoryboardID, UserID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -483,7 +483,7 @@ func (b *Service) EditStoryboard(ctx context.Context, StoryboardID string, UserI
 		return nil, err, false
 	}
 
-	err = b.db.EditStoryboard(
+	err = b.DB.EditStoryboard(
 		StoryboardID,
 		rb.Name,
 		rb.JoinCode,
@@ -501,7 +501,7 @@ func (b *Service) EditStoryboard(ctx context.Context, StoryboardID string, UserI
 
 // Delete handles deleting the storyboard
 func (b *Service) Delete(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	err := b.db.DeleteStoryboard(StoryboardID, UserID)
+	err := b.DB.DeleteStoryboard(StoryboardID, UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -512,7 +512,7 @@ func (b *Service) Delete(ctx context.Context, StoryboardID string, UserID string
 
 // Abandon handles setting abandoned true so storyboard doesn't show up in users storyboard list, then leaves storyboard
 func (b *Service) Abandon(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
-	_, err := b.db.AbandonStoryboard(StoryboardID, UserID)
+	_, err := b.DB.AbandonStoryboard(StoryboardID, UserID)
 	if err != nil {
 		return nil, err, false
 	}

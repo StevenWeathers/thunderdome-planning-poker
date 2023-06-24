@@ -18,7 +18,7 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 	var encryptedLeaderCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to create battle join_code")
 		}
@@ -26,7 +26,7 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 	}
 
 	if LeaderCode != "" {
-		EncryptedCode, codeErr := encrypt(LeaderCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(LeaderCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to create battle leader_code")
 		}
@@ -60,7 +60,7 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 		encryptedLeaderCode,
 	).Scan(&b.Id)
 	if e != nil {
-		d.logger.Error("create_battle query error", zap.Error(e))
+		d.Logger.Error("create_battle query error", zap.Error(e))
 		return nil, errors.New("error creating battle")
 	}
 
@@ -78,7 +78,7 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 			plan.AcceptanceCriteria,
 		).Scan(&plan.Id)
 		if e != nil {
-			d.logger.Error("insert plans error", zap.Error(e))
+			d.Logger.Error("insert plans error", zap.Error(e))
 		}
 	}
 
@@ -94,7 +94,7 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 	var encryptedLeaderCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to create battle join_code")
 		}
@@ -102,7 +102,7 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 	}
 
 	if LeaderCode != "" {
-		EncryptedCode, codeErr := encrypt(LeaderCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(LeaderCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to create battle leader_code")
 		}
@@ -137,7 +137,7 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 		encryptedLeaderCode,
 	).Scan(&b.Id)
 	if e != nil {
-		d.logger.Error("team_create_battle query error", zap.Error(e))
+		d.Logger.Error("team_create_battle query error", zap.Error(e))
 		return nil, errors.New("error creating battle")
 	}
 
@@ -155,7 +155,7 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 			plan.AcceptanceCriteria,
 		).Scan(&plan.Id)
 		if e != nil {
-			d.logger.Error("insert plans error", zap.Error(e))
+			d.Logger.Error("insert plans error", zap.Error(e))
 		}
 	}
 
@@ -171,7 +171,7 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 	var encryptedLeaderCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return errors.New("unable to revise battle join_code")
 		}
@@ -179,7 +179,7 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 	}
 
 	if LeaderCode != "" {
-		EncryptedCode, codeErr := encrypt(LeaderCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(LeaderCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return errors.New("unable to revise battle leadercode")
 		}
@@ -192,7 +192,7 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 		WHERE id = $1`,
 		BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding, HideVoterIdentity, encryptedJoinCode, encryptedLeaderCode,
 	); err != nil {
-		d.logger.Error("update battle error", zap.Error(err))
+		d.Logger.Error("update battle error", zap.Error(err))
 		return errors.New("unable to revise battle")
 	}
 
@@ -208,14 +208,14 @@ func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 		WHERE id = $1`,
 		BattleID,
 	).Scan(&EncryptedLeaderCode); err != nil {
-		d.logger.Error("get battle leadercode error", zap.Error(err))
+		d.Logger.Error("get battle leadercode error", zap.Error(err))
 		return "", errors.New("unable to retrieve battle leader_code")
 	}
 
 	if EncryptedLeaderCode == "" {
 		return "", errors.New("unable to retrieve battle leader_code")
 	}
-	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, d.config.AESHashkey)
+	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, d.Config.AESHashkey)
 	if codeErr != nil {
 		return "", errors.New("unable to retrieve battle leader_code")
 	}
@@ -266,7 +266,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*thunderdome.Battl
 		&leaders,
 	)
 	if e != nil {
-		d.logger.Error("error getting battle", zap.Error(e))
+		d.Logger.Error("error getting battle", zap.Error(e))
 		return nil, errors.New("not found")
 	}
 
@@ -277,7 +277,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*thunderdome.Battl
 	isBattleLeader := contains(b.Leaders, UserID)
 
 	if JoinCode != "" {
-		DecryptedCode, codeErr := decrypt(JoinCode, d.config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode join_code")
 		}
@@ -285,7 +285,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*thunderdome.Battl
 	}
 
 	if LeaderCode != "" && isBattleLeader {
-		DecryptedCode, codeErr := decrypt(LeaderCode, d.config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(LeaderCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode leader_code")
 		}
@@ -357,7 +357,7 @@ func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*th
 			&plans,
 			&leaders,
 		); err != nil {
-			d.logger.Error("error getting battle by user", zap.Error(e))
+			d.Logger.Error("error getting battle by user", zap.Error(e))
 		} else {
 			_ = json.Unmarshal([]byte(plans), &b.Plans)
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
@@ -376,13 +376,13 @@ func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 	var role string
 	err := d.DB.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
 	if err != nil {
-		d.logger.Error("error getting user role", zap.Error(err))
+		d.Logger.Error("error getting user role", zap.Error(err))
 		return errors.New("unable to get user role")
 	}
 
 	e := d.DB.QueryRow("SELECT user_id FROM battles_leaders WHERE battle_id = $1 AND user_id = $2", BattleID, UserID).Scan(&leaderID)
 	if e != nil && role != "ADMIN" {
-		d.logger.Error("error confirming battle leader", zap.Error(e))
+		d.Logger.Error("error confirming battle leader", zap.Error(e))
 		return errors.New("not a battle leader")
 	}
 
@@ -430,7 +430,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*thunderdome.BattleUser {
 		for rows.Next() {
 			var w thunderdome.BattleUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
-				d.logger.Error("error getting battle users", zap.Error(err))
+				d.Logger.Error("error getting battle users", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -462,7 +462,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*thunderdome.BattleUs
 		for rows.Next() {
 			var w thunderdome.BattleUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
-				d.logger.Error("error getting active battle users", zap.Error(err))
+				d.Logger.Error("error getting active battle users", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -486,7 +486,7 @@ func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*thunderdo
 		BattleID,
 		UserID,
 	); err != nil {
-		d.logger.Error("error adding user to battle", zap.Error(err))
+		d.Logger.Error("error adding user to battle", zap.Error(err))
 	}
 
 	users := d.GetBattleUsers(BattleID)
@@ -498,12 +498,12 @@ func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*thunderdo
 func (d *Database) RetreatUser(BattleID string, UserID string) []*thunderdome.BattleUser {
 	if _, err := d.DB.Exec(
 		`UPDATE battles_users SET active = false WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
-		d.logger.Error("error updating battle user to active false", zap.Error(err))
+		d.Logger.Error("error updating battle user to active false", zap.Error(err))
 	}
 
 	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.logger.Error("error updating user last active timestamp", zap.Error(err))
+		d.Logger.Error("error updating user last active timestamp", zap.Error(err))
 	}
 
 	users := d.GetBattleUsers(BattleID)
@@ -515,13 +515,13 @@ func (d *Database) RetreatUser(BattleID string, UserID string) []*thunderdome.Ba
 func (d *Database) AbandonBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE battles_users SET active = false, abandoned = true WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
-		d.logger.Error("error updating battle user to abandoned", zap.Error(err))
+		d.Logger.Error("error updating battle user to abandoned", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.logger.Error("error updating user last active timestamp", zap.Error(err))
+		d.Logger.Error("error updating user last active timestamp", zap.Error(err))
 		return nil, err
 	}
 
@@ -537,7 +537,7 @@ func (d *Database) SetBattleLeader(BattleID string, LeaderID string) ([]string, 
 	// set battle leader
 	if _, err := d.DB.Exec(
 		`call set_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
-		d.logger.Error("call set_battle_leader query error", zap.Error(err))
+		d.Logger.Error("call set_battle_leader query error", zap.Error(err))
 		return nil, errors.New("unable to promote leader")
 	}
 
@@ -554,7 +554,7 @@ func (d *Database) SetBattleLeader(BattleID string, LeaderID string) ([]string, 
 		if err := leaderRows.Scan(
 			&leader,
 		); err != nil {
-			d.logger.Error("battles_leaders query scan error", zap.Error(err))
+			d.Logger.Error("battles_leaders query scan error", zap.Error(err))
 		} else {
 			leaders = append(leaders, leader)
 		}
@@ -570,7 +570,7 @@ func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]strin
 	// set battle leader
 	if _, err := d.DB.Exec(
 		`call demote_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
-		d.logger.Error("call demote_battle_leader query error", zap.Error(err))
+		d.Logger.Error("call demote_battle_leader query error", zap.Error(err))
 		return nil, errors.New("unable to demote leader")
 	}
 
@@ -587,7 +587,7 @@ func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]strin
 		if err := leaderRows.Scan(
 			&leader,
 		); err != nil {
-			d.logger.Error("battles_leaders query scan error", zap.Error(err))
+			d.Logger.Error("battles_leaders query scan error", zap.Error(err))
 		} else {
 			leaders = append(leaders, leader)
 		}
@@ -600,13 +600,13 @@ func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]strin
 func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*thunderdome.BattleUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE battles_users SET spectator = $3 WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
-		d.logger.Error("update battle user spectator error", zap.Error(err))
+		d.Logger.Error("update battle user spectator error", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.logger.Error("error updating user last active timestamp", zap.Error(err))
+		d.Logger.Error("error updating user last active timestamp", zap.Error(err))
 	}
 
 	users := d.GetBattleUsers(BattleID)
@@ -618,7 +618,7 @@ func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator boo
 func (d *Database) DeleteBattle(BattleID string) error {
 	if _, err := d.DB.Exec(
 		`call delete_battle($1);`, BattleID); err != nil {
-		d.logger.Error("delete battle error", zap.Error(err))
+		d.Logger.Error("delete battle error", zap.Error(err))
 		return err
 	}
 
@@ -639,7 +639,7 @@ func (d *Database) AddBattleLeadersByEmail(ctx context.Context, BattleID string,
 		`select leaders FROM add_battle_leaders_by_email($1, $2);`, BattleID, emails,
 	).Scan(&leaders)
 	if e != nil {
-		d.logger.Error("add_battle_leaders_by_email query error", zap.Error(e))
+		d.Logger.Error("add_battle_leaders_by_email query error", zap.Error(e))
 		return nil, errors.New("error creating battle")
 	}
 
@@ -699,7 +699,7 @@ func (d *Database) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle, int
 			&b.UpdatedDate,
 			&leaders,
 		); err != nil {
-			d.logger.Error("get battles query error", zap.Error(err))
+			d.Logger.Error("get battles query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
@@ -763,7 +763,7 @@ func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.Battl
 			&b.UpdatedDate,
 			&leaders,
 		); err != nil {
-			d.logger.Error("get active battles query error", zap.Error(err))
+			d.Logger.Error("get active battles query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
@@ -781,7 +781,7 @@ func (d *Database) CleanBattles(ctx context.Context, DaysOld int) error {
 		`call clean_battles($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Ctx(ctx).Error("call clean_battles", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("call clean_battles", zap.Error(err))
 		return errors.New("error attempting to clean battles")
 	}
 

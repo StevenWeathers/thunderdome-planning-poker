@@ -63,7 +63,7 @@ func (d *Database) CheckinList(ctx context.Context, TeamId string, Date string, 
 				Comments := make([]*thunderdome.CheckinComment, 0)
 				jsonErr := json.Unmarshal([]byte(comments), &Comments)
 				if jsonErr != nil {
-					d.logger.Ctx(ctx).Error("checkin comments json error", zap.Error(jsonErr))
+					d.Logger.Ctx(ctx).Error("checkin comments json error", zap.Error(jsonErr))
 				}
 				checkin.Comments = Comments
 
@@ -95,10 +95,10 @@ func (d *Database) CheckinCreate(
 		return errors.New("REQUIRES_TEAM_USER")
 	}
 
-	SanitizedYesterday := d.htmlSanitizerPolicy.Sanitize(Yesterday)
-	SanitizedToday := d.htmlSanitizerPolicy.Sanitize(Today)
-	SanitizedBlockers := d.htmlSanitizerPolicy.Sanitize(Blockers)
-	SanitizedDiscuss := d.htmlSanitizerPolicy.Sanitize(Discuss)
+	SanitizedYesterday := d.HTMLSanitizerPolicy.Sanitize(Yesterday)
+	SanitizedToday := d.HTMLSanitizerPolicy.Sanitize(Today)
+	SanitizedBlockers := d.HTMLSanitizerPolicy.Sanitize(Blockers)
+	SanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(Discuss)
 
 	if _, err := d.DB.Exec(`INSERT INTO team_checkin
 		(team_id, user_id, yesterday, today, blockers, discuss, goals_met)
@@ -125,10 +125,10 @@ func (d *Database) CheckinUpdate(
 	Yesterday string, Today string, Blockers string, Discuss string,
 	GoalsMet bool,
 ) error {
-	SanitizedYesterday := d.htmlSanitizerPolicy.Sanitize(Yesterday)
-	SanitizedToday := d.htmlSanitizerPolicy.Sanitize(Today)
-	SanitizedBlockers := d.htmlSanitizerPolicy.Sanitize(Blockers)
-	SanitizedDiscuss := d.htmlSanitizerPolicy.Sanitize(Discuss)
+	SanitizedYesterday := d.HTMLSanitizerPolicy.Sanitize(Yesterday)
+	SanitizedToday := d.HTMLSanitizerPolicy.Sanitize(Today)
+	SanitizedBlockers := d.HTMLSanitizerPolicy.Sanitize(Blockers)
+	SanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(Discuss)
 
 	if _, err := d.DB.ExecContext(ctx, `
 		UPDATE team_checkin

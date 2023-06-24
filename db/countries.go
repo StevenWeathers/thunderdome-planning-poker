@@ -19,7 +19,7 @@ func (d *Database) GetActiveCountries(ctx context.Context) ([]string, error) {
 			if err := rows.Scan(
 				&country,
 			); err != nil {
-				d.logger.Ctx(ctx).Error("countries_active query scan error", zap.Error(err))
+				d.Logger.Ctx(ctx).Error("countries_active query scan error", zap.Error(err))
 			} else {
 				if country.String != "" {
 					countries = append(countries, country.String)
@@ -27,7 +27,7 @@ func (d *Database) GetActiveCountries(ctx context.Context) ([]string, error) {
 			}
 		}
 	} else {
-		d.logger.Ctx(ctx).Error("countries_active query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("countries_active query error", zap.Error(err))
 		return nil, errors.New("error attempting to get active countries")
 	}
 

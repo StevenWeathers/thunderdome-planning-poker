@@ -15,7 +15,7 @@ func (d *Database) CreateStoryboard(ctx context.Context, OwnerID string, Storybo
 	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -23,7 +23,7 @@ func (d *Database) CreateStoryboard(ctx context.Context, OwnerID string, Storybo
 	}
 
 	if FacilitatorCode != "" {
-		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -45,7 +45,7 @@ func (d *Database) CreateStoryboard(ctx context.Context, OwnerID string, Storybo
 		encryptedFacilitatorCode,
 	).Scan(&b.Id)
 	if e != nil {
-		d.logger.Error("create_storyboard query error", zap.Error(e))
+		d.Logger.Error("create_storyboard query error", zap.Error(e))
 		return nil, errors.New("error creating storyboard")
 	}
 
@@ -58,7 +58,7 @@ func (d *Database) TeamCreateStoryboard(ctx context.Context, TeamID string, Owne
 	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -66,7 +66,7 @@ func (d *Database) TeamCreateStoryboard(ctx context.Context, TeamID string, Owne
 	}
 
 	if FacilitatorCode != "" {
-		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -89,7 +89,7 @@ func (d *Database) TeamCreateStoryboard(ctx context.Context, TeamID string, Owne
 		encryptedFacilitatorCode,
 	).Scan(&b.Id)
 	if e != nil {
-		d.logger.Error("team_create_storyboard query error", zap.Error(e))
+		d.Logger.Error("team_create_storyboard query error", zap.Error(e))
 		return nil, errors.New("error creating storyboard")
 	}
 
@@ -102,7 +102,7 @@ func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, Jo
 	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return errors.New("unable to revise storyboard join_code")
 		}
@@ -110,7 +110,7 @@ func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, Jo
 	}
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return errors.New("unable to revise storyboard facilitator_code")
 		}
@@ -120,7 +120,7 @@ func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, Jo
 	if _, err := d.DB.Exec(`call edit_storyboard($1, $2, $3, $4);`,
 		StoryboardID, StoryboardName, encryptedJoinCode, encryptedFacilitatorCode,
 	); err != nil {
-		d.logger.Error("update storyboard error", zap.Error(err))
+		d.Logger.Error("update storyboard error", zap.Error(err))
 		return errors.New("unable to edit storyboard")
 	}
 
@@ -166,18 +166,18 @@ func (d *Database) GetStoryboard(StoryboardID string, UserID string) (*thunderdo
 		&facilitators,
 	)
 	if e != nil {
-		d.logger.Error("get storyboard query error", zap.Error(e))
+		d.Logger.Error("get storyboard query error", zap.Error(e))
 		return nil, errors.New("Not found")
 	}
 
 	clErr := json.Unmarshal([]byte(cl), &b.ColorLegend)
 	if clErr != nil {
-		d.logger.Error("color legend json error", zap.Error(clErr))
+		d.Logger.Error("color legend json error", zap.Error(clErr))
 	}
 
 	facilError := json.Unmarshal([]byte(facilitators), &b.Facilitators)
 	if facilError != nil {
-		d.logger.Error("facilitators json error", zap.Error(facilError))
+		d.Logger.Error("facilitators json error", zap.Error(facilError))
 	}
 	isFacilitator := contains(b.Facilitators, UserID)
 
@@ -186,7 +186,7 @@ func (d *Database) GetStoryboard(StoryboardID string, UserID string) (*thunderdo
 	b.Personas = d.GetStoryboardPersonas(StoryboardID)
 
 	if JoinCode != "" {
-		DecryptedCode, codeErr := decrypt(JoinCode, d.config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode join_code")
 		}
@@ -194,7 +194,7 @@ func (d *Database) GetStoryboard(StoryboardID string, UserID string) (*thunderdo
 	}
 
 	if FacilitatorCode != "" && isFacilitator {
-		DecryptedCode, codeErr := decrypt(FacilitatorCode, d.config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(FacilitatorCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode facilitator_code")
 		}
@@ -229,7 +229,7 @@ func (d *Database) GetStoryboardsByUser(UserID string) ([]*thunderdome.Storyboar
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			d.logger.Error("get_storyboards_by_user query scan error", zap.Error(err))
+			d.Logger.Error("get_storyboards_by_user query scan error", zap.Error(err))
 		} else {
 			storyboards = append(storyboards, b)
 		}
@@ -244,7 +244,7 @@ func (d *Database) ConfirmStoryboardFacilitator(StoryboardID string, UserID stri
 	var role string
 	err := d.DB.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
 	if err != nil {
-		d.logger.Error("error getting user role", zap.Error(err))
+		d.Logger.Error("error getting user role", zap.Error(err))
 		return errors.New("unable to get user role")
 	}
 
@@ -252,7 +252,7 @@ func (d *Database) ConfirmStoryboardFacilitator(StoryboardID string, UserID stri
 		`SELECT user_id FROM storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
 		StoryboardID, UserID).Scan(&facilitatorId)
 	if err != nil && role != "ADMIN" {
-		d.logger.Error("get ConfirmStoryboardFacilitator error", zap.Error(err))
+		d.Logger.Error("get ConfirmStoryboardFacilitator error", zap.Error(err))
 		return errors.New("storyboard facilitator not found")
 	}
 
@@ -271,7 +271,7 @@ func (d *Database) GetStoryboardUsers(StoryboardID string) []*thunderdome.Storyb
 		for rows.Next() {
 			var w thunderdome.StoryboardUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
-				d.logger.Error("get_storyboard_users query scan error", zap.Error(err))
+				d.Logger.Error("get_storyboard_users query scan error", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -298,7 +298,7 @@ func (d *Database) GetStoryboardPersonas(StoryboardID string) []*thunderdome.Sto
 		for rows.Next() {
 			var p thunderdome.StoryboardPersona
 			if err := rows.Scan(&p.Id, &p.Name, &p.Role, &p.Description); err != nil {
-				d.logger.Error("get_storyboard_personas query scan error", zap.Error(err))
+				d.Logger.Error("get_storyboard_personas query scan error", zap.Error(err))
 			} else {
 				personas = append(personas, &p)
 			}
@@ -317,7 +317,7 @@ func (d *Database) AddUserToStoryboard(StoryboardID string, UserID string) ([]*t
 		StoryboardID,
 		UserID,
 	); err != nil {
-		d.logger.Error("insert storybaord user error", zap.Error(err))
+		d.Logger.Error("insert storybaord user error", zap.Error(err))
 	}
 
 	users := d.GetStoryboardUsers(StoryboardID)
@@ -329,12 +329,12 @@ func (d *Database) AddUserToStoryboard(StoryboardID string, UserID string) ([]*t
 func (d *Database) RetreatStoryboardUser(StoryboardID string, UserID string) []*thunderdome.StoryboardUser {
 	if _, err := d.DB.Exec(
 		`UPDATE storyboard_user SET active = false WHERE storyboard_id = $1 AND user_id = $2`, StoryboardID, UserID); err != nil {
-		d.logger.Error("set storyboard user active false error", zap.Error(err))
+		d.Logger.Error("set storyboard user active false error", zap.Error(err))
 	}
 
 	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.logger.Error("set user last active error", zap.Error(err))
+		d.Logger.Error("set user last active error", zap.Error(err))
 	}
 
 	users := d.GetStoryboardUsers(StoryboardID)
@@ -370,13 +370,13 @@ func (d *Database) GetStoryboardUserActiveStatus(StoryboardID string, UserID str
 func (d *Database) AbandonStoryboard(StoryboardID string, UserID string) ([]*thunderdome.StoryboardUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE storyboard_user SET active = false, abandoned = true WHERE storyboard_id = $1 AND user_id = $2`, StoryboardID, UserID); err != nil {
-		d.logger.Error("set storyboard user active false error", zap.Error(err))
+		d.Logger.Error("set storyboard user active false error", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.logger.Error("set user last active error", zap.Error(err))
+		d.Logger.Error("set user last active error", zap.Error(err))
 		return nil, err
 	}
 
@@ -389,7 +389,7 @@ func (d *Database) AbandonStoryboard(StoryboardID string, UserID string) ([]*thu
 func (d *Database) SetStoryboardOwner(StoryboardID string, userID string, OwnerID string) (*thunderdome.Storyboard, error) {
 	if _, err := d.DB.Exec(
 		`call set_storyboard_owner($1, $2);`, StoryboardID, OwnerID); err != nil {
-		d.logger.Error("call set_storyboard_owner error", zap.Error(err))
+		d.Logger.Error("call set_storyboard_owner error", zap.Error(err))
 	}
 
 	storyboard, err := d.GetStoryboard(StoryboardID, "")
@@ -407,7 +407,7 @@ func (d *Database) StoryboardReviseColorLegend(StoryboardID string, UserID strin
 		StoryboardID,
 		ColorLegend,
 	); err != nil {
-		d.logger.Error("call revise_color_legend error", zap.Error(err))
+		d.Logger.Error("call revise_color_legend error", zap.Error(err))
 		return nil, err
 	}
 
@@ -423,7 +423,7 @@ func (d *Database) StoryboardReviseColorLegend(StoryboardID string, UserID strin
 func (d *Database) DeleteStoryboard(StoryboardID string, userID string) error {
 	if _, err := d.DB.Exec(
 		`call delete_storyboard($1);`, StoryboardID); err != nil {
-		d.logger.Error("call delete_storyboard error", zap.Error(err))
+		d.Logger.Error("call delete_storyboard error", zap.Error(err))
 		return err
 	}
 
@@ -439,7 +439,7 @@ func (d *Database) AddStoryboardPersona(StoryboardID string, UserID string, Name
 		Role,
 		Description,
 	); err != nil {
-		d.logger.Error("call persona_add error", zap.Error(err))
+		d.Logger.Error("call persona_add error", zap.Error(err))
 	}
 
 	personas := d.GetStoryboardPersonas(StoryboardID)
@@ -457,7 +457,7 @@ func (d *Database) UpdateStoryboardPersona(StoryboardID string, UserID string, P
 		Role,
 		Description,
 	); err != nil {
-		d.logger.Error("call persona_edit error", zap.Error(err))
+		d.Logger.Error("call persona_edit error", zap.Error(err))
 	}
 
 	personas := d.GetStoryboardPersonas(StoryboardID)
@@ -472,7 +472,7 @@ func (d *Database) DeleteStoryboardPersona(StoryboardID string, UserID string, P
 		StoryboardID,
 		PersonaID,
 	); err != nil {
-		d.logger.Error("call persona_delete error", zap.Error(err))
+		d.Logger.Error("call persona_delete error", zap.Error(err))
 	}
 
 	personas := d.GetStoryboardPersonas(StoryboardID)
@@ -515,7 +515,7 @@ func (d *Database) GetStoryboards(Limit int, Offset int) ([]*thunderdome.Storybo
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			d.logger.Error("get storyboards error", zap.Error(err))
+			d.Logger.Error("get storyboards error", zap.Error(err))
 		} else {
 			storyboards = append(storyboards, b)
 		}
@@ -560,7 +560,7 @@ func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*thunderdome.S
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			d.logger.Error("get active storyboards error", zap.Error(err))
+			d.Logger.Error("get active storyboards error", zap.Error(err))
 		} else {
 			storyboards = append(storyboards, b)
 		}
@@ -573,7 +573,7 @@ func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*thunderdome.S
 func (d *Database) StoryboardFacilitatorAdd(StoryboardId string, UserID string) (*thunderdome.Storyboard, error) {
 	if _, err := d.DB.Exec(
 		`call sb_facilitator_add($1, $2);`, StoryboardId, UserID); err != nil {
-		d.logger.Error("call sb_facilitator_add error", zap.Error(err))
+		d.Logger.Error("call sb_facilitator_add error", zap.Error(err))
 		return nil, errors.New("unable to add facilitator")
 	}
 
@@ -589,7 +589,7 @@ func (d *Database) StoryboardFacilitatorAdd(StoryboardId string, UserID string) 
 func (d *Database) StoryboardFacilitatorRemove(StoryboardId string, UserID string) (*thunderdome.Storyboard, error) {
 	if _, err := d.DB.Exec(
 		`call sb_facilitator_remove($1, $2);`, StoryboardId, UserID); err != nil {
-		d.logger.Error("call sb_facilitator_remove error", zap.Error(err))
+		d.Logger.Error("call sb_facilitator_remove error", zap.Error(err))
 		return nil, errors.New("unable to remove facilitator")
 	}
 
@@ -610,14 +610,14 @@ func (d *Database) GetStoryboardFacilitatorCode(StoryboardID string) (string, er
 		WHERE id = $1`,
 		StoryboardID,
 	).Scan(&EncryptedCode); err != nil {
-		d.logger.Error("get retro facilitator_code error", zap.Error(err))
+		d.Logger.Error("get retro facilitator_code error", zap.Error(err))
 		return "", errors.New("unable to retrieve storyboard facilitator_code")
 	}
 
 	if EncryptedCode == "" {
 		return "", errors.New("unable to retrieve storyboard facilitator_code")
 	}
-	DecryptedCode, codeErr := decrypt(EncryptedCode, d.config.AESHashkey)
+	DecryptedCode, codeErr := decrypt(EncryptedCode, d.Config.AESHashkey)
 	if codeErr != nil {
 		return "", errors.New("unable to retrieve storyboard facilitator_code")
 	}
@@ -631,7 +631,7 @@ func (d *Database) CleanStoryboards(ctx context.Context, DaysOld int) error {
 		`call clean_storyboards($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Ctx(ctx).Error("call clean_storyboards", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("call clean_storyboards", zap.Error(err))
 		return errors.New("error attempting to clean storyboards")
 	}
 

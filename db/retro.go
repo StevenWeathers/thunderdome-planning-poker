@@ -15,7 +15,7 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -23,7 +23,7 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 	}
 
 	if FacilitatorCode != "" {
-		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -53,7 +53,7 @@ func (d *Database) RetroCreate(OwnerID string, RetroName string, Format string, 
 		BrainstormVisibility,
 	).Scan(&b.Id)
 	if e != nil {
-		d.logger.Error("create_retro query error", zap.Error(e))
+		d.Logger.Error("create_retro query error", zap.Error(e))
 		return nil, errors.New("error creating retro")
 	}
 
@@ -66,7 +66,7 @@ func (d *Database) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID s
 	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -74,7 +74,7 @@ func (d *Database) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID s
 	}
 
 	if FacilitatorCode != "" {
-		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -105,7 +105,7 @@ func (d *Database) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID s
 		BrainstormVisibility,
 	).Scan(&b.Id)
 	if e != nil {
-		d.logger.Error("team_create_retro query error", zap.Error(e))
+		d.Logger.Error("team_create_retro query error", zap.Error(e))
 		return nil, errors.New("error creating retro")
 	}
 
@@ -118,7 +118,7 @@ func (d *Database) EditRetro(RetroID string, RetroName string, JoinCode string, 
 	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return errors.New("unable to revise retro join_code")
 		}
@@ -126,7 +126,7 @@ func (d *Database) EditRetro(RetroID string, RetroName string, JoinCode string, 
 	}
 
 	if FacilitatorCode != "" {
-		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return errors.New("unable to revise retro facilitator_code")
 		}
@@ -136,7 +136,7 @@ func (d *Database) EditRetro(RetroID string, RetroName string, JoinCode string, 
 	if _, err := d.DB.Exec(`call edit_retro($1, $2, $3, $4, $5, $6);`,
 		RetroID, RetroName, encryptedJoinCode, encryptedFacilitatorCode, maxVotes, brainstormVisibility,
 	); err != nil {
-		d.logger.Error("update retro error", zap.Error(err))
+		d.Logger.Error("update retro error", zap.Error(err))
 		return errors.New("unable to edit retro")
 	}
 
@@ -184,18 +184,18 @@ func (d *Database) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, 
 		&Facilitators,
 	)
 	if e != nil {
-		d.logger.Error("", zap.Error(e))
+		d.Logger.Error("", zap.Error(e))
 		return nil, e
 	}
 
 	facilError := json.Unmarshal([]byte(Facilitators), &b.Facilitators)
 	if facilError != nil {
-		d.logger.Error("facilitators json error", zap.Error(facilError))
+		d.Logger.Error("facilitators json error", zap.Error(facilError))
 	}
 	isFacilitator := contains(b.Facilitators, UserID)
 
 	if JoinCode != "" {
-		DecryptedCode, codeErr := decrypt(JoinCode, d.config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(JoinCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode join_code")
 		}
@@ -203,7 +203,7 @@ func (d *Database) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, 
 	}
 
 	if FacilitatorCode != "" && isFacilitator {
-		DecryptedCode, codeErr := decrypt(FacilitatorCode, d.config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(FacilitatorCode, d.Config.AESHashkey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode facilitator_code")
 		}
@@ -243,7 +243,7 @@ func (d *Database) RetroGetByUser(UserID string) ([]*thunderdome.Retro, error) {
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			d.logger.Error("get retro by user error", zap.Error(err))
+			d.Logger.Error("get retro by user error", zap.Error(err))
 		} else {
 			retros = append(retros, b)
 		}
@@ -258,7 +258,7 @@ func (d *Database) RetroConfirmFacilitator(RetroID string, userID string) error 
 	var role string
 	err := d.DB.QueryRow("SELECT type FROM users WHERE id = $1", userID).Scan(&role)
 	if err != nil {
-		d.logger.Error("error getting user role", zap.Error(err))
+		d.Logger.Error("error getting user role", zap.Error(err))
 		return errors.New("unable to get user role")
 	}
 
@@ -266,7 +266,7 @@ func (d *Database) RetroConfirmFacilitator(RetroID string, userID string) error 
 		"SELECT user_id FROM retro_facilitator WHERE retro_id = $1 AND user_id = $2",
 		RetroID, userID).Scan(&facilitatorId)
 	if err != nil && role != "ADMIN" {
-		d.logger.Error("get RetroConfirmFacilitator error", zap.Error(err))
+		d.Logger.Error("get RetroConfirmFacilitator error", zap.Error(err))
 		return errors.New("retro facilitator not found")
 	}
 
@@ -285,7 +285,7 @@ func (d *Database) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 		for rows.Next() {
 			var w thunderdome.RetroUser
 			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
-				d.logger.Error("get retro users error", zap.Error(err))
+				d.Logger.Error("get retro users error", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -312,7 +312,7 @@ func (d *Database) GetRetroFacilitators(RetroID string) []string {
 		for rows.Next() {
 			var facilitator string
 			if err := rows.Scan(&facilitator); err != nil {
-				d.logger.Error("get retro facilitators error", zap.Error(err))
+				d.Logger.Error("get retro facilitators error", zap.Error(err))
 			} else {
 				facilitators = append(facilitators, facilitator)
 			}
@@ -331,7 +331,7 @@ func (d *Database) RetroAddUser(RetroID string, UserID string) ([]*thunderdome.R
 		RetroID,
 		UserID,
 	); err != nil {
-		d.logger.Error("insert retro user error", zap.Error(err))
+		d.Logger.Error("insert retro user error", zap.Error(err))
 	}
 
 	users := d.RetroGetUsers(RetroID)
@@ -343,7 +343,7 @@ func (d *Database) RetroAddUser(RetroID string, UserID string) ([]*thunderdome.R
 func (d *Database) RetroFacilitatorAdd(RetroID string, UserID string) ([]string, error) {
 	if _, err := d.DB.Exec(
 		`call retro_add_facilitator($1, $2);`, RetroID, UserID); err != nil {
-		d.logger.Error("call retro_add_facilitator error", zap.Error(err))
+		d.Logger.Error("call retro_add_facilitator error", zap.Error(err))
 		return nil, errors.New("unable to add facilitator")
 	}
 
@@ -356,7 +356,7 @@ func (d *Database) RetroFacilitatorAdd(RetroID string, UserID string) ([]string,
 func (d *Database) RetroFacilitatorRemove(RetroID string, UserID string) ([]string, error) {
 	if _, err := d.DB.Exec(
 		`call retro_remove_facilitator($1, $2);`, RetroID, UserID); err != nil {
-		d.logger.Error("call retro_remove_facilitator error", zap.Error(err))
+		d.Logger.Error("call retro_remove_facilitator error", zap.Error(err))
 		return nil, errors.New("unable to remove facilitator")
 	}
 
@@ -369,12 +369,12 @@ func (d *Database) RetroFacilitatorRemove(RetroID string, UserID string) ([]stri
 func (d *Database) RetroRetreatUser(RetroID string, UserID string) []*thunderdome.RetroUser {
 	if _, err := d.DB.Exec(
 		`UPDATE retro_user SET active = false WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
-		d.logger.Error("update retro user active false error", zap.Error(err))
+		d.Logger.Error("update retro user active false error", zap.Error(err))
 	}
 
 	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.logger.Error("update user last active timestamp error", zap.Error(err))
+		d.Logger.Error("update user last active timestamp error", zap.Error(err))
 	}
 
 	users := d.RetroGetUsers(RetroID)
@@ -386,13 +386,13 @@ func (d *Database) RetroRetreatUser(RetroID string, UserID string) []*thunderdom
 func (d *Database) RetroAbandon(RetroID string, UserID string) ([]*thunderdome.RetroUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE retro_user SET active = false, abandoned = true WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
-		d.logger.Error("update retro user abandoned true error", zap.Error(err))
+		d.Logger.Error("update retro user abandoned true error", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.logger.Error("update user last active timestamp error", zap.Error(err))
+		d.Logger.Error("update user last active timestamp error", zap.Error(err))
 		return nil, err
 	}
 
@@ -406,7 +406,7 @@ func (d *Database) RetroAdvancePhase(RetroID string, Phase string) (*thunderdome
 	var b thunderdome.Retro
 	if _, err := d.DB.Exec(
 		`call set_retro_phase($1, $2);`, RetroID, Phase); err != nil {
-		d.logger.Error("call set_retro_phase error", zap.Error(err))
+		d.Logger.Error("call set_retro_phase error", zap.Error(err))
 		return nil, errors.New("Unable to advance phase")
 	}
 
@@ -424,7 +424,7 @@ func (d *Database) RetroAdvancePhase(RetroID string, Phase string) (*thunderdome
 func (d *Database) RetroDelete(RetroID string) error {
 	if _, err := d.DB.Exec(
 		`call delete_retro($1);`, RetroID); err != nil {
-		d.logger.Error("call delete_retro error", zap.Error(err))
+		d.Logger.Error("call delete_retro error", zap.Error(err))
 		return err
 	}
 
@@ -492,7 +492,7 @@ func (d *Database) GetRetros(Limit int, Offset int) ([]*thunderdome.Retro, int, 
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			d.logger.Error("get retros error", zap.Error(err))
+			d.Logger.Error("get retros error", zap.Error(err))
 		} else {
 			retros = append(retros, b)
 		}
@@ -539,7 +539,7 @@ func (d *Database) GetActiveRetros(Limit int, Offset int) ([]*thunderdome.Retro,
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			d.logger.Error("get active retros error", zap.Error(err))
+			d.Logger.Error("get active retros error", zap.Error(err))
 		} else {
 			retros = append(retros, b)
 		}
@@ -557,14 +557,14 @@ func (d *Database) GetRetroFacilitatorCode(RetroID string) (string, error) {
 		WHERE id = $1`,
 		RetroID,
 	).Scan(&EncryptedCode); err != nil {
-		d.logger.Error("get retro facilitator_code error", zap.Error(err))
+		d.Logger.Error("get retro facilitator_code error", zap.Error(err))
 		return "", errors.New("unable to retrieve retro facilitator_code")
 	}
 
 	if EncryptedCode == "" {
 		return "", errors.New("unable to retrieve retro facilitator_code")
 	}
-	DecryptedCode, codeErr := decrypt(EncryptedCode, d.config.AESHashkey)
+	DecryptedCode, codeErr := decrypt(EncryptedCode, d.Config.AESHashkey)
 	if codeErr != nil {
 		return "", errors.New("unable to retrieve retro facilitator_code")
 	}
@@ -578,7 +578,7 @@ func (d *Database) CleanRetros(ctx context.Context, DaysOld int) error {
 		`call clean_retros($1);`,
 		DaysOld,
 	); err != nil {
-		d.logger.Ctx(ctx).Error("call clean_retros", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("call clean_retros", zap.Error(err))
 		return errors.New("error attempting to clean retros")
 	}
 

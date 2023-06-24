@@ -24,8 +24,8 @@ type Config struct {
 
 // Database contains all the methods to interact with DB
 type Database struct {
-	config              *Config
+	Config              *Config
 	DB                  *sql.DB
-	htmlSanitizerPolicy *bluemonday.Policy
-	logger              *otelzap.Logger
+	HTMLSanitizerPolicy *bluemonday.Policy
+	Logger              *otelzap.Logger
 }

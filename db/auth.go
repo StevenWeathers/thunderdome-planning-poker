@@ -8,14 +8,22 @@ import (
 	"errors"
 	"fmt"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"image/png"
 
 	"github.com/pquerna/otp/totp"
 	"go.uber.org/zap"
 )
 
+// AuthService represents a PostgreSQL implementation of thunderdome.AuthService.
+type AuthService struct {
+	DB         *sql.DB
+	Logger     *otelzap.Logger
+	AESHashkey string
+}
+
 // AuthUser authenticate the user
-func (d *Database) AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*thunderdome.User, string, error) {
+func (d *AuthService) AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*thunderdome.User, string, error) {
 	var user thunderdome.User
 	var passHash string
 	sanitizedEmail := sanitizeEmail(UserEmail)
@@ -38,7 +46,7 @@ func (d *Database) AuthUser(ctx context.Context, UserEmail string, UserPassword 
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			d.logger.Ctx(ctx).Error("Unable to auth user not found", zap.Error(err), zap.String("email", sanitizedEmail))
+			d.Logger.Ctx(ctx).Error("Unable to auth user not found", zap.Error(err), zap.String("email", sanitizedEmail))
 			return nil, "", errors.New("USER_NOT_FOUND")
 		} else {
 			return nil, "", err
@@ -59,7 +67,7 @@ func (d *Database) AuthUser(ctx context.Context, UserEmail string, UserPassword 
 		if hashErr == nil {
 			_, updateErr := d.DB.Exec(`call update_user_password($1, $2)`, user.Id, hashedPassword)
 			if updateErr != nil {
-				d.logger.Error("Unable to update password cost", zap.Error(updateErr), zap.String("email", sanitizedEmail))
+				d.Logger.Error("Unable to update password cost", zap.Error(updateErr), zap.String("email", sanitizedEmail))
 			}
 		}
 	}
@@ -73,7 +81,7 @@ func (d *Database) AuthUser(ctx context.Context, UserEmail string, UserPassword 
 }
 
 // UserResetRequest inserts a new user reset request
-func (d *Database) UserResetRequest(ctx context.Context, UserEmail string) (resetID string, UserName string, resetErr error) {
+func (d *AuthService) UserResetRequest(ctx context.Context, UserEmail string) (resetID string, UserName string, resetErr error) {
 	var ResetID sql.NullString
 	var UserID sql.NullString
 	var name sql.NullString
@@ -84,7 +92,7 @@ func (d *Database) UserResetRequest(ctx context.Context, UserEmail string) (rese
 		sanitizeEmail(UserEmail),
 	).Scan(&ResetID, &UserID, &name)
 	if e != nil {
-		d.logger.Ctx(ctx).Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))
+		d.Logger.Ctx(ctx).Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))
 		return "", "", e
 	}
 
@@ -92,7 +100,7 @@ func (d *Database) UserResetRequest(ctx context.Context, UserEmail string) (rese
 }
 
 // UserResetPassword resets the user's password to a new password
-func (d *Database) UserResetPassword(ctx context.Context, ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error) {
+func (d *AuthService) UserResetPassword(ctx context.Context, ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error) {
 	var name sql.NullString
 	var email sql.NullString
 
@@ -111,7 +119,7 @@ func (d *Database) UserResetPassword(ctx context.Context, ResetID string, UserPa
 		ResetID,
 	).Scan(&name, &email)
 	if UserErr != nil {
-		d.logger.Ctx(ctx).Error("Unable to get user for password reset confirmation email", zap.Error(UserErr))
+		d.Logger.Ctx(ctx).Error("Unable to get user for password reset confirmation email", zap.Error(UserErr))
 		return "", "", UserErr
 	}
 
@@ -124,7 +132,7 @@ func (d *Database) UserResetPassword(ctx context.Context, ResetID string, UserPa
 }
 
 // UserUpdatePassword updates a users password
-func (d *Database) UserUpdatePassword(ctx context.Context, UserID string, UserPassword string) (Name string, Email string, resetErr error) {
+func (d *AuthService) UserUpdatePassword(ctx context.Context, UserID string, UserPassword string) (Name string, Email string, resetErr error) {
 	var UserName sql.NullString
 	var UserEmail sql.NullString
 
@@ -137,7 +145,7 @@ func (d *Database) UserUpdatePassword(ctx context.Context, UserID string, UserPa
 		UserID,
 	).Scan(&UserName, &UserEmail)
 	if UserErr != nil {
-		d.logger.Ctx(ctx).Error("Unable to get user for password update", zap.Error(UserErr))
+		d.Logger.Ctx(ctx).Error("Unable to get user for password update", zap.Error(UserErr))
 		return "", "", UserErr
 	}
 
@@ -155,7 +163,7 @@ func (d *Database) UserUpdatePassword(ctx context.Context, UserID string, UserPa
 }
 
 // UserVerifyRequest inserts a new user verify request
-func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*thunderdome.User, string, error) {
+func (d *AuthService) UserVerifyRequest(ctx context.Context, UserId string) (*thunderdome.User, string, error) {
 	var VerifyId string
 	user := &thunderdome.User{
 		Id: UserId,
@@ -169,7 +177,7 @@ func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*thund
 		&user.Email,
 	)
 	if e != nil {
-		d.logger.Ctx(ctx).Error("error finding user verify id", zap.Error(e))
+		d.Logger.Ctx(ctx).Error("error finding user verify id", zap.Error(e))
 		return nil, "", errors.New("user not found")
 	}
 
@@ -179,7 +187,7 @@ func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*thund
 		user.Id,
 	).Scan(&VerifyId)
 	if err != nil {
-		d.logger.Ctx(ctx).Error("Unable to insert user verification", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("Unable to insert user verification", zap.Error(err))
 		return nil, VerifyId, err
 	}
 
@@ -187,7 +195,7 @@ func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*thund
 }
 
 // VerifyUserAccount updates a user account verified status
-func (d *Database) VerifyUserAccount(ctx context.Context, VerifyID string) error {
+func (d *AuthService) VerifyUserAccount(ctx context.Context, VerifyID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`call verify_user_account($1)`, VerifyID); err != nil {
 		return err
@@ -197,7 +205,7 @@ func (d *Database) VerifyUserAccount(ctx context.Context, VerifyID string) error
 }
 
 // MFASetupGenerate generates an MFA secret and QR code image base64
-func (d *Database) MFASetupGenerate(email string) (string, string, error) {
+func (d *AuthService) MFASetupGenerate(email string) (string, string, error) {
 	key, err := totp.Generate(totp.GenerateOpts{
 		Issuer:      "Thunderdome.dev",
 		AccountName: email,
@@ -222,7 +230,7 @@ func (d *Database) MFASetupGenerate(email string) (string, string, error) {
 
 // MFASetupValidate validates the MFA secret and authenticator token
 // if success enables the user mfa and stores the secret in db
-func (d *Database) MFASetupValidate(ctx context.Context, UserID string, secret string, passcode string) error {
+func (d *AuthService) MFASetupValidate(ctx context.Context, UserID string, secret string, passcode string) error {
 	if passcode == "" || secret == "" {
 		return errors.New("MISSING_SECRET_OR_PASSCODE")
 	}
@@ -232,7 +240,7 @@ func (d *Database) MFASetupValidate(ctx context.Context, UserID string, secret s
 		return errors.New("INVALID_AUTHENTICATOR_TOKEN")
 	}
 
-	encryptedSecret, secretErr := encrypt(secret, d.config.AESHashkey)
+	encryptedSecret, secretErr := encrypt(secret, d.AESHashkey)
 	if secretErr != nil {
 		return fmt.Errorf("error encrypting MFA secret: %w", secretErr)
 	}
@@ -246,7 +254,7 @@ func (d *Database) MFASetupValidate(ctx context.Context, UserID string, secret s
 }
 
 // MFARemove removes MFA requirement from user
-func (d *Database) MFARemove(ctx context.Context, UserID string) error {
+func (d *AuthService) MFARemove(ctx context.Context, UserID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`call user_mfa_remove($1)`, UserID); err != nil {
 		return fmt.Errorf("error removing user MFA: %w", err)
@@ -256,7 +264,7 @@ func (d *Database) MFARemove(ctx context.Context, UserID string) error {
 }
 
 // MFATokenValidate validates the MFA secret and authenticator token for auth login
-func (d *Database) MFATokenValidate(ctx context.Context, SessionId string, passcode string) error {
+func (d *AuthService) MFATokenValidate(ctx context.Context, SessionId string, passcode string) error {
 	var encryptedSecret string
 
 	e := d.DB.QueryRowContext(ctx,
@@ -268,14 +276,14 @@ func (d *Database) MFATokenValidate(ctx context.Context, SessionId string, passc
 		&encryptedSecret,
 	)
 	if e != nil {
-		d.logger.Ctx(ctx).Error("error finding user MFA secret", zap.Error(e))
+		d.Logger.Ctx(ctx).Error("error finding user MFA secret", zap.Error(e))
 		return errors.New("user not found")
 	}
 
 	if encryptedSecret == "" {
 		return errors.New("no secret to validate against")
 	}
-	decryptedSecret, secretErr := decrypt(encryptedSecret, d.config.AESHashkey)
+	decryptedSecret, secretErr := decrypt(encryptedSecret, d.AESHashkey)
 	if secretErr != nil {
 		return errors.New("unable to decode MFA secret")
 	}

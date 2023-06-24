@@ -33,7 +33,7 @@ func (a *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 
 			if SessionId != "" {
 				var userErr error
-				User, userErr = a.DB.GetSessionUser(ctx, SessionId)
+				User, userErr = a.AuthService.GetSessionUser(ctx, SessionId)
 				if userErr != nil {
 					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
