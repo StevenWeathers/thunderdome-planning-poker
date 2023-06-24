@@ -378,7 +378,7 @@ func (a *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.DB.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
+		_, err := a.TeamService.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -427,7 +427,7 @@ func (a *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 			return
 		}
 
-		Team, err := a.DB.TeamGet(ctx, TeamID)
+		Team, err := a.TeamService.TeamGet(ctx, TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

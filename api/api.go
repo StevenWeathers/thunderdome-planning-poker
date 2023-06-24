@@ -69,6 +69,7 @@ type Service struct {
 	CheckinService    thunderdome.CheckinService
 	RetroService      thunderdome.RetroService
 	StoryboardService thunderdome.StoryboardService
+	TeamService       thunderdome.TeamService
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -116,7 +117,7 @@ func Init(apiService Service) *Service {
 	b := battle.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.BattleService)
 	rs := retro.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.RetroService)
 	sb := storyboard.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.StoryboardService)
-	tc := checkin.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.CheckinService)
+	tc := checkin.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.CheckinService, a.TeamService)
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
 

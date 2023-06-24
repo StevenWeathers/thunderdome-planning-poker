@@ -197,14 +197,14 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure team is legit
-		_, retroErr := b.db.TeamGet(context.Background(), teamID)
+		_, retroErr := b.TeamService.TeamGet(context.Background(), teamID)
 		if retroErr != nil {
 			b.handleSocketClose(ctx, ws, 4004, "team not found")
 			return
 		}
 
 		// make sure user is a team user
-		_, UserErr := b.db.TeamUserRole(ctx, User.Id, teamID)
+		_, UserErr := b.TeamService.TeamUserRole(ctx, User.Id, teamID)
 		if UserErr != nil {
 			b.logger.Ctx(ctx).Error("REQUIRES_TEAM_USER", zap.Error(UserErr))
 			b.handleSocketClose(ctx, ws, 4005, "REQUIRES_TEAM_USER")

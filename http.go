@@ -73,6 +73,7 @@ func (s *server) routes() {
 	checkinService := &db.CheckinService{DB: s.db.DB, Logger: s.logger, HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy}
 	retroService := &db.RetroService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
 	storyboardService := &db.StoryboardService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
+	teamService := &db.TeamService{DB: s.db.DB, Logger: s.logger}
 
 	a := api.Service{
 		Config:            apiConfig,
@@ -89,6 +90,7 @@ func (s *server) routes() {
 		CheckinService:    checkinService,
 		RetroService:      retroService,
 		StoryboardService: storyboardService,
+		TeamService:       teamService,
 	}
 
 	api.Init(a)

@@ -508,7 +508,7 @@ func (a *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = a.DB.TeamUserRole(ctx, UserID, TeamID)
+			Role, UserErr = a.TeamService.TeamUserRole(ctx, UserID, TeamID)
 			if UserType != adminUserType && UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -540,7 +540,7 @@ func (a *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = a.DB.TeamUserRole(ctx, UserID, TeamID)
+			Role, UserErr = a.TeamService.TeamUserRole(ctx, UserID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return

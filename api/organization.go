@@ -349,7 +349,7 @@ func (a *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 			return
 		}
 
-		Team, err := a.DB.TeamGet(ctx, TeamID)
+		Team, err := a.TeamService.TeamGet(ctx, TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -418,7 +418,7 @@ func (a *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.DB.TeamAddUser(ctx, TeamID, User.Id, u.Role)
+		_, err := a.TeamService.TeamAddUser(ctx, TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

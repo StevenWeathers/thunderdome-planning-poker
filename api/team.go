@@ -31,7 +31,7 @@ func (a *Service) handleGetTeamByUser() http.HandlerFunc {
 		TeamID := vars["teamId"]
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 
-		Team, err := a.DB.TeamGet(r.Context(), TeamID)
+		Team, err := a.TeamService.TeamGet(r.Context(), TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -63,7 +63,7 @@ func (a *Service) handleGetTeamsByUser() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.DB.TeamListByUser(r.Context(), UserID, Limit, Offset)
+		Teams := a.TeamService.TeamListByUser(r.Context(), UserID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -84,7 +84,7 @@ func (a *Service) handleGetTeamUsers() http.HandlerFunc {
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users, UserCount, err := a.DB.TeamUserList(r.Context(), TeamID, Limit, Offset)
+		Users, UserCount, err := a.TeamService.TeamUserList(r.Context(), TeamID, Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 		}
@@ -138,7 +138,7 @@ func (a *Service) handleCreateTeam() http.HandlerFunc {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 		}
 
-		NewTeam, err := a.DB.TeamCreate(r.Context(), UserID, team.Name)
+		NewTeam, err := a.TeamService.TeamCreate(r.Context(), UserID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -196,7 +196,7 @@ func (a *Service) handleTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.DB.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
+		_, err := a.TeamService.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -229,7 +229,7 @@ func (a *Service) handleTeamRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.TeamRemoveUser(r.Context(), TeamID, UserID)
+		err := a.TeamService.TeamRemoveUser(r.Context(), TeamID, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -255,7 +255,7 @@ func (a *Service) handleGetTeamBattles() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Battles := a.DB.TeamBattleList(r.Context(), TeamID, Limit, Offset)
+		Battles := a.TeamService.TeamBattleList(r.Context(), TeamID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Battles, nil)
 	}
@@ -284,7 +284,7 @@ func (a *Service) handleTeamRemoveBattle() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.TeamRemoveBattle(r.Context(), TeamID, BattleID)
+		err := a.TeamService.TeamRemoveBattle(r.Context(), TeamID, BattleID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -315,7 +315,7 @@ func (a *Service) handleDeleteTeam() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.TeamDelete(r.Context(), TeamID)
+		err := a.TeamService.TeamDelete(r.Context(), TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -340,7 +340,7 @@ func (a *Service) handleGetTeamRetros() http.HandlerFunc {
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Retrospectives := a.DB.TeamRetroList(r.Context(), TeamID, Limit, Offset)
+		Retrospectives := a.TeamService.TeamRetroList(r.Context(), TeamID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Retrospectives, nil)
 	}
@@ -369,7 +369,7 @@ func (a *Service) handleTeamRemoveRetro() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.TeamRemoveRetro(r.Context(), TeamID, RetrospectiveID)
+		err := a.TeamService.TeamRemoveRetro(r.Context(), TeamID, RetrospectiveID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -392,7 +392,7 @@ func (a *Service) handleGetTeamStoryboards() http.HandlerFunc {
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Storyboards := a.DB.TeamStoryboardList(r.Context(), TeamID, Limit, Offset)
+		Storyboards := a.TeamService.TeamStoryboardList(r.Context(), TeamID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Storyboards, nil)
 	}
@@ -421,7 +421,7 @@ func (a *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.TeamRemoveStoryboard(r.Context(), TeamID, StoryboardID)
+		err := a.TeamService.TeamRemoveStoryboard(r.Context(), TeamID, StoryboardID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
