@@ -55,13 +55,13 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 		}
 
 		var sb = storyboardCreateRequestBody{}
-		jsonErr := json.Unmarshal(body, &s)
+		jsonErr := json.Unmarshal(body, &sb)
 		if jsonErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
-		inputErr := validate.Struct(s)
+		inputErr := validate.Struct(sb)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
@@ -117,14 +117,14 @@ func (s *Service) handleStoryboardGet() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		storyboard, err := s.StoryboardService.GetStoryboard(StoryboardID, UserId)
+		sb, err := s.StoryboardService.GetStoryboard(StoryboardID, UserId)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARD_NOT_FOUND"))
 			return
 		}
 
 		// don't allow retrieving storyboard details if storyboard has JoinCode and user hasn't joined yet
-		if storyboard.JoinCode != "" {
+		if sb.JoinCode != "" {
 			UserErr := s.StoryboardService.GetStoryboardUserActiveStatus(StoryboardID, UserId)
 			if UserErr != nil && UserType != adminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_STORYBOARD"))
@@ -132,7 +132,7 @@ func (s *Service) handleStoryboardGet() http.HandlerFunc {
 			}
 		}
 
-		s.Success(w, r, http.StatusOK, storyboard, nil)
+		s.Success(w, r, http.StatusOK, sb, nil)
 	}
 }
 
