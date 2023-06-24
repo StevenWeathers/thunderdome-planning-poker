@@ -386,3 +386,43 @@ func (d *Database) TeamRemoveStoryboard(ctx context.Context, TeamID string, Stor
 
 	return nil
 }
+
+// TeamList gets a list of teams
+func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Team, int) {
+	var teams = make([]*thunderdome.Team, 0)
+	var count = 0
+
+	err := d.DB.QueryRowContext(ctx, `SELECT count FROM team_list_count();`).Scan(&count)
+	if err != nil {
+		d.logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
+		return teams, count
+	}
+
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
+		Limit,
+		Offset,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var team thunderdome.Team
+
+			if err := rows.Scan(
+				&team.Id,
+				&team.Name,
+				&team.CreatedDate,
+				&team.UpdatedDate,
+			); err != nil {
+				d.logger.Ctx(ctx).Error("team_list scan error", zap.Error(err))
+			} else {
+				teams = append(teams, &team)
+			}
+		}
+	} else {
+		d.logger.Ctx(ctx).Error("team_list query error", zap.Error(err))
+	}
+
+	return teams, count
+}

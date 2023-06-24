@@ -35,6 +35,7 @@ type APIKeyService interface {
 	GenerateApiKey(ctx context.Context, UserID string, KeyName string) (*APIKey, error)
 	GetUserApiKeys(ctx context.Context, UserID string) ([]*APIKey, error)
 	GetApiKeyUser(ctx context.Context, APK string) (*User, error)
+	GetAPIKeys(ctx context.Context, Limit int, Offset int) []*UserAPIKey
 	UpdateUserApiKey(ctx context.Context, UserID string, KeyID string, Active bool) ([]*APIKey, error)
 	DeleteUserApiKey(ctx context.Context, UserID string, KeyID string) ([]*APIKey, error)
 }

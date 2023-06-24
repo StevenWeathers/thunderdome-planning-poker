@@ -352,7 +352,7 @@ func (a *Service) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.DB.GetAPIKeys(r.Context(), Limit, Offset)
+		Teams := a.APIKeyService.GetAPIKeys(r.Context(), Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}

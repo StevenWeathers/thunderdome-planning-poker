@@ -571,3 +571,16 @@ func (d *Database) GetRetroFacilitatorCode(RetroID string) (string, error) {
 
 	return DecryptedCode, nil
 }
+
+// CleanRetros deletes retros older than {DaysOld} days
+func (d *Database) CleanRetros(ctx context.Context, DaysOld int) error {
+	if _, err := d.DB.ExecContext(ctx,
+		`call clean_retros($1);`,
+		DaysOld,
+	); err != nil {
+		d.logger.Ctx(ctx).Error("call clean_retros", zap.Error(err))
+		return errors.New("error attempting to clean retros")
+	}
+
+	return nil
+}

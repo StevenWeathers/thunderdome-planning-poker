@@ -89,7 +89,7 @@ func (a *Service) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_guests_days_old")
 
-		err := a.DB.CleanGuests(r.Context(), DaysOld)
+		err := a.UserService.CleanGuests(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -110,7 +110,7 @@ func (a *Service) handleCleanGuests() http.HandlerFunc {
 // @Router /maintenance/lowercase-emails [patch]
 func (a *Service) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		lowercasedUsers, err := a.DB.LowercaseUserEmails(r.Context())
+		lowercasedUsers, err := a.UserService.LowercaseUserEmails(r.Context())
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -121,7 +121,7 @@ func (a *Service) handleLowercaseUserEmails() http.HandlerFunc {
 			a.Email.SendEmailUpdate(u.Name, u.Email)
 		}
 
-		mergedUsers, err := a.DB.MergeDuplicateAccounts(r.Context())
+		mergedUsers, err := a.UserService.MergeDuplicateAccounts(r.Context())
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

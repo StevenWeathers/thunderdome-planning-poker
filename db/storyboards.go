@@ -624,3 +624,16 @@ func (d *Database) GetStoryboardFacilitatorCode(StoryboardID string) (string, er
 
 	return DecryptedCode, nil
 }
+
+// CleanStoryboards deletes storyboards older than {DaysOld} days
+func (d *Database) CleanStoryboards(ctx context.Context, DaysOld int) error {
+	if _, err := d.DB.ExecContext(ctx,
+		`call clean_storyboards($1);`,
+		DaysOld,
+	); err != nil {
+		d.logger.Ctx(ctx).Error("call clean_storyboards", zap.Error(err))
+		return errors.New("error attempting to clean storyboards")
+	}
+
+	return nil
+}

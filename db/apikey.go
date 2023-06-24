@@ -169,3 +169,43 @@ func (d *APIKeyService) GetApiKeyUser(ctx context.Context, APK string) (*thunder
 
 	return User, nil
 }
+
+// GetAPIKeys gets a list of api keys
+func (d *APIKeyService) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thunderdome.UserAPIKey {
+	var APIKeys = make([]*thunderdome.UserAPIKey, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT id, name, user_id, user_name, user_email, active, created_date, updated_date
+		FROM apikeys_list($1, $2);`,
+		Limit,
+		Offset,
+	)
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var ak thunderdome.UserAPIKey
+			var key string
+
+			if err := rows.Scan(
+				&key,
+				&ak.Name,
+				&ak.UserId,
+				&ak.UserName,
+				&ak.UserEmail,
+				&ak.Active,
+				&ak.CreatedDate,
+				&ak.UpdatedDate,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("apikeys_list scan error", zap.Error(err))
+			} else {
+				splitKey := strings.Split(key, ".")
+				ak.Prefix = splitKey[0]
+				ak.Id = key
+				APIKeys = append(APIKeys, &ak)
+			}
+		}
+	} else {
+		d.Logger.Ctx(ctx).Error("apikeys_list query error", zap.Error(err))
+	}
+
+	return APIKeys
+}

@@ -774,3 +774,16 @@ func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.Battl
 
 	return battles, Count, nil
 }
+
+// CleanBattles deletes battles older than {DaysOld} days
+func (d *Database) CleanBattles(ctx context.Context, DaysOld int) error {
+	if _, err := d.DB.ExecContext(ctx,
+		`call clean_battles($1);`,
+		DaysOld,
+	); err != nil {
+		d.logger.Ctx(ctx).Error("call clean_battles", zap.Error(err))
+		return errors.New("error attempting to clean battles")
+	}
+
+	return nil
+}

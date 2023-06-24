@@ -43,4 +43,7 @@ type UserService interface {
 	DisableUser(ctx context.Context, UserID string) error
 	EnableUser(ctx context.Context, UserID string) error
 	DeleteUser(ctx context.Context, UserID string) error
+	CleanGuests(ctx context.Context, DaysOld int) error
+	MergeDuplicateAccounts(ctx context.Context) ([]*User, error)
+	LowercaseUserEmails(ctx context.Context) ([]*User, error)
 }

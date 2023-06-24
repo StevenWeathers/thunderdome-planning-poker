@@ -460,3 +460,78 @@ func (d *UserService) EnableUser(ctx context.Context, UserID string) error {
 
 	return nil
 }
+
+// CleanGuests deletes guest users older than {DaysOld} days
+func (d *UserService) CleanGuests(ctx context.Context, DaysOld int) error {
+	if _, err := d.DB.ExecContext(ctx,
+		`call clean_guest_users($1);`,
+		DaysOld,
+	); err != nil {
+		d.Logger.Ctx(ctx).Error("call clean_guest_users", zap.Error(err))
+		return errors.New("error attempting to clean Guest Users")
+	}
+
+	return nil
+}
+
+// LowercaseUserEmails goes through and lower cases any user email that has uppercase letters
+// returning the list of updated users
+func (d *UserService) LowercaseUserEmails(ctx context.Context) ([]*thunderdome.User, error) {
+	var users = make([]*thunderdome.User, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT name, email FROM lowercase_unique_user_emails();`,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var usr thunderdome.User
+
+			if err := rows.Scan(
+				&usr.Name,
+				&usr.Email,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("lowercase_unique_user_emails scan error", zap.Error(err))
+				return nil, err
+			} else {
+				users = append(users, &usr)
+			}
+		}
+	} else {
+		d.Logger.Ctx(ctx).Error("lowercase_unique_user_emails query error", zap.Error(err))
+		return nil, err
+	}
+
+	return users, nil
+}
+
+// MergeDuplicateAccounts goes through and merges user accounts with duplicate emails that has uppercase letters
+// returning the list of merged users
+func (d *UserService) MergeDuplicateAccounts(ctx context.Context) ([]*thunderdome.User, error) {
+	var users = make([]*thunderdome.User, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT name, email FROM merge_nonunique_user_accounts();`,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var usr thunderdome.User
+
+			if err := rows.Scan(
+				&usr.Name,
+				&usr.Email,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("merge_nonunique_user_accounts scan error", zap.Error(err))
+				return nil, err
+			} else {
+				users = append(users, &usr)
+			}
+		}
+	} else {
+		d.Logger.Ctx(ctx).Error("merge_nonunique_user_accounts query error", zap.Error(err))
+		return nil, err
+	}
+
+	return users, nil
+}

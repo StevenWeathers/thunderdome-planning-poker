@@ -254,3 +254,35 @@ func (d *Database) OrganizationDelete(ctx context.Context, OrgID string) error {
 
 	return nil
 }
+
+// OrganizationList gets a list of organizations
+func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) []*thunderdome.Organization {
+	var organizations = make([]*thunderdome.Organization, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT id, name, created_date, updated_date FROM organization_list($1, $2);`,
+		Limit,
+		Offset,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var org thunderdome.Organization
+
+			if err := rows.Scan(
+				&org.Id,
+				&org.Name,
+				&org.CreatedDate,
+				&org.UpdatedDate,
+			); err != nil {
+				d.logger.Ctx(ctx).Error("organization_list scan error", zap.Error(err))
+			} else {
+				organizations = append(organizations, &org)
+			}
+		}
+	} else {
+		d.logger.Ctx(ctx).Error("organization_list query error", zap.Error(err))
+	}
+
+	return organizations
+}
