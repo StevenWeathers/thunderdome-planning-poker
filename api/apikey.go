@@ -49,7 +49,7 @@ type apikeyGenerateRequestBody struct {
 // @Tags apikey
 // @Produce  json
 // @Param userId path string true "the user ID to generate API key for"
-// @Param key body apikeyGenerateRequestBody true "new APIService key object"
+// @Param key body apikeyGenerateRequestBody true "new APIKey key object"
 // @Success 200 object standardJsonResponse{data=thunderdome.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
@@ -117,7 +117,7 @@ type apikeyUpdateRequestBody struct {
 // @Produce  json
 // @Param userId path string true "the user ID"
 // @Param keyID path string true "the API Key ID to update"
-// @Param key body apikeyUpdateRequestBody true "APIService key object to update"
+// @Param key body apikeyUpdateRequestBody true "APIKey key object to update"
 // @Success 200 object standardJsonResponse{data=[]thunderdome.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}

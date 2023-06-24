@@ -1,4 +1,4 @@
-// Package APIService provides restful API endpoints for Thunderdome webapp
+// Package api provides restful API endpoints for Thunderdome webapp
 package api
 
 import (
@@ -115,7 +115,7 @@ func Init(apiService Service) *Service {
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
 
-	swaggerdocs.SwaggerInfo.BasePath = a.Config.PathPrefix + "/APIService"
+	swaggerdocs.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
 	// swagger docs for external API when enabled
 	if a.Config.ExternalAPIEnabled {
 		a.Router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))
