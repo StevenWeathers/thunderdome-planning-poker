@@ -4,7 +4,6 @@ package http
 import (
 	"context"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
-	"github.com/StevenWeathers/thunderdome-planning-poker/email"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/battle"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/checkin"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/retro"
@@ -65,7 +64,7 @@ type Service struct {
 	Config              *Config
 	UIConfig            thunderdome.UIConfig
 	Router              *mux.Router
-	Email               *email.Email
+	Email               thunderdome.EmailService
 	Cookie              *securecookie.SecureCookie
 	DB                  *db.Database
 	Logger              *otelzap.Logger

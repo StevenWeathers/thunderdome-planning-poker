@@ -45,18 +45,18 @@ type Config struct {
 	smtpSender   string
 }
 
-// Email contains all the methods to send application emails
-type Email struct {
-	config *Config
-	logger *otelzap.Logger
+// Service contains all the methods to send application emails
+type Service struct {
+	Config *Config
+	Logger *otelzap.Logger
 }
 
-// New creates a new instance of Email
-func New(AppDomain string, PathPrefix string, logger *otelzap.Logger) *Email {
+// New creates a new instance of Service
+func New(AppDomain string, PathPrefix string, logger *otelzap.Logger) *Service {
 	var AppURL string = "https://" + AppDomain + PathPrefix + "/"
-	var m = &Email{
+	var s = &Service{
 		// read environment variables and sets up mailserver configuration values
-		config: &Config{
+		Config: &Config{
 			AppURL:       AppURL,
 			SenderName:   "Thunderdome",
 			smtpHost:     viper.GetString("smtp.host"),
@@ -67,38 +67,38 @@ func New(AppDomain string, PathPrefix string, logger *otelzap.Logger) *Email {
 			smtpPass:     viper.GetString("smtp.pass"),
 			smtpSender:   viper.GetString("smtp.sender"),
 		},
-		logger: logger,
+		Logger: logger,
 	}
 
 	// smtp server configuration.
-	smtpServerConfig = smtpServer{host: m.config.smtpHost, port: m.config.smtpPort}
+	smtpServerConfig = smtpServer{host: s.Config.smtpHost, port: s.Config.smtpPort}
 
 	// smtp sender info
 	smtpFrom = mail.Address{
-		Name:    m.config.SenderName,
-		Address: m.config.smtpSender,
+		Name:    s.Config.SenderName,
+		Address: s.Config.smtpSender,
 	}
 
 	// TLS config
 	tlsConfig = &tls.Config{
-		InsecureSkipVerify: !m.config.smtpSecure,
-		ServerName:         m.config.smtpHost,
+		InsecureSkipVerify: !s.Config.smtpSecure,
+		ServerName:         s.Config.smtpHost,
 	}
 
-	smtpAuth = smtp.PlainAuth(m.config.smtpIdentity, m.config.smtpUser, m.config.smtpPass, m.config.smtpHost)
+	smtpAuth = smtp.PlainAuth(s.Config.smtpIdentity, s.Config.smtpUser, s.Config.smtpPass, s.Config.smtpHost)
 
-	return m
+	return s
 }
 
-// Generates an Email Body with hermes
-func (m *Email) generateBody(Body hermes.Body) (emailBody string, generateErr error) {
+// Generates an email Body with hermes
+func (s *Service) generateBody(Body hermes.Body) (emailBody string, generateErr error) {
 	currentTime := time.Now()
 	year := strconv.Itoa(currentTime.Year())
 	hms := hermes.Hermes{
 		Product: hermes.Product{
 			Name:      "Thunderdome",
-			Link:      m.config.AppURL,
-			Logo:      m.config.AppURL + "img/thunderdome-email-logo.png",
+			Link:      s.Config.AppURL,
+			Logo:      s.Config.AppURL + "img/thunderdome-email-logo.png",
 			Copyright: "Copyright © " + year + " Thunderdome. All rights reserved.",
 		},
 	}
@@ -116,8 +116,8 @@ func (m *Email) generateBody(Body hermes.Body) (emailBody string, generateErr er
 	return emailBody, nil
 }
 
-// Send - utility function to send emails
-func (m *Email) Send(UserName string, UserEmail string, Subject string, Body string) error {
+// send - utility function to send emails
+func (s *Service) send(UserName string, UserEmail string, Subject string, Body string) error {
 	if !viper.GetBool("smtp.enabled") {
 		return nil
 	}
@@ -144,56 +144,56 @@ func (m *Email) Send(UserName string, UserEmail string, Subject string, Body str
 
 	c, err := smtp.Dial(smtpServerConfig.Address())
 	if err != nil {
-		m.logger.Error("Error dialing SMTP", zap.Error(err))
+		s.Logger.Error("Error dialing SMTP", zap.Error(err))
 		return err
 	}
 
 	tlsErr := c.StartTLS(tlsConfig)
 	if tlsErr != nil {
-		m.logger.Error("Error starting TLS", zap.Error(tlsErr))
+		s.Logger.Error("Error starting TLS", zap.Error(tlsErr))
 	}
 
 	// Auth
-	if m.config.smtpSecure {
+	if s.Config.smtpSecure {
 		if err = c.Auth(smtpAuth); err != nil {
-			m.logger.Error("Error authenticating SMTP", zap.Error(err))
+			s.Logger.Error("Error authenticating SMTP", zap.Error(err))
 			return err
 		}
 	}
 
 	// To && From
 	if err = c.Mail(smtpFrom.Address); err != nil {
-		m.logger.Error("Error setting SMTP from", zap.Error(err))
+		s.Logger.Error("Error setting SMTP from", zap.Error(err))
 		return err
 	}
 
 	if err = c.Rcpt(to.Address); err != nil {
-		m.logger.Error("Error setting SMTP to", zap.Error(err))
+		s.Logger.Error("Error setting SMTP to", zap.Error(err))
 		return err
 	}
 
 	// Data
 	w, err := c.Data()
 	if err != nil {
-		m.logger.Error("Error setting SMTP data", zap.Error(err))
+		s.Logger.Error("Error setting SMTP data", zap.Error(err))
 		return err
 	}
 
 	_, err = w.Write([]byte(message))
 	if err != nil {
-		m.logger.Error("Error sending email", zap.Error(err))
+		s.Logger.Error("Error sending email", zap.Error(err))
 		return err
 	}
 
 	err = w.Close()
 	if err != nil {
-		m.logger.Error("Error closing SMTP", zap.Error(err))
+		s.Logger.Error("Error closing SMTP", zap.Error(err))
 		return err
 	}
 
 	quitErr := c.Quit()
 	if quitErr != nil {
-		m.logger.Error("Error quitting smtp server connection", zap.Error(quitErr))
+		s.Logger.Error("Error quitting smtp server connection", zap.Error(quitErr))
 	}
 
 	return nil

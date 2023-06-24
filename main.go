@@ -68,7 +68,7 @@ type Config struct {
 type server struct {
 	config       *Config
 	router       *mux.Router
-	email        *email.Email
+	email        thunderdome.EmailService
 	cookie       *securecookie.SecureCookie
 	db           *db.Database
 	logger       *otelzap.Logger
@@ -98,7 +98,7 @@ func main() {
 		defer cleanup(context.Background())
 	}
 
-	cookieHashkey := viper.GetString("http.cookie_hashkey")
+	cookieHashKey := viper.GetString("http.cookie_hashkey")
 	pathPrefix := viper.GetString("http.path_prefix")
 	router := mux.NewRouter()
 
@@ -125,7 +125,7 @@ func main() {
 			HeaderAuthEnabled:  viper.GetString("auth.method") == "header",
 		},
 		router: router,
-		cookie: securecookie.New([]byte(cookieHashkey), nil),
+		cookie: securecookie.New([]byte(cookieHashKey), nil),
 		logger: logger,
 	}
 

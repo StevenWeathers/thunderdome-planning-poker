@@ -6,8 +6,8 @@ import (
 )
 
 // SendWelcome sends the welcome email to new registered user
-func (m *Email) SendWelcome(UserName string, UserEmail string, VerifyID string) error {
-	emailBody, err := m.generateBody(
+func (s *Service) SendWelcome(UserName string, UserEmail string, VerifyID string) error {
+	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: UserName,
 			Intros: []string{
@@ -19,7 +19,7 @@ func (m *Email) SendWelcome(UserName string, UserEmail string, VerifyID string) 
 					Button: hermes.Button{
 						Color: "#22BC66",
 						Text:  "Verify Account",
-						Link:  m.config.AppURL + "verify-account/" + VerifyID,
+						Link:  s.Config.AppURL + "verify-account/" + VerifyID,
 					},
 				},
 				{
@@ -33,19 +33,19 @@ func (m *Email) SendWelcome(UserName string, UserEmail string, VerifyID string) 
 		},
 	)
 	if err != nil {
-		m.logger.Error("Error Generating Welcome Email HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Welcome Service HTML", zap.Error(err))
 
 		return err
 	}
 
-	sendErr := m.Send(
+	sendErr := s.send(
 		UserName,
 		UserEmail,
 		"Welcome to the Thunderdome!",
 		emailBody,
 	)
 	if sendErr != nil {
-		m.logger.Error("Error sending Welcome Email", zap.Error(sendErr))
+		s.Logger.Error("Error sending Welcome Service", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -53,8 +53,8 @@ func (m *Email) SendWelcome(UserName string, UserEmail string, VerifyID string) 
 }
 
 // SendEmailVerification sends the verification email to registered user
-func (m *Email) SendEmailVerification(UserName string, UserEmail string, VerifyID string) error {
-	emailBody, err := m.generateBody(
+func (s *Service) SendEmailVerification(UserName string, UserEmail string, VerifyID string) error {
+	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: UserName,
 			Intros: []string{
@@ -66,7 +66,7 @@ func (m *Email) SendEmailVerification(UserName string, UserEmail string, VerifyI
 					Button: hermes.Button{
 						Color: "#22BC66",
 						Text:  "Verify Account",
-						Link:  m.config.AppURL + "verify-account/" + VerifyID,
+						Link:  s.Config.AppURL + "verify-account/" + VerifyID,
 					},
 				},
 				{
@@ -80,18 +80,18 @@ func (m *Email) SendEmailVerification(UserName string, UserEmail string, VerifyI
 		},
 	)
 	if err != nil {
-		m.logger.Error("Error Generating Verification Email HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Verification Service HTML", zap.Error(err))
 		return err
 	}
 
-	sendErr := m.Send(
+	sendErr := s.send(
 		UserName,
 		UserEmail,
 		"Verify your Thunderdome account email",
 		emailBody,
 	)
 	if sendErr != nil {
-		m.logger.Error("Error sending Verification Email", zap.Error(sendErr))
+		s.Logger.Error("Error sending Verification Service", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -99,8 +99,8 @@ func (m *Email) SendEmailVerification(UserName string, UserEmail string, VerifyI
 }
 
 // SendForgotPassword Sends a Forgot Password reset email to user
-func (m *Email) SendForgotPassword(UserName string, UserEmail string, ResetID string) error {
-	emailBody, err := m.generateBody(
+func (s *Service) SendForgotPassword(UserName string, UserEmail string, ResetID string) error {
+	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: UserName,
 			Intros: []string{
@@ -111,7 +111,7 @@ func (m *Email) SendForgotPassword(UserName string, UserEmail string, ResetID st
 					Instructions: "Reset your password now, the following link will expire within an hour of the original request.",
 					Button: hermes.Button{
 						Text: "Reset Password",
-						Link: m.config.AppURL + "reset-password/" + ResetID,
+						Link: s.Config.AppURL + "reset-password/" + ResetID,
 					},
 				},
 				{
@@ -125,18 +125,18 @@ func (m *Email) SendForgotPassword(UserName string, UserEmail string, ResetID st
 		},
 	)
 	if err != nil {
-		m.logger.Error("Error Generating Forgot Password Email HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Forgot Password Service HTML", zap.Error(err))
 		return err
 	}
 
-	sendErr := m.Send(
+	sendErr := s.send(
 		UserName,
 		UserEmail,
 		"Forgot your Thunderdome password?",
 		emailBody,
 	)
 	if sendErr != nil {
-		m.logger.Error("Error sending Forgot Password Email", zap.Error(sendErr))
+		s.Logger.Error("Error sending Forgot Password Service", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -144,8 +144,8 @@ func (m *Email) SendForgotPassword(UserName string, UserEmail string, ResetID st
 }
 
 // SendPasswordReset Sends a Reset Password confirmation email to user
-func (m *Email) SendPasswordReset(UserName string, UserEmail string) error {
-	emailBody, err := m.generateBody(
+func (s *Service) SendPasswordReset(UserName string, UserEmail string) error {
+	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: UserName,
 			Intros: []string{
@@ -163,18 +163,18 @@ func (m *Email) SendPasswordReset(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		m.logger.Error("Error Generating Reset Password Email HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Reset Password Service HTML", zap.Error(err))
 		return err
 	}
 
-	sendErr := m.Send(
+	sendErr := s.send(
 		UserName,
 		UserEmail,
 		"Your Thunderdome password was successfully reset.",
 		emailBody,
 	)
 	if sendErr != nil {
-		m.logger.Error("Error sending Reset Password Email", zap.Error(sendErr))
+		s.Logger.Error("Error sending Reset Password Service", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -182,8 +182,8 @@ func (m *Email) SendPasswordReset(UserName string, UserEmail string) error {
 }
 
 // SendPasswordUpdate Sends an Update Password confirmation email to user
-func (m *Email) SendPasswordUpdate(UserName string, UserEmail string) error {
-	emailBody, err := m.generateBody(
+func (s *Service) SendPasswordUpdate(UserName string, UserEmail string) error {
+	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: UserName,
 			Intros: []string{
@@ -201,18 +201,18 @@ func (m *Email) SendPasswordUpdate(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		m.logger.Error("Error Generating Update Password Email HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Update Password Service HTML", zap.Error(err))
 		return err
 	}
 
-	sendErr := m.Send(
+	sendErr := s.send(
 		UserName,
 		UserEmail,
 		"Your Thunderdome password was successfully updated.",
 		emailBody,
 	)
 	if sendErr != nil {
-		m.logger.Error("Error sending Update Password Email", zap.Error(sendErr))
+		s.Logger.Error("Error sending Update Password Service", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -220,8 +220,8 @@ func (m *Email) SendPasswordUpdate(UserName string, UserEmail string) error {
 }
 
 // SendDeleteConfirmation Sends an delete account confirmation email to user
-func (m *Email) SendDeleteConfirmation(UserName string, UserEmail string) error {
-	emailBody, err := m.generateBody(
+func (s *Service) SendDeleteConfirmation(UserName string, UserEmail string) error {
+	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: UserName,
 			Intros: []string{
@@ -239,27 +239,27 @@ func (m *Email) SendDeleteConfirmation(UserName string, UserEmail string) error 
 		},
 	)
 	if err != nil {
-		m.logger.Error("Error Generating Delete Account Confirmation Email HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Delete Account Confirmation Service HTML", zap.Error(err))
 		return err
 	}
 
-	sendErr := m.Send(
+	sendErr := s.send(
 		UserName,
 		UserEmail,
 		"Your Thunderdome account was deleted.",
 		emailBody,
 	)
 	if sendErr != nil {
-		m.logger.Error("Error sending Delete Account Confirmation Email", zap.Error(sendErr))
+		s.Logger.Error("Error sending Delete Account Confirmation Service", zap.Error(sendErr))
 		return sendErr
 	}
 
 	return nil
 }
 
-// SendEmailUpdate Sends an Update Email confirmation email to user
-func (m *Email) SendEmailUpdate(UserName string, UserEmail string) error {
-	emailBody, err := m.generateBody(
+// SendEmailUpdate Sends an Update Service confirmation email to user
+func (s *Service) SendEmailUpdate(UserName string, UserEmail string) error {
+	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: UserName,
 			Intros: []string{
@@ -277,27 +277,27 @@ func (m *Email) SendEmailUpdate(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		m.logger.Error("Error Generating Email Update Email HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Service Update Service HTML", zap.Error(err))
 		return err
 	}
 
-	sendErr := m.Send(
+	sendErr := s.send(
 		UserName,
 		UserEmail,
 		"Your Thunderdome account email has been updated.",
 		emailBody,
 	)
 	if sendErr != nil {
-		m.logger.Error("Error sending Email Update Email", zap.Error(sendErr))
+		s.Logger.Error("Error sending Service Update Service", zap.Error(sendErr))
 		return sendErr
 	}
 
 	return nil
 }
 
-// SendMergedUpdate Sends an Update Email confirmation email to user
-func (m *Email) SendMergedUpdate(UserName string, UserEmail string) error {
-	emailBody, err := m.generateBody(
+// SendMergedUpdate Sends an Update Service confirmation email to user
+func (s *Service) SendMergedUpdate(UserName string, UserEmail string) error {
+	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: UserName,
 			Intros: []string{
@@ -315,18 +315,18 @@ func (m *Email) SendMergedUpdate(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		m.logger.Error("Error Generating Update Merged Email Email HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Update Merged Service Service HTML", zap.Error(err))
 		return err
 	}
 
-	sendErr := m.Send(
+	sendErr := s.send(
 		UserName,
 		UserEmail,
 		"Your Thunderdome duplicate accounts have been merged.",
 		emailBody,
 	)
 	if sendErr != nil {
-		m.logger.Error("Error sending Update Merged Email", zap.Error(sendErr))
+		s.Logger.Error("Error sending Update Merged Service", zap.Error(sendErr))
 		return sendErr
 	}
 
