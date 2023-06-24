@@ -71,6 +71,7 @@ type Service struct {
 	StoryboardService   thunderdome.StoryboardService
 	TeamService         thunderdome.TeamService
 	OrganizationService thunderdome.OrganizationService
+	AdminService        thunderdome.AdminService
 }
 
 // standardJsonResponse structure used for all restful APIs response body

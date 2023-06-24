@@ -75,6 +75,7 @@ func (s *server) routes() {
 	storyboardService := &db.StoryboardService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
 	teamService := &db.TeamService{DB: s.db.DB, Logger: s.logger}
 	organizationService := &db.OrganizationService{DB: s.db.DB, Logger: s.logger}
+	adminService := &db.AdminService{DB: s.db.DB, Logger: s.logger}
 
 	a := api.Service{
 		Config:              apiConfig,
@@ -93,6 +94,7 @@ func (s *server) routes() {
 		StoryboardService:   storyboardService,
 		TeamService:         teamService,
 		OrganizationService: organizationService,
+		AdminService:        adminService,
 	}
 
 	api.Init(a)

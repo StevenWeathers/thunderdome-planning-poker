@@ -2,12 +2,20 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"go.uber.org/zap"
 )
 
+// AdminService represents a PostgreSQL implementation of thunderdome.AdminService.
+type AdminService struct {
+	DB     *sql.DB
+	Logger *otelzap.Logger
+}
+
 // GetAppStats gets counts of common application metrics such as users and battles
-func (d *Database) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStats, error) {
+func (d *AdminService) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStats, error) {
 	var Appstats thunderdome.ApplicationStats
 
 	err := d.DB.QueryRowContext(ctx, `
