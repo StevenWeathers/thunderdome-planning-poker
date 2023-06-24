@@ -2,14 +2,22 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"go.uber.org/zap"
 )
 
+// OrganizationService represents a PostgreSQL implementation of thunderdome.OrganizationService.
+type OrganizationService struct {
+	DB     *sql.DB
+	Logger *otelzap.Logger
+}
+
 // OrganizationGet gets an organization
-func (d *Database) OrganizationGet(ctx context.Context, OrgID string) (*thunderdome.Organization, error) {
+func (d *OrganizationService) OrganizationGet(ctx context.Context, OrgID string) (*thunderdome.Organization, error) {
 	var org = &thunderdome.Organization{}
 
 	e := d.DB.QueryRowContext(ctx,
@@ -29,8 +37,8 @@ func (d *Database) OrganizationGet(ctx context.Context, OrgID string) (*thunderd
 	return org, nil
 }
 
-// OrganizationUserRole gets a users role in organization
-func (d *Database) OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error) {
+// OrganizationUserRole gets a user's role in organization
+func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error) {
 	var role string
 
 	e := d.DB.QueryRowContext(ctx,
@@ -49,7 +57,7 @@ func (d *Database) OrganizationUserRole(ctx context.Context, UserID string, OrgI
 }
 
 // OrganizationListByUser gets a list of organizations the user is apart of
-func (d *Database) OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.Organization {
+func (d *OrganizationService) OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.Organization {
 	var organizations = make([]*thunderdome.Organization, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM organization_list_by_user($1, $2, $3);`,
@@ -82,7 +90,7 @@ func (d *Database) OrganizationListByUser(ctx context.Context, UserID string, Li
 }
 
 // OrganizationCreate creates an organization
-func (d *Database) OrganizationCreate(ctx context.Context, UserID string, OrgName string) (*thunderdome.Organization, error) {
+func (d *OrganizationService) OrganizationCreate(ctx context.Context, UserID string, OrgName string) (*thunderdome.Organization, error) {
 	o := &thunderdome.Organization{}
 
 	err := d.DB.QueryRowContext(ctx, `
@@ -100,7 +108,7 @@ func (d *Database) OrganizationCreate(ctx context.Context, UserID string, OrgNam
 }
 
 // OrganizationUserList gets a list of organization users
-func (d *Database) OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.OrganizationUser {
+func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.OrganizationUser {
 	var users = make([]*thunderdome.OrganizationUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, email, role, avatar FROM organization_user_list($1, $2, $3);`,
@@ -135,7 +143,7 @@ func (d *Database) OrganizationUserList(ctx context.Context, OrgID string, Limit
 }
 
 // OrganizationAddUser adds a user to an organization
-func (d *Database) OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
+func (d *OrganizationService) OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
 		`SELECT organization_user_add($1, $2, $3);`,
 		OrgID,
@@ -152,7 +160,7 @@ func (d *Database) OrganizationAddUser(ctx context.Context, OrgID string, UserID
 }
 
 // OrganizationRemoveUser removes a user from a organization
-func (d *Database) OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error {
+func (d *OrganizationService) OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`CALL organization_user_remove($1, $2);`,
 		OrganizationID,
@@ -168,7 +176,7 @@ func (d *Database) OrganizationRemoveUser(ctx context.Context, OrganizationID st
 }
 
 // OrganizationTeamList gets a list of organization teams
-func (d *Database) OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Team {
+func (d *OrganizationService) OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Team {
 	var teams = make([]*thunderdome.Team, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM organization_team_list($1, $2, $3);`,
@@ -201,7 +209,7 @@ func (d *Database) OrganizationTeamList(ctx context.Context, OrgID string, Limit
 }
 
 // OrganizationTeamCreate creates an organization team
-func (d *Database) OrganizationTeamCreate(ctx context.Context, OrgID string, TeamName string) (*thunderdome.Team, error) {
+func (d *OrganizationService) OrganizationTeamCreate(ctx context.Context, OrgID string, TeamName string) (*thunderdome.Team, error) {
 	t := &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx, `
@@ -218,8 +226,8 @@ func (d *Database) OrganizationTeamCreate(ctx context.Context, OrgID string, Tea
 	return t, nil
 }
 
-// OrganizationTeamUserRole gets a users role in organization team
-func (d *Database) OrganizationTeamUserRole(ctx context.Context, UserID string, OrgID string, TeamID string) (string, string, error) {
+// OrganizationTeamUserRole gets a user's role in organization team
+func (d *OrganizationService) OrganizationTeamUserRole(ctx context.Context, UserID string, OrgID string, TeamID string) (string, string, error) {
 	var orgRole string
 	var teamRole string
 
@@ -241,7 +249,7 @@ func (d *Database) OrganizationTeamUserRole(ctx context.Context, UserID string, 
 }
 
 // OrganizationDelete deletes an organization
-func (d *Database) OrganizationDelete(ctx context.Context, OrgID string) error {
+func (d *OrganizationService) OrganizationDelete(ctx context.Context, OrgID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`CALL organization_delete($1);`,
 		OrgID,
@@ -256,7 +264,7 @@ func (d *Database) OrganizationDelete(ctx context.Context, OrgID string) error {
 }
 
 // OrganizationList gets a list of organizations
-func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) []*thunderdome.Organization {
+func (d *OrganizationService) OrganizationList(ctx context.Context, Limit int, Offset int) []*thunderdome.Organization {
 	var organizations = make([]*thunderdome.Organization, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM organization_list($1, $2);`,

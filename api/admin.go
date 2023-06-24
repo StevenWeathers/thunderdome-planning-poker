@@ -304,7 +304,7 @@ func (a *Service) handleGetOrganizations() http.HandlerFunc {
 		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := a.DB.OrganizationList(r.Context(), Limit, Offset)
+		Organizations := a.OrganizationService.OrganizationList(r.Context(), Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Organizations, nil)
 	}

@@ -163,7 +163,7 @@ func (a *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = a.DB.OrganizationUserRole(ctx, UserID, OrgID)
+			Role, UserErr = a.OrganizationService.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
@@ -195,7 +195,7 @@ func (a *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr := a.DB.OrganizationUserRole(ctx, UserID, OrgID)
+			Role, UserErr := a.OrganizationService.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
@@ -238,7 +238,7 @@ func (a *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, TeamRole, UserErr = a.DB.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
+			OrgRole, TeamRole, UserErr = a.OrganizationService.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -279,7 +279,7 @@ func (a *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, TeamRole, UserErr := a.DB.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
+			OrgRole, TeamRole, UserErr := a.OrganizationService.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -324,7 +324,7 @@ func (a *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var DepartmentRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, UserErr = a.DB.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
+			OrgRole, DepartmentRole, UserErr = a.OrganizationService.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
@@ -365,7 +365,7 @@ func (a *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var DepartmentRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, UserErr := a.DB.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
+			OrgRole, DepartmentRole, UserErr := a.OrganizationService.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
@@ -417,7 +417,7 @@ func (a *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = a.DB.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
+			OrgRole, DepartmentRole, TeamRole, UserErr = a.OrganizationService.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -467,7 +467,7 @@ func (a *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = a.DB.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
+			OrgRole, DepartmentRole, TeamRole, UserErr = a.OrganizationService.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return

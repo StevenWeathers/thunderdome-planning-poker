@@ -9,7 +9,7 @@ import (
 )
 
 // DepartmentUserRole gets a users role in department (and organization)
-func (d *Database) DepartmentUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string) (string, string, error) {
+func (d *OrganizationService) DepartmentUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string) (string, string, error) {
 	var orgRole string
 	var departmentRole string
 
@@ -31,7 +31,7 @@ func (d *Database) DepartmentUserRole(ctx context.Context, UserID string, OrgID 
 }
 
 // DepartmentGet gets a department
-func (d *Database) DepartmentGet(ctx context.Context, DepartmentID string) (*thunderdome.Department, error) {
+func (d *OrganizationService) DepartmentGet(ctx context.Context, DepartmentID string) (*thunderdome.Department, error) {
 	var org = &thunderdome.Department{}
 
 	e := d.DB.QueryRowContext(ctx,
@@ -52,7 +52,7 @@ func (d *Database) DepartmentGet(ctx context.Context, DepartmentID string) (*thu
 }
 
 // OrganizationDepartmentList gets a list of organization departments
-func (d *Database) OrganizationDepartmentList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Department {
+func (d *OrganizationService) OrganizationDepartmentList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Department {
 	var departments = make([]*thunderdome.Department, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM department_list($1, $2, $3);`,
@@ -85,7 +85,7 @@ func (d *Database) OrganizationDepartmentList(ctx context.Context, OrgID string,
 }
 
 // DepartmentCreate creates an organization department
-func (d *Database) DepartmentCreate(ctx context.Context, OrgID string, OrgName string) (*thunderdome.Department, error) {
+func (d *OrganizationService) DepartmentCreate(ctx context.Context, OrgID string, OrgName string) (*thunderdome.Department, error) {
 	od := &thunderdome.Department{}
 
 	err := d.DB.QueryRowContext(ctx, `
@@ -103,7 +103,7 @@ func (d *Database) DepartmentCreate(ctx context.Context, OrgID string, OrgName s
 }
 
 // DepartmentTeamList gets a list of department teams
-func (d *Database) DepartmentTeamList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.Team {
+func (d *OrganizationService) DepartmentTeamList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.Team {
 	var teams = make([]*thunderdome.Team, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM department_team_list($1, $2, $3);`,
@@ -136,7 +136,7 @@ func (d *Database) DepartmentTeamList(ctx context.Context, DepartmentID string, 
 }
 
 // DepartmentTeamCreate creates a department team
-func (d *Database) DepartmentTeamCreate(ctx context.Context, DepartmentID string, TeamName string) (*thunderdome.Team, error) {
+func (d *OrganizationService) DepartmentTeamCreate(ctx context.Context, DepartmentID string, TeamName string) (*thunderdome.Team, error) {
 	t := &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx, `
@@ -154,7 +154,7 @@ func (d *Database) DepartmentTeamCreate(ctx context.Context, DepartmentID string
 }
 
 // DepartmentUserList gets a list of department users
-func (d *Database) DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.DepartmentUser {
+func (d *OrganizationService) DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.DepartmentUser {
 	var users = make([]*thunderdome.DepartmentUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, email, role, avatar FROM department_user_list($1, $2, $3);`,
@@ -189,7 +189,7 @@ func (d *Database) DepartmentUserList(ctx context.Context, DepartmentID string, 
 }
 
 // DepartmentAddUser adds a user to an organization department
-func (d *Database) DepartmentAddUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error) {
+func (d *OrganizationService) DepartmentAddUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
 		`SELECT department_user_add($1, $2, $3);`,
 		DepartmentID,
@@ -206,7 +206,7 @@ func (d *Database) DepartmentAddUser(ctx context.Context, DepartmentID string, U
 }
 
 // DepartmentRemoveUser removes a user from a department (and department teams)
-func (d *Database) DepartmentRemoveUser(ctx context.Context, DepartmentID string, UserID string) error {
+func (d *OrganizationService) DepartmentRemoveUser(ctx context.Context, DepartmentID string, UserID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`CALL department_user_remove($1, $2);`,
 		DepartmentID,
@@ -222,7 +222,7 @@ func (d *Database) DepartmentRemoveUser(ctx context.Context, DepartmentID string
 }
 
 // DepartmentTeamUserRole gets a users role in organization department team
-func (d *Database) DepartmentTeamUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string, TeamID string) (string, string, string, error) {
+func (d *OrganizationService) DepartmentTeamUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string, TeamID string) (string, string, string, error) {
 	var orgRole string
 	var departmentRole string
 	var teamRole string
@@ -247,7 +247,7 @@ func (d *Database) DepartmentTeamUserRole(ctx context.Context, UserID string, Or
 }
 
 // DepartmentDelete deletes a department
-func (d *Database) DepartmentDelete(ctx context.Context, DepartmentID string) error {
+func (d *OrganizationService) DepartmentDelete(ctx context.Context, DepartmentID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`CALL department_delete($1);`,
 		DepartmentID,

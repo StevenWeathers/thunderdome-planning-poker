@@ -55,21 +55,22 @@ type Config struct {
 }
 
 type Service struct {
-	Config            *Config
-	Router            *mux.Router
-	Email             *email.Email
-	Cookie            *securecookie.SecureCookie
-	DB                *db.Database
-	Logger            *otelzap.Logger
-	UserService       thunderdome.UserService
-	APIKeyService     thunderdome.APIKeyService
-	AlertService      thunderdome.AlertService
-	AuthService       thunderdome.AuthService
-	BattleService     thunderdome.BattleService
-	CheckinService    thunderdome.CheckinService
-	RetroService      thunderdome.RetroService
-	StoryboardService thunderdome.StoryboardService
-	TeamService       thunderdome.TeamService
+	Config              *Config
+	Router              *mux.Router
+	Email               *email.Email
+	Cookie              *securecookie.SecureCookie
+	DB                  *db.Database
+	Logger              *otelzap.Logger
+	UserService         thunderdome.UserService
+	APIKeyService       thunderdome.APIKeyService
+	AlertService        thunderdome.AlertService
+	AuthService         thunderdome.AuthService
+	BattleService       thunderdome.BattleService
+	CheckinService      thunderdome.CheckinService
+	RetroService        thunderdome.RetroService
+	StoryboardService   thunderdome.StoryboardService
+	TeamService         thunderdome.TeamService
+	OrganizationService thunderdome.OrganizationService
 }
 
 // standardJsonResponse structure used for all restful APIs response body

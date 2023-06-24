@@ -44,7 +44,7 @@ func (a *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := a.DB.OrganizationListByUser(r.Context(), UserID, Limit, Offset)
+		Organizations := a.OrganizationService.OrganizationListByUser(r.Context(), UserID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Organizations, nil)
 	}
@@ -72,7 +72,7 @@ func (a *Service) handleGetOrganizationByUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
-		Organization, err := a.DB.OrganizationGet(ctx, OrgID)
+		Organization, err := a.OrganizationService.OrganizationGet(ctx, OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -121,7 +121,7 @@ func (a *Service) handleCreateOrganization() http.HandlerFunc {
 			return
 		}
 
-		Organization, err := a.DB.OrganizationCreate(r.Context(), UserID, team.Name)
+		Organization, err := a.OrganizationService.OrganizationCreate(r.Context(), UserID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -151,7 +151,7 @@ func (a *Service) handleGetOrganizationTeams() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.DB.OrganizationTeamList(r.Context(), OrgID, Limit, Offset)
+		Teams := a.OrganizationService.OrganizationTeamList(r.Context(), OrgID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -177,7 +177,7 @@ func (a *Service) handleGetOrganizationUsers() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.DB.OrganizationUserList(r.Context(), OrgID, Limit, Offset)
+		Teams := a.OrganizationService.OrganizationUserList(r.Context(), OrgID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -217,7 +217,7 @@ func (a *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 			return
 		}
 
-		NewTeam, err := a.DB.OrganizationTeamCreate(r.Context(), OrgID, team.Name)
+		NewTeam, err := a.OrganizationService.OrganizationTeamCreate(r.Context(), OrgID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -270,7 +270,7 @@ func (a *Service) handleOrganizationAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.DB.OrganizationAddUser(r.Context(), OrgID, User.Id, u.Role)
+		_, err := a.OrganizationService.OrganizationAddUser(r.Context(), OrgID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -307,7 +307,7 @@ func (a *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.OrganizationRemoveUser(r.Context(), OrgID, UserID)
+		err := a.OrganizationService.OrganizationRemoveUser(r.Context(), OrgID, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -343,7 +343,7 @@ func (a *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		Organization, err := a.DB.OrganizationGet(r.Context(), OrgID)
+		Organization, err := a.OrganizationService.OrganizationGet(r.Context(), OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -412,7 +412,7 @@ func (a *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		OrgRole, roleErr := a.DB.OrganizationUserRole(r.Context(), User.Id, OrgID)
+		OrgRole, roleErr := a.OrganizationService.OrganizationUserRole(r.Context(), User.Id, OrgID)
 		if OrgRole == "" || roleErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
@@ -449,7 +449,7 @@ func (a *Service) handleDeleteOrganization() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.OrganizationDelete(r.Context(), OrgID)
+		err := a.OrganizationService.OrganizationDelete(r.Context(), OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

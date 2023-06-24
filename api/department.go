@@ -44,7 +44,7 @@ func (a *Service) handleGetOrganizationDepartments() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Departments := a.DB.OrganizationDepartmentList(r.Context(), OrgID, Limit, Offset)
+		Departments := a.OrganizationService.OrganizationDepartmentList(r.Context(), OrgID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Departments, nil)
 	}
@@ -74,13 +74,13 @@ func (a *Service) handleGetDepartmentByUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 
-		Organization, err := a.DB.OrganizationGet(ctx, OrgID)
+		Organization, err := a.OrganizationService.OrganizationGet(ctx, OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Department, err := a.DB.DepartmentGet(ctx, DepartmentID)
+		Department, err := a.OrganizationService.DepartmentGet(ctx, DepartmentID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -130,7 +130,7 @@ func (a *Service) handleCreateDepartment() http.HandlerFunc {
 			return
 		}
 
-		NewDepartment, err := a.DB.DepartmentCreate(r.Context(), OrgID, team.Name)
+		NewDepartment, err := a.OrganizationService.DepartmentCreate(r.Context(), OrgID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -160,7 +160,7 @@ func (a *Service) handleGetDepartmentTeams() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.DB.DepartmentTeamList(r.Context(), DepartmentID, Limit, Offset)
+		Teams := a.OrganizationService.DepartmentTeamList(r.Context(), DepartmentID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -186,7 +186,7 @@ func (a *Service) handleGetDepartmentUsers() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users := a.DB.DepartmentUserList(r.Context(), DepartmentID, Limit, Offset)
+		Users := a.OrganizationService.DepartmentUserList(r.Context(), DepartmentID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Users, nil)
 	}
@@ -226,7 +226,7 @@ func (a *Service) handleCreateDepartmentTeam() http.HandlerFunc {
 			return
 		}
 
-		NewTeam, err := a.DB.DepartmentTeamCreate(r.Context(), DepartmentID, team.Name)
+		NewTeam, err := a.OrganizationService.DepartmentTeamCreate(r.Context(), DepartmentID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -279,7 +279,7 @@ func (a *Service) handleDepartmentAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.DB.DepartmentAddUser(r.Context(), DepartmentId, User.Id, u.Role)
+		_, err := a.OrganizationService.DepartmentAddUser(r.Context(), DepartmentId, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -316,7 +316,7 @@ func (a *Service) handleDepartmentRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.DepartmentRemoveUser(r.Context(), DepartmentID, UserID)
+		err := a.OrganizationService.DepartmentRemoveUser(r.Context(), DepartmentID, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -372,7 +372,7 @@ func (a *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, DepartmentRole, roleErr := a.DB.DepartmentUserRole(r.Context(), User.Id, OrgID, DepartmentID)
+		_, DepartmentRole, roleErr := a.OrganizationService.DepartmentUserRole(r.Context(), User.Id, OrgID, DepartmentID)
 		if DepartmentRole == "" || roleErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "DEPARTMENT_USER_REQUIRED"))
 			return
@@ -415,13 +415,13 @@ func (a *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		TeamID := vars["teamId"]
 
-		Organization, err := a.DB.OrganizationGet(r.Context(), OrgID)
+		Organization, err := a.OrganizationService.OrganizationGet(r.Context(), OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Department, err := a.DB.DepartmentGet(r.Context(), DepartmentID)
+		Department, err := a.OrganizationService.DepartmentGet(r.Context(), DepartmentID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -467,7 +467,7 @@ func (a *Service) handleDeleteDepartment() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.DepartmentDelete(r.Context(), DepartmentID)
+		err := a.OrganizationService.DepartmentDelete(r.Context(), DepartmentID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
