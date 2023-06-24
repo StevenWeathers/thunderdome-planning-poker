@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/spf13/viper"
 	"io"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
@@ -32,7 +32,7 @@ type retroCreateRequestBody struct {
 // @Param departmentId path string false "the department ID"
 // @Param teamId path string false "the team ID"
 // @Param retro body retroCreateRequestBody false "new retro object"
-// @Success 200 object standardJsonResponse{data=model.Retro}
+// @Success 200 object standardJsonResponse{data=thunderdome.Retro}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -40,7 +40,7 @@ type retroCreateRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/retros [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/retros [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
-func (a *api) handleRetroCreate() http.HandlerFunc {
+func (a *Service) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -71,13 +71,13 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 
-		var newRetro *model.Retro
+		var newRetro *thunderdome.Retro
 		var err error
 		// if retro created with team association
 
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newRetro, err = a.db.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+				newRetro, err = a.RetroService.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -87,7 +87,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newRetro, err = a.db.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+			newRetro, err = a.RetroService.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -104,18 +104,18 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 // @Tags retro
 // @Produce  json
 // @Param retroId path string true "the retro ID to get"
-// @Success 200 object standardJsonResponse{data=model.Retro}
+// @Success 200 object standardJsonResponse{data=thunderdome.Retro}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId} [get]
-func (a *api) handleRetroGet() http.HandlerFunc {
+func (a *Service) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		re, err := a.db.RetroGet(RetroID, UserID)
+		re, err := a.RetroService.RetroGet(RetroID, UserID)
 
 		if err != nil {
 			http.NotFound(w, r)
@@ -134,17 +134,17 @@ func (a *api) handleRetroGet() http.HandlerFunc {
 // @Param userId path string true "the user ID to get retros for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Retro}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Retro}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/retros [get]
-func (a *api) handleRetrosGetByUser() http.HandlerFunc {
+func (a *Service) handleRetrosGetByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		retros, err := a.db.RetroGetByUser(UserID)
+		retros, err := a.RetroService.RetroGetByUser(UserID)
 		if err != nil {
 			http.NotFound(w, r)
 			return
@@ -162,23 +162,23 @@ func (a *api) handleRetrosGetByUser() http.HandlerFunc {
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Param active query boolean false "Only active retros"
-// @Success 200 object standardJsonResponse{data=[]model.Retro}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Retro}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros [get]
-func (a *api) handleGetRetros() http.HandlerFunc {
+func (a *Service) handleGetRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
 		var err error
 		var Count int
-		var Retros []*model.Retro
+		var Retros []*thunderdome.Retro
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Retros, Count, err = a.db.GetActiveRetros(Limit, Offset)
+			Retros, Count, err = a.RetroService.GetActiveRetros(Limit, Offset)
 		} else {
-			Retros, Count, err = a.db.GetRetros(Limit, Offset)
+			Retros, Count, err = a.RetroService.GetRetros(Limit, Offset)
 		}
 
 		if err != nil {
@@ -215,7 +215,7 @@ type actionUpdateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId} [put]
-func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
+func (a *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionUpdateRequestBody{}
 
@@ -270,7 +270,7 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId} [delete]
-func (a *api) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
+func (a *Service) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
@@ -319,7 +319,7 @@ type actionCommentRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments [post]
-func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
+func (a *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
 
@@ -355,7 +355,7 @@ func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
 			return
 		}
 
-		action, err := a.db.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
+		action, err := a.RetroService.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -379,7 +379,7 @@ func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [put]
-func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
+func (a *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
 
@@ -420,7 +420,7 @@ func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
 			return
 		}
 
-		action, err := a.db.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
+		action, err := a.RetroService.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -443,7 +443,7 @@ func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [post]
-func (a *api) handleRetroActionCommentDelete() http.HandlerFunc {
+func (a *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
@@ -465,7 +465,7 @@ func (a *api) handleRetroActionCommentDelete() http.HandlerFunc {
 			return
 		}
 
-		action, err := a.db.RetroActionCommentDelete(RetroID, ActionID, CommentID)
+		action, err := a.RetroService.RetroActionCommentDelete(RetroID, ActionID, CommentID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -486,7 +486,7 @@ func (a *api) handleRetroActionCommentDelete() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId} [delete]
-func (a *api) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
+func (a *Service) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]

@@ -40,42 +40,42 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
 
 	var d = &Database{
 		// read environment variables and sets up database configuration values
-		config:              config,
-		htmlSanitizerPolicy: bmp,
-		logger:              logger,
+		Config:              config,
+		HTMLSanitizerPolicy: bmp,
+		Logger:              logger,
 	}
 
 	psqlInfo := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		d.config.Host,
-		d.config.Port,
-		d.config.User,
-		d.config.Password,
-		d.config.Name,
-		d.config.SSLMode,
+		d.Config.Host,
+		d.Config.Port,
+		d.Config.User,
+		d.Config.Password,
+		d.Config.Name,
+		d.Config.SSLMode,
 	)
 
 	pdb, err := otelsql.Open("postgres", psqlInfo, otelsql.WithAttributes(
 		semconv.DBSystemPostgreSQL,
 	))
 	if err != nil {
-		d.logger.Ctx(ctx).Fatal("error connecting to the database: ", zap.Error(err))
+		d.Logger.Ctx(ctx).Fatal("error connecting to the database: ", zap.Error(err))
 	}
-	d.db = pdb
-	d.db.SetMaxOpenConns(d.config.MaxOpenConns)
-	d.db.SetMaxIdleConns(d.config.MaxIdleConns)
-	d.db.SetConnMaxLifetime(time.Duration(d.config.ConnMaxLifetime) * time.Minute)
+	d.DB = pdb
+	d.DB.SetMaxOpenConns(d.Config.MaxOpenConns)
+	d.DB.SetMaxIdleConns(d.Config.MaxIdleConns)
+	d.DB.SetConnMaxLifetime(time.Duration(d.Config.ConnMaxLifetime) * time.Minute)
 
 	err = otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
 		semconv.DBSystemPostgreSQL,
 	))
 	if err != nil {
-		d.logger.Ctx(ctx).Error("RegisterDBStatsMetrics error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("RegisterDBStatsMetrics error", zap.Error(err))
 	}
 
 	driver, err := postgres.WithInstance(pdb, &postgres.Config{})
 	if err != nil {
-		d.logger.Ctx(ctx).Error("db driver error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("db driver error", zap.Error(err))
 	}
 	m, err := migrate.NewWithInstance(
 		"iofs",
@@ -83,25 +83,25 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
 		"postgres",
 		driver)
 	if err != nil {
-		d.logger.Error("new db migration instance", zap.Error(err))
+		d.Logger.Error("new db migration instance", zap.Error(err))
 	}
 	if err := m.Up(); err != nil && err.Error() != "no change" {
-		d.logger.Ctx(ctx).Error("db migration up error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("db migration up error", zap.Error(err))
 	}
 
 	// on server start reset all users to active false for battles
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`call deactivate_all_users();`); err != nil {
-		d.logger.Ctx(ctx).Error("call deactivate_all_users error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("call deactivate_all_users error", zap.Error(err))
 	}
 
 	// on server start if admin email is specified set that user to admin type
 	if AdminEmail != "" {
-		if _, err := d.db.Exec(
+		if _, err := d.DB.Exec(
 			`call promote_user_by_email($1);`,
 			AdminEmail,
 		); err != nil {
-			d.logger.Ctx(ctx).Error("call promote_user_by_email error", zap.Error(err), zap.String("admin_email", AdminEmail))
+			d.Logger.Ctx(ctx).Error("call promote_user_by_email error", zap.Error(err), zap.String("admin_email", AdminEmail))
 		}
 	}
 

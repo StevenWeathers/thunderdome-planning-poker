@@ -2,11 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"io"
 	"net/http"
 	"strings"
-
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 
 	"github.com/spf13/viper"
 )
@@ -17,9 +16,9 @@ type userLoginRequestBody struct {
 }
 
 type loginResponse struct {
-	User        *model.User `json:"user"`
-	SessionId   string      `json:"sessionId"`
-	MFARequired bool        `json:"mfaRequired"`
+	User        *thunderdome.User `json:"user"`
+	SessionId   string            `json:"sessionId"`
+	MFARequired bool              `json:"mfaRequired"`
 }
 
 // handleLogin attempts to log in the user
@@ -33,7 +32,7 @@ type loginResponse struct {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth [post]
-func (a *api) handleLogin() http.HandlerFunc {
+func (a *Service) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -54,7 +53,7 @@ func (a *api) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		authedUser, sessionId, err := a.db.AuthUser(r.Context(), u.Email, u.Password)
+		authedUser, sessionId, err := a.AuthService.AuthUser(r.Context(), u.Email, u.Password)
 		if err != nil {
 			userErr := err.Error()
 			if userErr == "USER_NOT_FOUND" || userErr == "INVALID_PASSWORD" || userErr == "USER_DISABLED" {
@@ -98,7 +97,7 @@ func (a *api) handleLogin() http.HandlerFunc {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/ldap [post]
-func (a *api) handleLdapLogin() http.HandlerFunc {
+func (a *Service) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -157,7 +156,7 @@ func (a *api) handleLdapLogin() http.HandlerFunc {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth [get]
-func (a *api) handleHeaderLogin() http.HandlerFunc {
+func (a *Service) handleHeaderLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		viper.GetString("auth.ldap.url")
 
@@ -211,7 +210,7 @@ type mfaLoginRequestBody struct {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/mfa [post]
-func (a *api) handleMFALogin() http.HandlerFunc {
+func (a *Service) handleMFALogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -232,7 +231,7 @@ func (a *api) handleMFALogin() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.MFATokenValidate(r.Context(), u.SessionId, u.Passcode)
+		err := a.AuthService.MFATokenValidate(r.Context(), u.SessionId, u.Passcode)
 		if err != nil {
 			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_AUTHENTICATOR_TOKEN"))
 			return
@@ -248,13 +247,13 @@ func (a *api) handleMFALogin() http.HandlerFunc {
 	}
 }
 
-// handleLogout clears the user cookie(s) ending session
+// handleLogout clears the user Cookie(s) ending session
 // @Summary Logout
 // @Description Logs the user out by deleting session cookies
 // @Tags auth
 // @Success 200
 // @Router /auth/logout [delete]
-func (a *api) handleLogout() http.HandlerFunc {
+func (a *Service) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		SessionId, cookieErr := a.validateSessionCookie(w, r)
 		if cookieErr != nil {
@@ -262,7 +261,7 @@ func (a *api) handleLogout() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.DeleteSession(r.Context(), SessionId)
+		err := a.AuthService.DeleteSession(r.Context(), SessionId)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -283,11 +282,11 @@ type guestUserCreateRequestBody struct {
 // @Tags auth
 // @Produce json
 // @Param user body guestUserCreateRequestBody false "guest user object"
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=thunderdome.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/guest [post]
-func (a *api) handleCreateGuestUser() http.HandlerFunc {
+func (a *Service) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
 		if !AllowGuests {
@@ -314,7 +313,7 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 			return
 		}
 
-		newUser, err := a.db.CreateUserGuest(r.Context(), u.Name)
+		newUser, err := a.UserService.CreateUserGuest(r.Context(), u.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -343,11 +342,11 @@ type userRegisterRequestBody struct {
 // @Tags auth
 // @Produce json
 // @Param user body userRegisterRequestBody false "new user object"
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=thunderdome.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/register [post]
-func (a *api) handleUserRegistration() http.HandlerFunc {
+func (a *Service) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
 		if !AllowRegistration {
@@ -387,16 +386,22 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, SessionID, err := a.db.CreateUserRegistered(r.Context(), UserName, UserEmail, UserPassword, ActiveUserID)
+		newUser, VerifyID, err := a.UserService.CreateUserRegistered(r.Context(), UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.email.SendWelcome(UserName, UserEmail, VerifyID)
+		a.Email.SendWelcome(UserName, UserEmail, VerifyID)
 
 		if ActiveUserID != "" {
 			a.clearUserCookies(w)
+		}
+
+		SessionID, err := a.AuthService.CreateSession(r.Context(), newUser.Id)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
 		cookieErr := a.createSessionCookie(w, SessionID)
@@ -413,15 +418,15 @@ type forgotPasswordRequestBody struct {
 	Email string `json:"email" validate:"required,email"`
 }
 
-// handleForgotPassword attempts to send a password reset email
+// handleForgotPassword attempts to send a password reset Email
 // @Summary Forgot Password
-// @Description Sends a forgot password reset email to user
+// @Description Sends a forgot password reset Email to user
 // @Tags auth
 // @Produce json
 // @Param user body forgotPasswordRequestBody false "forgot password object"
 // @Success 200 object standardJsonResponse{}
 // @Router /auth/forgot-password [post]
-func (a *api) handleForgotPassword() http.HandlerFunc {
+func (a *Service) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -444,9 +449,9 @@ func (a *api) handleForgotPassword() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		ResetID, UserName, resetErr := a.db.UserResetRequest(r.Context(), UserEmail)
+		ResetID, UserName, resetErr := a.AuthService.UserResetRequest(r.Context(), UserEmail)
 		if resetErr == nil {
-			a.email.SendForgotPassword(UserName, UserEmail, ResetID)
+			a.Email.SendForgotPassword(UserName, UserEmail, ResetID)
 		}
 
 		a.Success(w, r, http.StatusOK, nil, nil)
@@ -469,7 +474,7 @@ type resetPasswordRequestBody struct {
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /auth/reset-password [patch]
-func (a *api) handleResetPassword() http.HandlerFunc {
+func (a *Service) handleResetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -490,13 +495,13 @@ func (a *api) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, resetErr := a.db.UserResetPassword(r.Context(), u.ResetID, u.Password1)
+		UserName, UserEmail, resetErr := a.AuthService.UserResetPassword(r.Context(), u.ResetID, u.Password1)
 		if resetErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, resetErr)
 			return
 		}
 
-		a.email.SendPasswordReset(UserName, UserEmail)
+		a.Email.SendPasswordReset(UserName, UserEmail)
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -518,7 +523,7 @@ type updatePasswordRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /auth/update-password [patch]
-func (a *api) handleUpdatePassword() http.HandlerFunc {
+func (a *Service) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		body, bodyErr := io.ReadAll(r.Body)
@@ -540,13 +545,13 @@ func (a *api) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(r.Context(), UserID, u.Password1)
+		UserName, UserEmail, updateErr := a.AuthService.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
-		a.email.SendPasswordUpdate(UserName, UserEmail)
+		a.Email.SendPasswordUpdate(UserName, UserEmail)
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -558,14 +563,14 @@ type verificationRequestBody struct {
 
 // handleAccountVerification attempts to verify a users account
 // @Summary Verify User
-// @Description Updates the users verified email status
+// @Description Updates the users verified Email status
 // @Tags auth
 // @Produce json
 // @Param verify body verificationRequestBody false "verify object"
 // @Success 200 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /auth/verify [patch]
-func (a *api) handleAccountVerification() http.HandlerFunc {
+func (a *Service) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -586,7 +591,7 @@ func (a *api) handleAccountVerification() http.HandlerFunc {
 			return
 		}
 
-		verifyErr := a.db.VerifyUserAccount(r.Context(), u.VerifyID)
+		verifyErr := a.AuthService.VerifyUserAccount(r.Context(), u.VerifyID)
 		if verifyErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, verifyErr)
 			return
@@ -602,18 +607,18 @@ func (a *api) handleAccountVerification() http.HandlerFunc {
 // @Tags auth
 // @Success 200
 // @Router /auth/mfa/setup/generate [post]
-func (a *api) handleMFASetupGenerate() http.HandlerFunc {
+func (a *Service) handleMFASetupGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		u, err := a.db.GetUser(ctx, UserID)
+		u, err := a.UserService.GetUser(ctx, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		secret, png64, err := a.db.MFASetupGenerate(u.Email)
+		secret, png64, err := a.AuthService.MFASetupGenerate(u.Email)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -640,7 +645,7 @@ type mfaSetupValidateRequestBody struct {
 // @Tags auth
 // @Success 200
 // @Router /auth/mfa/setup/validate [post]
-func (a *api) handleMFASetupValidate() http.HandlerFunc {
+func (a *Service) handleMFASetupValidate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
@@ -669,7 +674,7 @@ func (a *api) handleMFASetupValidate() http.HandlerFunc {
 		}
 		res := result{Result: "SUCCESS"}
 
-		err := a.db.MFASetupValidate(ctx, UserID, v.Secret, v.Passcode)
+		err := a.AuthService.MFASetupValidate(ctx, UserID, v.Secret, v.Passcode)
 		if err != nil {
 			res.Result = err.Error()
 		}
@@ -684,12 +689,12 @@ func (a *api) handleMFASetupValidate() http.HandlerFunc {
 // @Tags auth
 // @Success 200
 // @Router /auth/mfa [delete]
-func (a *api) handleMFARemove() http.HandlerFunc {
+func (a *Service) handleMFARemove() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		err := a.db.MFARemove(ctx, UserID)
+		err := a.AuthService.MFARemove(ctx, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

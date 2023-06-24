@@ -27,13 +27,13 @@ func (b *Service) UserVote(ctx context.Context, BattleID string, UserID string, 
 		return nil, err, false
 	}
 
-	Plans, AllVoted := b.db.SetVote(BattleID, UserID, wv.PlanID, wv.VoteValue)
+	Plans, AllVoted := b.BattleService.SetVote(BattleID, UserID, wv.PlanID, wv.VoteValue)
 
 	updatedPlans, _ := json.Marshal(Plans)
 	msg = createSocketEvent("vote_activity", string(updatedPlans), UserID)
 
 	if AllVoted && wv.AutoFinishVoting {
-		plans, err := b.db.EndPlanVoting(BattleID, wv.PlanID)
+		plans, err := b.BattleService.EndPlanVoting(BattleID, wv.PlanID)
 		if err != nil {
 			return nil, err, false
 		}
@@ -48,7 +48,7 @@ func (b *Service) UserVote(ctx context.Context, BattleID string, UserID string, 
 func (b *Service) UserVoteRetract(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	PlanID := EventValue
 
-	plans, err := b.db.RetractVote(BattleID, UserID, PlanID)
+	plans, err := b.BattleService.RetractVote(BattleID, UserID, PlanID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -61,7 +61,7 @@ func (b *Service) UserVoteRetract(ctx context.Context, BattleID string, UserID s
 
 // UserPromote handles promoting a user to a leader
 func (b *Service) UserPromote(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	leaders, err := b.db.SetBattleLeader(BattleID, EventValue)
+	leaders, err := b.BattleService.SetBattleLeader(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -74,7 +74,7 @@ func (b *Service) UserPromote(ctx context.Context, BattleID string, UserID strin
 
 // UserDemote handles demoting a user from a leader
 func (b *Service) UserDemote(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	leaders, err := b.db.DemoteBattleLeader(BattleID, EventValue)
+	leaders, err := b.BattleService.DemoteBattleLeader(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -87,13 +87,13 @@ func (b *Service) UserDemote(ctx context.Context, BattleID string, UserID string
 
 // UserPromoteSelf handles self-promoting a user to a leader
 func (b *Service) UserPromoteSelf(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	leaderCode, err := b.db.GetBattleLeaderCode(BattleID)
+	leaderCode, err := b.BattleService.GetBattleLeaderCode(BattleID)
 	if err != nil {
 		return nil, err, false
 	}
 
 	if EventValue == leaderCode {
-		leaders, err := b.db.SetBattleLeader(BattleID, UserID)
+		leaders, err := b.BattleService.SetBattleLeader(BattleID, UserID)
 		if err != nil {
 			return nil, err, false
 		}
@@ -116,7 +116,7 @@ func (b *Service) UserSpectatorToggle(ctx context.Context, BattleID string, User
 	if err != nil {
 		return nil, err, false
 	}
-	users, err := b.db.ToggleSpectator(BattleID, UserID, st.Spectator)
+	users, err := b.BattleService.ToggleSpectator(BattleID, UserID, st.Spectator)
 	if err != nil {
 		return nil, err, false
 	}
@@ -129,7 +129,7 @@ func (b *Service) UserSpectatorToggle(ctx context.Context, BattleID string, User
 
 // PlanVoteEnd handles ending plan voting
 func (b *Service) PlanVoteEnd(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	plans, err := b.db.EndPlanVoting(BattleID, EventValue)
+	plans, err := b.BattleService.EndPlanVoting(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -155,7 +155,7 @@ func (b *Service) Revise(ctx context.Context, BattleID string, UserID string, Ev
 		return nil, err, false
 	}
 
-	err = b.db.ReviseBattle(
+	err = b.BattleService.ReviseBattle(
 		BattleID,
 		rb.BattleName,
 		rb.PointValuesAllowed,
@@ -179,7 +179,7 @@ func (b *Service) Revise(ctx context.Context, BattleID string, UserID string, Ev
 
 // Delete handles deleting the battle
 func (b *Service) Delete(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	err := b.db.DeleteBattle(BattleID)
+	err := b.BattleService.DeleteBattle(BattleID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -204,7 +204,7 @@ func (b *Service) PlanAdd(ctx context.Context, BattleID string, UserID string, E
 		return nil, err, false
 	}
 
-	plans, err := b.db.CreatePlan(BattleID, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
+	plans, err := b.BattleService.CreatePlan(BattleID, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
 	if err != nil {
 		return nil, err, false
 	}
@@ -231,7 +231,7 @@ func (b *Service) PlanRevise(ctx context.Context, BattleID string, UserID string
 		return nil, err, false
 	}
 
-	plans, err := b.db.RevisePlan(BattleID, p.Id, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
+	plans, err := b.BattleService.RevisePlan(BattleID, p.Id, p.Name, p.Type, p.ReferenceId, p.Link, p.Description, p.AcceptanceCriteria, p.Priority)
 	if err != nil {
 		return nil, err, false
 	}
@@ -243,7 +243,7 @@ func (b *Service) PlanRevise(ctx context.Context, BattleID string, UserID string
 
 // PlanDelete handles deleting a plan
 func (b *Service) PlanDelete(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	plans, err := b.db.BurnPlan(BattleID, EventValue)
+	plans, err := b.BattleService.BurnPlan(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -255,7 +255,7 @@ func (b *Service) PlanDelete(ctx context.Context, BattleID string, UserID string
 
 // PlanActivate handles activating a plan for voting
 func (b *Service) PlanActivate(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	plans, err := b.db.ActivatePlanVoting(BattleID, EventValue)
+	plans, err := b.BattleService.ActivatePlanVoting(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -267,7 +267,7 @@ func (b *Service) PlanActivate(ctx context.Context, BattleID string, UserID stri
 
 // PlanSkip handles skipping a plan voting
 func (b *Service) PlanSkip(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	plans, err := b.db.SkipPlan(BattleID, EventValue)
+	plans, err := b.BattleService.SkipPlan(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
@@ -288,7 +288,7 @@ func (b *Service) PlanFinalize(ctx context.Context, BattleID string, UserID stri
 		return nil, err, false
 	}
 
-	plans, err := b.db.FinalizePlan(BattleID, p.Id, p.Points)
+	plans, err := b.BattleService.FinalizePlan(BattleID, p.Id, p.Points)
 	if err != nil {
 		return nil, err, false
 	}
@@ -300,7 +300,7 @@ func (b *Service) PlanFinalize(ctx context.Context, BattleID string, UserID stri
 
 // Abandon handles setting abandoned true so battle doesn't show up in users battle list, then leaves battle
 func (b *Service) Abandon(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	_, err := b.db.AbandonBattle(BattleID, UserID)
+	_, err := b.BattleService.AbandonBattle(BattleID, UserID)
 	if err != nil {
 		return nil, err, false
 	}

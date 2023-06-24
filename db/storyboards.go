@@ -2,20 +2,29 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
 
+// StoryboardService represents a PostgreSQL implementation of thunderdome.StoryboardService.
+type StoryboardService struct {
+	DB         *sql.DB
+	Logger     *otelzap.Logger
+	AESHashKey string
+}
+
 //CreateStoryboard adds a new storyboard
-func (d *Database) CreateStoryboard(ctx context.Context, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*model.Storyboard, error) {
+func (d *StoryboardService) CreateStoryboard(ctx context.Context, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*thunderdome.Storyboard, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -23,21 +32,21 @@ func (d *Database) CreateStoryboard(ctx context.Context, OwnerID string, Storybo
 	}
 
 	if FacilitatorCode != "" {
-		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
 		encryptedFacilitatorCode = EncryptedCode
 	}
 
-	var b = &model.Storyboard{
+	var b = &thunderdome.Storyboard{
 		Id:      "",
 		OwnerID: OwnerID,
 		Name:    StoryboardName,
-		Users:   make([]*model.StoryboardUser, 0),
+		Users:   make([]*thunderdome.StoryboardUser, 0),
 	}
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT * FROM create_storyboard($1, $2, $3, $4);`,
 		OwnerID,
 		StoryboardName,
@@ -45,7 +54,7 @@ func (d *Database) CreateStoryboard(ctx context.Context, OwnerID string, Storybo
 		encryptedFacilitatorCode,
 	).Scan(&b.Id)
 	if e != nil {
-		d.logger.Error("create_storyboard query error", zap.Error(e))
+		d.Logger.Error("create_storyboard query error", zap.Error(e))
 		return nil, errors.New("error creating storyboard")
 	}
 
@@ -53,12 +62,12 @@ func (d *Database) CreateStoryboard(ctx context.Context, OwnerID string, Storybo
 }
 
 //TeamCreateStoryboard adds a new storyboard associated to a team
-func (d *Database) TeamCreateStoryboard(ctx context.Context, TeamID string, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*model.Storyboard, error) {
+func (d *StoryboardService) TeamCreateStoryboard(ctx context.Context, TeamID string, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*thunderdome.Storyboard, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
@@ -66,21 +75,21 @@ func (d *Database) TeamCreateStoryboard(ctx context.Context, TeamID string, Owne
 	}
 
 	if FacilitatorCode != "" {
-		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, codeErr
 		}
 		encryptedFacilitatorCode = EncryptedCode
 	}
 
-	var b = &model.Storyboard{
+	var b = &thunderdome.Storyboard{
 		Id:      "",
 		OwnerID: OwnerID,
 		Name:    StoryboardName,
-		Users:   make([]*model.StoryboardUser, 0),
+		Users:   make([]*thunderdome.StoryboardUser, 0),
 	}
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT * FROM team_create_storyboard($1, $2, $3, $4, $5);`,
 		TeamID,
 		OwnerID,
@@ -89,7 +98,7 @@ func (d *Database) TeamCreateStoryboard(ctx context.Context, TeamID string, Owne
 		encryptedFacilitatorCode,
 	).Scan(&b.Id)
 	if e != nil {
-		d.logger.Error("team_create_storyboard query error", zap.Error(e))
+		d.Logger.Error("team_create_storyboard query error", zap.Error(e))
 		return nil, errors.New("error creating storyboard")
 	}
 
@@ -97,12 +106,12 @@ func (d *Database) TeamCreateStoryboard(ctx context.Context, TeamID string, Owne
 }
 
 // EditStoryboard updates the storyboard by ID
-func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, JoinCode string, FacilitatorCode string) error {
+func (d *StoryboardService) EditStoryboard(StoryboardID string, StoryboardName string, JoinCode string, FacilitatorCode string) error {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
 			return errors.New("unable to revise storyboard join_code")
 		}
@@ -110,17 +119,17 @@ func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, Jo
 	}
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(FacilitatorCode, d.AESHashKey)
 		if codeErr != nil {
 			return errors.New("unable to revise storyboard facilitator_code")
 		}
 		encryptedFacilitatorCode = EncryptedCode
 	}
 
-	if _, err := d.db.Exec(`call edit_storyboard($1, $2, $3, $4);`,
+	if _, err := d.DB.Exec(`call edit_storyboard($1, $2, $3, $4);`,
 		StoryboardID, StoryboardName, encryptedJoinCode, encryptedFacilitatorCode,
 	); err != nil {
-		d.logger.Error("update storyboard error", zap.Error(err))
+		d.Logger.Error("update storyboard error", zap.Error(err))
 		return errors.New("unable to edit storyboard")
 	}
 
@@ -128,23 +137,23 @@ func (d *Database) EditStoryboard(StoryboardID string, StoryboardName string, Jo
 }
 
 // GetStoryboard gets a storyboard by ID
-func (d *Database) GetStoryboard(StoryboardID string, UserID string) (*model.Storyboard, error) {
+func (d *StoryboardService) GetStoryboard(StoryboardID string, UserID string) (*thunderdome.Storyboard, error) {
 	var cl string
 	var JoinCode string
 	var facilitators string
 	var FacilitatorCode string
-	var b = &model.Storyboard{
+	var b = &thunderdome.Storyboard{
 		Id:          StoryboardID,
 		OwnerID:     "",
 		Name:        "",
-		Users:       make([]*model.StoryboardUser, 0),
-		Goals:       make([]*model.StoryboardGoal, 0),
-		ColorLegend: make([]*model.Color, 0),
-		Personas:    make([]*model.StoryboardPersona, 0),
+		Users:       make([]*thunderdome.StoryboardUser, 0),
+		Goals:       make([]*thunderdome.StoryboardGoal, 0),
+		ColorLegend: make([]*thunderdome.Color, 0),
+		Personas:    make([]*thunderdome.StoryboardPersona, 0),
 	}
 
 	// get storyboard
-	e := d.db.QueryRow(
+	e := d.DB.QueryRow(
 		`SELECT
 				s.id, s.name, s.owner_id, s.color_legend, COALESCE(s.join_code, ''), COALESCE(s.facilitator_code, ''),
 				 s.created_date, s.updated_date,
@@ -166,18 +175,18 @@ func (d *Database) GetStoryboard(StoryboardID string, UserID string) (*model.Sto
 		&facilitators,
 	)
 	if e != nil {
-		d.logger.Error("get storyboard query error", zap.Error(e))
+		d.Logger.Error("get storyboard query error", zap.Error(e))
 		return nil, errors.New("Not found")
 	}
 
 	clErr := json.Unmarshal([]byte(cl), &b.ColorLegend)
 	if clErr != nil {
-		d.logger.Error("color legend json error", zap.Error(clErr))
+		d.Logger.Error("color legend json error", zap.Error(clErr))
 	}
 
 	facilError := json.Unmarshal([]byte(facilitators), &b.Facilitators)
 	if facilError != nil {
-		d.logger.Error("facilitators json error", zap.Error(facilError))
+		d.Logger.Error("facilitators json error", zap.Error(facilError))
 	}
 	isFacilitator := contains(b.Facilitators, UserID)
 
@@ -186,7 +195,7 @@ func (d *Database) GetStoryboard(StoryboardID string, UserID string) (*model.Sto
 	b.Personas = d.GetStoryboardPersonas(StoryboardID)
 
 	if JoinCode != "" {
-		DecryptedCode, codeErr := decrypt(JoinCode, d.config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode join_code")
 		}
@@ -194,7 +203,7 @@ func (d *Database) GetStoryboard(StoryboardID string, UserID string) (*model.Sto
 	}
 
 	if FacilitatorCode != "" && isFacilitator {
-		DecryptedCode, codeErr := decrypt(FacilitatorCode, d.config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(FacilitatorCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode facilitator_code")
 		}
@@ -205,9 +214,9 @@ func (d *Database) GetStoryboard(StoryboardID string, UserID string) (*model.Sto
 }
 
 // GetStoryboardsByUser gets a list of storyboards by UserID
-func (d *Database) GetStoryboardsByUser(UserID string) ([]*model.Storyboard, int, error) {
-	var storyboards = make([]*model.Storyboard, 0)
-	storyboardRows, storyboardsErr := d.db.Query(`
+func (d *StoryboardService) GetStoryboardsByUser(UserID string) ([]*thunderdome.Storyboard, int, error) {
+	var storyboards = make([]*thunderdome.Storyboard, 0)
+	storyboardRows, storyboardsErr := d.DB.Query(`
 		SELECT * FROM get_storyboards_by_user($1);
 	`, UserID)
 	if storyboardsErr != nil {
@@ -216,11 +225,11 @@ func (d *Database) GetStoryboardsByUser(UserID string) ([]*model.Storyboard, int
 
 	defer storyboardRows.Close()
 	for storyboardRows.Next() {
-		var b = &model.Storyboard{
+		var b = &thunderdome.Storyboard{
 			Id:      "",
 			OwnerID: "",
 			Name:    "",
-			Users:   make([]*model.StoryboardUser, 0),
+			Users:   make([]*thunderdome.StoryboardUser, 0),
 		}
 		if err := storyboardRows.Scan(
 			&b.Id,
@@ -229,7 +238,7 @@ func (d *Database) GetStoryboardsByUser(UserID string) ([]*model.Storyboard, int
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			d.logger.Error("get_storyboards_by_user query scan error", zap.Error(err))
+			d.Logger.Error("get_storyboards_by_user query scan error", zap.Error(err))
 		} else {
 			storyboards = append(storyboards, b)
 		}
@@ -239,20 +248,20 @@ func (d *Database) GetStoryboardsByUser(UserID string) ([]*model.Storyboard, int
 }
 
 // ConfirmStoryboardFacilitator confirms the user is a facilitator of the storyboard
-func (d *Database) ConfirmStoryboardFacilitator(StoryboardID string, UserID string) error {
+func (d *StoryboardService) ConfirmStoryboardFacilitator(StoryboardID string, UserID string) error {
 	var facilitatorId string
 	var role string
-	err := d.db.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
+	err := d.DB.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
 	if err != nil {
-		d.logger.Error("error getting user role", zap.Error(err))
+		d.Logger.Error("error getting user role", zap.Error(err))
 		return errors.New("unable to get user role")
 	}
 
-	err = d.db.QueryRow(
+	err = d.DB.QueryRow(
 		`SELECT user_id FROM storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
 		StoryboardID, UserID).Scan(&facilitatorId)
 	if err != nil && role != "ADMIN" {
-		d.logger.Error("get ConfirmStoryboardFacilitator error", zap.Error(err))
+		d.Logger.Error("get ConfirmStoryboardFacilitator error", zap.Error(err))
 		return errors.New("storyboard facilitator not found")
 	}
 
@@ -260,18 +269,18 @@ func (d *Database) ConfirmStoryboardFacilitator(StoryboardID string, UserID stri
 }
 
 // GetStoryboardUsers retrieves the users for a given storyboard from db
-func (d *Database) GetStoryboardUsers(StoryboardID string) []*model.StoryboardUser {
-	var users = make([]*model.StoryboardUser, 0)
-	rows, err := d.db.Query(
+func (d *StoryboardService) GetStoryboardUsers(StoryboardID string) []*thunderdome.StoryboardUser {
+	var users = make([]*thunderdome.StoryboardUser, 0)
+	rows, err := d.DB.Query(
 		`SELECT * FROM get_storyboard_users($1);`,
 		StoryboardID,
 	)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w model.StoryboardUser
+			var w thunderdome.StoryboardUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
-				d.logger.Error("get_storyboard_users query scan error", zap.Error(err))
+				d.Logger.Error("get_storyboard_users query scan error", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -287,18 +296,18 @@ func (d *Database) GetStoryboardUsers(StoryboardID string) []*model.StoryboardUs
 }
 
 // GetStoryboardPersonas retrieves the personas for a given storyboard from db
-func (d *Database) GetStoryboardPersonas(StoryboardID string) []*model.StoryboardPersona {
-	var personas = make([]*model.StoryboardPersona, 0)
-	rows, err := d.db.Query(
+func (d *StoryboardService) GetStoryboardPersonas(StoryboardID string) []*thunderdome.StoryboardPersona {
+	var personas = make([]*thunderdome.StoryboardPersona, 0)
+	rows, err := d.DB.Query(
 		`SELECT * FROM get_storyboard_personas($1);`,
 		StoryboardID,
 	)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var p model.StoryboardPersona
+			var p thunderdome.StoryboardPersona
 			if err := rows.Scan(&p.Id, &p.Name, &p.Role, &p.Description); err != nil {
-				d.logger.Error("get_storyboard_personas query scan error", zap.Error(err))
+				d.Logger.Error("get_storyboard_personas query scan error", zap.Error(err))
 			} else {
 				personas = append(personas, &p)
 			}
@@ -309,15 +318,15 @@ func (d *Database) GetStoryboardPersonas(StoryboardID string) []*model.Storyboar
 }
 
 // AddUserToStoryboard adds a user by ID to the storyboard by ID
-func (d *Database) AddUserToStoryboard(StoryboardID string, UserID string) ([]*model.StoryboardUser, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) AddUserToStoryboard(StoryboardID string, UserID string) ([]*thunderdome.StoryboardUser, error) {
+	if _, err := d.DB.Exec(
 		`INSERT INTO storyboard_user (storyboard_id, user_id, active)
 		VALUES ($1, $2, true)
 		ON CONFLICT (storyboard_id, user_id) DO UPDATE SET active = true, abandoned = false`,
 		StoryboardID,
 		UserID,
 	); err != nil {
-		d.logger.Error("insert storybaord user error", zap.Error(err))
+		d.Logger.Error("insert storybaord user error", zap.Error(err))
 	}
 
 	users := d.GetStoryboardUsers(StoryboardID)
@@ -326,15 +335,15 @@ func (d *Database) AddUserToStoryboard(StoryboardID string, UserID string) ([]*m
 }
 
 // RetreatStoryboardUser removes a user from the current storyboard by ID
-func (d *Database) RetreatStoryboardUser(StoryboardID string, UserID string) []*model.StoryboardUser {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) RetreatStoryboardUser(StoryboardID string, UserID string) []*thunderdome.StoryboardUser {
+	if _, err := d.DB.Exec(
 		`UPDATE storyboard_user SET active = false WHERE storyboard_id = $1 AND user_id = $2`, StoryboardID, UserID); err != nil {
-		d.logger.Error("set storyboard user active false error", zap.Error(err))
+		d.Logger.Error("set storyboard user active false error", zap.Error(err))
 	}
 
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.logger.Error("set user last active error", zap.Error(err))
+		d.Logger.Error("set user last active error", zap.Error(err))
 	}
 
 	users := d.GetStoryboardUsers(StoryboardID)
@@ -343,10 +352,10 @@ func (d *Database) RetreatStoryboardUser(StoryboardID string, UserID string) []*
 }
 
 // GetStoryboardUserActiveStatus checks storyboard active status of User for given storyboard
-func (d *Database) GetStoryboardUserActiveStatus(StoryboardID string, UserID string) error {
+func (d *StoryboardService) GetStoryboardUserActiveStatus(StoryboardID string, UserID string) error {
 	var active bool
 
-	err := d.db.QueryRow(`
+	err := d.DB.QueryRow(`
 		SELECT coalesce(active, FALSE)
 		FROM storyboard_user
 		WHERE user_id = $2 AND storyboard_id = $1;`,
@@ -367,16 +376,16 @@ func (d *Database) GetStoryboardUserActiveStatus(StoryboardID string, UserID str
 }
 
 // AbandonStoryboard removes a user from the current storyboard by ID and sets abandoned true
-func (d *Database) AbandonStoryboard(StoryboardID string, UserID string) ([]*model.StoryboardUser, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) AbandonStoryboard(StoryboardID string, UserID string) ([]*thunderdome.StoryboardUser, error) {
+	if _, err := d.DB.Exec(
 		`UPDATE storyboard_user SET active = false, abandoned = true WHERE storyboard_id = $1 AND user_id = $2`, StoryboardID, UserID); err != nil {
-		d.logger.Error("set storyboard user active false error", zap.Error(err))
+		d.Logger.Error("set storyboard user active false error", zap.Error(err))
 		return nil, err
 	}
 
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.logger.Error("set user last active error", zap.Error(err))
+		d.Logger.Error("set user last active error", zap.Error(err))
 		return nil, err
 	}
 
@@ -385,29 +394,14 @@ func (d *Database) AbandonStoryboard(StoryboardID string, UserID string) ([]*mod
 	return users, nil
 }
 
-// SetStoryboardOwner sets the ownerId for the storyboard
-func (d *Database) SetStoryboardOwner(StoryboardID string, userID string, OwnerID string) (*model.Storyboard, error) {
-	if _, err := d.db.Exec(
-		`call set_storyboard_owner($1, $2);`, StoryboardID, OwnerID); err != nil {
-		d.logger.Error("call set_storyboard_owner error", zap.Error(err))
-	}
-
-	storyboard, err := d.GetStoryboard(StoryboardID, "")
-	if err != nil {
-		return nil, errors.New("Unable to promote owner")
-	}
-
-	return storyboard, nil
-}
-
 // StoryboardReviseColorLegend revises the storyboard color legend by StoryboardID
-func (d *Database) StoryboardReviseColorLegend(StoryboardID string, UserID string, ColorLegend string) (*model.Storyboard, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) StoryboardReviseColorLegend(StoryboardID string, UserID string, ColorLegend string) (*thunderdome.Storyboard, error) {
+	if _, err := d.DB.Exec(
 		`call revise_color_legend($1, $2);`,
 		StoryboardID,
 		ColorLegend,
 	); err != nil {
-		d.logger.Error("call revise_color_legend error", zap.Error(err))
+		d.Logger.Error("call revise_color_legend error", zap.Error(err))
 		return nil, err
 	}
 
@@ -420,10 +414,10 @@ func (d *Database) StoryboardReviseColorLegend(StoryboardID string, UserID strin
 }
 
 // DeleteStoryboard removes all storyboard associations and the storyboard itself from DB by StoryboardID
-func (d *Database) DeleteStoryboard(StoryboardID string, userID string) error {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) DeleteStoryboard(StoryboardID string, userID string) error {
+	if _, err := d.DB.Exec(
 		`call delete_storyboard($1);`, StoryboardID); err != nil {
-		d.logger.Error("call delete_storyboard error", zap.Error(err))
+		d.Logger.Error("call delete_storyboard error", zap.Error(err))
 		return err
 	}
 
@@ -431,15 +425,15 @@ func (d *Database) DeleteStoryboard(StoryboardID string, userID string) error {
 }
 
 // AddStoryboardPersona adds a persona to a storyboard
-func (d *Database) AddStoryboardPersona(StoryboardID string, UserID string, Name string, Role string, Description string) ([]*model.StoryboardPersona, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) AddStoryboardPersona(StoryboardID string, UserID string, Name string, Role string, Description string) ([]*thunderdome.StoryboardPersona, error) {
+	if _, err := d.DB.Exec(
 		`call persona_add($1, $2, $3, $4);`,
 		StoryboardID,
 		Name,
 		Role,
 		Description,
 	); err != nil {
-		d.logger.Error("call persona_add error", zap.Error(err))
+		d.Logger.Error("call persona_add error", zap.Error(err))
 	}
 
 	personas := d.GetStoryboardPersonas(StoryboardID)
@@ -448,8 +442,8 @@ func (d *Database) AddStoryboardPersona(StoryboardID string, UserID string, Name
 }
 
 // UpdateStoryboardPersona updates a storyboard persona
-func (d *Database) UpdateStoryboardPersona(StoryboardID string, UserID string, PersonaID string, Name string, Role string, Description string) ([]*model.StoryboardPersona, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) UpdateStoryboardPersona(StoryboardID string, UserID string, PersonaID string, Name string, Role string, Description string) ([]*thunderdome.StoryboardPersona, error) {
+	if _, err := d.DB.Exec(
 		`call persona_edit($1, $2, $3, $4, $5);`,
 		StoryboardID,
 		PersonaID,
@@ -457,7 +451,7 @@ func (d *Database) UpdateStoryboardPersona(StoryboardID string, UserID string, P
 		Role,
 		Description,
 	); err != nil {
-		d.logger.Error("call persona_edit error", zap.Error(err))
+		d.Logger.Error("call persona_edit error", zap.Error(err))
 	}
 
 	personas := d.GetStoryboardPersonas(StoryboardID)
@@ -466,13 +460,13 @@ func (d *Database) UpdateStoryboardPersona(StoryboardID string, UserID string, P
 }
 
 // DeleteStoryboardPersona deletes a storyboard persona
-func (d *Database) DeleteStoryboardPersona(StoryboardID string, UserID string, PersonaID string) ([]*model.StoryboardPersona, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) DeleteStoryboardPersona(StoryboardID string, UserID string, PersonaID string) ([]*thunderdome.StoryboardPersona, error) {
+	if _, err := d.DB.Exec(
 		`call persona_delete($1, $2);`,
 		StoryboardID,
 		PersonaID,
 	); err != nil {
-		d.logger.Error("call persona_delete error", zap.Error(err))
+		d.Logger.Error("call persona_delete error", zap.Error(err))
 	}
 
 	personas := d.GetStoryboardPersonas(StoryboardID)
@@ -481,11 +475,11 @@ func (d *Database) DeleteStoryboardPersona(StoryboardID string, UserID string, P
 }
 
 // GetStoryboards gets a list of storyboards
-func (d *Database) GetStoryboards(Limit int, Offset int) ([]*model.Storyboard, int, error) {
-	var storyboards = make([]*model.Storyboard, 0)
+func (d *StoryboardService) GetStoryboards(Limit int, Offset int) ([]*thunderdome.Storyboard, int, error) {
+	var storyboards = make([]*thunderdome.Storyboard, 0)
 	var Count int
 
-	e := d.db.QueryRow(
+	e := d.DB.QueryRow(
 		"SELECT COUNT(*) FROM storyboard;",
 	).Scan(
 		&Count,
@@ -494,7 +488,7 @@ func (d *Database) GetStoryboards(Limit int, Offset int) ([]*model.Storyboard, i
 		return nil, Count, e
 	}
 
-	rows, storyboardErr := d.db.Query(`
+	rows, storyboardErr := d.DB.Query(`
 		SELECT s.id, s.name, s.created_date, s.updated_date
 		FROM storyboard s
 		GROUP BY s.id ORDER BY s.created_date DESC
@@ -506,8 +500,8 @@ func (d *Database) GetStoryboards(Limit int, Offset int) ([]*model.Storyboard, i
 
 	defer rows.Close()
 	for rows.Next() {
-		var b = &model.Storyboard{
-			Users: make([]*model.StoryboardUser, 0),
+		var b = &thunderdome.Storyboard{
+			Users: make([]*thunderdome.StoryboardUser, 0),
 		}
 		if err := rows.Scan(
 			&b.Id,
@@ -515,7 +509,7 @@ func (d *Database) GetStoryboards(Limit int, Offset int) ([]*model.Storyboard, i
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			d.logger.Error("get storyboards error", zap.Error(err))
+			d.Logger.Error("get storyboards error", zap.Error(err))
 		} else {
 			storyboards = append(storyboards, b)
 		}
@@ -525,11 +519,11 @@ func (d *Database) GetStoryboards(Limit int, Offset int) ([]*model.Storyboard, i
 }
 
 // GetActiveStoryboards gets a list of active storyboards
-func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*model.Storyboard, int, error) {
-	var storyboards = make([]*model.Storyboard, 0)
+func (d *StoryboardService) GetActiveStoryboards(Limit int, Offset int) ([]*thunderdome.Storyboard, int, error) {
+	var storyboards = make([]*thunderdome.Storyboard, 0)
 	var Count int
 
-	e := d.db.QueryRow(
+	e := d.DB.QueryRow(
 		"SELECT COUNT(DISTINCT su.storyboard_id) FROM storyboard_user su WHERE su.active IS TRUE;",
 	).Scan(
 		&Count,
@@ -538,7 +532,7 @@ func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*model.Storybo
 		return nil, Count, e
 	}
 
-	rows, err := d.db.Query(`
+	rows, err := d.DB.Query(`
 		SELECT s.id, s.name, s.created_date, s.updated_date
 		FROM storyboard_user su
 		LEFT JOIN storyboard s ON s.id = su.storyboard_id
@@ -551,8 +545,8 @@ func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*model.Storybo
 
 	defer rows.Close()
 	for rows.Next() {
-		var b = &model.Storyboard{
-			Users: make([]*model.StoryboardUser, 0),
+		var b = &thunderdome.Storyboard{
+			Users: make([]*thunderdome.StoryboardUser, 0),
 		}
 		if err := rows.Scan(
 			&b.Id,
@@ -560,7 +554,7 @@ func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*model.Storybo
 			&b.CreatedDate,
 			&b.UpdatedDate,
 		); err != nil {
-			d.logger.Error("get active storyboards error", zap.Error(err))
+			d.Logger.Error("get active storyboards error", zap.Error(err))
 		} else {
 			storyboards = append(storyboards, b)
 		}
@@ -570,10 +564,10 @@ func (d *Database) GetActiveStoryboards(Limit int, Offset int) ([]*model.Storybo
 }
 
 // StoryboardFacilitatorAdd adds a storyboard facilitator
-func (d *Database) StoryboardFacilitatorAdd(StoryboardId string, UserID string) (*model.Storyboard, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) StoryboardFacilitatorAdd(StoryboardId string, UserID string) (*thunderdome.Storyboard, error) {
+	if _, err := d.DB.Exec(
 		`call sb_facilitator_add($1, $2);`, StoryboardId, UserID); err != nil {
-		d.logger.Error("call sb_facilitator_add error", zap.Error(err))
+		d.Logger.Error("call sb_facilitator_add error", zap.Error(err))
 		return nil, errors.New("unable to add facilitator")
 	}
 
@@ -586,10 +580,10 @@ func (d *Database) StoryboardFacilitatorAdd(StoryboardId string, UserID string) 
 }
 
 // StoryboardFacilitatorRemove removes a storyboard facilitator
-func (d *Database) StoryboardFacilitatorRemove(StoryboardId string, UserID string) (*model.Storyboard, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) StoryboardFacilitatorRemove(StoryboardId string, UserID string) (*thunderdome.Storyboard, error) {
+	if _, err := d.DB.Exec(
 		`call sb_facilitator_remove($1, $2);`, StoryboardId, UserID); err != nil {
-		d.logger.Error("call sb_facilitator_remove error", zap.Error(err))
+		d.Logger.Error("call sb_facilitator_remove error", zap.Error(err))
 		return nil, errors.New("unable to remove facilitator")
 	}
 
@@ -602,25 +596,38 @@ func (d *Database) StoryboardFacilitatorRemove(StoryboardId string, UserID strin
 }
 
 // GetStoryboardFacilitatorCode retrieve the storyboard facilitator code
-func (d *Database) GetStoryboardFacilitatorCode(StoryboardID string) (string, error) {
+func (d *StoryboardService) GetStoryboardFacilitatorCode(StoryboardID string) (string, error) {
 	var EncryptedCode string
 
-	if err := d.db.QueryRow(`
+	if err := d.DB.QueryRow(`
 		SELECT COALESCE(facilitator_code, '') FROM storyboard
 		WHERE id = $1`,
 		StoryboardID,
 	).Scan(&EncryptedCode); err != nil {
-		d.logger.Error("get retro facilitator_code error", zap.Error(err))
+		d.Logger.Error("get retro facilitator_code error", zap.Error(err))
 		return "", errors.New("unable to retrieve storyboard facilitator_code")
 	}
 
 	if EncryptedCode == "" {
 		return "", errors.New("unable to retrieve storyboard facilitator_code")
 	}
-	DecryptedCode, codeErr := decrypt(EncryptedCode, d.config.AESHashkey)
+	DecryptedCode, codeErr := decrypt(EncryptedCode, d.AESHashKey)
 	if codeErr != nil {
 		return "", errors.New("unable to retrieve storyboard facilitator_code")
 	}
 
 	return DecryptedCode, nil
+}
+
+// CleanStoryboards deletes storyboards older than {DaysOld} days
+func (d *StoryboardService) CleanStoryboards(ctx context.Context, DaysOld int) error {
+	if _, err := d.DB.ExecContext(ctx,
+		`call clean_storyboards($1);`,
+		DaysOld,
+	); err != nil {
+		d.Logger.Ctx(ctx).Error("call clean_storyboards", zap.Error(err))
+		return errors.New("error attempting to clean storyboards")
+	}
+
+	return nil
 }

@@ -19,10 +19,10 @@ import (
 // @Param teamId path string true "the team ID"
 // @Param date query string false "the date in YYYY-MM-DD format"
 // @Param tz query string false "the timezone name e.g. America/New_York"
-// @Success 200 object standardJsonResponse{data=[]model.TeamCheckin}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.TeamCheckin}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [get]
-func (a *api) handleCheckinsGet() http.HandlerFunc {
+func (a *Service) handleCheckinsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
@@ -43,7 +43,7 @@ func (a *api) handleCheckinsGet() http.HandlerFunc {
 			tz = "America/New_York"
 		}
 
-		Checkins, err := a.db.CheckinList(r.Context(), TeamID, date, tz)
+		Checkins, err := a.CheckinService.CheckinList(r.Context(), TeamID, date, tz)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -74,7 +74,7 @@ type checkinCreateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [post]
-func (a *api) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
@@ -139,7 +139,7 @@ type checkinUpdateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [put]
-func (a *api) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userId := ctx.Value(contextKeyUserID).(string)
@@ -199,7 +199,7 @@ func (a *api) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [delete]
-func (a *api) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userId := ctx.Value(contextKeyUserID).(string)
@@ -259,7 +259,7 @@ type checkinCommentRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments [post]
-func (a *api) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -329,7 +329,7 @@ func (a *api) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments [put]
-func (a *api) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -399,7 +399,7 @@ func (a *api) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments/{commentId} [delete]
-func (a *api) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFunc {
+func (a *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userId := ctx.Value(contextKeyUserID).(string)

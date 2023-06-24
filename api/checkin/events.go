@@ -20,7 +20,7 @@ func (b *Service) CheckinCreate(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	err = b.db.CheckinCreate(context.Background(), TeamID, c.UserId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+	err = b.CheckinService.CheckinCreate(context.Background(), TeamID, c.UserId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 	if err != nil {
 		return nil, err, false
 	}
@@ -45,7 +45,7 @@ func (b *Service) CheckinUpdate(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	err = b.db.CheckinUpdate(context.Background(), c.CheckinId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
+	err = b.CheckinService.CheckinUpdate(context.Background(), c.CheckinId, c.Yesterday, c.Today, c.Blockers, c.Discuss, c.GoalsMet)
 	if err != nil {
 		return nil, err, false
 	}
@@ -65,7 +65,7 @@ func (b *Service) CheckinDelete(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	err = b.db.CheckinDelete(context.Background(), c.CheckinId)
+	err = b.CheckinService.CheckinDelete(context.Background(), c.CheckinId)
 	if err != nil {
 		return nil, err, false
 	}
@@ -87,7 +87,7 @@ func (b *Service) CommentCreate(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	err = b.db.CheckinComment(ctx, TeamID, c.CheckinId, c.UserID, c.Comment)
+	err = b.CheckinService.CheckinComment(ctx, TeamID, c.CheckinId, c.UserID, c.Comment)
 	if err != nil {
 		return nil, err, false
 	}
@@ -109,7 +109,7 @@ func (b *Service) CommentUpdate(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	err = b.db.CheckinCommentEdit(ctx, TeamID, c.UserID, c.CommentId, c.Comment)
+	err = b.CheckinService.CheckinCommentEdit(ctx, TeamID, c.UserID, c.CommentId, c.Comment)
 	if err != nil {
 		return nil, err, false
 	}
@@ -129,7 +129,7 @@ func (b *Service) CommentDelete(ctx context.Context, TeamID string, UserID strin
 		return nil, err, false
 	}
 
-	err = b.db.CheckinCommentDelete(ctx, c.CommentId)
+	err = b.CheckinService.CheckinCommentDelete(ctx, c.CommentId)
 	if err != nil {
 		return nil, err, false
 	}

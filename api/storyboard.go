@@ -3,12 +3,12 @@ package api
 import (
 	"encoding/json"
 	"github.com/StevenWeathers/thunderdome-planning-poker/api/storyboard"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/spf13/viper"
 	"io"
 	"net/http"
 	"strconv"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
@@ -28,7 +28,7 @@ type storyboardCreateRequestBody struct {
 // @Param departmentId path string false "the department ID"
 // @Param teamId path string false "the team ID"
 // @Param storyboard body storyboardCreateRequestBody false "new storyboard object"
-// @Success 200 object standardJsonResponse{data=model.Storyboard}
+// @Success 200 object standardJsonResponse{data=thunderdome.Storyboard}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -36,7 +36,7 @@ type storyboardCreateRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/storyboards [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/storyboards [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards [post]
-func (a *api) handleStoryboardCreate() http.HandlerFunc {
+func (a *Service) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -67,12 +67,12 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 			return
 		}
 
-		var newStoryboard *model.Storyboard
+		var newStoryboard *thunderdome.Storyboard
 		var err error
 		// if storyboard created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newStoryboard, err = a.db.TeamCreateStoryboard(ctx, TeamID, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+				newStoryboard, err = a.StoryboardService.TeamCreateStoryboard(ctx, TeamID, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
 
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
@@ -83,7 +83,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newStoryboard, err = a.db.CreateStoryboard(ctx, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+			newStoryboard, err = a.StoryboardService.CreateStoryboard(ctx, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
 			if err != nil {
 				a.Failure(w, r, http.StatusInternalServerError, err)
 				return
@@ -100,12 +100,12 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 // @Tags storyboard
 // @Produce  json
 // @Param storyboardId path string true "the storyboard ID to get"
-// @Success 200 object standardJsonResponse{data=model.Storyboard}
+// @Success 200 object standardJsonResponse{data=thunderdome.Storyboard}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards/{storyboardId} [get]
-func (a *api) handleStoryboardGet() http.HandlerFunc {
+func (a *Service) handleStoryboardGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		StoryboardID := vars["storyboardId"]
@@ -117,7 +117,7 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		storyboard, err := a.db.GetStoryboard(StoryboardID, UserId)
+		storyboard, err := a.StoryboardService.GetStoryboard(StoryboardID, UserId)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARD_NOT_FOUND"))
 			return
@@ -125,7 +125,7 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 
 		// don't allow retrieving storyboard details if storyboard has JoinCode and user hasn't joined yet
 		if storyboard.JoinCode != "" {
-			UserErr := a.db.GetStoryboardUserActiveStatus(StoryboardID, UserId)
+			UserErr := a.StoryboardService.GetStoryboardUserActiveStatus(StoryboardID, UserId)
 			if UserErr != nil && UserType != adminUserType {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_STORYBOARD"))
 				return
@@ -144,18 +144,18 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 // @Param userId path string true "the user ID to get storyboards for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Storyboard}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Storyboard}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/storyboards [get]
-func (a *api) handleGetUserStoryboards() http.HandlerFunc {
+func (a *Service) handleGetUserStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		storyboards, Count, err := a.db.GetStoryboardsByUser(UserID)
+		storyboards, Count, err := a.StoryboardService.GetStoryboardsByUser(UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARDS_NOT_FOUND"))
 			return
@@ -179,23 +179,23 @@ func (a *api) handleGetUserStoryboards() http.HandlerFunc {
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Param active query boolean false "Only active storyboards"
-// @Success 200 object standardJsonResponse{data=[]model.Storyboard}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Storyboard}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards [get]
-func (a *api) handleGetStoryboards() http.HandlerFunc {
+func (a *Service) handleGetStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
 		var err error
 		var Count int
-		var storyboards []*model.Storyboard
+		var storyboards []*thunderdome.Storyboard
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			storyboards, Count, err = a.db.GetActiveStoryboards(Limit, Offset)
+			storyboards, Count, err = a.StoryboardService.GetActiveStoryboards(Limit, Offset)
 		} else {
-			storyboards, Count, err = a.db.GetStoryboards(Limit, Offset)
+			storyboards, Count, err = a.StoryboardService.GetStoryboards(Limit, Offset)
 		}
 
 		if err != nil {
@@ -224,7 +224,7 @@ func (a *api) handleGetStoryboards() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards/{storyboardId} [delete]
-func (a *api) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
+func (a *Service) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		Id := vars["storyboardId"]

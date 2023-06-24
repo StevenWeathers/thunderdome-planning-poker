@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"net/http"
 	"time"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 
 	"github.com/gorilla/mux"
@@ -60,7 +60,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 	RetroID := sub.arena
 
 	defer func() {
-		Users := b.db.RetroRetreatUser(RetroID, UserID)
+		Users := b.RetroService.RetroRetreatUser(RetroID, UserID)
 		UpdatedUsers, _ := json.Marshal(Users)
 
 		retreatEvent := createSocketEvent("user_left", string(UpdatedUsers), UserID)
@@ -105,7 +105,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 		// confirm owner for any operation that requires it
 		if _, ok := ownerOnlyOperations[eventType]; ok && !badEvent {
-			err := b.db.RetroConfirmFacilitator(RetroID, UserID)
+			err := b.RetroService.RetroConfirmFacilitator(RetroID, UserID)
 			if err != nil {
 				badEvent = true
 			}
@@ -184,7 +184,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		vars := mux.Vars(r)
 		retroID := vars["retroId"]
 		ctx := r.Context()
-		var User *model.User
+		var User *thunderdome.User
 		var UserAuthed bool
 
 		// upgrade to WebSocket connection
@@ -203,7 +203,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		if SessionId != "" {
 			var userErr error
-			User, userErr = b.db.GetSessionUser(ctx, SessionId)
+			User, userErr = b.AuthService.GetSessionUser(ctx, SessionId)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return
@@ -216,7 +216,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			User, userErr = b.db.GetGuestUser(ctx, UserID)
+			User, userErr = b.UserService.GetGuestUser(ctx, UserID)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return
@@ -224,14 +224,14 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure retro is legit
-		retro, retroErr := b.db.RetroGet(retroID, User.Id)
+		retro, retroErr := b.RetroService.RetroGet(retroID, User.Id)
 		if retroErr != nil {
 			b.handleSocketClose(ctx, ws, 4004, "retro not found")
 			return
 		}
 
 		// check users retro active status
-		UserErr := b.db.GetRetroUserActiveStatus(retroID, User.Id)
+		UserErr := b.RetroService.GetRetroUserActiveStatus(retroID, User.Id)
 		if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
 			usrErrMsg := UserErr.Error()
 
@@ -279,7 +279,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			ss := subscription{c, retroID, User.Id}
 			h.register <- ss
 
-			Users, _ := b.db.RetroAddUser(ss.arena, User.Id)
+			Users, _ := b.RetroService.RetroAddUser(ss.arena, User.Id)
 			UpdatedUsers, _ := json.Marshal(Users)
 
 			Retro, _ := json.Marshal(retro)
@@ -300,7 +300,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 func (b *Service) APIEvent(ctx context.Context, arenaID string, UserID, eventType string, eventValue string) error {
 	// confirm leader for any operation that requires it
 	if _, ok := ownerOnlyOperations[eventType]; ok {
-		err := b.db.RetroConfirmFacilitator(arenaID, UserID)
+		err := b.RetroService.RetroConfirmFacilitator(arenaID, UserID)
 		if err != nil {
 			return err
 		}

@@ -3,10 +3,10 @@ package checkin
 import (
 	"context"
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"net/http"
 	"time"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 
 	"github.com/gorilla/mux"
@@ -158,7 +158,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		vars := mux.Vars(r)
 		teamID := vars["teamId"]
 		ctx := r.Context()
-		var User *model.User
+		var User *thunderdome.User
 
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
@@ -176,7 +176,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		if SessionId != "" {
 			var userErr error
-			User, userErr = b.db.GetSessionUser(ctx, SessionId)
+			User, userErr = b.AuthService.GetSessionUser(ctx, SessionId)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return
@@ -189,7 +189,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			User, userErr = b.db.GetGuestUser(ctx, UserID)
+			User, userErr = b.UserService.GetGuestUser(ctx, UserID)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return
@@ -197,14 +197,14 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure team is legit
-		_, retroErr := b.db.TeamGet(context.Background(), teamID)
+		_, retroErr := b.TeamService.TeamGet(context.Background(), teamID)
 		if retroErr != nil {
 			b.handleSocketClose(ctx, ws, 4004, "team not found")
 			return
 		}
 
 		// make sure user is a team user
-		_, UserErr := b.db.TeamUserRole(ctx, User.Id, teamID)
+		_, UserErr := b.TeamService.TeamUserRole(ctx, User.Id, teamID)
 		if UserErr != nil {
 			b.logger.Ctx(ctx).Error("REQUIRES_TEAM_USER", zap.Error(UserErr))
 			b.handleSocketClose(ctx, ws, 4005, "REQUIRES_TEAM_USER")

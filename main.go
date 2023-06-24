@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/http"
 	"os"
@@ -65,12 +66,13 @@ type Config struct {
 }
 
 type server struct {
-	config *Config
-	router *mux.Router
-	email  *email.Email
-	cookie *securecookie.SecureCookie
-	db     *db.Database
-	logger *otelzap.Logger
+	config       *Config
+	router       *mux.Router
+	email        *email.Email
+	cookie       *securecookie.SecureCookie
+	db           *db.Database
+	logger       *otelzap.Logger
+	AlertService thunderdome.AlertService
 }
 
 func main() {

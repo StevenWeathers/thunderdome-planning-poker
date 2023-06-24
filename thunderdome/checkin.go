@@ -1,22 +1,6 @@
-package model
+package thunderdome
 
-import "time"
-
-type Team struct {
-	Id          string    `json:"id"`
-	Name        string    `json:"name"`
-	CreatedDate time.Time `json:"createdDate"`
-	UpdatedDate time.Time `json:"updatedDate"`
-}
-
-type TeamUser struct {
-	Id           string `json:"id"`
-	Name         string `json:"name"`
-	Email        string `json:"email"`
-	Role         string `json:"role"`
-	Avatar       string `json:"avatar"`
-	GravatarHash string `json:"gravatarHash"`
-}
+import "context"
 
 type TeamCheckin struct {
 	Id          string            `json:"id"`
@@ -39,4 +23,14 @@ type CheckinComment struct {
 	Comment     string `json:"comment"`
 	CreateDate  string `json:"created_date"`
 	UpdatedDate string `json:"updated_date"`
+}
+
+type CheckinService interface {
+	CheckinList(ctx context.Context, TeamId string, Date string, TimeZone string) ([]*TeamCheckin, error)
+	CheckinCreate(ctx context.Context, TeamId string, UserId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error
+	CheckinUpdate(ctx context.Context, CheckinId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error
+	CheckinDelete(ctx context.Context, CheckinId string) error
+	CheckinComment(ctx context.Context, TeamId string, CheckinId string, UserId string, Comment string) error
+	CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error
+	CheckinCommentDelete(ctx context.Context, CommentId string) error
 }

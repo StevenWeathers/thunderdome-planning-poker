@@ -2,23 +2,23 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"io"
 	"net/http"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
 type organizationResponse struct {
-	Organization *model.Organization `json:"organization"`
-	Role         string              `json:"role"`
+	Organization *thunderdome.Organization `json:"organization"`
+	Role         string                    `json:"role"`
 }
 
 type orgTeamResponse struct {
-	Organization     *model.Organization `json:"organization"`
-	Team             *model.Team         `json:"team"`
-	OrganizationRole string              `json:"organizationRole"`
-	TeamRole         string              `json:"teamRole"`
+	Organization     *thunderdome.Organization `json:"organization"`
+	Team             *thunderdome.Team         `json:"team"`
+	OrganizationRole string                    `json:"organizationRole"`
+	TeamRole         string                    `json:"teamRole"`
 }
 
 // handleGetOrganizationsByUser gets a list of organizations the user is a part of
@@ -29,13 +29,13 @@ type orgTeamResponse struct {
 // @Param userId path string true "the user ID to get organizations for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Organization}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Organization}
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/organizations [get]
-func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
+func (a *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -44,7 +44,7 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := a.db.OrganizationListByUser(r.Context(), UserID, Limit, Offset)
+		Organizations := a.OrganizationService.OrganizationListByUser(r.Context(), UserID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Organizations, nil)
 	}
@@ -61,9 +61,9 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId} [get]
-func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
+func (a *Service) handleGetOrganizationByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -72,7 +72,7 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
-		Organization, err := a.db.OrganizationGet(ctx, OrgID)
+		Organization, err := a.OrganizationService.OrganizationGet(ctx, OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -94,14 +94,14 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 // @Produce  json
 // @Param userId path string true "user id"
 // @Param organization body teamCreateRequestBody true "new organization object"
-// @Success 200 object standardJsonResponse{data=model.Organization}
+// @Success 200 object standardJsonResponse{data=thunderdome.Organization}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/organizations [post]
-func (a *api) handleCreateOrganization() http.HandlerFunc {
+func (a *Service) handleCreateOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -121,7 +121,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 			return
 		}
 
-		Organization, err := a.db.OrganizationCreate(r.Context(), UserID, team.Name)
+		Organization, err := a.OrganizationService.OrganizationCreate(r.Context(), UserID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -137,13 +137,13 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param orgId path string true "organization id"
-// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Team}
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams [get]
-func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
+func (a *Service) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -151,7 +151,7 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.OrganizationTeamList(r.Context(), OrgID, Limit, Offset)
+		Teams := a.OrganizationService.OrganizationTeamList(r.Context(), OrgID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -163,13 +163,13 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param orgId path string true "organization id"
-// @Success 200 object standardJsonResponse{data=[]model.User}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.User}
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users [get]
-func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
+func (a *Service) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -177,7 +177,7 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.OrganizationUserList(r.Context(), OrgID, Limit, Offset)
+		Teams := a.OrganizationService.OrganizationUserList(r.Context(), OrgID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -190,14 +190,14 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "organization id"
 // @Param team body teamCreateRequestBody true "new team object"
-// @Success 200 object standardJsonResponse{data=model.Team}
+// @Success 200 object standardJsonResponse{data=thunderdome.Team}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams [post]
-func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
+func (a *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -217,7 +217,7 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 			return
 		}
 
-		NewTeam, err := a.db.OrganizationTeamCreate(r.Context(), OrgID, team.Name)
+		NewTeam, err := a.OrganizationService.OrganizationTeamCreate(r.Context(), OrgID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -239,9 +239,9 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users [post]
-func (a *api) handleOrganizationAddUser() http.HandlerFunc {
+func (a *Service) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -264,13 +264,13 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := a.db.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := a.UserService.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, err := a.db.OrganizationAddUser(r.Context(), OrgID, User.Id, u.Role)
+		_, err := a.OrganizationService.OrganizationAddUser(r.Context(), OrgID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -292,9 +292,9 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users/{userId} [delete]
-func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
+func (a *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -307,7 +307,7 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.OrganizationRemoveUser(r.Context(), OrgID, UserID)
+		err := a.OrganizationService.OrganizationRemoveUser(r.Context(), OrgID, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -329,10 +329,10 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams/{teamId} [get]
-func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
+func (a *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -343,13 +343,13 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		Organization, err := a.db.OrganizationGet(r.Context(), OrgID)
+		Organization, err := a.OrganizationService.OrganizationGet(r.Context(), OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Team, err := a.db.TeamGet(ctx, TeamID)
+		Team, err := a.TeamService.TeamGet(ctx, TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -379,9 +379,9 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams/{teamId}/users [post]
-func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
+func (a *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -406,19 +406,19 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := a.db.GetUserByEmail(ctx, UserEmail)
+		User, UserErr := a.UserService.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		OrgRole, roleErr := a.db.OrganizationUserRole(r.Context(), User.Id, OrgID)
+		OrgRole, roleErr := a.OrganizationService.OrganizationUserRole(r.Context(), User.Id, OrgID)
 		if OrgRole == "" || roleErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 
-		_, err := a.db.TeamAddUser(ctx, TeamID, User.Id, u.Role)
+		_, err := a.TeamService.TeamAddUser(ctx, TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -439,7 +439,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId} [delete]
-func (a *api) handleDeleteOrganization() http.HandlerFunc {
+func (a *Service) handleDeleteOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
@@ -449,7 +449,7 @@ func (a *api) handleDeleteOrganization() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.OrganizationDelete(r.Context(), OrgID)
+		err := a.OrganizationService.OrganizationDelete(r.Context(), OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

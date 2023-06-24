@@ -1,0 +1,1 @@
+DROP PROCEDURE IF EXISTS set_storyboard_owner(UUID, UUID);

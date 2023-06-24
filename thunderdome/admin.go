@@ -1,6 +1,6 @@
-package model
+package thunderdome
 
-import "time"
+import "context"
 
 // ApplicationStats includes counts of different data points of the application
 type ApplicationStats struct {
@@ -29,14 +29,6 @@ type ApplicationStats struct {
 	StoryboardPersonaCount    int `json:"storyboardPersonaCount"`
 }
 
-type Alert struct {
-	Id             string    `json:"id" db:"id"`
-	Name           string    `json:"name" db:"name"`
-	Type           string    `json:"type" db:"type"`
-	Content        string    `json:"content" db:"content"`
-	Active         bool      `json:"active" db:"active"`
-	AllowDismiss   bool      `json:"allowDismiss" db:"allow_dismiss"`
-	RegisteredOnly bool      `json:"registeredOnly" db:"registered_only"`
-	CreatedDate    time.Time `json:"createdDate" db:"created_date"`
-	UpdatedDate    time.Time `json:"updatedDate" db:"updated_date"`
+type AdminService interface {
+	GetAppStats(ctx context.Context) (*ApplicationStats, error)
 }

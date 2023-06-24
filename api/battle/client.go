@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"net/http"
 	"time"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 
 	"github.com/gorilla/mux"
@@ -67,7 +67,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 	BattleID := sub.arena
 
 	defer func() {
-		Users := b.db.RetreatUser(BattleID, UserID)
+		Users := b.BattleService.RetreatUser(BattleID, UserID)
 		UpdatedUsers, _ := json.Marshal(Users)
 
 		retreatEvent := createSocketEvent("warrior_retreated", string(UpdatedUsers), UserID)
@@ -112,7 +112,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 		// confirm leader for any operation that requires it
 		if _, ok := leaderOnlyOperations[eventType]; ok && !badEvent {
-			err := b.db.ConfirmLeader(BattleID, UserID)
+			err := b.BattleService.ConfirmLeader(BattleID, UserID)
 			if err != nil {
 				badEvent = true
 			}
@@ -191,7 +191,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		vars := mux.Vars(r)
 		battleID := vars["battleId"]
 		ctx := r.Context()
-		var User *model.User
+		var User *thunderdome.User
 		var UserAuthed bool
 
 		// upgrade to WebSocket connection
@@ -210,7 +210,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 
 		if SessionId != "" {
 			var userErr error
-			User, userErr = b.db.GetSessionUser(ctx, SessionId)
+			User, userErr = b.AuthService.GetSessionUser(ctx, SessionId)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return
@@ -223,7 +223,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			User, userErr = b.db.GetGuestUser(ctx, UserID)
+			User, userErr = b.UserService.GetGuestUser(ctx, UserID)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return
@@ -231,14 +231,14 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		}
 
 		// make sure battle is legit
-		battle, battleErr := b.db.GetBattle(battleID, User.Id)
+		battle, battleErr := b.BattleService.GetBattle(battleID, User.Id)
 		if battleErr != nil {
 			b.handleSocketClose(ctx, ws, 4004, "battle not found")
 			return
 		}
 
 		// check users battle active status
-		UserErr := b.db.GetBattleUserActiveStatus(battleID, User.Id)
+		UserErr := b.BattleService.GetBattleUserActiveStatus(battleID, User.Id)
 		if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
 			usrErrMsg := UserErr.Error()
 
@@ -286,7 +286,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			ss := subscription{c, battleID, User.Id}
 			h.register <- ss
 
-			Users, _ := b.db.AddUserToBattle(ss.arena, User.Id)
+			Users, _ := b.BattleService.AddUserToBattle(ss.arena, User.Id)
 			UpdatedUsers, _ := json.Marshal(Users)
 
 			Battle, _ := json.Marshal(battle)
@@ -308,7 +308,7 @@ func (b *Service) APIEvent(ctx context.Context, arenaID string, UserID, eventTyp
 
 	// confirm leader for any operation that requires it
 	if _, ok := leaderOnlyOperations[eventType]; ok {
-		err := b.db.ConfirmLeader(arenaID, UserID)
+		err := b.BattleService.ConfirmLeader(arenaID, UserID)
 		if err != nil {
 			return err
 		}

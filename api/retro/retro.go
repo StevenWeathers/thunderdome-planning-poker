@@ -2,6 +2,7 @@ package retro
 
 import (
 	"context"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/http"
 
@@ -15,6 +16,9 @@ type Service struct {
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
+	UserService           thunderdome.UserService
+	AuthService           thunderdome.AuthService
+	RetroService          thunderdome.RetroService
 }
 
 // New returns a new retro with websocket hub/client and event handlers
@@ -23,12 +27,17 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
+	userService thunderdome.UserService, authService thunderdome.AuthService,
+	retroService thunderdome.RetroService,
 ) *Service {
 	rs := &Service{
 		db:                    db,
 		logger:                logger,
 		validateSessionCookie: validateSessionCookie,
 		validateUserCookie:    validateUserCookie,
+		UserService:           userService,
+		AuthService:           authService,
+		RetroService:          retroService,
 	}
 
 	rs.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){

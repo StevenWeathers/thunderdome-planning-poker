@@ -2,17 +2,17 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"io"
 	"net/http"
 	"strconv"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
 type teamResponse struct {
-	Team     *model.Team `json:"team"`
-	TeamRole string      `json:"teamRole"`
+	Team     *thunderdome.Team `json:"team"`
+	TeamRole string            `json:"teamRole"`
 }
 
 // handleGetTeamByUser gets an team with user role
@@ -25,13 +25,13 @@ type teamResponse struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId} [get]
-func (a *api) handleGetTeamByUser() http.HandlerFunc {
+func (a *Service) handleGetTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 
-		Team, err := a.db.TeamGet(r.Context(), TeamID)
+		Team, err := a.TeamService.TeamGet(r.Context(), TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -52,18 +52,18 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param userId path string true "the user ID"
-// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Team}
 // @Success 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/teams [get]
-func (a *api) handleGetTeamsByUser() http.HandlerFunc {
+func (a *Service) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.TeamListByUser(r.Context(), UserID, Limit, Offset)
+		Teams := a.TeamService.TeamListByUser(r.Context(), UserID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -75,16 +75,16 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=[]model.User}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.User}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/users [get]
-func (a *api) handleGetTeamUsers() http.HandlerFunc {
+func (a *Service) handleGetTeamUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users, UserCount, err := a.db.TeamUserList(r.Context(), TeamID, Limit, Offset)
+		Users, UserCount, err := a.TeamService.TeamUserList(r.Context(), TeamID, Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 		}
@@ -110,12 +110,12 @@ type teamCreateRequestBody struct {
 // @Produce  json
 // @Param userId path string true "the user ID"
 // @Param team body teamCreateRequestBody true "new team object"
-// @Success 200 object standardJsonResponse{data=model.Team}
+// @Success 200 object standardJsonResponse{data=thunderdome.Team}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/teams [post]
-func (a *api) handleCreateTeam() http.HandlerFunc {
+func (a *Service) handleCreateTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -138,7 +138,7 @@ func (a *api) handleCreateTeam() http.HandlerFunc {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 		}
 
-		NewTeam, err := a.db.TeamCreate(r.Context(), UserID, team.Name)
+		NewTeam, err := a.TeamService.TeamCreate(r.Context(), UserID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -165,7 +165,7 @@ type teamAddUserRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/users [post]
-func (a *api) handleTeamAddUser() http.HandlerFunc {
+func (a *Service) handleTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
@@ -190,13 +190,13 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := a.db.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := a.UserService.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, err := a.db.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
+		_, err := a.TeamService.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -218,7 +218,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/users/{userId} [delete]
-func (a *api) handleTeamRemoveUser() http.HandlerFunc {
+func (a *Service) handleTeamRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
@@ -229,7 +229,7 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.TeamRemoveUser(r.Context(), TeamID, UserID)
+		err := a.TeamService.TeamRemoveUser(r.Context(), TeamID, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -245,17 +245,17 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=[]model.Battle}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Battle}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/battles [get]
-func (a *api) handleGetTeamBattles() http.HandlerFunc {
+func (a *Service) handleGetTeamBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Battles := a.db.TeamBattleList(r.Context(), TeamID, Limit, Offset)
+		Battles := a.TeamService.TeamBattleList(r.Context(), TeamID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Battles, nil)
 	}
@@ -273,7 +273,7 @@ func (a *api) handleGetTeamBattles() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/battles/{battleId} [delete]
-func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
+func (a *Service) handleTeamRemoveBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
@@ -284,7 +284,7 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.TeamRemoveBattle(r.Context(), TeamID, BattleID)
+		err := a.TeamService.TeamRemoveBattle(r.Context(), TeamID, BattleID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -305,7 +305,7 @@ func (a *api) handleTeamRemoveBattle() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId} [delete]
-func (a *api) handleDeleteTeam() http.HandlerFunc {
+func (a *Service) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
@@ -315,7 +315,7 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.TeamDelete(r.Context(), TeamID)
+		err := a.TeamService.TeamDelete(r.Context(), TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -331,16 +331,16 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=[]model.Retro}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Retro}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/retros [get]
-func (a *api) handleGetTeamRetros() http.HandlerFunc {
+func (a *Service) handleGetTeamRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Retrospectives := a.db.TeamRetroList(r.Context(), TeamID, Limit, Offset)
+		Retrospectives := a.TeamService.TeamRetroList(r.Context(), TeamID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Retrospectives, nil)
 	}
@@ -358,7 +358,7 @@ func (a *api) handleGetTeamRetros() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/retros/{retroId} [delete]
-func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
+func (a *Service) handleTeamRemoveRetro() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
@@ -369,7 +369,7 @@ func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.TeamRemoveRetro(r.Context(), TeamID, RetrospectiveID)
+		err := a.TeamService.TeamRemoveRetro(r.Context(), TeamID, RetrospectiveID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -383,16 +383,16 @@ func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=[]model.Storyboard}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Storyboard}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/storyboards [get]
-func (a *api) handleGetTeamStoryboards() http.HandlerFunc {
+func (a *Service) handleGetTeamStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Storyboards := a.db.TeamStoryboardList(r.Context(), TeamID, Limit, Offset)
+		Storyboards := a.TeamService.TeamStoryboardList(r.Context(), TeamID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Storyboards, nil)
 	}
@@ -410,7 +410,7 @@ func (a *api) handleGetTeamStoryboards() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/storyboards/{storyboardId} [delete]
-func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
+func (a *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
@@ -421,7 +421,7 @@ func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.TeamRemoveStoryboard(r.Context(), TeamID, StoryboardID)
+		err := a.TeamService.TeamRemoveStoryboard(r.Context(), TeamID, StoryboardID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -437,22 +437,22 @@ func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Param completed query boolean false "Only completed retro actions"
-// @Success 200 object standardJsonResponse{data=[]model.RetroAction}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.RetroAction}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/retro-actions [get]
-func (a *api) handleGetTeamRetroActions() http.HandlerFunc {
+func (a *Service) handleGetTeamRetroActions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		var err error
 		var Count int
-		var Actions []*model.RetroAction
+		var Actions []*thunderdome.RetroAction
 		query := r.URL.Query()
 		Completed, _ := strconv.ParseBool(query.Get("completed"))
 
-		Actions, Count, err = a.db.GetTeamRetroActions(TeamID, Limit, Offset, Completed)
+		Actions, Count, err = a.RetroService.GetTeamRetroActions(TeamID, Limit, Offset, Completed)
 
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)

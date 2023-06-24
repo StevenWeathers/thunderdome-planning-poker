@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"net/http"
 	"time"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 
 	"github.com/gorilla/mux"
@@ -59,7 +59,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 	StoryboardID := sub.arena
 
 	defer func() {
-		Users := b.db.RetreatStoryboardUser(StoryboardID, UserID)
+		Users := b.StoryboardService.RetreatStoryboardUser(StoryboardID, UserID)
 		UpdatedUsers, _ := json.Marshal(Users)
 
 		retreatEvent := createSocketEvent("user_left", string(UpdatedUsers), UserID)
@@ -70,11 +70,11 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		if forceClosed {
 			cm := websocket.FormatCloseMessage(4002, "abandoned")
 			if err := c.ws.WriteControl(websocket.CloseMessage, cm, time.Now().Add(writeWait)); err != nil {
-				b.logger.Ctx(ctx).Error("abandon error", zap.Error(err))
+				b.Logger.Ctx(ctx).Error("abandon error", zap.Error(err))
 			}
 		}
 		if err := c.ws.Close(); err != nil {
-			b.logger.Ctx(ctx).Error("close error", zap.Error(err))
+			b.Logger.Ctx(ctx).Error("close error", zap.Error(err))
 		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
@@ -87,7 +87,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		_, msg, err := c.ws.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
+				b.Logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
 			}
 			break
 		}
@@ -96,7 +96,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		err = json.Unmarshal(msg, &keyVal)
 		if err != nil {
 			badEvent = true
-			b.logger.Error("unexpected storyboard event json error", zap.Error(err))
+			b.Logger.Error("unexpected storyboard event json error", zap.Error(err))
 		}
 
 		eventType := keyVal["type"]
@@ -104,21 +104,21 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 		// confirm owner for any operation that requires it
 		if _, ok := ownerOnlyOperations[eventType]; ok && !badEvent {
-			err := b.db.ConfirmStoryboardFacilitator(StoryboardID, UserID)
+			err := b.StoryboardService.ConfirmStoryboardFacilitator(StoryboardID, UserID)
 			if err != nil {
 				badEvent = true
 			}
 		}
 
 		// find event handler and execute otherwise invalid event
-		if _, ok := b.eventHandlers[eventType]; ok && !badEvent {
-			msg, eventErr, forceClosed = b.eventHandlers[eventType](ctx, StoryboardID, UserID, eventValue)
+		if _, ok := b.EventHandlers[eventType]; ok && !badEvent {
+			msg, eventErr, forceClosed = b.EventHandlers[eventType](ctx, StoryboardID, UserID, eventValue)
 			if eventErr != nil {
 				badEvent = true
 
 				// don't log forceClosed events e.g. Abandon
 				if !forceClosed {
-					b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(eventErr))
+					b.Logger.Ctx(ctx).Error("unexpected close error", zap.Error(eventErr))
 				}
 			}
 		}
@@ -170,10 +170,10 @@ func (sub *subscription) writePump() {
 func (b *Service) handleSocketClose(ctx context.Context, ws *websocket.Conn, closeCode int, text string) {
 	cm := websocket.FormatCloseMessage(closeCode, text)
 	if err := ws.WriteMessage(websocket.CloseMessage, cm); err != nil {
-		b.logger.Ctx(ctx).Error("unauthorized close error", zap.Error(err))
+		b.Logger.Ctx(ctx).Error("unauthorized close error", zap.Error(err))
 	}
 	if err := ws.Close(); err != nil {
-		b.logger.Ctx(ctx).Error("close error", zap.Error(err))
+		b.Logger.Ctx(ctx).Error("close error", zap.Error(err))
 	}
 }
 
@@ -183,18 +183,18 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		vars := mux.Vars(r)
 		storyboardID := vars["storyboardId"]
 		ctx := r.Context()
-		var User *model.User
+		var User *thunderdome.User
 		var UserAuthed bool
 
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			b.logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err))
+			b.Logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err))
 			return
 		}
 		c := &connection{send: make(chan []byte, 256), ws: ws}
 
-		SessionId, cookieErr := b.validateSessionCookie(w, r)
+		SessionId, cookieErr := b.ValidateSessionCookie(w, r)
 		if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
 			b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 			return
@@ -202,20 +202,20 @@ func (b *Service) ServeWs() http.HandlerFunc {
 
 		if SessionId != "" {
 			var userErr error
-			User, userErr = b.db.GetSessionUser(ctx, SessionId)
+			User, userErr = b.AuthService.GetSessionUser(ctx, SessionId)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return
 			}
 		} else {
-			UserID, err := b.validateUserCookie(w, r)
+			UserID, err := b.ValidateUserCookie(w, r)
 			if err != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return
 			}
 
 			var userErr error
-			User, userErr = b.db.GetGuestUser(ctx, UserID)
+			User, userErr = b.UserService.GetGuestUser(ctx, UserID)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return
@@ -223,21 +223,21 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure storyboard is legit
-		storyboard, storyboardErr := b.db.GetStoryboard(storyboardID, User.Id)
+		storyboard, storyboardErr := b.StoryboardService.GetStoryboard(storyboardID, User.Id)
 		if storyboardErr != nil {
 			b.handleSocketClose(ctx, ws, 4004, "storyboard not found")
 			return
 		}
 
 		// check users storyboard active status
-		UserErr := b.db.GetStoryboardUserActiveStatus(storyboardID, User.Id)
+		UserErr := b.StoryboardService.GetStoryboardUserActiveStatus(storyboardID, User.Id)
 		if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
 			usrErrMsg := UserErr.Error()
 
 			if usrErrMsg == "DUPLICATE_STORYBOARD_USER" {
 				b.handleSocketClose(ctx, ws, 4003, "duplicate session")
 			} else {
-				b.logger.Ctx(ctx).Error("error finding user", zap.Error(UserErr))
+				b.Logger.Ctx(ctx).Error("error finding user", zap.Error(UserErr))
 				b.handleSocketClose(ctx, ws, 4005, "internal error")
 			}
 			return
@@ -251,7 +251,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				_, msg, err := c.ws.ReadMessage()
 				if err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-						b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
+						b.Logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
 					}
 					break
 				}
@@ -259,7 +259,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				keyVal := make(map[string]string)
 				err = json.Unmarshal(msg, &keyVal)
 				if err != nil {
-					b.logger.Error("unexpected storyboard message error", zap.Error(err))
+					b.Logger.Error("unexpected storyboard message error", zap.Error(err))
 				}
 
 				if keyVal["type"] == "auth_storyboard" && keyVal["value"] == storyboard.JoinCode {
@@ -278,7 +278,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			ss := subscription{c, storyboardID, User.Id}
 			h.register <- ss
 
-			Users, _ := b.db.AddUserToStoryboard(ss.arena, User.Id)
+			Users, _ := b.StoryboardService.AddUserToStoryboard(ss.arena, User.Id)
 			UpdatedUsers, _ := json.Marshal(Users)
 
 			Storyboard, _ := json.Marshal(storyboard)
@@ -299,15 +299,15 @@ func (b *Service) ServeWs() http.HandlerFunc {
 func (b *Service) APIEvent(ctx context.Context, arenaID string, UserID, eventType string, eventValue string) error {
 	// confirm leader for any operation that requires it
 	if _, ok := ownerOnlyOperations[eventType]; ok {
-		err := b.db.ConfirmStoryboardFacilitator(arenaID, UserID)
+		err := b.StoryboardService.ConfirmStoryboardFacilitator(arenaID, UserID)
 		if err != nil {
 			return err
 		}
 	}
 
 	// find event handler and execute otherwise invalid event
-	if _, ok := b.eventHandlers[eventType]; ok {
-		msg, eventErr, _ := b.eventHandlers[eventType](ctx, arenaID, UserID, eventValue)
+	if _, ok := b.EventHandlers[eventType]; ok {
+		msg, eventErr, _ := b.EventHandlers[eventType](ctx, arenaID, UserID, eventValue)
 		if eventErr != nil {
 			return eventErr
 		}

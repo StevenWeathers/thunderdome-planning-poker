@@ -1,16 +1,16 @@
 package db
 
 import (
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
 )
 
 // CreateStoryboardStory adds a new story to a Storyboard
-func (d *Database) CreateStoryboardStory(StoryboardID string, GoalID string, ColumnID string, userID string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) CreateStoryboardStory(StoryboardID string, GoalID string, ColumnID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call create_storyboard_story($1, $2, $3);`, StoryboardID, GoalID, ColumnID,
 	); err != nil {
-		d.logger.Error("call create_storyboard_story error", zap.Error(err))
+		d.Logger.Error("call create_storyboard_story error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -19,13 +19,13 @@ func (d *Database) CreateStoryboardStory(StoryboardID string, GoalID string, Col
 }
 
 // ReviseStoryName updates the story name by ID
-func (d *Database) ReviseStoryName(StoryboardID string, userID string, StoryID string, StoryName string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) ReviseStoryName(StoryboardID string, userID string, StoryID string, StoryName string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call update_story_name($1, $2);`,
 		StoryID,
 		StoryName,
 	); err != nil {
-		d.logger.Error("call update_story_name error", zap.Error(err))
+		d.Logger.Error("call update_story_name error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -34,13 +34,13 @@ func (d *Database) ReviseStoryName(StoryboardID string, userID string, StoryID s
 }
 
 // ReviseStoryContent updates the story content by ID
-func (d *Database) ReviseStoryContent(StoryboardID string, userID string, StoryID string, StoryContent string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) ReviseStoryContent(StoryboardID string, userID string, StoryID string, StoryContent string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call update_story_content($1, $2);`,
 		StoryID,
 		StoryContent,
 	); err != nil {
-		d.logger.Error("call update_story_content error", zap.Error(err))
+		d.Logger.Error("call update_story_content error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -49,13 +49,13 @@ func (d *Database) ReviseStoryContent(StoryboardID string, userID string, StoryI
 }
 
 // ReviseStoryColor updates the story color by ID
-func (d *Database) ReviseStoryColor(StoryboardID string, userID string, StoryID string, StoryColor string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) ReviseStoryColor(StoryboardID string, userID string, StoryID string, StoryColor string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call update_story_color($1, $2);`,
 		StoryID,
 		StoryColor,
 	); err != nil {
-		d.logger.Error("call update_story_color error", zap.Error(err))
+		d.Logger.Error("call update_story_color error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -64,13 +64,13 @@ func (d *Database) ReviseStoryColor(StoryboardID string, userID string, StoryID 
 }
 
 // ReviseStoryPoints updates the story points by ID
-func (d *Database) ReviseStoryPoints(StoryboardID string, userID string, StoryID string, Points int) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) ReviseStoryPoints(StoryboardID string, userID string, StoryID string, Points int) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call update_story_points($1, $2);`,
 		StoryID,
 		Points,
 	); err != nil {
-		d.logger.Error("call update_story_points error", zap.Error(err))
+		d.Logger.Error("call update_story_points error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -79,13 +79,13 @@ func (d *Database) ReviseStoryPoints(StoryboardID string, userID string, StoryID
 }
 
 // ReviseStoryClosed updates the story closed status by ID
-func (d *Database) ReviseStoryClosed(StoryboardID string, userID string, StoryID string, Closed bool) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) ReviseStoryClosed(StoryboardID string, userID string, StoryID string, Closed bool) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call update_story_closed($1, $2);`,
 		StoryID,
 		Closed,
 	); err != nil {
-		d.logger.Error("call update_story_closed error", zap.Error(err))
+		d.Logger.Error("call update_story_closed error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -94,13 +94,13 @@ func (d *Database) ReviseStoryClosed(StoryboardID string, userID string, StoryID
 }
 
 // ReviseStoryLink updates the story link by ID
-func (d *Database) ReviseStoryLink(StoryboardID string, userID string, StoryID string, Link string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) ReviseStoryLink(StoryboardID string, userID string, StoryID string, Link string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call sb_story_link_edit($1, $2);`,
 		StoryID,
 		Link,
 	); err != nil {
-		d.logger.Error("call sb_story_link_edit error", zap.Error(err))
+		d.Logger.Error("call sb_story_link_edit error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -109,15 +109,15 @@ func (d *Database) ReviseStoryLink(StoryboardID string, userID string, StoryID s
 }
 
 // MoveStoryboardStory moves the story by ID to Goal/Column by ID
-func (d *Database) MoveStoryboardStory(StoryboardID string, userID string, StoryID string, GoalID string, ColumnID string, PlaceBefore string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) MoveStoryboardStory(StoryboardID string, userID string, StoryID string, GoalID string, ColumnID string, PlaceBefore string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call move_story($1, $2, $3, $4);`,
 		StoryID,
 		GoalID,
 		ColumnID,
 		PlaceBefore,
 	); err != nil {
-		d.logger.Error("call move_story error", zap.Error(err))
+		d.Logger.Error("call move_story error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -126,10 +126,10 @@ func (d *Database) MoveStoryboardStory(StoryboardID string, userID string, Story
 }
 
 // DeleteStoryboardStory removes a story from the current board by ID
-func (d *Database) DeleteStoryboardStory(StoryboardID string, userID string, StoryID string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) DeleteStoryboardStory(StoryboardID string, userID string, StoryID string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call delete_storyboard_story($1);`, StoryID); err != nil {
-		d.logger.Error("call delete_storyboard_story error", zap.Error(err))
+		d.Logger.Error("call delete_storyboard_story error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -138,15 +138,15 @@ func (d *Database) DeleteStoryboardStory(StoryboardID string, userID string, Sto
 }
 
 // AddStoryComment adds a comment to a story
-func (d *Database) AddStoryComment(StoryboardID string, UserID string, StoryID string, Comment string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) AddStoryComment(StoryboardID string, UserID string, StoryID string, Comment string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call story_comment_add($1, $2, $3, $4);`,
 		StoryboardID,
 		StoryID,
 		UserID,
 		Comment,
 	); err != nil {
-		d.logger.Error("call story_comment_add error", zap.Error(err))
+		d.Logger.Error("call story_comment_add error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -155,14 +155,14 @@ func (d *Database) AddStoryComment(StoryboardID string, UserID string, StoryID s
 }
 
 // EditStoryComment edits a story comment
-func (d *Database) EditStoryComment(StoryboardID string, CommentID string, Comment string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) EditStoryComment(StoryboardID string, CommentID string, Comment string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call story_comment_edit($1, $2, $3);`,
 		StoryboardID,
 		CommentID,
 		Comment,
 	); err != nil {
-		d.logger.Error("call story_comment_edit error", zap.Error(err))
+		d.Logger.Error("call story_comment_edit error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -171,13 +171,13 @@ func (d *Database) EditStoryComment(StoryboardID string, CommentID string, Comme
 }
 
 // DeleteStoryComment deletes a story comment
-func (d *Database) DeleteStoryComment(StoryboardID string, CommentID string) ([]*model.StoryboardGoal, error) {
-	if _, err := d.db.Exec(
+func (d *StoryboardService) DeleteStoryComment(StoryboardID string, CommentID string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
 		`call story_comment_delete($1, $2);`,
 		StoryboardID,
 		CommentID,
 	); err != nil {
-		d.logger.Error("call story_comment_delete error", zap.Error(err))
+		d.Logger.Error("call story_comment_delete error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
