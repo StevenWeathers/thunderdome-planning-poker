@@ -3,16 +3,16 @@ package db
 import (
 	"context"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
 
 // OrganizationGet gets an organization
-func (d *Database) OrganizationGet(ctx context.Context, OrgID string) (*model.Organization, error) {
-	var org = &model.Organization{}
+func (d *Database) OrganizationGet(ctx context.Context, OrgID string) (*thunderdome.Organization, error) {
+	var org = &thunderdome.Organization{}
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM organization_get_by_id($1)`,
 		OrgID,
 	).Scan(
@@ -33,7 +33,7 @@ func (d *Database) OrganizationGet(ctx context.Context, OrgID string) (*model.Or
 func (d *Database) OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error) {
 	var role string
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT role FROM organization_get_user_role($1, $2)`,
 		UserID,
 		OrgID,
@@ -49,9 +49,9 @@ func (d *Database) OrganizationUserRole(ctx context.Context, UserID string, OrgI
 }
 
 // OrganizationListByUser gets a list of organizations the user is apart of
-func (d *Database) OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*model.Organization {
-	var organizations = make([]*model.Organization, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.Organization {
+	var organizations = make([]*thunderdome.Organization, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM organization_list_by_user($1, $2, $3);`,
 		UserID,
 		Limit,
@@ -61,7 +61,7 @@ func (d *Database) OrganizationListByUser(ctx context.Context, UserID string, Li
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var org model.Organization
+			var org thunderdome.Organization
 
 			if err := rows.Scan(
 				&org.Id,
@@ -82,10 +82,10 @@ func (d *Database) OrganizationListByUser(ctx context.Context, UserID string, Li
 }
 
 // OrganizationCreate creates an organization
-func (d *Database) OrganizationCreate(ctx context.Context, UserID string, OrgName string) (*model.Organization, error) {
-	o := &model.Organization{}
+func (d *Database) OrganizationCreate(ctx context.Context, UserID string, OrgName string) (*thunderdome.Organization, error) {
+	o := &thunderdome.Organization{}
 
-	err := d.db.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, name, created_date, updated_date FROM organization_create($1, $2);`,
 		UserID,
 		OrgName,
@@ -100,9 +100,9 @@ func (d *Database) OrganizationCreate(ctx context.Context, UserID string, OrgNam
 }
 
 // OrganizationUserList gets a list of organization users
-func (d *Database) OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*model.OrganizationUser {
-	var users = make([]*model.OrganizationUser, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.OrganizationUser {
+	var users = make([]*thunderdome.OrganizationUser, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, email, role, avatar FROM organization_user_list($1, $2, $3);`,
 		OrgID,
 		Limit,
@@ -112,7 +112,7 @@ func (d *Database) OrganizationUserList(ctx context.Context, OrgID string, Limit
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr model.OrganizationUser
+			var usr thunderdome.OrganizationUser
 
 			if err := rows.Scan(
 				&usr.Id,
@@ -136,7 +136,7 @@ func (d *Database) OrganizationUserList(ctx context.Context, OrgID string, Limit
 
 // OrganizationAddUser adds a user to an organization
 func (d *Database) OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
-	_, err := d.db.ExecContext(ctx,
+	_, err := d.DB.ExecContext(ctx,
 		`SELECT organization_user_add($1, $2, $3);`,
 		OrgID,
 		UserID,
@@ -153,7 +153,7 @@ func (d *Database) OrganizationAddUser(ctx context.Context, OrgID string, UserID
 
 // OrganizationRemoveUser removes a user from a organization
 func (d *Database) OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error {
-	_, err := d.db.ExecContext(ctx,
+	_, err := d.DB.ExecContext(ctx,
 		`CALL organization_user_remove($1, $2);`,
 		OrganizationID,
 		UserID,
@@ -168,9 +168,9 @@ func (d *Database) OrganizationRemoveUser(ctx context.Context, OrganizationID st
 }
 
 // OrganizationTeamList gets a list of organization teams
-func (d *Database) OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*model.Team {
-	var teams = make([]*model.Team, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Team {
+	var teams = make([]*thunderdome.Team, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM organization_team_list($1, $2, $3);`,
 		OrgID,
 		Limit,
@@ -180,7 +180,7 @@ func (d *Database) OrganizationTeamList(ctx context.Context, OrgID string, Limit
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var team model.Team
+			var team thunderdome.Team
 
 			if err := rows.Scan(
 				&team.Id,
@@ -201,10 +201,10 @@ func (d *Database) OrganizationTeamList(ctx context.Context, OrgID string, Limit
 }
 
 // OrganizationTeamCreate creates an organization team
-func (d *Database) OrganizationTeamCreate(ctx context.Context, OrgID string, TeamName string) (*model.Team, error) {
-	t := &model.Team{}
+func (d *Database) OrganizationTeamCreate(ctx context.Context, OrgID string, TeamName string) (*thunderdome.Team, error) {
+	t := &thunderdome.Team{}
 
-	err := d.db.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, name, created_date, updated_date FROM organization_team_create($1, $2);`,
 		OrgID,
 		TeamName,
@@ -223,7 +223,7 @@ func (d *Database) OrganizationTeamUserRole(ctx context.Context, UserID string, 
 	var orgRole string
 	var teamRole string
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT orgRole, teamRole FROM organization_team_user_role($1, $2, $3)`,
 		UserID,
 		OrgID,
@@ -242,7 +242,7 @@ func (d *Database) OrganizationTeamUserRole(ctx context.Context, UserID string, 
 
 // OrganizationDelete deletes an organization
 func (d *Database) OrganizationDelete(ctx context.Context, OrgID string) error {
-	_, err := d.db.ExecContext(ctx,
+	_, err := d.DB.ExecContext(ctx,
 		`CALL organization_delete($1);`,
 		OrgID,
 	)

@@ -3,12 +3,12 @@ package api
 import (
 	"encoding/json"
 	"github.com/StevenWeathers/thunderdome-planning-poker/api/storyboard"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/spf13/viper"
 	"io"
 	"net/http"
 	"strconv"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
@@ -28,7 +28,7 @@ type storyboardCreateRequestBody struct {
 // @Param departmentId path string false "the department ID"
 // @Param teamId path string false "the team ID"
 // @Param storyboard body storyboardCreateRequestBody false "new storyboard object"
-// @Success 200 object standardJsonResponse{data=model.Storyboard}
+// @Success 200 object standardJsonResponse{data=thunderdome.Storyboard}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -67,7 +67,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 			return
 		}
 
-		var newStoryboard *model.Storyboard
+		var newStoryboard *thunderdome.Storyboard
 		var err error
 		// if storyboard created with team association
 		if teamIdExists {
@@ -100,7 +100,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 // @Tags storyboard
 // @Produce  json
 // @Param storyboardId path string true "the storyboard ID to get"
-// @Success 200 object standardJsonResponse{data=model.Storyboard}
+// @Success 200 object standardJsonResponse{data=thunderdome.Storyboard}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -144,7 +144,7 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 // @Param userId path string true "the user ID to get storyboards for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Storyboard}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Storyboard}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -179,7 +179,7 @@ func (a *api) handleGetUserStoryboards() http.HandlerFunc {
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Param active query boolean false "Only active storyboards"
-// @Success 200 object standardJsonResponse{data=[]model.Storyboard}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Storyboard}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards [get]
@@ -189,7 +189,7 @@ func (a *api) handleGetStoryboards() http.HandlerFunc {
 		query := r.URL.Query()
 		var err error
 		var Count int
-		var storyboards []*model.Storyboard
+		var storyboards []*thunderdome.Storyboard
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {

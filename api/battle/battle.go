@@ -3,6 +3,7 @@ package battle
 
 import (
 	"context"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/http"
 
@@ -16,6 +17,7 @@ type Service struct {
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
+	UserService           thunderdome.UserService
 }
 
 // New returns a new battle with websocket hub/client and event handlers
@@ -24,12 +26,14 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
+	userService thunderdome.UserService,
 ) *Service {
 	b := &Service{
 		db:                    db,
 		logger:                logger,
 		validateSessionCookie: validateSessionCookie,
 		validateUserCookie:    validateUserCookie,
+		UserService:           userService,
 	}
 
 	b.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){

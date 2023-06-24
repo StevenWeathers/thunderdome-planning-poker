@@ -1,4 +1,4 @@
-package model
+package thunderdome
 
 // Color is a color legend
 type Color struct {

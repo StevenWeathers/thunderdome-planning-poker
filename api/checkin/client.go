@@ -3,10 +3,10 @@ package checkin
 import (
 	"context"
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"net/http"
 	"time"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 
 	"github.com/gorilla/mux"
@@ -158,7 +158,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		vars := mux.Vars(r)
 		teamID := vars["teamId"]
 		ctx := r.Context()
-		var User *model.User
+		var User *thunderdome.User
 
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
@@ -189,7 +189,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			}
 
 			var userErr error
-			User, userErr = b.db.GetGuestUser(ctx, UserID)
+			User, userErr = b.UserService.GetGuestUser(ctx, UserID)
 			if userErr != nil {
 				b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 				return

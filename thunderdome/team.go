@@ -1,4 +1,4 @@
-package model
+package thunderdome
 
 import "time"
 

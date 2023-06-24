@@ -26,7 +26,7 @@ type alertRequestBody struct {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Alert}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Alert}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [get]
@@ -55,7 +55,7 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 // @Tags alert
 // @Produce  json
 // @Param alert body alertRequestBody true "new alert object"
-// @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [post]
@@ -99,7 +99,7 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Produce  json
 // @Param alertId path string true "the alert ID to update"
 // @Param alert body alertRequestBody true "alert object to update"
-// @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [put]
@@ -150,7 +150,7 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 // @Tags alert
 // @Produce  json
 // @Param alertId path string true "the alert ID to delete"
-// @Success 200 object standardJsonResponse{data=[]model.Alert} "returns active alerts"
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Alert} "returns active alerts"
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [delete]

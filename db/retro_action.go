@@ -3,14 +3,14 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
 
 // CreateRetroAction adds a new action to the retro
-func (d *Database) CreateRetroAction(RetroID string, UserID string, Content string) ([]*model.RetroAction, error) {
-	if _, err := d.db.Exec(
+func (d *Database) CreateRetroAction(RetroID string, UserID string, Content string) ([]*thunderdome.RetroAction, error) {
+	if _, err := d.DB.Exec(
 		`INSERT INTO retro_action (retro_id, content) VALUES ($1, $2);`, RetroID, Content,
 	); err != nil {
 		d.logger.Error("insert retro_action error", zap.Error(err))
@@ -22,8 +22,8 @@ func (d *Database) CreateRetroAction(RetroID string, UserID string, Content stri
 }
 
 // UpdateRetroAction updates an actions status
-func (d *Database) UpdateRetroAction(RetroID string, ActionID string, Content string, Completed bool) (Actions []*model.RetroAction, DeleteError error) {
-	if _, err := d.db.Exec(
+func (d *Database) UpdateRetroAction(RetroID string, ActionID string, Content string, Completed bool) (Actions []*thunderdome.RetroAction, DeleteError error) {
+	if _, err := d.DB.Exec(
 		`UPDATE retro_action SET completed = $2, content = $3, updated_date = NOW() WHERE id = $1;`, ActionID, Completed, Content); err != nil {
 		d.logger.Error("update retro_action error", zap.Error(err))
 	}
@@ -34,8 +34,8 @@ func (d *Database) UpdateRetroAction(RetroID string, ActionID string, Content st
 }
 
 // DeleteRetroAction removes a goal from the current board by ID
-func (d *Database) DeleteRetroAction(RetroID string, userID string, ActionID string) ([]*model.RetroAction, error) {
-	if _, err := d.db.Exec(
+func (d *Database) DeleteRetroAction(RetroID string, userID string, ActionID string) ([]*thunderdome.RetroAction, error) {
+	if _, err := d.DB.Exec(
 		`DELETE FROM retro_action WHERE id = $1;`, ActionID); err != nil {
 		d.logger.Error("delete retro_action error", zap.Error(err))
 	}
@@ -46,17 +46,17 @@ func (d *Database) DeleteRetroAction(RetroID string, userID string, ActionID str
 }
 
 // GetRetroActions retrieves retro actions from the DB
-func (d *Database) GetRetroActions(RetroID string) []*model.RetroAction {
-	var actions = make([]*model.RetroAction, 0)
+func (d *Database) GetRetroActions(RetroID string) []*thunderdome.RetroAction {
+	var actions = make([]*thunderdome.RetroAction, 0)
 
-	actionRows, actionsErr := d.db.Query(
+	actionRows, actionsErr := d.DB.Query(
 		`SELECT id, content, completed FROM retro_action WHERE retro_id = $1 ORDER BY created_date ASC;`,
 		RetroID,
 	)
 	if actionsErr == nil {
 		defer actionRows.Close()
 		for actionRows.Next() {
-			var ri = &model.RetroAction{
+			var ri = &thunderdome.RetroAction{
 				ID:        "",
 				Content:   "",
 				Completed: false,
@@ -73,12 +73,12 @@ func (d *Database) GetRetroActions(RetroID string) []*model.RetroAction {
 }
 
 // GetTeamRetroActions retrieves retro actions for the team
-func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Completed bool) ([]*model.RetroAction, int, error) {
-	var actions = make([]*model.RetroAction, 0)
+func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Completed bool) ([]*thunderdome.RetroAction, int, error) {
+	var actions = make([]*thunderdome.RetroAction, 0)
 
 	var Count int
 
-	e := d.db.QueryRow(
+	e := d.DB.QueryRow(
 		`SELECT COUNT(ra.*) FROM team_retro tr
 				LEFT JOIN retro_action ra ON ra.retro_id = tr.retro_id
 				WHERE tr.team_id = $1 AND ra.completed = $2;`,
@@ -91,7 +91,7 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Com
 		return nil, Count, e
 	}
 
-	actionRows, err := d.db.Query(
+	actionRows, err := d.DB.Query(
 		`SELECT ra.id, ra.content, ra.completed, ra.retro_id,
 				COALESCE(
 					json_agg(rac ORDER BY rac.created_date) FILTER (WHERE rac.id IS NOT NULL), '[]'
@@ -111,11 +111,11 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Com
 		defer actionRows.Close()
 		for actionRows.Next() {
 			var comments string
-			var ri = &model.RetroAction{}
+			var ri = &thunderdome.RetroAction{}
 			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed, &ri.RetroID, &comments); err != nil {
 				d.logger.Error("get retro actions error", zap.Error(err))
 			} else {
-				Comments := make([]*model.RetroActionComment, 0)
+				Comments := make([]*thunderdome.RetroActionComment, 0)
 				jsonErr := json.Unmarshal([]byte(comments), &Comments)
 				if jsonErr != nil {
 					d.logger.Error("retro action comments json error", zap.Error(jsonErr))
@@ -133,8 +133,8 @@ func (d *Database) GetTeamRetroActions(TeamID string, Limit int, Offset int, Com
 }
 
 // RetroActionCommentAdd adds a comment to a retro action
-func (d *Database) RetroActionCommentAdd(RetroID string, ActionID string, UserID string, Comment string) ([]*model.RetroAction, error) {
-	if _, err := d.db.Exec(
+func (d *Database) RetroActionCommentAdd(RetroID string, ActionID string, UserID string, Comment string) ([]*thunderdome.RetroAction, error) {
+	if _, err := d.DB.Exec(
 		`call retro_action_comment_add($1, $2, $3, $4);`,
 		RetroID,
 		ActionID,
@@ -150,8 +150,8 @@ func (d *Database) RetroActionCommentAdd(RetroID string, ActionID string, UserID
 }
 
 // RetroActionCommentEdit edits a retro action comment
-func (d *Database) RetroActionCommentEdit(RetroID string, ActionID string, CommentID string, Comment string) ([]*model.RetroAction, error) {
-	if _, err := d.db.Exec(
+func (d *Database) RetroActionCommentEdit(RetroID string, ActionID string, CommentID string, Comment string) ([]*thunderdome.RetroAction, error) {
+	if _, err := d.DB.Exec(
 		`call retro_action_comment_edit($1, $2, $3, $4);`,
 		RetroID,
 		ActionID,
@@ -167,8 +167,8 @@ func (d *Database) RetroActionCommentEdit(RetroID string, ActionID string, Comme
 }
 
 // RetroActionCommentDelete deletes a retro action comment
-func (d *Database) RetroActionCommentDelete(RetroID string, ActionID string, CommentID string) ([]*model.RetroAction, error) {
-	if _, err := d.db.Exec(
+func (d *Database) RetroActionCommentDelete(RetroID string, ActionID string, CommentID string) ([]*thunderdome.RetroAction, error) {
+	if _, err := d.DB.Exec(
 		`call retro_action_comment_delete($1, $2, $3);`,
 		RetroID,
 		ActionID,
@@ -183,8 +183,8 @@ func (d *Database) RetroActionCommentDelete(RetroID string, ActionID string, Com
 }
 
 // RetroActionAssigneeAdd adds an assignee to a retro action
-func (d *Database) RetroActionAssigneeAdd(RetroID string, ActionID string, UserID string) ([]*model.RetroAction, error) {
-	if _, err := d.db.Exec(
+func (d *Database) RetroActionAssigneeAdd(RetroID string, ActionID string, UserID string) ([]*thunderdome.RetroAction, error) {
+	if _, err := d.DB.Exec(
 		`call retro_action_assignee_add($1, $2, $3);`,
 		RetroID,
 		ActionID,
@@ -199,8 +199,8 @@ func (d *Database) RetroActionAssigneeAdd(RetroID string, ActionID string, UserI
 }
 
 // RetroActionAssigneeDelete deletes a retro action assignee
-func (d *Database) RetroActionAssigneeDelete(RetroID string, ActionID string, UserID string) ([]*model.RetroAction, error) {
-	if _, err := d.db.Exec(
+func (d *Database) RetroActionAssigneeDelete(RetroID string, ActionID string, UserID string) ([]*thunderdome.RetroAction, error) {
+	if _, err := d.DB.Exec(
 		`call retro_action_assignee_delete($1, $2, $3);`,
 		RetroID,
 		ActionID,

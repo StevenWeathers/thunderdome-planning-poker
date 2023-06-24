@@ -4,26 +4,33 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
 
+// UserService represents a PostgreSQL implementation of thunderdome.UserService.
+type UserService struct {
+	DB     *sql.DB
+	Logger *otelzap.Logger
+}
+
 // GetRegisteredUsers gets a list of registered users
-func (d *Database) GetRegisteredUsers(ctx context.Context, Limit int, Offset int) ([]*model.User, int, error) {
-	var users = make([]*model.User, 0)
+func (d *UserService) GetRegisteredUsers(ctx context.Context, Limit int, Offset int) ([]*thunderdome.User, int, error) {
+	var users = make([]*thunderdome.User, 0)
 	var Count int
 
-	err := d.db.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		"SELECT COUNT(*) FROM users WHERE email IS NOT NULL;",
 	).Scan(
 		&Count,
 	)
 	if err != nil {
-		d.logger.Ctx(ctx).Error("get registered users query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("get registered users query error", zap.Error(err))
 	}
 
-	rows, err := d.db.QueryContext(ctx,
+	rows, err := d.DB.QueryContext(ctx,
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title, disabled
 		FROM registered_users_list($1, $2);`,
@@ -36,7 +43,7 @@ func (d *Database) GetRegisteredUsers(ctx context.Context, Limit int, Offset int
 
 	defer rows.Close()
 	for rows.Next() {
-		var w model.User
+		var w thunderdome.User
 
 		if err := rows.Scan(
 			&w.Id,
@@ -50,7 +57,7 @@ func (d *Database) GetRegisteredUsers(ctx context.Context, Limit int, Offset int
 			&w.JobTitle,
 			&w.Disabled,
 		); err != nil {
-			d.logger.Ctx(ctx).Error("registered_users_list query scan error", zap.Error(err))
+			d.Logger.Ctx(ctx).Error("registered_users_list query scan error", zap.Error(err))
 		} else {
 			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)
@@ -61,15 +68,15 @@ func (d *Database) GetRegisteredUsers(ctx context.Context, Limit int, Offset int
 }
 
 // GetUser gets a user by ID
-func (d *Database) GetUser(ctx context.Context, UserID string) (*model.User, error) {
-	var w model.User
+func (d *UserService) GetUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
+	var w thunderdome.User
 	var UserEmail sql.NullString
 	var UserCountry sql.NullString
 	var UserLocale sql.NullString
 	var UserCompany sql.NullString
 	var UserJobTitle sql.NullString
 
-	err := d.db.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, email, type, avatar, verified,
 			notifications_enabled, country, locale, company, job_title,
 			created_date, updated_date, last_active, disabled, mfa_enabled
@@ -94,7 +101,7 @@ func (d *Database) GetUser(ctx context.Context, UserID string) (*model.User, err
 		&w.MFAEnabled,
 	)
 	if err != nil {
-		d.logger.Ctx(ctx).Error("get user query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("get user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
@@ -113,15 +120,15 @@ func (d *Database) GetUser(ctx context.Context, UserID string) (*model.User, err
 }
 
 // GetGuestUser gets a guest user by ID
-func (d *Database) GetGuestUser(ctx context.Context, UserID string) (*model.User, error) {
-	var w model.User
+func (d *UserService) GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
+	var w thunderdome.User
 	var UserEmail sql.NullString
 	var UserCountry sql.NullString
 	var UserLocale sql.NullString
 	var UserCompany sql.NullString
 	var UserJobTitle sql.NullString
 
-	err := d.db.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active
 FROM users
 WHERE id = $1 AND type = 'GUEST';
@@ -144,7 +151,7 @@ WHERE id = $1 AND type = 'GUEST';
 		&w.LastActive,
 	)
 	if err != nil {
-		d.logger.Ctx(ctx).Error("get guest user query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("get guest user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
@@ -159,10 +166,10 @@ WHERE id = $1 AND type = 'GUEST';
 }
 
 // GetUserByEmail gets the user by email
-func (d *Database) GetUserByEmail(ctx context.Context, UserEmail string) (*model.User, error) {
-	var w model.User
+func (d *UserService) GetUserByEmail(ctx context.Context, UserEmail string) (*thunderdome.User, error) {
+	var w thunderdome.User
 
-	err := d.db.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		"SELECT id, name, email, type, verified, disabled FROM users WHERE LOWER(email) = $1",
 		sanitizeEmail(UserEmail),
 	).Scan(
@@ -174,7 +181,7 @@ func (d *Database) GetUserByEmail(ctx context.Context, UserEmail string) (*model
 		&w.Disabled,
 	)
 	if err != nil {
-		d.logger.Ctx(ctx).Error("get user by email query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("get user by email query error", zap.Error(err))
 		return nil, errors.New("user email not found")
 	}
 
@@ -184,73 +191,19 @@ func (d *Database) GetUserByEmail(ctx context.Context, UserEmail string) (*model
 }
 
 // CreateUserGuest adds a new guest user
-func (d *Database) CreateUserGuest(ctx context.Context, UserName string) (*model.User, error) {
+func (d *UserService) CreateUserGuest(ctx context.Context, UserName string) (*thunderdome.User, error) {
 	var UserID string
-	err := d.db.QueryRowContext(ctx, `INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
+	err := d.DB.QueryRowContext(ctx, `INSERT INTO users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
 	if err != nil {
-		d.logger.Ctx(ctx).Error("create guest user query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("create guest user query error", zap.Error(err))
 		return nil, errors.New("unable to create new user")
 	}
 
-	return &model.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: createGravatarHash(UserID)}, nil
+	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: createGravatarHash(UserID)}, nil
 }
 
 // CreateUserRegistered adds a new registered user
-func (d *Database) CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *model.User, VerifyID string, SessionID string, RegisterErr error) {
-	hashedPassword, hashErr := hashSaltPassword(UserPassword)
-	if hashErr != nil {
-		return nil, "", "", hashErr
-	}
-
-	var verifyID string
-	UserType := "REGISTERED"
-	UserAvatar := "robohash"
-	sanitizedEmail := sanitizeEmail(UserEmail)
-	User := &model.User{
-		Name:         UserName,
-		Email:        sanitizedEmail,
-		Type:         UserType,
-		Avatar:       UserAvatar,
-		GravatarHash: createGravatarHash(UserEmail),
-	}
-
-	if ActiveUserID != "" {
-		err := d.db.QueryRowContext(ctx,
-			`SELECT userId, verifyId FROM register_existing_user($1, $2, $3, $4, $5);`,
-			ActiveUserID,
-			UserName,
-			sanitizedEmail,
-			hashedPassword,
-			UserType,
-		).Scan(&User.Id, &verifyID)
-		if err != nil {
-			d.logger.Ctx(ctx).Error("register_existing_user query error", zap.Error(err))
-			return nil, "", "", errors.New("a user with that email already exists")
-		}
-	} else {
-		err := d.db.QueryRow(
-			`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
-			UserName,
-			sanitizedEmail,
-			hashedPassword,
-			UserType,
-		).Scan(&User.Id, &verifyID)
-		if err != nil {
-			d.logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
-			return nil, "", "", errors.New("a user with that email already exists")
-		}
-	}
-
-	sessionId, sessErr := d.CreateSession(ctx, User.Id)
-	if sessErr != nil {
-		return nil, "", "", sessErr
-	}
-
-	return User, verifyID, sessionId, nil
-}
-
-// CreateUser adds a new registered user
-func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *model.User, VerifyID string, RegisterErr error) {
+func (d *UserService) CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error) {
 	hashedPassword, hashErr := hashSaltPassword(UserPassword)
 	if hashErr != nil {
 		return nil, "", hashErr
@@ -260,7 +213,7 @@ func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail st
 	UserType := "REGISTERED"
 	UserAvatar := "robohash"
 	sanitizedEmail := sanitizeEmail(UserEmail)
-	User := &model.User{
+	User := &thunderdome.User{
 		Name:         UserName,
 		Email:        sanitizedEmail,
 		Type:         UserType,
@@ -268,7 +221,56 @@ func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail st
 		GravatarHash: createGravatarHash(UserEmail),
 	}
 
-	err := d.db.QueryRowContext(ctx,
+	if ActiveUserID != "" {
+		err := d.DB.QueryRowContext(ctx,
+			`SELECT userId, verifyId FROM register_existing_user($1, $2, $3, $4, $5);`,
+			ActiveUserID,
+			UserName,
+			sanitizedEmail,
+			hashedPassword,
+			UserType,
+		).Scan(&User.Id, &verifyID)
+		if err != nil {
+			d.Logger.Ctx(ctx).Error("register_existing_user query error", zap.Error(err))
+			return nil, "", errors.New("a user with that email already exists")
+		}
+	} else {
+		err := d.DB.QueryRow(
+			`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
+			UserName,
+			sanitizedEmail,
+			hashedPassword,
+			UserType,
+		).Scan(&User.Id, &verifyID)
+		if err != nil {
+			d.Logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
+			return nil, "", errors.New("a user with that email already exists")
+		}
+	}
+
+	return User, verifyID, nil
+}
+
+// CreateUser adds a new registered user
+func (d *UserService) CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error) {
+	hashedPassword, hashErr := hashSaltPassword(UserPassword)
+	if hashErr != nil {
+		return nil, "", hashErr
+	}
+
+	var verifyID string
+	UserType := "REGISTERED"
+	UserAvatar := "robohash"
+	sanitizedEmail := sanitizeEmail(UserEmail)
+	User := &thunderdome.User{
+		Name:         UserName,
+		Email:        sanitizedEmail,
+		Type:         UserType,
+		Avatar:       UserAvatar,
+		GravatarHash: createGravatarHash(UserEmail),
+	}
+
+	err := d.DB.QueryRowContext(ctx,
 		`SELECT userId, verifyId FROM register_user($1, $2, $3, $4);`,
 		UserName,
 		sanitizedEmail,
@@ -276,7 +278,7 @@ func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail st
 		UserType,
 	).Scan(&User.Id, &verifyID)
 	if err != nil {
-		d.logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
 		return nil, "", errors.New("a user with that email already exists")
 	}
 
@@ -284,11 +286,11 @@ func (d *Database) CreateUser(ctx context.Context, UserName string, UserEmail st
 }
 
 // UpdateUserProfile updates the users profile (excludes: email, password)
-func (d *Database) UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *UserService) UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
 	}
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call user_profile_update($1, $2, $3, $4, $5, $6, $7, $8);`,
 		UserID,
 		UserName,
@@ -299,7 +301,7 @@ func (d *Database) UpdateUserProfile(ctx context.Context, UserID string, UserNam
 		Company,
 		JobTitle,
 	); err != nil {
-		d.logger.Ctx(ctx).Error("user_profile_update query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("user_profile_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
 	}
 
@@ -307,11 +309,11 @@ func (d *Database) UpdateUserProfile(ctx context.Context, UserID string, UserNam
 }
 
 // UpdateUserProfileLdap updates the users profile (excludes: username, email, password)
-func (d *Database) UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *UserService) UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
 	}
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call user_profile_ldap_update($1, $2, $3, $4, $5, $6, $7);`,
 		UserID,
 		UserAvatar,
@@ -321,7 +323,7 @@ func (d *Database) UpdateUserProfileLdap(ctx context.Context, UserID string, Use
 		Company,
 		JobTitle,
 	); err != nil {
-		d.logger.Ctx(ctx).Error("user_profile_ldap_update query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("user_profile_ldap_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
 	}
 
@@ -329,11 +331,11 @@ func (d *Database) UpdateUserProfileLdap(ctx context.Context, UserID string, Use
 }
 
 // UpdateUserAccount updates the users profile including email (excludes: password)
-func (d *Database) UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *UserService) UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
 	}
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call user_account_update($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
 		UserID,
 		UserName,
@@ -352,51 +354,24 @@ func (d *Database) UpdateUserAccount(ctx context.Context, UserID string, UserNam
 }
 
 // DeleteUser deletes a user
-func (d *Database) DeleteUser(ctx context.Context, UserID string) error {
-	if _, err := d.db.ExecContext(ctx,
+func (d *UserService) DeleteUser(ctx context.Context, UserID string) error {
+	if _, err := d.DB.ExecContext(ctx,
 		`call delete_user($1);`,
 		UserID,
 	); err != nil {
-		d.logger.Ctx(ctx).Error("delete_user query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("delete_user query error", zap.Error(err))
 		return errors.New("error attempting to delete user")
 	}
 
 	return nil
 }
 
-// GetActiveCountries gets a list of user countries
-func (d *Database) GetActiveCountries(ctx context.Context) ([]string, error) {
-	var countries = make([]string, 0)
-
-	rows, err := d.db.QueryContext(ctx, `SELECT * FROM countries_active();`)
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var country sql.NullString
-			if err := rows.Scan(
-				&country,
-			); err != nil {
-				d.logger.Ctx(ctx).Error("countries_active query scan error", zap.Error(err))
-			} else {
-				if country.String != "" {
-					countries = append(countries, country.String)
-				}
-			}
-		}
-	} else {
-		d.logger.Ctx(ctx).Error("countries_active query error", zap.Error(err))
-		return nil, errors.New("error attempting to get active countries")
-	}
-
-	return countries, nil
-}
-
 // SearchRegisteredUsersByEmail retrieves the registered users filtered by email likeness
-func (d *Database) SearchRegisteredUsersByEmail(ctx context.Context, Email string, Limit int, Offset int) ([]*model.User, int, error) {
-	var users = make([]*model.User, 0)
+func (d *UserService) SearchRegisteredUsersByEmail(ctx context.Context, Email string, Limit int, Offset int) ([]*thunderdome.User, int, error) {
+	var users = make([]*thunderdome.User, 0)
 	var count int
 
-	rows, err := d.db.QueryContext(ctx,
+	rows, err := d.DB.QueryContext(ctx,
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title, count
 		FROM registered_users_email_search($1, $2, $3);`,
@@ -410,7 +385,7 @@ func (d *Database) SearchRegisteredUsersByEmail(ctx context.Context, Email strin
 
 	defer rows.Close()
 	for rows.Next() {
-		var w model.User
+		var w thunderdome.User
 
 		if err := rows.Scan(
 			&w.Id,
@@ -424,7 +399,7 @@ func (d *Database) SearchRegisteredUsersByEmail(ctx context.Context, Email strin
 			&w.JobTitle,
 			&count,
 		); err != nil {
-			d.logger.Ctx(ctx).Error("registered_users_email_search query error", zap.Error(err))
+			d.Logger.Ctx(ctx).Error("registered_users_email_search query error", zap.Error(err))
 		} else {
 			w.GravatarHash = createGravatarHash(w.Email)
 			users = append(users, &w)

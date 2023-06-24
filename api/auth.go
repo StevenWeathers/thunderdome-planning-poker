@@ -2,11 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"io"
 	"net/http"
 	"strings"
-
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 
 	"github.com/spf13/viper"
 )
@@ -17,9 +16,9 @@ type userLoginRequestBody struct {
 }
 
 type loginResponse struct {
-	User        *model.User `json:"user"`
-	SessionId   string      `json:"sessionId"`
-	MFARequired bool        `json:"mfaRequired"`
+	User        *thunderdome.User `json:"user"`
+	SessionId   string            `json:"sessionId"`
+	MFARequired bool              `json:"mfaRequired"`
 }
 
 // handleLogin attempts to log in the user
@@ -283,7 +282,7 @@ type guestUserCreateRequestBody struct {
 // @Tags auth
 // @Produce json
 // @Param user body guestUserCreateRequestBody false "guest user object"
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=thunderdome.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/guest [post]
@@ -314,7 +313,7 @@ func (a *api) handleCreateGuestUser() http.HandlerFunc {
 			return
 		}
 
-		newUser, err := a.db.CreateUserGuest(r.Context(), u.Name)
+		newUser, err := a.UserService.CreateUserGuest(r.Context(), u.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -343,7 +342,7 @@ type userRegisterRequestBody struct {
 // @Tags auth
 // @Produce json
 // @Param user body userRegisterRequestBody false "new user object"
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=thunderdome.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/register [post]
@@ -387,7 +386,7 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, SessionID, err := a.db.CreateUserRegistered(r.Context(), UserName, UserEmail, UserPassword, ActiveUserID)
+		newUser, VerifyID, err := a.UserService.CreateUserRegistered(r.Context(), UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -397,6 +396,12 @@ func (a *api) handleUserRegistration() http.HandlerFunc {
 
 		if ActiveUserID != "" {
 			a.clearUserCookies(w)
+		}
+
+		SessionID, err := a.db.CreateSession(r.Context(), newUser.Id)
+		if err != nil {
+			a.Failure(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
 		cookieErr := a.createSessionCookie(w, SessionID)
@@ -607,7 +612,7 @@ func (a *api) handleMFASetupGenerate() http.HandlerFunc {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		u, err := a.db.GetUser(ctx, UserID)
+		u, err := a.UserService.GetUser(ctx, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

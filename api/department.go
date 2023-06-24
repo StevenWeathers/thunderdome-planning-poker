@@ -2,27 +2,27 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"io"
 	"net/http"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
 type departmentResponse struct {
-	Organization     *model.Organization `json:"organization"`
-	Department       *model.Department   `json:"department"`
-	OrganizationRole string              `json:"organizationRole"`
-	DepartmentRole   string              `json:"departmentRole"`
+	Organization     *thunderdome.Organization `json:"organization"`
+	Department       *thunderdome.Department   `json:"department"`
+	OrganizationRole string                    `json:"organizationRole"`
+	DepartmentRole   string                    `json:"departmentRole"`
 }
 
 type departmentTeamResponse struct {
-	Organization     *model.Organization `json:"organization"`
-	Department       *model.Department   `json:"department"`
-	Team             *model.Team         `json:"team"`
-	OrganizationRole string              `json:"organizationRole"`
-	DepartmentRole   string              `json:"departmentRole"`
-	TeamRole         string              `json:"teamRole"`
+	Organization     *thunderdome.Organization `json:"organization"`
+	Department       *thunderdome.Department   `json:"department"`
+	Team             *thunderdome.Team         `json:"team"`
+	OrganizationRole string                    `json:"organizationRole"`
+	DepartmentRole   string                    `json:"departmentRole"`
+	TeamRole         string                    `json:"teamRole"`
 }
 
 // handleGetOrganizationDepartments gets a list of departments associated to the organization
@@ -31,7 +31,7 @@ type departmentTeamResponse struct {
 // @Tags organization
 // @Produce  json
 // @Param orgId path string true "the organization ID to get departments for"
-// @Success 200 object standardJsonResponse{data=[]model.Department}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Department}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments [get]
 func (a *api) handleGetOrganizationDepartments() http.HandlerFunc {
@@ -104,7 +104,7 @@ func (a *api) handleGetDepartmentByUser() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "the organization ID to create department for"
 // @Param department body teamCreateRequestBody true "new department object"
-// @Success 200 object standardJsonResponse{data=model.Department}
+// @Success 200 object standardJsonResponse{data=thunderdome.Department}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments [post]
@@ -147,7 +147,7 @@ func (a *api) handleCreateDepartment() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID to get teams for"
-// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Team}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [get]
 func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
@@ -173,7 +173,7 @@ func (a *api) handleGetDepartmentTeams() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID"
-// @Success 200 object standardJsonResponse{data=[]model.DepartmentUser}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.DepartmentUser}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users [get]
 func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
@@ -200,7 +200,7 @@ func (a *api) handleGetDepartmentUsers() http.HandlerFunc {
 // @Param orgId path string true "the organization ID"
 // @Param departmentId path string true "the department ID"
 // @Param team body teamCreateRequestBody true "new team object"
-// @Success 200 object standardJsonResponse{data=model.Team}
+// @Success 200 object standardJsonResponse{data=thunderdome.Team}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
@@ -273,7 +273,7 @@ func (a *api) handleDepartmentAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := a.db.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := a.UserService.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
@@ -366,7 +366,7 @@ func (a *api) handleDepartmentTeamAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := a.db.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := a.UserService.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return

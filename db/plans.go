@@ -3,15 +3,15 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
 
 // GetPlans retrieves plans for given battle
-func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
-	var plans = make([]*model.Plan, 0)
-	planRows, plansErr := d.db.Query(
+func (d *Database) GetPlans(BattleID string, UserID string) []*thunderdome.Plan {
+	var plans = make([]*thunderdome.Plan, 0)
+	planRows, plansErr := d.DB.Query(
 		`SELECT
 			id, name, type, reference_id, link, description, acceptance_criteria, priority, points, active, skipped, votestart_time, voteend_time, votes
 			FROM plans WHERE battle_id = $1 ORDER BY created_date
@@ -26,8 +26,8 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 			var Link sql.NullString
 			var Description sql.NullString
 			var AcceptanceCriteria sql.NullString
-			var p = &model.Plan{
-				Votes:   make([]*model.Vote, 0),
+			var p = &thunderdome.Plan{
+				Votes:   make([]*thunderdome.Vote, 0),
 				Active:  false,
 				Skipped: false,
 			}
@@ -61,14 +61,14 @@ func (d *Database) GetPlans(BattleID string, UserID string) []*model.Plan {
 }
 
 // CreatePlan adds a new plan to a battle
-func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*model.Plan, error) {
+func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*thunderdome.Plan, error) {
 	SanitizedDescription := d.htmlSanitizerPolicy.Sanitize(Description)
 	SanitizedAcceptanceCriteria := d.htmlSanitizerPolicy.Sanitize(AcceptanceCriteria)
 	// default priority should be 99 for sort order purposes
 	if Priority == 0 {
 		Priority = 99
 	}
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`call create_plan($1, $2, $3, $4, $5, $6, $7, $8);`, BattleID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority,
 	); err != nil {
 		d.logger.Error("call create_plan error", zap.Error(err))
@@ -80,8 +80,8 @@ func (d *Database) CreatePlan(BattleID string, PlanName string, PlanType string,
 }
 
 // ActivatePlanVoting sets the plan by ID to active, wipes any previous votes/points, and disables votingLock
-func (d *Database) ActivatePlanVoting(BattleID string, PlanID string) ([]*model.Plan, error) {
-	if _, err := d.db.Exec(
+func (d *Database) ActivatePlanVoting(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
+	if _, err := d.DB.Exec(
 		`call activate_plan_voting($1, $2);`, BattleID, PlanID,
 	); err != nil {
 		d.logger.Error("call activate_plan_voting error", zap.Error(err))
@@ -93,8 +93,8 @@ func (d *Database) ActivatePlanVoting(BattleID string, PlanID string) ([]*model.
 }
 
 // SetVote sets a users vote for the plan
-func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteValue string) (BattlePlans []*model.Plan, AllUsersVoted bool) {
-	if _, err := d.db.Exec(
+func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteValue string) (BattlePlans []*thunderdome.Plan, AllUsersVoted bool) {
+	if _, err := d.DB.Exec(
 		`call set_user_vote($1, $2, $3);`, PlanID, UserID, VoteValue); err != nil {
 		d.logger.Error("call set_user_vote error", zap.Error(err))
 	}
@@ -126,8 +126,8 @@ func (d *Database) SetVote(BattleID string, UserID string, PlanID string, VoteVa
 }
 
 // RetractVote removes a users vote for the plan
-func (d *Database) RetractVote(BattleID string, UserID string, PlanID string) ([]*model.Plan, error) {
-	if _, err := d.db.Exec(
+func (d *Database) RetractVote(BattleID string, UserID string, PlanID string) ([]*thunderdome.Plan, error) {
+	if _, err := d.DB.Exec(
 		`call retract_user_vote($1, $2);`, PlanID, UserID); err != nil {
 		d.logger.Error("call retract_user_vote error", zap.Error(err))
 		return nil, err
@@ -139,8 +139,8 @@ func (d *Database) RetractVote(BattleID string, UserID string, PlanID string) ([
 }
 
 // EndPlanVoting sets plan to active: false
-func (d *Database) EndPlanVoting(BattleID string, PlanID string) ([]*model.Plan, error) {
-	if _, err := d.db.Exec(
+func (d *Database) EndPlanVoting(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
+	if _, err := d.DB.Exec(
 		`call end_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
 		d.logger.Error("call end_plan_voting error", zap.Error(err))
 	}
@@ -151,8 +151,8 @@ func (d *Database) EndPlanVoting(BattleID string, PlanID string) ([]*model.Plan,
 }
 
 // SkipPlan sets plan to active: false and unsets battle's activePlanId
-func (d *Database) SkipPlan(BattleID string, PlanID string) ([]*model.Plan, error) {
-	if _, err := d.db.Exec(
+func (d *Database) SkipPlan(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
+	if _, err := d.DB.Exec(
 		`call skip_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
 		d.logger.Error("call skip_plan_voting error", zap.Error(err))
 	}
@@ -163,7 +163,7 @@ func (d *Database) SkipPlan(BattleID string, PlanID string) ([]*model.Plan, erro
 }
 
 // RevisePlan updates the plan by ID
-func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*model.Plan, error) {
+func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*thunderdome.Plan, error) {
 	SanitizedDescription := d.htmlSanitizerPolicy.Sanitize(Description)
 	SanitizedAcceptanceCriteria := d.htmlSanitizerPolicy.Sanitize(AcceptanceCriteria)
 	// default priority should be 99 for sort order purposes
@@ -171,7 +171,7 @@ func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, P
 		Priority = 99
 	}
 	// set PlanID to true
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`call revise_plan($1, $2, $3, $4, $5, $6, $7, $8);`, PlanID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority); err != nil {
 		d.logger.Error("call revise_plan error", zap.Error(err))
 	}
@@ -182,8 +182,8 @@ func (d *Database) RevisePlan(BattleID string, PlanID string, PlanName string, P
 }
 
 // BurnPlan removes a plan from the current battle by ID
-func (d *Database) BurnPlan(BattleID string, PlanID string) ([]*model.Plan, error) {
-	if _, err := d.db.Exec(
+func (d *Database) BurnPlan(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
+	if _, err := d.DB.Exec(
 		`call delete_plan($1, $2);`, BattleID, PlanID); err != nil {
 		d.logger.Error("call delete_plan error", zap.Error(err))
 	}
@@ -194,8 +194,8 @@ func (d *Database) BurnPlan(BattleID string, PlanID string) ([]*model.Plan, erro
 }
 
 // FinalizePlan sets plan to active: false
-func (d *Database) FinalizePlan(BattleID string, PlanID string, PlanPoints string) ([]*model.Plan, error) {
-	if _, err := d.db.Exec(
+func (d *Database) FinalizePlan(BattleID string, PlanID string, PlanPoints string) ([]*thunderdome.Plan, error) {
+	if _, err := d.DB.Exec(
 		`call finalize_plan($1, $2, $3);`, BattleID, PlanID, PlanPoints); err != nil {
 		d.logger.Error("call finalize_plan error", zap.Error(err))
 	}

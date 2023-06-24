@@ -3,17 +3,17 @@ package db
 import (
 	"context"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"strings"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
 
 // GetAppStats gets counts of common application metrics such as users and battles
-func (d *Database) GetAppStats(ctx context.Context) (*model.ApplicationStats, error) {
-	var Appstats model.ApplicationStats
+func (d *Database) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStats, error) {
+	var Appstats thunderdome.ApplicationStats
 
-	err := d.db.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		SELECT
 			unregistered_user_count,
 			registered_user_count,
@@ -75,7 +75,7 @@ func (d *Database) GetAppStats(ctx context.Context) (*model.ApplicationStats, er
 
 // PromoteUser promotes a user to admin type
 func (d *Database) PromoteUser(ctx context.Context, UserID string) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call promote_user($1);`,
 		UserID,
 	); err != nil {
@@ -88,7 +88,7 @@ func (d *Database) PromoteUser(ctx context.Context, UserID string) error {
 
 // DemoteUser demotes a user to registered type
 func (d *Database) DemoteUser(ctx context.Context, UserID string) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call demote_user($1);`,
 		UserID,
 	); err != nil {
@@ -101,7 +101,7 @@ func (d *Database) DemoteUser(ctx context.Context, UserID string) error {
 
 // DisableUser disables a user from logging in
 func (d *Database) DisableUser(ctx context.Context, UserID string) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call user_disable($1);`,
 		UserID,
 	); err != nil {
@@ -114,7 +114,7 @@ func (d *Database) DisableUser(ctx context.Context, UserID string) error {
 
 // EnableUser enables a user allowing login
 func (d *Database) EnableUser(ctx context.Context, UserID string) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call user_enable($1);`,
 		UserID,
 	); err != nil {
@@ -127,7 +127,7 @@ func (d *Database) EnableUser(ctx context.Context, UserID string) error {
 
 // CleanBattles deletes battles older than {DaysOld} days
 func (d *Database) CleanBattles(ctx context.Context, DaysOld int) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call clean_battles($1);`,
 		DaysOld,
 	); err != nil {
@@ -140,7 +140,7 @@ func (d *Database) CleanBattles(ctx context.Context, DaysOld int) error {
 
 // CleanRetros deletes retros older than {DaysOld} days
 func (d *Database) CleanRetros(ctx context.Context, DaysOld int) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call clean_retros($1);`,
 		DaysOld,
 	); err != nil {
@@ -153,7 +153,7 @@ func (d *Database) CleanRetros(ctx context.Context, DaysOld int) error {
 
 // CleanStoryboards deletes storyboards older than {DaysOld} days
 func (d *Database) CleanStoryboards(ctx context.Context, DaysOld int) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call clean_storyboards($1);`,
 		DaysOld,
 	); err != nil {
@@ -166,7 +166,7 @@ func (d *Database) CleanStoryboards(ctx context.Context, DaysOld int) error {
 
 // CleanGuests deletes guest users older than {DaysOld} days
 func (d *Database) CleanGuests(ctx context.Context, DaysOld int) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call clean_guest_users($1);`,
 		DaysOld,
 	); err != nil {
@@ -179,16 +179,16 @@ func (d *Database) CleanGuests(ctx context.Context, DaysOld int) error {
 
 // LowercaseUserEmails goes through and lower cases any user email that has uppercase letters
 // returning the list of updated users
-func (d *Database) LowercaseUserEmails(ctx context.Context) ([]*model.User, error) {
-	var users = make([]*model.User, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) LowercaseUserEmails(ctx context.Context) ([]*thunderdome.User, error) {
+	var users = make([]*thunderdome.User, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT name, email FROM lowercase_unique_user_emails();`,
 	)
 
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr model.User
+			var usr thunderdome.User
 
 			if err := rows.Scan(
 				&usr.Name,
@@ -210,16 +210,16 @@ func (d *Database) LowercaseUserEmails(ctx context.Context) ([]*model.User, erro
 
 // MergeDuplicateAccounts goes through and merges user accounts with duplicate emails that has uppercase letters
 // returning the list of merged users
-func (d *Database) MergeDuplicateAccounts(ctx context.Context) ([]*model.User, error) {
-	var users = make([]*model.User, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) MergeDuplicateAccounts(ctx context.Context) ([]*thunderdome.User, error) {
+	var users = make([]*thunderdome.User, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT name, email FROM merge_nonunique_user_accounts();`,
 	)
 
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr model.User
+			var usr thunderdome.User
 
 			if err := rows.Scan(
 				&usr.Name,
@@ -240,9 +240,9 @@ func (d *Database) MergeDuplicateAccounts(ctx context.Context) ([]*model.User, e
 }
 
 // OrganizationList gets a list of organizations
-func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) []*model.Organization {
-	var organizations = make([]*model.Organization, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) []*thunderdome.Organization {
+	var organizations = make([]*thunderdome.Organization, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM organization_list($1, $2);`,
 		Limit,
 		Offset,
@@ -251,7 +251,7 @@ func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) 
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var org model.Organization
+			var org thunderdome.Organization
 
 			if err := rows.Scan(
 				&org.Id,
@@ -272,17 +272,17 @@ func (d *Database) OrganizationList(ctx context.Context, Limit int, Offset int) 
 }
 
 // TeamList gets a list of teams
-func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) ([]*model.Team, int) {
-	var teams = make([]*model.Team, 0)
+func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Team, int) {
+	var teams = make([]*thunderdome.Team, 0)
 	var count = 0
 
-	err := d.db.QueryRowContext(ctx, `SELECT count FROM team_list_count();`).Scan(&count)
+	err := d.DB.QueryRowContext(ctx, `SELECT count FROM team_list_count();`).Scan(&count)
 	if err != nil {
 		d.logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
 		return teams, count
 	}
 
-	rows, err := d.db.QueryContext(ctx,
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
 		Limit,
 		Offset,
@@ -291,7 +291,7 @@ func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) ([]*mode
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var team model.Team
+			var team thunderdome.Team
 
 			if err := rows.Scan(
 				&team.Id,
@@ -312,9 +312,9 @@ func (d *Database) TeamList(ctx context.Context, Limit int, Offset int) ([]*mode
 }
 
 // GetAPIKeys gets a list of api keys
-func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*model.UserAPIKey {
-	var APIKeys = make([]*model.UserAPIKey, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thunderdome.UserAPIKey {
+	var APIKeys = make([]*thunderdome.UserAPIKey, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, user_id, user_name, user_email, active, created_date, updated_date
 		FROM apikeys_list($1, $2);`,
 		Limit,
@@ -323,7 +323,7 @@ func (d *Database) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*mod
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var ak model.UserAPIKey
+			var ak thunderdome.UserAPIKey
 			var key string
 
 			if err := rows.Scan(

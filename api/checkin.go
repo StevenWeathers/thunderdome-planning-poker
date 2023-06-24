@@ -19,7 +19,7 @@ import (
 // @Param teamId path string true "the team ID"
 // @Param date query string false "the date in YYYY-MM-DD format"
 // @Param tz query string false "the timezone name e.g. America/New_York"
-// @Success 200 object standardJsonResponse{data=[]model.TeamCheckin}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.TeamCheckin}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [get]
 func (a *api) handleCheckinsGet() http.HandlerFunc {

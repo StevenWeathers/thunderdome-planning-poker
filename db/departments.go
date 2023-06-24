@@ -3,8 +3,8 @@ package db
 import (
 	"context"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
 
@@ -13,7 +13,7 @@ func (d *Database) DepartmentUserRole(ctx context.Context, UserID string, OrgID 
 	var orgRole string
 	var departmentRole string
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT orgRole, departmentRole FROM department_get_user_role($1, $2, $3)`,
 		UserID,
 		OrgID,
@@ -31,10 +31,10 @@ func (d *Database) DepartmentUserRole(ctx context.Context, UserID string, OrgID 
 }
 
 // DepartmentGet gets a department
-func (d *Database) DepartmentGet(ctx context.Context, DepartmentID string) (*model.Department, error) {
-	var org = &model.Department{}
+func (d *Database) DepartmentGet(ctx context.Context, DepartmentID string) (*thunderdome.Department, error) {
+	var org = &thunderdome.Department{}
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM department_get_by_id($1)`,
 		DepartmentID,
 	).Scan(
@@ -52,9 +52,9 @@ func (d *Database) DepartmentGet(ctx context.Context, DepartmentID string) (*mod
 }
 
 // OrganizationDepartmentList gets a list of organization departments
-func (d *Database) OrganizationDepartmentList(ctx context.Context, OrgID string, Limit int, Offset int) []*model.Department {
-	var departments = make([]*model.Department, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) OrganizationDepartmentList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Department {
+	var departments = make([]*thunderdome.Department, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM department_list($1, $2, $3);`,
 		OrgID,
 		Limit,
@@ -64,7 +64,7 @@ func (d *Database) OrganizationDepartmentList(ctx context.Context, OrgID string,
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var department model.Department
+			var department thunderdome.Department
 
 			if err := rows.Scan(
 				&department.Id,
@@ -85,10 +85,10 @@ func (d *Database) OrganizationDepartmentList(ctx context.Context, OrgID string,
 }
 
 // DepartmentCreate creates an organization department
-func (d *Database) DepartmentCreate(ctx context.Context, OrgID string, OrgName string) (*model.Department, error) {
-	od := &model.Department{}
+func (d *Database) DepartmentCreate(ctx context.Context, OrgID string, OrgName string) (*thunderdome.Department, error) {
+	od := &thunderdome.Department{}
 
-	err := d.db.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, name, created_date, updated_date FROM department_create($1, $2);`,
 		OrgID,
 		OrgName,
@@ -103,9 +103,9 @@ func (d *Database) DepartmentCreate(ctx context.Context, OrgID string, OrgName s
 }
 
 // DepartmentTeamList gets a list of department teams
-func (d *Database) DepartmentTeamList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*model.Team {
-	var teams = make([]*model.Team, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) DepartmentTeamList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.Team {
+	var teams = make([]*thunderdome.Team, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, created_date, updated_date FROM department_team_list($1, $2, $3);`,
 		DepartmentID,
 		Limit,
@@ -115,7 +115,7 @@ func (d *Database) DepartmentTeamList(ctx context.Context, DepartmentID string, 
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var team model.Team
+			var team thunderdome.Team
 
 			if err := rows.Scan(
 				&team.Id,
@@ -136,10 +136,10 @@ func (d *Database) DepartmentTeamList(ctx context.Context, DepartmentID string, 
 }
 
 // DepartmentTeamCreate creates a department team
-func (d *Database) DepartmentTeamCreate(ctx context.Context, DepartmentID string, TeamName string) (*model.Team, error) {
-	t := &model.Team{}
+func (d *Database) DepartmentTeamCreate(ctx context.Context, DepartmentID string, TeamName string) (*thunderdome.Team, error) {
+	t := &thunderdome.Team{}
 
-	err := d.db.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, name, created_date, updated_date FROM department_team_create($1, $2);`,
 		DepartmentID,
 		TeamName,
@@ -154,9 +154,9 @@ func (d *Database) DepartmentTeamCreate(ctx context.Context, DepartmentID string
 }
 
 // DepartmentUserList gets a list of department users
-func (d *Database) DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*model.DepartmentUser {
-	var users = make([]*model.DepartmentUser, 0)
-	rows, err := d.db.QueryContext(ctx,
+func (d *Database) DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.DepartmentUser {
+	var users = make([]*thunderdome.DepartmentUser, 0)
+	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, email, role, avatar FROM department_user_list($1, $2, $3);`,
 		DepartmentID,
 		Limit,
@@ -166,7 +166,7 @@ func (d *Database) DepartmentUserList(ctx context.Context, DepartmentID string, 
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var usr model.DepartmentUser
+			var usr thunderdome.DepartmentUser
 
 			if err := rows.Scan(
 				&usr.Id,
@@ -190,7 +190,7 @@ func (d *Database) DepartmentUserList(ctx context.Context, DepartmentID string, 
 
 // DepartmentAddUser adds a user to an organization department
 func (d *Database) DepartmentAddUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error) {
-	_, err := d.db.ExecContext(ctx,
+	_, err := d.DB.ExecContext(ctx,
 		`SELECT department_user_add($1, $2, $3);`,
 		DepartmentID,
 		UserID,
@@ -207,7 +207,7 @@ func (d *Database) DepartmentAddUser(ctx context.Context, DepartmentID string, U
 
 // DepartmentRemoveUser removes a user from a department (and department teams)
 func (d *Database) DepartmentRemoveUser(ctx context.Context, DepartmentID string, UserID string) error {
-	_, err := d.db.ExecContext(ctx,
+	_, err := d.DB.ExecContext(ctx,
 		`CALL department_user_remove($1, $2);`,
 		DepartmentID,
 		UserID,
@@ -227,7 +227,7 @@ func (d *Database) DepartmentTeamUserRole(ctx context.Context, UserID string, Or
 	var departmentRole string
 	var teamRole string
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT orgRole, departmentRole, teamRole FROM department_team_user_role($1, $2, $3, $4)`,
 		UserID,
 		OrgID,
@@ -248,7 +248,7 @@ func (d *Database) DepartmentTeamUserRole(ctx context.Context, UserID string, Or
 
 // DepartmentDelete deletes a department
 func (d *Database) DepartmentDelete(ctx context.Context, DepartmentID string) error {
-	_, err := d.db.ExecContext(ctx,
+	_, err := d.DB.ExecContext(ctx,
 		`CALL department_delete($1);`,
 		DepartmentID,
 	)

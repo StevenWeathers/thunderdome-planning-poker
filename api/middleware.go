@@ -2,10 +2,9 @@ package api
 
 import (
 	"context"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"net/http"
 	"strings"
-
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 
 	"github.com/gorilla/mux"
 )
@@ -16,7 +15,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
 		ctx := r.Context()
-		var User *model.User
+		var User *thunderdome.User
 
 		if apiKey != "" && a.config.ExternalAPIEnabled {
 			var apiKeyErr error
@@ -47,7 +46,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 				}
 
 				var userErr error
-				User, userErr = a.db.GetGuestUser(ctx, UserID)
+				User, userErr = a.UserService.GetGuestUser(ctx, UserID)
 				if userErr != nil {
 					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
@@ -132,7 +131,7 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		EntityUser, EntityUserErr := a.db.GetUser(ctx, EntityUserID)
+		EntityUser, EntityUserErr := a.UserService.GetUser(ctx, EntityUserID)
 		if EntityUserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
 			return

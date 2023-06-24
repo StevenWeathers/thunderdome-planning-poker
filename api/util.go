@@ -6,11 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"net/http"
 	"strconv"
 	"strings"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/go-ldap/ldap/v3"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -284,8 +284,8 @@ func sanitizeUserInputForLogs(unescapedInput string) string {
 }
 
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user
-func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPassword string) (*model.User, string, error) {
-	var AuthedUser *model.User
+func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPassword string) (*thunderdome.User, string, error) {
+	var AuthedUser *thunderdome.User
 	var SessionId string
 	var sessErr error
 
@@ -339,11 +339,11 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 		return AuthedUser, SessionId, err
 	}
 
-	AuthedUser, err = a.db.GetUserByEmail(ctx, useremail)
+	AuthedUser, err = a.UserService.GetUserByEmail(ctx, useremail)
 
 	if AuthedUser == nil {
 		a.logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(ctx, usercn, useremail, "", "")
+		AuthedUser, verifyID, err := a.UserService.CreateUserRegistered(ctx, usercn, useremail, "", "")
 		if err != nil {
 			a.logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
@@ -353,8 +353,11 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 			a.logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		AuthedUser = newUser
-		SessionId = sessionId
+		SessionId, err = a.db.CreateSession(ctx, AuthedUser.Id)
+		if err != nil {
+			a.logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
+			return AuthedUser, SessionId, err
+		}
 	} else {
 		if AuthedUser.Disabled {
 			return nil, "", fmt.Errorf("user is disabled")
@@ -371,16 +374,16 @@ func (a *api) authAndCreateUserLdap(ctx context.Context, UserName string, UserPa
 }
 
 // Authenticate using HTTP headers and if user does not exist, automatically add user as a verified user
-func (a *api) authAndCreateUserHeader(ctx context.Context, username string, useremail string) (*model.User, string, error) {
-	var AuthedUser *model.User
+func (a *api) authAndCreateUserHeader(ctx context.Context, username string, useremail string) (*thunderdome.User, string, error) {
+	var AuthedUser *thunderdome.User
 	var SessionId string
 	var sessErr error
 
-	AuthedUser, err := a.db.GetUserByEmail(ctx, useremail)
+	AuthedUser, err := a.UserService.GetUserByEmail(ctx, useremail)
 
 	if AuthedUser == nil {
 		a.logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		newUser, verifyID, sessionId, err := a.db.CreateUserRegistered(ctx, username, useremail, "", "")
+		AuthedUser, verifyID, err := a.UserService.CreateUserRegistered(ctx, username, useremail, "", "")
 		if err != nil {
 			a.logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
@@ -390,8 +393,11 @@ func (a *api) authAndCreateUserHeader(ctx context.Context, username string, user
 			a.logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		AuthedUser = newUser
-		SessionId = sessionId
+		SessionId, err = a.db.CreateSession(ctx, AuthedUser.Id)
+		if err != nil {
+			a.logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
+			return AuthedUser, SessionId, err
+		}
 	} else {
 		if AuthedUser.Disabled {
 			return nil, "", fmt.Errorf("user is disabled")

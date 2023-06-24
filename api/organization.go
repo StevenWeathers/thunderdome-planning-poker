@@ -2,23 +2,23 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"io"
 	"net/http"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
 type organizationResponse struct {
-	Organization *model.Organization `json:"organization"`
-	Role         string              `json:"role"`
+	Organization *thunderdome.Organization `json:"organization"`
+	Role         string                    `json:"role"`
 }
 
 type orgTeamResponse struct {
-	Organization     *model.Organization `json:"organization"`
-	Team             *model.Team         `json:"team"`
-	OrganizationRole string              `json:"organizationRole"`
-	TeamRole         string              `json:"teamRole"`
+	Organization     *thunderdome.Organization `json:"organization"`
+	Team             *thunderdome.Team         `json:"team"`
+	OrganizationRole string                    `json:"organizationRole"`
+	TeamRole         string                    `json:"teamRole"`
 }
 
 // handleGetOrganizationsByUser gets a list of organizations the user is a part of
@@ -29,7 +29,7 @@ type orgTeamResponse struct {
 // @Param userId path string true "the user ID to get organizations for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Organization}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Organization}
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/organizations [get]
@@ -94,7 +94,7 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 // @Produce  json
 // @Param userId path string true "user id"
 // @Param organization body teamCreateRequestBody true "new organization object"
-// @Success 200 object standardJsonResponse{data=model.Organization}
+// @Success 200 object standardJsonResponse{data=thunderdome.Organization}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -137,7 +137,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param orgId path string true "organization id"
-// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Team}
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams [get]
@@ -163,7 +163,7 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 // @Tags organization
 // @Produce  json
 // @Param orgId path string true "organization id"
-// @Success 200 object standardJsonResponse{data=[]model.User}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.User}
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users [get]
@@ -190,7 +190,7 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 // @Produce  json
 // @Param orgId path string true "organization id"
 // @Param team body teamCreateRequestBody true "new team object"
-// @Success 200 object standardJsonResponse{data=model.Team}
+// @Success 200 object standardJsonResponse{data=thunderdome.Team}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -264,7 +264,7 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := a.db.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := a.UserService.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
@@ -406,7 +406,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := a.db.GetUserByEmail(ctx, UserEmail)
+		User, UserErr := a.UserService.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return

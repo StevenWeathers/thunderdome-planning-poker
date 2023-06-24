@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/spf13/viper"
 	"io"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
@@ -32,7 +32,7 @@ type retroCreateRequestBody struct {
 // @Param departmentId path string false "the department ID"
 // @Param teamId path string false "the team ID"
 // @Param retro body retroCreateRequestBody false "new retro object"
-// @Success 200 object standardJsonResponse{data=model.Retro}
+// @Success 200 object standardJsonResponse{data=thunderdome.Retro}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -71,7 +71,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 			return
 		}
 
-		var newRetro *model.Retro
+		var newRetro *thunderdome.Retro
 		var err error
 		// if retro created with team association
 
@@ -104,7 +104,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 // @Tags retro
 // @Produce  json
 // @Param retroId path string true "the retro ID to get"
-// @Success 200 object standardJsonResponse{data=model.Retro}
+// @Success 200 object standardJsonResponse{data=thunderdome.Retro}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -134,7 +134,7 @@ func (a *api) handleRetroGet() http.HandlerFunc {
 // @Param userId path string true "the user ID to get retros for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Retro}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Retro}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -162,7 +162,7 @@ func (a *api) handleRetrosGetByUser() http.HandlerFunc {
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Param active query boolean false "Only active retros"
-// @Success 200 object standardJsonResponse{data=[]model.Retro}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Retro}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros [get]
@@ -172,7 +172,7 @@ func (a *api) handleGetRetros() http.HandlerFunc {
 		query := r.URL.Query()
 		var err error
 		var Count int
-		var Retros []*model.Retro
+		var Retros []*thunderdome.Retro
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {

@@ -13,7 +13,7 @@ import (
 // @Description Get application stats such as count of registered users
 // @Tags admin
 // @Produce  json
-// @Success 200 object standardJsonResponse{data=[]model.ApplicationStats}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.ApplicationStats}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/stats [get]
@@ -36,7 +36,7 @@ func (a *api) handleAppStats() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.User}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.User}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users [get]
@@ -44,7 +44,7 @@ func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users, Count, err := a.db.GetRegisteredUsers(r.Context(), Limit, Offset)
+		Users, Count, err := a.UserService.GetRegisteredUsers(r.Context(), Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -73,7 +73,7 @@ type userCreateRequestBody struct {
 // @Tags admin
 // @Produce  json
 // @param newUser body userCreateRequestBody true "new user object"
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=thunderdome.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -100,7 +100,7 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, err := a.db.CreateUser(r.Context(), user.Name, user.Email, user.Password1)
+		newUser, VerifyID, err := a.UserService.CreateUser(r.Context(), user.Name, user.Email, user.Password1)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -292,7 +292,7 @@ func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Organization}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Organization}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/organizations [get]
@@ -317,7 +317,7 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Team}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/teams [get]
@@ -344,7 +344,7 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.UserAPIKey}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.UserAPIKey}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/apikeys [get]
@@ -366,7 +366,7 @@ func (a *api) handleGetAPIKeys() http.HandlerFunc {
 // @Param search query string true "The user email to search for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.User}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.User}
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -380,7 +380,7 @@ func (a *api) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 			return
 		}
 
-		Users, Count, err := a.db.SearchRegisteredUsersByEmail(r.Context(), Search, Limit, Offset)
+		Users, Count, err := a.UserService.SearchRegisteredUsersByEmail(r.Context(), Search, Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

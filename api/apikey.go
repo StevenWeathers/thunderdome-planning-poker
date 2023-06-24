@@ -14,7 +14,7 @@ import (
 // @Tags apikey
 // @Produce  json
 // @Param userId path string true "the user ID to get API keys for"
-// @Success 200 object standardJsonResponse{data=[]model.APIKey}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -50,7 +50,7 @@ type apikeyGenerateRequestBody struct {
 // @Produce  json
 // @Param userId path string true "the user ID to generate API key for"
 // @Param key body apikeyGenerateRequestBody true "new api key object"
-// @Success 200 object standardJsonResponse{data=model.APIKey}
+// @Success 200 object standardJsonResponse{data=thunderdome.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -118,7 +118,7 @@ type apikeyUpdateRequestBody struct {
 // @Param userId path string true "the user ID"
 // @Param keyID path string true "the API Key ID to update"
 // @Param key body apikeyUpdateRequestBody true "api key object to update"
-// @Success 200 object standardJsonResponse{data=[]model.APIKey}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -170,7 +170,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 // @Produce  json
 // @Param userId path int false "the user ID"
 // @Param keyID path int false "the API Key ID to update"
-// @Success 200 object standardJsonResponse{data=[]model.APIKey}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth

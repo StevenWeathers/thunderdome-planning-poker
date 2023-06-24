@@ -9,6 +9,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/email"
 	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
@@ -54,12 +55,13 @@ type Config struct {
 }
 
 type api struct {
-	config *Config
-	router *mux.Router
-	email  *email.Email
-	cookie *securecookie.SecureCookie
-	db     *db.Database
-	logger *otelzap.Logger
+	config      *Config
+	router      *mux.Router
+	email       *email.Email
+	cookie      *securecookie.SecureCookie
+	db          *db.Database
+	logger      *otelzap.Logger
+	UserService thunderdome.UserService
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -102,19 +104,23 @@ const (
 // @in header
 // @name X-API-Key
 // @version BETA
-func Init(config *Config, router *mux.Router, database *db.Database, email *email.Email, cookie *securecookie.SecureCookie, logger *otelzap.Logger) *api {
+func Init(
+	config *Config, router *mux.Router, database *db.Database, email *email.Email,
+	cookie *securecookie.SecureCookie, logger *otelzap.Logger, userService thunderdome.UserService,
+) *api {
 	var a = &api{
-		config: config,
-		router: router,
-		db:     database,
-		email:  email,
-		cookie: cookie,
-		logger: logger,
+		config:      config,
+		router:      router,
+		db:          database,
+		email:       email,
+		cookie:      cookie,
+		logger:      logger,
+		UserService: userService,
 	}
-	b := battle.New(database, logger, a.validateSessionCookie, a.validateUserCookie)
-	rs := retro.New(database, logger, a.validateSessionCookie, a.validateUserCookie)
-	sb := storyboard.New(database, logger, a.validateSessionCookie, a.validateUserCookie)
-	tc := checkin.New(database, logger, a.validateSessionCookie, a.validateUserCookie)
+	b := battle.New(database, logger, a.validateSessionCookie, a.validateUserCookie, userService)
+	rs := retro.New(database, logger, a.validateSessionCookie, a.validateUserCookie, userService)
+	sb := storyboard.New(database, logger, a.validateSessionCookie, a.validateUserCookie, userService)
+	tc := checkin.New(database, logger, a.validateSessionCookie, a.validateUserCookie, userService)
 	swaggerJsonPath := "/" + a.config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
 

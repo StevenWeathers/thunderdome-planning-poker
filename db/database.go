@@ -61,10 +61,10 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
 	if err != nil {
 		d.logger.Ctx(ctx).Fatal("error connecting to the database: ", zap.Error(err))
 	}
-	d.db = pdb
-	d.db.SetMaxOpenConns(d.config.MaxOpenConns)
-	d.db.SetMaxIdleConns(d.config.MaxIdleConns)
-	d.db.SetConnMaxLifetime(time.Duration(d.config.ConnMaxLifetime) * time.Minute)
+	d.DB = pdb
+	d.DB.SetMaxOpenConns(d.config.MaxOpenConns)
+	d.DB.SetMaxIdleConns(d.config.MaxIdleConns)
+	d.DB.SetConnMaxLifetime(time.Duration(d.config.ConnMaxLifetime) * time.Minute)
 
 	err = otelsql.RegisterDBStatsMetrics(pdb, otelsql.WithAttributes(
 		semconv.DBSystemPostgreSQL,
@@ -90,14 +90,14 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
 	}
 
 	// on server start reset all users to active false for battles
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`call deactivate_all_users();`); err != nil {
 		d.logger.Ctx(ctx).Error("call deactivate_all_users error", zap.Error(err))
 	}
 
 	// on server start if admin email is specified set that user to admin type
 	if AdminEmail != "" {
-		if _, err := d.db.Exec(
+		if _, err := d.DB.Exec(
 			`call promote_user_by_email($1);`,
 			AdminEmail,
 		); err != nil {

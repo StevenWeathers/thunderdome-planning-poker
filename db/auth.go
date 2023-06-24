@@ -7,20 +7,20 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"image/png"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/pquerna/otp/totp"
 	"go.uber.org/zap"
 )
 
 // AuthUser authenticate the user
-func (d *Database) AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*model.User, string, error) {
-	var user model.User
+func (d *Database) AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*thunderdome.User, string, error) {
+	var user thunderdome.User
 	var passHash string
 	sanitizedEmail := sanitizeEmail(UserEmail)
 
-	err := d.db.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM users WHERE LOWER(email) = $1`,
 		sanitizedEmail,
 	).Scan(
@@ -57,7 +57,7 @@ func (d *Database) AuthUser(ctx context.Context, UserEmail string, UserPassword 
 	if checkPasswordCost(passHash) {
 		hashedPassword, hashErr := hashSaltPassword(UserPassword)
 		if hashErr == nil {
-			_, updateErr := d.db.Exec(`call update_user_password($1, $2)`, user.Id, hashedPassword)
+			_, updateErr := d.DB.Exec(`call update_user_password($1, $2)`, user.Id, hashedPassword)
 			if updateErr != nil {
 				d.logger.Error("Unable to update password cost", zap.Error(updateErr), zap.String("email", sanitizedEmail))
 			}
@@ -78,7 +78,7 @@ func (d *Database) UserResetRequest(ctx context.Context, UserEmail string) (rese
 	var UserID sql.NullString
 	var name sql.NullString
 
-	e := d.db.QueryRowContext(ctx, `
+	e := d.DB.QueryRowContext(ctx, `
 		SELECT resetId, userId, userName FROM insert_user_reset($1);
 		`,
 		sanitizeEmail(UserEmail),
@@ -101,7 +101,7 @@ func (d *Database) UserResetPassword(ctx context.Context, ResetID string, UserPa
 		return "", "", hashErr
 	}
 
-	UserErr := d.db.QueryRowContext(ctx, `
+	UserErr := d.DB.QueryRowContext(ctx, `
 		SELECT
 			w.name, w.email
 		FROM user_reset wr
@@ -115,7 +115,7 @@ func (d *Database) UserResetPassword(ctx context.Context, ResetID string, UserPa
 		return "", "", UserErr
 	}
 
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call reset_user_password($1, $2)`, ResetID, hashedPassword); err != nil {
 		return "", "", err
 	}
@@ -128,7 +128,7 @@ func (d *Database) UserUpdatePassword(ctx context.Context, UserID string, UserPa
 	var UserName sql.NullString
 	var UserEmail sql.NullString
 
-	UserErr := d.db.QueryRowContext(ctx, `
+	UserErr := d.DB.QueryRowContext(ctx, `
 		SELECT
 			w.name, w.email
 		FROM users w
@@ -146,7 +146,7 @@ func (d *Database) UserUpdatePassword(ctx context.Context, UserID string, UserPa
 		return "", "", hashErr
 	}
 
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call update_user_password($1, $2)`, UserID, hashedPassword); err != nil {
 		return "", "", err
 	}
@@ -155,13 +155,13 @@ func (d *Database) UserUpdatePassword(ctx context.Context, UserID string, UserPa
 }
 
 // UserVerifyRequest inserts a new user verify request
-func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*model.User, string, error) {
+func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*thunderdome.User, string, error) {
 	var VerifyId string
-	user := &model.User{
+	user := &thunderdome.User{
 		Id: UserId,
 	}
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT name, email FROM users WHERE id = $1`,
 		user.Id,
 	).Scan(
@@ -173,7 +173,7 @@ func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*model
 		return nil, "", errors.New("user not found")
 	}
 
-	err := d.db.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		INSERT INTO user_verify (user_id) VALUES ($1) RETURNING verify_id;
 		`,
 		user.Id,
@@ -188,7 +188,7 @@ func (d *Database) UserVerifyRequest(ctx context.Context, UserId string) (*model
 
 // VerifyUserAccount updates a user account verified status
 func (d *Database) VerifyUserAccount(ctx context.Context, VerifyID string) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call verify_user_account($1)`, VerifyID); err != nil {
 		return err
 	}
@@ -237,7 +237,7 @@ func (d *Database) MFASetupValidate(ctx context.Context, UserID string, secret s
 		return fmt.Errorf("error encrypting MFA secret: %w", secretErr)
 	}
 
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call user_mfa_enable($1, $2)`, UserID, encryptedSecret); err != nil {
 		return fmt.Errorf("error enabling user MFA: %w", err)
 	}
@@ -247,7 +247,7 @@ func (d *Database) MFASetupValidate(ctx context.Context, UserID string, secret s
 
 // MFARemove removes MFA requirement from user
 func (d *Database) MFARemove(ctx context.Context, UserID string) error {
-	if _, err := d.db.ExecContext(ctx,
+	if _, err := d.DB.ExecContext(ctx,
 		`call user_mfa_remove($1)`, UserID); err != nil {
 		return fmt.Errorf("error removing user MFA: %w", err)
 	}
@@ -259,7 +259,7 @@ func (d *Database) MFARemove(ctx context.Context, UserID string) error {
 func (d *Database) MFATokenValidate(ctx context.Context, SessionId string, passcode string) error {
 	var encryptedSecret string
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT COALESCE(um.secret, '') FROM user_mfa um
  				LEFT JOIN user_session us ON us.user_id = um.user_id
  				WHERE us.session_id = $1`,

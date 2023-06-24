@@ -1,4 +1,4 @@
-package model
+package thunderdome
 
 // StoryboardUser aka user
 type StoryboardUser struct {

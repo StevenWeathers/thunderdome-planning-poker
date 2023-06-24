@@ -5,14 +5,14 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"strings"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"go.uber.org/zap"
 )
 
 //CreateBattle creates a new story pointing session (battle)
-func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*model.Battle, error) {
+func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -33,10 +33,10 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 		encryptedLeaderCode = EncryptedCode
 	}
 
-	var b = &model.Battle{
+	var b = &thunderdome.Battle{
 		Name:                 BattleName,
-		Users:                make([]*model.BattleUser, 0),
-		Plans:                make([]*model.Plan, 0),
+		Users:                make([]*thunderdome.BattleUser, 0),
+		Plans:                make([]*thunderdome.Plan, 0),
 		VotingLocked:         true,
 		PointValuesAllowed:   PointValuesAllowed,
 		AutoFinishVoting:     AutoFinishVoting,
@@ -48,7 +48,7 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 	}
 	b.Leaders = append(b.Leaders, LeaderID)
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT battleId FROM create_battle($1, $2, $3, $4, $5, $6, $7, $8);`,
 		LeaderID,
 		BattleName,
@@ -65,9 +65,9 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 	}
 
 	for _, plan := range Plans {
-		plan.Votes = make([]*model.Vote, 0)
+		plan.Votes = make([]*thunderdome.Vote, 0)
 
-		e := d.db.QueryRowContext(ctx,
+		e := d.DB.QueryRowContext(ctx,
 			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 			b.Id,
 			plan.Name,
@@ -88,7 +88,7 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 }
 
 //TeamCreateBattle creates a new story pointing session (battle) associated to a team
-func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*model.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*model.Battle, error) {
+func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -109,10 +109,10 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 		encryptedLeaderCode = EncryptedCode
 	}
 
-	var b = &model.Battle{
+	var b = &thunderdome.Battle{
 		Name:                 BattleName,
-		Users:                make([]*model.BattleUser, 0),
-		Plans:                make([]*model.Plan, 0),
+		Users:                make([]*thunderdome.BattleUser, 0),
+		Plans:                make([]*thunderdome.Plan, 0),
 		VotingLocked:         true,
 		PointValuesAllowed:   PointValuesAllowed,
 		AutoFinishVoting:     AutoFinishVoting,
@@ -124,7 +124,7 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 	}
 	b.Leaders = append(b.Leaders, LeaderID)
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`SELECT battleId FROM team_create_battle($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
 		TeamID,
 		LeaderID,
@@ -142,9 +142,9 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 	}
 
 	for _, plan := range Plans {
-		plan.Votes = make([]*model.Vote, 0)
+		plan.Votes = make([]*thunderdome.Vote, 0)
 
-		e := d.db.QueryRowContext(ctx,
+		e := d.DB.QueryRowContext(ctx,
 			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 			b.Id,
 			plan.Name,
@@ -186,7 +186,7 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 		encryptedLeaderCode = EncryptedCode
 	}
 
-	if _, err := d.db.Exec(`
+	if _, err := d.DB.Exec(`
 		UPDATE battles
 		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, hide_voter_identity = $6, join_code = $7, leader_code = $8, updated_date = NOW()
 		WHERE id = $1`,
@@ -203,7 +203,7 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 	var EncryptedLeaderCode string
 
-	if err := d.db.QueryRow(`
+	if err := d.DB.QueryRow(`
 		SELECT COALESCE(leader_code, '') FROM battles
 		WHERE id = $1`,
 		BattleID,
@@ -224,11 +224,11 @@ func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 }
 
 // GetBattle gets a battle by ID
-func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, error) {
-	var b = &model.Battle{
+func (d *Database) GetBattle(BattleID string, UserID string) (*thunderdome.Battle, error) {
+	var b = &thunderdome.Battle{
 		Id:                 BattleID,
-		Users:              make([]*model.BattleUser, 0),
-		Plans:              make([]*model.Plan, 0),
+		Users:              make([]*thunderdome.BattleUser, 0),
+		Plans:              make([]*thunderdome.Plan, 0),
 		VotingLocked:       true,
 		PointValuesAllowed: make([]string, 0),
 		AutoFinishVoting:   true,
@@ -241,7 +241,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 	var leaders string
 	var JoinCode string
 	var LeaderCode string
-	e := d.db.QueryRow(
+	e := d.DB.QueryRow(
 		`
 		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.hide_voter_identity, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''), b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
@@ -299,11 +299,11 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*model.Battle, err
 }
 
 // GetBattlesByUser gets a list of battles by UserID
-func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*model.Battle, int, error) {
+func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
 	var Count int
-	var battles = make([]*model.Battle, 0)
+	var battles = make([]*thunderdome.Battle, 0)
 
-	e := d.db.QueryRow(`
+	e := d.DB.QueryRow(`
 		SELECT COUNT(*) FROM battles b
 		LEFT JOIN battles_users bw ON b.id = bw.battle_id
 		WHERE bw.user_id = $1 AND bw.abandoned = false;
@@ -314,7 +314,7 @@ func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*mo
 		return nil, Count, e
 	}
 
-	battleRows, battlesErr := d.db.Query(`
+	battleRows, battlesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
@@ -336,9 +336,9 @@ func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*mo
 		var pv string
 		var leaders string
 		var ActivePlanID sql.NullString
-		var b = &model.Battle{
-			Users:              make([]*model.BattleUser, 0),
-			Plans:              make([]*model.Plan, 0),
+		var b = &thunderdome.Battle{
+			Users:              make([]*thunderdome.BattleUser, 0),
+			Plans:              make([]*thunderdome.Plan, 0),
 			VotingLocked:       true,
 			PointValuesAllowed: make([]string, 0),
 			AutoFinishVoting:   true,
@@ -374,13 +374,13 @@ func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*mo
 func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 	var leaderID string
 	var role string
-	err := d.db.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
+	err := d.DB.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
 	if err != nil {
 		d.logger.Error("error getting user role", zap.Error(err))
 		return errors.New("unable to get user role")
 	}
 
-	e := d.db.QueryRow("SELECT user_id FROM battles_leaders WHERE battle_id = $1 AND user_id = $2", BattleID, UserID).Scan(&leaderID)
+	e := d.DB.QueryRow("SELECT user_id FROM battles_leaders WHERE battle_id = $1 AND user_id = $2", BattleID, UserID).Scan(&leaderID)
 	if e != nil && role != "ADMIN" {
 		d.logger.Error("error confirming battle leader", zap.Error(e))
 		return errors.New("not a battle leader")
@@ -393,7 +393,7 @@ func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 func (d *Database) GetBattleUserActiveStatus(BattleID string, UserID string) error {
 	var active bool
 
-	e := d.db.QueryRow(`
+	e := d.DB.QueryRow(`
 		SELECT coalesce(active, FALSE)
 		FROM battles_users
 		WHERE user_id = $2 AND battle_id = $1;`,
@@ -414,9 +414,9 @@ func (d *Database) GetBattleUserActiveStatus(BattleID string, UserID string) err
 }
 
 // GetBattleUsers retrieves the users for a given battle
-func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
-	var users = make([]*model.BattleUser, 0)
-	rows, err := d.db.Query(
+func (d *Database) GetBattleUsers(BattleID string) []*thunderdome.BattleUser {
+	var users = make([]*thunderdome.BattleUser, 0)
+	rows, err := d.DB.Query(
 		`SELECT
 			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, '')
 		FROM battles_users bw
@@ -428,7 +428,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w model.BattleUser
+			var w thunderdome.BattleUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
 				d.logger.Error("error getting battle users", zap.Error(err))
 			} else {
@@ -446,9 +446,9 @@ func (d *Database) GetBattleUsers(BattleID string) []*model.BattleUser {
 }
 
 // GetBattleActiveUsers retrieves the active users for a given battle
-func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
-	var users = make([]*model.BattleUser, 0)
-	rows, err := d.db.Query(
+func (d *Database) GetBattleActiveUsers(BattleID string) []*thunderdome.BattleUser {
+	var users = make([]*thunderdome.BattleUser, 0)
+	rows, err := d.DB.Query(
 		`SELECT
 			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, '')
 		FROM battles_users bw
@@ -460,7 +460,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w model.BattleUser
+			var w thunderdome.BattleUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
 				d.logger.Error("error getting active battle users", zap.Error(err))
 			} else {
@@ -478,8 +478,8 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*model.BattleUser {
 }
 
 // AddUserToBattle adds a user by ID to the battle by ID
-func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*model.BattleUser, error) {
-	if _, err := d.db.Exec(
+func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
+	if _, err := d.DB.Exec(
 		`INSERT INTO battles_users (battle_id, user_id, active)
 		VALUES ($1, $2, true)
 		ON CONFLICT (battle_id, user_id) DO UPDATE SET active = true, abandoned = false`,
@@ -495,13 +495,13 @@ func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*model.Bat
 }
 
 // RetreatUser removes a user from the current battle by ID
-func (d *Database) RetreatUser(BattleID string, UserID string) []*model.BattleUser {
-	if _, err := d.db.Exec(
+func (d *Database) RetreatUser(BattleID string, UserID string) []*thunderdome.BattleUser {
+	if _, err := d.DB.Exec(
 		`UPDATE battles_users SET active = false WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
 		d.logger.Error("error updating battle user to active false", zap.Error(err))
 	}
 
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
 		d.logger.Error("error updating user last active timestamp", zap.Error(err))
 	}
@@ -512,14 +512,14 @@ func (d *Database) RetreatUser(BattleID string, UserID string) []*model.BattleUs
 }
 
 // AbandonBattle removes a user from the current battle by ID and sets abandoned true
-func (d *Database) AbandonBattle(BattleID string, UserID string) ([]*model.BattleUser, error) {
-	if _, err := d.db.Exec(
+func (d *Database) AbandonBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
+	if _, err := d.DB.Exec(
 		`UPDATE battles_users SET active = false, abandoned = true WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
 		d.logger.Error("error updating battle user to abandoned", zap.Error(err))
 		return nil, err
 	}
 
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
 		d.logger.Error("error updating user last active timestamp", zap.Error(err))
 		return nil, err
@@ -535,13 +535,13 @@ func (d *Database) SetBattleLeader(BattleID string, LeaderID string) ([]string, 
 	leaders := make([]string, 0)
 
 	// set battle leader
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`call set_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
 		d.logger.Error("call set_battle_leader query error", zap.Error(err))
 		return nil, errors.New("unable to promote leader")
 	}
 
-	leaderRows, leadersErr := d.db.Query(`
+	leaderRows, leadersErr := d.DB.Query(`
 		SELECT user_id FROM battles_leaders WHERE battle_id = $1;
 	`, BattleID)
 	if leadersErr != nil {
@@ -568,13 +568,13 @@ func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]strin
 	leaders := make([]string, 0)
 
 	// set battle leader
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`call demote_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
 		d.logger.Error("call demote_battle_leader query error", zap.Error(err))
 		return nil, errors.New("unable to demote leader")
 	}
 
-	leaderRows, leadersErr := d.db.Query(`
+	leaderRows, leadersErr := d.DB.Query(`
 		SELECT user_id FROM battles_leaders WHERE battle_id = $1;
 	`, BattleID)
 	if leadersErr != nil {
@@ -597,14 +597,14 @@ func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]strin
 }
 
 // ToggleSpectator changes a battle users spectator status
-func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*model.BattleUser, error) {
-	if _, err := d.db.Exec(
+func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*thunderdome.BattleUser, error) {
+	if _, err := d.DB.Exec(
 		`UPDATE battles_users SET spectator = $3 WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
 		d.logger.Error("update battle user spectator error", zap.Error(err))
 		return nil, err
 	}
 
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
 		d.logger.Error("error updating user last active timestamp", zap.Error(err))
 	}
@@ -616,7 +616,7 @@ func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator boo
 
 // DeleteBattle removes all battle associations and the battle itself by BattleID
 func (d *Database) DeleteBattle(BattleID string) error {
-	if _, err := d.db.Exec(
+	if _, err := d.DB.Exec(
 		`call delete_battle($1);`, BattleID); err != nil {
 		d.logger.Error("delete battle error", zap.Error(err))
 		return err
@@ -635,7 +635,7 @@ func (d *Database) AddBattleLeadersByEmail(ctx context.Context, BattleID string,
 	}
 	emails := strings.Join(LeaderEmails[:], ",")
 
-	e := d.db.QueryRowContext(ctx,
+	e := d.DB.QueryRowContext(ctx,
 		`select leaders FROM add_battle_leaders_by_email($1, $2);`, BattleID, emails,
 	).Scan(&leaders)
 	if e != nil {
@@ -649,11 +649,11 @@ func (d *Database) AddBattleLeadersByEmail(ctx context.Context, BattleID string,
 }
 
 // GetBattles gets a list of battles
-func (d *Database) GetBattles(Limit int, Offset int) ([]*model.Battle, int, error) {
-	var battles = make([]*model.Battle, 0)
+func (d *Database) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
+	var battles = make([]*thunderdome.Battle, 0)
 	var Count int
 
-	e := d.db.QueryRow(
+	e := d.DB.QueryRow(
 		"SELECT COUNT(*) FROM battles;",
 	).Scan(
 		&Count,
@@ -662,7 +662,7 @@ func (d *Database) GetBattles(Limit int, Offset int) ([]*model.Battle, int, erro
 		return nil, Count, e
 	}
 
-	battleRows, battlesErr := d.db.Query(`
+	battleRows, battlesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM battles b
@@ -679,9 +679,9 @@ func (d *Database) GetBattles(Limit int, Offset int) ([]*model.Battle, int, erro
 		var pv string
 		var leaders string
 		var ActivePlanID sql.NullString
-		var b = &model.Battle{
-			Users:              make([]*model.BattleUser, 0),
-			Plans:              make([]*model.Plan, 0),
+		var b = &thunderdome.Battle{
+			Users:              make([]*thunderdome.BattleUser, 0),
+			Plans:              make([]*thunderdome.Plan, 0),
 			VotingLocked:       true,
 			PointValuesAllowed: make([]string, 0),
 			AutoFinishVoting:   true,
@@ -712,11 +712,11 @@ func (d *Database) GetBattles(Limit int, Offset int) ([]*model.Battle, int, erro
 }
 
 // GetActiveBattles gets a list of active battles
-func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*model.Battle, int, error) {
-	var battles = make([]*model.Battle, 0)
+func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
+	var battles = make([]*thunderdome.Battle, 0)
 	var Count int
 
-	e := d.db.QueryRow(
+	e := d.DB.QueryRow(
 		"SELECT COUNT(DISTINCT bu.battle_id) FROM battles_users bu WHERE bu.active IS TRUE;",
 	).Scan(
 		&Count,
@@ -725,7 +725,7 @@ func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*model.Battle, int
 		return nil, Count, e
 	}
 
-	battleRows, battlesErr := d.db.Query(`
+	battleRows, battlesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM battles_users bu
@@ -743,9 +743,9 @@ func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*model.Battle, int
 		var pv string
 		var leaders string
 		var ActivePlanID sql.NullString
-		var b = &model.Battle{
-			Users:              make([]*model.BattleUser, 0),
-			Plans:              make([]*model.Plan, 0),
+		var b = &thunderdome.Battle{
+			Users:              make([]*thunderdome.BattleUser, 0),
+			Plans:              make([]*thunderdome.Plan, 0),
 			VotingLocked:       true,
 			PointValuesAllowed: make([]string, 0),
 			AutoFinishVoting:   true,

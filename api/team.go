@@ -2,17 +2,17 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"io"
 	"net/http"
 	"strconv"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
 type teamResponse struct {
-	Team     *model.Team `json:"team"`
-	TeamRole string      `json:"teamRole"`
+	Team     *thunderdome.Team `json:"team"`
+	TeamRole string            `json:"teamRole"`
 }
 
 // handleGetTeamByUser gets an team with user role
@@ -52,7 +52,7 @@ func (a *api) handleGetTeamByUser() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param userId path string true "the user ID"
-// @Success 200 object standardJsonResponse{data=[]model.Team}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Team}
 // @Success 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/teams [get]
@@ -75,7 +75,7 @@ func (a *api) handleGetTeamsByUser() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=[]model.User}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.User}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/users [get]
 func (a *api) handleGetTeamUsers() http.HandlerFunc {
@@ -110,7 +110,7 @@ type teamCreateRequestBody struct {
 // @Produce  json
 // @Param userId path string true "the user ID"
 // @Param team body teamCreateRequestBody true "new team object"
-// @Success 200 object standardJsonResponse{data=model.Team}
+// @Success 200 object standardJsonResponse{data=thunderdome.Team}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -190,7 +190,7 @@ func (a *api) handleTeamAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := a.db.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := a.UserService.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
@@ -245,7 +245,7 @@ func (a *api) handleTeamRemoveUser() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=[]model.Battle}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Battle}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/battles [get]
 func (a *api) handleGetTeamBattles() http.HandlerFunc {
@@ -331,7 +331,7 @@ func (a *api) handleDeleteTeam() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=[]model.Retro}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Retro}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/retros [get]
 func (a *api) handleGetTeamRetros() http.HandlerFunc {
@@ -383,7 +383,7 @@ func (a *api) handleTeamRemoveRetro() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=[]model.Storyboard}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Storyboard}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/storyboards [get]
 func (a *api) handleGetTeamStoryboards() http.HandlerFunc {
@@ -437,7 +437,7 @@ func (a *api) handleTeamRemoveStoryboard() http.HandlerFunc {
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Param completed query boolean false "Only completed retro actions"
-// @Success 200 object standardJsonResponse{data=[]model.RetroAction}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.RetroAction}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/retro-actions [get]
@@ -448,7 +448,7 @@ func (a *api) handleGetTeamRetroActions() http.HandlerFunc {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		var err error
 		var Count int
-		var Actions []*model.RetroAction
+		var Actions []*thunderdome.RetroAction
 		query := r.URL.Query()
 		Completed, _ := strconv.ParseBool(query.Get("completed"))
 

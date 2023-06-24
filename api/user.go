@@ -13,7 +13,7 @@ import (
 // @Description Gets a users profile by session user ID
 // @Tags auth, user
 // @Produce  json
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=thunderdome.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -23,7 +23,7 @@ func (a *api) handleSessionUserProfile() http.HandlerFunc {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := a.db.GetUser(ctx, UserID)
+		User, UserErr := a.UserService.GetUser(ctx, UserID)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
@@ -39,7 +39,7 @@ func (a *api) handleSessionUserProfile() http.HandlerFunc {
 // @Tags user
 // @Produce  json
 // @Param userId path string true "the user ID"
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=thunderdome.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -49,7 +49,7 @@ func (a *api) handleUserProfile() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, UserErr := a.db.GetUser(r.Context(), UserID)
+		User, UserErr := a.UserService.GetUser(r.Context(), UserID)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
@@ -77,7 +77,7 @@ type userprofileUpdateRequestBody struct {
 // @Produce  json
 // @Param userId path string true "the user ID"
 // @Param user body userprofileUpdateRequestBody true "the user profile object to update"
-// @Success 200 object standardJsonResponse{data=model.User}
+// @Success 200 object standardJsonResponse{data=thunderdome.User}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -114,7 +114,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 				a.Failure(w, r, http.StatusBadRequest, vErr)
 				return
 			}
-			updateErr := a.db.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+			updateErr := a.UserService.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			if updateErr != nil {
 				a.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
@@ -126,9 +126,9 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 					a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 					return
 				}
-				updateErr = a.db.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = a.UserService.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			} else {
-				updateErr = a.db.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = a.UserService.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			}
 			if updateErr != nil {
 				a.Failure(w, r, http.StatusInternalServerError, updateErr)
@@ -136,7 +136,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 			}
 		}
 
-		user, UserErr := a.db.GetUser(ctx, UserID)
+		user, UserErr := a.UserService.GetUser(ctx, UserID)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
@@ -164,13 +164,13 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 		ctx := r.Context()
 		UserCookieID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := a.db.GetUser(ctx, UserID)
+		User, UserErr := a.UserService.GetUser(ctx, UserID)
 		if UserErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		updateErr := a.db.DeleteUser(ctx, UserID)
+		updateErr := a.UserService.DeleteUser(ctx, UserID)
 		if updateErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return

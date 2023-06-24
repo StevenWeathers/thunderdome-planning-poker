@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/spf13/viper"
 	"io"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/api/battle"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/model"
 	"github.com/gorilla/mux"
 )
 
@@ -21,7 +21,7 @@ import (
 // @Param userId path string true "the user ID to get battles for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]model.Battle}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -49,15 +49,15 @@ func (a *api) handleGetUserBattles() http.HandlerFunc {
 }
 
 type battleRequestBody struct {
-	BattleName           string        `json:"name" validate:"required"`
-	PointValuesAllowed   []string      `json:"pointValuesAllowed" validate:"required"`
-	AutoFinishVoting     bool          `json:"autoFinishVoting"`
-	Plans                []*model.Plan `json:"plans"`
-	PointAverageRounding string        `json:"pointAverageRounding" validate:"required,oneof=ceil round floor"`
-	HideVoterIdentity    bool          `json:"hideVoterIdentity"`
-	BattleLeaders        []string      `json:"battleLeaders"`
-	JoinCode             string        `json:"joinCode"`
-	LeaderCode           string        `json:"leaderCode"`
+	BattleName           string              `json:"name" validate:"required"`
+	PointValuesAllowed   []string            `json:"pointValuesAllowed" validate:"required"`
+	AutoFinishVoting     bool                `json:"autoFinishVoting"`
+	Plans                []*thunderdome.Plan `json:"plans"`
+	PointAverageRounding string              `json:"pointAverageRounding" validate:"required,oneof=ceil round floor"`
+	HideVoterIdentity    bool                `json:"hideVoterIdentity"`
+	BattleLeaders        []string            `json:"battleLeaders"`
+	JoinCode             string              `json:"joinCode"`
+	LeaderCode           string              `json:"leaderCode"`
 }
 
 // handleBattleCreate handles creating a battle (arena)
@@ -70,7 +70,7 @@ type battleRequestBody struct {
 // @Param departmentId path string false "the department ID"
 // @Param teamId path string false "the team ID"
 // @Param battle body battleRequestBody false "new battle object"
-// @Success 200 object standardJsonResponse{data=model.Battle}
+// @Success 200 object standardJsonResponse{data=thunderdome.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -109,7 +109,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 			return
 		}
 
-		var newBattle *model.Battle
+		var newBattle *thunderdome.Battle
 		var err error
 		// if battle created with team association
 		if teamIdExists {
@@ -153,7 +153,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Param active query boolean false "Only active battles"
-// @Success 200 object standardJsonResponse{data=[]model.Battle}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Battle}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles [get]
@@ -163,7 +163,7 @@ func (a *api) handleGetBattles() http.HandlerFunc {
 		query := r.URL.Query()
 		var err error
 		var Count int
-		var Battles []*model.Battle
+		var Battles []*thunderdome.Battle
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
@@ -193,7 +193,7 @@ func (a *api) handleGetBattles() http.HandlerFunc {
 // @Tags battle
 // @Produce  json
 // @Param battleId path string true "the battle ID to get"
-// @Success 200 object standardJsonResponse{data=model.Battle}
+// @Success 200 object standardJsonResponse{data=thunderdome.Battle}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth

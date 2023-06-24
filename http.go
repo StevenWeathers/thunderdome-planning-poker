@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"embed"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	"html/template"
 	"image"
 	"image/png"
@@ -59,7 +60,11 @@ func (s *server) routes() {
 		FeatureStoryboard:         viper.GetBool("feature.storyboard"),
 		OrganizationsEnabled:      viper.GetBool("config.organizations_enabled"),
 	}
-	api.Init(apiConfig, s.router, s.db, s.email, s.cookie, s.logger)
+
+	// Create services.
+	us := &db.UserService{DB: s.db.DB, Logger: s.logger}
+
+	api.Init(apiConfig, s.router, s.db, s.email, s.cookie, s.logger, us)
 
 	// static assets
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))
@@ -114,7 +119,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AllowGuests               bool
 		AllowRegistration         bool
 		AllowJiraImport           bool
-		AllowCsvImport			  bool
+		AllowCsvImport            bool
 		DefaultLocale             string
 		FriendlyUIVerbs           bool
 		OrganizationsEnabled      bool
@@ -153,7 +158,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AllowGuests:               viper.GetBool("config.allow_guests"),
 		AllowRegistration:         viper.GetBool("config.allow_registration") && viper.GetString("auth.method") == "normal",
 		AllowJiraImport:           viper.GetBool("config.allow_jira_import"),
-		AllowCsvImport:			   viper.GetBool("config.allow_csv_import"),
+		AllowCsvImport:            viper.GetBool("config.allow_csv_import"),
 		DefaultLocale:             viper.GetString("config.default_locale"),
 		FriendlyUIVerbs:           viper.GetBool("config.friendly_ui_verbs"),
 		OrganizationsEnabled:      viper.GetBool("config.organizations_enabled"),
