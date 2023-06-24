@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
@@ -6,7 +6,7 @@
     import CheckIcon from '../../components/icons/CheckIcon.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.js'
+    import { appRoutes } from '../../config.ts'
     import { validateUserIsAdmin } from '../../validationUtils.js'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'

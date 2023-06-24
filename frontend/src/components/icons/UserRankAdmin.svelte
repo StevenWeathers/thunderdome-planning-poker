@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     let klass = 'h-6 w-6'
     export { klass as class }
 </script>

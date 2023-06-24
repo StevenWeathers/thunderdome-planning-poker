@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import SolidButton from '../SolidButton.svelte'
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import { warrior as user } from '../../stores.js'
-    import { AppConfig, appRoutes } from '../../config.js'
+    import { AppConfig, appRoutes } from '../../config.ts'
     import { _ } from '../../i18n.js'
 
     export let xfetch
@@ -107,7 +107,7 @@
                 name="retroName"
                 bind:value="{retroName}"
                 placeholder="{$_('retroNamePlaceholder')}"
-                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="retroName"
@@ -129,7 +129,7 @@
                 <select
                     bind:value="{selectedTeam}"
                     class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                     id="selectedTeam"
                     name="selectedTeam"
@@ -142,7 +142,7 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                    class="pointer-events-none absolute inset-y-0 end-0 flex
                 items-center px-2 text-gray-700 dark:text-gray-400"
                 >
                     <DownCarrotIcon />
@@ -163,7 +163,7 @@
                 name="joinCode"
                 bind:value="{joinCode}"
                 placeholder="{$_('joinCodePlaceholder')}"
-                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="joinCode"
@@ -183,7 +183,7 @@
                 name="facilitatorCode"
                 bind:value="{facilitatorCode}"
                 placeholder="{$_('facilitatorCodePlaceholder')}"
-                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="facilitatorCode"
@@ -225,7 +225,7 @@
             <select
                 bind:value="{brainstormVisibility}"
                 class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 id="brainstormVisibility"
                 name="brainstormVisibility"
@@ -237,7 +237,7 @@
                 {/each}
             </select>
             <div
-                class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                class="pointer-events-none absolute inset-y-0 end-0 flex
                 items-center px-2 text-gray-700 dark:text-gray-400"
             >
                 <DownCarrotIcon />
@@ -245,7 +245,7 @@
         </div>
     </div>
 
-    <div class="ltr:text-right rtl:text-left">
+    <div class="text-right">
         <SolidButton type="submit">{$_('createRetro')}</SolidButton>
     </div>
 </form>

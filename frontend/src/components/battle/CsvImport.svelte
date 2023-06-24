@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
     import HollowButton from '../HollowButton.svelte'
-    import { AppConfig } from '../../config.js'
+    import { AppConfig } from '../../config.ts'
     import { _ } from '../../i18n.js'
 
     export let notifications
@@ -92,7 +92,7 @@
 {#if allowCsvImport}
     <HollowButton
         type="label"
-        additionalClasses="rtl:ml-2 ltr:mr-2"
+        additionalClasses="me-2"
         color="purple"
         labelFor="csvimport"
     >

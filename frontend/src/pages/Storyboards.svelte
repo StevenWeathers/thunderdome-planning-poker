@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
     import CreateStoryboard from '../components/storyboard/CreateStoryboard.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import { warrior as user } from '../stores.js'
-    import { appRoutes } from '../config.js'
+    import { appRoutes } from '../config.ts'
     import { _ } from '../i18n.js'
 
     export let xfetch
@@ -44,9 +44,7 @@
     </h1>
 
     <div class="flex flex-wrap">
-        <div
-            class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:ltr:pr-4 md:rtl:pl-4"
-        >
+        <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
             {#each storyboards as storyboard}
                 <div
                     class="bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
@@ -68,9 +66,7 @@
                                     )}{/if}
                             </div>
                         </div>
-                        <div
-                            class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
-                        >
+                        <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                             <HollowButton
                                 href="{appRoutes.storyboard}/{storyboard.id}"
                             >
@@ -82,9 +78,7 @@
             {/each}
         </div>
 
-        <div
-            class="w-full md:w-1/2 lg:w-2/5 md:ltr:pl-2 xl:ltr:pl-4 md:rtl:pr-2 xl:rtl:pr-4"
-        >
+        <div class="w-full md:w-1/2 lg:w-2/5 md:ps-2 xl:ps-4">
             <div
                 class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white"
             >

@@ -24,11 +24,9 @@
 </style>
 
 <div
-    class="absolute bottom-0 ltr:right-0 rtl:left-0 w-1/4 h-1/4 rounded bg-red-200 animate-ping"
+    class="absolute bottom-0 end-0 w-1/4 h-1/4 rounded bg-red-200 animate-ping"
 ></div>
-<div
-    class="absolute bottom-0 ltr:right-0 rtl:left-0 w-1/4 h-1/4 rounded shadow-md"
->
+<div class="absolute bottom-0 end-0 w-1/4 h-1/4 rounded shadow-md">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
         <rect
             class="text-white fill-current"

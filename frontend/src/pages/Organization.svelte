@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
@@ -13,7 +13,7 @@
     import ChevronRight from '../components/icons/ChevronRight.svelte'
     import { warrior } from '../stores.js'
     import { _ } from '../i18n.js'
-    import { appRoutes } from '../config.js'
+    import { appRoutes } from '../config.ts'
     import { validateUserIsRegistered } from '../validationUtils.js'
     import RowCol from '../components/table/RowCol.svelte'
     import TableRow from '../components/table/TableRow.svelte'
@@ -309,7 +309,7 @@
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="ltr:text-right rtl:text-left">
+                <div class="text-right">
                     {#if isAdmin}
                         <SolidButton onClick="{toggleCreateDepartment}">
                             {$_('departmentCreate')}
@@ -385,7 +385,7 @@
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="ltr:text-right rtl:text-left">
+                <div class="text-right">
                     {#if isAdmin}
                         <SolidButton onClick="{toggleCreateTeam}">
                             {$_('teamCreate')}
@@ -455,7 +455,7 @@
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="ltr:text-right rtl:text-left">
+                <div class="text-right">
                     {#if isAdmin}
                         <SolidButton
                             onClick="{toggleAddUser}"
@@ -497,7 +497,7 @@
                                         class="h-10 w-10 rounded-full"
                                     />
                                 </div>
-                                <div class="rtl:mr-4 ltr:ml-4">
+                                <div class="ms-4">
                                     <div
                                         class="font-medium text-gray-900 dark:text-gray-200"
                                     >

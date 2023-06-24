@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     export let disabled = false
     export let color = 'green'
     export let additionalClasses = ''

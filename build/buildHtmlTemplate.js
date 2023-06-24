@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+const fs = require('fs')
+const path = require('path')
 
 const makeHtmlAttributes = (attributes) => {
   if (!attributes) {
@@ -11,7 +11,7 @@ const makeHtmlAttributes = (attributes) => {
   return keys.reduce((result, key) => (result += ` ${key}="${attributes[key]}"`), '')
 }
 
-export const template = async ({
+module.exports = async ({
   attributes,
   files,
   meta,

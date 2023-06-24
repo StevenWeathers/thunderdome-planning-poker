@@ -1,3 +1,7 @@
+declare global {
+    let appConfig: any;
+}
+
 const locales = {
     de: 'Deutsch',
     en: 'English',
@@ -13,10 +17,10 @@ const AppConfig =
     typeof appConfig != 'undefined'
         ? appConfig
         : {
-              PathPrefix: '',
-              DefaultLocale: 'en',
-          }
-const { PathPrefix, DefaultLocale: fallbackLocale, FriendlyUIVerbs } = AppConfig
+            PathPrefix: '',
+            DefaultLocale: 'en',
+        }
+const {PathPrefix, DefaultLocale: fallbackLocale, FriendlyUIVerbs} = AppConfig
 
 const defaultAppRoutes = {
     landing: `${PathPrefix}/`,
@@ -51,4 +55,4 @@ const friendlyAppRoutes = {
 }
 const appRoutes = FriendlyUIVerbs ? friendlyAppRoutes : defaultAppRoutes
 
-export { locales, fallbackLocale, appRoutes, PathPrefix, AppConfig }
+export {locales, fallbackLocale, appRoutes, PathPrefix, AppConfig}

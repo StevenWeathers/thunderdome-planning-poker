@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Sockette from 'sockette'
     import { onDestroy, onMount } from 'svelte'
 
@@ -519,7 +519,7 @@
                     {retro.name}
                 </h1>
             </div>
-            <div class="w-3/4 ltr:text-right rtl:text-left">
+            <div class="w-3/4 text-right">
                 <div>
                     {#if retro.phase === 'completed'}
                         <SolidButton
@@ -556,7 +556,7 @@
                         <HollowButton
                             color="red"
                             onClick="{toggleDeleteRetro}"
-                            class="rtl:ml-2 ltr:mr-2"
+                            class="me-2"
                             testid="retro-delete"
                         >
                             {$_('deleteRetro')}
@@ -651,9 +651,7 @@
                     </div>
                 </div>
             </div>
-            <div
-                class="w-1/2 ltr:text-right rtl:text-left text-gray-600 dark:text-gray-400"
-            >
+            <div class="w-1/2 text-right text-gray-600 dark:text-gray-400">
                 {#if retro.phase === 'brainstorm'}
                     {$_('brainstormPhaseDescription')}
                 {:else if retro.phase === 'group'}
@@ -690,7 +688,7 @@
                                 their skills and abilities, the resources
                                 available, and the situation at hand."
                             </p>
-                            <p class="tracking-wider md:text-lg lg:text-xl ">
+                            <p class="tracking-wider md:text-lg lg:text-xl">
                                 &mdash;Norm Kerth, Project Retrospectives: A
                                 Handbook for Team Review <a
                                     href="https://retrospectivewiki.org/index.php?title=The_Prime_Directive"
@@ -778,12 +776,10 @@
                             </div>
                         </div>
                         <div class="w-full md:w-1/3">
-                            <div class="ltr:pl-4 rtl:pr-4">
+                            <div class="ps-4">
                                 {#if retro.phase === 'action'}
                                     <div class="flex items-center mb-4">
-                                        <div
-                                            class="flex-shrink ltr:pr-2 rtl:pl-2"
-                                        >
+                                        <div class="flex-shrink pe-2">
                                             <CheckCircle
                                                 class="w-8 h-8 text-indigo-500 dark:text-violet-400"
                                             />
@@ -814,7 +810,7 @@
                                 {/if}
                                 {#each retro.actionItems as item, i}
                                     <div
-                                        class="mb-2 p-2 bg-white dark:bg-gray-800 shadow ltr:border-l-4 rtl:border-r-4 border-indigo-500 dark:border-violet-400"
+                                        class="mb-2 p-2 bg-white dark:bg-gray-800 shadow border-s-4 border-indigo-500 dark:border-violet-400"
                                     >
                                         <div class="flex items-center">
                                             <div class="flex-shrink">
@@ -822,7 +818,7 @@
                                                     on:click="{toggleActionEdit(
                                                         item.id,
                                                     )}"
-                                                    class="ltr:pr-2 rtl:pl-2 pt-1 text-gray-500 dark:text-gray-400
+                                                    class="pe-2 pt-1 text-gray-500 dark:text-gray-400
                                                 hover:text-blue-500"
                                                 >
                                                     <PencilIcon />
@@ -831,7 +827,7 @@
                                             <div
                                                 class="flex-grow dark:text-white"
                                             >
-                                                <div class="ltr:pr-2 rtl:pl-2">
+                                                <div class="pe-2">
                                                     {item.content}
                                                 </div>
                                             </div>
@@ -850,7 +846,7 @@
                                                 <div
                                                     class="bg-white dark:bg-gray-800 border-2 rounded-md
                                             border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                            justify-center items-center rtl:ml-2 ltr:mr-2
+                                            justify-center items-center me-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
                                                 >
                                                     <CheckboxIcon />
@@ -926,7 +922,7 @@
                                     />
                                 </div>
 
-                                <div class="ltr:text-right rtl:text-left">
+                                <div class="text-right">
                                     <SolidButton type="submit"
                                         >{$_('joinRetro')}</SolidButton
                                     >

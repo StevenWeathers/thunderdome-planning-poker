@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import SmileCircle from '../icons/SmileCircle.svelte'
     import TrashIcon from '../icons/TrashIcon.svelte'
     import FrownCircle from '../icons/FrownCircle.svelte'
@@ -26,7 +26,7 @@
 
 <div class="">
     <div class="flex items-center mb-4">
-        <div class="flex-shrink ltr:pr-2 rtl:pl-2">
+        <div class="flex-shrink pe-2">
             {#if itemType === 'worked'}
                 <SmileCircle
                     class="w-8 h-8 text-green-500 dark:text-lime-400"
@@ -60,7 +60,7 @@
     <div>
         {#each items as item}
             <div
-                class="p-2 mb-2 bg-white dark:bg-gray-800 shadow item-list-item ltr:border-l-4 rtl:border-r-4"
+                class="p-2 mb-2 bg-white dark:bg-gray-800 shadow item-list-item border-s-4"
                 class:border-green-400="{item.type === 'worked'}"
                 class:dark:border-lime-400="{item.type === 'worked'}"
                 class:border-red-500="{item.type === 'improve'}"
@@ -91,12 +91,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex-shrink ltr:pl-2 rtl:pr-2">
+                    <div class="flex-shrink ps-2">
                         {#if phase === 'brainstorm'}
                             <button
                                 on:click="{handleDelete(itemType, item.id)}"
-                                class="ltr:pr-2 rtl:pl-2 pt-1 {item.userId !==
-                                $user.id
+                                class="pe-2 pt-1 {item.userId !== $user.id
                                     ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
                                     : 'text-gray-500 dark:text-gray-400 hover:text-red-500'}"
                                 disabled="{item.userId !== $user.id}"

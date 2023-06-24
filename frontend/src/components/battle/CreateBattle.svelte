@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import SolidButton from '../SolidButton.svelte'
@@ -8,7 +8,7 @@
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import { warrior as user } from '../../stores.js'
     import { _ } from '../../i18n.js'
-    import { AppConfig, appRoutes } from '../../config.js'
+    import { AppConfig, appRoutes } from '../../config.ts'
 
     export let notifications
     export let eventTag
@@ -172,7 +172,7 @@
                 <select
                     bind:value="{selectedTeam}"
                     class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                     id="selectedTeam"
                     name="selectedTeam"
@@ -185,7 +185,7 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                    class="pointer-events-none absolute inset-y-0 end-0 flex
                 items-center px-2 text-gray-700 dark:text-gray-400"
                 >
                     <DownCarrotIcon />
@@ -200,15 +200,13 @@
         >
             {$_('pages.myBattles.createBattle.fields.allowedPointValues.label')}
         </h3>
-        <div
-            class="control relative rtl:-ml-2 ltr:-mr-2 md:rtl:-ml-1 md:ltr:-mr-1"
-        >
+        <div class="control relative -me-2 md:-me-1">
             {#each allowedPointValues as point, pi}
                 <label
                     class="{points.includes(point)
                         ? checkedPointColor
                         : uncheckedPointColor}
-                    cursor-pointer font-bold border p-2 rtl:ml-2 ltr:mr-2 xl:rtl:ml-1 xl:mr-1 mb-2
+                    cursor-pointer font-bold border p-2 me-2 xl:me-1 mb-2
                     xl:mb-0 rounded inline-block"
                 >
                     <input
@@ -263,7 +261,7 @@
                     />
                 </div>
                 <div class="w-1/4">
-                    <div class="ltr:pl-2 rtl:pr-2">
+                    <div class="ps-2">
                         <HollowButton onClick="{removePlan(i)}" color="red">
                             {$_(
                                 'pages.myBattles.createBattle.fields.plans.removeButton',
@@ -286,7 +284,7 @@
             <select
                 bind:value="{pointAverageRounding}"
                 class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 id="averageRounding"
                 name="averageRounding"
@@ -301,7 +299,7 @@
                 {/each}
             </select>
             <div
-                class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                class="pointer-events-none absolute inset-y-0 end-0 flex
                 items-center px-2 text-gray-700 dark:text-gray-400"
             >
                 <DownCarrotIcon />
@@ -316,7 +314,7 @@
                 bind:checked="{autoFinishVoting}"
                 id="autoFinishVoting"
                 name="autoFinishVoting"
-                class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
+                class="w-4 h-4 dark:accent-lime-400 me-1"
             />
             {$_('pages.myBattles.createBattle.fields.autoFinishVoting.label')}
         </label>
@@ -329,7 +327,7 @@
                 bind:checked="{hideVoterIdentity}"
                 id="hideVoterIdentity"
                 name="hideVoterIdentity"
-                class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
+                class="w-4 h-4 dark:accent-lime-400 me-1"
             />
             Hide Voter Identity
         </label>
@@ -375,7 +373,7 @@
         </div>
     </div>
 
-    <div class="ltr:text-right rtl:text-left">
+    <div class="text-right">
         <SolidButton type="submit">{$_('battleCreate')}</SolidButton>
     </div>
 </form>

@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
     import GithubIcon from './icons/Github.svelte'
-    import { AppConfig } from '../config.js'
+    import { AppConfig } from '../config.ts'
     import { _ } from '../i18n.js'
 
     const { AppVersion } = AppConfig

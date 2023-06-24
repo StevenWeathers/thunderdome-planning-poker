@@ -1,4 +1,4 @@
-import { PathPrefix } from './config.js'
+import {PathPrefix} from './config.js'
 
 /**
  * Extends fetch with common inputs e.g. credentials, content-type
@@ -11,28 +11,26 @@ export default function (handle401) {
      * @param {string} endpoint the endpoint to fetch
      * @param {object} config the optional fetch config e.g. body for post
      */
-    return function (endpoint, customConfig = {}) {
-        const headers = { 'content-type': 'application/json' }
-        const customHeaders = customConfig.headers || {}
-        const skip401Redirect = customConfig.skip401Redirect || false
+    return function (endpoint, customConfig: any = {}) {
+        const headers = {'content-type': 'application/json'}
 
-        const config = {
+        const config: RequestInit = {
             method: customConfig.body ? 'POST' : 'GET',
             credentials: 'same-origin',
             ...customConfig,
             headers: {
                 ...headers,
-                ...customHeaders,
+                ...customConfig.headers,
             },
         }
 
-        if (config.body) {
+        if (customConfig.body) {
             config.body = JSON.stringify(config.body)
         }
 
         return fetch(`${PathPrefix}${endpoint}`, config).then(response => {
             if (response.status === 401) {
-                handle401(skip401Redirect)
+                handle401(customConfig.skip401Redirect)
             }
 
             if (!response.ok) {

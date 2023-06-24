@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import ExternalLinkIcon from '../icons/ExternalLinkIcon.svelte'
     import Modal from '../Modal.svelte'
     import { _ } from '../../i18n.js'

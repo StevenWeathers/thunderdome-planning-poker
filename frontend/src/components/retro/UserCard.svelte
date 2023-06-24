@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import UserAvatar from '../user/UserAvatar.svelte'
     import { _ } from '../../i18n.js'
     import { warrior } from '../../stores.js'
@@ -16,7 +16,7 @@
 </script>
 
 <div
-    class="shrink text-center px-2 "
+    class="shrink text-center px-2"
     data-testId="userCard"
     data-userName="{user.name}"
 >

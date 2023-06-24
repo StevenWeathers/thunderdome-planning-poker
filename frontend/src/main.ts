@@ -1,9 +1,11 @@
 import App from './App.svelte'
 
-const app = new App({
+declare global {
+    let app: any;
+}
+
+window.app = new App({
     target: document.body,
 })
-
-window.app = app
 
 export default app

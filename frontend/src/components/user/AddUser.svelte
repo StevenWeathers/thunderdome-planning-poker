@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Modal from '../Modal.svelte'
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import SolidButton from '../SolidButton.svelte'
@@ -63,7 +63,7 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                    class="pointer-events-none absolute inset-y-0 end-0 flex
                     items-center px-2 text-gray-700 dark:text-gray-400"
                 >
                     <DownCarrotIcon />
@@ -72,7 +72,7 @@
         </div>
 
         <div>
-            <div class="ltr:text-right rtl:text-left">
+            <div class="text-right">
                 <SolidButton
                     type="submit"
                     disabled="{createDisabled}"

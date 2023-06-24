@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import ExternalLinkIcon from '../icons/ExternalLinkIcon.svelte'
     import AddPlan from './AddPlan.svelte'
     import HollowButton from '../HollowButton.svelte'
@@ -140,7 +140,7 @@
                 {$_('plans')}
             </h3>
         </div>
-        <div class="w-2/3 ltr:text-right rtl:text-left">
+        <div class="w-2/3 text-right">
             {#if isLeader}
                 <CsvImport
                     handlePlanAdd="{handlePlanAdd}"
@@ -162,9 +162,9 @@
     </div>
 
     <ul
-        class="flex border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 "
+        class="flex border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
     >
-        <li class="-mb-px {showCompleted ? '' : 'rtl:ml-1 ltr:mr-1'}">
+        <li class="-mb-px {showCompleted ? '' : 'me-1'}">
             <button
                 class="{showCompleted
                     ? 'hover:text-blue-600 text-blue-400 dark:hover:text-sky-300 dark:text-sky-600'
@@ -176,9 +176,7 @@
                 {$_('unpointed', { values: { count: unpointedPlans.length } })}
             </button>
         </li>
-        <li
-            class="rtl:ml-1 ltr:mr-1 {showCompleted ? 'rtl:ml-1 ltr:mr-1' : ''}"
-        >
+        <li class="me-1 {showCompleted ? 'me-1' : ''}">
             <button
                 class="{showCompleted
                     ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
@@ -194,7 +192,7 @@
 
     {#each plansToShow as plan (plan.id)}
         <div
-            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 "
+            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
             data-testid="plan"
         >
             <div class="w-full lg:w-1/3 mb-4 lg:mb-0">
@@ -227,14 +225,14 @@
                 {#if plan.points !== ''}
                     <div
                         class="inline-block font-bold text-green-600 dark:text-lime-400
-                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded rtl:mr-2 ltr:ml-2"
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ms-2"
                         data-testid="plan-points"
                     >
                         {plan.points}
                     </div>
                 {/if}
             </div>
-            <div class="w-full lg:w-2/3 ltr:text-right rtl:text-left">
+            <div class="w-full lg:w-2/3 text-right">
                 <HollowButton
                     color="blue"
                     onClick="{togglePlanView(plan.id)}"
@@ -273,7 +271,7 @@
     {/each}
     {#if showCompleted && totalPoints}
         <div
-            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 "
+            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
         >
             <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
                 <div
@@ -284,7 +282,7 @@
                 &nbsp;
                 <div
                     class="inline-block font-bold text-green-600 dark:text-lime-400
-                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded rtl:mr-2 ltr:ml-2"
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ms-2"
                 >
                     {totalPoints}
                 </div>

@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
     import SolidButton from '../SolidButton.svelte'
     import { _ } from '../../i18n.js'
-    import { AppConfig } from '../../config.js'
+    import { AppConfig } from '../../config.ts'
     import { validatePasswords } from '../../validationUtils.js'
 
     export let handleUpdate = () => {}
@@ -89,11 +89,11 @@ focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500
         />
     </div>
 
-    <div class="ltr:text-right rtl:text-left">
+    <div class="text-right">
         <button
             type="button"
             class="inline-block align-baseline font-bold text-sm
-            text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
+            text-blue-500 hover:text-blue-800 me-4"
             on:click="{toggleForm}"
         >
             {$_('pages.warriorProfile.updatePasswordForm.cancelButton')}

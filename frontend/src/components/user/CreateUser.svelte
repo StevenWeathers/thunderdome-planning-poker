@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Modal from '../Modal.svelte'
     import WarriorRegisterForm from './UserRegisterForm.svelte'
 

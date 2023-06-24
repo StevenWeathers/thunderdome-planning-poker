@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import HollowButton from './HollowButton.svelte'
     import SolidButton from './SolidButton.svelte'
     import LocaleSwitcher from './LocaleSwitcher.svelte'
@@ -6,7 +6,7 @@
     import { validateUserIsAdmin } from '../validationUtils'
     import { _, locale, setupI18n } from '../i18n.js'
     import { warrior } from '../stores.js'
-    import { AppConfig, appRoutes } from '../config.js'
+    import { AppConfig, appRoutes } from '../config.ts'
 
     export let xfetch
     export let router
@@ -95,10 +95,7 @@
         <div class="flex justify-between">
             <div class="flex space-x-7 rtl:space-x-reverse">
                 <div>
-                    <a
-                        href="{appRoutes.landing}"
-                        class="block my-3 rtl:ml-10 ltr:mr-10"
-                    >
+                    <a href="{appRoutes.landing}" class="block my-3 me-10">
                         <img
                             src="{PathPrefix}/img/logo.svg"
                             alt="Thunderdome"
@@ -146,7 +143,7 @@
                         {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
                             <a
                                 href="{appRoutes.teams}"
-                                class="pt-6 pb-4 px-4  border-b-4 {currentPage ===
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
                                 'teams'
                                     ? activePageClass
                                     : pageClass}"
@@ -196,7 +193,7 @@
                     </div>
                 {:else}
                     <span
-                        class="font-bold rtl:ml-2 ltr:mr-2 text-lg lg:text-xl inline-block max-w-48 truncate"
+                        class="font-bold me-2 text-lg lg:text-xl inline-block max-w-48 truncate"
                     >
                         <UserIcon class="h-5 w-5" />
                         <a
@@ -228,7 +225,7 @@
                     {/if}
                 {/if}
                 <LocaleSwitcher
-                    class="rtl:mr-2 ltr:ml-2 text-lg lg:text-xl"
+                    class="ms-2 text-lg lg:text-xl"
                     selectedLocale="{$locale}"
                     on:locale-changed="{e =>
                         setupI18n({
@@ -338,9 +335,7 @@
             </ul>
             <div class="font-rajdhani font-semibold mx-4 my-2 dark:text-white">
                 {#if $warrior.name}
-                    <span
-                        class="font-bold rtl:ml-2 ltr:mr-2 text-lg lg:text-xl"
-                    >
+                    <span class="font-bold me-2 text-lg lg:text-xl">
                         <UserIcon class="h-5 w-5" />
                         <a
                             href="{appRoutes.profile}"

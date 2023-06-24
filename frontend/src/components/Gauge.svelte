@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { afterUpdate } from 'svelte'
     import Snap from 'snapsvg-cjs'
 
@@ -132,9 +132,7 @@
 
 <div class="relative gauge {color}">
     {#if count !== ''}
-        <div
-            class="absolute ltr:text-right rtl:text-left text-sm md:text-lg count-text"
-        >
+        <div class="absolute text-right text-sm md:text-lg count-text">
             {count}
         </div>
     {/if}
@@ -149,11 +147,9 @@
     </svg>
     <div class="absolute w-full h-full flex flex-col items-center justify-end">
         <h3
-            class="block text-3xl md:text-5xl font-black rtl:mr-1.5 ltr:ml-1.5 tracking-tight percentage"
+            class="block text-3xl md:text-5xl font-black ms-1.5 tracking-tight percentage"
         >
-            <span>{stat}</span><span
-                class="rtl:mr-0.5 ltr:ml-0.5 text-base font-bold">%</span
-            >
+            <span>{stat}</span><span class="ms-0.5 text-base font-bold">%</span>
         </h3>
         <h4
             class="mt-0.5 font-bold text-gray-500 dark:text-gray-400 uppercase text-sm md:text-md tracking-wide"

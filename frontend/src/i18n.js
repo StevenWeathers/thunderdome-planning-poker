@@ -10,7 +10,7 @@ import {
     number,
 } from 'svelte-i18n'
 
-import { AppConfig, fallbackLocale, locales, PathPrefix } from './config.js'
+import { AppConfig, fallbackLocale, locales, PathPrefix } from './config.ts'
 
 const { AppVersion, FriendlyUIVerbs } = AppConfig
 const verbsType = FriendlyUIVerbs ? 'friendly' : 'default'

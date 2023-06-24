@@ -1,5 +1,6 @@
+import {describe, expect, it} from '@jest/globals';
 import '@testing-library/jest-dom'
-import { render, fireEvent } from '@testing-library/svelte'
+import {fireEvent, render} from '@testing-library/svelte'
 
 import DeleteConfirmation from '../DeleteConfirmation.svelte'
 
@@ -9,20 +10,20 @@ describe('DeleteConfirmation component', () => {
     })
 
     it('should match snapshot', () => {
-        const { container } = render(DeleteConfirmation, {})
+        const {container} = render(DeleteConfirmation, {})
 
         expect(container).toMatchSnapshot()
     })
 
     it('should match snapshot when permanent=false', () => {
-        const { container } = render(DeleteConfirmation, { permanent: false })
+        const {container} = render(DeleteConfirmation, {permanent: false})
 
         expect(container).toMatchSnapshot()
     })
 
     it('should fire handleDelete when confirmed', async () => {
         const stub = jest.fn()
-        const { getByText } = render(DeleteConfirmation, { handleDelete: stub })
+        const {getByText} = render(DeleteConfirmation, {handleDelete: stub})
         const button = getByText('Confirm Delete')
 
         await fireEvent.click(button)
@@ -33,7 +34,7 @@ describe('DeleteConfirmation component', () => {
     it('should not fire handleDelete when cancel and instead fire toggleDelete', async () => {
         const handleDelete = jest.fn()
         const toggleDelete = jest.fn()
-        const { getByText } = render(DeleteConfirmation, {
+        const {getByText} = render(DeleteConfirmation, {
             handleDelete,
             toggleDelete,
         })

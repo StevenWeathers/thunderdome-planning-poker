@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import './app.css'
     import './unreset.css'
     import '../../node_modules/quill/dist/quill.core.css'
@@ -7,8 +7,8 @@
     import { onDestroy } from 'svelte'
 
     import { dir, isLocaleLoaded, setupI18n } from './i18n.js'
-    import { AppConfig, appRoutes } from './config.js'
-    import apiclient from './apiclient.js'
+    import { AppConfig, appRoutes } from './config.ts'
+    import apiclient from './apiclient.ts'
     import { warrior } from './stores.js'
     import eventTag from './eventTag.js'
 

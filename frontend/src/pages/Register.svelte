@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import WarriorRegisterForm from '../components/user/UserRegisterForm.svelte'
     import { warrior } from '../stores.js'
     import { validateName } from '../validationUtils.js'
     import { _ } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.js'
+    import { AppConfig, appRoutes } from '../config.ts'
 
     export let router
     export let xfetch
@@ -206,7 +206,7 @@
                         />
                     </div>
                     <div>
-                        <div class="ltr:text-right rtl:text-left">
+                        <div class="text-right">
                             <SolidButton
                                 type="submit"
                                 disabled="{registerDisabled}"

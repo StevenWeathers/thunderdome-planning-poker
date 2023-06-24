@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import PointCard from './PointCard.svelte'
     import WarriorIcon from '../icons/UserIcon.svelte'
     import { _ } from '../../i18n.js'
@@ -104,7 +104,7 @@
         <div class="mb-2">{$_('pages.battle.voteResults.average')}</div>
         <span
             class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500 border p-2 rounded
-            ltr:ml-2 rtl:mr-2 inline-block"
+            me-2 inline-block"
             data-testid="voteresult-average"
         >
             {average}
@@ -115,7 +115,7 @@
         <div>
             <span
                 class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500 border p-2
-                rounded rtl:mr-2 ltr:ml-2 inline-block"
+                rounded ms-2 inline-block"
                 data-testid="voteresult-high"
             >
                 {highestVote || 0}
@@ -141,8 +141,8 @@
                 >
                     <WarriorIcon class="h-5 w-5" />
                     <span
-                        class="text-sm ltr:text-right rtl:text-left text-gray-900 font-normal w-48
-                        absolute ltr:left-0 rtl:right-0 top-0 -mt-2 rtl:mr-4 ltr:ml-4 bg-white p-2 rounded
+                        class="text-sm text-right text-gray-900 font-normal w-48
+                        absolute start-0 top-0 -mt-2 ms-4 bg-white p-2 rounded
                         shadow-lg {showHighestVoters ? '' : 'hidden'}"
                     >
                         {#if counts[highestVote]}

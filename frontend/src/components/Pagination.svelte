@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import ChevronLeftIcon from './icons/ChevronLeft.svelte'
     import ChevronRightIcon from './icons/ChevronRight.svelte'
     import { createEventDispatcher } from 'svelte/internal'
@@ -53,8 +53,7 @@
 
 <div class="flex text-gray-700 dark:text-gray-400 text-lg">
     <div
-        class="h-12 w-12 rtl:ml-1 ltr:mr-1 flex justify-center items-center {current >
-        1
+        class="h-12 w-12 me-1 flex justify-center items-center {current > 1
             ? 'cursor-pointer'
             : 'text-gray-400 dark:text-gray-700'}"
         on:click="{() => current > 1 && setCurrent(current - 1)}"
@@ -84,7 +83,7 @@
         </div>
     </div>
     <div
-        class="h-12 w-12 rtl:mr-1 ltr:ml-1 flex justify-center items-center {current <
+        class="h-12 w-12 ms-1 flex justify-center items-center {current <
         num_pages
             ? 'cursor-pointer'
             : 'text-gray-400 dark:text-gray-700'}"

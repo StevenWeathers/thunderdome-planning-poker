@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Sockette from 'sockette'
     import { onDestroy, onMount } from 'svelte'
     import {
@@ -642,13 +642,13 @@
                     {storyboard.name}
                 </h1>
             </div>
-            <div class="w-2/3 ltr:text-right rtl:text-left">
+            <div class="w-2/3 text-right">
                 <div>
                     {#if isFacilitator}
                         <HollowButton
                             color="green"
                             onClick="{toggleAddGoal()}"
-                            additionalClasses="rtl:ml-2 ltr:mr-2"
+                            additionalClasses="me-2"
                             testid="goal-add"
                         >
                             {$_('storyboardAddGoal')}
@@ -663,7 +663,7 @@
                         <HollowButton
                             color="red"
                             onClick="{toggleDeleteStoryboard}"
-                            additionalClasses="rtl:ml-2 ltr:mr-2"
+                            additionalClasses="me-2"
                             testid="storyboard-delete"
                         >
                             {$_('deleteStoryboard')}
@@ -692,14 +692,12 @@
                             testid="personas-toggle"
                         >
                             {$_('personas')}
-                            <DownCarrotIcon
-                                additionalClasses="rtl:mr-1 ltr:ml-1"
-                            />
+                            <DownCarrotIcon additionalClasses="ms-1" />
                         </HollowButton>
                         {#if showPersonas}
                             <div
-                                class="origin-top-right absolute ltr:right-0 rtl:left-0 mt-1 w-64
-                            rounded-md shadow-lg ltr:text-left rtl:text-right z-10"
+                                class="origin-top-right absolute end-0 mt-1 w-64
+                            rounded-md shadow-lg text-left z-10"
                             >
                                 <div
                                     class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
@@ -744,9 +742,7 @@
                                     </div>
 
                                     {#if isFacilitator}
-                                        <div
-                                            class="p-2 ltr:text-right rtl:text-left"
-                                        >
+                                        <div class="p-2 text-right">
                                             <HollowButton
                                                 color="green"
                                                 onClick="{toggleEditPersona({
@@ -773,14 +769,12 @@
                             testid="colorlegend-toggle"
                         >
                             {$_('colorLegend')}
-                            <DownCarrotIcon
-                                additionalClasses="rtl:mr-1 ltr:ml-1"
-                            />
+                            <DownCarrotIcon additionalClasses="ms-1" />
                         </HollowButton>
                         {#if showColorLegend}
                             <div
-                                class="origin-top-right absolute ltr:right-0 rtl:left-0 mt-1 w-64
-                            rounded-md shadow-lg ltr:text-left rtl:text-right z-10"
+                                class="origin-top-right absolute end-0 mt-1 w-64
+                            rounded-md shadow-lg text-left z-10"
                             >
                                 <div
                                     class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
@@ -789,7 +783,7 @@
                                         {#each storyboard.color_legend as color}
                                             <div class="mb-1 flex w-full">
                                                 <span
-                                                    class="p-4 rtl:ml-2 ltr:mr-2 inline-block
+                                                    class="p-4 me-2 inline-block
                                                 colorcard-{color.color}"></span>
                                                 <span
                                                     class="inline-block align-middle
@@ -807,9 +801,7 @@
                                     </div>
 
                                     {#if isFacilitator}
-                                        <div
-                                            class="p-2 ltr:text-right rtl:text-left"
-                                        >
+                                        <div class="p-2 text-right">
                                             <HollowButton
                                                 color="orange"
                                                 onClick="{toggleEditLegend}"
@@ -831,19 +823,17 @@
                             testid="users-toggle"
                         >
                             <UsersIcon
-                                additionalClasses="rtl:ml-1 ltr:mr-1"
+                                additionalClasses="me-1"
                                 height="18"
                                 width="18"
                             />
                             {$_('users')}
-                            <DownCarrotIcon
-                                additionalClasses="rtl:mr-1 ltr:ml-1"
-                            />
+                            <DownCarrotIcon additionalClasses="ms-1" />
                         </HollowButton>
                         {#if showUsers}
                             <div
-                                class="origin-top-right absolute ltr:right-0 rtl:left-0 mt-1 w-64
-                            rounded-md shadow-lg ltr:text-left rtl:text-right z-10"
+                                class="origin-top-right absolute end-0 mt-1 w-64
+                            rounded-md shadow-lg text-left z-10"
                             >
                                 <div
                                     class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
@@ -892,18 +882,18 @@
                                 >
                                     {#if collapseGoals.includes(goal.id)}
                                         <DownCarrotIcon
-                                            additionalClasses="rtl:ml-1 ltr:mr-1"
+                                            additionalClasses="me-1"
                                         />
                                     {:else}
                                         <UpCarrotIcon
-                                            additionalClasses="rtl:ml-1 ltr:mr-1"
+                                            additionalClasses="me-1"
                                         />
                                     {/if}
                                 </button>{goal.name}
                             </h2>
                         </div>
                     </div>
-                    <div class="w-1/4 ltr:text-right rtl:text-left">
+                    <div class="w-1/4 text-right">
                         {#if isFacilitator}
                             <HollowButton
                                 color="green"
@@ -917,7 +907,7 @@
                                 color="orange"
                                 onClick="{toggleAddGoal(goal.id)}"
                                 btnSize="small"
-                                additionalClasses="rtl:mr-2 ltr:ml-2"
+                                additionalClasses="ms-2"
                                 testid="goal-edit"
                             >
                                 {$_('edit')}
@@ -926,7 +916,7 @@
                                 color="red"
                                 onClick="{handleGoalDeletion(goal.id)}"
                                 btnSize="small"
-                                additionalClasses="rtl:mr-2 ltr:ml-2"
+                                additionalClasses="ms-2"
                                 testid="goal-delete"
                             >
                                 {$_('delete')}
@@ -1009,7 +999,7 @@
                                 >
                                     {#each goalColumn.stories as story (story.id)}
                                         <div
-                                            class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white ltr:border-l-4 rtl:border-r-4
+                                            class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
                                     story-{story.color} border my-4
                                     cursor-pointer"
                                             style="list-style: none;"
@@ -1053,7 +1043,7 @@
                                                                 {/if}
                                                             </div>
                                                             <div
-                                                                class="w-1/2 ltr:text-right rtl:text-left"
+                                                                class="w-1/2 text-right"
                                                             >
                                                                 {#if story.points > 0}
                                                                     <span
@@ -1072,7 +1062,7 @@
                                             </div>
                                             {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
                                                 <div
-                                                    class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white ltr:border-l-4 rtl:border-r-4
+                                                    class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
                                     story-{story.color} border
                                     cursor-pointer"
                                                     style="list-style: none;"
@@ -1117,7 +1107,7 @@
                                                                         {/if}
                                                                     </div>
                                                                     <div
-                                                                        class="w-1/2 ltr:text-right rtl:text-left"
+                                                                        class="w-1/2 text-right"
                                                                     >
                                                                         {#if story.points > 0}
                                                                             <span
@@ -1178,7 +1168,7 @@
                                     />
                                 </div>
 
-                                <div class="ltr:text-right rtl:text-left">
+                                <div class="text-right">
                                     <SolidButton type="submit"
                                         >{$_('joinStoryboard')}
                                     </SolidButton>

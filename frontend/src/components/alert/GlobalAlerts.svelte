@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import CloseIcon from '../icons/CloseIcon.svelte'
     import { activeAlerts, dismissedAlerts } from '../../stores.js'
 
@@ -157,22 +157,22 @@
                     <div class="w-0 flex-1 flex items-center">
                         <span
                             class="{alert.type}Alert-type flex rounded-lg uppercase
-                        px-2 py-1 text-xs font-bold rtl:ml-3 ltr:mr-3"
+                        px-2 py-1 text-xs font-bold me-3"
                         >
                             {alert.type}
                         </span>
                         <p
-                            class="rtl:mr-3 ltr:ml-3 font-medium {alert.type}Alert-body truncate"
+                            class="ms-3 font-medium {alert.type}Alert-body truncate"
                         >
                             {alert.content}
                         </p>
                     </div>
                     {#if alert.allowDismiss}
-                        <div class="order-2 flex-shrink-0 sm:order-3 sm:ml-3">
+                        <div class="order-2 flex-shrink-0 sm:order-3 sm:ms-3">
                             <button
                                 type="button"
                                 on:click="{dismissAlert(alert.id)}"
-                                class="rtl:-ml-1 ltr:-mr-1 flex p-2 rounded-md {alert.type}Alert-dismiss focus:outline-none focus:ring-2 focus:ring-white sm:rtl:-ml-2 sm:ltr:-mr-2"
+                                class="-me-1 sm:-me-2 flex p-2 rounded-md {alert.type}Alert-dismiss focus:outline-none focus:ring-2 focus:ring-white"
                             >
                                 <CloseIcon />
                             </button>

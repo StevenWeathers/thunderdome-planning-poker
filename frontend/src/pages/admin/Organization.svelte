@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
@@ -9,7 +9,7 @@
     import ChevronRight from '../../components/icons/ChevronRight.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.js'
+    import { appRoutes } from '../../config.ts'
     import RowCol from '../../components/table/RowCol.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
@@ -367,7 +367,7 @@
                                         class="h-10 w-10 rounded-full"
                                     />
                                 </div>
-                                <div class="rtl:mr-4 ltr:ml-4">
+                                <div class="ms-4">
                                     <div
                                         class="font-medium text-gray-900 dark:text-gray-200"
                                     >

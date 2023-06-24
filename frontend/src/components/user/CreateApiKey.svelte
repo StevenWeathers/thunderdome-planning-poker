@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import SolidButton from '../SolidButton.svelte'
     import ClipboardIcon from '../icons/ClipboardIcon.svelte'
     import Modal from '../Modal.svelte'
@@ -112,7 +112,7 @@
                     required
                 />
             </div>
-            <div class="ltr:text-right rtl:text-left">
+            <div class="text-right">
                 <div>
                     <SolidButton type="submit">
                         {$_('pages.warriorProfile.apiKeys.fields.submitButton')}
@@ -135,7 +135,7 @@
                 <input
                     class="flex-shrink flex-grow flex-auto leading-normal w-px
                     flex-1 border-2 h-10 bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-900 rounded
-                    ltr:rounded-r-none rtl:rounded-l-none px-4 appearance-none text-gray-800 dark:text-gray-400 font-bold
+                    rounded-e-none px-4 appearance-none text-gray-800 dark:text-gray-400 font-bold
                     focus:outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     type="text"
                     value="{apiKey}"
@@ -157,7 +157,7 @@
                 {$_('pages.warriorProfile.apiKeys.storeWarning')}
             </p>
         </div>
-        <div class="ltr:text-right rtl:text-left">
+        <div class="text-right">
             <div>
                 <SolidButton
                     onClick="{toggleCreateApiKey}"

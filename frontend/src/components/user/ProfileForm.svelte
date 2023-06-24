@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import WarriorAvatar from './UserAvatar.svelte'
     import LocaleSwitcher from '../LocaleSwitcher.svelte'
@@ -8,7 +8,7 @@
     import SetupMFA from '../user/SetupMFA.svelte'
     import DeleteConfirmation from '../DeleteConfirmation.svelte'
     import { countryList } from '../../country.js'
-    import { AppConfig } from '../../config.js'
+    import { AppConfig } from '../../config.ts'
     import { _, locale, setupI18n } from '../../i18n.js'
     import { warrior } from '../../stores.js'
     import { validateName, validateUserIsAdmin } from '../../validationUtils.js'
@@ -183,7 +183,7 @@
                 <span
                     class="inline-block font-bold text-green-600
                                     border-green-500 border py-1 px-2 rounded
-                                    ltr:ml-1 rtl:mr-1"
+                                    ms-1"
                     data-testid="user-verified"
                 >
                     {$_('pages.warriorProfile.fields.email.verified')}
@@ -191,7 +191,7 @@
                 </span>
             {:else if profile.rank !== 'GUEST'}
                 <button
-                    class="ltr:float-right rtl:float-left inline-block align-baseline font-bold text-sm text-blue-500
+                    class="float-right inline-block align-baseline font-bold text-sm text-blue-500
                                         hover:text-blue-800"
                     on:click="{requestVerifyEmail}"
                     data-testid="request-verify"
@@ -242,7 +242,7 @@
             <select
                 bind:value="{profile.country}"
                 class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 id="yourCountry"
                 name="yourCountry"
@@ -258,7 +258,7 @@
             </select>
             <div
                 class="pointer-events-none absolute inset-y-0
-                                ltr:right-0 rtl:left-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
+                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
             >
                 <DownCarrotIcon />
             </div>
@@ -325,7 +325,7 @@
             <input
                 bind:checked="{profile.notificationsEnabled}"
                 type="checkbox"
-                class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
+                class="w-4 h-4 dark:accent-lime-400 me-1"
             />
             <span>
                 {$_('pages.warriorProfile.fields.enable_notifications.label')}
@@ -352,7 +352,7 @@
                         <select
                             bind:value="{profile.avatar}"
                             class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                             id="yourAvatar"
                             name="yourAvatar"
@@ -365,15 +365,15 @@
                         </select>
                         <div
                             class="pointer-events-none absolute
-                                            inset-y-0 ltr:right-0 rtl:left-0 flex items-center
+                                            inset-y-0 end-0 flex items-center
                                             px-2 text-gray-700 dark:text-gray-300"
                         >
                             <DownCarrotIcon />
                         </div>
                     </div>
                 </div>
-                <div class="md:w-1/3 lg:w-1/4 rtl:mr-1 ltr:ml-1">
-                    <span class="ltr:float-right rtl:float-left">
+                <div class="md:w-1/3 lg:w-1/4 ms-1">
+                    <span class="float-right">
                         <WarriorAvatar
                             warriorId="{profile.id}"
                             avatar="{profile.avatar}"
@@ -388,12 +388,12 @@
     {/if}
 
     <div>
-        <div class="ltr:text-right rtl:text-left">
+        <div class="text-right">
             {#if !ldapEnabled && !headerAuthEnabled && profile.rank !== 'GUEST' && toggleUpdatePassword}
                 <button
                     type="button"
                     class="inline-block align-baseline font-bold
-                                    text-sm text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
+                                    text-sm text-blue-500 hover:text-blue-800 me-4"
                     on:click="{toggleUpdatePassword}"
                     data-testid="toggle-updatepassword"
                 >

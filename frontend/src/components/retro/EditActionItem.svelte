@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import CheckboxIcon from '../icons/CheckboxIcon.svelte'
     import SolidButton from '../SolidButton.svelte'
     import HollowButton from '../HollowButton.svelte'
@@ -64,7 +64,7 @@
                     <div
                         class="bg-white dark:bg-gray-800 border-2 rounded-md
                                                 border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                                justify-center items-center rtl:ml-2 ltr:mr-2
+                                                justify-center items-center me-2
                                                 focus-within:border-blue-500 dark:focus-within:border-sky-500"
                     >
                         <CheckboxIcon />
@@ -80,7 +80,7 @@
                     >{$_('delete')}</HollowButton
                 >
             </div>
-            <div class="w-1/2 ltr:text-right rtl:text-left">
+            <div class="w-1/2 text-right">
                 <SolidButton type="submit">{$_('save')}</SolidButton>
             </div>
         </div>

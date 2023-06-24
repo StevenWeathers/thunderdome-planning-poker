@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { quill } from '../../quill.js'
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
@@ -106,7 +106,7 @@
                     bind:value="{planType}"
                     required
                     class="block appearance-none w-full border-2 dark:bg-gray-900 border-gray-300 dark:border-gray-600
-                    text-gray-700 dark:text-gray-400 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                    text-gray-700 dark:text-gray-400 py-3 px-4 pe-8 rounded leading-tight
                     focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 >
                     <option value="" disabled>
@@ -117,7 +117,7 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                    class="pointer-events-none absolute inset-y-0 end-0 flex
                     items-center px-2 text-gray-700 dark:text-gray-300"
                 >
                     <ChevronDown />
@@ -168,7 +168,7 @@
                 {$_('planLink')}
             </label>
             <input
-                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 type="text"
@@ -191,7 +191,7 @@
                     id="priority"
                     bind:value="{priority}"
                     class="block appearance-none w-full border-2 dark:bg-gray-900 border-gray-300 dark:border-gray-600
-                    text-gray-700 dark:text-gray-400 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                    text-gray-700 dark:text-gray-400 py-3 px-4 pe-8 rounded leading-tight
                     focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 >
                     <option value="{99}" disabled>
@@ -204,7 +204,7 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                    class="pointer-events-none absolute inset-y-0 end-0 flex
                     items-center px-2 text-gray-700 dark:text-gray-300"
                 >
                     <ChevronDown />
@@ -220,7 +220,7 @@
                     }}"
                     class="inline-block align-baseline text-sm
                         text-blue-700 dark:text-sky-400 hover:text-blue-800 dark:hover:text-sky-600 bg-transparent
-                        border-transparent rtl:ml-1 ltr:mr-1 font-bold text-xl"
+                        border-transparent me-1 font-bold text-xl"
                     type="button"
                 >
                     {#if descriptionExpanded}-{:else}+{/if}
@@ -253,7 +253,7 @@
                     }}"
                     class="inline-block align-baseline text-sm
                         text-blue-700 dark:text-sky-400 hover:text-blue-800 dark:hover:text-sky-600 bg-transparent
-                        border-transparent rtl:ml-1 ltr:mr-1 font-bold text-xl"
+                        border-transparent me-1 font-bold text-xl"
                     type="button"
                 >
                     {#if acceptanceExpanded}-{:else}+{/if}
@@ -281,7 +281,7 @@
                 </div>
             {/if}
         </div>
-        <div class="ltr:text-right rtl:text-left">
+        <div class="text-right">
             <div>
                 <SolidButton type="submit" testid="plan-save"
                     >{$_('save')}</SolidButton

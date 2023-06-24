@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { createEventDispatcher } from 'svelte'
     import WarriorIcon from '../icons/UserIcon.svelte'
     import { _ } from '../../i18n.js'
@@ -46,10 +46,8 @@
 >
     {#if results.count}
         <div
-            class="text-green-500 dark:text-lime-400 font-semibold inline-block absolute ltr:right-0 rtl:left-0
-            top-0 p-2 text-4xl ltr:text-right rtl:text-left {showVoters
-                ? 'z-20'
-                : 'z-10'}"
+            class="text-green-500 dark:text-lime-400 font-semibold inline-block absolute end-0
+            top-0 p-2 text-4xl text-right {showVoters ? 'z-20' : 'z-10'}"
             data-testid="pointCardCount"
         >
             {results.count}
@@ -69,8 +67,8 @@
             >
                 <WarriorIcon class="h-5 w-5" />
                 <span
-                    class="ltr:text-right rtl:text-left text-sm text-gray-900 font-normal w-48
-                    absolute ltr:left-0 rtl:right-0 top-0 mt-0 rtl:mr-6 ltr:ml-6 bg-white p-2 rounded
+                    class="text-right text-sm text-gray-900 font-normal w-48
+                    absolute start-0 top-0 mt-0 ms-6 bg-white p-2 rounded
                     shadow-lg {showVoters ? '' : 'hidden'}"
                 >
                     {#each results.voters as voter}

@@ -1,5 +1,5 @@
-<script>
-    import { AppConfig, appRoutes } from '../config.js'
+<script lang="ts">
+    import { AppConfig, appRoutes } from '../config.ts'
     import { _ } from '../i18n.js'
 
     export let activePage = 'admin'
@@ -92,7 +92,7 @@
         <ul class="flex">
             {#each pages as page}
                 {#if page.enabled}
-                    <li class="rtl:mr-3 ltr:ml-3">
+                    <li class="me-3">
                         <a
                             class="admin-nav-pill {activePage ===
                             page.name.toLowerCase().replace(' ', '')

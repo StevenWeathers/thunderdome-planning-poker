@@ -1,5 +1,5 @@
-<script>
-    import { AppConfig } from '../config.js'
+<script lang="ts">
+    import { AppConfig } from '../config.ts'
     import { _ } from '../i18n.js'
 
     let count = 0

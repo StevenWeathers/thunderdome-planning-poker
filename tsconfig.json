@@ -1,0 +1,16 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "include": [
+    "frontend/src/**/*",
+    "frontend/src/node_modules"
+  ],
+  "exclude": [
+    "node_modules/*",
+    "__sapper__/*",
+    "frontend/public/*"
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  }
+}

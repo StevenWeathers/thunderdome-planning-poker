@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import CheckIcon from '../../components/icons/CheckIcon.svelte'
@@ -9,7 +9,7 @@
     import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import { activeAlerts, warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.js'
+    import { appRoutes } from '../../config.ts'
     import { validateUserIsAdmin } from '../../validationUtils.js'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
@@ -152,7 +152,7 @@
     </div>
 
     <div class="w-full">
-        <div class="ltr:text-right rtl:text-left mb-4">
+        <div class="text-right mb-4">
             <HollowButton onClick="{toggleCreateAlert}">
                 {$_('alertCreate')}
             </HollowButton>

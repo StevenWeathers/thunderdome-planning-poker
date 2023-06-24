@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import VoteIcon from '../icons/VoteIcon.svelte'
     import LeaderIcon from '../icons/LeaderIcon.svelte'
     import WarriorRankPrivate from '../icons/UserRankGuest.svelte'
@@ -6,7 +6,7 @@
     import WarriorRankGeneral from '../icons/UserRankAdmin.svelte'
     import UserAvatar from '../user/UserAvatar.svelte'
     import BecomeLeader from './BecomeLeader.svelte'
-    import { AppConfig } from '../../config.js'
+    import { AppConfig } from '../../config.ts'
     import { _ } from '../../i18n.js'
     import { warrior as activeWarrior } from '../../stores.js'
 
@@ -66,7 +66,7 @@
     data-username="{warrior.name}"
     data-userid="{warrior.id}"
 >
-    <div class="w-1/4 rtl:ml-2 ltr:mr-2">
+    <div class="w-1/4 me-2">
         <UserAvatar
             warriorId="{warrior.id}"
             avatar="{warrior.avatar}"
@@ -165,7 +165,7 @@
                     </button>
                 {/if}
             </div>
-            <div class="w-1/4 ltr:text-right rtl:text-left">
+            <div class="w-1/4 text-right">
                 {#if !warrior.spectator}
                     {#if voted && points === ''}
                         <span class="text-green-500 dark:text-lime-400">
@@ -174,7 +174,7 @@
                     {:else if voted && points !== ''}
                         <span
                             class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500
-                            border p-2 rounded rtl:mr-2 ltr:ml-2"
+                            border p-2 rounded ms-2"
                             data-testid="user-points"
                         >
                             {points}

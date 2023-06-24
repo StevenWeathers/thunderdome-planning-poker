@@ -1,15 +1,17 @@
+import {describe, expect, it} from '@jest/globals';
+
 import {
-    validatePasswords,
+    nameLenError,
+    nameMax,
+    nameMin,
+    passLenError,
+    passMax,
+    passMin,
+    passNotMatchError,
     validateName,
+    validatePasswords,
     validateUserIsAdmin,
     validateUserIsRegistered,
-    nameMin,
-    nameMax,
-    passMin,
-    passMax,
-    nameLenError,
-    passLenError,
-    passNotMatchError,
 } from '../validationUtils'
 
 describe('Validation Utils', () => {
@@ -76,55 +78,55 @@ describe('Validation Utils', () => {
 
     describe('validateUserIsAdmin', () => {
         it('should return true for ADMIN rank user', () => {
-            expect(validateUserIsAdmin({ rank: 'ADMIN' })).toEqual(true)
+            expect(validateUserIsAdmin({rank: 'ADMIN'})).toEqual(true)
         })
 
         it('should return true for GENERAL rank user', () => {
-            expect(validateUserIsAdmin({ rank: 'GENERAL' })).toEqual(true)
+            expect(validateUserIsAdmin({rank: 'GENERAL'})).toEqual(true)
         })
 
         it('should return false for REGISTERED rank user', () => {
-            expect(validateUserIsAdmin({ rank: 'REGISTERED' })).toEqual(false)
+            expect(validateUserIsAdmin({rank: 'REGISTERED'})).toEqual(false)
         })
 
         it('should return false for CORPORAL rank user', () => {
-            expect(validateUserIsAdmin({ rank: 'CORPORAL' })).toEqual(false)
+            expect(validateUserIsAdmin({rank: 'CORPORAL'})).toEqual(false)
         })
 
         it('should return false for GUEST rank user', () => {
-            expect(validateUserIsAdmin({ rank: 'GUEST' })).toEqual(false)
+            expect(validateUserIsAdmin({rank: 'GUEST'})).toEqual(false)
         })
 
         it('should return false for PRIVATE rank user', () => {
-            expect(validateUserIsAdmin({ rank: 'PRIVATE' })).toEqual(false)
+            expect(validateUserIsAdmin({rank: 'PRIVATE'})).toEqual(false)
         })
     })
 
     describe('validateUserIsRegistered', () => {
         it('should return true for ADMIN rank user', () => {
-            expect(validateUserIsRegistered({ rank: 'ADMIN' })).toEqual(true)
+            expect(validateUserIsRegistered({rank: 'ADMIN'})).toEqual(true)
         })
 
         it('should return true for GENERAL rank user', () => {
-            expect(validateUserIsRegistered({ rank: 'GENERAL' })).toEqual(true)
+            expect(validateUserIsRegistered({rank: 'GENERAL'})).toEqual(true)
         })
 
         it('should return true for REGISTERED rank user', () => {
-            expect(validateUserIsRegistered({ rank: 'REGISTERED' })).toEqual(
+            expect(validateUserIsRegistered({rank: 'REGISTERED'})).toEqual(
                 true,
             )
         })
 
         it('should return true for CORPORAL rank user', () => {
-            expect(validateUserIsRegistered({ rank: 'CORPORAL' })).toEqual(true)
+            expect(validateUserIsRegistered({rank: 'CORPORAL'})).toEqual(true)
         })
 
         it('should return false for GUEST rank user', () => {
-            expect(validateUserIsRegistered({ rank: 'GUEST' })).toEqual(false)
+            expect(validateUserIsRegistered({rank: 'GUEST'})).toEqual(false)
         })
 
         it('should return false for PRIVATE rank user', () => {
-            expect(validateUserIsRegistered({ rank: 'PRIVATE' })).toEqual(false)
+            expect(validateUserIsRegistered({rank: 'PRIVATE'})).toEqual(false)
         })
     })
 })

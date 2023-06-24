@@ -1,5 +1,5 @@
-<script>
-    import { appRoutes } from '../../config.js'
+<script lang="ts">
+    import { appRoutes } from '../../config.ts'
     import SolidButton from '../SolidButton.svelte'
     import ClipboardIcon from '../icons/ClipboardIcon.svelte'
 
@@ -18,9 +18,9 @@
 <div class="flex flex-wrap items-stretch w-full">
     <input
         class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1
-        border-2 h-10 bg-gray-200 border-gray-200 rounded ltr:rounded-r-none rtl:rounded-l-none px-3
+        border-2 h-10 bg-gray-200 border-gray-200 rounded rounded-e-none px-3
         appearance-none text-gray-700 focus:outline-none focus:bg-white
-        focus:border-orange-500 "
+        focus:border-orange-500"
         type="text"
         value="{hostname}{appRoutes.storyboard}/{storyboardId}"
         id="StoryboardLink"

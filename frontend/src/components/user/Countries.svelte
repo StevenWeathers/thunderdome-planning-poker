@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import CountryFlag from './CountryFlag.svelte'
     import { _ } from '../../i18n.js'
 

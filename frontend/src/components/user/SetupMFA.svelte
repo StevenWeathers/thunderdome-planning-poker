@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Modal from '../Modal.svelte'
     import SolidButton from '../SolidButton.svelte'
 
@@ -83,7 +83,7 @@
             </div>
 
             <div>
-                <div class="ltr:text-right rtl:text-left">
+                <div class="text-right">
                     <SolidButton type="submit" disabled="{submitDisabled}">
                         {$_('mfaConfirmToken')}
                     </SolidButton>

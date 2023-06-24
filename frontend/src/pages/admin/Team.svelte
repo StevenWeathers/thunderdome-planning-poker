@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
@@ -6,7 +6,7 @@
     import CountryFlag from '../../components/user/CountryFlag.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
-    import { AppConfig, appRoutes } from '../../config.js'
+    import { AppConfig, appRoutes } from '../../config.ts'
     import { validateUserIsAdmin } from '../../validationUtils.js'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
@@ -319,7 +319,7 @@
                                         >
                                     </div>
                                     <div
-                                        class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
+                                        class="w-full md:w-1/2 md:mb-0 md:text-right"
                                     >
                                         <HollowButton
                                             href="{appRoutes.battle}/{battle.id}"
@@ -362,7 +362,7 @@
                                         >
                                     </div>
                                     <div
-                                        class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
+                                        class="w-full md:w-1/2 md:mb-0 md:text-right"
                                     >
                                         <HollowButton
                                             href="{appRoutes.retro}/{retro.id}"
@@ -384,9 +384,9 @@
                                     {$_('retroActionItems')}
                                 </h3>
 
-                                <div class="ltr:text-right rtl:text-left mb-4">
+                                <div class="text-right mb-4">
                                     <div
-                                        class="relative inline-block w-10 rtl:ml-2 ltr:mr-2 align-middle select-none transition duration-200 ease-in"
+                                        class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
                                     >
                                         <input
                                             type="checkbox"
@@ -441,7 +441,7 @@
                                                 <div
                                                     class="bg-white dark:bg-gray-800 border-2 rounded-md
                                             border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                            justify-center items-center rtl:ml-2 ltr:mr-2
+                                            justify-center items-center me-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
                                                 >
                                                     <CheckboxIcon />
@@ -512,7 +512,7 @@
                                         >
                                     </div>
                                     <div
-                                        class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
+                                        class="w-full md:w-1/2 md:mb-0 md:text-right"
                                     >
                                         <HollowButton
                                             href="{appRoutes.storyboard}/{storyboard.id}"
@@ -568,7 +568,7 @@
                                                 class="h-10 w-10 rounded-full"
                                             />
                                         </div>
-                                        <div class="rtl:mr-4 ltr:ml-4">
+                                        <div class="ms-4">
                                             <div
                                                 class="font-medium text-gray-900 dark:text-gray-200"
                                             >

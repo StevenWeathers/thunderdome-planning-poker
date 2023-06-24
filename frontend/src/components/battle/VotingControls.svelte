@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import SolidButton from '../SolidButton.svelte'
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
     import { _ } from '../../i18n.js'
@@ -84,7 +84,7 @@
                                 bind:value="{planPoints}"
                                 required
                                 class="block appearance-none w-full border-2 dark:bg-gray-900
-                                border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8
+                                border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 pe-8
                                 rounded leading-tight focus:outline-none
                                 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                             >
@@ -97,13 +97,13 @@
                             </select>
                             <div
                                 class="pointer-events-none absolute inset-y-0
-                                ltr:right-0 rtl:left-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
+                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
                             >
                                 <DownCarrotIcon />
                             </div>
                         </div>
                     </div>
-                    <div class="w-1/2 ltr:text-right rtl:text-left px-2">
+                    <div class="w-1/2 text-right px-2">
                         <SolidButton
                             additionalClasses="w-full h-full"
                             type="submit"

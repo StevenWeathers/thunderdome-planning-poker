@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Modal from '../Modal.svelte'
     import HollowButton from '../HollowButton.svelte'
     import UserIcon from '../icons/UserIcon.svelte'
@@ -113,11 +113,11 @@
                 {#if selectedComment !== null && selectedComment.id === comment.id}
                     <div class="w-full my-2">
                         <textarea
-                            class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                            class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                             rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                             focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
                             bind:value="{selectedCommentContent}"></textarea>
-                        <div class="ltr:text-right rtl:text-left">
+                        <div class="text-right">
                             <HollowButton
                                 color="blue"
                                 onClick="{toggleCommentEdit(null)}"
@@ -139,9 +139,9 @@
                     </div>
                 {/if}
                 {#if (comment.user_id === $user.id || comment.user_id === isAdmin) && !(selectedComment !== null && selectedComment.id === comment.id)}
-                    <div class="mb-2 ltr:text-right rtl:text-left">
+                    <div class="mb-2 text-right">
                         <button
-                            class="text-blue-500 hover:text-blue-300 rtl:ml-1 ltr:mr-1"
+                            class="text-blue-500 hover:text-blue-300 me-1"
                             on:click="{toggleCommentEdit(comment)}"
                         >
                             {$_('edit')}
@@ -162,12 +162,12 @@
 
         <div class="w-full mt-8">
             <textarea
-                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
                 placeholder="{$_('writeCommentPlaceholder')}"
                 bind:value="{userComment}"></textarea>
-            <div class="ltr:text-right rtl:text-left">
+            <div class="text-right">
                 <HollowButton
                     color="teal"
                     onClick="{handleCommentSubmit}"

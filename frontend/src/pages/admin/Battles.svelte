@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
@@ -6,7 +6,7 @@
     import HollowButton from '../../components/HollowButton.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.js'
+    import { appRoutes } from '../../config.ts'
     import { validateUserIsAdmin } from '../../validationUtils.js'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
@@ -77,9 +77,9 @@
     </div>
 
     <div class="w-full">
-        <div class="ltr:text-right rtl:text-left mb-4">
+        <div class="text-right mb-4">
             <div
-                class="relative inline-block w-10 rtl:ml-2 ltr:mr-2 align-middle select-none transition duration-200 ease-in"
+                class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
             >
                 <input
                     type="checkbox"

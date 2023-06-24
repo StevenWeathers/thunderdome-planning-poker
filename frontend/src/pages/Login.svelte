@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import { warrior } from '../stores.js'
     import { _, setupI18n } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.js'
+    import { AppConfig, appRoutes } from '../config.ts'
 
     export let router
     export let xfetch
@@ -247,12 +247,12 @@
                         />
                     </div>
 
-                    <div class="ltr:text-right rtl:text-left">
+                    <div class="text-right">
                         {#if !LdapEnabled}
                             <button
                                 type="button"
                                 class="inline-block align-baseline font-bold
-                                text-sm text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
+                                text-sm text-blue-500 hover:text-blue-800 me-4"
                                 on:click="{toggleForgotPassword}"
                             >
                                 {$_('pages.login.fields.password.forgotLabel')}
@@ -298,11 +298,11 @@
                         />
                     </div>
 
-                    <div class="ltr:text-right rtl:text-left">
+                    <div class="text-right">
                         <button
                             type="button"
                             class="inline-block align-baseline font-bold text-sm
-                            text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
+                            text-blue-500 hover:text-blue-800 me-4"
                             on:click="{toggleForgotPassword}"
                         >
                             {$_('cancel')}
@@ -346,7 +346,7 @@
                         />
                     </div>
 
-                    <div class="ltr:text-right rtl:text-left">
+                    <div class="text-right">
                         <SolidButton
                             type="submit"
                             disabled="{mfaLoginDisabled}"

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Modal from '../Modal.svelte'
     import SolidButton from '../SolidButton.svelte'
     import { quill } from '../../quill.js'
@@ -68,7 +68,7 @@
                         {$_('checkinMeetYesterdayGoalsQuestion')}
                     </div>
                     <div
-                        class="relative inline-block w-16 rtl:ml-2 ltr:mr-2 align-middle select-none transition duration-200 ease-in"
+                        class="relative inline-block w-16 me-2 align-middle select-none transition duration-200 ease-in"
                     >
                         <input
                             type="checkbox"
@@ -146,7 +146,7 @@
         </div>
 
         <div class="w-full">
-            <div class="ltr:text-right rtl:text-left">
+            <div class="text-right">
                 <SolidButton type="submit" testid="save"
                     >{$_('save')}</SolidButton
                 >

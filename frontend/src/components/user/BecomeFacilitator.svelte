@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
     import { _ } from '../../i18n.js'
@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <div class="ltr:text-right rtl:text-left">
+        <div class="text-right">
             <SolidButton type="submit">{$_('save')}</SolidButton>
         </div>
     </form>

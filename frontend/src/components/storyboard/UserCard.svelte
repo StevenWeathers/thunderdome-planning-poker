@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import UserAvatar from '../user/UserAvatar.svelte'
     import { warrior } from '../../stores.js'
     import { _ } from '../../i18n.js'
@@ -23,7 +23,7 @@
         gravatarHash="{user.gravatarHash}"
     />
     <p
-        class="rtl:mr-2 ltr:ml-2 text-l font-bold leading-tight truncate"
+        class="ms-2 text-l font-bold leading-tight truncate"
         data-testId="userName"
         title="{user.name}"
     >

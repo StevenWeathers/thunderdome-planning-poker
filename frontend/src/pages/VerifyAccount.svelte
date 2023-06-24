@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import PageLayout from '../components/PageLayout.svelte'
     import { _ } from '../i18n.js'
 

@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
     import Countries from '../components/user/Countries.svelte'
     import CheckIcon from '../components/icons/CheckIcon.svelte'
 
     import { _ } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.js'
+    import { AppConfig, appRoutes } from '../config.ts'
     import { warrior } from '../stores.js'
 
     export let xfetch

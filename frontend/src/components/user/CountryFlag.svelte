@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { countryMap } from '../../country.js'
     import { _ } from '../../i18n.js'
 

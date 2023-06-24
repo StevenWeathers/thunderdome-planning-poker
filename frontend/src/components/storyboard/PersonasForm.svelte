@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
 
@@ -39,7 +39,7 @@
                 Persona Name
             </label>
             <input
-                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="personaName"
@@ -57,7 +57,7 @@
                 Persona Role
             </label>
             <input
-                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="personaRole"
@@ -75,7 +75,7 @@
                 Persona Description
             </label>
             <textarea
-                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="personaDescription"
@@ -83,7 +83,7 @@
                 placeholder="Enter a persona description"
                 name="personaDescription"></textarea>
         </div>
-        <div class="ltr:text-right rtl:text-left">
+        <div class="text-right">
             <div>
                 <SolidButton type="submit">Save</SolidButton>
             </div>
