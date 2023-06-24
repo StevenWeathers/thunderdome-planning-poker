@@ -1,9 +1,16 @@
-package api
+package http
 
 import (
+	"bytes"
 	"encoding/json"
+	"github.com/anthonynsimon/bild/transform"
+	"github.com/ipsn/go-adorable"
+	"github.com/o1egl/govatar"
+	"image"
+	"image/png"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -18,18 +25,18 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /auth/user [get]
-func (a *Service) handleSessionUserProfile() http.HandlerFunc {
+func (s *Service) handleSessionUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := a.UserService.GetUser(ctx, UserID)
+		User, UserErr := s.UserService.GetUser(ctx, UserID)
 		if UserErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, UserErr)
+			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, User, nil)
+		s.Success(w, r, http.StatusOK, User, nil)
 	}
 }
 
@@ -44,18 +51,18 @@ func (a *Service) handleSessionUserProfile() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId} [get]
-func (a *Service) handleUserProfile() http.HandlerFunc {
+func (s *Service) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, UserErr := a.UserService.GetUser(r.Context(), UserID)
+		User, UserErr := s.UserService.GetUser(r.Context(), UserID)
 		if UserErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, UserErr)
+			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, User, nil)
+		s.Success(w, r, http.StatusOK, User, nil)
 	}
 }
 
@@ -82,7 +89,7 @@ type userprofileUpdateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId} [put]
-func (a *Service) handleUserProfileUpdate() http.HandlerFunc {
+func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		SessionUserType := ctx.Value(contextKeyUserType).(string)
@@ -92,57 +99,57 @@ func (a *Service) handleUserProfileUpdate() http.HandlerFunc {
 		var profile = userprofileUpdateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &profile)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(profile)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
 		if SessionUserType == adminUserType {
 			_, _, vErr := validateUserAccount(profile.Name, profile.Email)
 			if vErr != nil {
-				a.Failure(w, r, http.StatusBadRequest, vErr)
+				s.Failure(w, r, http.StatusBadRequest, vErr)
 				return
 			}
-			updateErr := a.UserService.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+			updateErr := s.UserService.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			if updateErr != nil {
-				a.Failure(w, r, http.StatusInternalServerError, updateErr)
+				s.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
 			}
 		} else {
 			var updateErr error
-			if !a.Config.LdapEnabled {
+			if !s.Config.LdapEnabled {
 				if profile.Name == "" {
-					a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
+					s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 					return
 				}
-				updateErr = a.UserService.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = s.UserService.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			} else {
-				updateErr = a.UserService.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = s.UserService.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			}
 			if updateErr != nil {
-				a.Failure(w, r, http.StatusInternalServerError, updateErr)
+				s.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
 			}
 		}
 
-		user, UserErr := a.UserService.GetUser(ctx, UserID)
+		user, UserErr := s.UserService.GetUser(ctx, UserID)
 		if UserErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, UserErr)
+			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, user, nil)
+		s.Success(w, r, http.StatusOK, user, nil)
 	}
 }
 
@@ -157,33 +164,33 @@ func (a *Service) handleUserProfileUpdate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId} [delete]
-func (a *Service) handleUserDelete() http.HandlerFunc {
+func (s *Service) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		ctx := r.Context()
 		UserCookieID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := a.UserService.GetUser(ctx, UserID)
+		User, UserErr := s.UserService.GetUser(ctx, UserID)
 		if UserErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, UserErr)
+			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		updateErr := a.UserService.DeleteUser(ctx, UserID)
+		updateErr := s.UserService.DeleteUser(ctx, UserID)
 		if updateErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, updateErr)
+			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
-		a.Email.SendDeleteConfirmation(User.Name, User.Email)
+		s.Email.SendDeleteConfirmation(User.Name, User.Email)
 
 		// don't clear admins user cookies when deleting other users
 		if UserID == UserCookieID {
-			a.clearUserCookies(w)
+			s.clearUserCookies(w)
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -196,20 +203,20 @@ func (a *Service) handleUserDelete() http.HandlerFunc {
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /users/{userId}/request-verify [post]
-func (a *Service) handleVerifyRequest() http.HandlerFunc {
+func (s *Service) handleVerifyRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, VerifyId, err := a.AuthService.UserVerifyRequest(r.Context(), UserID)
+		User, VerifyId, err := s.AuthService.UserVerifyRequest(r.Context(), UserID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Email.SendEmailVerification(User.Name, User.Email, VerifyId)
+		s.Email.SendEmailVerification(User.Name, User.Email, VerifyId)
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -220,16 +227,63 @@ func (a *Service) handleVerifyRequest() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{[]string}
 // @Failure 500 object standardJsonResponse{}
 // @Router /active-countries [get]
-func (a *Service) handleGetActiveCountries() http.HandlerFunc {
+func (s *Service) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		countries, err := a.UserService.GetActiveCountries(r.Context())
+		countries, err := s.UserService.GetActiveCountries(r.Context())
 
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		w.Header().Set("Cache-Control", "max-age=3600") // cache for 1 hour just to decrease load
-		a.Success(w, r, http.StatusOK, countries, nil)
+		s.Success(w, r, http.StatusOK, countries, nil)
+	}
+}
+
+// handleUserAvatar creates an avatar for the given user by ID
+func (s *Service) handleUserAvatar() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ctx := r.Context()
+
+		Width, _ := strconv.Atoi(vars["width"])
+		UserID := vars["id"]
+		AvatarGender := govatar.MALE
+		userGender, ok := vars["avatar"]
+		if ok {
+			if userGender == "female" {
+				AvatarGender = govatar.FEMALE
+			}
+		}
+
+		var avatar image.Image
+		if s.Config.AvatarService == "govatar" {
+			avatar, _ = govatar.GenerateForUsername(AvatarGender, UserID)
+		} else { // must be goadorable
+			var err error
+			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(UserID))))
+			if err != nil {
+				s.Logger.Ctx(ctx).Fatal(err.Error())
+			}
+		}
+
+		img := transform.Resize(avatar, Width, Width, transform.Linear)
+		buffer := new(bytes.Buffer)
+
+		if err := png.Encode(buffer, img); err != nil {
+			s.Logger.Ctx(ctx).Error("unable to encode image.")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
+
+		if _, err := w.Write(buffer.Bytes()); err != nil {
+			s.Logger.Ctx(ctx).Error("unable to write image.")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 }

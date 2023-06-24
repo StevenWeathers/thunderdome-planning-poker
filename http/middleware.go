@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"context"
@@ -10,45 +10,45 @@ import (
 )
 
 // userOnly validates that the request was made by a valid user
-func (a *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
 		ctx := r.Context()
 		var User *thunderdome.User
 
-		if apiKey != "" && a.Config.ExternalAPIEnabled {
+		if apiKey != "" && s.Config.ExternalAPIEnabled {
 			var apiKeyErr error
-			User, apiKeyErr = a.APIKeyService.GetApiKeyUser(ctx, apiKey)
+			User, apiKeyErr = s.APIKeyService.GetApiKeyUser(ctx, apiKey)
 			if apiKeyErr != nil {
-				a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
+				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
 			}
 		} else {
-			SessionId, cookieErr := a.validateSessionCookie(w, r)
+			SessionId, cookieErr := s.validateSessionCookie(w, r)
 			if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
-				a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 				return
 			}
 
 			if SessionId != "" {
 				var userErr error
-				User, userErr = a.AuthService.GetSessionUser(ctx, SessionId)
+				User, userErr = s.AuthService.GetSessionUser(ctx, SessionId)
 				if userErr != nil {
-					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
 				}
 			} else {
-				UserID, err := a.validateUserCookie(w, r)
+				UserID, err := s.validateUserCookie(w, r)
 				if err != nil {
-					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
 				}
 
 				var userErr error
-				User, userErr = a.UserService.GetGuestUser(ctx, UserID)
+				User, userErr = s.UserService.GetGuestUser(ctx, UserID)
 				if userErr != nil {
-					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
 				}
 			}
@@ -62,7 +62,7 @@ func (a *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // entityUserOnly validates that the request was made by the session user matching the {userId} of the entity (or ADMIN)
-func (a *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -71,12 +71,12 @@ func (a *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		EntityUserID := vars["userId"]
 		idErr := validate.Var(EntityUserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		if UserType != adminUserType && EntityUserID != UserID {
-			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
+			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
@@ -85,12 +85,12 @@ func (a *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // registeredUserOnly validates that the request was made by a registered user
-func (a *Service) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
 		if UserType == guestUserType {
-			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "REGISTERED_USER_ONLY"))
+			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "REGISTERED_USER_ONLY"))
 			return
 		}
 
@@ -99,12 +99,12 @@ func (a *Service) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // adminOnly middleware checks if the user is an admin, otherwise reject their request
-func (a *Service) adminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
 		if UserType != adminUserType {
-			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ADMIN"))
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ADMIN"))
 			return
 		}
 
@@ -113,7 +113,7 @@ func (a *Service) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // verifiedUserOnly validates that the request was made by a verified registered user
-func (a *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -122,23 +122,23 @@ func (a *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		EntityUserID := vars["userId"]
 		idErr := validate.Var(EntityUserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		if UserType != adminUserType && (EntityUserID != UserID) {
-			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
+			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
-		EntityUser, EntityUserErr := a.UserService.GetUser(ctx, EntityUserID)
+		EntityUser, EntityUserErr := s.UserService.GetUser(ctx, EntityUserID)
 		if EntityUserErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
+			s.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
 			return
 		}
 
-		if a.Config.ExternalAPIVerifyRequired && !EntityUser.Verified {
-			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
+		if s.Config.ExternalAPIVerifyRequired && !EntityUser.Verified {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
 			return
 		}
 
@@ -147,7 +147,7 @@ func (a *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgUserOnly validates that the request was made by a valid user of the organization
-func (a *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -156,16 +156,16 @@ func (a *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgID := vars["orgId"]
 		idErr := validate.Var(OrgID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = a.OrganizationService.OrganizationUserRole(ctx, UserID, OrgID)
+			Role, UserErr = s.OrganizationService.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
 			}
 		} else {
@@ -179,7 +179,7 @@ func (a *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgAdminOnly validates that the request was made by an ADMIN of the organization
-func (a *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -188,20 +188,20 @@ func (a *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgID := vars["orgId"]
 		idErr := validate.Var(OrgID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr := a.OrganizationService.OrganizationUserRole(ctx, UserID, OrgID)
+			Role, UserErr := s.OrganizationService.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
 			}
 			if Role != adminUserType {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ORG_ADMIN"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ORG_ADMIN"))
 				return
 			}
 		} else {
@@ -215,7 +215,7 @@ func (a *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgTeamOnly validates that the request was made by an user of the organization team (or organization)
-func (a *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -224,13 +224,13 @@ func (a *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgID := vars["orgId"]
 		idErr := validate.Var(OrgID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		TeamID := vars["teamId"]
 		idErr = validate.Var(TeamID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
@@ -238,9 +238,9 @@ func (a *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, TeamRole, UserErr = a.OrganizationService.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
+			OrgRole, TeamRole, UserErr = s.OrganizationService.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
 		} else {
@@ -256,7 +256,7 @@ func (a *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgTeamAdminOnly validates that the request was made by an ADMIN of the organization team (or organization)
-func (a *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -265,13 +265,13 @@ func (a *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgID := vars["orgId"]
 		idErr := validate.Var(OrgID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		TeamID := vars["teamId"]
 		idErr = validate.Var(TeamID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
@@ -279,13 +279,13 @@ func (a *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, TeamRole, UserErr := a.OrganizationService.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
+			OrgRole, TeamRole, UserErr := s.OrganizationService.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
 			if TeamRole != adminUserType && OrgRole != adminUserType {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_ORGANIZATION_ADMIN"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_ORGANIZATION_ADMIN"))
 				return
 			}
 		} else {
@@ -301,7 +301,7 @@ func (a *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentUserOnly validates that the request was made by a valid user of the organization (with department role)
-func (a *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -310,13 +310,13 @@ func (a *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgID := vars["orgId"]
 		idErr := validate.Var(OrgID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		DepartmentID := vars["departmentId"]
 		idErr = validate.Var(DepartmentID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
@@ -324,9 +324,9 @@ func (a *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var DepartmentRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, UserErr = a.OrganizationService.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
+			OrgRole, DepartmentRole, UserErr = s.OrganizationService.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
 			}
 		} else {
@@ -342,7 +342,7 @@ func (a *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentAdminOnly validates that the request was made by an ADMIN of the organization (with department role)
-func (a *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -351,13 +351,13 @@ func (a *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgID := vars["orgId"]
 		idErr := validate.Var(OrgID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		DepartmentID := vars["departmentId"]
 		idErr = validate.Var(DepartmentID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
@@ -365,13 +365,13 @@ func (a *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var DepartmentRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, UserErr := a.OrganizationService.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
+			OrgRole, DepartmentRole, UserErr := s.OrganizationService.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
 			}
 			if DepartmentRole != adminUserType && OrgRole != adminUserType {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
 				return
 			}
 		} else {
@@ -387,7 +387,7 @@ func (a *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentTeamUserOnly validates that the request was made by an user of the department team (or organization)
-func (a *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -396,19 +396,19 @@ func (a *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgID := vars["orgId"]
 		idErr := validate.Var(OrgID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		DepartmentID := vars["departmentId"]
 		idErr = validate.Var(DepartmentID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		TeamID := vars["teamId"]
 		idErr = validate.Var(TeamID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
@@ -417,9 +417,9 @@ func (a *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = a.OrganizationService.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
+			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationService.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
 		} else {
@@ -437,7 +437,7 @@ func (a *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentTeamAdminOnly validates that the request was made by an ADMIN of the department team (or organization)
-func (a *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -446,19 +446,19 @@ func (a *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		OrgID := vars["orgId"]
 		idErr := validate.Var(OrgID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		DepartmentID := vars["departmentId"]
 		idErr = validate.Var(DepartmentID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		TeamID := vars["teamId"]
 		idErr = validate.Var(TeamID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
@@ -467,14 +467,14 @@ func (a *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = a.OrganizationService.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
+			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationService.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
 
 			if TeamRole != adminUserType && DepartmentRole != adminUserType && OrgRole != adminUserType {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
 				return
 			}
 		} else {
@@ -492,7 +492,7 @@ func (a *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // teamUserOnly validates that the request was made by a valid user of the team
-func (a *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -501,16 +501,16 @@ func (a *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		TeamID := vars["teamId"]
 		idErr := validate.Var(TeamID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = a.TeamService.TeamUserRole(ctx, UserID, TeamID)
+			Role, UserErr = s.TeamService.TeamUserRole(ctx, UserID, TeamID)
 			if UserType != adminUserType && UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
 		} else {
@@ -524,7 +524,7 @@ func (a *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // teamAdminOnly validates that the request was made by an ADMIN of the team
-func (a *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (s *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -533,20 +533,20 @@ func (a *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		TeamID := vars["teamId"]
 		idErr := validate.Var(TeamID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = a.TeamService.TeamUserRole(ctx, UserID, TeamID)
+			Role, UserErr = s.TeamService.TeamUserRole(ctx, UserID, TeamID)
 			if UserErr != nil {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
 			if Role != adminUserType {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_ADMIN"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_ADMIN"))
 				return
 			}
 		} else {

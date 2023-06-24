@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -30,12 +30,12 @@ type alertRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [get]
-func (a *Service) handleGetAlerts() http.HandlerFunc {
+func (s *Service) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
-		Alerts, Count, err := a.AlertService.AlertsList(r.Context(), Limit, Offset)
+		Alerts, Count, err := s.AlertService.AlertsList(r.Context(), Limit, Offset)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -45,7 +45,7 @@ func (a *Service) handleGetAlerts() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		a.Success(w, r, http.StatusOK, Alerts, Meta)
+		s.Success(w, r, http.StatusOK, Alerts, Meta)
 	}
 }
 
@@ -59,36 +59,36 @@ func (a *Service) handleGetAlerts() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [post]
-func (a *Service) handleAlertCreate() http.HandlerFunc {
+func (s *Service) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var alert = alertRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &alert)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(alert)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		err := a.AlertService.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := s.AlertService.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.AlertService.GetActiveAlerts(r.Context())
+		ActiveAlerts = s.AlertService.GetActiveAlerts(r.Context())
 
-		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
+		s.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
 }
 
@@ -103,44 +103,44 @@ func (a *Service) handleAlertCreate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [put]
-func (a *Service) handleAlertUpdate() http.HandlerFunc {
+func (s *Service) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ID := vars["alertId"]
 		idErr := validate.Var(ID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		var alert = alertRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &alert)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(alert)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		err := a.AlertService.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := s.AlertService.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.AlertService.GetActiveAlerts(r.Context())
+		ActiveAlerts = s.AlertService.GetActiveAlerts(r.Context())
 
-		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
+		s.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
 }
 
@@ -154,24 +154,24 @@ func (a *Service) handleAlertUpdate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [delete]
-func (a *Service) handleAlertDelete() http.HandlerFunc {
+func (s *Service) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		AlertID := vars["alertId"]
 		idErr := validate.Var(AlertID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := a.AlertService.AlertDelete(r.Context(), AlertID)
+		err := s.AlertService.AlertDelete(r.Context(), AlertID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.AlertService.GetActiveAlerts(r.Context())
+		ActiveAlerts = s.AlertService.GetActiveAlerts(r.Context())
 
-		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
+		s.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
 }

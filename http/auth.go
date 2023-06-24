@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -32,34 +32,34 @@ type loginResponse struct {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth [post]
-func (a *Service) handleLogin() http.HandlerFunc {
+func (s *Service) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = userLoginRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		authedUser, sessionId, err := a.AuthService.AuthUser(r.Context(), u.Email, u.Password)
+		authedUser, sessionId, err := s.AuthService.AuthUser(r.Context(), u.Email, u.Password)
 		if err != nil {
 			userErr := err.Error()
 			if userErr == "USER_NOT_FOUND" || userErr == "INVALID_PASSWORD" || userErr == "USER_DISABLED" {
-				a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
+				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			} else {
-				a.Failure(w, r, http.StatusInternalServerError, err)
+				s.Failure(w, r, http.StatusInternalServerError, err)
 			}
 			return
 		}
@@ -71,17 +71,17 @@ func (a *Service) handleLogin() http.HandlerFunc {
 		}
 
 		if authedUser.MFAEnabled {
-			a.Success(w, r, http.StatusOK, res, nil)
+			s.Success(w, r, http.StatusOK, res, nil)
 			return
 		}
 
-		cookieErr := a.createSessionCookie(w, sessionId)
+		cookieErr := s.createSessionCookie(w, sessionId)
 		if cookieErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, res, nil)
+		s.Success(w, r, http.StatusOK, res, nil)
 	}
 }
 
@@ -97,30 +97,30 @@ func (a *Service) handleLogin() http.HandlerFunc {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/ldap [post]
-func (a *Service) handleLdapLogin() http.HandlerFunc {
+func (s *Service) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = userLoginRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		authedUser, sessionId, err := a.authAndCreateUserLdap(r.Context(), u.Email, u.Password)
+		authedUser, sessionId, err := s.authAndCreateUserLdap(r.Context(), u.Email, u.Password)
 		if err != nil {
-			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
+			s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
 
@@ -131,17 +131,17 @@ func (a *Service) handleLdapLogin() http.HandlerFunc {
 		}
 
 		if authedUser.MFAEnabled {
-			a.Success(w, r, http.StatusOK, res, nil)
+			s.Success(w, r, http.StatusOK, res, nil)
 			return
 		}
 
-		cookieErr := a.createSessionCookie(w, sessionId)
+		cookieErr := s.createSessionCookie(w, sessionId)
 		if cookieErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, res, nil)
+		s.Success(w, r, http.StatusOK, res, nil)
 	}
 }
 
@@ -156,7 +156,7 @@ func (a *Service) handleLdapLogin() http.HandlerFunc {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth [get]
-func (a *Service) handleHeaderLogin() http.HandlerFunc {
+func (s *Service) handleHeaderLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		viper.GetString("auth.ldap.url")
 
@@ -164,13 +164,13 @@ func (a *Service) handleHeaderLogin() http.HandlerFunc {
 		useremail := r.Header.Get(viper.GetString("auth.header.emailHeader"))
 
 		if username == "" {
-			a.Failure(w, r, http.StatusUnauthorized, Errorf(EUNAUTHORIZED, "MISSING_AUTH_HEADER"))
+			s.Failure(w, r, http.StatusUnauthorized, Errorf(EUNAUTHORIZED, "MISSING_AUTH_HEADER"))
 			return
 		}
 
-		authedUser, sessionId, err := a.authAndCreateUserHeader(r.Context(), username, useremail)
+		authedUser, sessionId, err := s.authAndCreateUserHeader(r.Context(), username, useremail)
 		if err != nil {
-			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
+			s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
 
@@ -181,17 +181,17 @@ func (a *Service) handleHeaderLogin() http.HandlerFunc {
 		}
 
 		if authedUser.MFAEnabled {
-			a.Success(w, r, http.StatusOK, res, nil)
+			s.Success(w, r, http.StatusOK, res, nil)
 			return
 		}
 
-		cookieErr := a.createSessionCookie(w, sessionId)
+		cookieErr := s.createSessionCookie(w, sessionId)
 		if cookieErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, res, nil)
+		s.Success(w, r, http.StatusOK, res, nil)
 	}
 }
 
@@ -210,40 +210,40 @@ type mfaLoginRequestBody struct {
 // @Failure 401 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/mfa [post]
-func (a *Service) handleMFALogin() http.HandlerFunc {
+func (s *Service) handleMFALogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = mfaLoginRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		err := a.AuthService.MFATokenValidate(r.Context(), u.SessionId, u.Passcode)
+		err := s.AuthService.MFATokenValidate(r.Context(), u.SessionId, u.Passcode)
 		if err != nil {
-			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_AUTHENTICATOR_TOKEN"))
+			s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_AUTHENTICATOR_TOKEN"))
 			return
 		}
 
-		cookieErr := a.createSessionCookie(w, u.SessionId)
+		cookieErr := s.createSessionCookie(w, u.SessionId)
 		if cookieErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -253,22 +253,22 @@ func (a *Service) handleMFALogin() http.HandlerFunc {
 // @Tags auth
 // @Success 200
 // @Router /auth/logout [delete]
-func (a *Service) handleLogout() http.HandlerFunc {
+func (s *Service) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		SessionId, cookieErr := a.validateSessionCookie(w, r)
+		SessionId, cookieErr := s.validateSessionCookie(w, r)
 		if cookieErr != nil {
-			a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+			s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
-		err := a.AuthService.DeleteSession(r.Context(), SessionId)
+		err := s.AuthService.DeleteSession(r.Context(), SessionId)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.clearUserCookies(w)
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.clearUserCookies(w)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -286,46 +286,46 @@ type guestUserCreateRequestBody struct {
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/guest [post]
-func (a *Service) handleCreateGuestUser() http.HandlerFunc {
+func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
 		if !AllowGuests {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "GUESTS_USERS_DISABLED"))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "GUESTS_USERS_DISABLED"))
 			return
 		}
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = guestUserCreateRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		newUser, err := a.UserService.CreateUserGuest(r.Context(), u.Name)
+		newUser, err := s.UserService.CreateUserGuest(r.Context(), u.Name)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		cookieErr := a.createUserCookie(w, newUser.Id)
+		cookieErr := s.createUserCookie(w, newUser.Id)
 		if cookieErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, newUser, nil)
+		s.Success(w, r, http.StatusOK, newUser, nil)
 	}
 }
 
@@ -346,33 +346,33 @@ type userRegisterRequestBody struct {
 // @Failure 400 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Router /auth/register [post]
-func (a *Service) handleUserRegistration() http.HandlerFunc {
+func (s *Service) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
 		if !AllowRegistration {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "USER_REGISTRATION_DISABLED"))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "USER_REGISTRATION_DISABLED"))
 		}
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = userRegisterRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		ActiveUserID, _ := a.validateUserCookie(w, r)
+		ActiveUserID, _ := s.validateUserCookie(w, r)
 
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
 			u.Name,
@@ -382,35 +382,35 @@ func (a *Service) handleUserRegistration() http.HandlerFunc {
 		)
 
 		if accountErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, accountErr)
+			s.Failure(w, r, http.StatusBadRequest, accountErr)
 			return
 		}
 
-		newUser, VerifyID, err := a.UserService.CreateUserRegistered(r.Context(), UserName, UserEmail, UserPassword, ActiveUserID)
+		newUser, VerifyID, err := s.UserService.CreateUserRegistered(r.Context(), UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Email.SendWelcome(UserName, UserEmail, VerifyID)
+		s.Email.SendWelcome(UserName, UserEmail, VerifyID)
 
 		if ActiveUserID != "" {
-			a.clearUserCookies(w)
+			s.clearUserCookies(w)
 		}
 
-		SessionID, err := a.AuthService.CreateSession(r.Context(), newUser.Id)
+		SessionID, err := s.AuthService.CreateSession(r.Context(), newUser.Id)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		cookieErr := a.createSessionCookie(w, SessionID)
+		cookieErr := s.createSessionCookie(w, SessionID)
 		if cookieErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, newUser, nil)
+		s.Success(w, r, http.StatusOK, newUser, nil)
 	}
 }
 
@@ -426,35 +426,35 @@ type forgotPasswordRequestBody struct {
 // @Param user body forgotPasswordRequestBody false "forgot password object"
 // @Success 200 object standardJsonResponse{}
 // @Router /auth/forgot-password [post]
-func (a *Service) handleForgotPassword() http.HandlerFunc {
+func (s *Service) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = forgotPasswordRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
 		UserEmail := strings.ToLower(u.Email)
 
-		ResetID, UserName, resetErr := a.AuthService.UserResetRequest(r.Context(), UserEmail)
+		ResetID, UserName, resetErr := s.AuthService.UserResetRequest(r.Context(), UserEmail)
 		if resetErr == nil {
-			a.Email.SendForgotPassword(UserName, UserEmail, ResetID)
+			s.Email.SendForgotPassword(UserName, UserEmail, ResetID)
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -474,36 +474,36 @@ type resetPasswordRequestBody struct {
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /auth/reset-password [patch]
-func (a *Service) handleResetPassword() http.HandlerFunc {
+func (s *Service) handleResetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = resetPasswordRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		UserName, UserEmail, resetErr := a.AuthService.UserResetPassword(r.Context(), u.ResetID, u.Password1)
+		UserName, UserEmail, resetErr := s.AuthService.UserResetPassword(r.Context(), u.ResetID, u.Password1)
 		if resetErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, resetErr)
+			s.Failure(w, r, http.StatusInternalServerError, resetErr)
 			return
 		}
 
-		a.Email.SendPasswordReset(UserName, UserEmail)
+		s.Email.SendPasswordReset(UserName, UserEmail)
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -523,37 +523,37 @@ type updatePasswordRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /auth/update-password [patch]
-func (a *Service) handleUpdatePassword() http.HandlerFunc {
+func (s *Service) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = updatePasswordRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		UserName, UserEmail, updateErr := a.AuthService.UserUpdatePassword(r.Context(), UserID, u.Password1)
+		UserName, UserEmail, updateErr := s.AuthService.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, updateErr)
+			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
-		a.Email.SendPasswordUpdate(UserName, UserEmail)
+		s.Email.SendPasswordUpdate(UserName, UserEmail)
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -570,34 +570,34 @@ type verificationRequestBody struct {
 // @Success 200 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /auth/verify [patch]
-func (a *Service) handleAccountVerification() http.HandlerFunc {
+func (s *Service) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = verificationRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		verifyErr := a.AuthService.VerifyUserAccount(r.Context(), u.VerifyID)
+		verifyErr := s.AuthService.VerifyUserAccount(r.Context(), u.VerifyID)
 		if verifyErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, verifyErr)
+			s.Failure(w, r, http.StatusInternalServerError, verifyErr)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -607,20 +607,20 @@ func (a *Service) handleAccountVerification() http.HandlerFunc {
 // @Tags auth
 // @Success 200
 // @Router /auth/mfa/setup/generate [post]
-func (a *Service) handleMFASetupGenerate() http.HandlerFunc {
+func (s *Service) handleMFASetupGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		u, err := a.UserService.GetUser(ctx, UserID)
+		u, err := s.UserService.GetUser(ctx, UserID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		secret, png64, err := a.AuthService.MFASetupGenerate(u.Email)
+		secret, png64, err := s.AuthService.MFASetupGenerate(u.Email)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -629,7 +629,7 @@ func (a *Service) handleMFASetupGenerate() http.HandlerFunc {
 			QRCode string `json:"qrCode"`
 		}
 
-		a.Success(w, r, http.StatusOK, result{Secret: secret, QRCode: png64}, nil)
+		s.Success(w, r, http.StatusOK, result{Secret: secret, QRCode: png64}, nil)
 	}
 }
 
@@ -645,27 +645,27 @@ type mfaSetupValidateRequestBody struct {
 // @Tags auth
 // @Success 200
 // @Router /auth/mfa/setup/validate [post]
-func (a *Service) handleMFASetupValidate() http.HandlerFunc {
+func (s *Service) handleMFASetupValidate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var v = mfaSetupValidateRequestBody{}
 		jsonErr := json.Unmarshal(body, &v)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(v)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -674,12 +674,12 @@ func (a *Service) handleMFASetupValidate() http.HandlerFunc {
 		}
 		res := result{Result: "SUCCESS"}
 
-		err := a.AuthService.MFASetupValidate(ctx, UserID, v.Secret, v.Passcode)
+		err := s.AuthService.MFASetupValidate(ctx, UserID, v.Secret, v.Passcode)
 		if err != nil {
 			res.Result = err.Error()
 		}
 
-		a.Success(w, r, http.StatusOK, res, nil)
+		s.Success(w, r, http.StatusOK, res, nil)
 	}
 }
 
@@ -689,17 +689,17 @@ func (a *Service) handleMFASetupValidate() http.HandlerFunc {
 // @Tags auth
 // @Success 200
 // @Router /auth/mfa [delete]
-func (a *Service) handleMFARemove() http.HandlerFunc {
+func (s *Service) handleMFARemove() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		err := a.AuthService.MFARemove(ctx, UserID)
+		err := s.AuthService.MFARemove(ctx, UserID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

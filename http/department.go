@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -34,19 +34,19 @@ type departmentTeamResponse struct {
 // @Success 200 object standardJsonResponse{data=[]thunderdome.Department}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments [get]
-func (a *Service) handleGetOrganizationDepartments() http.HandlerFunc {
+func (s *Service) handleGetOrganizationDepartments() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Departments := a.OrganizationService.OrganizationDepartmentList(r.Context(), OrgID, Limit, Offset)
+		Departments := s.OrganizationService.OrganizationDepartmentList(r.Context(), OrgID, Limit, Offset)
 
-		a.Success(w, r, http.StatusOK, Departments, nil)
+		s.Success(w, r, http.StatusOK, Departments, nil)
 	}
 }
 
@@ -61,10 +61,10 @@ func (a *Service) handleGetOrganizationDepartments() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId} [get]
-func (a *Service) handleGetDepartmentByUser() http.HandlerFunc {
+func (s *Service) handleGetDepartmentByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		ctx := r.Context()
@@ -74,15 +74,15 @@ func (a *Service) handleGetDepartmentByUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 
-		Organization, err := a.OrganizationService.OrganizationGet(ctx, OrgID)
+		Organization, err := s.OrganizationService.OrganizationGet(ctx, OrgID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Department, err := a.OrganizationService.DepartmentGet(ctx, DepartmentID)
+		Department, err := s.OrganizationService.DepartmentGet(ctx, DepartmentID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -93,7 +93,7 @@ func (a *Service) handleGetDepartmentByUser() http.HandlerFunc {
 			DepartmentRole:   DepartmentRole,
 		}
 
-		a.Success(w, r, http.StatusOK, result, nil)
+		s.Success(w, r, http.StatusOK, result, nil)
 	}
 }
 
@@ -108,10 +108,10 @@ func (a *Service) handleGetDepartmentByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments [post]
-func (a *Service) handleCreateDepartment() http.HandlerFunc {
+func (s *Service) handleCreateDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
@@ -120,23 +120,23 @@ func (a *Service) handleCreateDepartment() http.HandlerFunc {
 		var team = teamCreateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &team)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
-		NewDepartment, err := a.OrganizationService.DepartmentCreate(r.Context(), OrgID, team.Name)
+		NewDepartment, err := s.OrganizationService.DepartmentCreate(r.Context(), OrgID, team.Name)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, NewDepartment, nil)
+		s.Success(w, r, http.StatusOK, NewDepartment, nil)
 	}
 }
 
@@ -150,19 +150,19 @@ func (a *Service) handleCreateDepartment() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=[]thunderdome.Team}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [get]
-func (a *Service) handleGetDepartmentTeams() http.HandlerFunc {
+func (s *Service) handleGetDepartmentTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.OrganizationService.DepartmentTeamList(r.Context(), DepartmentID, Limit, Offset)
+		Teams := s.OrganizationService.DepartmentTeamList(r.Context(), DepartmentID, Limit, Offset)
 
-		a.Success(w, r, http.StatusOK, Teams, nil)
+		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
 }
 
@@ -176,19 +176,19 @@ func (a *Service) handleGetDepartmentTeams() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{data=[]thunderdome.DepartmentUser}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users [get]
-func (a *Service) handleGetDepartmentUsers() http.HandlerFunc {
+func (s *Service) handleGetDepartmentUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users := a.OrganizationService.DepartmentUserList(r.Context(), DepartmentID, Limit, Offset)
+		Users := s.OrganizationService.DepartmentUserList(r.Context(), DepartmentID, Limit, Offset)
 
-		a.Success(w, r, http.StatusOK, Users, nil)
+		s.Success(w, r, http.StatusOK, Users, nil)
 	}
 }
 
@@ -204,10 +204,10 @@ func (a *Service) handleGetDepartmentUsers() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams [post]
-func (a *Service) handleCreateDepartmentTeam() http.HandlerFunc {
+func (s *Service) handleCreateDepartmentTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
@@ -216,23 +216,23 @@ func (a *Service) handleCreateDepartmentTeam() http.HandlerFunc {
 		var team = teamCreateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &team)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
-		NewTeam, err := a.OrganizationService.DepartmentTeamCreate(r.Context(), DepartmentID, team.Name)
+		NewTeam, err := s.OrganizationService.DepartmentTeamCreate(r.Context(), DepartmentID, team.Name)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, NewTeam, nil)
+		s.Success(w, r, http.StatusOK, NewTeam, nil)
 	}
 }
 
@@ -248,10 +248,10 @@ func (a *Service) handleCreateDepartmentTeam() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users [post]
-func (a *Service) handleDepartmentAddUser() http.HandlerFunc {
+func (s *Service) handleDepartmentAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 
@@ -261,31 +261,31 @@ func (a *Service) handleDepartmentAddUser() http.HandlerFunc {
 		var u = teamAddUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		UserEmail := u.Email
 
-		User, UserErr := a.UserService.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := s.UserService.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, err := a.OrganizationService.DepartmentAddUser(r.Context(), DepartmentId, User.Id, u.Role)
+		_, err := s.OrganizationService.DepartmentAddUser(r.Context(), DepartmentId, User.Id, u.Role)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -301,10 +301,10 @@ func (a *Service) handleDepartmentAddUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/users/{userId} [delete]
-func (a *Service) handleDepartmentRemoveUser() http.HandlerFunc {
+func (s *Service) handleDepartmentRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		vars := mux.Vars(r)
@@ -312,17 +312,17 @@ func (a *Service) handleDepartmentRemoveUser() http.HandlerFunc {
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := a.OrganizationService.DepartmentRemoveUser(r.Context(), DepartmentID, UserID)
+		err := s.OrganizationService.DepartmentRemoveUser(r.Context(), DepartmentID, UserID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -339,10 +339,10 @@ func (a *Service) handleDepartmentRemoveUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users [post]
-func (a *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
+func (s *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 
@@ -354,37 +354,37 @@ func (a *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 		var u = teamAddUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		UserEmail := u.Email
 
-		User, UserErr := a.UserService.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := s.UserService.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, DepartmentRole, roleErr := a.OrganizationService.DepartmentUserRole(r.Context(), User.Id, OrgID, DepartmentID)
+		_, DepartmentRole, roleErr := s.OrganizationService.DepartmentUserRole(r.Context(), User.Id, OrgID, DepartmentID)
 		if DepartmentRole == "" || roleErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "DEPARTMENT_USER_REQUIRED"))
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "DEPARTMENT_USER_REQUIRED"))
 			return
 		}
 
-		_, err := a.TeamService.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
+		_, err := s.TeamService.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -400,10 +400,10 @@ func (a *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId}/teams/{teamId} [get]
-func (a *Service) handleDepartmentTeamByUser() http.HandlerFunc {
+func (s *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		ctx := r.Context()
@@ -415,21 +415,21 @@ func (a *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		TeamID := vars["teamId"]
 
-		Organization, err := a.OrganizationService.OrganizationGet(r.Context(), OrgID)
+		Organization, err := s.OrganizationService.OrganizationGet(r.Context(), OrgID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Department, err := a.OrganizationService.DepartmentGet(r.Context(), DepartmentID)
+		Department, err := s.OrganizationService.DepartmentGet(r.Context(), DepartmentID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Team, err := a.TeamService.TeamGet(ctx, TeamID)
+		Team, err := s.TeamService.TeamGet(ctx, TeamID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -442,7 +442,7 @@ func (a *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 			TeamRole:         TeamRole,
 		}
 
-		a.Success(w, r, http.StatusOK, result, nil)
+		s.Success(w, r, http.StatusOK, result, nil)
 	}
 }
 
@@ -457,22 +457,22 @@ func (a *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/departments/{departmentId} [delete]
-func (a *Service) handleDeleteDepartment() http.HandlerFunc {
+func (s *Service) handleDeleteDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		idErr := validate.Var(DepartmentID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := a.OrganizationService.DepartmentDelete(r.Context(), DepartmentID)
+		err := s.OrganizationService.DepartmentDelete(r.Context(), DepartmentID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

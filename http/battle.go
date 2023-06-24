@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/battle"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/battle"
 
 	"github.com/gorilla/mux"
 )
@@ -26,15 +26,15 @@ import (
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/battles [get]
-func (a *Service) handleGetUserBattles() http.HandlerFunc {
+func (s *Service) handleGetUserBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		battles, Count, err := a.BattleService.GetBattlesByUser(UserID, Limit, Offset)
+		battles, Count, err := s.BattleService.GetBattlesByUser(UserID, Limit, Offset)
 		if err != nil {
-			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
+			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
 		}
 
@@ -44,7 +44,7 @@ func (a *Service) handleGetUserBattles() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		a.Success(w, r, http.StatusOK, battles, Meta)
+		s.Success(w, r, http.StatusOK, battles, Meta)
 	}
 }
 
@@ -78,7 +78,7 @@ type battleRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/battles [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/battles [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles [post]
-func (a *Service) handleBattleCreate() http.HandlerFunc {
+func (s *Service) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -86,26 +86,26 @@ func (a *Service) handleBattleCreate() http.HandlerFunc {
 		TeamID, teamIdExists := vars["teamId"]
 
 		if !teamIdExists && viper.GetBool("config.require_teams") {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "BATTLE_CREATION_REQUIRES_TEAM"))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "BATTLE_CREATION_REQUIRES_TEAM"))
 			return
 		}
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var b = battleRequestBody{}
 		jsonErr := json.Unmarshal(body, &b)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(b)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -114,34 +114,34 @@ func (a *Service) handleBattleCreate() http.HandlerFunc {
 		// if battle created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newBattle, err = a.BattleService.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+				newBattle, err = s.BattleService.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 				if err != nil {
-					a.Failure(w, r, http.StatusInternalServerError, err)
+					s.Failure(w, r, http.StatusInternalServerError, err)
 					return
 				}
 			} else {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
 		} else {
-			newBattle, err = a.BattleService.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+			newBattle, err = s.BattleService.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 			if err != nil {
-				a.Failure(w, r, http.StatusInternalServerError, err)
+				s.Failure(w, r, http.StatusInternalServerError, err)
 				return
 			}
 		}
 
 		// when battleLeaders array is passed add additional leaders to battle
 		if len(b.BattleLeaders) > 0 {
-			updatedLeaders, err := a.BattleService.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
+			updatedLeaders, err := s.BattleService.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
 			if err != nil {
-				a.Logger.Error("error adding additional battle leaders")
+				s.Logger.Error("error adding additional battle leaders")
 			} else {
 				newBattle.Leaders = updatedLeaders
 			}
 		}
 
-		a.Success(w, r, http.StatusOK, newBattle, nil)
+		s.Success(w, r, http.StatusOK, newBattle, nil)
 	}
 }
 
@@ -157,7 +157,7 @@ func (a *Service) handleBattleCreate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles [get]
-func (a *Service) handleGetBattles() http.HandlerFunc {
+func (s *Service) handleGetBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
@@ -167,13 +167,13 @@ func (a *Service) handleGetBattles() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Battles, Count, err = a.BattleService.GetActiveBattles(Limit, Offset)
+			Battles, Count, err = s.BattleService.GetActiveBattles(Limit, Offset)
 		} else {
-			Battles, Count, err = a.BattleService.GetBattles(Limit, Offset)
+			Battles, Count, err = s.BattleService.GetBattles(Limit, Offset)
 		}
 
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -183,7 +183,7 @@ func (a *Service) handleGetBattles() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		a.Success(w, r, http.StatusOK, Battles, Meta)
+		s.Success(w, r, http.StatusOK, Battles, Meta)
 	}
 }
 
@@ -198,34 +198,34 @@ func (a *Service) handleGetBattles() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId} [get]
-func (a *Service) handleGetBattle() http.HandlerFunc {
+func (s *Service) handleGetBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleId := vars["battleId"]
 		idErr := validate.Var(BattleId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		b, err := a.BattleService.GetBattle(BattleId, UserId)
+		b, err := s.BattleService.GetBattle(BattleId, UserId)
 		if err != nil {
-			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
+			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
 		}
 
 		// don't allow retrieving battle details if battle has JoinCode and user hasn't joined yet
 		if b.JoinCode != "" {
-			UserErr := a.BattleService.GetBattleUserActiveStatus(BattleId, UserId)
+			UserErr := s.BattleService.GetBattleUserActiveStatus(BattleId, UserId)
 			if UserErr != nil && UserType != adminUserType {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
 				return
 			}
 		}
 
-		a.Success(w, r, http.StatusOK, b, nil)
+		s.Success(w, r, http.StatusOK, b, nil)
 	}
 }
 
@@ -250,30 +250,30 @@ type planRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId}/plans [post]
-func (a *Service) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
+func (s *Service) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]
 		idErr := validate.Var(BattleID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		err := b.APIEvent(r.Context(), BattleID, UserID, "add_plan", string(body))
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -288,23 +288,23 @@ func (a *Service) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId} [delete]
-func (a *Service) handleBattleDelete(b *battle.Service) http.HandlerFunc {
+func (s *Service) handleBattleDelete(b *battle.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]
 		idErr := validate.Var(BattleID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		err := b.APIEvent(r.Context(), BattleID, UserID, "concede_battle", "")
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

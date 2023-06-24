@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"net/http"
@@ -16,17 +16,17 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-battles [delete]
-func (a *Service) handleCleanBattles() http.HandlerFunc {
+func (s *Service) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_battles_days_old")
 
-		err := a.BattleService.CleanBattles(r.Context(), DaysOld)
+		err := s.BattleService.CleanBattles(r.Context(), DaysOld)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -39,17 +39,17 @@ func (a *Service) handleCleanBattles() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-retros [delete]
-func (a *Service) handleCleanRetros() http.HandlerFunc {
+func (s *Service) handleCleanRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_retros_days_old")
 
-		err := a.RetroService.CleanRetros(r.Context(), DaysOld)
+		err := s.RetroService.CleanRetros(r.Context(), DaysOld)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -62,17 +62,17 @@ func (a *Service) handleCleanRetros() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-storyboards [delete]
-func (a *Service) handleCleanStoryboards() http.HandlerFunc {
+func (s *Service) handleCleanStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_storyboards_days_old")
 
-		err := a.StoryboardService.CleanStoryboards(r.Context(), DaysOld)
+		err := s.StoryboardService.CleanStoryboards(r.Context(), DaysOld)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -85,17 +85,17 @@ func (a *Service) handleCleanStoryboards() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-guests [delete]
-func (a *Service) handleCleanGuests() http.HandlerFunc {
+func (s *Service) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_guests_days_old")
 
-		err := a.UserService.CleanGuests(r.Context(), DaysOld)
+		err := s.UserService.CleanGuests(r.Context(), DaysOld)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -108,30 +108,30 @@ func (a *Service) handleCleanGuests() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/lowercase-emails [patch]
-func (a *Service) handleLowercaseUserEmails() http.HandlerFunc {
+func (s *Service) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		lowercasedUsers, err := a.UserService.LowercaseUserEmails(r.Context())
+		lowercasedUsers, err := s.UserService.LowercaseUserEmails(r.Context())
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Logger.Info("Lowercased user emails", zap.Int("count", len(lowercasedUsers)))
+		s.Logger.Info("Lowercased user emails", zap.Int("count", len(lowercasedUsers)))
 		for _, u := range lowercasedUsers {
-			a.Email.SendEmailUpdate(u.Name, u.Email)
+			s.Email.SendEmailUpdate(u.Name, u.Email)
 		}
 
-		mergedUsers, err := a.UserService.MergeDuplicateAccounts(r.Context())
+		mergedUsers, err := s.UserService.MergeDuplicateAccounts(r.Context())
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Logger.Info("Merged user accounts", zap.Int("count", len(mergedUsers)))
+		s.Logger.Info("Merged user accounts", zap.Int("count", len(mergedUsers)))
 		for _, u := range mergedUsers {
-			a.Email.SendMergedUpdate(u.Name, u.Email)
+			s.Email.SendMergedUpdate(u.Name, u.Email)
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

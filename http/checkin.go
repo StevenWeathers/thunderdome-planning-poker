@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/checkin"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/checkin"
 
 	"github.com/gorilla/mux"
 )
@@ -22,13 +22,13 @@ import (
 // @Success 200 object standardJsonResponse{data=[]thunderdome.TeamCheckin}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [get]
-func (a *Service) handleCheckinsGet() http.HandlerFunc {
+func (s *Service) handleCheckinsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		idErr := validate.Var(TeamID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		query := r.URL.Query()
@@ -43,13 +43,13 @@ func (a *Service) handleCheckinsGet() http.HandlerFunc {
 			tz = "America/New_York"
 		}
 
-		Checkins, err := a.CheckinService.CheckinList(r.Context(), TeamID, date, tz)
+		Checkins, err := s.CheckinService.CheckinList(r.Context(), TeamID, date, tz)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, Checkins, nil)
+		s.Success(w, r, http.StatusOK, Checkins, nil)
 	}
 }
 
@@ -74,46 +74,46 @@ type checkinCreateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins [post]
-func (a *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
+func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		var c = checkinCreateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &c)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(c)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
 		err := tc.APIEvent(r.Context(), TeamId, c.UserId, "checkin_create", string(body))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
-				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 				return
 			}
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -139,7 +139,7 @@ type checkinUpdateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [put]
-func (a *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
+func (s *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userId := ctx.Value(contextKeyUserID).(string)
@@ -147,43 +147,43 @@ func (a *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		CheckinId := vars["checkinId"]
 		idErr = validate.Var(CheckinId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		var c = checkinUpdateRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &c)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		c.CheckinId = CheckinId
 		cu, jsonErr := json.Marshal(c)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		err := tc.APIEvent(ctx, TeamId, userId, "checkin_update", string(cu))
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -199,7 +199,7 @@ func (a *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId} [delete]
-func (a *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
+func (s *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userId := ctx.Value(contextKeyUserID).(string)
@@ -207,13 +207,13 @@ func (a *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		CheckinId := vars["checkinId"]
 		idErr = validate.Var(CheckinId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
@@ -225,17 +225,17 @@ func (a *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 		}
 		cu, jsonErr := json.Marshal(c)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		err := tc.APIEvent(ctx, TeamId, userId, "checkin_delete", string(cu))
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -259,60 +259,60 @@ type checkinCommentRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments [post]
-func (a *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
+func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		CheckinId := vars["checkinId"]
 		idErr = validate.Var(CheckinId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		var c = checkinCommentRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &c)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(c)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
 		c.CheckinId = CheckinId
 		cu, jsonErr := json.Marshal(c)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		err := tc.APIEvent(ctx, TeamId, c.UserID, "comment_create", string(cu))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
-				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 				return
 			}
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -329,60 +329,60 @@ func (a *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments [put]
-func (a *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
+func (s *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		CommentId := vars["commentId"]
 		idErr = validate.Var(CommentId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		var c = checkinCommentRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &c)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(c)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
 		c.CommentId = CommentId
 		cu, jsonErr := json.Marshal(c)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		err := tc.APIEvent(ctx, TeamId, c.UserID, "comment_update", string(cu))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
-				a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 				return
 			}
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -399,7 +399,7 @@ func (a *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/checkins/{checkinId}/comments/{commentId} [delete]
-func (a *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFunc {
+func (s *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		userId := ctx.Value(contextKeyUserID).(string)
@@ -407,13 +407,13 @@ func (a *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFu
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		CommentId := vars["commentId"]
 		idErr = validate.Var(CommentId, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
@@ -422,16 +422,16 @@ func (a *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFu
 		}
 		cu, jsonErr := json.Marshal(c)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		err := tc.APIEvent(ctx, TeamId, userId, "comment_delete", string(cu))
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }

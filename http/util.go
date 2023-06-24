@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"context"
@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"html/template"
+	"io/fs"
 	"net/http"
 	"strconv"
 	"strings"
@@ -74,21 +76,21 @@ func validateUserPassword(pwd1 string, pwd2 string) (UpdatedPassword string, val
 }
 
 // createUserCookie creates the users Cookie
-func (a *Service) createUserCookie(w http.ResponseWriter, UserID string) error {
-	encoded, err := a.Cookie.Encode(a.Config.SecureCookieName, UserID)
+func (s *Service) createUserCookie(w http.ResponseWriter, UserID string) error {
+	encoded, err := s.Cookie.Encode(s.Config.SecureCookieName, UserID)
 	if err != nil {
 		return err
 
 	}
 
 	cookie := &http.Cookie{
-		Name:     a.Config.SecureCookieName,
+		Name:     s.Config.SecureCookieName,
 		Value:    encoded,
-		Path:     a.Config.PathPrefix + "/",
+		Path:     s.Config.PathPrefix + "/",
 		HttpOnly: true,
-		Domain:   a.Config.AppDomain,
+		Domain:   s.Config.AppDomain,
 		MaxAge:   86400 * 365,
-		Secure:   a.Config.SecureCookieFlag,
+		Secure:   s.Config.SecureCookieFlag,
 		SameSite: http.SameSiteStrictMode,
 	}
 	http.SetCookie(w, cookie)
@@ -97,20 +99,20 @@ func (a *Service) createUserCookie(w http.ResponseWriter, UserID string) error {
 }
 
 // createSessionCookie creates the user's session Cookie
-func (a *Service) createSessionCookie(w http.ResponseWriter, SessionID string) error {
-	encoded, err := a.Cookie.Encode(a.Config.SessionCookieName, SessionID)
+func (s *Service) createSessionCookie(w http.ResponseWriter, SessionID string) error {
+	encoded, err := s.Cookie.Encode(s.Config.SessionCookieName, SessionID)
 	if err != nil {
 		return err
 	}
 
 	cookie := &http.Cookie{
-		Name:     a.Config.SessionCookieName,
+		Name:     s.Config.SessionCookieName,
 		Value:    encoded,
-		Path:     a.Config.PathPrefix + "/",
+		Path:     s.Config.PathPrefix + "/",
 		HttpOnly: true,
-		Domain:   a.Config.AppDomain,
+		Domain:   s.Config.AppDomain,
 		MaxAge:   86400 * 30,
-		Secure:   a.Config.SecureCookieFlag,
+		Secure:   s.Config.SecureCookieFlag,
 		SameSite: http.SameSiteStrictMode,
 	}
 
@@ -121,29 +123,29 @@ func (a *Service) createSessionCookie(w http.ResponseWriter, SessionID string) e
 
 // clearUserCookies wipes the frontend and backend cookies
 // used in the event of bad Cookie reads
-func (a *Service) clearUserCookies(w http.ResponseWriter) {
+func (s *Service) clearUserCookies(w http.ResponseWriter) {
 	feCookie := &http.Cookie{
-		Name:   a.Config.FrontendCookieName,
+		Name:   s.Config.FrontendCookieName,
 		Value:  "",
-		Path:   a.Config.PathPrefix + "/",
+		Path:   s.Config.PathPrefix + "/",
 		MaxAge: -1,
 	}
 	beCookie := &http.Cookie{
-		Name:     a.Config.SecureCookieName,
+		Name:     s.Config.SecureCookieName,
 		Value:    "",
-		Path:     a.Config.PathPrefix + "/",
-		Domain:   a.Config.AppDomain,
-		Secure:   a.Config.SecureCookieFlag,
+		Path:     s.Config.PathPrefix + "/",
+		Domain:   s.Config.AppDomain,
+		Secure:   s.Config.SecureCookieFlag,
 		SameSite: http.SameSiteStrictMode,
 		MaxAge:   -1,
 		HttpOnly: true,
 	}
 	seCookie := &http.Cookie{
-		Name:     a.Config.SessionCookieName,
+		Name:     s.Config.SessionCookieName,
 		Value:    "",
-		Path:     a.Config.PathPrefix + "/",
-		Domain:   a.Config.AppDomain,
-		Secure:   a.Config.SecureCookieFlag,
+		Path:     s.Config.PathPrefix + "/",
+		Domain:   s.Config.AppDomain,
+		Secure:   s.Config.SecureCookieFlag,
 		SameSite: http.SameSiteStrictMode,
 		MaxAge:   -1,
 		HttpOnly: true,
@@ -155,15 +157,15 @@ func (a *Service) clearUserCookies(w http.ResponseWriter) {
 }
 
 // validateUserCookie returns the UserID from secure cookies or errors if failures getting it
-func (a *Service) validateUserCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+func (s *Service) validateUserCookie(w http.ResponseWriter, r *http.Request) (string, error) {
 	var UserID string
 
-	if cookie, err := r.Cookie(a.Config.SecureCookieName); err == nil {
+	if cookie, err := r.Cookie(s.Config.SecureCookieName); err == nil {
 		var value string
-		if err = a.Cookie.Decode(a.Config.SecureCookieName, cookie.Value, &value); err == nil {
+		if err = s.Cookie.Decode(s.Config.SecureCookieName, cookie.Value, &value); err == nil {
 			UserID = value
 		} else {
-			a.clearUserCookies(w)
+			s.clearUserCookies(w)
 			return "", errors.New("INVALID_USER_COOKIE")
 		}
 	} else {
@@ -174,15 +176,15 @@ func (a *Service) validateUserCookie(w http.ResponseWriter, r *http.Request) (st
 }
 
 // validateSessionCookie returns the SessionID from secure cookies or errors if failures getting it
-func (a *Service) validateSessionCookie(w http.ResponseWriter, r *http.Request) (string, error) {
+func (s *Service) validateSessionCookie(w http.ResponseWriter, r *http.Request) (string, error) {
 	var SessionID string
 
-	if cookie, err := r.Cookie(a.Config.SessionCookieName); err == nil {
+	if cookie, err := r.Cookie(s.Config.SessionCookieName); err == nil {
 		var value string
-		if err = a.Cookie.Decode(a.Config.SessionCookieName, cookie.Value, &value); err == nil {
+		if err = s.Cookie.Decode(s.Config.SessionCookieName, cookie.Value, &value); err == nil {
 			SessionID = value
 		} else {
-			a.clearUserCookies(w)
+			s.clearUserCookies(w)
 			return "", errors.New("INVALID_SESSION_COOKIE")
 		}
 	} else {
@@ -193,7 +195,7 @@ func (a *Service) validateSessionCookie(w http.ResponseWriter, r *http.Request) 
 }
 
 // Success returns the successful response including any data and meta
-func (a *Service) Success(w http.ResponseWriter, r *http.Request, code int, data interface{}, meta interface{}) {
+func (s *Service) Success(w http.ResponseWriter, r *http.Request, code int, data interface{}, meta interface{}) {
 	result := &standardJsonResponse{
 		Success: true,
 		Error:   "",
@@ -217,13 +219,13 @@ func (a *Service) Success(w http.ResponseWriter, r *http.Request, code int, data
 }
 
 // Failure responds with an error and its associated status code header
-func (a *Service) Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
+func (s *Service) Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
 	ctx := r.Context()
 	// Extract error message.
 	errCode, errMessage := ErrorCode(err), ErrorMessage(err)
 
 	if errCode == EINTERNAL {
-		a.Logger.Ctx(ctx).Error(
+		s.Logger.Ctx(ctx).Error(
 			"[http] error",
 			zap.String("method", r.Method),
 			zap.String("url_path", sanitizeUserInputForLogs(r.URL.Path)),
@@ -284,21 +286,21 @@ func sanitizeUserInputForLogs(unescapedInput string) string {
 }
 
 // Authenticate using LDAP and if user does not exist, automatically add user as a verified user
-func (a *Service) authAndCreateUserLdap(ctx context.Context, UserName string, UserPassword string) (*thunderdome.User, string, error) {
+func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, UserPassword string) (*thunderdome.User, string, error) {
 	var AuthedUser *thunderdome.User
 	var SessionId string
 	var sessErr error
 
 	l, err := ldap.DialURL(viper.GetString("auth.ldap.url"))
 	if err != nil {
-		a.Logger.Ctx(ctx).Error("Failed connecting to ldap server at " + viper.GetString("auth.ldap.url"))
+		s.Logger.Ctx(ctx).Error("Failed connecting to ldap server at " + viper.GetString("auth.ldap.url"))
 		return AuthedUser, SessionId, err
 	}
 	defer l.Close()
 	if viper.GetBool("auth.ldap.use_tls") {
 		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 		if err != nil {
-			a.Logger.Ctx(ctx).Error("Failed securing ldap connection", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed securing ldap connection", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 	}
@@ -306,7 +308,7 @@ func (a *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 	if viper.GetString("auth.ldap.bindname") != "" {
 		err = l.Bind(viper.GetString("auth.ldap.bindname"), viper.GetString("auth.ldap.bindpass"))
 		if err != nil {
-			a.Logger.Ctx(ctx).Error("Failed binding for authentication", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed binding for authentication", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 	}
@@ -320,12 +322,12 @@ func (a *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 
 	sr, err := l.Search(searchRequest)
 	if err != nil {
-		a.Logger.Ctx(ctx).Error("Failed performing ldap search query", zap.String("username", sanitizeUserInputForLogs(UserName)), zap.Error(err))
+		s.Logger.Ctx(ctx).Error("Failed performing ldap search query", zap.String("username", sanitizeUserInputForLogs(UserName)), zap.Error(err))
 		return AuthedUser, SessionId, err
 	}
 
 	if len(sr.Entries) != 1 {
-		a.Logger.Ctx(ctx).Error("User does not exist or too many entries returned", zap.String("username", sanitizeUserInputForLogs(UserName)))
+		s.Logger.Ctx(ctx).Error("User does not exist or too many entries returned", zap.String("username", sanitizeUserInputForLogs(UserName)))
 		return AuthedUser, SessionId, errors.New("user not found")
 	}
 
@@ -335,27 +337,27 @@ func (a *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 
 	err = l.Bind(userdn, UserPassword)
 	if err != nil {
-		a.Logger.Ctx(ctx).Error("Failed authenticating user", zap.String("username", sanitizeUserInputForLogs(UserName)))
+		s.Logger.Ctx(ctx).Error("Failed authenticating user", zap.String("username", sanitizeUserInputForLogs(UserName)))
 		return AuthedUser, SessionId, err
 	}
 
-	AuthedUser, err = a.UserService.GetUserByEmail(ctx, useremail)
+	AuthedUser, err = s.UserService.GetUserByEmail(ctx, useremail)
 
 	if AuthedUser == nil {
-		a.Logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		AuthedUser, verifyID, err := a.UserService.CreateUserRegistered(ctx, usercn, useremail, "", "")
+		s.Logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
+		AuthedUser, verifyID, err := s.UserService.CreateUserRegistered(ctx, usercn, useremail, "", "")
 		if err != nil {
-			a.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		err = a.AuthService.VerifyUserAccount(ctx, verifyID)
+		err = s.AuthService.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
-			a.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		SessionId, err = a.AuthService.CreateSession(ctx, AuthedUser.Id)
+		SessionId, err = s.AuthService.CreateSession(ctx, AuthedUser.Id)
 		if err != nil {
-			a.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 	} else {
@@ -363,9 +365,9 @@ func (a *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = a.AuthService.CreateSession(ctx, AuthedUser.Id)
+		SessionId, sessErr = s.AuthService.CreateSession(ctx, AuthedUser.Id)
 		if sessErr != nil {
-			a.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err
 		}
 	}
@@ -374,28 +376,28 @@ func (a *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 }
 
 // Authenticate using HTTP headers and if user does not exist, automatically add user as a verified user
-func (a *Service) authAndCreateUserHeader(ctx context.Context, username string, useremail string) (*thunderdome.User, string, error) {
+func (s *Service) authAndCreateUserHeader(ctx context.Context, username string, useremail string) (*thunderdome.User, string, error) {
 	var AuthedUser *thunderdome.User
 	var SessionId string
 	var sessErr error
 
-	AuthedUser, err := a.UserService.GetUserByEmail(ctx, useremail)
+	AuthedUser, err := s.UserService.GetUserByEmail(ctx, useremail)
 
 	if AuthedUser == nil {
-		a.Logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		AuthedUser, verifyID, err := a.UserService.CreateUserRegistered(ctx, username, useremail, "", "")
+		s.Logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
+		AuthedUser, verifyID, err := s.UserService.CreateUserRegistered(ctx, username, useremail, "", "")
 		if err != nil {
-			a.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		err = a.AuthService.VerifyUserAccount(ctx, verifyID)
+		err = s.AuthService.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
-			a.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		SessionId, err = a.AuthService.CreateSession(ctx, AuthedUser.Id)
+		SessionId, err = s.AuthService.CreateSession(ctx, AuthedUser.Id)
 		if err != nil {
-			a.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 	} else {
@@ -403,9 +405,9 @@ func (a *Service) authAndCreateUserHeader(ctx context.Context, username string, 
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = a.AuthService.CreateSession(ctx, AuthedUser.Id)
+		SessionId, sessErr = s.AuthService.CreateSession(ctx, AuthedUser.Id)
 		if sessErr != nil {
-			a.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
+			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err
 		}
 	}
@@ -429,4 +431,28 @@ func isTeamUserOrAnAdmin(r *http.Request) bool {
 	}
 
 	return isAdmin || TeamRole != ""
+}
+
+// get the index template from embedded filesystem
+func (s *Service) getIndexTemplate(FSS fs.FS) *template.Template {
+	ctx := context.Background()
+	// get the html template from dist, have it ready for requests
+	tmplContent, ioErr := fs.ReadFile(FSS, "static/index.html")
+	if ioErr != nil {
+		s.Logger.Ctx(ctx).Error("Error opening index template")
+		if !s.Config.EmbedUseOS {
+			s.Logger.Ctx(ctx).Fatal(ioErr.Error())
+		}
+	}
+
+	tmplString := string(tmplContent)
+	tmpl, tmplErr := template.New("index").Parse(tmplString)
+	if tmplErr != nil {
+		s.Logger.Ctx(ctx).Error("Error parsing index template")
+		if !s.Config.EmbedUseOS {
+			s.Logger.Ctx(ctx).Fatal(tmplErr.Error())
+		}
+	}
+
+	return tmpl
 }

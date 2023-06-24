@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -19,23 +19,23 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys [get]
-func (a *Service) handleUserAPIKeys() http.HandlerFunc {
+func (s *Service) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		APIKeys, keysErr := a.APIKeyService.GetUserApiKeys(r.Context(), UserID)
+		APIKeys, keysErr := s.APIKeyService.GetUserApiKeys(r.Context(), UserID)
 		if keysErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, keysErr)
+			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, APIKeys, nil)
+		s.Success(w, r, http.StatusOK, APIKeys, nil)
 	}
 }
 
@@ -55,54 +55,54 @@ type apikeyGenerateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys [post]
-func (a *Service) handleAPIKeyGenerate() http.HandlerFunc {
+func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		ctx := r.Context()
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var k = apikeyGenerateRequestBody{}
 		jsonErr := json.Unmarshal(body, &k)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(k)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		APIKeys, keysErr := a.APIKeyService.GetUserApiKeys(ctx, UserID)
+		APIKeys, keysErr := s.APIKeyService.GetUserApiKeys(ctx, UserID)
 		if keysErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, keysErr)
+			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		if len(APIKeys) == a.Config.UserAPIKeyLimit {
-			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "USER_APIKEY_LIMIT_REACHED"))
+		if len(APIKeys) == s.Config.UserAPIKeyLimit {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "USER_APIKEY_LIMIT_REACHED"))
 			return
 		}
 
-		APIKey, keyErr := a.APIKeyService.GenerateApiKey(ctx, UserID, k.Name)
+		APIKey, keyErr := s.APIKeyService.GenerateApiKey(ctx, UserID, k.Name)
 		if keyErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, keyErr)
+			s.Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, APIKey, nil)
+		s.Success(w, r, http.StatusOK, APIKey, nil)
 	}
 }
 
@@ -123,43 +123,43 @@ type apikeyUpdateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys/{keyID} [put]
-func (a *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
+func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		APK := vars["keyID"]
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var k = apikeyUpdateRequestBody{}
 		jsonErr := json.Unmarshal(body, &k)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(k)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		APIKeys, keysErr := a.APIKeyService.UpdateUserApiKey(r.Context(), UserID, APK, k.Active)
+		APIKeys, keysErr := s.APIKeyService.UpdateUserApiKey(r.Context(), UserID, APK, k.Active)
 		if keysErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, keysErr)
+			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, APIKeys, nil)
+		s.Success(w, r, http.StatusOK, APIKeys, nil)
 	}
 }
 
@@ -175,23 +175,23 @@ func (a *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys/{keyID} [delete]
-func (a *Service) handleUserAPIKeyDelete() http.HandlerFunc {
+func (s *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		APK := vars["keyID"]
 
-		APIKeys, keysErr := a.APIKeyService.DeleteUserApiKey(r.Context(), UserID, APK)
+		APIKeys, keysErr := s.APIKeyService.DeleteUserApiKey(r.Context(), UserID, APK)
 		if keysErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, keysErr)
+			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, APIKeys, nil)
+		s.Success(w, r, http.StatusOK, APIKeys, nil)
 	}
 }

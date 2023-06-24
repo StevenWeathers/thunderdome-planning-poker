@@ -117,7 +117,7 @@ func main() {
 			AnalyticsEnabled:   viper.GetBool("analytics.enabled"),
 			AnalyticsID:        viper.GetString("analytics.id"),
 			Version:            version,
-			AvatarService:      viper.GetString(("config.avatar_service")),
+			AvatarService:      viper.GetString("config.avatar_service"),
 			PathPrefix:         pathPrefix,
 			ExternalAPIEnabled: viper.GetBool("config.allow_external_api"),
 			UserAPIKeyLimit:    viper.GetInt("config.user_apikey_limit"),

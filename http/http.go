@@ -1,13 +1,14 @@
-// Package api provides restful API endpoints for Thunderdome webapp
-package api
+// Package http provides restful API endpoints for Thunderdome webapp
+package http
 
 import (
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/battle"
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/checkin"
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/storyboard"
+	"context"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	"github.com/StevenWeathers/thunderdome-planning-poker/email"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/battle"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/checkin"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/retro"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
 	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
@@ -16,6 +17,8 @@ import (
 	"github.com/spf13/viper"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
+	"io/fs"
+	"net/http"
 )
 
 var validate *validator.Validate
@@ -52,10 +55,15 @@ type Config struct {
 	FeatureStoryboard bool
 	// Whether Organizations (and Departments) feature is enabled
 	OrganizationsEnabled bool
+	// Which avatar service is utilized
+	AvatarService string
+	// Whether to use the OS filesystem or embedded
+	EmbedUseOS bool
 }
 
 type Service struct {
 	Config              *Config
+	UIConfig            thunderdome.UIConfig
 	Router              *mux.Router
 	Email               *email.Email
 	Cookie              *securecookie.SecureCookie
@@ -114,7 +122,9 @@ const (
 // @in header
 // @name X-API-Key
 // @version BETA
-func Init(apiService Service) *Service {
+func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
+	staticHandler := http.FileServer(HFS)
+
 	var a = &apiService
 	b := battle.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.BattleService)
 	rs := retro.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.RetroService)
@@ -321,5 +331,40 @@ func Init(apiService Service) *Service {
 		apiRouter.HandleFunc("/storyboard/{storyboardId}", sb.ServeWs())
 	}
 
+	// user avatar generation
+	if a.Config.AvatarService == "goadorable" || a.Config.AvatarService == "govatar" {
+		a.Router.PathPrefix("/avatar/{width}/{id}/{avatar}").Handler(a.handleUserAvatar()).Methods("GET")
+		a.Router.PathPrefix("/avatar/{width}/{id}").Handler(a.handleUserAvatar()).Methods("GET")
+	}
+
+	// static assets
+	a.Router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
+	a.Router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
+	a.Router.PathPrefix("/lang/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
+
+	// handle index.html
+	a.Router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))
+
 	return a
+}
+
+// handleIndex parses the index html file, injecting any relevant data
+func (s *Service) handleIndex(FSS fs.FS, uiConfig thunderdome.UIConfig) http.HandlerFunc {
+	tmpl := s.getIndexTemplate(FSS)
+
+	ActiveAlerts = s.AlertService.GetActiveAlerts(context.Background()) // prime the active alerts cache
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		uiConfig.ActiveAlerts = ActiveAlerts // get the latest alerts from memory
+
+		if s.Config.EmbedUseOS {
+			tmpl = s.getIndexTemplate(FSS)
+		}
+
+		err := tmpl.Execute(w, uiConfig)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+	}
 }

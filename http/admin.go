@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -17,15 +17,15 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/stats [get]
-func (a *Service) handleAppStats() http.HandlerFunc {
+func (s *Service) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		AppStats, err := a.AdminService.GetAppStats(r.Context())
+		AppStats, err := s.AdminService.GetAppStats(r.Context())
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, AppStats, nil)
+		s.Success(w, r, http.StatusOK, AppStats, nil)
 	}
 }
 
@@ -40,13 +40,13 @@ func (a *Service) handleAppStats() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users [get]
-func (a *Service) handleGetRegisteredUsers() http.HandlerFunc {
+func (s *Service) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users, Count, err := a.UserService.GetRegisteredUsers(r.Context(), Limit, Offset)
+		Users, Count, err := s.UserService.GetRegisteredUsers(r.Context(), Limit, Offset)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -56,7 +56,7 @@ func (a *Service) handleGetRegisteredUsers() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		a.Success(w, r, http.StatusOK, Users, Meta)
+		s.Success(w, r, http.StatusOK, Users, Meta)
 	}
 }
 
@@ -78,37 +78,37 @@ type userCreateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users [post]
-func (a *Service) handleUserCreate() http.HandlerFunc {
+func (s *Service) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user = userCreateRequestBody{}
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 			return
 		}
 
 		jsonErr := json.Unmarshal(body, &user)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		accountErr := validate.Struct(user)
 
 		if accountErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, accountErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, accountErr.Error()))
 			return
 		}
 
-		newUser, VerifyID, err := a.UserService.CreateUser(r.Context(), user.Name, user.Email, user.Password1)
+		newUser, VerifyID, err := s.UserService.CreateUser(r.Context(), user.Name, user.Email, user.Password1)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Email.SendWelcome(user.Name, user.Email, VerifyID)
+		s.Email.SendWelcome(user.Name, user.Email, VerifyID)
 
-		a.Success(w, r, http.StatusOK, newUser, nil)
+		s.Success(w, r, http.StatusOK, newUser, nil)
 	}
 }
 
@@ -123,23 +123,23 @@ func (a *Service) handleUserCreate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/promote/ [patch]
-func (a *Service) handleUserPromote() http.HandlerFunc {
+func (s *Service) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := a.UserService.PromoteUser(r.Context(), UserID)
+		err := s.UserService.PromoteUser(r.Context(), UserID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -153,23 +153,23 @@ func (a *Service) handleUserPromote() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/demote [patch]
-func (a *Service) handleUserDemote() http.HandlerFunc {
+func (s *Service) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := a.UserService.DemoteUser(r.Context(), UserID)
+		err := s.UserService.DemoteUser(r.Context(), UserID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -183,23 +183,23 @@ func (a *Service) handleUserDemote() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/disable [patch]
-func (a *Service) handleUserDisable() http.HandlerFunc {
+func (s *Service) handleUserDisable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := a.UserService.DisableUser(r.Context(), UserID)
+		err := s.UserService.DisableUser(r.Context(), UserID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -213,23 +213,23 @@ func (a *Service) handleUserDisable() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/enable [patch]
-func (a *Service) handleUserEnable() http.HandlerFunc {
+func (s *Service) handleUserEnable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := a.UserService.EnableUser(r.Context(), UserID)
+		err := s.UserService.EnableUser(r.Context(), UserID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -244,44 +244,44 @@ func (a *Service) handleUserEnable() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/password [patch]
-func (a *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
+func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var u = updatePasswordRequestBody{}
 		jsonErr := json.Unmarshal(body, &u)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(u)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		UserName, UserEmail, updateErr := a.AuthService.UserUpdatePassword(r.Context(), UserID, u.Password1)
+		UserName, UserEmail, updateErr := s.AuthService.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
-			a.Failure(w, r, http.StatusInternalServerError, updateErr)
+			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
-		a.Email.SendPasswordUpdate(UserName, UserEmail)
+		s.Email.SendPasswordUpdate(UserName, UserEmail)
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -296,17 +296,17 @@ func (a *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/organizations [get]
-func (a *Service) handleGetOrganizations() http.HandlerFunc {
+func (s *Service) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.Config.OrganizationsEnabled {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := a.OrganizationService.OrganizationList(r.Context(), Limit, Offset)
+		Organizations := s.OrganizationService.OrganizationList(r.Context(), Limit, Offset)
 
-		a.Success(w, r, http.StatusOK, Organizations, nil)
+		s.Success(w, r, http.StatusOK, Organizations, nil)
 	}
 }
 
@@ -321,11 +321,11 @@ func (a *Service) handleGetOrganizations() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/teams [get]
-func (a *Service) handleGetTeams() http.HandlerFunc {
+func (s *Service) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams, Count := a.TeamService.TeamList(r.Context(), Limit, Offset)
+		Teams, Count := s.TeamService.TeamList(r.Context(), Limit, Offset)
 
 		Meta := &pagination{
 			Count:  Count,
@@ -333,7 +333,7 @@ func (a *Service) handleGetTeams() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		a.Success(w, r, http.StatusOK, Teams, Meta)
+		s.Success(w, r, http.StatusOK, Teams, Meta)
 	}
 }
 
@@ -348,13 +348,13 @@ func (a *Service) handleGetTeams() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/apikeys [get]
-func (a *Service) handleGetAPIKeys() http.HandlerFunc {
+func (s *Service) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.APIKeyService.GetAPIKeys(r.Context(), Limit, Offset)
+		Teams := s.APIKeyService.GetAPIKeys(r.Context(), Limit, Offset)
 
-		a.Success(w, r, http.StatusOK, Teams, nil)
+		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
 }
 
@@ -371,18 +371,18 @@ func (a *Service) handleGetAPIKeys() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/search/users/email [get]
-func (a *Service) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
+func (s *Service) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		Search, err := getSearchFromRequest(r)
 		if err != nil {
-			a.Failure(w, r, http.StatusBadRequest, err)
+			s.Failure(w, r, http.StatusBadRequest, err)
 			return
 		}
 
-		Users, Count, err := a.UserService.SearchRegisteredUsersByEmail(r.Context(), Search, Limit, Offset)
+		Users, Count, err := s.UserService.SearchRegisteredUsersByEmail(r.Context(), Search, Limit, Offset)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -392,6 +392,6 @@ func (a *Service) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		a.Success(w, r, http.StatusOK, Users, Meta)
+		s.Success(w, r, http.StatusOK, Users, Meta)
 	}
 }

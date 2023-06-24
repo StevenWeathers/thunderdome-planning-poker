@@ -1,4 +1,4 @@
-package api
+package http
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/api/retro"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/retro"
 
 	"github.com/gorilla/mux"
 )
@@ -40,7 +40,7 @@ type retroCreateRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/retros [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/retros [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
-func (a *Service) handleRetroCreate() http.HandlerFunc {
+func (s *Service) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -48,26 +48,26 @@ func (a *Service) handleRetroCreate() http.HandlerFunc {
 		TeamID, teamIdExists := vars["teamId"]
 
 		if !teamIdExists && viper.GetBool("config.require_teams") {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "RETRO_CREATION_REQUIRES_TEAM"))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "RETRO_CREATION_REQUIRES_TEAM"))
 			return
 		}
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
 		var nr = retroCreateRequestBody{}
 		jsonErr := json.Unmarshal(body, &nr)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(nr)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
@@ -77,24 +77,24 @@ func (a *Service) handleRetroCreate() http.HandlerFunc {
 
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newRetro, err = a.RetroService.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+				newRetro, err = s.RetroService.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
 			} else {
-				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
 		} else {
-			newRetro, err = a.RetroService.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+			newRetro, err = s.RetroService.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 		}
 
-		a.Success(w, r, http.StatusOK, newRetro, nil)
+		s.Success(w, r, http.StatusOK, newRetro, nil)
 	}
 }
 
@@ -109,20 +109,20 @@ func (a *Service) handleRetroCreate() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId} [get]
-func (a *Service) handleRetroGet() http.HandlerFunc {
+func (s *Service) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		re, err := a.RetroService.RetroGet(RetroID, UserID)
+		re, err := s.RetroService.RetroGet(RetroID, UserID)
 
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, re, nil)
+		s.Success(w, r, http.StatusOK, re, nil)
 	}
 }
 
@@ -139,18 +139,18 @@ func (a *Service) handleRetroGet() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/retros [get]
-func (a *Service) handleRetrosGetByUser() http.HandlerFunc {
+func (s *Service) handleRetrosGetByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		retros, err := a.RetroService.RetroGetByUser(UserID)
+		retros, err := s.RetroService.RetroGetByUser(UserID)
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, retros, nil)
+		s.Success(w, r, http.StatusOK, retros, nil)
 	}
 }
 
@@ -166,7 +166,7 @@ func (a *Service) handleRetrosGetByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros [get]
-func (a *Service) handleGetRetros() http.HandlerFunc {
+func (s *Service) handleGetRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
@@ -176,13 +176,13 @@ func (a *Service) handleGetRetros() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Retros, Count, err = a.RetroService.GetActiveRetros(Limit, Offset)
+			Retros, Count, err = s.RetroService.GetActiveRetros(Limit, Offset)
 		} else {
-			Retros, Count, err = a.RetroService.GetRetros(Limit, Offset)
+			Retros, Count, err = s.RetroService.GetRetros(Limit, Offset)
 		}
 
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -192,7 +192,7 @@ func (a *Service) handleGetRetros() http.HandlerFunc {
 			Limit:  Limit,
 		}
 
-		a.Success(w, r, http.StatusOK, Retros, Meta)
+		s.Success(w, r, http.StatusOK, Retros, Meta)
 	}
 }
 
@@ -215,7 +215,7 @@ type actionUpdateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId} [put]
-func (a *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
+func (s *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionUpdateRequestBody{}
 
@@ -223,7 +223,7 @@ func (a *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		ActionID := vars["actionId"]
@@ -231,30 +231,30 @@ func (a *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 		jsonErr := json.Unmarshal(body, &ra)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		ra.ActionID = ActionID
 		inputErr := validate.Struct(ra)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 		updatedActionJson, _ := json.Marshal(ra)
 
 		err := rs.APIEvent(r.Context(), RetroID, UserID, "update_action", string(updatedActionJson))
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -270,19 +270,19 @@ func (a *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId} [delete]
-func (a *Service) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
+func (s *Service) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		ActionID := vars["actionId"]
 		idErr = validate.Var(ActionID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
@@ -294,11 +294,11 @@ func (a *Service) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 
 		err := rs.APIEvent(r.Context(), RetroID, UserID, "delete_action", string(deleteItem))
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
 
@@ -319,7 +319,7 @@ type actionCommentRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments [post]
-func (a *Service) handleRetroActionCommentAdd() http.HandlerFunc {
+func (s *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
 
@@ -327,41 +327,41 @@ func (a *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		ActionID := vars["actionId"]
 		idErr = validate.Var(ActionID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 		jsonErr := json.Unmarshal(body, &ra)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(ra)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		action, err := a.RetroService.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
+		action, err := s.RetroService.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, action, nil)
+		s.Success(w, r, http.StatusOK, action, nil)
 	}
 }
 
@@ -379,7 +379,7 @@ func (a *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [put]
-func (a *Service) handleRetroActionCommentEdit() http.HandlerFunc {
+func (s *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
 
@@ -387,46 +387,46 @@ func (a *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		ActionID := vars["actionId"]
 		idErr = validate.Var(ActionID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		CommentID := vars["commentId"]
 		idErr = validate.Var(CommentID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 		jsonErr := json.Unmarshal(body, &ra)
 		if jsonErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
 		inputErr := validate.Struct(ra)
 		if inputErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		action, err := a.RetroService.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
+		action, err := s.RetroService.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, action, nil)
+		s.Success(w, r, http.StatusOK, action, nil)
 	}
 }
 
@@ -443,35 +443,35 @@ func (a *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [post]
-func (a *Service) handleRetroActionCommentDelete() http.HandlerFunc {
+func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		ActionID := vars["actionId"]
 		idErr = validate.Var(ActionID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		CommentID := vars["commentId"]
 		idErr = validate.Var(CommentID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		action, err := a.RetroService.RetroActionCommentDelete(RetroID, ActionID, CommentID)
+		action, err := s.RetroService.RetroActionCommentDelete(RetroID, ActionID, CommentID)
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, action, nil)
+		s.Success(w, r, http.StatusOK, action, nil)
 	}
 }
 
@@ -486,23 +486,23 @@ func (a *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId} [delete]
-func (a *Service) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
+func (s *Service) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
 		if idErr != nil {
-			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
 		err := rs.APIEvent(r.Context(), RetroID, UserID, "concede_retro", "")
 		if err != nil {
-			a.Failure(w, r, http.StatusInternalServerError, err)
+			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
