@@ -222,7 +222,7 @@ func (a *Service) handleVerifyRequest() http.HandlerFunc {
 // @Router /active-countries [get]
 func (a *Service) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		countries, err := a.DB.GetActiveCountries(r.Context())
+		countries, err := a.UserService.GetActiveCountries(r.Context())
 
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
