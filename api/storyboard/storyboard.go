@@ -18,6 +18,7 @@ type Service struct {
 	EventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           thunderdome.UserService
 	AuthService           thunderdome.AuthService
+	StoryboardService     thunderdome.StoryboardService
 }
 
 // New returns a new storyboard with websocket hub/client and event handlers
@@ -27,6 +28,7 @@ func New(
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	userService thunderdome.UserService, authService thunderdome.AuthService,
+	storyboardService thunderdome.StoryboardService,
 ) *Service {
 	sb := &Service{
 		DB:                    db,
@@ -35,6 +37,7 @@ func New(
 		ValidateUserCookie:    validateUserCookie,
 		UserService:           userService,
 		AuthService:           authService,
+		StoryboardService:     storyboardService,
 	}
 
 	sb.EventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){

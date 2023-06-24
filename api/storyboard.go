@@ -72,7 +72,7 @@ func (a *Service) handleStoryboardCreate() http.HandlerFunc {
 		// if storyboard created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newStoryboard, err = a.DB.TeamCreateStoryboard(ctx, TeamID, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+				newStoryboard, err = a.StoryboardService.TeamCreateStoryboard(ctx, TeamID, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
 
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
@@ -83,7 +83,7 @@ func (a *Service) handleStoryboardCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newStoryboard, err = a.DB.CreateStoryboard(ctx, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+			newStoryboard, err = a.StoryboardService.CreateStoryboard(ctx, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
 			if err != nil {
 				a.Failure(w, r, http.StatusInternalServerError, err)
 				return
@@ -117,7 +117,7 @@ func (a *Service) handleStoryboardGet() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		storyboard, err := a.DB.GetStoryboard(StoryboardID, UserId)
+		storyboard, err := a.StoryboardService.GetStoryboard(StoryboardID, UserId)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARD_NOT_FOUND"))
 			return
@@ -125,7 +125,7 @@ func (a *Service) handleStoryboardGet() http.HandlerFunc {
 
 		// don't allow retrieving storyboard details if storyboard has JoinCode and user hasn't joined yet
 		if storyboard.JoinCode != "" {
-			UserErr := a.DB.GetStoryboardUserActiveStatus(StoryboardID, UserId)
+			UserErr := a.StoryboardService.GetStoryboardUserActiveStatus(StoryboardID, UserId)
 			if UserErr != nil && UserType != adminUserType {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_STORYBOARD"))
 				return
@@ -155,7 +155,7 @@ func (a *Service) handleGetUserStoryboards() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		storyboards, Count, err := a.DB.GetStoryboardsByUser(UserID)
+		storyboards, Count, err := a.StoryboardService.GetStoryboardsByUser(UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARDS_NOT_FOUND"))
 			return
@@ -193,9 +193,9 @@ func (a *Service) handleGetStoryboards() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			storyboards, Count, err = a.DB.GetActiveStoryboards(Limit, Offset)
+			storyboards, Count, err = a.StoryboardService.GetActiveStoryboards(Limit, Offset)
 		} else {
-			storyboards, Count, err = a.DB.GetStoryboards(Limit, Offset)
+			storyboards, Count, err = a.StoryboardService.GetStoryboards(Limit, Offset)
 		}
 
 		if err != nil {

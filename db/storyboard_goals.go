@@ -8,7 +8,7 @@ import (
 )
 
 // CreateStoryboardGoal adds a new goal to a Storyboard
-func (d *Database) CreateStoryboardGoal(StoryboardID string, userID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *StoryboardService) CreateStoryboardGoal(StoryboardID string, userID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`call create_storyboard_goal($1, $2);`, StoryboardID, GoalName,
 	); err != nil {
@@ -21,7 +21,7 @@ func (d *Database) CreateStoryboardGoal(StoryboardID string, userID string, Goal
 }
 
 // ReviseGoalName updates the plan name by ID
-func (d *Database) ReviseGoalName(StoryboardID string, userID string, GoalID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *StoryboardService) ReviseGoalName(StoryboardID string, userID string, GoalID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`call update_storyboard_goal($1, $2);`,
 		GoalID,
@@ -36,7 +36,7 @@ func (d *Database) ReviseGoalName(StoryboardID string, userID string, GoalID str
 }
 
 // DeleteStoryboardGoal removes a goal from the current board by ID
-func (d *Database) DeleteStoryboardGoal(StoryboardID string, userID string, GoalID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *StoryboardService) DeleteStoryboardGoal(StoryboardID string, userID string, GoalID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`call delete_storyboard_goal($1);`, GoalID); err != nil {
 		d.Logger.Error("call delete_storyboard_goal error", zap.Error(err))
@@ -48,7 +48,7 @@ func (d *Database) DeleteStoryboardGoal(StoryboardID string, userID string, Goal
 }
 
 // GetStoryboardGoals retrieves goals for given storyboard from db
-func (d *Database) GetStoryboardGoals(StoryboardID string) []*thunderdome.StoryboardGoal {
+func (d *StoryboardService) GetStoryboardGoals(StoryboardID string) []*thunderdome.StoryboardGoal {
 	var goals = make([]*thunderdome.StoryboardGoal, 0)
 
 	goalRows, goalsErr := d.DB.Query(

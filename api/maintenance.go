@@ -66,7 +66,7 @@ func (a *Service) handleCleanStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_storyboards_days_old")
 
-		err := a.DB.CleanStoryboards(r.Context(), DaysOld)
+		err := a.StoryboardService.CleanStoryboards(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

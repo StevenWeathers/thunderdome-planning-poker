@@ -72,21 +72,23 @@ func (s *server) routes() {
 	}
 	checkinService := &db.CheckinService{DB: s.db.DB, Logger: s.logger, HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy}
 	retroService := &db.RetroService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
+	storyboardService := &db.StoryboardService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
 
 	a := api.Service{
-		Config:         apiConfig,
-		Router:         s.router,
-		DB:             s.db,
-		Email:          s.email,
-		Cookie:         s.cookie,
-		Logger:         s.logger,
-		UserService:    userService,
-		APIKeyService:  apkService,
-		AlertService:   s.AlertService,
-		AuthService:    authService,
-		BattleService:  battleService,
-		CheckinService: checkinService,
-		RetroService:   retroService,
+		Config:            apiConfig,
+		Router:            s.router,
+		DB:                s.db,
+		Email:             s.email,
+		Cookie:            s.cookie,
+		Logger:            s.logger,
+		UserService:       userService,
+		APIKeyService:     apkService,
+		AlertService:      s.AlertService,
+		AuthService:       authService,
+		BattleService:     battleService,
+		CheckinService:    checkinService,
+		RetroService:      retroService,
+		StoryboardService: storyboardService,
 	}
 
 	api.Init(a)

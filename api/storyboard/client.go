@@ -59,7 +59,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 	StoryboardID := sub.arena
 
 	defer func() {
-		Users := b.DB.RetreatStoryboardUser(StoryboardID, UserID)
+		Users := b.StoryboardService.RetreatStoryboardUser(StoryboardID, UserID)
 		UpdatedUsers, _ := json.Marshal(Users)
 
 		retreatEvent := createSocketEvent("user_left", string(UpdatedUsers), UserID)
@@ -104,7 +104,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 		// confirm owner for any operation that requires it
 		if _, ok := ownerOnlyOperations[eventType]; ok && !badEvent {
-			err := b.DB.ConfirmStoryboardFacilitator(StoryboardID, UserID)
+			err := b.StoryboardService.ConfirmStoryboardFacilitator(StoryboardID, UserID)
 			if err != nil {
 				badEvent = true
 			}
@@ -223,14 +223,14 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		// make sure storyboard is legit
-		storyboard, storyboardErr := b.DB.GetStoryboard(storyboardID, User.Id)
+		storyboard, storyboardErr := b.StoryboardService.GetStoryboard(storyboardID, User.Id)
 		if storyboardErr != nil {
 			b.handleSocketClose(ctx, ws, 4004, "storyboard not found")
 			return
 		}
 
 		// check users storyboard active status
-		UserErr := b.DB.GetStoryboardUserActiveStatus(storyboardID, User.Id)
+		UserErr := b.StoryboardService.GetStoryboardUserActiveStatus(storyboardID, User.Id)
 		if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
 			usrErrMsg := UserErr.Error()
 
@@ -278,7 +278,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			ss := subscription{c, storyboardID, User.Id}
 			h.register <- ss
 
-			Users, _ := b.DB.AddUserToStoryboard(ss.arena, User.Id)
+			Users, _ := b.StoryboardService.AddUserToStoryboard(ss.arena, User.Id)
 			UpdatedUsers, _ := json.Marshal(Users)
 
 			Storyboard, _ := json.Marshal(storyboard)
@@ -299,7 +299,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 func (b *Service) APIEvent(ctx context.Context, arenaID string, UserID, eventType string, eventValue string) error {
 	// confirm leader for any operation that requires it
 	if _, ok := ownerOnlyOperations[eventType]; ok {
-		err := b.DB.ConfirmStoryboardFacilitator(arenaID, UserID)
+		err := b.StoryboardService.ConfirmStoryboardFacilitator(arenaID, UserID)
 		if err != nil {
 			return err
 		}

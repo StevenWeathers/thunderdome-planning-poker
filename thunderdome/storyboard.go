@@ -1,5 +1,7 @@
 package thunderdome
 
+import "context"
+
 // StoryboardUser aka user
 type StoryboardUser struct {
 	Id           string `json:"id"`
@@ -74,4 +76,53 @@ type StoryboardPersona struct {
 	Name        string `json:"name"`
 	Role        string `json:"role"`
 	Description string `json:"description"`
+}
+
+type StoryboardService interface {
+	CreateStoryboard(ctx context.Context, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*Storyboard, error)
+	TeamCreateStoryboard(ctx context.Context, TeamID string, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*Storyboard, error)
+	EditStoryboard(StoryboardID string, StoryboardName string, JoinCode string, FacilitatorCode string) error
+	GetStoryboard(StoryboardID string, UserID string) (*Storyboard, error)
+	GetStoryboardsByUser(UserID string) ([]*Storyboard, int, error)
+	ConfirmStoryboardFacilitator(StoryboardID string, UserID string) error
+	GetStoryboardUsers(StoryboardID string) []*StoryboardUser
+	GetStoryboardPersonas(StoryboardID string) []*StoryboardPersona
+	GetStoryboards(Limit int, Offset int) ([]*Storyboard, int, error)
+	GetActiveStoryboards(Limit int, Offset int) ([]*Storyboard, int, error)
+	AddUserToStoryboard(StoryboardID string, UserID string) ([]*StoryboardUser, error)
+	RetreatStoryboardUser(StoryboardID string, UserID string) []*StoryboardUser
+	GetStoryboardUserActiveStatus(StoryboardID string, UserID string) error
+	AbandonStoryboard(StoryboardID string, UserID string) ([]*StoryboardUser, error)
+	StoryboardFacilitatorAdd(StoryboardId string, UserID string) (*Storyboard, error)
+	StoryboardFacilitatorRemove(StoryboardId string, UserID string) (*Storyboard, error)
+	GetStoryboardFacilitatorCode(StoryboardID string) (string, error)
+	StoryboardReviseColorLegend(StoryboardID string, UserID string, ColorLegend string) (*Storyboard, error)
+	DeleteStoryboard(StoryboardID string, userID string) error
+	CleanStoryboards(ctx context.Context, DaysOld int) error
+
+	AddStoryboardPersona(StoryboardID string, UserID string, Name string, Role string, Description string) ([]*StoryboardPersona, error)
+	UpdateStoryboardPersona(StoryboardID string, UserID string, PersonaID string, Name string, Role string, Description string) ([]*StoryboardPersona, error)
+	DeleteStoryboardPersona(StoryboardID string, UserID string, PersonaID string) ([]*StoryboardPersona, error)
+
+	CreateStoryboardGoal(StoryboardID string, userID string, GoalName string) ([]*StoryboardGoal, error)
+	ReviseGoalName(StoryboardID string, userID string, GoalID string, GoalName string) ([]*StoryboardGoal, error)
+	DeleteStoryboardGoal(StoryboardID string, userID string, GoalID string) ([]*StoryboardGoal, error)
+	GetStoryboardGoals(StoryboardID string) []*StoryboardGoal
+
+	CreateStoryboardColumn(StoryboardID string, GoalID string, userID string) ([]*StoryboardGoal, error)
+	ReviseStoryboardColumn(StoryboardID string, UserID string, ColumnID string, ColumnName string) ([]*StoryboardGoal, error)
+	DeleteStoryboardColumn(StoryboardID string, userID string, ColumnID string) ([]*StoryboardGoal, error)
+
+	CreateStoryboardStory(StoryboardID string, GoalID string, ColumnID string, userID string) ([]*StoryboardGoal, error)
+	ReviseStoryName(StoryboardID string, userID string, StoryID string, StoryName string) ([]*StoryboardGoal, error)
+	ReviseStoryContent(StoryboardID string, userID string, StoryID string, StoryContent string) ([]*StoryboardGoal, error)
+	ReviseStoryColor(StoryboardID string, userID string, StoryID string, StoryColor string) ([]*StoryboardGoal, error)
+	ReviseStoryPoints(StoryboardID string, userID string, StoryID string, Points int) ([]*StoryboardGoal, error)
+	ReviseStoryClosed(StoryboardID string, userID string, StoryID string, Closed bool) ([]*StoryboardGoal, error)
+	ReviseStoryLink(StoryboardID string, userID string, StoryID string, Link string) ([]*StoryboardGoal, error)
+	MoveStoryboardStory(StoryboardID string, userID string, StoryID string, GoalID string, ColumnID string, PlaceBefore string) ([]*StoryboardGoal, error)
+	DeleteStoryboardStory(StoryboardID string, userID string, StoryID string) ([]*StoryboardGoal, error)
+	AddStoryComment(StoryboardID string, UserID string, StoryID string, Comment string) ([]*StoryboardGoal, error)
+	EditStoryComment(StoryboardID string, CommentID string, Comment string) ([]*StoryboardGoal, error)
+	DeleteStoryComment(StoryboardID string, CommentID string) ([]*StoryboardGoal, error)
 }
