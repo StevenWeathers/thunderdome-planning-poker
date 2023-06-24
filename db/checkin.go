@@ -16,7 +16,6 @@ import (
 type CheckinService struct {
 	DB                  *sql.DB
 	Logger              *otelzap.Logger
-	AESHashKey          string
 	HTMLSanitizerPolicy *bluemonday.Policy
 }
 
