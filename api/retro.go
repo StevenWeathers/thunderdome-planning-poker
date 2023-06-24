@@ -77,7 +77,7 @@ func (a *Service) handleRetroCreate() http.HandlerFunc {
 
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newRetro, err = a.DB.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+				newRetro, err = a.RetroService.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -87,7 +87,7 @@ func (a *Service) handleRetroCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newRetro, err = a.DB.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+			newRetro, err = a.RetroService.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -115,7 +115,7 @@ func (a *Service) handleRetroGet() http.HandlerFunc {
 		RetroID := vars["retroId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		re, err := a.DB.RetroGet(RetroID, UserID)
+		re, err := a.RetroService.RetroGet(RetroID, UserID)
 
 		if err != nil {
 			http.NotFound(w, r)
@@ -144,7 +144,7 @@ func (a *Service) handleRetrosGetByUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		retros, err := a.DB.RetroGetByUser(UserID)
+		retros, err := a.RetroService.RetroGetByUser(UserID)
 		if err != nil {
 			http.NotFound(w, r)
 			return
@@ -176,9 +176,9 @@ func (a *Service) handleGetRetros() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Retros, Count, err = a.DB.GetActiveRetros(Limit, Offset)
+			Retros, Count, err = a.RetroService.GetActiveRetros(Limit, Offset)
 		} else {
-			Retros, Count, err = a.DB.GetRetros(Limit, Offset)
+			Retros, Count, err = a.RetroService.GetRetros(Limit, Offset)
 		}
 
 		if err != nil {
@@ -355,7 +355,7 @@ func (a *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 			return
 		}
 
-		action, err := a.DB.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
+		action, err := a.RetroService.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -420,7 +420,7 @@ func (a *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 			return
 		}
 
-		action, err := a.DB.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
+		action, err := a.RetroService.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -465,7 +465,7 @@ func (a *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 			return
 		}
 
-		action, err := a.DB.RetroActionCommentDelete(RetroID, ActionID, CommentID)
+		action, err := a.RetroService.RetroActionCommentDelete(RetroID, ActionID, CommentID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

@@ -43,7 +43,7 @@ func (a *Service) handleCleanRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_retros_days_old")
 
-		err := a.DB.CleanRetros(r.Context(), DaysOld)
+		err := a.RetroService.CleanRetros(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

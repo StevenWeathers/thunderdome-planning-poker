@@ -18,7 +18,7 @@ func (b *Service) CreateItem(ctx context.Context, RetroID string, UserID string,
 		return nil, err, false
 	}
 
-	items, err := b.db.CreateRetroItem(RetroID, UserID, rs.Type, rs.Content)
+	items, err := b.RetroService.CreateRetroItem(RetroID, UserID, rs.Type, rs.Content)
 	if err != nil {
 		return nil, err, false
 	}
@@ -40,7 +40,7 @@ func (b *Service) GroupItem(ctx context.Context, RetroID string, UserID string, 
 		return nil, err, false
 	}
 
-	items, err := b.db.GroupRetroItem(RetroID, rs.ItemId, rs.GroupId)
+	items, err := b.RetroService.GroupRetroItem(RetroID, rs.ItemId, rs.GroupId)
 	if err != nil {
 		return nil, err, false
 	}
@@ -63,7 +63,7 @@ func (b *Service) DeleteItem(ctx context.Context, RetroID string, UserID string,
 		return nil, err, false
 	}
 
-	items, err := b.db.DeleteRetroItem(RetroID, UserID, rs.Type, rs.ItemID)
+	items, err := b.RetroService.DeleteRetroItem(RetroID, UserID, rs.Type, rs.ItemID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -85,7 +85,7 @@ func (b *Service) GroupNameChange(ctx context.Context, RetroID string, UserID st
 		return nil, err, false
 	}
 
-	groups, err := b.db.GroupNameChange(RetroID, rs.GroupId, rs.Name)
+	groups, err := b.RetroService.GroupNameChange(RetroID, rs.GroupId, rs.Name)
 	if err != nil {
 		return nil, err, false
 	}
@@ -106,7 +106,7 @@ func (b *Service) GroupUserVote(ctx context.Context, RetroID string, UserID stri
 		return nil, err, false
 	}
 
-	votes, err := b.db.GroupUserVote(RetroID, rs.GroupId, UserID)
+	votes, err := b.RetroService.GroupUserVote(RetroID, rs.GroupId, UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -127,7 +127,7 @@ func (b *Service) GroupUserSubtractVote(ctx context.Context, RetroID string, Use
 		return nil, err, false
 	}
 
-	votes, err := b.db.GroupUserSubtractVote(RetroID, rs.GroupId, UserID)
+	votes, err := b.RetroService.GroupUserSubtractVote(RetroID, rs.GroupId, UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -148,7 +148,7 @@ func (b *Service) CreateAction(ctx context.Context, RetroID string, UserID strin
 		return nil, err, false
 	}
 
-	items, err := b.db.CreateRetroAction(RetroID, UserID, rs.Content)
+	items, err := b.RetroService.CreateRetroAction(RetroID, UserID, rs.Content)
 	if err != nil {
 		return nil, err, false
 	}
@@ -171,7 +171,7 @@ func (b *Service) UpdateAction(ctx context.Context, RetroID string, UserID strin
 		return nil, err, false
 	}
 
-	items, err := b.db.UpdateRetroAction(RetroID, rs.ActionID, rs.Content, rs.Completed)
+	items, err := b.RetroService.UpdateRetroAction(RetroID, rs.ActionID, rs.Content, rs.Completed)
 	if err != nil {
 		return nil, err, false
 	}
@@ -192,7 +192,7 @@ func (b *Service) DeleteAction(ctx context.Context, RetroID string, UserID strin
 		return nil, err, false
 	}
 
-	items, err := b.db.DeleteRetroAction(RetroID, UserID, rs.ActionID)
+	items, err := b.RetroService.DeleteRetroAction(RetroID, UserID, rs.ActionID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -213,7 +213,7 @@ func (b *Service) AdvancePhase(ctx context.Context, RetroID string, UserID strin
 		return nil, err, false
 	}
 
-	retro, err := b.db.RetroAdvancePhase(RetroID, rs.Phase)
+	retro, err := b.RetroService.RetroAdvancePhase(RetroID, rs.Phase)
 	if err != nil {
 		return nil, err, false
 	}
@@ -234,7 +234,7 @@ func (b *Service) FacilitatorAdd(ctx context.Context, RetroID string, UserID str
 		return nil, err, false
 	}
 
-	facilitators, err := b.db.RetroFacilitatorAdd(RetroID, rs.UserID)
+	facilitators, err := b.RetroService.RetroFacilitatorAdd(RetroID, rs.UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -255,7 +255,7 @@ func (b *Service) FacilitatorRemove(ctx context.Context, RetroID string, UserID 
 		return nil, err, false
 	}
 
-	facilitators, err := b.db.RetroFacilitatorRemove(RetroID, rs.UserID)
+	facilitators, err := b.RetroService.RetroFacilitatorRemove(RetroID, rs.UserID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -268,13 +268,13 @@ func (b *Service) FacilitatorRemove(ctx context.Context, RetroID string, UserID 
 
 // FacilitatorSelf handles self-promoting a user to a facilitator
 func (b *Service) FacilitatorSelf(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
-	facilitatorCode, err := b.db.GetRetroFacilitatorCode(RetroID)
+	facilitatorCode, err := b.RetroService.GetRetroFacilitatorCode(RetroID)
 	if err != nil {
 		return nil, err, false
 	}
 
 	if EventValue == facilitatorCode {
-		facilitators, err := b.db.RetroFacilitatorAdd(RetroID, UserID)
+		facilitators, err := b.RetroService.RetroFacilitatorAdd(RetroID, UserID)
 		if err != nil {
 			return nil, err, false
 		}
@@ -302,7 +302,7 @@ func (b *Service) EditRetro(ctx context.Context, RetroID string, UserID string, 
 		return nil, err, false
 	}
 
-	err = b.db.EditRetro(
+	err = b.RetroService.EditRetro(
 		RetroID,
 		rb.Name,
 		rb.JoinCode,
@@ -322,7 +322,7 @@ func (b *Service) EditRetro(ctx context.Context, RetroID string, UserID string, 
 
 // Delete handles deleting the retro
 func (b *Service) Delete(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
-	err := b.db.RetroDelete(RetroID)
+	err := b.RetroService.RetroDelete(RetroID)
 	if err != nil {
 		return nil, err, false
 	}
@@ -333,7 +333,7 @@ func (b *Service) Delete(ctx context.Context, RetroID string, UserID string, Eve
 
 // Abandon handles setting abandoned true so retro doesn't show up in users retro list, then leaves retro
 func (b *Service) Abandon(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
-	_, err := b.db.RetroAbandon(RetroID, UserID)
+	_, err := b.RetroService.RetroAbandon(RetroID, UserID)
 	if err != nil {
 		return nil, err, false
 	}

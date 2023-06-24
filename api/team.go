@@ -452,7 +452,7 @@ func (a *Service) handleGetTeamRetroActions() http.HandlerFunc {
 		query := r.URL.Query()
 		Completed, _ := strconv.ParseBool(query.Get("completed"))
 
-		Actions, Count, err = a.DB.GetTeamRetroActions(TeamID, Limit, Offset, Completed)
+		Actions, Count, err = a.RetroService.GetTeamRetroActions(TeamID, Limit, Offset, Completed)
 
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)

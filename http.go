@@ -66,19 +66,27 @@ func (s *server) routes() {
 	apkService := &db.APIKeyService{DB: s.db.DB, Logger: s.logger}
 	s.AlertService = &db.AlertService{DB: s.db.DB, Logger: s.logger}
 	authService := &db.AuthService{DB: s.db.DB, Logger: s.logger, AESHashkey: s.db.Config.AESHashkey}
-	battleService := &db.BattleService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
+	battleService := &db.BattleService{
+		DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey,
+		HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy,
+	}
+	checkinService := &db.CheckinService{DB: s.db.DB, Logger: s.logger, HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy}
+	retroService := &db.RetroService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
+
 	a := api.Service{
-		Config:        apiConfig,
-		Router:        s.router,
-		DB:            s.db,
-		Email:         s.email,
-		Cookie:        s.cookie,
-		Logger:        s.logger,
-		UserService:   userService,
-		APIKeyService: apkService,
-		AlertService:  s.AlertService,
-		AuthService:   authService,
-		BattleService: battleService,
+		Config:         apiConfig,
+		Router:         s.router,
+		DB:             s.db,
+		Email:          s.email,
+		Cookie:         s.cookie,
+		Logger:         s.logger,
+		UserService:    userService,
+		APIKeyService:  apkService,
+		AlertService:   s.AlertService,
+		AuthService:    authService,
+		BattleService:  battleService,
+		CheckinService: checkinService,
+		RetroService:   retroService,
 	}
 
 	api.Init(a)
