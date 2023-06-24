@@ -63,6 +63,7 @@ type Service struct {
 	Logger        *otelzap.Logger
 	UserService   thunderdome.UserService
 	APIKeyService thunderdome.APIKeyService
+	AlertService  thunderdome.AlertService
 }
 
 // standardJsonResponse structure used for all restful APIs response body

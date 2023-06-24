@@ -62,8 +62,9 @@ func (s *server) routes() {
 	}
 
 	// Create services.
-	us := &db.UserService{DB: s.db.DB, Logger: s.logger}
-	apk := &db.APIKeyService{DB: s.db.DB, Logger: s.logger}
+	userService := &db.UserService{DB: s.db.DB, Logger: s.logger}
+	apkService := &db.APIKeyService{DB: s.db.DB, Logger: s.logger}
+	s.AlertService = &db.AlertService{DB: s.db.DB, Logger: s.logger}
 	a := api.Service{
 		Config:        apiConfig,
 		Router:        s.router,
@@ -71,8 +72,9 @@ func (s *server) routes() {
 		Email:         s.email,
 		Cookie:        s.cookie,
 		Logger:        s.logger,
-		UserService:   us,
-		APIKeyService: apk,
+		UserService:   userService,
+		APIKeyService: apkService,
+		AlertService:  s.AlertService,
 	}
 
 	api.Init(a)
@@ -197,7 +199,7 @@ func (s *server) handleIndex(FSS fs.FS) http.HandlerFunc {
 		AppConfig:        appConfig,
 	}
 
-	api.ActiveAlerts = s.db.GetActiveAlerts(context.Background()) // prime the active alerts cache
+	api.ActiveAlerts = s.AlertService.GetActiveAlerts(context.Background()) // prime the active alerts cache
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		data.ActiveAlerts = api.ActiveAlerts // get latest alerts from memory

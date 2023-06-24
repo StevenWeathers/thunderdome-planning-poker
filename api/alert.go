@@ -33,7 +33,7 @@ type alertRequestBody struct {
 func (a *Service) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
-		Alerts, Count, err := a.DB.AlertsList(r.Context(), Limit, Offset)
+		Alerts, Count, err := a.AlertService.AlertsList(r.Context(), Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -80,13 +80,13 @@ func (a *Service) handleAlertCreate() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := a.AlertService.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.DB.GetActiveAlerts(r.Context())
+		ActiveAlerts = a.AlertService.GetActiveAlerts(r.Context())
 
 		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -132,13 +132,13 @@ func (a *Service) handleAlertUpdate() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := a.AlertService.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.DB.GetActiveAlerts(r.Context())
+		ActiveAlerts = a.AlertService.GetActiveAlerts(r.Context())
 
 		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -164,13 +164,13 @@ func (a *Service) handleAlertDelete() http.HandlerFunc {
 			return
 		}
 
-		err := a.DB.AlertDelete(r.Context(), AlertID)
+		err := a.AlertService.AlertDelete(r.Context(), AlertID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.DB.GetActiveAlerts(r.Context())
+		ActiveAlerts = a.AlertService.GetActiveAlerts(r.Context())
 
 		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
