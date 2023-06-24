@@ -121,7 +121,7 @@ func Init(apiService Service) *Service {
 		a.Router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))
 	}
 
-	apiRouter := a.Router.PathPrefix("/APIService").Subrouter()
+	apiRouter := a.Router.PathPrefix("/api").Subrouter()
 	userRouter := apiRouter.PathPrefix("/users").Subrouter()
 	orgRouter := apiRouter.PathPrefix("/organizations").Subrouter()
 	teamRouter := apiRouter.PathPrefix("/teams").Subrouter()
