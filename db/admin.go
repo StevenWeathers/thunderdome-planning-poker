@@ -73,58 +73,6 @@ func (d *Database) GetAppStats(ctx context.Context) (*thunderdome.ApplicationSta
 	return &Appstats, nil
 }
 
-// PromoteUser promotes a user to admin type
-func (d *Database) PromoteUser(ctx context.Context, UserID string) error {
-	if _, err := d.DB.ExecContext(ctx,
-		`call promote_user($1);`,
-		UserID,
-	); err != nil {
-		d.logger.Ctx(ctx).Error("call promote_user error", zap.Error(err))
-		return errors.New("error attempting to promote user to admin")
-	}
-
-	return nil
-}
-
-// DemoteUser demotes a user to registered type
-func (d *Database) DemoteUser(ctx context.Context, UserID string) error {
-	if _, err := d.DB.ExecContext(ctx,
-		`call demote_user($1);`,
-		UserID,
-	); err != nil {
-		d.logger.Ctx(ctx).Error("call demote_user error", zap.Error(err))
-		return errors.New("error attempting to demote user to registered")
-	}
-
-	return nil
-}
-
-// DisableUser disables a user from logging in
-func (d *Database) DisableUser(ctx context.Context, UserID string) error {
-	if _, err := d.DB.ExecContext(ctx,
-		`call user_disable($1);`,
-		UserID,
-	); err != nil {
-		d.logger.Ctx(ctx).Error("call user_disable error", zap.Error(err))
-		return errors.New("error attempting to disable user")
-	}
-
-	return nil
-}
-
-// EnableUser enables a user allowing login
-func (d *Database) EnableUser(ctx context.Context, UserID string) error {
-	if _, err := d.DB.ExecContext(ctx,
-		`call user_enable($1);`,
-		UserID,
-	); err != nil {
-		d.logger.Ctx(ctx).Error("call user_enable error", zap.Error(err))
-		return errors.New("error attempting to enable user")
-	}
-
-	return nil
-}
-
 // CleanBattles deletes battles older than {DaysOld} days
 func (d *Database) CleanBattles(ctx context.Context, DaysOld int) error {
 	if _, err := d.DB.ExecContext(ctx,

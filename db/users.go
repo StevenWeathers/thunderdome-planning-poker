@@ -408,3 +408,55 @@ func (d *UserService) SearchRegisteredUsersByEmail(ctx context.Context, Email st
 
 	return users, count, nil
 }
+
+// PromoteUser promotes a user to admin type
+func (d *UserService) PromoteUser(ctx context.Context, UserID string) error {
+	if _, err := d.DB.ExecContext(ctx,
+		`call promote_user($1);`,
+		UserID,
+	); err != nil {
+		d.Logger.Ctx(ctx).Error("call promote_user error", zap.Error(err))
+		return errors.New("error attempting to promote user to admin")
+	}
+
+	return nil
+}
+
+// DemoteUser demotes a user to registered type
+func (d *UserService) DemoteUser(ctx context.Context, UserID string) error {
+	if _, err := d.DB.ExecContext(ctx,
+		`call demote_user($1);`,
+		UserID,
+	); err != nil {
+		d.Logger.Ctx(ctx).Error("call demote_user error", zap.Error(err))
+		return errors.New("error attempting to demote user to registered")
+	}
+
+	return nil
+}
+
+// DisableUser disables a user from logging in
+func (d *UserService) DisableUser(ctx context.Context, UserID string) error {
+	if _, err := d.DB.ExecContext(ctx,
+		`call user_disable($1);`,
+		UserID,
+	); err != nil {
+		d.Logger.Ctx(ctx).Error("call user_disable error", zap.Error(err))
+		return errors.New("error attempting to disable user")
+	}
+
+	return nil
+}
+
+// EnableUser enables a user allowing login
+func (d *UserService) EnableUser(ctx context.Context, UserID string) error {
+	if _, err := d.DB.ExecContext(ctx,
+		`call user_enable($1);`,
+		UserID,
+	); err != nil {
+		d.Logger.Ctx(ctx).Error("call user_enable error", zap.Error(err))
+		return errors.New("error attempting to enable user")
+	}
+
+	return nil
+}

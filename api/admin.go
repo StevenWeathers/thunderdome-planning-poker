@@ -133,7 +133,7 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.PromoteUser(r.Context(), UserID)
+		err := a.UserService.PromoteUser(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -163,7 +163,7 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.DemoteUser(r.Context(), UserID)
+		err := a.UserService.DemoteUser(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -193,7 +193,7 @@ func (a *api) handleUserDisable() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.DisableUser(r.Context(), UserID)
+		err := a.UserService.DisableUser(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -223,7 +223,7 @@ func (a *api) handleUserEnable() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.EnableUser(r.Context(), UserID)
+		err := a.UserService.EnableUser(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

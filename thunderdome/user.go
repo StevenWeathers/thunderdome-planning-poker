@@ -38,5 +38,9 @@ type UserService interface {
 	UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error
 	UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error
 	UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error
+	PromoteUser(ctx context.Context, UserID string) error
+	DemoteUser(ctx context.Context, UserID string) error
+	DisableUser(ctx context.Context, UserID string) error
+	EnableUser(ctx context.Context, UserID string) error
 	DeleteUser(ctx context.Context, UserID string) error
 }
