@@ -66,6 +66,7 @@ func (s *server) routes() {
 	apkService := &db.APIKeyService{DB: s.db.DB, Logger: s.logger}
 	s.AlertService = &db.AlertService{DB: s.db.DB, Logger: s.logger}
 	authService := &db.AuthService{DB: s.db.DB, Logger: s.logger, AESHashkey: s.db.Config.AESHashkey}
+	battleService := &db.BattleService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
 	a := api.Service{
 		Config:        apiConfig,
 		Router:        s.router,
@@ -77,6 +78,7 @@ func (s *server) routes() {
 		APIKeyService: apkService,
 		AlertService:  s.AlertService,
 		AuthService:   authService,
+		BattleService: battleService,
 	}
 
 	api.Init(a)

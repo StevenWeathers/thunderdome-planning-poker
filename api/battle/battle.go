@@ -19,6 +19,7 @@ type Service struct {
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           thunderdome.UserService
 	AuthService           thunderdome.AuthService
+	BattleService         thunderdome.BattleService
 }
 
 // New returns a new battle with websocket hub/client and event handlers
@@ -28,6 +29,7 @@ func New(
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	userService thunderdome.UserService, authService thunderdome.AuthService,
+	battleService thunderdome.BattleService,
 ) *Service {
 	b := &Service{
 		db:                    db,
@@ -36,6 +38,7 @@ func New(
 		validateUserCookie:    validateUserCookie,
 		UserService:           userService,
 		AuthService:           authService,
+		BattleService:         battleService,
 	}
 
 	b.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){

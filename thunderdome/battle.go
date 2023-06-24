@@ -1,6 +1,9 @@
 package thunderdome
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // BattleUser aka user
 type BattleUser struct {
@@ -55,4 +58,38 @@ type Plan struct {
 	Skipped            bool      `json:"skipped"`
 	VoteStartTime      time.Time `json:"voteStartTime"`
 	VoteEndTime        time.Time `json:"voteEndTime"`
+}
+
+type BattleService interface {
+	CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*Battle, error)
+	TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*Battle, error)
+	ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, LeaderCode string) error
+	GetBattleLeaderCode(BattleID string) (string, error)
+	GetBattle(BattleID string, UserID string) (*Battle, error)
+	GetBattlesByUser(UserID string, Limit int, Offset int) ([]*Battle, int, error)
+	ConfirmLeader(BattleID string, UserID string) error
+	GetBattleUserActiveStatus(BattleID string, UserID string) error
+	GetBattleUsers(BattleID string) []*BattleUser
+	GetBattleActiveUsers(BattleID string) []*BattleUser
+	AddUserToBattle(BattleID string, UserID string) ([]*BattleUser, error)
+	RetreatUser(BattleID string, UserID string) []*BattleUser
+	AbandonBattle(BattleID string, UserID string) ([]*BattleUser, error)
+	SetBattleLeader(BattleID string, LeaderID string) ([]string, error)
+	DemoteBattleLeader(BattleID string, LeaderID string) ([]string, error)
+	ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*BattleUser, error)
+	DeleteBattle(BattleID string) error
+	AddBattleLeadersByEmail(ctx context.Context, BattleID string, LeaderEmails []string) ([]string, error)
+	GetBattles(Limit int, Offset int) ([]*Battle, int, error)
+	GetActiveBattles(Limit int, Offset int) ([]*Battle, int, error)
+	CleanBattles(ctx context.Context, DaysOld int) error
+	GetPlans(BattleID string, UserID string) []*Plan
+	CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*Plan, error)
+	ActivatePlanVoting(BattleID string, PlanID string) ([]*Plan, error)
+	SetVote(BattleID string, UserID string, PlanID string, VoteValue string) (BattlePlans []*Plan, AllUsersVoted bool)
+	RetractVote(BattleID string, UserID string, PlanID string) ([]*Plan, error)
+	EndPlanVoting(BattleID string, PlanID string) ([]*Plan, error)
+	SkipPlan(BattleID string, PlanID string) ([]*Plan, error)
+	RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*Plan, error)
+	BurnPlan(BattleID string, PlanID string) ([]*Plan, error)
+	FinalizePlan(BattleID string, PlanID string, PlanPoints string) ([]*Plan, error)
 }

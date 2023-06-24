@@ -6,19 +6,29 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"strings"
 
 	"go.uber.org/zap"
 )
 
+// BattleService represents a PostgreSQL implementation of thunderdome.BattleService.
+type BattleService struct {
+	DB                  *sql.DB
+	Logger              *otelzap.Logger
+	AESHashKey          string
+	HTMLSanitizerPolicy *bluemonday.Policy
+}
+
 //CreateBattle creates a new story pointing session (battle)
-func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
+func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, errors.New("unable to create battle join_code")
 		}
@@ -26,7 +36,7 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 	}
 
 	if LeaderCode != "" {
-		EncryptedCode, codeErr := encrypt(LeaderCode, d.Config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(LeaderCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, errors.New("unable to create battle leader_code")
 		}
@@ -88,13 +98,13 @@ func (d *Database) CreateBattle(ctx context.Context, LeaderID string, BattleName
 }
 
 //TeamCreateBattle creates a new story pointing session (battle) associated to a team
-func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
+func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, errors.New("unable to create battle join_code")
 		}
@@ -102,7 +112,7 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 	}
 
 	if LeaderCode != "" {
-		EncryptedCode, codeErr := encrypt(LeaderCode, d.Config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(LeaderCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, errors.New("unable to create battle leader_code")
 		}
@@ -165,13 +175,13 @@ func (d *Database) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID
 }
 
 // ReviseBattle updates the battle by ID
-func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, LeaderCode string) error {
+func (d *BattleService) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, LeaderCode string) error {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
 
 	if JoinCode != "" {
-		EncryptedCode, codeErr := encrypt(JoinCode, d.Config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
 			return errors.New("unable to revise battle join_code")
 		}
@@ -179,7 +189,7 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 	}
 
 	if LeaderCode != "" {
-		EncryptedCode, codeErr := encrypt(LeaderCode, d.Config.AESHashkey)
+		EncryptedCode, codeErr := encrypt(LeaderCode, d.AESHashKey)
 		if codeErr != nil {
 			return errors.New("unable to revise battle leadercode")
 		}
@@ -200,7 +210,7 @@ func (d *Database) ReviseBattle(BattleID string, BattleName string, PointValuesA
 }
 
 // GetBattleLeaderCode retrieve the battle leader_code
-func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
+func (d *BattleService) GetBattleLeaderCode(BattleID string) (string, error) {
 	var EncryptedLeaderCode string
 
 	if err := d.DB.QueryRow(`
@@ -215,7 +225,7 @@ func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 	if EncryptedLeaderCode == "" {
 		return "", errors.New("unable to retrieve battle leader_code")
 	}
-	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, d.Config.AESHashkey)
+	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, d.AESHashKey)
 	if codeErr != nil {
 		return "", errors.New("unable to retrieve battle leader_code")
 	}
@@ -224,7 +234,7 @@ func (d *Database) GetBattleLeaderCode(BattleID string) (string, error) {
 }
 
 // GetBattle gets a battle by ID
-func (d *Database) GetBattle(BattleID string, UserID string) (*thunderdome.Battle, error) {
+func (d *BattleService) GetBattle(BattleID string, UserID string) (*thunderdome.Battle, error) {
 	var b = &thunderdome.Battle{
 		Id:                 BattleID,
 		Users:              make([]*thunderdome.BattleUser, 0),
@@ -277,7 +287,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*thunderdome.Battl
 	isBattleLeader := contains(b.Leaders, UserID)
 
 	if JoinCode != "" {
-		DecryptedCode, codeErr := decrypt(JoinCode, d.Config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode join_code")
 		}
@@ -285,7 +295,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*thunderdome.Battl
 	}
 
 	if LeaderCode != "" && isBattleLeader {
-		DecryptedCode, codeErr := decrypt(LeaderCode, d.Config.AESHashkey)
+		DecryptedCode, codeErr := decrypt(LeaderCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode leader_code")
 		}
@@ -299,7 +309,7 @@ func (d *Database) GetBattle(BattleID string, UserID string) (*thunderdome.Battl
 }
 
 // GetBattlesByUser gets a list of battles by UserID
-func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
+func (d *BattleService) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
 	var Count int
 	var battles = make([]*thunderdome.Battle, 0)
 
@@ -371,7 +381,7 @@ func (d *Database) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*th
 }
 
 // ConfirmLeader confirms the user is a leader of the battle
-func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
+func (d *BattleService) ConfirmLeader(BattleID string, UserID string) error {
 	var leaderID string
 	var role string
 	err := d.DB.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
@@ -390,7 +400,7 @@ func (d *Database) ConfirmLeader(BattleID string, UserID string) error {
 }
 
 // GetBattleUserActiveStatus checks battle active status of User for given battle
-func (d *Database) GetBattleUserActiveStatus(BattleID string, UserID string) error {
+func (d *BattleService) GetBattleUserActiveStatus(BattleID string, UserID string) error {
 	var active bool
 
 	e := d.DB.QueryRow(`
@@ -414,7 +424,7 @@ func (d *Database) GetBattleUserActiveStatus(BattleID string, UserID string) err
 }
 
 // GetBattleUsers retrieves the users for a given battle
-func (d *Database) GetBattleUsers(BattleID string) []*thunderdome.BattleUser {
+func (d *BattleService) GetBattleUsers(BattleID string) []*thunderdome.BattleUser {
 	var users = make([]*thunderdome.BattleUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
@@ -446,7 +456,7 @@ func (d *Database) GetBattleUsers(BattleID string) []*thunderdome.BattleUser {
 }
 
 // GetBattleActiveUsers retrieves the active users for a given battle
-func (d *Database) GetBattleActiveUsers(BattleID string) []*thunderdome.BattleUser {
+func (d *BattleService) GetBattleActiveUsers(BattleID string) []*thunderdome.BattleUser {
 	var users = make([]*thunderdome.BattleUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
@@ -478,7 +488,7 @@ func (d *Database) GetBattleActiveUsers(BattleID string) []*thunderdome.BattleUs
 }
 
 // AddUserToBattle adds a user by ID to the battle by ID
-func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
+func (d *BattleService) AddUserToBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO battles_users (battle_id, user_id, active)
 		VALUES ($1, $2, true)
@@ -495,7 +505,7 @@ func (d *Database) AddUserToBattle(BattleID string, UserID string) ([]*thunderdo
 }
 
 // RetreatUser removes a user from the current battle by ID
-func (d *Database) RetreatUser(BattleID string, UserID string) []*thunderdome.BattleUser {
+func (d *BattleService) RetreatUser(BattleID string, UserID string) []*thunderdome.BattleUser {
 	if _, err := d.DB.Exec(
 		`UPDATE battles_users SET active = false WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
 		d.Logger.Error("error updating battle user to active false", zap.Error(err))
@@ -512,7 +522,7 @@ func (d *Database) RetreatUser(BattleID string, UserID string) []*thunderdome.Ba
 }
 
 // AbandonBattle removes a user from the current battle by ID and sets abandoned true
-func (d *Database) AbandonBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
+func (d *BattleService) AbandonBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE battles_users SET active = false, abandoned = true WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
 		d.Logger.Error("error updating battle user to abandoned", zap.Error(err))
@@ -531,7 +541,7 @@ func (d *Database) AbandonBattle(BattleID string, UserID string) ([]*thunderdome
 }
 
 // SetBattleLeader sets the leaderId for the battle
-func (d *Database) SetBattleLeader(BattleID string, LeaderID string) ([]string, error) {
+func (d *BattleService) SetBattleLeader(BattleID string, LeaderID string) ([]string, error) {
 	leaders := make([]string, 0)
 
 	// set battle leader
@@ -564,7 +574,7 @@ func (d *Database) SetBattleLeader(BattleID string, LeaderID string) ([]string, 
 }
 
 // DemoteBattleLeader removes a user from battle leaders
-func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]string, error) {
+func (d *BattleService) DemoteBattleLeader(BattleID string, LeaderID string) ([]string, error) {
 	leaders := make([]string, 0)
 
 	// set battle leader
@@ -597,7 +607,7 @@ func (d *Database) DemoteBattleLeader(BattleID string, LeaderID string) ([]strin
 }
 
 // ToggleSpectator changes a battle users spectator status
-func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*thunderdome.BattleUser, error) {
+func (d *BattleService) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*thunderdome.BattleUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE battles_users SET spectator = $3 WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
 		d.Logger.Error("update battle user spectator error", zap.Error(err))
@@ -615,7 +625,7 @@ func (d *Database) ToggleSpectator(BattleID string, UserID string, Spectator boo
 }
 
 // DeleteBattle removes all battle associations and the battle itself by BattleID
-func (d *Database) DeleteBattle(BattleID string) error {
+func (d *BattleService) DeleteBattle(BattleID string) error {
 	if _, err := d.DB.Exec(
 		`call delete_battle($1);`, BattleID); err != nil {
 		d.Logger.Error("delete battle error", zap.Error(err))
@@ -626,7 +636,7 @@ func (d *Database) DeleteBattle(BattleID string) error {
 }
 
 // AddBattleLeadersByEmail adds additional battle leaders using provided emails for matches
-func (d *Database) AddBattleLeadersByEmail(ctx context.Context, BattleID string, LeaderEmails []string) ([]string, error) {
+func (d *BattleService) AddBattleLeadersByEmail(ctx context.Context, BattleID string, LeaderEmails []string) ([]string, error) {
 	var leaders string
 	var newLeaders []string
 
@@ -649,7 +659,7 @@ func (d *Database) AddBattleLeadersByEmail(ctx context.Context, BattleID string,
 }
 
 // GetBattles gets a list of battles
-func (d *Database) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
+func (d *BattleService) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
 	var battles = make([]*thunderdome.Battle, 0)
 	var Count int
 
@@ -712,7 +722,7 @@ func (d *Database) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle, int
 }
 
 // GetActiveBattles gets a list of active battles
-func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
+func (d *BattleService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
 	var battles = make([]*thunderdome.Battle, 0)
 	var Count int
 
@@ -776,7 +786,7 @@ func (d *Database) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.Battl
 }
 
 // CleanBattles deletes battles older than {DaysOld} days
-func (d *Database) CleanBattles(ctx context.Context, DaysOld int) error {
+func (d *BattleService) CleanBattles(ctx context.Context, DaysOld int) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`call clean_battles($1);`,
 		DaysOld,

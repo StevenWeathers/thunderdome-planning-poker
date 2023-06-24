@@ -32,7 +32,7 @@ func (a *Service) handleGetUserBattles() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		battles, Count, err := a.DB.GetBattlesByUser(UserID, Limit, Offset)
+		battles, Count, err := a.BattleService.GetBattlesByUser(UserID, Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
@@ -114,7 +114,7 @@ func (a *Service) handleBattleCreate() http.HandlerFunc {
 		// if battle created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newBattle, err = a.DB.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+				newBattle, err = a.BattleService.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
 					return
@@ -124,7 +124,7 @@ func (a *Service) handleBattleCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newBattle, err = a.DB.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+			newBattle, err = a.BattleService.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 			if err != nil {
 				a.Failure(w, r, http.StatusInternalServerError, err)
 				return
@@ -133,7 +133,7 @@ func (a *Service) handleBattleCreate() http.HandlerFunc {
 
 		// when battleLeaders array is passed add additional leaders to battle
 		if len(b.BattleLeaders) > 0 {
-			updatedLeaders, err := a.DB.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
+			updatedLeaders, err := a.BattleService.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
 			if err != nil {
 				a.Logger.Error("error adding additional battle leaders")
 			} else {
@@ -167,9 +167,9 @@ func (a *Service) handleGetBattles() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Battles, Count, err = a.DB.GetActiveBattles(Limit, Offset)
+			Battles, Count, err = a.BattleService.GetActiveBattles(Limit, Offset)
 		} else {
-			Battles, Count, err = a.DB.GetBattles(Limit, Offset)
+			Battles, Count, err = a.BattleService.GetBattles(Limit, Offset)
 		}
 
 		if err != nil {
@@ -210,7 +210,7 @@ func (a *Service) handleGetBattle() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		b, err := a.DB.GetBattle(BattleId, UserId)
+		b, err := a.BattleService.GetBattle(BattleId, UserId)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
@@ -218,7 +218,7 @@ func (a *Service) handleGetBattle() http.HandlerFunc {
 
 		// don't allow retrieving battle details if battle has JoinCode and user hasn't joined yet
 		if b.JoinCode != "" {
-			UserErr := a.DB.GetBattleUserActiveStatus(BattleId, UserId)
+			UserErr := a.BattleService.GetBattleUserActiveStatus(BattleId, UserId)
 			if UserErr != nil && UserType != adminUserType {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
 				return

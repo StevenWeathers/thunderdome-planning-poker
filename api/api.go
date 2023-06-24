@@ -65,6 +65,7 @@ type Service struct {
 	APIKeyService thunderdome.APIKeyService
 	AlertService  thunderdome.AlertService
 	AuthService   thunderdome.AuthService
+	BattleService thunderdome.BattleService
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -109,7 +110,7 @@ const (
 // @version BETA
 func Init(apiService Service) *Service {
 	var a = &apiService
-	b := battle.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService)
+	b := battle.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.BattleService)
 	rs := retro.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService)
 	sb := storyboard.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService)
 	tc := checkin.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService)
