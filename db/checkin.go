@@ -2,15 +2,26 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"go.uber.org/zap"
 )
 
+// CheckinService represents a PostgreSQL implementation of thunderdome.CheckinService.
+type CheckinService struct {
+	DB                  *sql.DB
+	Logger              *otelzap.Logger
+	AESHashKey          string
+	HTMLSanitizerPolicy *bluemonday.Policy
+}
+
 // CheckinList gets a list of team checkins by day
-func (d *Database) CheckinList(ctx context.Context, TeamId string, Date string, TimeZone string) ([]*thunderdome.TeamCheckin, error) {
+func (d *CheckinService) CheckinList(ctx context.Context, TeamId string, Date string, TimeZone string) ([]*thunderdome.TeamCheckin, error) {
 	Checkins := make([]*thunderdome.TeamCheckin, 0)
 
 	rows, err := d.DB.QueryContext(ctx, `SELECT
@@ -76,7 +87,7 @@ func (d *Database) CheckinList(ctx context.Context, TeamId string, Date string, 
 }
 
 // CheckinCreate creates a team checkin
-func (d *Database) CheckinCreate(
+func (d *CheckinService) CheckinCreate(
 	ctx context.Context,
 	TeamId string, UserId string,
 	Yesterday string, Today string, Blockers string, Discuss string,
@@ -119,7 +130,7 @@ func (d *Database) CheckinCreate(
 }
 
 // CheckinUpdate updates a team checkin
-func (d *Database) CheckinUpdate(
+func (d *CheckinService) CheckinUpdate(
 	ctx context.Context,
 	CheckinId string,
 	Yesterday string, Today string, Blockers string, Discuss string,
@@ -149,7 +160,7 @@ func (d *Database) CheckinUpdate(
 }
 
 // CheckinDelete deletes a team checkin
-func (d *Database) CheckinDelete(ctx context.Context, CheckinId string) error {
+func (d *CheckinService) CheckinDelete(ctx context.Context, CheckinId string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM team_checkin WHERE id = $1;`,
 		CheckinId,
@@ -163,7 +174,7 @@ func (d *Database) CheckinDelete(ctx context.Context, CheckinId string) error {
 }
 
 // CheckinComment comments on a team checkin
-func (d *Database) CheckinComment(
+func (d *CheckinService) CheckinComment(
 	ctx context.Context,
 	TeamId string,
 	CheckinId string,
@@ -197,7 +208,7 @@ func (d *Database) CheckinComment(
 }
 
 // CheckinCommentEdit edits a team checkin comment
-func (d *Database) CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error {
+func (d *CheckinService) CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error {
 	var userCount int
 	// target user must be on team to comment on checkin
 	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
@@ -225,7 +236,7 @@ func (d *Database) CheckinCommentEdit(ctx context.Context, TeamId string, UserId
 }
 
 // CheckinCommentDelete deletes a team checkin comment
-func (d *Database) CheckinCommentDelete(ctx context.Context, CommentId string) error {
+func (d *CheckinService) CheckinCommentDelete(ctx context.Context, CommentId string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM team_checkin_comment WHERE id = $1;`,
 		CommentId,

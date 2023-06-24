@@ -18,6 +18,7 @@ type Service struct {
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
 	UserService           thunderdome.UserService
 	AuthService           thunderdome.AuthService
+	CheckinService        thunderdome.CheckinService
 }
 
 // New returns a new retro with websocket hub/client and event handlers
@@ -27,6 +28,7 @@ func New(
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	userService thunderdome.UserService, authService thunderdome.AuthService,
+	checkinService thunderdome.CheckinService,
 ) *Service {
 	c := &Service{
 		db:                    db,
@@ -35,6 +37,7 @@ func New(
 		validateUserCookie:    validateUserCookie,
 		UserService:           userService,
 		AuthService:           authService,
+		CheckinService:        checkinService,
 	}
 
 	c.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){

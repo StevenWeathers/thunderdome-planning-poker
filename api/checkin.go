@@ -43,7 +43,7 @@ func (a *Service) handleCheckinsGet() http.HandlerFunc {
 			tz = "America/New_York"
 		}
 
-		Checkins, err := a.DB.CheckinList(r.Context(), TeamID, date, tz)
+		Checkins, err := a.CheckinService.CheckinList(r.Context(), TeamID, date, tz)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

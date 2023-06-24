@@ -55,17 +55,18 @@ type Config struct {
 }
 
 type Service struct {
-	Config        *Config
-	Router        *mux.Router
-	Email         *email.Email
-	Cookie        *securecookie.SecureCookie
-	DB            *db.Database
-	Logger        *otelzap.Logger
-	UserService   thunderdome.UserService
-	APIKeyService thunderdome.APIKeyService
-	AlertService  thunderdome.AlertService
-	AuthService   thunderdome.AuthService
-	BattleService thunderdome.BattleService
+	Config         *Config
+	Router         *mux.Router
+	Email          *email.Email
+	Cookie         *securecookie.SecureCookie
+	DB             *db.Database
+	Logger         *otelzap.Logger
+	UserService    thunderdome.UserService
+	APIKeyService  thunderdome.APIKeyService
+	AlertService   thunderdome.AlertService
+	AuthService    thunderdome.AuthService
+	BattleService  thunderdome.BattleService
+	CheckinService thunderdome.CheckinService
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -113,7 +114,7 @@ func Init(apiService Service) *Service {
 	b := battle.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.BattleService)
 	rs := retro.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService)
 	sb := storyboard.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService)
-	tc := checkin.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService)
+	tc := checkin.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.CheckinService)
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
 
