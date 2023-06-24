@@ -40,7 +40,7 @@ type retroCreateRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/retros [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/retros [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
-func (a *api) handleRetroCreate() http.HandlerFunc {
+func (a *APIService) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -77,7 +77,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newRetro, err = a.db.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+				newRetro, err = a.DB.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -87,7 +87,7 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newRetro, err = a.db.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+			newRetro, err = a.DB.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -109,13 +109,13 @@ func (a *api) handleRetroCreate() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId} [get]
-func (a *api) handleRetroGet() http.HandlerFunc {
+func (a *APIService) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		re, err := a.db.RetroGet(RetroID, UserID)
+		re, err := a.DB.RetroGet(RetroID, UserID)
 
 		if err != nil {
 			http.NotFound(w, r)
@@ -139,12 +139,12 @@ func (a *api) handleRetroGet() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/retros [get]
-func (a *api) handleRetrosGetByUser() http.HandlerFunc {
+func (a *APIService) handleRetrosGetByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		retros, err := a.db.RetroGetByUser(UserID)
+		retros, err := a.DB.RetroGetByUser(UserID)
 		if err != nil {
 			http.NotFound(w, r)
 			return
@@ -166,7 +166,7 @@ func (a *api) handleRetrosGetByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros [get]
-func (a *api) handleGetRetros() http.HandlerFunc {
+func (a *APIService) handleGetRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
@@ -176,9 +176,9 @@ func (a *api) handleGetRetros() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Retros, Count, err = a.db.GetActiveRetros(Limit, Offset)
+			Retros, Count, err = a.DB.GetActiveRetros(Limit, Offset)
 		} else {
-			Retros, Count, err = a.db.GetRetros(Limit, Offset)
+			Retros, Count, err = a.DB.GetRetros(Limit, Offset)
 		}
 
 		if err != nil {
@@ -215,7 +215,7 @@ type actionUpdateRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId} [put]
-func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
+func (a *APIService) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionUpdateRequestBody{}
 
@@ -270,7 +270,7 @@ func (a *api) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId} [delete]
-func (a *api) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
+func (a *APIService) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
@@ -319,7 +319,7 @@ type actionCommentRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments [post]
-func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
+func (a *APIService) handleRetroActionCommentAdd() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
 
@@ -355,7 +355,7 @@ func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
 			return
 		}
 
-		action, err := a.db.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
+		action, err := a.DB.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -379,7 +379,7 @@ func (a *api) handleRetroActionCommentAdd() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [put]
-func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
+func (a *APIService) handleRetroActionCommentEdit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
 
@@ -420,7 +420,7 @@ func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
 			return
 		}
 
-		action, err := a.db.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
+		action, err := a.DB.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -443,7 +443,7 @@ func (a *api) handleRetroActionCommentEdit() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [post]
-func (a *api) handleRetroActionCommentDelete() http.HandlerFunc {
+func (a *APIService) handleRetroActionCommentDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
@@ -465,7 +465,7 @@ func (a *api) handleRetroActionCommentDelete() http.HandlerFunc {
 			return
 		}
 
-		action, err := a.db.RetroActionCommentDelete(RetroID, ActionID, CommentID)
+		action, err := a.DB.RetroActionCommentDelete(RetroID, ActionID, CommentID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -486,7 +486,7 @@ func (a *api) handleRetroActionCommentDelete() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /retros/{retroId} [delete]
-func (a *api) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
+func (a *APIService) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]

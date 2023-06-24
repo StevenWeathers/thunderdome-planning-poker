@@ -63,8 +63,19 @@ func (s *server) routes() {
 
 	// Create services.
 	us := &db.UserService{DB: s.db.DB, Logger: s.logger}
+	apk := &db.APIKeyService{DB: s.db.DB, Logger: s.logger}
+	a := api.APIService{
+		Config:        apiConfig,
+		Router:        s.router,
+		DB:            s.db,
+		Email:         s.email,
+		Cookie:        s.cookie,
+		Logger:        s.logger,
+		UserService:   us,
+		APIKeyService: apk,
+	}
 
-	api.Init(apiConfig, s.router, s.db, s.email, s.cookie, s.logger, us)
+	api.Init(a)
 
 	// static assets
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix(s.config.PathPrefix, staticHandler))

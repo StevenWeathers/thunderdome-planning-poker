@@ -18,7 +18,7 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /auth/user [get]
-func (a *api) handleSessionUserProfile() http.HandlerFunc {
+func (a *APIService) handleSessionUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
@@ -44,7 +44,7 @@ func (a *api) handleSessionUserProfile() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId} [get]
-func (a *api) handleUserProfile() http.HandlerFunc {
+func (a *APIService) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -82,7 +82,7 @@ type userprofileUpdateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId} [put]
-func (a *api) handleUserProfileUpdate() http.HandlerFunc {
+func (a *APIService) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		SessionUserType := ctx.Value(contextKeyUserType).(string)
@@ -121,7 +121,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 			}
 		} else {
 			var updateErr error
-			if !a.config.LdapEnabled {
+			if !a.Config.LdapEnabled {
 				if profile.Name == "" {
 					a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 					return
@@ -157,7 +157,7 @@ func (a *api) handleUserProfileUpdate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId} [delete]
-func (a *api) handleUserDelete() http.HandlerFunc {
+func (a *APIService) handleUserDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -176,7 +176,7 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 			return
 		}
 
-		a.email.SendDeleteConfirmation(User.Name, User.Email)
+		a.Email.SendDeleteConfirmation(User.Name, User.Email)
 
 		// don't clear admins user cookies when deleting other users
 		if UserID == UserCookieID {
@@ -187,27 +187,27 @@ func (a *api) handleUserDelete() http.HandlerFunc {
 	}
 }
 
-// handleVerifyRequest sends verification email
+// handleVerifyRequest sends verification Email
 // @Summary Request Verification Email
-// @Description Sends verification email
+// @Description Sends verification Email
 // @Tags user
 // @Param userId path string true "the user ID"
 // @Success 200 object standardJsonResponse{}
 // @Success 400 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Router /users/{userId}/request-verify [post]
-func (a *api) handleVerifyRequest() http.HandlerFunc {
+func (a *APIService) handleVerifyRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, VerifyId, err := a.db.UserVerifyRequest(r.Context(), UserID)
+		User, VerifyId, err := a.DB.UserVerifyRequest(r.Context(), UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.email.SendEmailVerification(User.Name, User.Email, VerifyId)
+		a.Email.SendEmailVerification(User.Name, User.Email, VerifyId)
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -220,9 +220,9 @@ func (a *api) handleVerifyRequest() http.HandlerFunc {
 // @Success 200 object standardJsonResponse{[]string}
 // @Failure 500 object standardJsonResponse{}
 // @Router /active-countries [get]
-func (a *api) handleGetActiveCountries() http.HandlerFunc {
+func (a *APIService) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		countries, err := a.db.GetActiveCountries(r.Context())
+		countries, err := a.DB.GetActiveCountries(r.Context())
 
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)

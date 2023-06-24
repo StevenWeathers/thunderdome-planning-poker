@@ -36,7 +36,7 @@ type storyboardCreateRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/storyboards [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/storyboards [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards [post]
-func (a *api) handleStoryboardCreate() http.HandlerFunc {
+func (a *APIService) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -72,7 +72,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 		// if storyboard created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newStoryboard, err = a.db.TeamCreateStoryboard(ctx, TeamID, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+				newStoryboard, err = a.DB.TeamCreateStoryboard(ctx, TeamID, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
 
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
@@ -83,7 +83,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newStoryboard, err = a.db.CreateStoryboard(ctx, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
+			newStoryboard, err = a.DB.CreateStoryboard(ctx, UserID, s.StoryboardName, s.JoinCode, s.FacilitatorCode)
 			if err != nil {
 				a.Failure(w, r, http.StatusInternalServerError, err)
 				return
@@ -105,7 +105,7 @@ func (a *api) handleStoryboardCreate() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards/{storyboardId} [get]
-func (a *api) handleStoryboardGet() http.HandlerFunc {
+func (a *APIService) handleStoryboardGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		StoryboardID := vars["storyboardId"]
@@ -117,7 +117,7 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		storyboard, err := a.db.GetStoryboard(StoryboardID, UserId)
+		storyboard, err := a.DB.GetStoryboard(StoryboardID, UserId)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARD_NOT_FOUND"))
 			return
@@ -125,7 +125,7 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 
 		// don't allow retrieving storyboard details if storyboard has JoinCode and user hasn't joined yet
 		if storyboard.JoinCode != "" {
-			UserErr := a.db.GetStoryboardUserActiveStatus(StoryboardID, UserId)
+			UserErr := a.DB.GetStoryboardUserActiveStatus(StoryboardID, UserId)
 			if UserErr != nil && UserType != adminUserType {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_STORYBOARD"))
 				return
@@ -149,13 +149,13 @@ func (a *api) handleStoryboardGet() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/storyboards [get]
-func (a *api) handleGetUserStoryboards() http.HandlerFunc {
+func (a *APIService) handleGetUserStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		storyboards, Count, err := a.db.GetStoryboardsByUser(UserID)
+		storyboards, Count, err := a.DB.GetStoryboardsByUser(UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "STORYBOARDS_NOT_FOUND"))
 			return
@@ -183,7 +183,7 @@ func (a *api) handleGetUserStoryboards() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards [get]
-func (a *api) handleGetStoryboards() http.HandlerFunc {
+func (a *APIService) handleGetStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
@@ -193,9 +193,9 @@ func (a *api) handleGetStoryboards() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			storyboards, Count, err = a.db.GetActiveStoryboards(Limit, Offset)
+			storyboards, Count, err = a.DB.GetActiveStoryboards(Limit, Offset)
 		} else {
-			storyboards, Count, err = a.db.GetStoryboards(Limit, Offset)
+			storyboards, Count, err = a.DB.GetStoryboards(Limit, Offset)
 		}
 
 		if err != nil {
@@ -224,7 +224,7 @@ func (a *api) handleGetStoryboards() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /storyboards/{storyboardId} [delete]
-func (a *api) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
+func (a *APIService) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		Id := vars["storyboardId"]

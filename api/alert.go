@@ -30,10 +30,10 @@ type alertRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [get]
-func (a *api) handleGetAlerts() http.HandlerFunc {
+func (a *APIService) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
-		Alerts, Count, err := a.db.AlertsList(r.Context(), Limit, Offset)
+		Alerts, Count, err := a.DB.AlertsList(r.Context(), Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -59,7 +59,7 @@ func (a *api) handleGetAlerts() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts [post]
-func (a *api) handleAlertCreate() http.HandlerFunc {
+func (a *APIService) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var alert = alertRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
@@ -80,13 +80,13 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := a.DB.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.db.GetActiveAlerts(r.Context())
+		ActiveAlerts = a.DB.GetActiveAlerts(r.Context())
 
 		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -103,7 +103,7 @@ func (a *api) handleAlertCreate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [put]
-func (a *api) handleAlertUpdate() http.HandlerFunc {
+func (a *APIService) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ID := vars["alertId"]
@@ -132,13 +132,13 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := a.DB.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.db.GetActiveAlerts(r.Context())
+		ActiveAlerts = a.DB.GetActiveAlerts(r.Context())
 
 		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -154,7 +154,7 @@ func (a *api) handleAlertUpdate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /alerts/{alertId} [delete]
-func (a *api) handleAlertDelete() http.HandlerFunc {
+func (a *APIService) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		AlertID := vars["alertId"]
@@ -164,13 +164,13 @@ func (a *api) handleAlertDelete() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.AlertDelete(r.Context(), AlertID)
+		err := a.DB.AlertDelete(r.Context(), AlertID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = a.db.GetActiveAlerts(r.Context())
+		ActiveAlerts = a.DB.GetActiveAlerts(r.Context())
 
 		a.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}

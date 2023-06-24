@@ -1,4 +1,4 @@
-// Package api provides restful API endpoints for Thunderdome webapp
+// Package APIService provides restful API endpoints for Thunderdome webapp
 package api
 
 import (
@@ -54,14 +54,15 @@ type Config struct {
 	OrganizationsEnabled bool
 }
 
-type api struct {
-	config      *Config
-	router      *mux.Router
-	email       *email.Email
-	cookie      *securecookie.SecureCookie
-	db          *db.Database
-	logger      *otelzap.Logger
-	UserService thunderdome.UserService
+type APIService struct {
+	Config        *Config
+	Router        *mux.Router
+	Email         *email.Email
+	Cookie        *securecookie.SecureCookie
+	DB            *db.Database
+	Logger        *otelzap.Logger
+	UserService   thunderdome.UserService
+	APIKeyService thunderdome.APIKeyService
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -104,42 +105,31 @@ const (
 // @in header
 // @name X-API-Key
 // @version BETA
-func Init(
-	config *Config, router *mux.Router, database *db.Database, email *email.Email,
-	cookie *securecookie.SecureCookie, logger *otelzap.Logger, userService thunderdome.UserService,
-) *api {
-	var a = &api{
-		config:      config,
-		router:      router,
-		db:          database,
-		email:       email,
-		cookie:      cookie,
-		logger:      logger,
-		UserService: userService,
-	}
-	b := battle.New(database, logger, a.validateSessionCookie, a.validateUserCookie, userService)
-	rs := retro.New(database, logger, a.validateSessionCookie, a.validateUserCookie, userService)
-	sb := storyboard.New(database, logger, a.validateSessionCookie, a.validateUserCookie, userService)
-	tc := checkin.New(database, logger, a.validateSessionCookie, a.validateUserCookie, userService)
-	swaggerJsonPath := "/" + a.config.PathPrefix + "swagger/doc.json"
+func Init(apiService APIService) *APIService {
+	var a = &apiService
+	b := battle.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService)
+	rs := retro.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService)
+	sb := storyboard.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService)
+	tc := checkin.New(a.DB, a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService)
+	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
 
-	swaggerdocs.SwaggerInfo.BasePath = a.config.PathPrefix + "/api"
+	swaggerdocs.SwaggerInfo.BasePath = a.Config.PathPrefix + "/APIService"
 	// swagger docs for external API when enabled
-	if a.config.ExternalAPIEnabled {
-		a.router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))
+	if a.Config.ExternalAPIEnabled {
+		a.Router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))
 	}
 
-	apiRouter := a.router.PathPrefix("/api").Subrouter()
+	apiRouter := a.Router.PathPrefix("/APIService").Subrouter()
 	userRouter := apiRouter.PathPrefix("/users").Subrouter()
 	orgRouter := apiRouter.PathPrefix("/organizations").Subrouter()
 	teamRouter := apiRouter.PathPrefix("/teams").Subrouter()
 	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
 
 	// user authentication, profile
-	if a.config.LdapEnabled {
+	if a.Config.LdapEnabled {
 		apiRouter.HandleFunc("/auth/ldap", a.handleLdapLogin()).Methods("POST")
-	} else if a.config.HeaderAuthEnabled {
+	} else if a.Config.HeaderAuthEnabled {
 		apiRouter.HandleFunc("/auth", a.handleHeaderLogin()).Methods("GET")
 	} else {
 		apiRouter.HandleFunc("/auth", a.handleLogin()).Methods("POST")
@@ -166,7 +156,7 @@ func Init(
 	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUser()))).Methods("GET")
 	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleCreateTeam()))).Methods("POST")
 
-	if a.config.ExternalAPIEnabled {
+	if a.Config.ExternalAPIEnabled {
 		userRouter.HandleFunc("/{userId}/apikeys", a.userOnly(a.entityUserOnly(a.handleUserAPIKeys()))).Methods("GET")
 		userRouter.HandleFunc("/{userId}/apikeys", a.userOnly(a.verifiedUserOnly(a.handleAPIKeyGenerate()))).Methods("POST")
 		userRouter.HandleFunc("/{userId}/apikeys/{keyID}", a.userOnly(a.entityUserOnly(a.handleUserAPIKeyUpdate()))).Methods("PUT")
@@ -256,7 +246,7 @@ func Init(
 	apiRouter.HandleFunc("/maintenance/clean-guests", a.userOnly(a.adminOnly(a.handleCleanGuests()))).Methods("DELETE")
 	apiRouter.HandleFunc("/maintenance/lowercase-emails", a.userOnly(a.adminOnly(a.handleLowercaseUserEmails()))).Methods("PATCH")
 	// battle(s)
-	if a.config.FeaturePoker {
+	if a.Config.FeaturePoker {
 		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handleBattleCreate()))).Methods("POST")
 		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handleGetUserBattles()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
@@ -276,7 +266,7 @@ func Init(
 		apiRouter.HandleFunc("/arena/{battleId}", b.ServeBattleWs())
 	}
 	// retro(s)
-	if a.config.FeatureRetro {
+	if a.Config.FeatureRetro {
 		userRouter.HandleFunc("/{userId}/retros", a.userOnly(a.entityUserOnly(a.handleRetroCreate()))).Methods("POST")
 		userRouter.HandleFunc("/{userId}/retros", a.userOnly(a.entityUserOnly(a.handleRetrosGetByUser()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/retros", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamRetros()))).Methods("GET")
@@ -303,7 +293,7 @@ func Init(
 		apiRouter.HandleFunc("/retro/{retroId}", rs.ServeWs())
 	}
 	// storyboard(s)
-	if a.config.FeatureRetro {
+	if a.Config.FeatureRetro {
 		userRouter.HandleFunc("/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleStoryboardCreate()))).Methods("POST")
 		userRouter.HandleFunc("/{userId}/storyboards", a.userOnly(a.entityUserOnly(a.handleGetUserStoryboards()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/storyboards", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamStoryboards()))).Methods("GET")

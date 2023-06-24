@@ -16,11 +16,11 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-battles [delete]
-func (a *api) handleCleanBattles() http.HandlerFunc {
+func (a *APIService) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_battles_days_old")
 
-		err := a.db.CleanBattles(r.Context(), DaysOld)
+		err := a.DB.CleanBattles(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -39,11 +39,11 @@ func (a *api) handleCleanBattles() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-retros [delete]
-func (a *api) handleCleanRetros() http.HandlerFunc {
+func (a *APIService) handleCleanRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_retros_days_old")
 
-		err := a.db.CleanRetros(r.Context(), DaysOld)
+		err := a.DB.CleanRetros(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -62,11 +62,11 @@ func (a *api) handleCleanRetros() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-storyboards [delete]
-func (a *api) handleCleanStoryboards() http.HandlerFunc {
+func (a *APIService) handleCleanStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_storyboards_days_old")
 
-		err := a.db.CleanStoryboards(r.Context(), DaysOld)
+		err := a.DB.CleanStoryboards(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -85,11 +85,11 @@ func (a *api) handleCleanStoryboards() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/clean-guests [delete]
-func (a *api) handleCleanGuests() http.HandlerFunc {
+func (a *APIService) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_guests_days_old")
 
-		err := a.db.CleanGuests(r.Context(), DaysOld)
+		err := a.DB.CleanGuests(r.Context(), DaysOld)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -101,35 +101,35 @@ func (a *api) handleCleanGuests() http.HandlerFunc {
 
 // handleLowercaseUserEmails handles lowercasing any user emails that have any uppercase letters
 // @Summary Lowercase User Emails
-// @Description Lowercases any user emails that have uppercase letters to prevent duplicate email registration
+// @Description Lowercases any user emails that have uppercase letters to prevent duplicate Email registration
 // @Tags maintenance
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /maintenance/lowercase-emails [patch]
-func (a *api) handleLowercaseUserEmails() http.HandlerFunc {
+func (a *APIService) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		lowercasedUsers, err := a.db.LowercaseUserEmails(r.Context())
+		lowercasedUsers, err := a.DB.LowercaseUserEmails(r.Context())
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.logger.Info("Lowercased user emails", zap.Int("count", len(lowercasedUsers)))
+		a.Logger.Info("Lowercased user emails", zap.Int("count", len(lowercasedUsers)))
 		for _, u := range lowercasedUsers {
-			a.email.SendEmailUpdate(u.Name, u.Email)
+			a.Email.SendEmailUpdate(u.Name, u.Email)
 		}
 
-		mergedUsers, err := a.db.MergeDuplicateAccounts(r.Context())
+		mergedUsers, err := a.DB.MergeDuplicateAccounts(r.Context())
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		a.logger.Info("Merged user accounts", zap.Int("count", len(mergedUsers)))
+		a.Logger.Info("Merged user accounts", zap.Int("count", len(mergedUsers)))
 		for _, u := range mergedUsers {
-			a.email.SendMergedUpdate(u.Name, u.Email)
+			a.Email.SendMergedUpdate(u.Name, u.Email)
 		}
 
 		a.Success(w, r, http.StatusOK, nil, nil)

@@ -17,9 +17,9 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/stats [get]
-func (a *api) handleAppStats() http.HandlerFunc {
+func (a *APIService) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		AppStats, err := a.db.GetAppStats(r.Context())
+		AppStats, err := a.DB.GetAppStats(r.Context())
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -40,7 +40,7 @@ func (a *api) handleAppStats() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users [get]
-func (a *api) handleGetRegisteredUsers() http.HandlerFunc {
+func (a *APIService) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
@@ -78,7 +78,7 @@ type userCreateRequestBody struct {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users [post]
-func (a *api) handleUserCreate() http.HandlerFunc {
+func (a *APIService) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user = userCreateRequestBody{}
 		body, err := io.ReadAll(r.Body)
@@ -106,7 +106,7 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 			return
 		}
 
-		a.email.SendWelcome(user.Name, user.Email, VerifyID)
+		a.Email.SendWelcome(user.Name, user.Email, VerifyID)
 
 		a.Success(w, r, http.StatusOK, newUser, nil)
 	}
@@ -123,7 +123,7 @@ func (a *api) handleUserCreate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/promote/ [patch]
-func (a *api) handleUserPromote() http.HandlerFunc {
+func (a *APIService) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -153,7 +153,7 @@ func (a *api) handleUserPromote() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/demote [patch]
-func (a *api) handleUserDemote() http.HandlerFunc {
+func (a *APIService) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -183,7 +183,7 @@ func (a *api) handleUserDemote() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/disable [patch]
-func (a *api) handleUserDisable() http.HandlerFunc {
+func (a *APIService) handleUserDisable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -213,7 +213,7 @@ func (a *api) handleUserDisable() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/enable [patch]
-func (a *api) handleUserEnable() http.HandlerFunc {
+func (a *APIService) handleUserEnable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -244,7 +244,7 @@ func (a *api) handleUserEnable() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/users/{userId}/password [patch]
-func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
+func (a *APIService) handleAdminUpdateUserPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -273,13 +273,13 @@ func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := a.db.UserUpdatePassword(r.Context(), UserID, u.Password1)
+		UserName, UserEmail, updateErr := a.DB.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
 
-		a.email.SendPasswordUpdate(UserName, UserEmail)
+		a.Email.SendPasswordUpdate(UserName, UserEmail)
 
 		a.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -296,15 +296,15 @@ func (a *api) handleAdminUpdateUserPassword() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/organizations [get]
-func (a *api) handleGetOrganizations() http.HandlerFunc {
+func (a *APIService) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := a.db.OrganizationList(r.Context(), Limit, Offset)
+		Organizations := a.DB.OrganizationList(r.Context(), Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Organizations, nil)
 	}
@@ -321,11 +321,11 @@ func (a *api) handleGetOrganizations() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/teams [get]
-func (a *api) handleGetTeams() http.HandlerFunc {
+func (a *APIService) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams, Count := a.db.TeamList(r.Context(), Limit, Offset)
+		Teams, Count := a.DB.TeamList(r.Context(), Limit, Offset)
 
 		Meta := &pagination{
 			Count:  Count,
@@ -348,22 +348,22 @@ func (a *api) handleGetTeams() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/apikeys [get]
-func (a *api) handleGetAPIKeys() http.HandlerFunc {
+func (a *APIService) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.GetAPIKeys(r.Context(), Limit, Offset)
+		Teams := a.DB.GetAPIKeys(r.Context(), Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
 }
 
-// handleSearchRegisteredUsersByEmail gets a list of registered users filtered by email likeness
+// handleSearchRegisteredUsersByEmail gets a list of registered users filtered by Email likeness
 // @Summary Search Registered Users by Email
-// @Description Get list of registered users filtered by email likeness
+// @Description Get list of registered users filtered by Email likeness
 // @Tags admin
 // @Produce  json
-// @Param search query string true "The user email to search for"
+// @Param search query string true "The user Email to search for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
 // @Success 200 object standardJsonResponse{data=[]thunderdome.User}
@@ -371,7 +371,7 @@ func (a *api) handleGetAPIKeys() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /admin/search/users/email [get]
-func (a *api) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
+func (a *APIService) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		Search, err := getSearchFromRequest(r)

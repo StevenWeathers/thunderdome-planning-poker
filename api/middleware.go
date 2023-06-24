@@ -10,16 +10,16 @@ import (
 )
 
 // userOnly validates that the request was made by a valid user
-func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get(apiKeyHeaderName)
 		apiKey = strings.TrimSpace(apiKey)
 		ctx := r.Context()
 		var User *thunderdome.User
 
-		if apiKey != "" && a.config.ExternalAPIEnabled {
+		if apiKey != "" && a.Config.ExternalAPIEnabled {
 			var apiKeyErr error
-			User, apiKeyErr = a.db.GetApiKeyUser(ctx, apiKey)
+			User, apiKeyErr = a.APIKeyService.GetApiKeyUser(ctx, apiKey)
 			if apiKeyErr != nil {
 				a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
@@ -33,7 +33,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 
 			if SessionId != "" {
 				var userErr error
-				User, userErr = a.db.GetSessionUser(ctx, SessionId)
+				User, userErr = a.DB.GetSessionUser(ctx, SessionId)
 				if userErr != nil {
 					a.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
@@ -62,7 +62,7 @@ func (a *api) userOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // entityUserOnly validates that the request was made by the session user matching the {userId} of the entity (or ADMIN)
-func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -85,7 +85,7 @@ func (a *api) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // registeredUserOnly validates that the request was made by a registered user
-func (a *api) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
@@ -99,7 +99,7 @@ func (a *api) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // adminOnly middleware checks if the user is an admin, otherwise reject their request
-func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
@@ -113,7 +113,7 @@ func (a *api) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // verifiedUserOnly validates that the request was made by a verified registered user
-func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -137,7 +137,7 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if a.config.ExternalAPIVerifyRequired && !EntityUser.Verified {
+		if a.Config.ExternalAPIVerifyRequired && !EntityUser.Verified {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
 			return
 		}
@@ -147,7 +147,7 @@ func (a *api) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgUserOnly validates that the request was made by a valid user of the organization
-func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -163,7 +163,7 @@ func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = a.db.OrganizationUserRole(ctx, UserID, OrgID)
+			Role, UserErr = a.DB.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
@@ -179,7 +179,7 @@ func (a *api) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgAdminOnly validates that the request was made by an ADMIN of the organization
-func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -195,7 +195,7 @@ func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr := a.db.OrganizationUserRole(ctx, UserID, OrgID)
+			Role, UserErr := a.DB.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
@@ -215,7 +215,7 @@ func (a *api) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgTeamOnly validates that the request was made by an user of the organization team (or organization)
-func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -238,7 +238,7 @@ func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, TeamRole, UserErr = a.db.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
+			OrgRole, TeamRole, UserErr = a.DB.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -256,7 +256,7 @@ func (a *api) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // orgTeamAdminOnly validates that the request was made by an ADMIN of the organization team (or organization)
-func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -279,7 +279,7 @@ func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, TeamRole, UserErr := a.db.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
+			OrgRole, TeamRole, UserErr := a.DB.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -301,7 +301,7 @@ func (a *api) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentUserOnly validates that the request was made by a valid user of the organization (with department role)
-func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -324,7 +324,7 @@ func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var DepartmentRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, UserErr = a.db.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
+			OrgRole, DepartmentRole, UserErr = a.DB.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
@@ -342,7 +342,7 @@ func (a *api) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentAdminOnly validates that the request was made by an ADMIN of the organization (with department role)
-func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -365,7 +365,7 @@ func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var DepartmentRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, UserErr := a.db.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
+			OrgRole, DepartmentRole, UserErr := a.DB.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
@@ -387,7 +387,7 @@ func (a *api) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentTeamUserOnly validates that the request was made by an user of the department team (or organization)
-func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -417,7 +417,7 @@ func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = a.db.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
+			OrgRole, DepartmentRole, TeamRole, UserErr = a.DB.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -437,7 +437,7 @@ func (a *api) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // departmentTeamAdminOnly validates that the request was made by an ADMIN of the department team (or organization)
-func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -467,7 +467,7 @@ func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = a.db.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
+			OrgRole, DepartmentRole, TeamRole, UserErr = a.DB.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -492,7 +492,7 @@ func (a *api) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // teamUserOnly validates that the request was made by a valid user of the team
-func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -508,7 +508,7 @@ func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = a.db.TeamUserRole(ctx, UserID, TeamID)
+			Role, UserErr = a.DB.TeamUserRole(ctx, UserID, TeamID)
 			if UserType != adminUserType && UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -524,7 +524,7 @@ func (a *api) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 }
 
 // teamAdminOnly validates that the request was made by an ADMIN of the team
-func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
+func (a *APIService) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -540,7 +540,7 @@ func (a *api) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = a.db.TeamUserRole(ctx, UserID, TeamID)
+			Role, UserErr = a.DB.TeamUserRole(ctx, UserID, TeamID)
 			if UserErr != nil {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return

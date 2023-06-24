@@ -19,7 +19,7 @@ import (
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys [get]
-func (a *api) handleUserAPIKeys() http.HandlerFunc {
+func (a *APIService) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -29,7 +29,7 @@ func (a *api) handleUserAPIKeys() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := a.db.GetUserApiKeys(r.Context(), UserID)
+		APIKeys, keysErr := a.APIKeyService.GetUserApiKeys(r.Context(), UserID)
 		if keysErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -49,13 +49,13 @@ type apikeyGenerateRequestBody struct {
 // @Tags apikey
 // @Produce  json
 // @Param userId path string true "the user ID to generate API key for"
-// @Param key body apikeyGenerateRequestBody true "new api key object"
+// @Param key body apikeyGenerateRequestBody true "new APIService key object"
 // @Success 200 object standardJsonResponse{data=thunderdome.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys [post]
-func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
+func (a *APIService) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -85,18 +85,18 @@ func (a *api) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := a.db.GetUserApiKeys(ctx, UserID)
+		APIKeys, keysErr := a.APIKeyService.GetUserApiKeys(ctx, UserID)
 		if keysErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
 
-		if len(APIKeys) == a.config.UserAPIKeyLimit {
+		if len(APIKeys) == a.Config.UserAPIKeyLimit {
 			a.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "USER_APIKEY_LIMIT_REACHED"))
 			return
 		}
 
-		APIKey, keyErr := a.db.GenerateApiKey(ctx, UserID, k.Name)
+		APIKey, keyErr := a.APIKeyService.GenerateApiKey(ctx, UserID, k.Name)
 		if keyErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
@@ -117,13 +117,13 @@ type apikeyUpdateRequestBody struct {
 // @Produce  json
 // @Param userId path string true "the user ID"
 // @Param keyID path string true "the API Key ID to update"
-// @Param key body apikeyUpdateRequestBody true "api key object to update"
+// @Param key body apikeyUpdateRequestBody true "APIService key object to update"
 // @Success 200 object standardJsonResponse{data=[]thunderdome.APIKey}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys/{keyID} [put]
-func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
+func (a *APIService) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -153,7 +153,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := a.db.UpdateUserApiKey(r.Context(), UserID, APK, k.Active)
+		APIKeys, keysErr := a.APIKeyService.UpdateUserApiKey(r.Context(), UserID, APK, k.Active)
 		if keysErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -175,7 +175,7 @@ func (a *api) handleUserAPIKeyUpdate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/apikeys/{keyID} [delete]
-func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
+func (a *APIService) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -186,7 +186,7 @@ func (a *api) handleUserAPIKeyDelete() http.HandlerFunc {
 		}
 		APK := vars["keyID"]
 
-		APIKeys, keysErr := a.db.DeleteUserApiKey(r.Context(), UserID, APK)
+		APIKeys, keysErr := a.APIKeyService.DeleteUserApiKey(r.Context(), UserID, APK)
 		if keysErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return

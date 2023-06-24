@@ -33,9 +33,9 @@ type orgTeamResponse struct {
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/organizations [get]
-func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
+func (a *APIService) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -44,7 +44,7 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := a.db.OrganizationListByUser(r.Context(), UserID, Limit, Offset)
+		Organizations := a.DB.OrganizationListByUser(r.Context(), UserID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Organizations, nil)
 	}
@@ -61,9 +61,9 @@ func (a *api) handleGetOrganizationsByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId} [get]
-func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
+func (a *APIService) handleGetOrganizationByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -72,7 +72,7 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
-		Organization, err := a.db.OrganizationGet(ctx, OrgID)
+		Organization, err := a.DB.OrganizationGet(ctx, OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -99,9 +99,9 @@ func (a *api) handleGetOrganizationByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/organizations [post]
-func (a *api) handleCreateOrganization() http.HandlerFunc {
+func (a *APIService) handleCreateOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -121,7 +121,7 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 			return
 		}
 
-		Organization, err := a.db.OrganizationCreate(r.Context(), UserID, team.Name)
+		Organization, err := a.DB.OrganizationCreate(r.Context(), UserID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -141,9 +141,9 @@ func (a *api) handleCreateOrganization() http.HandlerFunc {
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams [get]
-func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
+func (a *APIService) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -151,7 +151,7 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.OrganizationTeamList(r.Context(), OrgID, Limit, Offset)
+		Teams := a.DB.OrganizationTeamList(r.Context(), OrgID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -167,9 +167,9 @@ func (a *api) handleGetOrganizationTeams() http.HandlerFunc {
 // @Failure 403 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users [get]
-func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
+func (a *APIService) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -177,7 +177,7 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := a.db.OrganizationUserList(r.Context(), OrgID, Limit, Offset)
+		Teams := a.DB.OrganizationUserList(r.Context(), OrgID, Limit, Offset)
 
 		a.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -195,9 +195,9 @@ func (a *api) handleGetOrganizationUsers() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams [post]
-func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
+func (a *APIService) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -217,7 +217,7 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 			return
 		}
 
-		NewTeam, err := a.db.OrganizationTeamCreate(r.Context(), OrgID, team.Name)
+		NewTeam, err := a.DB.OrganizationTeamCreate(r.Context(), OrgID, team.Name)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -239,9 +239,9 @@ func (a *api) handleCreateOrganizationTeam() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users [post]
-func (a *api) handleOrganizationAddUser() http.HandlerFunc {
+func (a *APIService) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -270,7 +270,7 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 			return
 		}
 
-		_, err := a.db.OrganizationAddUser(r.Context(), OrgID, User.Id, u.Role)
+		_, err := a.DB.OrganizationAddUser(r.Context(), OrgID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -292,9 +292,9 @@ func (a *api) handleOrganizationAddUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/users/{userId} [delete]
-func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
+func (a *APIService) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -307,7 +307,7 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.OrganizationRemoveUser(r.Context(), OrgID, UserID)
+		err := a.DB.OrganizationRemoveUser(r.Context(), OrgID, UserID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -329,10 +329,10 @@ func (a *api) handleOrganizationRemoveUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams/{teamId} [get]
-func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
+func (a *APIService) handleGetOrganizationTeamByUser() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -343,13 +343,13 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		Organization, err := a.db.OrganizationGet(r.Context(), OrgID)
+		Organization, err := a.DB.OrganizationGet(r.Context(), OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Team, err := a.db.TeamGet(ctx, TeamID)
+		Team, err := a.DB.TeamGet(ctx, TeamID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -379,9 +379,9 @@ func (a *api) handleGetOrganizationTeamByUser() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId}/teams/{teamId}/users [post]
-func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
+func (a *APIService) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !a.config.OrganizationsEnabled {
+		if !a.Config.OrganizationsEnabled {
 			a.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
@@ -412,13 +412,13 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		OrgRole, roleErr := a.db.OrganizationUserRole(r.Context(), User.Id, OrgID)
+		OrgRole, roleErr := a.DB.OrganizationUserRole(r.Context(), User.Id, OrgID)
 		if OrgRole == "" || roleErr != nil {
 			a.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 
-		_, err := a.db.TeamAddUser(ctx, TeamID, User.Id, u.Role)
+		_, err := a.DB.TeamAddUser(ctx, TeamID, User.Id, u.Role)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -439,7 +439,7 @@ func (a *api) handleOrganizationTeamAddUser() http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /organizations/{orgId} [delete]
-func (a *api) handleDeleteOrganization() http.HandlerFunc {
+func (a *APIService) handleDeleteOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
@@ -449,7 +449,7 @@ func (a *api) handleDeleteOrganization() http.HandlerFunc {
 			return
 		}
 
-		err := a.db.OrganizationDelete(r.Context(), OrgID)
+		err := a.DB.OrganizationDelete(r.Context(), OrgID)
 		if err != nil {
 			a.Failure(w, r, http.StatusInternalServerError, err)
 			return

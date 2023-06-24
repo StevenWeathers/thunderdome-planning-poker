@@ -26,13 +26,13 @@ import (
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/battles [get]
-func (a *api) handleGetUserBattles() http.HandlerFunc {
+func (a *APIService) handleGetUserBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		battles, Count, err := a.db.GetBattlesByUser(UserID, Limit, Offset)
+		battles, Count, err := a.DB.GetBattlesByUser(UserID, Limit, Offset)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
@@ -78,7 +78,7 @@ type battleRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/battles [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/battles [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles [post]
-func (a *api) handleBattleCreate() http.HandlerFunc {
+func (a *APIService) handleBattleCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -114,7 +114,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 		// if battle created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newBattle, err = a.db.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+				newBattle, err = a.DB.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 				if err != nil {
 					a.Failure(w, r, http.StatusInternalServerError, err)
 					return
@@ -124,7 +124,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newBattle, err = a.db.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+			newBattle, err = a.DB.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 			if err != nil {
 				a.Failure(w, r, http.StatusInternalServerError, err)
 				return
@@ -133,9 +133,9 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 
 		// when battleLeaders array is passed add additional leaders to battle
 		if len(b.BattleLeaders) > 0 {
-			updatedLeaders, err := a.db.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
+			updatedLeaders, err := a.DB.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
 			if err != nil {
-				a.logger.Error("error adding additional battle leaders")
+				a.Logger.Error("error adding additional battle leaders")
 			} else {
 				newBattle.Leaders = updatedLeaders
 			}
@@ -157,7 +157,7 @@ func (a *api) handleBattleCreate() http.HandlerFunc {
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles [get]
-func (a *api) handleGetBattles() http.HandlerFunc {
+func (a *APIService) handleGetBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
@@ -167,9 +167,9 @@ func (a *api) handleGetBattles() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Battles, Count, err = a.db.GetActiveBattles(Limit, Offset)
+			Battles, Count, err = a.DB.GetActiveBattles(Limit, Offset)
 		} else {
-			Battles, Count, err = a.db.GetBattles(Limit, Offset)
+			Battles, Count, err = a.DB.GetBattles(Limit, Offset)
 		}
 
 		if err != nil {
@@ -198,7 +198,7 @@ func (a *api) handleGetBattles() http.HandlerFunc {
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId} [get]
-func (a *api) handleGetBattle() http.HandlerFunc {
+func (a *APIService) handleGetBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleId := vars["battleId"]
@@ -210,7 +210,7 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		b, err := a.db.GetBattle(BattleId, UserId)
+		b, err := a.DB.GetBattle(BattleId, UserId)
 		if err != nil {
 			a.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
@@ -218,7 +218,7 @@ func (a *api) handleGetBattle() http.HandlerFunc {
 
 		// don't allow retrieving battle details if battle has JoinCode and user hasn't joined yet
 		if b.JoinCode != "" {
-			UserErr := a.db.GetBattleUserActiveStatus(BattleId, UserId)
+			UserErr := a.DB.GetBattleUserActiveStatus(BattleId, UserId)
 			if UserErr != nil && UserType != adminUserType {
 				a.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
 				return
@@ -250,7 +250,7 @@ type planRequestBody struct {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId}/plans [post]
-func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
+func (a *APIService) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]
@@ -288,7 +288,7 @@ func (a *api) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId} [delete]
-func (a *api) handleBattleDelete(b *battle.Service) http.HandlerFunc {
+func (a *APIService) handleBattleDelete(b *battle.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]

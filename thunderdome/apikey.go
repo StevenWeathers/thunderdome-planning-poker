@@ -1,6 +1,9 @@
 package thunderdome
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // APIKey structure
 type APIKey struct {
@@ -26,4 +29,12 @@ type UserAPIKey struct {
 	Active      bool      `json:"active"`
 	CreatedDate time.Time `json:"createdDate"`
 	UpdatedDate time.Time `json:"updatedDate"`
+}
+
+type APIKeyService interface {
+	GenerateApiKey(ctx context.Context, UserID string, KeyName string) (*APIKey, error)
+	GetUserApiKeys(ctx context.Context, UserID string) ([]*APIKey, error)
+	GetApiKeyUser(ctx context.Context, APK string) (*User, error)
+	UpdateUserApiKey(ctx context.Context, UserID string, KeyID string, Active bool) ([]*APIKey, error)
+	DeleteUserApiKey(ctx context.Context, UserID string, KeyID string) ([]*APIKey, error)
 }
