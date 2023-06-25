@@ -1,18 +1,17 @@
 <script lang="ts">
     import { onMount } from 'svelte'
-
-    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
-    import Pagination from '../../components/Pagination.svelte'
-    import CheckIcon from '../../components/icons/CheckIcon.svelte'
-    import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.ts'
-    import { validateUserIsAdmin } from '../../validationUtils.js'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
+    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
+    import Pagination from '../../components/Pagination.svelte'
+    import CheckIcon from '../../components/icons/CheckIcon.svelte'
 
     export let xfetch
     export let router
@@ -41,7 +40,7 @@
                 appStats = result.data
             })
             .catch(function () {
-                notifications.danger($_('applicationStatsError'))
+                notifications.danger($LL.applicationStatsError())
             })
     }
 
@@ -55,7 +54,7 @@
                 apikeys = result.data
             })
             .catch(function () {
-                notifications.danger($_('getApikeysError'))
+                notifications.danger($LL.getApikeysError())
             })
     }
 
@@ -66,16 +65,12 @@
             })
                 .then(res => res.json())
                 .then(function () {
-                    notifications.success(
-                        $_('pages.warriorProfile.apiKeys.deleteSuccess'),
-                    )
+                    notifications.success($LL.apiKeyDeleteSuccess())
                     getAppStats()
                     getApiKeys()
                 })
                 .catch(function () {
-                    notifications.danger(
-                        $_('pages.warriorProfile.apiKeys.deleteFailed'),
-                    )
+                    notifications.danger($LL.apiKeyDeleteFailed())
                 })
         }
     }
@@ -92,15 +87,11 @@
             })
                 .then(res => res.json())
                 .then(function () {
-                    notifications.success(
-                        $_('pages.warriorProfile.apiKeys.updateSuccess'),
-                    )
+                    notifications.success($LL.apiKeyUpdateSuccess())
                     getApiKeys()
                 })
                 .catch(function () {
-                    notifications.danger(
-                        $_('pages.warriorProfile.apiKeys.updateFailed'),
-                    )
+                    notifications.danger($LL.apiKeyUpdateFailed())
                 })
         }
     }
@@ -126,7 +117,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('apiKeys')} {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$LL.apiKeys()} {$LL.admin()} | {$LL.appName()}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="apikeys">
@@ -134,7 +125,7 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            {$_('apiKeys')}
+            {$LL.apiKeys()}
         </h1>
     </div>
 
@@ -142,25 +133,25 @@
         <Table>
             <tr slot="header">
                 <HeadCol>
-                    {$_('name')}
+                    {$LL.apiKeyName()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('prefix')}
+                    {$LL.apiKeyPrefix()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('userName')}
+                    {$LL.userName()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('active')}
+                    {$LL.active()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('dateCreated')}
+                    {$LL.dateCreated()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('dateUpdated')}
+                    {$LL.dateUpdated()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('actions')}
+                    {$LL.actions()}
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
@@ -202,13 +193,9 @@
                                 testid="apikey-activetoggle"
                             >
                                 {#if !apikey.active}
-                                    {$_(
-                                        'pages.warriorProfile.apiKeys.activateButton',
-                                    )}
+                                    {$LL.activate()}
                                 {:else}
-                                    {$_(
-                                        'pages.warriorProfile.apiKeys.deactivateButton',
-                                    )}
+                                    {$LL.deactivate()}
                                 {/if}
                             </HollowButton>
                             <HollowButton
@@ -219,9 +206,7 @@
                                 )}"
                                 testid="apikey-delete"
                             >
-                                {$_(
-                                    'pages.warriorProfile.apiKeys.deleteButton',
-                                )}
+                                {$LL.delete()}
                             </HollowButton>
                         </RowCol>
                     </TableRow>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import CloseIcon from '../icons/CloseIcon.svelte'
-    import { activeAlerts, dismissedAlerts } from '../../stores.js'
+    import { activeAlerts, dismissedAlerts } from '../../stores'
 
     export let registered = false
 

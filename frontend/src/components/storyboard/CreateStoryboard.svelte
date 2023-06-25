@@ -2,10 +2,10 @@
     import { onMount } from 'svelte'
 
     import SolidButton from '../SolidButton.svelte'
-    import DownCarrotIcon from '../icons/ChevronDown.svelte'
-    import { warrior as user } from '../../stores.js'
-    import { AppConfig, appRoutes } from '../../config.ts'
-    import { _ } from '../../i18n.js'
+    import { warrior as user } from '../../stores'
+    import { AppConfig, appRoutes } from '../../config'
+    import LL from '../../i18n/i18n-svelte'
+    import ChevronDown from '../icons/ChevronDown.svelte'
 
     export let xfetch
     export let notifications
@@ -43,14 +43,12 @@
                 if (Array.isArray(error)) {
                     error[1].json().then(function (result) {
                         notifications.danger(
-                            `${$_('Error encountered creating storyboard')} : ${
-                                result.error
-                            }`,
+                            `Error encountered creating storyboard : ${result.error}`,
                         )
                     })
                 } else {
                     notifications.danger(
-                        $_('Error encountered creating storyboard'),
+                        `Error encountered creating storyboard`,
                     )
                 }
                 eventTag('create_storyboard', 'engagement', 'failure')
@@ -64,7 +62,7 @@
                 teams = result.data
             })
             .catch(function () {
-                notifications.danger($_('getTeamsError'))
+                notifications.danger($LL.getTeamsError())
             })
     }
 
@@ -104,8 +102,9 @@
                 class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
                 for="selectedTeam"
             >
-                {$_('associateTeam')}
-                {#if !AppConfig.RequireTeams}{$_('optional')}{/if}
+                {$LL.associateTeam()}
+                {#if !AppConfig.RequireTeams}{$LL.optional()}
+                {/if}
             </label>
             <div class="relative">
                 <select
@@ -116,7 +115,7 @@
                     id="selectedTeam"
                     name="selectedTeam"
                 >
-                    <option value="" disabled>{$_('selectTeam')}</option>
+                    <option value="" disabled>{$LL.selectTeam()}</option>
                     {#each teams as team}
                         <option value="{team.id}">
                             {team.name}
@@ -127,7 +126,7 @@
                     class="pointer-events-none absolute inset-y-0 end-0 flex
                 items-center px-2 text-gray-700 dark:text-gray-400"
                 >
-                    <DownCarrotIcon />
+                    <ChevronDown />
                 </div>
             </div>
         </div>
@@ -138,13 +137,13 @@
             class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
             for="joinCode"
         >
-            {$_('passCode')}
+            {$LL.passCode()}
         </label>
         <div class="control">
             <input
                 name="joinCode"
                 bind:value="{joinCode}"
-                placeholder="{$_('optionalPasscodePlaceholder')}"
+                placeholder="{$LL.optionalPasscodePlaceholder()}"
                 class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -158,16 +157,18 @@
             class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
             for="facilitatorCode"
         >
-            {$_('facilitatorCodeOptional')}
+            {$LL.facilitatorCodeOptional()}
         </label>
         <div class="control">
             <input
                 name="facilitatorCode"
                 bind:value="{facilitatorCode}"
-                placeholder="{$_('facilitatorCodePlaceholder')}"
-                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                placeholder="{$LL.facilitatorCodePlaceholder()}"
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2
+            appearance-none
+            rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
+            focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500
+            dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="facilitatorCode"
             />
         </div>

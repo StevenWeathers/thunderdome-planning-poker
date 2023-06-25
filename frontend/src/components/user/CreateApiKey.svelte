@@ -2,8 +2,8 @@
     import SolidButton from '../SolidButton.svelte'
     import ClipboardIcon from '../icons/ClipboardIcon.svelte'
     import Modal from '../Modal.svelte'
-    import { _ } from '../../i18n.js'
-    import { warrior } from '../../stores.js'
+    import LL from '../../i18n/i18n-svelte'
+    import { warrior } from '../../stores'
 
     export let handleApiKeyCreate = () => {}
     export let toggleCreateApiKey = () => {}
@@ -18,9 +18,7 @@
         event.preventDefault()
 
         if (keyName === '') {
-            notifications.danger(
-                $_('pages.warriorProfile.apiKeys.fields.name.invalid'),
-            )
+            notifications.danger($LL.apiKeyNameInvalid())
             eventTag('create_api_key_name_invalid', 'engagement', 'failure')
             return false
         }
@@ -42,27 +40,19 @@
                         let errMessage
                         switch (result.error) {
                             case 'USER_APIKEY_LIMIT_REACHED':
-                                errMessage = $_(
-                                    'pages.warriorProfile.apiKeys.limitReached',
-                                )
+                                errMessage = $LL.apiKeyLimitReached()
                                 break
                             case 'REQUIRES_VERIFIED_USER':
-                                errMessage = $_(
-                                    'pages.warriorProfile.apiKeys.unverifiedUser',
-                                )
+                                errMessage = $LL.apiKeyUnverifiedUser()
                                 break
                             default:
-                                errMessage = $_(
-                                    'pages.warriorProfile.apiKeys.createFailed',
-                                )
+                                errMessage = $LL.apiKeyCreateFailed()
                         }
 
                         notifications.danger(errMessage)
                     })
                 } else {
-                    notifications.danger(
-                        $_('pages.warriorProfile.apiKeys.createFailed'),
-                    )
+                    notifications.danger($LL.apiKeyCreateFailed())
                 }
 
                 eventTag('create_api_key', 'engagement', 'failure')
@@ -79,10 +69,10 @@
             navigator.clipboard
                 .writeText(apk.value)
                 .then(function () {
-                    notifications.success($_('apikeyCopySuccess'))
+                    notifications.success($LL.apikeyCopySuccess())
                 })
                 .catch(function () {
-                    notifications.danger($_('apikeyCopyFailure'))
+                    notifications.danger($LL.apikeyCopyFailure())
                 })
         }
     }
@@ -96,7 +86,7 @@
                     class="block dark:text-gray-400 font-bold mb-2"
                     for="keyName"
                 >
-                    {$_('pages.warriorProfile.apiKeys.fields.name.label')}
+                    {$LL.apiKeyName()}
                 </label>
                 <input
                     class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
@@ -106,16 +96,14 @@
                     id="keyName"
                     name="keyName"
                     bind:value="{keyName}"
-                    placeholder="{$_(
-                        'pages.warriorProfile.apiKeys.fields.name.placeholder',
-                    )}"
+                    placeholder="{$LL.apiKeyNamePlaceholder()}"
                     required
                 />
             </div>
             <div class="text-right">
                 <div>
                     <SolidButton type="submit">
-                        {$_('pages.warriorProfile.apiKeys.fields.submitButton')}
+                        {$LL.create()}
                     </SolidButton>
                 </div>
             </div>
@@ -123,12 +111,10 @@
     {:else}
         <div class="mb-4">
             <p class="mb-3 mt-3 dark:text-white">
-                {@html $_('pages.warriorProfile.apiKeys.createSuccess', {
-                    values: {
-                        keyName: `<span class="font-bold">${keyName}</span>`,
-                        onlyNowOpen: '<span class="font-bold">',
-                        onlyNowClose: '</span>',
-                    },
+                {@html $LL.apiKeyCreateSuccess({
+                    keyName: `<span class="font-bold">${keyName}</span>`,
+                    onlyNowOpen: '<span class="font-bold">',
+                    onlyNowClose: '</span>',
                 })}
             </p>
             <div class="flex flex-wrap items-stretch w-full mb-3">
@@ -154,7 +140,7 @@
                 </div>
             </div>
             <p class="dark:text-white">
-                {$_('pages.warriorProfile.apiKeys.storeWarning')}
+                {$LL.apiKeyStoreWarning()}
             </p>
         </div>
         <div class="text-right">
@@ -163,7 +149,7 @@
                     onClick="{toggleCreateApiKey}"
                     testid="apikey-close"
                 >
-                    {$_('pages.warriorProfile.apiKeys.fields.closeButton')}
+                    {$LL.close()}
                 </SolidButton>
             </div>
         </div>

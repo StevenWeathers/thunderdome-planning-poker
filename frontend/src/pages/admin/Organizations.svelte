@@ -1,16 +1,15 @@
 <script lang="ts">
     import { onMount } from 'svelte'
-
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
     import AdminPageLayout from '../../components/AdminPageLayout.svelte'
-    import Pagination from '../../components/Pagination.svelte'
-    import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.ts'
-    import { validateUserIsAdmin } from '../../validationUtils.js'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
+    import Pagination from '../../components/Pagination.svelte'
 
     export let xfetch
     export let router
@@ -38,7 +37,7 @@
                 appStats = result.data
             })
             .catch(function () {
-                notifications.danger($_('applicationStatsError'))
+                notifications.danger($LL.applicationStatsError())
             })
     }
 
@@ -53,7 +52,7 @@
                 organizations = result.data
             })
             .catch(function () {
-                notifications.danger($_('getOrganizationsError'))
+                notifications.danger($LL.getOrganizationsError())
             })
     }
 
@@ -79,8 +78,8 @@
 
 <svelte:head>
     <title>
-        {$_('organizations')}
-        {$_('pages.admin.title')} | {$_('appName')}
+        {$LL.organizations()}
+        {$LL.admin()} | {$LL.appName()}
     </title>
 </svelte:head>
 
@@ -89,7 +88,7 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            {$_('organizations')}
+            {$LL.organizations()}
         </h1>
     </div>
 
@@ -97,13 +96,13 @@
         <Table>
             <tr slot="header">
                 <HeadCol>
-                    {$_('name')}
+                    {$LL.name()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('dateCreated')}
+                    {$LL.dateCreated()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('dateUpdated')}
+                    {$LL.dateUpdated()}
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">

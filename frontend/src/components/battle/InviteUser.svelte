@@ -1,8 +1,8 @@
 <script lang="ts">
     import SolidButton from '../SolidButton.svelte'
     import ClipboardIcon from '../icons/ClipboardIcon.svelte'
-    import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.ts'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../../config'
 
     export let notifications
     export let hostname = ''
@@ -19,10 +19,10 @@
             navigator.clipboard
                 .writeText(bl.value)
                 .then(function () {
-                    notifications.success($_('inviteLinkCopySuccess'))
+                    notifications.success($LL.inviteLinkCopySuccess())
                 })
                 .catch(function () {
-                    notifications.danger($_('inviteLinkCopyFailure'))
+                    notifications.danger($LL.inviteLinkCopyFailure())
                 })
         }
     }
@@ -37,10 +37,10 @@
             navigator.clipboard
                 .writeText(jc.value)
                 .then(function () {
-                    notifications.success($_('joinCodeCopySuccess'))
+                    notifications.success($LL.joinCodeCopySuccess())
                 })
                 .catch(function () {
-                    notifications.danger($_('joinCodeCopyFailure'))
+                    notifications.danger($LL.joinCodeCopyFailure())
                 })
         }
     }
@@ -50,7 +50,7 @@
     <h4
         class="text-2xl mb-2 leading-tight font-semibold font-rajdhani uppercase dark:text-white"
     >
-        {$_('pages.battle.warriorInvite')}
+        {$LL.warriorInvite({ friendly: AppConfig.FriendlyUIVerbs })}
     </h4>
     <div class="flex flex-wrap items-stretch w-full">
         <input
@@ -77,7 +77,7 @@
     {#if joinCode !== ''}
         <div class="mt-4">
             <label for="JoinCode" class="font-bold dark:text-gray-300"
-                >{$_('passCode')}</label
+                >{$LL.passCode()}</label
             >
             <div class="flex flex-wrap items-stretch w-full">
                 <input

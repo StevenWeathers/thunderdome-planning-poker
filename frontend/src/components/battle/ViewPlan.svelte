@@ -1,13 +1,14 @@
 <script lang="ts">
     import ExternalLinkIcon from '../icons/ExternalLinkIcon.svelte'
     import Modal from '../Modal.svelte'
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
     import NoSymbolIcon from '../icons/NoSymbol.svelte'
     import DoubleChevronDown from '../icons/DoubleChevronDown.svelte'
     import DoubleChevronUp from '../icons/DoubleChevronUp.svelte'
     import ChevronDown from '../icons/ChevronDown.svelte'
     import ChevronUp from '../icons/ChevronUp.svelte'
     import Bars2 from '../icons/Bars2.svelte'
+    import { AppConfig } from '../../config'
 
     export let togglePlanView = () => {}
 
@@ -25,27 +26,27 @@
             icon: false,
         },
         1: {
-            name: $_('planPriorityBlocker'),
+            name: $LL.planPriorityBlocker(),
             icon: NoSymbolIcon,
         },
         2: {
-            name: $_('planPriorityHighest'),
+            name: $LL.planPriorityHighest(),
             icon: DoubleChevronUp,
         },
         3: {
-            name: $_('planPriorityHigh'),
+            name: $LL.planPriorityHigh(),
             icon: ChevronUp,
         },
         4: {
-            name: $_('planPriorityMedium'),
+            name: $LL.planPriorityMedium(),
             icon: Bars2,
         },
         5: {
-            name: $_('planPriorityLow'),
+            name: $LL.planPriorityLow(),
             icon: ChevronDown,
         },
         6: {
-            name: $_('planPriorityLowest'),
+            name: $LL.planPriorityLowest(),
             icon: DoubleChevronDown,
         },
     }
@@ -53,21 +54,25 @@
 
 <Modal closeModal="{togglePlanView}" widthClasses="md:w-2/3 lg:w-3/5">
     <div class="mb-4 dark:text-white">
-        <div class="font-bold mb-2 dark:text-gray-400">{$_('planType')}</div>
+        <div class="font-bold mb-2 dark:text-gray-400">
+            {$LL.planType({ friendly: AppConfig.FriendlyUIVerbs })}
+        </div>
         {planType}
     </div>
     <div class="mb-4 dark:text-white">
-        <div class="font-bold mb-2 dark:text-gray-400">{$_('planName')}</div>
+        <div class="font-bold mb-2 dark:text-gray-400">
+            {$LL.planName({ friendly: AppConfig.FriendlyUIVerbs })}
+        </div>
         {planName}
     </div>
     <div class="mb-4 dark:text-white">
         <div class="font-bold mb-2 dark:text-gray-400">
-            {$_('planReferenceId')}
+            {$LL.planReferenceId()}
         </div>
         {referenceId}
     </div>
     <div class="mb-4">
-        <div class="font-bold mb-2 dark:text-gray-400">{$_('planLink')}</div>
+        <div class="font-bold mb-2 dark:text-gray-400">{$LL.planLink()}</div>
         {#if planLink !== ''}
             <a
                 href="{planLink}"
@@ -81,7 +86,7 @@
     </div>
     <div class="mb-4 dark:text-white">
         <div class="font-bold mb-2 dark:text-gray-400">
-            {$_('planPriority')}
+            {$LL.planPriority()}
         </div>
         <svelte:component this="{priorities[priority].icon}" />{priorities[
             priority
@@ -89,7 +94,7 @@
     </div>
     <div class="mb-4">
         <div class="font-bold mb-2 dark:text-gray-400">
-            {$_('planDescription')}
+            {$LL.planDescription()}
         </div>
         <div class="unreset dark:text-white">
             {@html description}
@@ -97,7 +102,7 @@
     </div>
     <div class="mb-4">
         <div class="font-bold mb-2 dark:text-gray-400">
-            {$_('planAcceptanceCriteria')}
+            {$LL.planAcceptanceCriteria()}
         </div>
         <div class="unreset dark:text-white">
             {@html acceptanceCriteria}

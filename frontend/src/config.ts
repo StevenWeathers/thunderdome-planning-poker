@@ -1,6 +1,9 @@
 declare global {
-    let appConfig: any;
+    interface Window {
+        appConfig: any;
+    }
 }
+
 
 const locales = {
     de: 'Deutsch',
@@ -12,10 +15,11 @@ const locales = {
     fa: 'Persian',
     it: 'Italiano',
 }
+const rtlLanguages = ['fa']
 
 const AppConfig =
-    typeof appConfig != 'undefined'
-        ? appConfig
+    typeof window.appConfig != 'undefined'
+        ? window.appConfig
         : {
             PathPrefix: '',
             DefaultLocale: 'en',
@@ -55,4 +59,4 @@ const friendlyAppRoutes = {
 }
 const appRoutes = FriendlyUIVerbs ? friendlyAppRoutes : defaultAppRoutes
 
-export {locales, fallbackLocale, appRoutes, PathPrefix, AppConfig}
+export {locales, fallbackLocale, appRoutes, PathPrefix, AppConfig, rtlLanguages}

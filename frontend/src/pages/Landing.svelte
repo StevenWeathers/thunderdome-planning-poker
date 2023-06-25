@@ -1,10 +1,10 @@
 <script lang="ts">
     import Countries from '../components/user/Countries.svelte'
     import CheckIcon from '../components/icons/CheckIcon.svelte'
+    import LL from '../i18n/i18n-svelte'
 
-    import { _ } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.ts'
-    import { warrior } from '../stores.js'
+    import { AppConfig, appRoutes } from '../config'
+    import { warrior } from '../stores'
 
     export let xfetch
     export let eventTag
@@ -47,7 +47,7 @@
 </style>
 
 <svelte:head>
-    <title>{$_('appName')} - {$_('appSubtitle')}</title>
+    <title>{$LL.appName()} - {$LL.appSubtitle()}</title>
 </svelte:head>
 
 <section
@@ -59,17 +59,17 @@
                 <h1
                     class="mb-2 lg:mb-4 text-5xl font-rajdhani uppercase font-semibold leading-none"
                 >
-                    {$_('landingTitle')}
+                    {$LL.landingTitle({ friendly: AppConfig.FriendlyUIVerbs })}
                 </h1>
 
                 <p class="py-2 lg:py-4 text-2xl lg:text-3xl mb-4 font-rajdhani">
-                    {$_('landingSalesPitch')}
+                    {$LL.landingSalesPitch()}
                 </p>
 
                 <div class="text-center mb-4 md:mb-0">
                     <a
                         class="w-full text-3xl md:w-auto inline-block
-                        no-underline bg-transparent bg-gray-800
+                        no-underline bg-gray-800
                         hover:bg-transparent hover:text-gray-800 font-semibold
                         text-yellow-thunder py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
@@ -77,7 +77,9 @@
                             ? appRoutes.battles
                             : appRoutes.register}"
                     >
-                        {$_('battleCreate')}
+                        {$LL.battleCreate({
+                            friendly: AppConfig.FriendlyUIVerbs,
+                        })}
                     </a>
                 </div>
             </div>
@@ -88,7 +90,7 @@
                     <img
                         class="w-full"
                         src="https://user-images.githubusercontent.com/846933/144792533-351cbc72-877e-4832-a4ce-d3b184e0c97e.png"
-                        alt="{$_('appPreviewAlt')}"
+                        alt="{$LL.appPreviewAlt()}"
                     />
                 </div>
             </div>
@@ -107,7 +109,9 @@
                     <h3
                         class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
                     >
-                        {$_('customizableBattleOptions')}
+                        {$LL.customizableBattleOptions({
+                            friendly: AppConfig.FriendlyUIVerbs,
+                        })}
                     </h3>
                 </div>
 
@@ -161,7 +165,7 @@
                     <h3
                         class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
                     >
-                        {$_('conciseVotingResults')}
+                        {$LL.conciseVotingResults()}
                     </h3>
                 </div>
 
@@ -201,7 +205,7 @@
                 <div class="text-center mb-4 md:mb-0">
                     <a
                         class="w-full text-3xl md:w-auto inline-block
-                        no-underline bg-transparent bg-gray-800
+                        no-underline bg-gray-800
                         hover:bg-transparent hover:text-gray-800 font-semibold
                         text-teal-400 py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
@@ -280,7 +284,7 @@
                 <div class="text-center mb-4 md:mb-0">
                     <a
                         class="w-full text-3xl md:w-auto inline-block
-                        no-underline bg-transparent bg-gray-800
+                        no-underline bg-gray-800
                         hover:bg-transparent hover:text-gray-800 font-semibold
                         text-violet-400 py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
@@ -325,22 +329,20 @@
                 <h3
                     class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
                 >
-                    {$_('openSource')}
+                    {$LL.openSource()}
                 </h3>
                 <p class="px-2 text-lg dark:text-gray-300">
-                    {@html $_('landingFeatureOpenSourceText', {
-                        values: {
-                            repoOpen: `<a
+                    {@html $LL.landingFeatureOpenSourceText({
+                        repoOpen: `<a
                         href="https://github.com/StevenWeathers/thunderdome-planning-poker"
                         class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600"
                     >`,
-                            repoClose: '</a>',
-                            donateOpen: `<a
+                        repoClose: '</a>',
+                        donateOpen: `<a
                         href="https://github.com/StevenWeathers/thunderdome-planning-poker#donations"
                         class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600"
                     >`,
-                            donateClose: '</a>',
-                        },
+                        donateClose: '</a>',
                     })}
                 </p>
             </div>
@@ -349,23 +351,19 @@
                 <h3
                     class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
                 >
-                    {$_('hostedOrSelfHosted')}
+                    {$LL.hostedOrSelfHosted()}
                 </h3>
                 <p class="px-2 text-lg dark:text-gray-300">
-                    {@html $_('hostedDesc', {
-                        values: {
-                            linkOpen: `<a href="https://thunderdome.dev" class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600">`,
-                            linkClose: '</a>',
-                        },
+                    {@html $LL.hostedDesc({
+                        linkOpen: `<a href="https://thunderdome.dev" class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600">`,
+                        linkClose: '</a>',
                     })}
-                    {@html $_('selfHostedDesc', {
-                        values: {
-                            linkOpen: `<a
+                    {@html $LL.selfHostedDesc({
+                        linkOpen: `<a
                             href="https://github.com/StevenWeathers/thunderdome-planning-poker#running-in-production"
                             class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600"
                     >`,
-                            linkClose: '</a>',
-                        },
+                        linkClose: '</a>',
                     })}
                 </p>
             </div>

@@ -2,7 +2,7 @@
     import { createEventDispatcher } from 'svelte'
 
     import DownCarrotIcon from './icons/ChevronDown.svelte'
-    import { locales } from '../i18n.js'
+    import { locales } from '../config'
 
     export let selectedLocale = 'en'
     let klass = ''

@@ -1,7 +1,7 @@
 <script lang="ts">
     import UserAvatar from '../user/UserAvatar.svelte'
-    import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
 
     export let user = {}
     export let showBorder = 'true'
@@ -30,12 +30,12 @@
         {user.name}
         {#if facilitators.includes(user.id)}
             <div class="text-indigo-500 dark:text-violet-400">
-                {$_('facilitator')}
+                {$LL.facilitator()}
                 {#if facilitators.includes($warrior.id)}
                     <button
                         class="text-red-500 text-sm"
                         on:click="{handleRemoveFacilitator(user.id)}"
-                        >{$_('remove')}</button
+                        >{$LL.remove()}</button
                     >
                 {/if}
             </div>
@@ -44,7 +44,7 @@
                 <button
                     class="text-blue-500 dark:text-sky-400 text-sm"
                     on:click="{handleAddFacilitator(user.id)}"
-                    >{$_('makeFacilitator')}</button
+                    >{$LL.makeFacilitator()}</button
                 >
             </div>
         {/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte'
     import WarriorIcon from '../icons/UserIcon.svelte'
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
 
     const dispatch = createEventDispatcher()
 
@@ -62,7 +62,7 @@
                         showVoters = false
                     }
                 }}"
-                title="{$_('pages.battle.voteResults.showVoters')}"
+                title="{$LL.showVoters()}"
                 class="text-green-500 dark:text-lime-400 relative leading-none"
             >
                 <WarriorIcon class="h-5 w-5" />
@@ -82,7 +82,10 @@
     <div
         class="w-full rounded overflow-hidden shadow-lg border {activeColor}
         {lockedClass} relative text-5xl lg:text-6xl relative z-0 font-rajdhani"
+        role="button"
+        tabindex="0"
         on:click="{voteAction}"
+        on:keypress="{voteAction}"
     >
         <div class="py-12 md:py-16 text-center">{point}</div>
     </div>

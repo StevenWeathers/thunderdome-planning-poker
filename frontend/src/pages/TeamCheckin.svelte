@@ -5,22 +5,22 @@
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import Checkin from '../components/checkin/Checkin.svelte'
-    import UserAvatar from '../components/user/UserAvatar.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
-    import PencilIcon from '../components/icons/PencilIcon.svelte'
     import TrashIcon from '../components/icons/TrashIcon.svelte'
-    import BlockedPing from '../components/checkin/BlockedPing.svelte'
     import Comments from '../components/checkin/Comments.svelte'
     import Gauge from '../components/Gauge.svelte'
-    import { _ } from '../i18n.js'
-    import { warrior as user } from '../stores.js'
-    import { AppConfig, appRoutes, PathPrefix } from '../config.ts'
-    import { validateUserIsRegistered } from '../validationUtils.js'
+    import LL from '../i18n/i18n-svelte'
+    import { warrior as user } from '../stores'
+    import { AppConfig, appRoutes, PathPrefix } from '../config'
+    import { validateUserIsRegistered } from '../validationUtils'
     import {
         formatDayForInput,
         getTimezoneName,
         subtractDays,
-    } from '../dateUtils.js'
+    } from '../dateUtils'
+    import UserAvatar from '../components/user/UserAvatar.svelte'
+    import BlockedPing from '../components/checkin/BlockedPing.svelte'
+    import EditIcon from '../components/icons/EditIcon.svelte'
 
     export let xfetch
     export let router
@@ -117,7 +117,7 @@
                 }
             })
             .catch(function () {
-                notifications.danger($_('teamGetError'))
+                notifications.danger($LL.teamGetError())
                 eventTag('team_checkin_team', 'engagement', 'failure')
             })
     }
@@ -132,7 +132,7 @@
                 filterCheckins()
             })
             .catch(function () {
-                notifications.danger($_('getCheckinsError'))
+                notifications.danger($LL.getCheckinsError())
                 eventTag('team_checkin_checkins', 'engagement', 'failure')
             })
     }
@@ -151,7 +151,7 @@
                 }, {})
             })
             .catch(function () {
-                notifications.danger($_('teamGetUsersError'))
+                notifications.danger($LL.teamGetUsersError())
                 eventTag('team_checkin_users', 'engagement', 'failure')
             })
     }
@@ -181,14 +181,14 @@
                     error[1].json().then(function (result) {
                         if (result.error === 'REQUIRES_TEAM_USER') {
                             notifications.danger(
-                                $_('teamUserRequiredToCheckin'),
+                                $LL.teamUserRequiredToCheckin(),
                             )
                         } else {
-                            notifications.danger($_('checkinError'))
+                            notifications.danger($LL.checkinError())
                         }
                     })
                 } else {
-                    notifications.danger($_('checkinError'))
+                    notifications.danger($LL.checkinError())
                 }
                 eventTag('team_checkin_create', 'engagement', 'failure')
             })
@@ -205,7 +205,7 @@
                 eventTag('team_checkin_edit', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger($_('updateCheckinError'))
+                notifications.danger($LL.updateCheckinError())
                 eventTag('team_checkin_edit', 'engagement', 'failure')
             })
     }
@@ -217,7 +217,7 @@
                 eventTag('team_checkin_delete', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger($_('deleteCheckinError'))
+                notifications.danger($LL.deleteCheckinError())
                 eventTag('team_checkin_delete', 'engagement', 'failure')
             })
     }
@@ -237,14 +237,14 @@
                     error[1].json().then(function (result) {
                         if (result.error === 'REQUIRES_TEAM_USER') {
                             notifications.danger(
-                                $_('teamUserRequiredToComment'),
+                                $LL.teamUserRequiredToComment(),
                             )
                         } else {
-                            notifications.danger($_('checkinCommentError'))
+                            notifications.danger($LL.checkinCommentError())
                         }
                     })
                 } else {
-                    notifications.danger($_('checkinCommentError'))
+                    notifications.danger($LL.checkinCommentError())
                 }
                 eventTag('team_checkin_comment', 'engagement', 'failure')
             })
@@ -268,14 +268,14 @@
                     error[1].json().then(function (result) {
                         if (result.error === 'REQUIRES_TEAM_USER') {
                             notifications.danger(
-                                $_('teamUserRequiredToComment'),
+                                $LL.teamUserRequiredToComment(),
                             )
                         } else {
-                            notifications.danger($_('checkinCommentError'))
+                            notifications.danger($LL.checkinCommentError())
                         }
                     })
                 } else {
-                    notifications.danger($_('checkinCommentError'))
+                    notifications.danger($LL.checkinCommentError())
                 }
                 eventTag('team_checkin_comment_edit', 'engagement', 'failure')
             })
@@ -290,7 +290,7 @@
                 eventTag('team_checkin_comment_delete', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger($_('checkinCommentDeleteError'))
+                notifications.danger($LL.checkinCommentDeleteError())
                 eventTag('team_checkin_comment_delete', 'engagement', 'failure')
             })
     }
@@ -425,7 +425,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('team')} {team.name} | {$_('appName')}</title>
+    <title>{$LL.team()} {team.name} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
@@ -434,7 +434,7 @@
             <h1
                 class="text-3xl font-semibold font-rajdhani leading-none uppercase dark:text-white"
             >
-                {$_('checkIn')}
+                {$LL.checkIn()}
                 <ChevronRight class="w-8 h-8" />
                 <input
                     type="date"
@@ -451,7 +451,7 @@
                 <div
                     class="text-xl font-semibold font-rajdhani dark:text-white"
                 >
-                    <span class="uppercase">{$_('organization')}</span>
+                    <span class="uppercase">{$LL.organization()}</span>
                     <ChevronRight />
                     <a
                         class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -461,7 +461,7 @@
                     {#if departmentId}
                         &nbsp;
                         <ChevronRight />
-                        <span class="uppercase">{$_('department')}</span>
+                        <span class="uppercase">{$LL.department()}</span>
                         <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -469,7 +469,7 @@
                             >{department.name}</a
                         >
                         <ChevronRight />
-                        <span class="uppercase">{$_('team')}</span>
+                        <span class="uppercase">{$LL.team()}</span>
                         <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -479,7 +479,7 @@
                         </a>
                     {:else}
                         <ChevronRight />
-                        <span class="uppercase">{$_('team')}</span>
+                        <span class="uppercase">{$LL.team()}</span>
                         <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -493,7 +493,7 @@
                 <div
                     class="text-2xl font-semibold font-rajdhani dark:text-white"
                 >
-                    <span class="uppercase">{$_('team')}</span>
+                    <span class="uppercase">{$LL.team()}</span>
                     <ChevronRight />
                     <a
                         class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -511,7 +511,7 @@
                 testid="check-in"
                 disabled="{selectedDate !== formatDayForInput(now) ||
                     alreadyCheckedIn}"
-                >{$_('checkIn')}
+                >{$LL.checkIn()}
             </SolidButton>
         </div>
     </div>
@@ -519,7 +519,7 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 my-4">
         <div class="px-2 md:px-4">
             <Gauge
-                text="{$_('participation')}"
+                text="{$LL.participation()}"
                 percentage="{stats.pPerc}"
                 stat="{stats.pPerc}"
                 count="{stats.participants} / {userCount}"
@@ -527,7 +527,7 @@
         </div>
         <div class="px-2 md:px-4">
             <Gauge
-                text="{$_('goalsMet')}"
+                text="{$LL.goalsMet()}"
                 percentage="{stats.gPerc}"
                 color="green"
                 stat="{stats.gPerc}"
@@ -536,7 +536,7 @@
         </div>
         <div class="px-2 md:px-4">
             <Gauge
-                text="{$_('blocked')}"
+                text="{$LL.blocked()}"
                 percentage="{stats.bPerc}"
                 color="red"
                 stat="{stats.bPerc}"
@@ -551,7 +551,7 @@
         <div
             class="inline-block align-middle me-2 text-gray-600 dark:text-gray-400 uppercase font-rajdhani text-xl tracking-wide"
         >
-            {$_('showBlockedCheckins')}
+            {$LL.showBlockedCheckins()}
         </div>
         <div
             class="relative inline-block w-16 align-middle select-none transition duration-200 ease-in"
@@ -652,13 +652,13 @@
                                                     toggleCheckin(checkin)
                                                 }}"
                                                 class="text-blue-500"
-                                                title="{$_('edit')}"
+                                                title="{$LL.edit()}"
                                                 data-testid="checkin-edit"
                                             >
                                                 <span class="sr-only"
-                                                    >{$_('edit')}</span
+                                                    >{$LL.edit()}</span
                                                 >
-                                                <PencilIcon />
+                                                <EditIcon />
                                             </button>
                                             <button
                                                 on:click="{() => {
@@ -671,7 +671,7 @@
                                                 data-testid="checkin-delete"
                                             >
                                                 <span class="sr-only"
-                                                    >{$_('delete')}</span
+                                                    >{$LL.delete()}</span
                                                 >
                                                 <TrashIcon />
                                             </button>
@@ -682,7 +682,7 @@
                             <div class="grow">
                                 <div>
                                     <div class="font-bold text-gray-400">
-                                        {$_('yesterday')}:
+                                        {$LL.yesterday()}:
                                     </div>
                                     <div
                                         class="unreset whitespace-pre-wrap"
@@ -693,7 +693,7 @@
                                 </div>
                                 <div>
                                     <div class="font-bold text-gray-400">
-                                        {$_('today')}:
+                                        {$LL.today()}:
                                     </div>
                                     <div
                                         class="unreset whitespace-pre-wrap"
@@ -707,7 +707,7 @@
                                         <div
                                             class="font-bold text-lg text-red-500"
                                         >
-                                            {$_('blockers')}:
+                                            {$LL.blockers()}:
                                         </div>
                                         <div
                                             class="unreset whitespace-pre-wrap"
@@ -722,7 +722,7 @@
                                         <div
                                             class="font-bold text-lg text-green-500"
                                         >
-                                            {$_('discuss')}:
+                                            {$LL.discuss()}:
                                         </div>
                                         <div
                                             class="unreset whitespace-pre-wrap"

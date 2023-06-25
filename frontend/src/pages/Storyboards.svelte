@@ -2,11 +2,11 @@
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
-    import CreateStoryboard from '../components/storyboard/CreateStoryboard.svelte'
+    import { warrior as user } from '../stores'
+    import { appRoutes } from '../config'
+    import LL from '../i18n/i18n-svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import { warrior as user } from '../stores.js'
-    import { appRoutes } from '../config.ts'
-    import { _ } from '../i18n.js'
+    import CreateStoryboard from '../components/storyboard/CreateStoryboard.svelte'
 
     export let xfetch
     export let notifications
@@ -21,7 +21,7 @@
             storyboards = bs.data
         })
         .catch(function (error) {
-            notifications.danger($_('getStoryboardsErrorMessage'))
+            notifications.danger($LL.getStoryboardsErrorMessage())
             eventTag('fetch_storyboards', 'engagement', 'failure')
         })
 
@@ -33,14 +33,14 @@
 </script>
 
 <svelte:head>
-    <title>{$_('yourStoryboards')} | {$_('appName')}</title>
+    <title>{$LL.yourStoryboards()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
     <h1
         class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
     >
-        {$_('myStoryboards')}
+        {$LL.myStoryboards()}
     </h1>
 
     <div class="flex flex-wrap">
@@ -61,16 +61,14 @@
                             <div
                                 class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
                             >
-                                {#if $user.id === storyboard.owner_id}{$_(
-                                        'owner',
-                                    )}{/if}
+                                {#if $user.id === storyboard.owner_id}{$LL.owner()}{/if}
                             </div>
                         </div>
                         <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                             <HollowButton
                                 href="{appRoutes.storyboard}/{storyboard.id}"
                             >
-                                {$_('joinStoryboard')}
+                                {$LL.joinStoryboard()}
                             </HollowButton>
                         </div>
                     </div>
@@ -85,7 +83,7 @@
                 <h2
                     class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
                 >
-                    {$_('createAStoryboard')}
+                    {$LL.createAStoryboard()}
                 </h2>
                 <CreateStoryboard
                     notifications="{notifications}"

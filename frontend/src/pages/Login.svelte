@@ -1,9 +1,9 @@
 <script lang="ts">
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
-    import { warrior } from '../stores.js'
-    import { _, setupI18n } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.ts'
+    import { warrior } from '../stores'
+    import { AppConfig, appRoutes } from '../config'
+    import LL from '../i18n/i18n-svelte'
 
     export let router
     export let xfetch
@@ -56,14 +56,14 @@
             .then(function () {
                 warrior.create(mfaUser)
                 eventTag('login_mfa', 'engagement', 'success', () => {
-                    setupI18n({
-                        withLocale: mfaUser.locale,
-                    })
+                    // setupI18n({
+                    //     withLocale: mfaUser.locale,
+                    // })
                     router.route(targetPage(), true)
                 })
             })
             .catch(function () {
-                notifications.danger($_('mfaAuthError'))
+                notifications.danger($LL.mfaAuthError())
                 eventTag('login_mfa', 'engagement', 'failure')
             })
     }
@@ -94,15 +94,19 @@
                 } else {
                     warrior.create(newUser)
                     eventTag('login', 'engagement', 'success', () => {
-                        setupI18n({
-                            withLocale: newUser.locale,
-                        })
+                        // setupI18n({
+                        //     withLocale: newUser.locale,
+                        // })
                         router.route(targetPage(), true)
                     })
                 }
             })
             .catch(function () {
-                notifications.danger($_('pages.login.authError'))
+                notifications.danger(
+                    $LL.authError({
+                        friendly: AppConfig.FriendlyUIVerbs,
+                    }),
+                )
                 eventTag('login', 'engagement', 'failure')
             })
     }
@@ -125,8 +129,8 @@
         xfetch('/api/auth/forgot-password', { body })
             .then(function () {
                 notifications.success(
-                    $_('pages.login.sendResetSuccess', {
-                        values: { email: warriorResetEmail },
+                    $LL.sendResetPasswordSuccess({
+                        email: warriorResetEmail,
                     }),
                     2000,
                 )
@@ -134,7 +138,7 @@
                 eventTag('forgot_password', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger($_('pages.login.sendResetError'))
+                notifications.danger($LL.sendResetPasswordError())
                 eventTag('forgot_password', 'engagement', 'failure')
             })
     }
@@ -145,7 +149,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('pages.login.title')} | {$_('appName')}</title>
+    <title>{$LL.login()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
@@ -162,18 +166,18 @@
                         md:leading-tight text-center dark:text-white"
                         data-formtitle="login"
                     >
-                        {$_('pages.login.title')}
+                        {$LL.login()}
                     </div>
                     {#if battleId && AllowRegistration}
                         <div
                             class="font-semibold font-rajdhani uppercase text-lg md:text-xl mb-2 md:mb-6
                             md:leading-tight text-center dark:text-white"
                         >
-                            {@html $_('pages.login.registerForBattle', {
-                                values: {
-                                    registerOpen: `<a href="${appRoutes.register}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
-                                    registerClose: `</a>`,
-                                },
+                            {@html $LL.registerForBattle[
+                                AppConfig.FriendlyUIVerbs
+                            ]({
+                                registerOpen: `<a href="${appRoutes.register}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+                                registerClose: `</a>`,
                             })}
                         </div>
                     {/if}
@@ -182,11 +186,9 @@
                             class="font-semibold font-rajdhani uppercase text-lg md:text-xl mb-2 md:mb-6
                             md:leading-tight text-center dark:text-white"
                         >
-                            {@html $_('registerForRetro', {
-                                values: {
-                                    registerOpen: `<a href="${appRoutes.register}/retro/${retroId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
-                                    registerClose: `</a>`,
-                                },
+                            {@html $LL.registerForRetro({
+                                registerOpen: `<a href="${appRoutes.register}/retro/${retroId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+                                registerClose: `</a>`,
                             })}
                         </div>
                     {/if}
@@ -195,11 +197,9 @@
                             class="font-semibold font-rajdhani uppercase text-lg md:text-xl mb-2 md:mb-6
                             md:leading-tight text-center dark:text-white"
                         >
-                            {@html $_('registerForStoryboard', {
-                                values: {
-                                    registerOpen: `<a href="${appRoutes.register}/storyboard/${storyboardId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
-                                    registerClose: `</a>`,
-                                },
+                            {@html $LL.registerForStoryboard({
+                                registerOpen: `<a href="${appRoutes.register}/storyboard/${storyboardId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+                                registerClose: `</a>`,
                             })}
                         </div>
                     {/if}
@@ -208,13 +208,11 @@
                             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourEmail"
                         >
-                            {$_('pages.login.fields.email.label')}
+                            {$LL.email()}
                         </label>
                         <input
                             bind:value="{warriorEmail}"
-                            placeholder="{$_(
-                                'pages.login.fields.email.placeholder',
-                            )}"
+                            placeholder="{$LL.enterYourEmail()}"
                             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -230,13 +228,11 @@
                             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourPassword"
                         >
-                            {$_('pages.login.fields.password.label')}
+                            {$LL.password()}
                         </label>
                         <input
                             bind:value="{warriorPassword}"
-                            placeholder="{$_(
-                                'pages.login.fields.password.placeholder',
-                            )}"
+                            placeholder="{$LL.passwordPlaceholder()}"
                             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -255,11 +251,11 @@
                                 text-sm text-blue-500 hover:text-blue-800 me-4"
                                 on:click="{toggleForgotPassword}"
                             >
-                                {$_('pages.login.fields.password.forgotLabel')}
+                                {$LL.forgotPasswordCheckboxLabel()}
                             </button>
                         {/if}
                         <SolidButton type="submit" disabled="{loginDisabled}">
-                            {$_('pages.login.button')}
+                            {$LL.login()}
                         </SolidButton>
                     </div>
                 </form>
@@ -276,18 +272,18 @@
                         md:leading-tight text-center dark:text-white"
                         data-formtitle="forgotpassword"
                     >
-                        {$_('forgotPassword')}
+                        {$LL.forgotPassword()}
                     </div>
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourResetEmail"
                         >
-                            {$_('email')}
+                            {$LL.email()}
                         </label>
                         <input
                             bind:value="{warriorResetEmail}"
-                            placeholder="{$_('enterYourEmail')}"
+                            placeholder="{$LL.enterYourEmail()}"
                             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -305,10 +301,10 @@
                             text-blue-500 hover:text-blue-800 me-4"
                             on:click="{toggleForgotPassword}"
                         >
-                            {$_('cancel')}
+                            {$LL.cancel()}
                         </button>
                         <SolidButton type="submit" disabled="{resetDisabled}">
-                            {$_('sendResetEmail')}
+                            {$LL.sendResetEmail()}
                         </SolidButton>
                     </div>
                 </form>
@@ -324,18 +320,18 @@
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight text-center dark:text-white"
                     >
-                        {$_('pages.login.title')}
+                        {$LL.login()}
                     </div>
                     <div class="mb-4">
                         <label
                             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourEmail"
                         >
-                            {$_('mfaTokenLabel')}
+                            {$LL.mfaTokenLabel()}
                         </label>
                         <input
                             bind:value="{mfaToken}"
-                            placeholder="{$_('mfaTokenPlaceholder')}"
+                            placeholder="{$LL.mfaTokenPlaceholder()}"
                             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -351,7 +347,7 @@
                             type="submit"
                             disabled="{mfaLoginDisabled}"
                         >
-                            {$_('pages.login.button')}
+                            {$LL.login()}
                         </SolidButton>
                     </div>
                 </form>

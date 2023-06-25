@@ -1,23 +1,22 @@
 <script lang="ts">
     import { onMount } from 'svelte'
-
-    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import UserAvatar from '../../components/user/UserAvatar.svelte'
     import CountryFlag from '../../components/user/CountryFlag.svelte'
-    import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { AppConfig, appRoutes } from '../../config.ts'
-    import { validateUserIsAdmin } from '../../validationUtils.js'
-    import Table from '../../components/table/Table.svelte'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
     import HeadCol from '../../components/table/HeadCol.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
-    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
     import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte'
     import CommentIcon from '../../components/icons/CommentIcon.svelte'
     import Pagination from '../../components/Pagination.svelte'
     import ChevronRight from '../../components/icons/ChevronRight.svelte'
+    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
+    import Table from '../../components/table/Table.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
 
     const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig
 
@@ -96,7 +95,7 @@
                 getUsers()
             })
             .catch(function () {
-                notifications.danger($_('teamGetError'))
+                notifications.danger($LL.teamGetError())
             })
     }
 
@@ -110,7 +109,7 @@
                 users = result.data
             })
             .catch(function () {
-                notifications.danger($_('teamGetUsersError'))
+                notifications.danger($LL.teamGetUsersError())
             })
     }
 
@@ -125,7 +124,11 @@
                     battles = result.data
                 })
                 .catch(function () {
-                    notifications.danger($_('teamGetBattlesError'))
+                    notifications.danger(
+                        $LL.teamGetBattlesError({
+                            friendly: AppConfig.FriendlyUIVerbs,
+                        }),
+                    )
                 })
         }
     }
@@ -141,7 +144,7 @@
                     retros = result.data
                 })
                 .catch(function () {
-                    notifications.danger($_('teamGetRetrosError'))
+                    notifications.danger($LL.teamGetRetrosError())
                 })
         }
     }
@@ -158,7 +161,7 @@
                     totalRetroActions = result.meta.count
                 })
                 .catch(function () {
-                    notifications.danger($_('teamGetRetroActionsError'))
+                    notifications.danger($LL.teamGetRetroActionsError())
                 })
         }
     }
@@ -175,7 +178,7 @@
                     storyboards = result.data
                 })
                 .catch(function () {
-                    notifications.danger($_('teamGetStoryboardsError'))
+                    notifications.danger($LL.teamGetStoryboardsError())
                 })
         }
     }
@@ -197,7 +200,7 @@
                 }
             })
             .catch(function () {
-                notifications.danger($_('teamDeleteError'))
+                notifications.danger($LL.teamDeleteError())
             })
     }
 
@@ -230,7 +233,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('team')} {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$LL.team()} {$LL.admin()} | {$LL.appName()}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="teams">
@@ -243,7 +246,7 @@
 
         {#if organizationId}
             <div class="text-xl font-semibold font-rajdhani dark:text-white">
-                <span class="uppercase">{$_('organization')}</span>
+                <span class="uppercase">{$LL.organization()}</span>
                 <ChevronRight />
                 <a
                     class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -254,7 +257,7 @@
                 {#if departmentId}
                     &nbsp;
                     <ChevronRight />
-                    <span class="uppercase">{$_('department')}</span>
+                    <span class="uppercase">{$LL.department()}</span>
                     <ChevronRight />
                     <a
                         class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -272,10 +275,10 @@
             <Table>
                 <tr slot="header">
                     <HeadCol>
-                        {$_('dateCreated')}
+                        {$LL.dateCreated()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('dateUpdated')}
+                        {$LL.dateUpdated()}
                     </HeadCol>
                 </tr>
                 <tbody slot="body" let:class="{className}" class="{className}">
@@ -298,7 +301,9 @@
                             <h2
                                 class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                             >
-                                {$_('battles')}
+                                {$LL.battles({
+                                    friendly: AppConfig.FriendlyUIVerbs,
+                                })}
                             </h2>
                         </div>
                     </div>
@@ -324,7 +329,10 @@
                                         <HollowButton
                                             href="{appRoutes.battle}/{battle.id}"
                                         >
-                                            {$_('battleJoin')}
+                                            {$LL.battleJoin({
+                                                friendly:
+                                                    AppConfig.FriendlyUIVerbs,
+                                            })}
                                         </HollowButton>
                                     </div>
                                 </div>
@@ -341,7 +349,7 @@
                             <h2
                                 class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                             >
-                                {$_('retros')}
+                                {$LL.retros()}
                             </h2>
                         </div>
                     </div>
@@ -367,7 +375,7 @@
                                         <HollowButton
                                             href="{appRoutes.retro}/{retro.id}"
                                         >
-                                            {$_('joinRetro')}
+                                            {$LL.joinRetro()}
                                         </HollowButton>
                                     </div>
                                 </div>
@@ -381,7 +389,7 @@
                                 <h3
                                     class="text-xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                                 >
-                                    {$_('retroActionItems')}
+                                    {$LL.retroActionItems()}
                                 </h3>
 
                                 <div class="text-right mb-4">
@@ -405,16 +413,16 @@
                                     <label
                                         for="completedActionItems"
                                         class="dark:text-gray-300"
-                                        >{$_('showCompletedActionItems')}</label
+                                        >{$LL.showCompletedActionItems()}</label
                                     >
                                 </div>
                             </div>
 
                             <Table>
                                 <tr slot="header">
-                                    <HeadCol>{$_('actionItem')}</HeadCol>
-                                    <HeadCol>{$_('completed')}</HeadCol>
-                                    <HeadCol>{$_('comments')}</HeadCol>
+                                    <HeadCol>{$LL.actionItem()}</HeadCol>
+                                    <HeadCol>{$LL.completed()}</HeadCol>
+                                    <HeadCol>{$LL.comments()}</HeadCol>
                                 </tr>
                                 <tbody
                                     slot="body"
@@ -491,7 +499,7 @@
                             <h2
                                 class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                             >
-                                {$_('storyboards')}
+                                {$LL.storyboards()}
                             </h2>
                         </div>
                     </div>
@@ -517,7 +525,7 @@
                                         <HollowButton
                                             href="{appRoutes.storyboard}/{storyboard.id}"
                                         >
-                                            {$_('joinStoryboard')}
+                                            {$LL.joinStoryboard()}
                                         </HollowButton>
                                     </div>
                                 </div>
@@ -533,7 +541,7 @@
                         <h2
                             class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                         >
-                            {$_('users')}
+                            {$LL.users()}
                         </h2>
                     </div>
                 </div>
@@ -541,13 +549,13 @@
                 <Table>
                     <tr slot="header">
                         <HeadCol>
-                            {$_('name')}
+                            {$LL.name()}
                         </HeadCol>
                         <HeadCol>
-                            {$_('email')}
+                            {$LL.email()}
                         </HeadCol>
                         <HeadCol>
-                            {$_('role')}
+                            {$LL.role()}
                         </HeadCol>
                     </tr>
                     <tbody
@@ -616,7 +624,7 @@
                         onClick="{toggleDeleteTeam}"
                         testid="team-delete"
                     >
-                        {$_('deleteTeam')}
+                        {$LL.deleteTeam()}
                     </HollowButton>
                 </div>
             {/if}
@@ -625,8 +633,8 @@
                 <DeleteConfirmation
                     toggleDelete="{toggleDeleteTeam}"
                     handleDelete="{deleteTeam}"
-                    confirmText="{$_('deleteTeamConfirmText')}"
-                    confirmBtnText="{$_('deleteTeam')}"
+                    confirmText="{$LL.deleteTeamConfirmText()}"
+                    confirmBtnText="{$LL.deleteTeam()}"
                 />
             {/if}
         </div>

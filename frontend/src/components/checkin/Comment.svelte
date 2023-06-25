@@ -1,9 +1,9 @@
 <script lang="ts">
     import UserIcon from '../icons/UserIcon.svelte'
     import HollowButton from '../HollowButton.svelte'
+    import LL from '../../i18n/i18n-svelte'
+    import { warrior as user } from '../../stores'
     import SolidButton from '../SolidButton.svelte'
-    import { _ } from '../../i18n.js'
-    import { warrior as user } from '../../stores.js'
 
     export let checkinId = {}
     export let comment = {}
@@ -48,10 +48,10 @@
                     bind:value="{editcomment}"></textarea>
                 <div class="text-right">
                     <HollowButton color="blue" onClick="{toggleEdit}">
-                        {$_('cancel')}
+                        {$LL.cancel()}
                     </HollowButton>
                     <SolidButton type="submit" disabled="{editcomment === ''}">
-                        {$_('updateComment')}
+                        {$LL.updateComment()}
                     </SolidButton>
                 </div>
             </form>
@@ -67,13 +67,13 @@
                 class="text-blue-500 hover:text-blue-300 dark:text-sky-300 dark:hover:text-sky-100 me-1"
                 on:click="{toggleEdit}"
             >
-                {$_('edit')}
+                {$LL.edit()}
             </button>
             <button
                 class="text-red-500"
                 on:click="{handleDelete(checkinId, comment.id)}"
             >
-                {$_('delete')}
+                {$LL.delete()}
             </button>
         </div>
     {/if}

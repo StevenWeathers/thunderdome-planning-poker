@@ -10,7 +10,11 @@
     "frontend/public/*"
   ],
   "compilerOptions": {
+    "sourceMap": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": [
+      "jest"
+    ]
   }
 }

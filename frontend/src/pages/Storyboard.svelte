@@ -1,32 +1,32 @@
 <script lang="ts">
-    import Sockette from 'sockette'
-    import { onDestroy, onMount } from 'svelte'
     import {
         dndzone,
         SHADOW_ITEM_MARKER_PROPERTY_NAME,
     } from 'svelte-dnd-action'
+    import Sockette from 'sockette'
+    import { onDestroy, onMount } from 'svelte'
 
     import AddGoal from '../components/storyboard/AddGoal.svelte'
-    import PageLayout from '../components/PageLayout.svelte'
     import UserCard from '../components/storyboard/UserCard.svelte'
     import InviteUser from '../components/storyboard/InviteUser.svelte'
     import ColumnForm from '../components/storyboard/ColumnForm.svelte'
     import StoryForm from '../components/storyboard/StoryForm.svelte'
     import ColorLegendForm from '../components/storyboard/ColorLegendForm.svelte'
     import PersonasForm from '../components/storyboard/PersonasForm.svelte'
-    import UsersIcon from '../components/icons/Users.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import EditIcon from '../components/icons/PencilIcon.svelte'
     import DownCarrotIcon from '../components/icons/ChevronDown.svelte'
-    import CommentIcon from '../components/icons/CommentIcon.svelte'
     import DeleteStoryboard from '../components/storyboard/DeleteStoryboard.svelte'
     import EditStoryboard from '../components/storyboard/EditStoryboard.svelte'
     import UpCarrotIcon from '../components/icons/ChevronUp.svelte'
     import { AppConfig, appRoutes, PathPrefix } from '../config'
-    import { warrior as user } from '../stores.js'
-    import { _ } from '../i18n.js'
+    import { warrior as user } from '../stores'
+    import LL from '../i18n/i18n-svelte'
     import BecomeFacilitator from '../components/user/BecomeFacilitator.svelte'
+    import UsersIcon from '../components/icons/UsersIcon.svelte'
+    import EditIcon from '../components/icons/EditIcon.svelte'
+    import CommentIcon from '../components/icons/CommentIcon.svelte'
+    import PageLayout from '../components/PageLayout.svelte'
 
     export let storyboardId
     export let notifications
@@ -72,7 +72,7 @@
                 JoinPassRequired = true
                 break
             case 'join_code_incorrect':
-                notifications.danger($_('incorrectPassCode'))
+                notifications.danger($LL.incorrectPassCode())
                 break
             case 'init':
                 JoinPassRequired = false
@@ -153,7 +153,7 @@
                 break
             case 'storyboard_conceded':
                 // storyboard over, goodbye.
-                notifications.warning($_('storyboardDeleted'))
+                notifications.warning($LL.storyboardDeleted())
                 router.route(appRoutes.storyboards)
                 break
             default:
@@ -185,7 +185,7 @@
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'storyboard', '', () => {
-                        notifications.danger($_('duplicateStoryboardSession'))
+                        notifications.danger($LL.duplicateStoryboardSession())
                         router.route(`${appRoutes.storyboards}`)
                     })
                 } else if (e.code === 4002) {
@@ -628,7 +628,7 @@
 </style>
 
 <svelte:head>
-    <title>{$_('storyboard')} {storyboard.name} | {$_('appName')}</title>
+    <title>{$LL.storyboard()} {storyboard.name} | {$LL.appName()}</title>
 </svelte:head>
 
 {#if storyboard.name && !socketReconnecting && !socketError}
@@ -651,14 +651,14 @@
                             additionalClasses="me-2"
                             testid="goal-add"
                         >
-                            {$_('storyboardAddGoal')}
+                            {$LL.storyboardAddGoal()}
                         </HollowButton>
                         <HollowButton
                             color="blue"
                             onClick="{toggleEditStoryboard}"
                             testid="storyboard-edit"
                         >
-                            {$_('editStoryboard')}
+                            {$LL.editStoryboard()}
                         </HollowButton>
                         <HollowButton
                             color="red"
@@ -666,7 +666,7 @@
                             additionalClasses="me-2"
                             testid="storyboard-delete"
                         >
-                            {$_('deleteStoryboard')}
+                            {$LL.deleteStoryboard()}
                         </HollowButton>
                     {:else}
                         <HollowButton
@@ -674,14 +674,14 @@
                             onClick="{toggleBecomeFacilitator}"
                             testid="become-facilitator"
                         >
-                            {$_('becomeFacilitator')}
+                            {$LL.becomeFacilitator()}
                         </HollowButton>
                         <HollowButton
                             color="red"
                             onClick="{abandonStoryboard}"
                             testid="storyboard-leave"
                         >
-                            {$_('leaveStoryboard')}
+                            {$LL.leaveStoryboard()}
                         </HollowButton>
                     {/if}
                     <div class="inline-block relative">
@@ -691,7 +691,7 @@
                             onClick="{togglePersonas}"
                             testid="personas-toggle"
                         >
-                            {$_('personas')}
+                            {$LL.personas()}
                             <DownCarrotIcon additionalClasses="ms-1" />
                         </HollowButton>
                         {#if showPersonas}
@@ -719,7 +719,7 @@
                                                         hover:text-orange-800"
                                                             data-testid="persona-edit"
                                                         >
-                                                            {$_('edit')}
+                                                            {$LL.edit()}
                                                         </button>
                                                         &nbsp;|&nbsp;
                                                         <button
@@ -730,7 +730,7 @@
                                                         hover:text-red-800"
                                                             data-testid="persona-delete"
                                                         >
-                                                            {$_('delete')}
+                                                            {$LL.delete()}
                                                         </button>
                                                     {/if}
                                                 </div>
@@ -753,7 +753,7 @@
                                                 })}"
                                                 testid="persona-add"
                                             >
-                                                {$_('addPersona')}
+                                                {$LL.addPersona()}
                                             </HollowButton>
                                         </div>
                                     {/if}
@@ -768,7 +768,7 @@
                             onClick="{toggleColorLegend}"
                             testid="colorlegend-toggle"
                         >
-                            {$_('colorLegend')}
+                            {$LL.colorLegend()}
                             <DownCarrotIcon additionalClasses="ms-1" />
                         </HollowButton>
                         {#if showColorLegend}
@@ -792,9 +792,7 @@
                                                         : 'text-gray-600 dark:text-gray-200'}"
                                                 >
                                                     {color.legend ||
-                                                        $_(
-                                                            'colorLegendNotSpecified',
-                                                        )}
+                                                        $LL.colorLegendNotSpecified()}
                                                 </span>
                                             </div>
                                         {/each}
@@ -807,7 +805,7 @@
                                                 onClick="{toggleEditLegend}"
                                                 testid="colorlegend-edit"
                                             >
-                                                {$_('editColorLegend')}
+                                                {$LL.editColorLegend()}
                                             </HollowButton>
                                         </div>
                                     {/if}
@@ -827,7 +825,7 @@
                                 height="18"
                                 width="18"
                             />
-                            {$_('users')}
+                            {$LL.users()}
                             <DownCarrotIcon additionalClasses="ms-1" />
                         </HollowButton>
                         {#if showUsers}
@@ -901,7 +899,7 @@
                                 btnSize="small"
                                 testid="column-add"
                             >
-                                {$_('storyboardAddColumn')}
+                                {$LL.storyboardAddColumn()}
                             </HollowButton>
                             <HollowButton
                                 color="orange"
@@ -910,7 +908,7 @@
                                 additionalClasses="ms-2"
                                 testid="goal-edit"
                             >
-                                {$_('edit')}
+                                {$LL.edit()}
                             </HollowButton>
                             <HollowButton
                                 color="red"
@@ -919,7 +917,7 @@
                                 additionalClasses="ms-2"
                                 testid="goal-delete"
                             >
-                                {$_('delete')}
+                                {$LL.delete()}
                             </HollowButton>
                         {/if}
                     </div>
@@ -946,9 +944,7 @@
                                         border-dashed border-2 border-gray-400 dark:border-gray-600
                                         hover:border-green-500 text-gray-600 dark:text-gray-400
                                         hover:text-green-500 py-1 px-2"
-                                                title="{$_(
-                                                    'storyboardEditColumn',
-                                                )}"
+                                                title="{$LL.storyboardEditColumn()}"
                                                 data-testid="column-edit"
                                             >
                                                 <EditIcon />
@@ -966,9 +962,7 @@
                                         px-2 border-dashed border-2
                                         border-gray-400 dark:border-gray-600 hover:border-green-500
                                         text-gray-600 dark:text-gray-400 hover:text-green-500"
-                                                title="{$_(
-                                                    'storyboardAddStoryToColumn',
-                                                )}"
+                                                title="{$LL.storyboardAddStoryToColumn()}"
                                                 data-testid="story-add"
                                             >
                                                 +
@@ -1003,10 +997,15 @@
                                     story-{story.color} border my-4
                                     cursor-pointer"
                                             style="list-style: none;"
+                                            role="button"
+                                            tabindex="0"
                                             data-goalid="{goal.id}"
                                             data-columnid="{goalColumn.id}"
                                             data-storyid="{story.id}"
                                             on:click="{toggleStoryForm(story)}"
+                                            on:keypress="{toggleStoryForm(
+                                                story,
+                                            )}"
                                         >
                                             <div>
                                                 <div>
@@ -1066,10 +1065,15 @@
                                     story-{story.color} border
                                     cursor-pointer"
                                                     style="list-style: none;"
+                                                    role="button"
+                                                    tabindex="0"
                                                     data-goalid="{goal.id}"
                                                     data-columnid="{goalColumn.id}"
                                                     data-storyid="{story.id}"
                                                     on:click="{toggleStoryForm(
+                                                        story,
+                                                    )}"
+                                                    on:keypress="{toggleStoryForm(
                                                         story,
                                                     )}"
                                                 >
@@ -1153,11 +1157,11 @@
                                         class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                                         for="storyboardJoinCode"
                                     >
-                                        {$_('passCodeRequired')}
+                                        {$LL.passCodeRequired()}
                                     </label>
                                     <input
                                         bind:value="{joinPasscode}"
-                                        placeholder="{$_('enterPasscode')}"
+                                        placeholder="{$LL.enterPasscode()}"
                                         class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -1170,7 +1174,7 @@
 
                                 <div class="text-right">
                                     <SolidButton type="submit"
-                                        >{$_('joinStoryboard')}
+                                        >{$LL.joinStoryboard()}
                                     </SolidButton>
                                 </div>
                             </form>
@@ -1180,15 +1184,15 @@
                     <h1
                         class="text-5xl text-orange-500 leading-tight font-bold"
                     >
-                        {$_('reloadingStoryboard')}
+                        {$LL.reloadingStoryboard()}
                     </h1>
                 {:else if socketError}
                     <h1 class="text-5xl text-red-500 leading-tight font-bold">
-                        {$_('joinStoryboardError')}
+                        {$LL.joinStoryboardError()}
                     </h1>
                 {:else}
                     <h1 class="text-5xl text-green-500 leading-tight font-bold">
-                        {$_('loadingStoryboard')}
+                        {$LL.loadingStoryboard()}
                     </h1>
                 {/if}
             </div>

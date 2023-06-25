@@ -1,19 +1,24 @@
-import { writable } from 'svelte/store'
+import {derived, writable} from 'svelte/store'
 import Cookies from 'js-cookie'
-import { AppConfig } from './config.ts'
+import {AppConfig, rtlLanguages} from './config'
+import {locale} from "./i18n/i18n-svelte";
 
-const { PathPrefix, CookieName } = AppConfig
+const {PathPrefix, CookieName} = AppConfig
 const cookiePath = `${PathPrefix}/`
 
+declare global {
+    let ActiveAlerts: any;
+}
+
 function initWarrior() {
-    const { subscribe, set, update } = writable(
-        Cookies.getJSON(CookieName) || {},
+    const {subscribe, set, update} = writable(
+        JSON.parse(Cookies.get(CookieName) || '{}'),
     )
 
     return {
         subscribe,
         create: warrior => {
-            Cookies.set(CookieName, warrior, {
+            Cookies.set(CookieName, JSON.stringify(warrior), {
                 expires: 365,
                 SameSite: 'strict',
                 path: cookiePath,
@@ -21,7 +26,7 @@ function initWarrior() {
             set(warrior)
         },
         update: warrior => {
-            Cookies.set(CookieName, warrior, {
+            Cookies.set(CookieName, JSON.stringify(warrior), {
                 expires: 365,
                 SameSite: 'strict',
                 path: cookiePath,
@@ -29,7 +34,7 @@ function initWarrior() {
             update(w => (w = warrior))
         },
         delete: () => {
-            Cookies.remove(CookieName, { path: cookiePath })
+            Cookies.remove(CookieName, {path: cookiePath})
             set({})
         },
     }
@@ -39,7 +44,7 @@ export const warrior = initWarrior()
 
 function initActiveAlerts() {
     const activeAlerts = typeof ActiveAlerts != 'undefined' ? ActiveAlerts : []
-    const { subscribe, update } = writable(activeAlerts)
+    const {subscribe, update} = writable(activeAlerts)
 
     return {
         subscribe,
@@ -54,7 +59,7 @@ export const activeAlerts = initActiveAlerts()
 function initDismissedAlerts() {
     const dismissKey = 'dismissed_alerts'
     const dismissedAlerts = JSON.parse(localStorage.getItem(dismissKey)) || []
-    const { subscribe, update } = writable(dismissedAlerts)
+    const {subscribe, update} = writable(dismissedAlerts)
 
     return {
         subscribe,
@@ -64,9 +69,13 @@ function initDismissedAlerts() {
                 ...dismisses.filter(alert => validAlerts.includes(alert.id)),
             ]
             localStorage.setItem(dismissKey, JSON.stringify(alertsToDismiss))
-            update(a => (a = alertsToDismiss))
+            update((a: any) => (a = alertsToDismiss))
         },
     }
 }
+
+export const dir = derived(locale, $locale =>
+    rtlLanguages.includes($locale) ? 'rtl' : 'ltr',
+)
 
 export const dismissedAlerts = initDismissedAlerts()

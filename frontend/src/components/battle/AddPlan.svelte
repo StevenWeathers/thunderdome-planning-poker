@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { quill } from '../../quill.js'
+    import { quill } from '../../quill'
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
     import NoSymbol from '../icons/NoSymbol.svelte'
@@ -8,7 +8,8 @@
     import Bars2 from '../icons/Bars2.svelte'
     import ChevronDown from '../icons/ChevronDown.svelte'
     import DoubleChevronDown from '../icons/DoubleChevronDown.svelte'
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig } from '../../config'
 
     export let handlePlanAdd = () => {}
     export let toggleAddPlan = () => {}
@@ -18,27 +19,27 @@
 
     // going by common Jira issue types for now
     const planTypes = [
-        $_('planTypeStory'),
-        $_('planTypeBug'),
-        $_('planTypeSpike'),
-        $_('planTypeEpic'),
-        $_('planTypeTask'),
-        $_('planTypeSubtask'),
+        $LL.planTypeStory(),
+        $LL.planTypeBug(),
+        $LL.planTypeSpike(),
+        $LL.planTypeEpic(),
+        $LL.planTypeTask(),
+        $LL.planTypeSubtask(),
     ]
 
     // going by common Jira issue priorities for now
     const priorities = [
-        { name: $_('planPriorityBlocker'), value: 1, icon: NoSymbol },
+        { name: $LL.planPriorityBlocker(), value: 1, icon: NoSymbol },
         {
-            name: $_('planPriorityHighest'),
+            name: $LL.planPriorityHighest(),
             value: 2,
             icon: DoubleChevronUp,
         },
-        { name: $_('planPriorityHigh'), value: 3, icon: ChevronUp },
-        { name: $_('planPriorityMedium'), value: 4, icon: Bars2 },
-        { name: $_('planPriorityLow'), value: 5, icon: ChevronDown },
+        { name: $LL.planPriorityHigh(), value: 3, icon: ChevronUp },
+        { name: $LL.planPriorityMedium(), value: 4, icon: Bars2 },
+        { name: $LL.planPriorityLow(), value: 5, icon: ChevronDown },
         {
-            name: $_('planPriorityLowest'),
+            name: $LL.planPriorityLowest(),
             value: 6,
             icon: DoubleChevronDown,
         },
@@ -46,7 +47,7 @@
 
     export let planId = ''
     export let planName = ''
-    export let planType = $_('planTypeStory')
+    export let planType = $LL.planTypeStory()
     export let referenceId = ''
     export let planLink = ''
     export let description = ''
@@ -63,7 +64,7 @@
 
         if (planLink !== '' && !isAbsolute.test(planLink)) {
             invalidPlan = true
-            notifications.danger($_('planLinkInvalid'))
+            notifications.danger($LL.planLinkInvalid())
             eventTag('plan_add_invalid_link', 'battle', ``)
         }
 
@@ -97,7 +98,7 @@
                 class="block font-bold mb-2 dark:text-gray-400"
                 for="planType"
             >
-                {$_('planType')}
+                {$LL.planType({ friendly: AppConfig.FriendlyUIVerbs })}
             </label>
             <div class="relative">
                 <select
@@ -110,7 +111,9 @@
                     focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 >
                     <option value="" disabled>
-                        {$_('planTypePlaceholder')}
+                        {$LL.planTypePlaceholder({
+                            friendly: AppConfig.FriendlyUIVerbs,
+                        })}
                     </option>
                     {#each planTypes as pType}
                         <option value="{pType}">{pType}</option>
@@ -129,7 +132,7 @@
                 class="block font-bold mb-2 dark:text-gray-400"
                 for="planName"
             >
-                {$_('planName')}
+                {$LL.planName({ friendly: AppConfig.FriendlyUIVerbs })}
             </label>
             <input
                 class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
@@ -139,7 +142,9 @@
                 id="planName"
                 name="planName"
                 bind:value="{planName}"
-                placeholder="{$_('planNamePlaceholder')}"
+                placeholder="{$LL.planNamePlaceholder({
+                    friendly: AppConfig.FriendlyUIVerbs,
+                })}"
             />
         </div>
         <div class="mb-4">
@@ -147,7 +152,7 @@
                 class="block font-bold mb-2 dark:text-gray-400"
                 for="referenceId"
             >
-                {$_('planReferenceId')}
+                {$LL.planReferenceId()}
             </label>
             <input
                 class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
@@ -157,7 +162,7 @@
                 id="referenceId"
                 name="referenceId"
                 bind:value="{referenceId}"
-                placeholder="{$_('planReferenceIdPlaceholder')}"
+                placeholder="{$LL.planReferenceIdPlaceholder()}"
             />
         </div>
         <div class="mb-4">
@@ -165,7 +170,7 @@
                 class="block font-bold mb-2 dark:text-gray-400"
                 for="planLink"
             >
-                {$_('planLink')}
+                {$LL.planLink()}
             </label>
             <input
                 class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
@@ -175,7 +180,9 @@
                 id="planLink"
                 name="planLink"
                 bind:value="{planLink}"
-                placeholder="{$_('planLinkPlaceholder')}"
+                placeholder="{$LL.planLinkPlaceholder({
+                    friendly: AppConfig.FriendlyUIVerbs,
+                })}"
             />
         </div>
         <div class="mb-4">
@@ -183,7 +190,7 @@
                 class="block font-bold mb-2 dark:text-gray-400"
                 for="priority"
             >
-                {$_('planPriority')}
+                {$LL.planPriority()}
             </label>
             <div class="relative">
                 <select
@@ -195,7 +202,7 @@
                     focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 >
                     <option value="{99}" disabled>
-                        {$_('planPriorityPlaceholder')}
+                        {$LL.planPriorityPlaceholder()}
                     </option>
                     {#each priorities as p}
                         <option value="{p.value}">
@@ -225,7 +232,7 @@
                 >
                     {#if descriptionExpanded}-{:else}+{/if}
                 </button>
-                <span class="dark:text-gray-400">{$_('planDescription')}</span>
+                <span class="dark:text-gray-400">{$LL.planDescription()}</span>
             </div>
             {#if descriptionExpanded}
                 <div class="mb-2">
@@ -233,7 +240,7 @@
                         <div
                             class="w-full bg-white"
                             use:quill="{{
-                                placeholder: $_('planDescriptionPlaceholder'),
+                                placeholder: $LL.planDescriptionPlaceholder(),
                                 content: description,
                             }}"
                             on:text-change="{e =>
@@ -259,7 +266,7 @@
                     {#if acceptanceExpanded}-{:else}+{/if}
                 </button>
                 <span class="dark:text-gray-400"
-                    >{$_('planAcceptanceCriteria')}</span
+                    >{$LL.planAcceptanceCriteria()}</span
                 >
             </div>
             {#if acceptanceExpanded}
@@ -268,9 +275,8 @@
                         <div
                             class="w-full"
                             use:quill="{{
-                                placeholder: $_(
-                                    'planAcceptanceCriteriaPlaceholder',
-                                ),
+                                placeholder:
+                                    $LL.planAcceptanceCriteriaPlaceholder(),
                                 content: acceptanceCriteria,
                             }}"
                             on:text-change="{e =>
@@ -284,7 +290,7 @@
         <div class="text-right">
             <div>
                 <SolidButton type="submit" testid="plan-save"
-                    >{$_('save')}</SolidButton
+                    >{$LL.save()}</SolidButton
                 >
             </div>
         </div>

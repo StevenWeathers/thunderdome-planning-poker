@@ -1,4 +1,4 @@
-import {PathPrefix} from './config.js'
+import {PathPrefix} from './config'
 
 /**
  * Extends fetch with common inputs e.g. credentials, content-type

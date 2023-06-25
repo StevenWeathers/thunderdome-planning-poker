@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { quill } from '../../quill.js'
+    import { quill } from '../../quill'
     import Modal from '../Modal.svelte'
     import HollowButton from '../HollowButton.svelte'
     import UserIcon from '../icons/UserIcon.svelte'
-    import { warrior as user } from '../../stores.js'
-    import { _ } from '../../i18n.js'
+    import { warrior as user } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
 
     export let toggleStoryForm = () => {}
     export let sendSocketEvent = () => {}
@@ -335,7 +335,7 @@
                                                         null,
                                                     )}"
                                                 >
-                                                    {$_('cancel')}
+                                                    {$LL.cancel()}
                                                 </HollowButton>
                                                 <HollowButton
                                                     color="green"
@@ -343,7 +343,7 @@
                                                     disabled="{selectedCommentContent ===
                                                         ''}"
                                                 >
-                                                    {$_('updateComment')}
+                                                    {$LL.updateComment()}
                                                 </HollowButton>
                                             </div>
                                         </div>
@@ -360,7 +360,7 @@
                                                     comment,
                                                 )}"
                                             >
-                                                {$_('edit')}
+                                                {$LL.edit()}
                                             </button>
                                             <button
                                                 class="text-red-500 hover:text-red-300"
@@ -368,7 +368,7 @@
                                                     comment.id,
                                                 )}"
                                             >
-                                                {$_('delete')}
+                                                {$LL.delete()}
                                             </button>
                                         </div>
                                     {/if}

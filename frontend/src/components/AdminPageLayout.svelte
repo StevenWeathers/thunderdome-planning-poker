@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { AppConfig, appRoutes } from '../config.ts'
-    import { _ } from '../i18n.js'
+    import { AppConfig, appRoutes } from '../config'
+    import LL from '../i18n/i18n-svelte'
 
     export let activePage = 'admin'
 
@@ -12,58 +12,58 @@
         OrganizationsEnabled,
     } = AppConfig
 
-    const pages = [
+    $: pages = $LL && [
         {
             name: 'Admin',
-            label: $_('adminPageAdmin'),
+            label: $LL.adminPageAdmin(),
             path: '',
             enabled: true,
         },
         {
             name: 'Alerts',
-            label: $_('adminPageAlerts'),
+            label: $LL.adminPageAlerts(),
             path: '/alerts',
             enabled: true,
         },
         {
             name: 'Battles',
-            label: $_('battles'),
+            label: $LL.battles({ friendly: AppConfig.FriendlyUIVerbs }),
             path: '/battles',
             enabled: FeaturePoker,
         },
         {
             name: 'Retros',
-            label: $_('retros'),
+            label: $LL.retros(),
             path: '/retros',
             enabled: FeatureRetro,
         },
         {
             name: 'Storyboards',
-            label: $_('storyboards'),
+            label: $LL.storyboards(),
             path: '/storyboards',
             enabled: FeatureStoryboard,
         },
         {
             name: 'Organizations',
-            label: $_('adminPageOrganizations'),
+            label: $LL.adminPageOrganizations(),
             path: '/organizations',
             enabled: OrganizationsEnabled,
         },
         {
             name: 'Teams',
-            label: $_('adminPageTeams'),
+            label: $LL.adminPageTeams(),
             path: '/teams',
             enabled: true,
         },
         {
             name: 'Users',
-            label: $_('adminPageUsers'),
+            label: $LL.adminPageUsers(),
             path: '/users',
             enabled: true,
         },
         {
             name: 'API Keys',
-            label: $_('adminPageApi'),
+            label: $LL.adminPageApi(),
             path: '/apikeys',
             enabled: ExternalAPIEnabled,
         },
@@ -89,7 +89,7 @@
     <div
         class="w-full flex justify-end px-6 py-2 border-b-2 bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
     >
-        <ul class="flex">
+        <ul class="flex" data-testid="admin-nav">
             {#each pages as page}
                 {#if page.enabled}
                     <li class="me-3">
@@ -99,6 +99,7 @@
                                 ? activePillClasses
                                 : nonActivePillClasses}"
                             href="{appRoutes.admin}{page.path}"
+                            data-testid="admin-nav-item"
                         >
                             {page.label}
                         </a>

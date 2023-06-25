@@ -1,17 +1,16 @@
 <script lang="ts">
     import { onMount } from 'svelte'
-
-    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import Pagination from '../../components/Pagination.svelte'
-    import HollowButton from '../../components/HollowButton.svelte'
-    import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.ts'
-    import { validateUserIsAdmin } from '../../validationUtils.js'
-    import Table from '../../components/table/Table.svelte'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
     import HeadCol from '../../components/table/HeadCol.svelte'
+    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
+    import Table from '../../components/table/Table.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
 
     export let xfetch
     export let router
@@ -35,7 +34,7 @@
                 storyboardCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger($_('getStoryboardsErrorMessage'))
+                notifications.danger($LL.getStoryboardsErrorMessage())
             })
     }
 
@@ -64,9 +63,7 @@
 </script>
 
 <svelte:head>
-    <title
-        >{$_('storyboards')} {$_('pages.admin.title')} | {$_('appName')}</title
-    >
+    <title>{$LL.storyboards()} {$LL.admin()} | {$LL.appName()}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="storyboards">
@@ -74,7 +71,7 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            {$_('storyboards')}
+            {$LL.storyboards()}
         </h1>
     </div>
 
@@ -98,23 +95,23 @@
                 </label>
             </div>
             <label for="activeStoryboards" class="dark:text-gray-300"
-                >{$_('showActiveStoryboards')}</label
+                >{$LL.showActiveStoryboards()}</label
             >
         </div>
 
         <Table>
             <tr slot="header">
                 <HeadCol>
-                    {$_('name')}
+                    {$LL.name()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('dateCreated')}
+                    {$LL.dateCreated()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('dateUpdated')}
+                    {$LL.dateUpdated()}
                 </HeadCol>
                 <HeadCol type="action">
-                    <span class="sr-only">{$_('actions')}</span>
+                    <span class="sr-only">{$LL.actions()}</span>
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
@@ -137,7 +134,7 @@
                             <HollowButton
                                 href="{appRoutes.storyboard}/{storyboard.id}"
                             >
-                                {$_('joinStoryboard')}
+                                {$LL.joinStoryboard()}
                             </HollowButton>
                         </RowCol>
                     </TableRow>

@@ -1,20 +1,19 @@
 <script lang="ts">
     import { onMount } from 'svelte'
-
-    import CheckIcon from '../../components/icons/CheckIcon.svelte'
-    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
-    import Pagination from '../../components/Pagination.svelte'
-    import CreateAlert from '../../components/alert/CreateAlert.svelte'
-    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
-    import { activeAlerts, warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.ts'
-    import { validateUserIsAdmin } from '../../validationUtils.js'
-    import Table from '../../components/table/Table.svelte'
+    import { activeAlerts, warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
     import HeadCol from '../../components/table/HeadCol.svelte'
-    import TableRow from '../../components/table/TableRow.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
+    import CreateAlert from '../../components/alert/CreateAlert.svelte'
+    import Pagination from '../../components/Pagination.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
+    import TableRow from '../../components/table/TableRow.svelte'
+    import CheckIcon from '../../components/icons/CheckIcon.svelte'
+    import Table from '../../components/table/Table.svelte'
+    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
 
     export let xfetch
     export let router
@@ -65,7 +64,7 @@
                 activeAlerts.update(result.data)
                 getAlerts()
                 toggleCreateAlert()
-                notifications.success($_('createAlertSuccess'))
+                notifications.success($LL.createAlertSuccess())
             })
             .catch(function () {
                 notifications.danger('createAlertError')
@@ -82,10 +81,10 @@
                 activeAlerts.update(result.data)
                 getAlerts()
                 toggleUpdateAlert({ ...defaultAlert })()
-                notifications.success($_('updateAlertSuccess'))
+                notifications.success($LL.updateAlertSuccess())
             })
             .catch(function () {
-                notifications.danger($_('updateAlertError'))
+                notifications.danger($LL.updateAlertError())
                 eventTag('admin_update_alert', 'engagement', 'failure')
             })
     }
@@ -99,7 +98,7 @@
                 alertCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger($_('getAlertsError'))
+                notifications.danger($LL.getAlertsError())
             })
     }
 
@@ -111,10 +110,10 @@
                 activeAlerts.update(result.data)
                 getAlerts()
                 toggleDeleteAlert(null)()
-                notifications.success($_('deleteAlertSuccess'))
+                notifications.success($LL.deleteAlertSuccess())
             })
             .catch(function () {
-                notifications.danger($_('deleteAlertError'))
+                notifications.danger($LL.deleteAlertError())
                 eventTag('admin_delete_alert', 'engagement', 'failure')
             })
     }
@@ -139,7 +138,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('alerts')} {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$LL.alerts()} {$LL.admin()} | {$LL.appName()}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="alerts">
@@ -147,36 +146,36 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            {$_('alerts')}
+            {$LL.alerts()}
         </h1>
     </div>
 
     <div class="w-full">
         <div class="text-right mb-4">
             <HollowButton onClick="{toggleCreateAlert}">
-                {$_('alertCreate')}
+                {$LL.alertCreate()}
             </HollowButton>
         </div>
 
         <Table>
             <tr slot="header">
                 <HeadCol>
-                    {$_('name')}
+                    {$LL.name()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('type')}
+                    {$LL.type()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('active')}
+                    {$LL.active()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('alertRegisteredOnly')}
+                    {$LL.alertRegisteredOnly()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('alertAllowDismiss')}
+                    {$LL.alertAllowDismiss()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('dateUpdated')}
+                    {$LL.dateUpdated()}
                 </HeadCol>
                 <HeadCol type="action">
                     <span class="sr-only">Actions</span>
@@ -220,13 +219,13 @@
                                 onClick="{toggleUpdateAlert(alert)}"
                                 color="blue"
                             >
-                                {$_('edit')}
+                                {$LL.edit()}
                             </HollowButton>
                             <HollowButton
                                 onClick="{toggleDeleteAlert(alert.id)}"
                                 color="red"
                             >
-                                {$_('delete')}
+                                {$LL.delete()}
                             </HollowButton>
                         </RowCol>
                     </TableRow>
@@ -271,8 +270,8 @@
         <DeleteConfirmation
             toggleDelete="{toggleDeleteAlert(null)}"
             handleDelete="{handleDeleteAlert}"
-            confirmText="{$_('alertDeleteConfirmation')}"
-            confirmBtnText="{$_('alertDelete')}"
+            confirmText="{$LL.alertDeleteConfirmation()}"
+            confirmBtnText="{$LL.alertDelete()}"
         />
     {/if}
 </AdminPageLayout>

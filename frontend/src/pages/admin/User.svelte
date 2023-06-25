@@ -1,23 +1,22 @@
 <script lang="ts">
     import { onMount } from 'svelte'
-
-    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
-    import VerifiedIcon from '../../components/icons/Verified.svelte'
+    import VerifiedIcon from '../../components/icons/VerifiedIcon.svelte'
     import Pagination from '../../components/Pagination.svelte'
-    import HollowButton from '../../components/HollowButton.svelte'
-    import SolidButton from '../../components/SolidButton.svelte'
     import UpdatePasswordForm from '../../components/user/UpdatePasswordForm.svelte'
     import UserAvatar from '../../components/user/UserAvatar.svelte'
     import CountryFlag from '../../components/user/CountryFlag.svelte'
     import Modal from '../../components/Modal.svelte'
-    import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { AppConfig, appRoutes } from '../../config.ts'
-    import { validateUserIsAdmin } from '../../validationUtils.js'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
+    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
 
     export let xfetch
     export let router
@@ -57,7 +56,7 @@
                 user = result.data
             })
             .catch(function () {
-                notifications.danger($_('getUserError'))
+                notifications.danger($LL.getUserError())
             })
     }
 
@@ -77,7 +76,11 @@
                 battleCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger($_('getBattlesError'))
+                notifications.danger(
+                    $LL.getBattlesError({
+                        friendly: AppConfig.FriendlyUIVerbs,
+                    }),
+                )
             })
     }
 
@@ -102,7 +105,7 @@
                 retroCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger($_('getRetrosError'))
+                notifications.danger($LL.getRetrosError())
             })
     }
 
@@ -127,7 +130,7 @@
                 storyboardCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger($_('getStoryboardsError'))
+                notifications.danger($LL.getStoryboardsError())
             })
     }
 
@@ -144,17 +147,12 @@
 
         xfetch(`/api/admin/users/${userId}/password`, { body, method: 'PATCH' })
             .then(function () {
-                notifications.success(
-                    $_('pages.warriorProfile.passwordUpdated'),
-                    1500,
-                )
+                notifications.success($LL.passwordUpdated(), 1500)
                 toggleUpdatePassword()
                 eventTag('update_password', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger(
-                    $_('pages.warriorProfile.passwordUpdateError'),
-                )
+                notifications.danger($LL.passwordUpdateError())
                 eventTag('update_password', 'engagement', 'failure')
             })
     }
@@ -177,7 +175,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('users')} {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$LL.users()} {$LL.admin()} | {$LL.appName()}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="users">
@@ -192,7 +190,7 @@
             </div>
             <div class="flex-1 text-right">
                 <SolidButton onClick="{toggleUpdatePassword}"
-                    >{$_('pages.warriorProfile.updatePasswordButton')}
+                    >{$LL.updatePassword()}
                 </SolidButton>
             </div>
         </div>
@@ -204,22 +202,22 @@
                 <tr slot="header">
                     <HeadCol />
                     <HeadCol>
-                        {$_('pages.admin.registeredWarriors.country')}
+                        {$LL.country()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('email')}
+                        {$LL.email()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('type')}
+                        {$LL.type()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('createdDate')}
+                        {$LL.dateCreated()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('updatedDate')}
+                        {$LL.dateUpdated()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('lastActive')}
+                        {$LL.lastActive()}
                     </HeadCol>
                 </tr>
                 <tbody slot="body" let:class="{className}" class="{className}">
@@ -253,9 +251,7 @@
                             {#if user.verified}
                                 <span
                                     class="text-green-600"
-                                    title="{$_(
-                                        'pages.admin.registeredWarriors.verified',
-                                    )}"
+                                    title="{$LL.verified()}"
                                 >
                                     <VerifiedIcon />
                                 </span>
@@ -283,22 +279,22 @@
                 <h4
                     class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
                 >
-                    {$_('battles')}
+                    {$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
                 </h4>
 
                 <Table>
                     <tr slot="header">
                         <HeadCol>
-                            {$_('name')}
+                            {$LL.name()}
                         </HeadCol>
                         <HeadCol>
-                            {$_('dateCreated')}
+                            {$LL.dateCreated()}
                         </HeadCol>
                         <HeadCol>
-                            {$_('dateUpdated')}
+                            {$LL.dateUpdated()}
                         </HeadCol>
                         <HeadCol type="action">
-                            <span class="sr-only">{$_('actions')}</span>
+                            <span class="sr-only">{$LL.actions()}</span>
                         </HeadCol>
                     </tr>
                     <tbody
@@ -329,7 +325,9 @@
                                     <HollowButton
                                         href="{appRoutes.battle}/{battle.id}"
                                     >
-                                        {$_('battleJoin')}
+                                        {$LL.battleJoin({
+                                            friendly: AppConfig.FriendlyUIVerbs,
+                                        })}
                                     </HollowButton>
                                 </RowCol>
                             </TableRow>
@@ -355,22 +353,22 @@
                 <h4
                     class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
                 >
-                    {$_('retros')}
+                    {$LL.retros()}
                 </h4>
 
                 <Table>
                     <tr slot="header">
                         <HeadCol>
-                            {$_('name')}
+                            {$LL.name()}
                         </HeadCol>
                         <HeadCol>
-                            {$_('dateCreated')}
+                            {$LL.dateCreated()}
                         </HeadCol>
                         <HeadCol>
-                            {$_('dateUpdated')}
+                            {$LL.dateUpdated()}
                         </HeadCol>
                         <HeadCol type="action">
-                            <span class="sr-only">{$_('actions')}</span>
+                            <span class="sr-only">{$LL.actions()}</span>
                         </HeadCol>
                     </tr>
                     <tbody
@@ -401,7 +399,7 @@
                                     <HollowButton
                                         href="{appRoutes.retro}/{retro.id}"
                                     >
-                                        {$_('joinRetro')}
+                                        {$LL.joinRetro()}
                                     </HollowButton>
                                 </RowCol>
                             </TableRow>
@@ -427,22 +425,22 @@
                 <h4
                     class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
                 >
-                    {$_('storyboards')}
+                    {$LL.storyboards()}
                 </h4>
 
                 <Table>
                     <tr slot="header">
                         <HeadCol>
-                            {$_('name')}
+                            {$LL.name()}
                         </HeadCol>
                         <HeadCol>
-                            {$_('dateCreated')}
+                            {$LL.dateCreated()}
                         </HeadCol>
                         <HeadCol>
-                            {$_('dateUpdated')}
+                            {$LL.dateUpdated()}
                         </HeadCol>
                         <HeadCol type="action">
-                            <span class="sr-only">{$_('actions')}</span>
+                            <span class="sr-only">{$LL.actions()}</span>
                         </HeadCol>
                     </tr>
                     <tbody
@@ -473,7 +471,7 @@
                                     <HollowButton
                                         href="{appRoutes.storyboard}/{storyboard.id}"
                                     >
-                                        {$_('joinStoryboard')}
+                                        {$LL.joinStoryboard()}
                                     </HollowButton>
                                 </RowCol>
                             </TableRow>

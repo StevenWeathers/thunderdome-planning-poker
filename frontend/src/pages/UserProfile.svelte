@@ -4,13 +4,13 @@
     import PageLayout from '../components/PageLayout.svelte'
     import UpdatePasswordForm from '../components/user/UpdatePasswordForm.svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
+    import CheckIcon from '../components/icons/CheckIcon.svelte'
+    import { warrior } from '../stores'
+    import LL from '../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../config'
     import ProfileForm from '../components/user/ProfileForm.svelte'
     import CreateApiKey from '../components/user/CreateApiKey.svelte'
-    import CheckIcon from '../components/icons/CheckIcon.svelte'
-    import { warrior } from '../stores.js'
-    import { _ } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.ts'
+    import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
 
     export let xfetch
     export let router
@@ -42,7 +42,7 @@
                 warriorProfile = result.data
             })
             .catch(function () {
-                notifications.danger($_('pages.warriorProfile.errorRetreiving'))
+                notifications.danger($LL.profileErrorRetrieving())
                 eventTag('fetch_profile', 'engagement', 'failure')
             })
     }
@@ -65,11 +65,11 @@
                     locale: p.locale,
                 })
 
-                notifications.success($_('pages.warriorProfile.updateSuccess'))
+                notifications.success($LL.profileUpdateSuccess())
                 eventTag('update_profile', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger($_('pages.warriorProfile.errorUpdating'))
+                notifications.danger($LL.profileErrorUpdating())
                 eventTag('update_profile', 'engagement', 'failure')
             })
     }
@@ -82,17 +82,12 @@
 
         xfetch('/api/auth/update-password', { body, method: 'PATCH' })
             .then(function () {
-                notifications.success(
-                    $_('pages.warriorProfile.passwordUpdated'),
-                    1500,
-                )
+                notifications.success($LL.passwordUpdated(), 1500)
                 toggleUpdatePassword()
                 eventTag('update_password', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger(
-                    $_('pages.warriorProfile.passwordUpdateError'),
-                )
+                notifications.danger($LL.passwordUpdateError())
                 eventTag('update_password', 'engagement', 'failure')
             })
     }
@@ -104,9 +99,7 @@
                 apiKeys = result.data
             })
             .catch(function () {
-                notifications.danger(
-                    $_('pages.warriorProfile.apiKeys.errorRetreiving'),
-                )
+                notifications.danger($LL.apiKeysErrorRetrieving())
                 eventTag('fetch_profile_apikeys', 'engagement', 'failure')
             })
     }
@@ -118,15 +111,11 @@
             })
                 .then(res => res.json())
                 .then(function (result) {
-                    notifications.success(
-                        $_('pages.warriorProfile.apiKeys.deleteSuccess'),
-                    )
+                    notifications.success($LL.apiKeyDeleteSuccess())
                     apiKeys = result.data
                 })
                 .catch(function () {
-                    notifications.danger(
-                        $_('pages.warriorProfile.apiKeys.deleteFailed'),
-                    )
+                    notifications.danger($LL.apiKeyDeleteFailed())
                 })
         }
     }
@@ -143,15 +132,11 @@
             })
                 .then(res => res.json())
                 .then(function (result) {
-                    notifications.success(
-                        $_('pages.warriorProfile.apiKeys.updateSuccess'),
-                    )
+                    notifications.success($LL.apiKeyUpdateSuccess())
                     apiKeys = result.data
                 })
                 .catch(function () {
-                    notifications.danger(
-                        $_('pages.warriorProfile.apiKeys.updateFailed'),
-                    )
+                    notifications.danger($LL.apiKeyUpdateFailed())
                 })
         }
     }
@@ -170,7 +155,7 @@
                 router.route(appRoutes.landing)
             })
             .catch(function () {
-                notifications.danger($_('pages.warriorProfile.delete.error'))
+                notifications.danger($LL.profileDeleteError())
                 eventTag('delete_warrior', 'engagement', 'failure')
             })
     }
@@ -193,7 +178,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('pages.warriorProfile.title')} | {$_('appName')}</title>
+    <title>{$LL.profileTitle()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
@@ -201,7 +186,7 @@
         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight dark:text-white"
     >
-        {$_('pages.warriorProfile.title')}
+        {$LL.profileTitle()}
     </h1>
 
     <div class="flex justify-center flex-wrap">
@@ -231,7 +216,7 @@
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
         md:leading-tight text-center dark:text-white"
                     >
-                        {$_('pages.warriorProfile.updatePasswordForm.title')}
+                        {$LL.updatePassword()}
                     </div>
 
                     <UpdatePasswordForm
@@ -251,7 +236,7 @@
                             <h2
                                 class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                             >
-                                {$_('pages.warriorProfile.apiKeys.title')}
+                                {$LL.apiKeys()}
                             </h2>
                         </div>
                         <div class="flex-1">
@@ -261,15 +246,13 @@
                                     options="{{ target: '_blank' }}"
                                     color="blue"
                                 >
-                                    {$_('apiDocumentation')}
+                                    {$LL.apiDocumentation()}
                                 </HollowButton>
                                 <HollowButton
                                     onClick="{toggleCreateApiKey}"
                                     testid="apikey-create"
                                 >
-                                    {$_(
-                                        'pages.warriorProfile.apiKeys.createButton',
-                                    )}
+                                    {$LL.apiKeyCreateButton()}
                                 </HollowButton>
                             </div>
                         </div>
@@ -294,38 +277,32 @@
                                                     scope="col"
                                                     class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                                 >
-                                                    {$_('name')}
+                                                    {$LL.name()}
                                                 </th>
                                                 <th
                                                     scope="col"
                                                     class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                                 >
-                                                    {$_(
-                                                        'pages.warriorProfile.apiKeys.prefix',
-                                                    )}
+                                                    {$LL.apiKeyPrefix()}
                                                 </th>
                                                 <th
                                                     scope="col"
                                                     class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                                 >
-                                                    {$_(
-                                                        'pages.warriorProfile.apiKeys.active',
-                                                    )}
+                                                    {$LL.active()}
                                                 </th>
                                                 <th
                                                     scope="col"
                                                     class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                                                 >
-                                                    {$_(
-                                                        'pages.warriorProfile.apiKeys.updated',
-                                                    )}
+                                                    {$LL.lastUpdated()}
                                                 </th>
                                                 <th
                                                     scope="col"
                                                     class="relative px-6 py-3"
                                                 >
                                                     <span class="sr-only"
-                                                        >{$_('actions')}</span
+                                                        >{$LL.actions()}</span
                                                     >
                                                 </th>
                                             </tr>
@@ -386,13 +363,9 @@
                                                             testid="apikey-activetoggle"
                                                         >
                                                             {#if !apk.active}
-                                                                {$_(
-                                                                    'pages.warriorProfile.apiKeys.activateButton',
-                                                                )}
+                                                                {$LL.activate()}
                                                             {:else}
-                                                                {$_(
-                                                                    'pages.warriorProfile.apiKeys.deactivateButton',
-                                                                )}
+                                                                {$LL.deactivate()}
                                                             {/if}
                                                         </HollowButton>
                                                         <HollowButton
@@ -402,9 +375,7 @@
                                                             )}"
                                                             testid="apikey-delete"
                                                         >
-                                                            {$_(
-                                                                'pages.warriorProfile.apiKeys.deleteButton',
-                                                            )}
+                                                            {$LL.delete()}
                                                         </HollowButton>
                                                     </td>
                                                 </tr>
@@ -422,7 +393,7 @@
         {#if !LdapEnabled && !HeaderAuthEnabled}
             <div class="w-full text-center mt-8">
                 <HollowButton onClick="{toggleDeleteAccount}" color="red">
-                    {$_('pages.warriorProfile.delete.deleteButton')}
+                    {$LL.deleteAccount()}
                 </HollowButton>
             </div>
         {/if}
@@ -441,8 +412,8 @@
         <DeleteConfirmation
             toggleDelete="{toggleDeleteAccount}"
             handleDelete="{handleDeleteAccount}"
-            confirmText="{$_('pages.warriorProfile.delete.warningStatement')}"
-            confirmBtnText="{$_('pages.warriorProfile.delete.confirmButton')}"
+            confirmText="{$LL.deleteAccountWarningStatement()}"
+            confirmBtnText="{$LL.deleteConfirmButton()}"
         />
     {/if}
 </PageLayout>

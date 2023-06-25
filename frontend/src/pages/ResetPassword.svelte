@@ -1,9 +1,9 @@
 <script lang="ts">
     import PageLayout from '../components/PageLayout.svelte'
     import SolidButton from '../components/SolidButton.svelte'
-    import { validatePasswords } from '../validationUtils.js'
-    import { _ } from '../i18n.js'
-    import { appRoutes } from '../config.ts'
+    import { validatePasswords } from '../validationUtils'
+    import LL from '../i18n/i18n-svelte'
+    import { appRoutes } from '../config'
 
     export let xfetch
     export let router
@@ -41,9 +41,7 @@
                     })
                 })
                 .catch(function () {
-                    notifications.danger(
-                        $_('pages.login.passwordReset.resetError'),
-                    )
+                    notifications.danger($LL.passwordResetError())
                     eventTag('reset_password', 'engagement', 'failure')
                 })
         }
@@ -53,7 +51,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('pages.login.passwordReset.title')} | {$_('appName')}</title>
+    <title>{$LL.resetPassword()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
@@ -68,7 +66,7 @@
                     class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                     md:leading-tight text-center dark:text-white"
                 >
-                    {$_('pages.login.passwordReset.title')}
+                    {$LL.resetPassword()}
                 </div>
 
                 <div class="mb-4">
@@ -76,13 +74,11 @@
                         class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                         for="yourPassword1"
                     >
-                        {$_('pages.login.passwordReset.fields.password.label')}
+                        {$LL.password()}
                     </label>
                     <input
                         bind:value="{warriorPassword1}"
-                        placeholder="{$_(
-                            'pages.login.passwordReset.fields.password.placeholder',
-                        )}"
+                        placeholder="{$LL.passwordPlaceholder()}"
                         class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -98,15 +94,11 @@
                         class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                         for="yourPassword2"
                     >
-                        {$_(
-                            'pages.login.passwordReset.fields.confirmPassword.label',
-                        )}
+                        {$LL.confirmPassword()}
                     </label>
                     <input
                         bind:value="{warriorPassword2}"
-                        placeholder="{$_(
-                            'pages.login.passwordReset.fields.confirmPassword.placeholder',
-                        )}"
+                        placeholder="{$LL.confirmPasswordPlaceholder()}"
                         class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -119,7 +111,7 @@
 
                 <div class="text-right">
                     <SolidButton type="submit" disabled="{resetDisabled}">
-                        {$_('pages.login.passwordReset.saveButton')}
+                        {$LL.reset()}
                     </SolidButton>
                 </div>
             </form>

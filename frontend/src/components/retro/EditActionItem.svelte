@@ -1,9 +1,9 @@
 <script lang="ts">
-    import CheckboxIcon from '../icons/CheckboxIcon.svelte'
     import SolidButton from '../SolidButton.svelte'
-    import HollowButton from '../HollowButton.svelte'
     import Modal from '../Modal.svelte'
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
+    import CheckboxIcon from '../icons/CheckboxIcon.svelte'
+    import HollowButton from '../HollowButton.svelte'
 
     export let toggleEdit = () => {}
     export let handleEdit = () => {}
@@ -29,15 +29,15 @@
                 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="actionItem"
             >
-                {$_('actionItem')}
+                {$LL.actionItem()}
             </label>
             <div class="control">
                 <input
                     bind:value="{editAction.content}"
-                    placeholder="{$_('actionItemPlaceholder')}"
+                    placeholder="{$LL.actionItemPlaceholder()}"
                     class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
-                            px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
-                            focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
+                px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
+                focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
                     id="actionItem"
                     name="actionItem"
                     type="text"
@@ -51,7 +51,7 @@
                 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="Completed"
             >
-                {$_('completed')}
+                {$LL.completed()}
             </label>
             <div class="control">
                 <div class="flex-shrink">
@@ -77,11 +77,11 @@
         <div class="flex w-full pt-4">
             <div class="w-1/2">
                 <HollowButton color="red" onClick="{handleDelete(editAction)}"
-                    >{$_('delete')}</HollowButton
+                    >{$LL.delete()}</HollowButton
                 >
             </div>
             <div class="w-1/2 text-right">
-                <SolidButton type="submit">{$_('save')}</SolidButton>
+                <SolidButton type="submit">{$LL.save()}</SolidButton>
             </div>
         </div>
     </form>

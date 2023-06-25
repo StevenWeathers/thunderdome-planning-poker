@@ -2,8 +2,8 @@
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
-    import { AppConfig } from '../../config.ts'
-    import { _ } from '../../i18n.js'
+    import { AppConfig } from '../../config'
+    import LL from '../../i18n/i18n-svelte'
 
     const allowedPointValues = AppConfig.AllowedPointValues
     const allowedPointAverages = ['ceil', 'round', 'floor']
@@ -55,15 +55,15 @@
                 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="battleName"
             >
-                {$_('pages.myBattles.createBattle.fields.name.label')}
+                {$LL.battleName({ friendly: AppConfig.FriendlyUIVerbs })}
             </label>
             <div class="control">
                 <input
                     name="battleName"
                     bind:value="{battleName}"
-                    placeholder="{$_(
-                        'pages.myBattles.createBattle.fields.name.placeholder',
-                    )}"
+                    placeholder="{$LL.battleNamePlaceholder({
+                        friendly: AppConfig.FriendlyUIVerbs,
+                    })}"
                     class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -77,14 +77,12 @@
             <h3
                 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
             >
-                {$_(
-                    'pages.myBattles.createBattle.fields.allowedPointValues.label',
-                )}
+                {$LL.pointValuesAllowed()}
             </h3>
             <div class="control relative -me-2 md:-me-1">
                 {#if !votingLocked}
                     <div class="font-bold text-red-500">
-                        {$_('battleEditPointsDisabled')}
+                        {$LL.battleEditPointsDisabled()}
                     </div>
                 {/if}
                 {#each allowedPointValues as point}
@@ -116,9 +114,7 @@
                 class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="averageRounding"
             >
-                {$_(
-                    'pages.myBattles.createBattle.fields.averageRounding.label',
-                )}
+                {$LL.pointAverageRounding()}
             </label>
             <div class="relative">
                 <select
@@ -131,10 +127,7 @@
                 >
                     {#each allowedPointAverages as item}
                         <option value="{item}">
-                            {$_(
-                                'pages.myBattles.createBattle.fields.averageRounding.' +
-                                    item,
-                            )}
+                            {$LL.averageRoundingOptions[item]()}
                         </option>
                     {/each}
                 </select>
@@ -159,9 +152,9 @@
                     disabled="{!votingLocked}"
                     class="w-4 h-4 dark:accent-lime-400 me-1"
                 />
-                {$_(
-                    'pages.myBattles.createBattle.fields.autoFinishVoting.label',
-                )}
+                {$LL.autoFinishVotingLabel({
+                    friendly: AppConfig.FriendlyUIVerbs,
+                })}
             </label>
         </div>
 
@@ -185,16 +178,17 @@
                 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="joinCode"
             >
-                {$_('passCode')}
+                {$LL.passCode()}
             </label>
             <div class="control">
                 <input
                     name="joinCode"
                     bind:value="{joinCode}"
-                    placeholder="{$_('optionalPasscodePlaceholder')}"
+                    placeholder="{$LL.optionalPasscodePlaceholder()}"
                     class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
+                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="joinCode"
                 />
             </div>
@@ -205,23 +199,24 @@
                 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="leaderCode"
             >
-                {$_('leaderPasscode')}
+                {$LL.leaderPasscode()}
             </label>
             <div class="control">
                 <input
                     name="leaderCode"
                     bind:value="{leaderCode}"
-                    placeholder="{$_('optionalLeadercodePlaceholder')}"
+                    placeholder="{$LL.optionalLeadercodePlaceholder()}"
                     class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
+                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="leaderCode"
                 />
             </div>
         </div>
 
         <div class="text-right">
-            <SolidButton type="submit">{$_('save')}</SolidButton>
+            <SolidButton type="submit">{$LL.save()}</SolidButton>
         </div>
     </form>
 </Modal>

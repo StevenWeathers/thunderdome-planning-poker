@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { appRoutes } from '../../config.ts'
+    import { appRoutes } from '../../config'
     import SolidButton from '../SolidButton.svelte'
     import ClipboardIcon from '../icons/ClipboardIcon.svelte'
 

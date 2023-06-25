@@ -3,12 +3,12 @@
 
     import PageLayout from '../components/PageLayout.svelte'
     import CreateBattle from '../components/battle/CreateBattle.svelte'
-    import LeaderIcon from '../components/icons/LeaderIcon.svelte'
     import HollowButton from '../components/HollowButton.svelte'
+    import { warrior } from '../stores'
+    import LL from '../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../config'
+    import LeaderIcon from '../components/icons/LeaderIcon.svelte'
     import Pagination from '../components/Pagination.svelte'
-    import { warrior } from '../stores.js'
-    import { _ } from '../i18n.js'
-    import { appRoutes } from '../config.ts'
 
     export let xfetch
     export let notifications
@@ -32,7 +32,11 @@
                 battleCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger($_('pages.myBattles.battlesError'))
+                notifications.danger(
+                    $LL.myBattlesError({
+                        friendly: AppConfig.FriendlyUIVerbs,
+                    }),
+                )
                 eventTag('fetch_battles', 'engagement', 'failure')
             })
     }
@@ -52,14 +56,16 @@
 </script>
 
 <svelte:head>
-    <title>{$_('pages.myBattles.title')} | {$_('appName')}</title>
+    <title
+        >{$LL.myBattles({ friendly: AppConfig.FriendlyUIVerbs })} | {$LL.appName()}</title
+    >
 </svelte:head>
 
 <PageLayout>
     <h1
         class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
     >
-        {$_('pages.myBattles.title')}
+        {$LL.myBattles({ friendly: AppConfig.FriendlyUIVerbs })}
     </h1>
 
     <div class="flex flex-wrap">
@@ -82,26 +88,28 @@
                             <div
                                 class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
                             >
-                                {$_('pages.myBattles.countPlansPointed', {
-                                    values: {
-                                        totalPointed: battle.plans.filter(
-                                            p => p.points !== '',
-                                        ).length,
-                                        totalPlans: battle.plans.length,
-                                    },
+                                {$LL.countPlansPointed[
+                                    AppConfig.FriendlyUIVerbs
+                                ]({
+                                    totalPointed: battle.plans.filter(
+                                        p => p.points !== '',
+                                    ).length,
+                                    totalPlans: battle.plans.length,
                                 })}
                             </div>
                         </div>
                         <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                             <HollowButton href="{appRoutes.battle}/{battle.id}">
-                                {$_('battleJoin')}
+                                {$LL.battleJoin({
+                                    friendly: AppConfig.FriendlyUIVerbs,
+                                })}
                             </HollowButton>
                         </div>
                     </div>
                 </div>
             {/each}
             {#if battleCount > battlesPageLimit}
-                <div class="mt-6 pt-1 flex justify-center bg-white">
+                <div class="mt-6 pt-1 flex justify-center">
                     <Pagination
                         bind:current="{battlesPage}"
                         num_items="{battleCount}"
@@ -119,7 +127,7 @@
                 <h2
                     class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
                 >
-                    {$_('pages.myBattles.createBattle.title')}
+                    {$LL.createBattle({ friendly: AppConfig.FriendlyUIVerbs })}
                 </h2>
                 <CreateBattle
                     notifications="{notifications}"

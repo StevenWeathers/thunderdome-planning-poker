@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { AppConfig } from '../../config.ts'
-    import { _ } from '../../i18n.js'
+    import { AppConfig } from '../../config'
+    import LL from '../../i18n/i18n-svelte'
 
     const { PathPrefix, AvatarService } = AppConfig
     let klass = ''
@@ -16,7 +16,7 @@
 {#if AvatarService === 'dicebear'}
     <img
         src="https://avatars.dicebear.com/api/{avatar}/{warriorId}.svg?w={width}"
-        alt="{$_('avatarAltText')}"
+        alt="{$LL.avatarAltText()}"
         class="{klass}"
         {...options}
     />
@@ -24,14 +24,14 @@
     {#if gravatarHash !== ''}
         <img
             src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar}&r=g"
-            alt="{$_('avatarAltText')}"
+            alt="{$LL.avatarAltText()}"
             class="{klass}"
             {...options}
         />
     {:else}
         <img
             src="https://gravatar.com/avatar/{warriorId}?s={width}&d={avatar}&r=g"
-            alt="{$_('avatarAltText')}"
+            alt="{$LL.avatarAltText()}"
             class="{klass}"
             {...options}
         />
@@ -39,21 +39,21 @@
 {:else if AvatarService === 'robohash'}
     <img
         src="https://robohash.org/{warriorId}.png?set={avatar}&size={width}x{width}"
-        alt="{$_('avatarAltText')}"
+        alt="{$LL.avatarAltText()}"
         class="{klass}"
         {...options}
     />
 {:else if AvatarService === 'govatar'}
     <img
         src="{PathPrefix}/avatar/{width}/{warriorId}/{avatar}"
-        alt="{$_('avatarAltText')}"
+        alt="{$LL.avatarAltText()}"
         class="{klass}"
         {...options}
     />
 {:else if AvatarService === 'goadorable'}
     <img
         src="{PathPrefix}/avatar/{width}/{warriorId}"
-        alt="{$_('avatarAltText')}"
+        alt="{$LL.avatarAltText()}"
         class="{klass}"
         {...options}
     />

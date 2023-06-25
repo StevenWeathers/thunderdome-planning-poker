@@ -1,22 +1,22 @@
 <script lang="ts">
-    import Sockette from 'sockette'
     import { onDestroy, onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
     import PointCard from '../components/battle/PointCard.svelte'
-    import WarriorCard from '../components/battle/UserCard.svelte'
     import BattlePlans from '../components/battle/BattlePlans.svelte'
-    import VotingControls from '../components/battle/VotingControls.svelte'
-    import InviteWarrior from '../components/battle/InviteUser.svelte'
     import VoteResults from '../components/battle/VoteResults.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
     import EditBattle from '../components/battle/EditBattle.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
-    import { warrior } from '../stores.js'
-    import { _ } from '../i18n.js'
-    import { AppConfig, appRoutes, PathPrefix } from '../config.ts'
+    import { warrior } from '../stores'
+    import LL from '../i18n/i18n-svelte'
+    import { AppConfig, appRoutes, PathPrefix } from '../config'
+    import UserCard from '../components/battle/UserCard.svelte'
+    import VotingControls from '../components/battle/VotingControls.svelte'
+    import InviteUser from '../components/battle/InviteUser.svelte'
+    import Sockette from 'sockette'
 
     export let battleId
     export let notifications
@@ -31,7 +31,7 @@
     const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
     const defaultPlan = {
         id: '',
-        name: `[${$_('pages.battle.votingNotStarted')}]`,
+        name: '',
         type: '',
         referenceId: '',
         link: '',
@@ -67,7 +67,7 @@
                 JoinPassRequired = true
                 break
             case 'join_code_incorrect':
-                notifications.danger($_('incorrectPassCode'))
+                notifications.danger($LL.incorrectPassCode())
                 break
             case 'init': {
                 JoinPassRequired = false
@@ -102,9 +102,10 @@
                 }
                 if ($warrior.notificationsEnabled) {
                     notifications.success(
-                        `${$_('pages.battle.warriorJoined', {
-                            values: { name: joinedWarrior.name },
-                        })}`,
+                        `${$LL.warriorJoined[AppConfig.FriendlyUIVerbs]({
+                            name: joinedWarrior.name,
+                        })}
+    `,
                     )
                 }
                 break
@@ -117,9 +118,10 @@
 
                 if ($warrior.notificationsEnabled) {
                     notifications.danger(
-                        `${$_('pages.battle.warriorRetreated', {
-                            values: { name: leftWarrior.name },
-                        })}`,
+                        `${$LL.warriorRetreated[AppConfig.FriendlyUIVerbs]({
+                            name: leftWarrior.name,
+                        })}
+    `,
                     )
                 }
                 break
@@ -152,7 +154,11 @@
                 battle.votingLocked = true
                 vote = ''
                 if ($warrior.notificationsEnabled) {
-                    notifications.warning($_('pages.battle.planSkipped'))
+                    notifications.warning(
+                        $LL.planSkipped({
+                            friendly: AppConfig.FriendlyUIVerbs,
+                        }),
+                    )
                 }
                 break
             case 'vote_activity':
@@ -161,9 +167,10 @@
                 )
                 if ($warrior.notificationsEnabled) {
                     notifications.success(
-                        `${$_('pages.battle.warriorVoted', {
-                            values: { name: votedWarrior.name },
-                        })}`,
+                        `${$LL.warriorVoted({
+                            name: votedWarrior.name,
+                        })}
+    `,
                     )
                 }
 
@@ -175,9 +182,10 @@
                 )
                 if ($warrior.notificationsEnabled) {
                     notifications.warning(
-                        `${$_('pages.battle.warriorRetractedVote', {
-                            values: { name: devotedWarrior.name },
-                        })}`,
+                        `${$LL.warriorRetractedVote({
+                            name: devotedWarrior.name,
+                        })}
+    `,
                     )
                 }
 
@@ -231,7 +239,9 @@
                 break
             case 'battle_conceded':
                 // battle over, goodbye.
-                notifications.warning($_('pages.battle.battleDeleted'))
+                notifications.warning(
+                    $LL.battleDeleted({ friendly: AppConfig.FriendlyUIVerbs }),
+                )
                 router.route(appRoutes.battles)
                 break
             case 'jab_warrior':
@@ -239,9 +249,10 @@
                     w => w.id === parsedEvent.value,
                 )
                 notifications.info(
-                    `${$_('pages.battle.warriorNudge', {
-                        values: { name: warriorToJab.name },
-                    })}`,
+                    `${$LL.warriorNudgeMessage({
+                        name: warriorToJab.name,
+                    })}
+    `,
                 )
                 break
             default:
@@ -271,7 +282,11 @@
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'battle', '', () => {
-                        notifications.danger($_('sessionDuplicate'))
+                        notifications.danger(
+                            $LL.sessionDuplicate({
+                                friendly: AppConfig.FriendlyUIVerbs,
+                            }),
+                        )
                         router.route(`${appRoutes.battles}`)
                     })
                 } else if (e.code === 4002) {
@@ -484,7 +499,10 @@
 </script>
 
 <svelte:head>
-    <title>{$_('pages.battle.title')} {battle.name} | {$_('appName')}</title>
+    <title
+        >{$LL.battle({ friendly: AppConfig.FriendlyUIVerbs })}
+        {battle.name} | {$LL.appName()}</title
+    >
 </svelte:head>
 
 <PageLayout>
@@ -519,7 +537,7 @@
                         >
                     {/if}
                     &nbsp;<span data-testid="currentplan-name"
-                        >{currentPlan.name}</span
+                        >{#if currentPlan.name === ''}[{$LL.votingNotStarted()}]{:else}{currentPlan.name}{/if}</span
                     >
                 </h1>
                 <h2
@@ -591,13 +609,15 @@
                         <h3
                             class="text-3xl text-white leading-tight font-semibold font-rajdhani uppercase"
                         >
-                            {$_('pages.battle.warriors')}
+                            {$LL.warriors({
+                                friendly: AppConfig.FriendlyUIVerbs,
+                            })}
                         </h3>
                     </div>
 
                     {#each battle.users as war (war.id)}
                         {#if war.active}
-                            <WarriorCard
+                            <UserCard
                                 warrior="{war}"
                                 leaders="{battle.leaders}"
                                 isLeader="{isLeader}"
@@ -625,7 +645,7 @@
                 <div
                     class="bg-white dark:bg-gray-800 shadow-lg p-4 mb-4 rounded-lg"
                 >
-                    <InviteWarrior
+                    <InviteUser
                         hostname="{hostname}"
                         battleId="{battle.id}"
                         joinCode="{battle.joinCode}"
@@ -638,14 +658,18 @@
                                 onClick="{toggleEditBattle}"
                                 testid="battle-edit"
                             >
-                                {$_('battleEdit')}
+                                {$LL.battleEdit({
+                                    friendly: AppConfig.FriendlyUIVerbs,
+                                })}
                             </HollowButton>
                             <HollowButton
                                 color="red"
                                 onClick="{toggleDeleteBattle}"
                                 testid="battle-delete"
                             >
-                                {$_('battleDelete')}
+                                {$LL.battleDelete({
+                                    friendly: AppConfig.FriendlyUIVerbs,
+                                })}
                             </HollowButton>
                         </div>
                     {:else}
@@ -655,7 +679,9 @@
                                 onClick="{abandonBattle}"
                                 testid="battle-abandon"
                             >
-                                {$_('battleAbandon')}
+                                {$LL.battleAbandon({
+                                    friendly: AppConfig.FriendlyUIVerbs,
+                                })}
                             </HollowButton>
                         </div>
                     {/if}
@@ -689,14 +715,16 @@
                             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="battleJoinCode"
                         >
-                            {$_('passCodeRequired')}
+                            {$LL.passCodeRequired()}
                         </label>
                         <input
                             bind:value="{joinPasscode}"
-                            placeholder="{$_('enterPasscode')}"
-                            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                            placeholder="{$LL.enterPasscode()}"
+                            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2
+                        appearance-none
+                        rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                        focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500
+                        focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                             id="battleJoinCode"
                             name="battleJoinCode"
                             type="password"
@@ -706,7 +734,9 @@
 
                     <div class="text-right">
                         <SolidButton type="submit"
-                            >{$_('battleJoin')}</SolidButton
+                            >{$LL.battleJoin({
+                                friendly: AppConfig.FriendlyUIVerbs,
+                            })}</SolidButton
                         >
                     </div>
                 </form>
@@ -716,7 +746,9 @@
         <div class="flex items-center">
             <div class="flex-1 text-center">
                 <h1 class="text-5xl text-teal-500 leading-tight font-bold">
-                    {$_('pages.battle.socketReconnecting')}
+                    {$LL.battleSocketReconnecting({
+                        friendly: AppConfig.FriendlyUIVerbs,
+                    })}
                 </h1>
             </div>
         </div>
@@ -724,7 +756,9 @@
         <div class="flex items-center">
             <div class="flex-1 text-center">
                 <h1 class="text-5xl text-red-500 leading-tight font-bold">
-                    {$_('pages.battle.socketError')}
+                    {$LL.battleSocketError({
+                        friendly: AppConfig.FriendlyUIVerbs,
+                    })}
                 </h1>
             </div>
         </div>
@@ -732,7 +766,7 @@
         <div class="flex items-center">
             <div class="flex-1 text-center">
                 <h1 class="text-5xl text-green-500 leading-tight font-bold">
-                    {$_('pages.battle.loading')}
+                    {$LL.battleLoading({ friendly: AppConfig.FriendlyUIVerbs })}
                 </h1>
             </div>
         </div>
@@ -742,8 +776,12 @@
         <DeleteConfirmation
             toggleDelete="{toggleDeleteBattle}"
             handleDelete="{concedeBattle}"
-            confirmText="{$_('deleteBattleConfirmText')}"
-            confirmBtnText="{$_('deleteBattle')}"
+            confirmText="{$LL.deleteBattleConfirmText({
+                friendly: AppConfig.FriendlyUIVerbs,
+            })}"
+            confirmBtnText="{$LL.deleteBattle({
+                friendly: AppConfig.FriendlyUIVerbs,
+            })}"
         />
     {/if}
 </PageLayout>

@@ -17,7 +17,7 @@ const production = !process.env.ROLLUP_WATCH
 module.exports = {
   input: 'frontend/src/main.ts',
   output: {
-    sourcemap: false,
+    sourcemap: true,
     name: 'thunderdome',
     dir: `dist/static/`,
     entryFileNames: '[name]-[hash].js',
@@ -64,10 +64,6 @@ module.exports = {
           src: 'frontend/public/img',
           dest: 'dist'
         },
-        {
-          src: 'frontend/public/lang',
-          dest: 'dist',
-        }
       ]
     }),
 

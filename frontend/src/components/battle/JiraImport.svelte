@@ -2,8 +2,8 @@
     import he from 'he'
 
     import HollowButton from '../HollowButton.svelte'
-    import { AppConfig } from '../../config.ts'
-    import { _ } from '../../i18n.js'
+    import { AppConfig } from '../../config'
+    import LL from '../../i18n/i18n-svelte'
 
     export let notifications
     export let eventTag = () => {}
@@ -17,7 +17,7 @@
             return
         }
         if (file.type !== 'text/xml') {
-            notifications.danger($_('importJiraXMLBadFileTypeError'))
+            notifications.danger($LL.importJiraXMLBadFileTypeError())
             eventTag('jira_import_failed', 'battle', `file.type not text/xml`)
             return
         }
@@ -88,13 +88,13 @@
                     )
                 }
             } catch (e) {
-                notifications.danger($_('importJiraXMLReadFileError'))
+                notifications.danger($LL.importJiraXMLReadFileError())
                 eventTag('jira_import_failed', 'battle', `ferror reading file`)
             }
         }
 
         reader.onerror = () => {
-            notifications.danger($_('importJiraXMLReadFileError'))
+            notifications.danger($LL.importJiraXMLReadFileError())
             eventTag('jira_import_failed', 'battle', `ferror reading file`)
         }
     }
@@ -107,7 +107,7 @@
         color="blue"
         labelFor="jiraimport"
     >
-        {$_('importJiraXML')}
+        {$LL.importJiraXML({ friendly: AppConfig.FriendlyUIVerbs })}
         <input
             type="file"
             on:change="{uploadFile}"

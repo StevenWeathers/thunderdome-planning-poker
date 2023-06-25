@@ -1,10 +1,10 @@
 <script lang="ts">
-    import SmileCircle from '../icons/SmileCircle.svelte'
+    import SmileCircle from '../icons/SmileCircleIcon.svelte'
+    import FrownCircle from '../icons/FrownCircleIcon.svelte'
+    import QuestionCircle from '../icons/QuestionCircleIcon.svelte'
+    import { warrior as user } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
     import TrashIcon from '../icons/TrashIcon.svelte'
-    import FrownCircle from '../icons/FrownCircle.svelte'
-    import QuestionCircle from '../icons/QuestionCircle.svelte'
-    import { warrior as user } from '../../stores.js'
-    import { _ } from '../../i18n.js'
 
     export let handleSubmit = () => {}
     export let handleDelete = () => {}
@@ -75,13 +75,11 @@
                             <div class="flex-grow dark:text-gray-200">
                                 {#if feedbackVisibility === 'hidden' && item.userId !== $user.id}
                                     <span class="italic"
-                                        >{$_('retroFeedbackHidden')}</span
+                                        >{$LL.retroFeedbackHidden()}</span
                                     >
                                 {:else if feedbackVisibility === 'concealed' && item.userId !== $user.id}
                                     <span class="italic"
-                                        >{$_(
-                                            'retroFeedbackConcealed',
-                                        )}&nbsp;&nbsp;</span
+                                        >{$LL.retroFeedbackConcealed()}&nbsp;&nbsp;</span
                                     ><span class="text-white dark:text-gray-800"
                                         >{item.content}</span
                                     >

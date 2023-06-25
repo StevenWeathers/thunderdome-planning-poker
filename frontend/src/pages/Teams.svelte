@@ -5,10 +5,10 @@
     import SolidButton from '../components/SolidButton.svelte'
     import CreateOrganization from '../components/user/CreateOrganization.svelte'
     import CreateTeam from '../components/user/CreateTeam.svelte'
-    import { warrior } from '../stores.js'
-    import { _ } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.ts'
-    import { validateUserIsRegistered } from '../validationUtils.js'
+    import { warrior } from '../stores'
+    import LL from '../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../config'
+    import { validateUserIsRegistered } from '../validationUtils'
     import RowCol from '../components/table/RowCol.svelte'
     import TableRow from '../components/table/TableRow.svelte'
     import HeadCol from '../components/table/HeadCol.svelte'
@@ -48,7 +48,7 @@
                 organizations = result.data
             })
             .catch(function () {
-                notifications.danger($_('getOrganizationsError'))
+                notifications.danger($LL.getOrganizationsError())
             })
     }
 
@@ -62,7 +62,7 @@
                 teams = result.data
             })
             .catch(function () {
-                notifications.danger($_('getTeamsError'))
+                notifications.danger($LL.getTeamsError())
             })
     }
 
@@ -79,7 +79,7 @@
                 })
             })
             .catch(function () {
-                notifications.danger($_('createOrgError'))
+                notifications.danger($LL.createOrgError())
                 eventTag('create_organization', 'engagement', 'failure')
             })
     }
@@ -97,7 +97,7 @@
                 })
             })
             .catch(function () {
-                notifications.danger($_('teamCreateError'))
+                notifications.danger($LL.teamCreateError())
                 eventTag('create_team', 'engagement', 'failure')
             })
     }
@@ -116,7 +116,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('organizations')} | {$_('appName')}</title>
+    <title>{$LL.organizations()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
@@ -127,13 +127,13 @@
                     <h2
                         class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                     >
-                        {$_('organizations')}
+                        {$LL.organizations()}
                     </h2>
                 </div>
                 <div class="w-1/5">
                     <div class="text-right">
                         <SolidButton onClick="{toggleCreateOrganization}">
-                            {$_('organizationCreate')}
+                            {$LL.organizationCreate()}
                         </SolidButton>
                     </div>
                 </div>
@@ -142,13 +142,13 @@
             <Table>
                 <tr slot="header">
                     <HeadCol>
-                        {$_('name')}
+                        {$LL.name()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('dateCreated')}
+                        {$LL.dateCreated()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('dateUpdated')}
+                        {$LL.dateUpdated()}
                     </HeadCol>
                 </tr>
                 <tbody slot="body" let:class="{className}" class="{className}">
@@ -185,13 +185,13 @@
                 <h2
                     class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                 >
-                    {$_('teams')}
+                    {$LL.teams()}
                 </h2>
             </div>
             <div class="w-1/5">
                 <div class="text-right">
                     <SolidButton onClick="{toggleCreateTeam}">
-                        {$_('teamCreate')}
+                        {$LL.teamCreate()}
                     </SolidButton>
                 </div>
             </div>
@@ -201,13 +201,13 @@
             <Table>
                 <tr slot="header">
                     <HeadCol>
-                        {$_('name')}
+                        {$LL.name()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('dateCreated')}
+                        {$LL.dateCreated()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('dateUpdated')}
+                        {$LL.dateUpdated()}
                     </HeadCol>
                 </tr>
                 <tbody slot="body" let:class="{className}" class="{className}">
