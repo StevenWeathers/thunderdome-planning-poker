@@ -1,6 +1,5 @@
-<script>
-    import { AppConfig } from '../config.js'
-    import { _ } from '../i18n.js'
+<script lang="ts">
+    import { AppConfig } from '../config'
 
     let count = 0
     let defaultTimeout = AppConfig.ToastTimeout

@@ -1,32 +1,32 @@
-<script>
-    import Sockette from 'sockette'
-    import { onDestroy, onMount } from 'svelte'
+<script lang="ts">
     import {
         dndzone,
         SHADOW_ITEM_MARKER_PROPERTY_NAME,
     } from 'svelte-dnd-action'
+    import Sockette from 'sockette'
+    import { onDestroy, onMount } from 'svelte'
 
     import AddGoal from '../components/storyboard/AddGoal.svelte'
-    import PageLayout from '../components/PageLayout.svelte'
     import UserCard from '../components/storyboard/UserCard.svelte'
     import InviteUser from '../components/storyboard/InviteUser.svelte'
     import ColumnForm from '../components/storyboard/ColumnForm.svelte'
     import StoryForm from '../components/storyboard/StoryForm.svelte'
     import ColorLegendForm from '../components/storyboard/ColorLegendForm.svelte'
     import PersonasForm from '../components/storyboard/PersonasForm.svelte'
-    import UsersIcon from '../components/icons/Users.svelte'
     import SolidButton from '../components/SolidButton.svelte'
     import HollowButton from '../components/HollowButton.svelte'
-    import EditIcon from '../components/icons/PencilIcon.svelte'
     import DownCarrotIcon from '../components/icons/ChevronDown.svelte'
-    import CommentIcon from '../components/icons/CommentIcon.svelte'
     import DeleteStoryboard from '../components/storyboard/DeleteStoryboard.svelte'
     import EditStoryboard from '../components/storyboard/EditStoryboard.svelte'
     import UpCarrotIcon from '../components/icons/ChevronUp.svelte'
     import { AppConfig, appRoutes, PathPrefix } from '../config'
-    import { warrior as user } from '../stores.js'
-    import { _ } from '../i18n.js'
+    import { warrior as user } from '../stores'
+    import LL from '../i18n/i18n-svelte'
     import BecomeFacilitator from '../components/user/BecomeFacilitator.svelte'
+    import UsersIcon from '../components/icons/UsersIcon.svelte'
+    import EditIcon from '../components/icons/EditIcon.svelte'
+    import CommentIcon from '../components/icons/CommentIcon.svelte'
+    import PageLayout from '../components/PageLayout.svelte'
 
     export let storyboardId
     export let notifications
@@ -72,7 +72,7 @@
                 JoinPassRequired = true
                 break
             case 'join_code_incorrect':
-                notifications.danger($_('incorrectPassCode'))
+                notifications.danger($LL.incorrectPassCode())
                 break
             case 'init':
                 JoinPassRequired = false
@@ -153,7 +153,7 @@
                 break
             case 'storyboard_conceded':
                 // storyboard over, goodbye.
-                notifications.warning($_('storyboardDeleted'))
+                notifications.warning($LL.storyboardDeleted())
                 router.route(appRoutes.storyboards)
                 break
             default:
@@ -185,7 +185,7 @@
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'storyboard', '', () => {
-                        notifications.danger($_('duplicateStoryboardSession'))
+                        notifications.danger($LL.duplicateStoryboardSession())
                         router.route(`${appRoutes.storyboards}`)
                     })
                 } else if (e.code === 4002) {
@@ -628,7 +628,7 @@
 </style>
 
 <svelte:head>
-    <title>{$_('storyboard')} {storyboard.name} | {$_('appName')}</title>
+    <title>{$LL.storyboard()} {storyboard.name} | {$LL.appName()}</title>
 </svelte:head>
 
 {#if storyboard.name && !socketReconnecting && !socketError}
@@ -642,31 +642,31 @@
                     {storyboard.name}
                 </h1>
             </div>
-            <div class="w-2/3 ltr:text-right rtl:text-left">
+            <div class="w-2/3 text-right">
                 <div>
                     {#if isFacilitator}
                         <HollowButton
                             color="green"
                             onClick="{toggleAddGoal()}"
-                            additionalClasses="rtl:ml-2 ltr:mr-2"
+                            additionalClasses="me-2"
                             testid="goal-add"
                         >
-                            {$_('storyboardAddGoal')}
+                            {$LL.storyboardAddGoal()}
                         </HollowButton>
                         <HollowButton
                             color="blue"
                             onClick="{toggleEditStoryboard}"
                             testid="storyboard-edit"
                         >
-                            {$_('editStoryboard')}
+                            {$LL.editStoryboard()}
                         </HollowButton>
                         <HollowButton
                             color="red"
                             onClick="{toggleDeleteStoryboard}"
-                            additionalClasses="rtl:ml-2 ltr:mr-2"
+                            additionalClasses="me-2"
                             testid="storyboard-delete"
                         >
-                            {$_('deleteStoryboard')}
+                            {$LL.deleteStoryboard()}
                         </HollowButton>
                     {:else}
                         <HollowButton
@@ -674,14 +674,14 @@
                             onClick="{toggleBecomeFacilitator}"
                             testid="become-facilitator"
                         >
-                            {$_('becomeFacilitator')}
+                            {$LL.becomeFacilitator()}
                         </HollowButton>
                         <HollowButton
                             color="red"
                             onClick="{abandonStoryboard}"
                             testid="storyboard-leave"
                         >
-                            {$_('leaveStoryboard')}
+                            {$LL.leaveStoryboard()}
                         </HollowButton>
                     {/if}
                     <div class="inline-block relative">
@@ -691,15 +691,13 @@
                             onClick="{togglePersonas}"
                             testid="personas-toggle"
                         >
-                            {$_('personas')}
-                            <DownCarrotIcon
-                                additionalClasses="rtl:mr-1 ltr:ml-1"
-                            />
+                            {$LL.personas()}
+                            <DownCarrotIcon additionalClasses="ms-1" />
                         </HollowButton>
                         {#if showPersonas}
                             <div
-                                class="origin-top-right absolute ltr:right-0 rtl:left-0 mt-1 w-64
-                            rounded-md shadow-lg ltr:text-left rtl:text-right z-10"
+                                class="origin-top-right absolute end-0 mt-1 w-64
+                            rounded-md shadow-lg text-left z-10"
                             >
                                 <div
                                     class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
@@ -721,7 +719,7 @@
                                                         hover:text-orange-800"
                                                             data-testid="persona-edit"
                                                         >
-                                                            {$_('edit')}
+                                                            {$LL.edit()}
                                                         </button>
                                                         &nbsp;|&nbsp;
                                                         <button
@@ -732,7 +730,7 @@
                                                         hover:text-red-800"
                                                             data-testid="persona-delete"
                                                         >
-                                                            {$_('delete')}
+                                                            {$LL.delete()}
                                                         </button>
                                                     {/if}
                                                 </div>
@@ -744,9 +742,7 @@
                                     </div>
 
                                     {#if isFacilitator}
-                                        <div
-                                            class="p-2 ltr:text-right rtl:text-left"
-                                        >
+                                        <div class="p-2 text-right">
                                             <HollowButton
                                                 color="green"
                                                 onClick="{toggleEditPersona({
@@ -757,7 +753,7 @@
                                                 })}"
                                                 testid="persona-add"
                                             >
-                                                {$_('addPersona')}
+                                                {$LL.addPersona()}
                                             </HollowButton>
                                         </div>
                                     {/if}
@@ -772,15 +768,13 @@
                             onClick="{toggleColorLegend}"
                             testid="colorlegend-toggle"
                         >
-                            {$_('colorLegend')}
-                            <DownCarrotIcon
-                                additionalClasses="rtl:mr-1 ltr:ml-1"
-                            />
+                            {$LL.colorLegend()}
+                            <DownCarrotIcon additionalClasses="ms-1" />
                         </HollowButton>
                         {#if showColorLegend}
                             <div
-                                class="origin-top-right absolute ltr:right-0 rtl:left-0 mt-1 w-64
-                            rounded-md shadow-lg ltr:text-left rtl:text-right z-10"
+                                class="origin-top-right absolute end-0 mt-1 w-64
+                            rounded-md shadow-lg text-left z-10"
                             >
                                 <div
                                     class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
@@ -789,7 +783,7 @@
                                         {#each storyboard.color_legend as color}
                                             <div class="mb-1 flex w-full">
                                                 <span
-                                                    class="p-4 rtl:ml-2 ltr:mr-2 inline-block
+                                                    class="p-4 me-2 inline-block
                                                 colorcard-{color.color}"></span>
                                                 <span
                                                     class="inline-block align-middle
@@ -798,24 +792,20 @@
                                                         : 'text-gray-600 dark:text-gray-200'}"
                                                 >
                                                     {color.legend ||
-                                                        $_(
-                                                            'colorLegendNotSpecified',
-                                                        )}
+                                                        $LL.colorLegendNotSpecified()}
                                                 </span>
                                             </div>
                                         {/each}
                                     </div>
 
                                     {#if isFacilitator}
-                                        <div
-                                            class="p-2 ltr:text-right rtl:text-left"
-                                        >
+                                        <div class="p-2 text-right">
                                             <HollowButton
                                                 color="orange"
                                                 onClick="{toggleEditLegend}"
                                                 testid="colorlegend-edit"
                                             >
-                                                {$_('editColorLegend')}
+                                                {$LL.editColorLegend()}
                                             </HollowButton>
                                         </div>
                                     {/if}
@@ -831,19 +821,17 @@
                             testid="users-toggle"
                         >
                             <UsersIcon
-                                additionalClasses="rtl:ml-1 ltr:mr-1"
+                                additionalClasses="me-1"
                                 height="18"
                                 width="18"
                             />
-                            {$_('users')}
-                            <DownCarrotIcon
-                                additionalClasses="rtl:mr-1 ltr:ml-1"
-                            />
+                            {$LL.users()}
+                            <DownCarrotIcon additionalClasses="ms-1" />
                         </HollowButton>
                         {#if showUsers}
                             <div
-                                class="origin-top-right absolute ltr:right-0 rtl:left-0 mt-1 w-64
-                            rounded-md shadow-lg ltr:text-left rtl:text-right z-10"
+                                class="origin-top-right absolute end-0 mt-1 w-64
+                            rounded-md shadow-lg text-left z-10"
                             >
                                 <div
                                     class="rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-xs"
@@ -892,18 +880,18 @@
                                 >
                                     {#if collapseGoals.includes(goal.id)}
                                         <DownCarrotIcon
-                                            additionalClasses="rtl:ml-1 ltr:mr-1"
+                                            additionalClasses="me-1"
                                         />
                                     {:else}
                                         <UpCarrotIcon
-                                            additionalClasses="rtl:ml-1 ltr:mr-1"
+                                            additionalClasses="me-1"
                                         />
                                     {/if}
                                 </button>{goal.name}
                             </h2>
                         </div>
                     </div>
-                    <div class="w-1/4 ltr:text-right rtl:text-left">
+                    <div class="w-1/4 text-right">
                         {#if isFacilitator}
                             <HollowButton
                                 color="green"
@@ -911,25 +899,25 @@
                                 btnSize="small"
                                 testid="column-add"
                             >
-                                {$_('storyboardAddColumn')}
+                                {$LL.storyboardAddColumn()}
                             </HollowButton>
                             <HollowButton
                                 color="orange"
                                 onClick="{toggleAddGoal(goal.id)}"
                                 btnSize="small"
-                                additionalClasses="rtl:mr-2 ltr:ml-2"
+                                additionalClasses="ms-2"
                                 testid="goal-edit"
                             >
-                                {$_('edit')}
+                                {$LL.edit()}
                             </HollowButton>
                             <HollowButton
                                 color="red"
                                 onClick="{handleGoalDeletion(goal.id)}"
                                 btnSize="small"
-                                additionalClasses="rtl:mr-2 ltr:ml-2"
+                                additionalClasses="ms-2"
                                 testid="goal-delete"
                             >
-                                {$_('delete')}
+                                {$LL.delete()}
                             </HollowButton>
                         {/if}
                     </div>
@@ -956,9 +944,7 @@
                                         border-dashed border-2 border-gray-400 dark:border-gray-600
                                         hover:border-green-500 text-gray-600 dark:text-gray-400
                                         hover:text-green-500 py-1 px-2"
-                                                title="{$_(
-                                                    'storyboardEditColumn',
-                                                )}"
+                                                title="{$LL.storyboardEditColumn()}"
                                                 data-testid="column-edit"
                                             >
                                                 <EditIcon />
@@ -976,9 +962,7 @@
                                         px-2 border-dashed border-2
                                         border-gray-400 dark:border-gray-600 hover:border-green-500
                                         text-gray-600 dark:text-gray-400 hover:text-green-500"
-                                                title="{$_(
-                                                    'storyboardAddStoryToColumn',
-                                                )}"
+                                                title="{$LL.storyboardAddStoryToColumn()}"
                                                 data-testid="story-add"
                                             >
                                                 +
@@ -1009,14 +993,19 @@
                                 >
                                     {#each goalColumn.stories as story (story.id)}
                                         <div
-                                            class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white ltr:border-l-4 rtl:border-r-4
+                                            class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
                                     story-{story.color} border my-4
                                     cursor-pointer"
                                             style="list-style: none;"
+                                            role="button"
+                                            tabindex="0"
                                             data-goalid="{goal.id}"
                                             data-columnid="{goalColumn.id}"
                                             data-storyid="{story.id}"
                                             on:click="{toggleStoryForm(story)}"
+                                            on:keypress="{toggleStoryForm(
+                                                story,
+                                            )}"
                                         >
                                             <div>
                                                 <div>
@@ -1053,7 +1042,7 @@
                                                                 {/if}
                                                             </div>
                                                             <div
-                                                                class="w-1/2 ltr:text-right rtl:text-left"
+                                                                class="w-1/2 text-right"
                                                             >
                                                                 {#if story.points > 0}
                                                                     <span
@@ -1072,14 +1061,19 @@
                                             </div>
                                             {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
                                                 <div
-                                                    class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white ltr:border-l-4 rtl:border-r-4
+                                                    class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
                                     story-{story.color} border
                                     cursor-pointer"
                                                     style="list-style: none;"
+                                                    role="button"
+                                                    tabindex="0"
                                                     data-goalid="{goal.id}"
                                                     data-columnid="{goalColumn.id}"
                                                     data-storyid="{story.id}"
                                                     on:click="{toggleStoryForm(
+                                                        story,
+                                                    )}"
+                                                    on:keypress="{toggleStoryForm(
                                                         story,
                                                     )}"
                                                 >
@@ -1117,7 +1111,7 @@
                                                                         {/if}
                                                                     </div>
                                                                     <div
-                                                                        class="w-1/2 ltr:text-right rtl:text-left"
+                                                                        class="w-1/2 text-right"
                                                                     >
                                                                         {#if story.points > 0}
                                                                             <span
@@ -1163,11 +1157,11 @@
                                         class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                                         for="storyboardJoinCode"
                                     >
-                                        {$_('passCodeRequired')}
+                                        {$LL.passCodeRequired()}
                                     </label>
                                     <input
                                         bind:value="{joinPasscode}"
-                                        placeholder="{$_('enterPasscode')}"
+                                        placeholder="{$LL.enterPasscode()}"
                                         class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -1178,9 +1172,9 @@
                                     />
                                 </div>
 
-                                <div class="ltr:text-right rtl:text-left">
+                                <div class="text-right">
                                     <SolidButton type="submit"
-                                        >{$_('joinStoryboard')}
+                                        >{$LL.joinStoryboard()}
                                     </SolidButton>
                                 </div>
                             </form>
@@ -1190,15 +1184,15 @@
                     <h1
                         class="text-5xl text-orange-500 leading-tight font-bold"
                     >
-                        {$_('reloadingStoryboard')}
+                        {$LL.reloadingStoryboard()}
                     </h1>
                 {:else if socketError}
                     <h1 class="text-5xl text-red-500 leading-tight font-bold">
-                        {$_('joinStoryboardError')}
+                        {$LL.joinStoryboardError()}
                     </h1>
                 {:else}
                     <h1 class="text-5xl text-green-500 leading-tight font-bold">
-                        {$_('loadingStoryboard')}
+                        {$LL.loadingStoryboard()}
                     </h1>
                 {/if}
             </div>

@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
     import PointCard from './PointCard.svelte'
     import WarriorIcon from '../icons/UserIcon.svelte'
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig } from '../../config'
 
     export let activePlanId = ''
     export let plans = []
@@ -64,7 +65,9 @@
                 count: 0,
                 voters: [],
             }
-            let warriorName = $_('pages.battle.voteResults.unknownWarrior')
+            let warriorName = $LL.unknownWarrior({
+                friendly: AppConfig.FriendlyUIVerbs,
+            })
 
             if (warriors.length) {
                 const warrior = warriors.find(w => w.id === v.warriorId) || {
@@ -96,26 +99,26 @@
     md:pt-4 md:pb-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg text-xl"
 >
     <div class="w-1/3 dark:text-white">
-        <div class="mb-2">{$_('pages.battle.voteResults.totalVotes')}</div>
+        <div class="mb-2">{$LL.totalVotes()}</div>
         <span data-testid="voteresult-total">{totalVotes}</span>
         <WarriorIcon class="h-5 w-5" />
     </div>
     <div class="w-1/3 dark:text-white">
-        <div class="mb-2">{$_('pages.battle.voteResults.average')}</div>
+        <div class="mb-2">{$LL.voteResultsAverage()}</div>
         <span
             class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500 border p-2 rounded
-            ltr:ml-2 rtl:mr-2 inline-block"
+            me-2 inline-block"
             data-testid="voteresult-average"
         >
             {average}
         </span>
     </div>
     <div class="w-1/3 dark:text-white">
-        <div class="mb-2">{$_('pages.battle.voteResults.highest')}</div>
+        <div class="mb-2">{$LL.voteResultsHighest()}</div>
         <div>
             <span
                 class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500 border p-2
-                rounded rtl:mr-2 ltr:ml-2 inline-block"
+          rounded ms-2 inline-block"
                 data-testid="voteresult-high"
             >
                 {highestVote || 0}
@@ -137,12 +140,12 @@
                         }
                     }}"
                     class="relative leading-none"
-                    title="{$_('pages.battle.voteResults.showVoters')}"
+                    title="{$LL.showVoters()}"
                 >
                     <WarriorIcon class="h-5 w-5" />
                     <span
-                        class="text-sm ltr:text-right rtl:text-left text-gray-900 font-normal w-48
-                        absolute ltr:left-0 rtl:right-0 top-0 -mt-2 rtl:mr-4 ltr:ml-4 bg-white p-2 rounded
+                        class="text-sm text-right text-gray-900 font-normal w-48
+                        absolute start-0 top-0 -mt-2 ms-4 bg-white p-2 rounded
                         shadow-lg {showHighestVoters ? '' : 'hidden'}"
                     >
                         {#if counts[highestVote]}

@@ -337,7 +337,6 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	// static assets
 	a.Router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 	a.Router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
-	a.Router.PathPrefix("/lang/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 
 	// handle index.html
 	a.Router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))

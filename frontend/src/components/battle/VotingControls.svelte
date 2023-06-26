@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
     import SolidButton from '../SolidButton.svelte'
-    import DownCarrotIcon from '../icons/ChevronDown.svelte'
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
+    import ChevronDown from '../icons/ChevronDown.svelte'
+    import { AppConfig } from '../../config'
 
     export let sendSocketEvent = () => {}
     export let eventTag
@@ -51,7 +52,7 @@
             onClick="{skipPlan}"
             testid="voting-skip"
         >
-            {$_('planSkip')}
+            {$LL.planSkip({ friendly: AppConfig.FriendlyUIVerbs })}
         </SolidButton>
         {#if !votingLocked}
             <SolidButton
@@ -59,7 +60,7 @@
                 onClick="{endPlanVoting}"
                 testid="voting-finish"
             >
-                {$_('votingFinish')}
+                {$LL.votingFinish()}
             </SolidButton>
         {:else}
             <SolidButton
@@ -68,13 +69,13 @@
                 onClick="{restartVoting}"
                 testid="voting-restart"
             >
-                {$_('votingRestart')}
+                {$LL.votingRestart()}
             </SolidButton>
             <form on:submit="{handleSubmit}" name="savePlanPoints">
                 <legend
                     class="text-xl mb-2 font-semibold leading-tight dark:text-gray-300"
                 >
-                    {$_('pages.battle.finalPoints')}
+                    {$LL.finalPoints()}
                 </legend>
                 <div class="flex -mx-2">
                     <div class="w-1/2 px-2">
@@ -84,32 +85,33 @@
                                 bind:value="{planPoints}"
                                 required
                                 class="block appearance-none w-full border-2 dark:bg-gray-900
-                                border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8
+                                border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 pe-8
                                 rounded leading-tight focus:outline-none
                                 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                             >
                                 <option value="" disabled>
-                                    {$_('pages.battle.points')}
+                                    {$LL.points()}
                                 </option>
+                                >
                                 {#each points as point}
                                     <option value="{point}">{point}</option>
                                 {/each}
                             </select>
                             <div
                                 class="pointer-events-none absolute inset-y-0
-                                ltr:right-0 rtl:left-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
+                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
                             >
-                                <DownCarrotIcon />
+                                <ChevronDown />
                             </div>
                         </div>
                     </div>
-                    <div class="w-1/2 ltr:text-right rtl:text-left px-2">
+                    <div class="w-1/2 text-right px-2">
                         <SolidButton
                             additionalClasses="w-full h-full"
                             type="submit"
                             testid="voting-save"
                         >
-                            {$_('save')}
+                            {$LL.save()}
                         </SolidButton>
                     </div>
                 </div>

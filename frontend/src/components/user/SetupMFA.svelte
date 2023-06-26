@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
     import Modal from '../Modal.svelte'
     import SolidButton from '../SolidButton.svelte'
 
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
 
     export let toggleSetup = () => {}
     export let handleComplete = () => {}
@@ -20,7 +20,7 @@
             secret = r.data.secret
         })
         .catch(() => {
-            notifications.danger($_('mfaGenerateFailed'))
+            notifications.danger($LL.mfaGenerateFailed())
         })
 
     function onSubmit(e) {
@@ -29,14 +29,14 @@
             .then(res => res.json())
             .then(r => {
                 if (r.data.result === 'SUCCESS') {
-                    notifications.success($_('mfaSetupSuccess'))
+                    notifications.success($LL.mfaSetupSuccess())
                     handleComplete()
                 } else {
                     notifications.danger(`${r.data.result}`)
                 }
             })
             .catch(() => {
-                notifications.danger($_('mfaSetupFailed'))
+                notifications.danger($LL.mfaSetupFailed())
             })
     }
 
@@ -47,7 +47,7 @@
     <div class="pt-12">
         <div class="dark:text-gray-300 text-center">
             <p class="font-rajdhani text-lg mb-2">
-                {$_('mfaSetupIntro')}
+                {$LL.mfaSetupIntro()}
             </p>
             {#if qrCode !== ''}
                 <img
@@ -57,7 +57,7 @@
                 />
 
                 <p class="mt-2 font-rajdhani text-xl text-red-500">
-                    {$_('mfaSecretKeyLabel')}: {secret}
+                    {$LL.mfaSecretKeyLabel()}: {secret}
                 </p>
             {/if}
         </div>
@@ -67,14 +67,15 @@
                     class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                     for="mfaPasscode"
                 >
-                    {$_('mfaTokenLabel')}
+                    {$LL.mfaTokenLabel()}
                 </label>
                 <input
                     bind:value="{passcode}"
-                    placeholder="{$_('mfaTokenPlaceholder')}"
+                    placeholder="{$LL.mfaTokenPlaceholder()}"
                     class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                    rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+                    focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500
+                    focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="mfaPasscode"
                     name="mfaPasscode"
                     type="password"
@@ -83,9 +84,9 @@
             </div>
 
             <div>
-                <div class="ltr:text-right rtl:text-left">
+                <div class="text-right">
                     <SolidButton type="submit" disabled="{submitDisabled}">
-                        {$_('mfaConfirmToken')}
+                        {$LL.mfaConfirmToken()}
                     </SolidButton>
                 </div>
             </div>

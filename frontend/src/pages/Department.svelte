@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
@@ -8,16 +8,16 @@
     import AddUser from '../components/user/AddUser.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
-    import CountryFlag from '../components/user/CountryFlag.svelte'
-    import UserAvatar from '../components/user/UserAvatar.svelte'
-    import { warrior } from '../stores.js'
-    import { _ } from '../i18n.js'
-    import { appRoutes } from '../config.js'
-    import { validateUserIsRegistered } from '../validationUtils.js'
+    import { warrior } from '../stores'
+    import LL from '../i18n/i18n-svelte'
+    import { appRoutes } from '../config'
+    import { validateUserIsRegistered } from '../validationUtils'
     import RowCol from '../components/table/RowCol.svelte'
     import TableRow from '../components/table/TableRow.svelte'
     import HeadCol from '../components/table/HeadCol.svelte'
     import Table from '../components/table/Table.svelte'
+    import UserAvatar from '../components/user/UserAvatar.svelte'
+    import CountryFlag from '../components/user/CountryFlag.svelte'
 
     export let xfetch
     export let router
@@ -83,7 +83,7 @@
                 getUsers()
             })
             .catch(function () {
-                notifications.danger($_('departmentGetError'))
+                notifications.danger($LL.departmentGetError())
             })
     }
 
@@ -97,7 +97,7 @@
                 teams = result.data
             })
             .catch(function () {
-                notifications.danger($_('departmentTeamsGetError'))
+                notifications.danger($LL.departmentTeamsGetError())
             })
     }
 
@@ -111,7 +111,7 @@
                 users = result.data
             })
             .catch(function () {
-                notifications.danger($_('departmentUsersGetError'))
+                notifications.danger($LL.departmentUsersGetError())
             })
     }
 
@@ -128,11 +128,11 @@
             .then(function () {
                 eventTag('create_department_team', 'engagement', 'success')
                 toggleCreateTeam()
-                notifications.success($_('teamCreateSuccess'))
+                notifications.success($LL.teamCreateSuccess())
                 getTeams()
             })
             .catch(function () {
-                notifications.danger($_('teamCreateError'))
+                notifications.danger($LL.teamCreateError())
                 eventTag('create_department_team', 'engagement', 'failure')
             })
     }
@@ -150,11 +150,11 @@
             .then(function () {
                 eventTag('department_add_user', 'engagement', 'success')
                 toggleAddUser()
-                notifications.success($_('userAddSuccess'))
+                notifications.success($LL.userAddSuccess())
                 getUsers()
             })
             .catch(function () {
-                notifications.danger($_('userAddError'))
+                notifications.danger($LL.userAddError())
                 eventTag('department_add_user', 'engagement', 'failure')
             })
     }
@@ -167,11 +167,11 @@
             .then(function () {
                 eventTag('department_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
-                notifications.success($_('userRemoveSuccess'))
+                notifications.success($LL.userRemoveSuccess())
                 getUsers()
             })
             .catch(function () {
-                notifications.danger($_('userRemoveError'))
+                notifications.danger($LL.userRemoveError())
                 eventTag('department_remove_user', 'engagement', 'failure')
             })
     }
@@ -184,11 +184,11 @@
             .then(function () {
                 eventTag('department_delete_team', 'engagement', 'success')
                 toggleDeleteTeam(null)()
-                notifications.success($_('teamDeleteSuccess'))
+                notifications.success($LL.teamDeleteSuccess())
                 getTeams()
             })
             .catch(function () {
-                notifications.danger($_('teamDeleteError'))
+                notifications.danger($LL.teamDeleteError())
                 eventTag('department_delete_team', 'engagement', 'failure')
             })
     }
@@ -206,18 +206,18 @@
 </script>
 
 <svelte:head>
-    <title>{$_('department')} {department.name} | {$_('appName')}</title>
+    <title>{$LL.department()} {department.name} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
     <div class="mb-6 lg:mb-8 dark:text-white">
         <h1 class="text-3xl font-semibold font-rajdhani">
-            <span class="uppercase">{$_('department')}</span>
+            <span class="uppercase">{$LL.department()}</span>
             <ChevronRight class="w-8 h-8" />
             {department.name}
         </h1>
         <div class="text-xl font-semibold font-rajdhani">
-            <span class="uppercase">{$_('organization')}</span>
+            <span class="uppercase">{$LL.organization()}</span>
             <ChevronRight />
             <a
                 class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -234,14 +234,14 @@
                 <h2
                     class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                 >
-                    {$_('teams')}
+                    {$LL.teams()}
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="ltr:text-right rtl:text-left">
+                <div class="text-right">
                     {#if isAdmin}
                         <SolidButton onClick="{toggleCreateTeam}">
-                            {$_('teamCreate')}
+                            {$LL.teamCreate()}
                         </SolidButton>
                     {/if}
                 </div>
@@ -252,16 +252,16 @@
             <Table>
                 <tr slot="header">
                     <HeadCol>
-                        {$_('name')}
+                        {$LL.name()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('dateCreated')}
+                        {$LL.dateCreated()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('dateUpdated')}
+                        {$LL.dateUpdated()}
                     </HeadCol>
                     <HeadCol type="action">
-                        <span class="sr-only">{$_('actions')}</span>
+                        <span class="sr-only">{$LL.actions()}</span>
                     </HeadCol>
                 </tr>
                 <tbody slot="body" let:class="{className}" class="{className}">
@@ -287,7 +287,7 @@
                                         onClick="{toggleDeleteTeam(team.id)}"
                                         color="red"
                                     >
-                                        {$_('delete')}
+                                        {$LL.delete()}
                                     </HollowButton>
                                 {/if}
                             </RowCol>
@@ -304,17 +304,17 @@
                 <h2
                     class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                 >
-                    {$_('users')}
+                    {$LL.users()}
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="ltr:text-right rtl:text-left">
+                <div class="text-right">
                     {#if isAdmin}
                         <SolidButton
                             onClick="{toggleAddUser}"
                             testid="user-add"
                         >
-                            {$_('userAdd')}
+                            {$LL.userAdd()}
                         </SolidButton>
                     {/if}
                 </div>
@@ -324,16 +324,16 @@
         <Table>
             <tr slot="header">
                 <HeadCol>
-                    {$_('name')}
+                    {$LL.name()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('email')}
+                    {$LL.email()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('role')}
+                    {$LL.role()}
                 </HeadCol>
                 <HeadCol type="action">
-                    <span class="sr-only">{$_('actions')}</span>
+                    <span class="sr-only">{$LL.actions()}</span>
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
@@ -350,7 +350,7 @@
                                         class="h-10 w-10 rounded-full"
                                     />
                                 </div>
-                                <div class="rtl:mr-4 ltr:ml-4">
+                                <div class="ms-4">
                                     <div
                                         class="font-medium text-gray-900 dark:text-gray-200"
                                     >
@@ -386,7 +386,7 @@
                                     onClick="{toggleRemoveUser(user.id)}"
                                     color="red"
                                 >
-                                    {$_('remove')}
+                                    {$LL.remove()}
                                 </HollowButton>
                             {/if}
                         </RowCol>
@@ -412,8 +412,8 @@
             toggleDelete="{toggleRemoveUser(null)}"
             handleDelete="{handleUserRemove}"
             permanent="{false}"
-            confirmText="{$_('removeUserConfirmText')}"
-            confirmBtnText="{$_('removeUser')}"
+            confirmText="{$LL.removeUserConfirmText()}"
+            confirmBtnText="{$LL.removeUser()}"
         />
     {/if}
 
@@ -421,8 +421,8 @@
         <DeleteConfirmation
             toggleDelete="{toggleDeleteTeam(null)}"
             handleDelete="{handleDeleteTeam}"
-            confirmText="{$_('deleteTeamConfirmText')}"
-            confirmBtnText="{$_('deleteTeam')}"
+            confirmText="{$LL.deleteTeamConfirmText()}"
+            confirmBtnText="{$LL.deleteTeam()}"
         />
     {/if}
 </PageLayout>

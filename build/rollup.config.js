@@ -1,24 +1,24 @@
-import svelte from 'rollup-plugin-svelte'
-import resolve from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
-import livereload from 'rollup-plugin-livereload'
-import { terser } from 'rollup-plugin-terser'
-import copy from 'rollup-plugin-copy'
-import del from 'rollup-plugin-delete'
-import sveltePreprocess from 'svelte-preprocess'
-import html from '@rollup/plugin-html'
-import { template } from './buildHtmlTemplate.js'
-import postcss from 'rollup-plugin-postcss'
-import postcssNesting from 'postcss-nesting'
+const svelte = require('rollup-plugin-svelte')
+const resolve = require('@rollup/plugin-node-resolve')
+const commonjs = require('@rollup/plugin-commonjs')
+const livereload = require('rollup-plugin-livereload')
+const terser = require('@rollup/plugin-terser')
+const copy = require('rollup-plugin-copy')
+const del = require('rollup-plugin-delete')
+const sveltePreprocess = require('svelte-preprocess')
+const html = require('@rollup/plugin-html')
+const template = require('./buildHtmlTemplate.js')
+const postcss = require('rollup-plugin-postcss')
+const postcssNesting = require('postcss-nesting')
+const typescript = require('@rollup/plugin-typescript')
 
 const production = !process.env.ROLLUP_WATCH
 
-export default {
-  input: 'frontend/src/main.js',
+module.exports = {
+  input: 'frontend/src/main.ts',
   output: {
-    sourcemap: false,
+    sourcemap: true,
     name: 'thunderdome',
-    format: 'esm',
     dir: `dist/static/`,
     entryFileNames: '[name]-[hash].js',
     chunkFileNames: '[name].[hash].js',
@@ -39,6 +39,7 @@ export default {
         },
       }),
     }),
+    typescript({ sourceMap: !production }),
     postcss({
       plugins: [postcssNesting(), (production && require('cssnano'))],
       extract: true
@@ -63,10 +64,6 @@ export default {
           src: 'frontend/public/img',
           dest: 'dist'
         },
-        {
-          src: 'frontend/public/lang',
-          dest: 'dist',
-        }
       ]
     }),
 

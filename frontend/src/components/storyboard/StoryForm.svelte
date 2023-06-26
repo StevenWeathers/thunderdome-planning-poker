@@ -1,10 +1,10 @@
-<script>
-    import { quill } from '../../quill.js'
+<script lang="ts">
+    import { quill } from '../../quill'
     import Modal from '../Modal.svelte'
     import HollowButton from '../HollowButton.svelte'
     import UserIcon from '../icons/UserIcon.svelte'
-    import { warrior as user } from '../../stores.js'
-    import { _ } from '../../i18n.js'
+    import { warrior as user } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
 
     export let toggleStoryForm = () => {}
     export let sendSocketEvent = () => {}
@@ -248,7 +248,7 @@
                         Story Name
                     </label>
                     <input
-                        class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                         id="storyName"
@@ -267,7 +267,7 @@
                         Story Link
                     </label>
                     <input
-                        class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                         id="storyLink"
@@ -323,21 +323,19 @@
                                     {#if selectedComment !== null && selectedComment.id === comment.id}
                                         <div class="w-full my-2">
                                             <textarea
-                                                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                                                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                             rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                             focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
                                                 bind:value="{selectedCommentContent}"
                                             ></textarea>
-                                            <div
-                                                class="ltr:text-right rtl:text-left"
-                                            >
+                                            <div class="text-right">
                                                 <HollowButton
                                                     color="blue"
                                                     onClick="{toggleCommentEdit(
                                                         null,
                                                     )}"
                                                 >
-                                                    {$_('cancel')}
+                                                    {$LL.cancel()}
                                                 </HollowButton>
                                                 <HollowButton
                                                     color="green"
@@ -345,7 +343,7 @@
                                                     disabled="{selectedCommentContent ===
                                                         ''}"
                                                 >
-                                                    {$_('updateComment')}
+                                                    {$LL.updateComment()}
                                                 </HollowButton>
                                             </div>
                                         </div>
@@ -355,16 +353,14 @@
                                         </div>
                                     {/if}
                                     {#if comment.user_id === $user.id && !(selectedComment !== null && selectedComment.id === comment.id)}
-                                        <div
-                                            class="mb-2 ltr:text-right rtl:text-left"
-                                        >
+                                        <div class="mb-2 text-right">
                                             <button
-                                                class="text-blue-500 hover:text-blue-300 rtl:ml-1 ltr:mr-1"
+                                                class="text-blue-500 hover:text-blue-300 me-1"
                                                 on:click="{toggleCommentEdit(
                                                     comment,
                                                 )}"
                                             >
-                                                {$_('edit')}
+                                                {$LL.edit()}
                                             </button>
                                             <button
                                                 class="text-red-500 hover:text-red-300"
@@ -372,7 +368,7 @@
                                                     comment.id,
                                                 )}"
                                             >
-                                                {$_('delete')}
+                                                {$LL.delete()}
                                             </button>
                                         </div>
                                     {/if}
@@ -382,12 +378,12 @@
                     </div>
                     <div class="w-full">
                         <textarea
-                            class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                            class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
                             placeholder="Write a comment..."
                             bind:value="{userComment}"></textarea>
-                        <div class="ltr:text-right rtl:text-left">
+                        <div class="text-right">
                             <HollowButton
                                 color="teal"
                                 onClick="{handleCommentSubmit}"
@@ -410,7 +406,7 @@
                         Story Points
                     </label>
                     <input
-                        class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                         id="storyPoints"
@@ -432,7 +428,7 @@
                         {#each colorLegend as color}
                             <button
                                 on:click="{changeColor(color.color)}"
-                                class="p-4 rtl:ml-2 ltr:mr-2 mb-2 colorcard-{color.color}
+                                class="p-4 me-2 mb-2 colorcard-{color.color}
                                 border-2 border-solid {story.color ===
                                 color.color
                                     ? `border-${color.color}-800`
@@ -454,7 +450,7 @@
                         </HollowButton>
                     {/if}
                 </div>
-                <div class="ltr:text-right rtl:text-left">
+                <div class="text-right">
                     <HollowButton color="red" onClick="{handleStoryDelete}">
                         Delete Story
                     </HollowButton>

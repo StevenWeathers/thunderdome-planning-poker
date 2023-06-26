@@ -1,20 +1,19 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
-
-    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import CheckIcon from '../../components/icons/CheckIcon.svelte'
     import UserAvatar from '../../components/user/UserAvatar.svelte'
     import CountryFlag from '../../components/user/CountryFlag.svelte'
-    import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.js'
-    import { validateUserIsAdmin } from '../../validationUtils.js'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
-    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
+    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
 
     export let xfetch
     export let router
@@ -38,7 +37,7 @@
                 retro = result.data
             })
             .catch(function () {
-                notifications.danger($_('getRetroErrorMessage'))
+                notifications.danger($LL.getRetroErrorMessage())
             })
     }
 
@@ -49,7 +48,7 @@
                 router.route(appRoutes.adminRetros)
             })
             .catch(function () {
-                notifications.danger($_('deleteRetroErrorMessage'))
+                notifications.danger($LL.deleteRetroErrorMessage())
             })
     }
 
@@ -72,7 +71,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('retro')} {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$LL.retro()} {$LL.admin()} | {$LL.appName()}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="retros">
@@ -89,10 +88,10 @@
             <Table>
                 <tr slot="header">
                     <HeadCol>
-                        {$_('dateCreated')}
+                        {$LL.dateCreated()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('dateUpdated')}
+                        {$LL.dateUpdated()}
                     </HeadCol>
                 </tr>
                 <tbody slot="body" let:class="{className}" class="{className}">
@@ -111,22 +110,22 @@
             <h3
                 class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
             >
-                {$_('users')}
+                {$LL.users()}
             </h3>
 
             <Table>
                 <tr slot="header">
                     <HeadCol>
-                        {$_('name')}
+                        {$LL.name()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('active')}
+                        {$LL.active()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('abandoned')}
+                        {$LL.abandoned()}
                     </HeadCol>
                     <HeadCol>
-                        {$_('leader')}
+                        {$LL.leader()}
                     </HeadCol>
                 </tr>
                 <tbody slot="body" let:class="{className}" class="{className}">
@@ -143,7 +142,7 @@
                                             class="h-10 w-10 rounded-full"
                                         />
                                     </div>
-                                    <div class="rtl:mr-4 ltr:ml-4">
+                                    <div class="ms-4">
                                         <div
                                             class="text-sm font-medium text-gray-900"
                                         >
@@ -197,7 +196,7 @@
                     onClick="{toggleDeleteRetro}"
                     testid="retro-delete"
                 >
-                    {$_('deleteRetro')}
+                    {$LL.deleteRetro()}
                 </HollowButton>
             </div>
 
@@ -205,8 +204,8 @@
                 <DeleteConfirmation
                     toggleDelete="{toggleDeleteRetro}"
                     handleDelete="{deleteRetro}"
-                    confirmText="{$_('confirmDeleteRetro')}"
-                    confirmBtnText="{$_('deleteRetro')}"
+                    confirmText="{$LL.confirmDeleteRetro()}"
+                    confirmBtnText="{$LL.deleteRetro()}"
                 />
             {/if}
         </div>

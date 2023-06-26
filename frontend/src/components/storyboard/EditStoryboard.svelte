@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
 
     export let toggleEditStoryboard = () => {}
     export let handleStoryboardEdit = () => {}
@@ -53,16 +53,17 @@
                 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
                 for="joinCode"
             >
-                {$_('passCode')}
+                {$LL.passCode()}
             </label>
             <div class="control">
                 <input
                     name="joinCode"
                     bind:value="{joinCode}"
-                    placeholder="{$_('optionalPasscodePlaceholder')}"
+                    placeholder="{$LL.optionalPasscodePlaceholder()}"
                     class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
+                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="joinCode"
                 />
             </div>
@@ -73,23 +74,25 @@
                 class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                 for="facilitatorCode"
             >
-                {$_('facilitatorCodeOptional')}
+                {$LL.facilitatorCodeOptional()}
             </label>
             <div class="control">
                 <input
                     name="facilitatorCode"
                     bind:value="{facilitatorCode}"
-                    placeholder="{$_('facilitatorCodePlaceholder')}"
-                    class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                    placeholder="{$LL.facilitatorCodePlaceholder()}"
+                    class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2
+                appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500
+                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="facilitatorCode"
                 />
             </div>
         </div>
 
-        <div class="ltr:text-right rtl:text-left">
-            <SolidButton type="submit">{$_('save')}</SolidButton>
+        <div class="text-right">
+            <SolidButton type="submit">{$LL.save()}</SolidButton>
         </div>
     </form>
 </Modal>

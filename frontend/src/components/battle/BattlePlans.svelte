@@ -1,10 +1,7 @@
-<script>
+<script lang="ts">
     import ExternalLinkIcon from '../icons/ExternalLinkIcon.svelte'
-    import AddPlan from './AddPlan.svelte'
     import HollowButton from '../HollowButton.svelte'
-    import ViewPlan from './ViewPlan.svelte'
-    import JiraImport from './JiraImport.svelte'
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
     import NoSymbolIcon from '../icons/NoSymbol.svelte'
     import DoubleChevronUp from '../icons/DoubleChevronUp.svelte'
     import ChevronUp from '../icons/ChevronUp.svelte'
@@ -12,6 +9,10 @@
     import ChevronDown from '../icons/ChevronDown.svelte'
     import DoubleChevronDown from '../icons/DoubleChevronDown.svelte'
     import CsvImport from './CsvImport.svelte'
+    import JiraImport from './JiraImport.svelte'
+    import AddPlan from './AddPlan.svelte'
+    import ViewPlan from './ViewPlan.svelte'
+    import { AppConfig } from '../../config'
 
     export let plans = []
     export let isLeader = false
@@ -19,10 +20,10 @@
     export let eventTag
     export let notifications
 
-    const defaultPlan = {
+    let defaultPlan = {
         id: '',
         name: '',
-        type: $_('planTypeStory'),
+        type: $LL.planTypeStory(),
         referenceId: '',
         link: '',
         description: '',
@@ -30,33 +31,33 @@
         priority: 99,
     }
 
-    const priorities = {
+    let priorities = {
         99: {
             name: '',
             icon: false,
         },
         1: {
-            name: $_('planPriorityBlocker'),
+            name: $LL.planPriorityBlocker(),
             icon: NoSymbolIcon,
         },
         2: {
-            name: $_('planPriorityHighest'),
+            name: $LL.planPriorityHighest(),
             icon: DoubleChevronUp,
         },
         3: {
-            name: $_('planPriorityHigh'),
+            name: $LL.planPriorityHigh(),
             icon: ChevronUp,
         },
         4: {
-            name: $_('planPriorityMedium'),
+            name: $LL.planPriorityMedium(),
             icon: Bars2,
         },
         5: {
-            name: $_('planPriorityLow'),
+            name: $LL.planPriorityLow(),
             icon: ChevronDown,
         },
         6: {
-            name: $_('planPriorityLowest'),
+            name: $LL.planPriorityLowest(),
             icon: DoubleChevronDown,
         },
     }
@@ -137,10 +138,10 @@
             <h3
                 class="text-3xl leading-tight font-semibold font-rajdhani uppercase dark:text-white"
             >
-                {$_('plans')}
+                {$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}
             </h3>
         </div>
-        <div class="w-2/3 ltr:text-right rtl:text-left">
+        <div class="w-2/3 text-right">
             {#if isLeader}
                 <CsvImport
                     handlePlanAdd="{handlePlanAdd}"
@@ -155,16 +156,16 @@
                     testid="plans-importjira"
                 />
                 <HollowButton onClick="{toggleAddPlan()}" testid="plans-add">
-                    {$_('planAdd')}
+                    {$LL.planAdd({ friendly: AppConfig.FriendlyUIVerbs })}
                 </HollowButton>
             {/if}
         </div>
     </div>
 
     <ul
-        class="flex border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 "
+        class="flex border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
     >
-        <li class="-mb-px {showCompleted ? '' : 'rtl:ml-1 ltr:mr-1'}">
+        <li class="-mb-px {showCompleted ? '' : 'me-1'}">
             <button
                 class="{showCompleted
                     ? 'hover:text-blue-600 text-blue-400 dark:hover:text-sky-300 dark:text-sky-600'
@@ -173,12 +174,10 @@
                 on:click="{toggleShowCompleted(false)}"
                 data-testid="plans-unpointed"
             >
-                {$_('unpointed', { values: { count: unpointedPlans.length } })}
+                {$LL.unpointed({ count: unpointedPlans.length })}
             </button>
         </li>
-        <li
-            class="rtl:ml-1 ltr:mr-1 {showCompleted ? 'rtl:ml-1 ltr:mr-1' : ''}"
-        >
+        <li class="me-1 {showCompleted ? 'me-1' : ''}">
             <button
                 class="{showCompleted
                     ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
@@ -187,14 +186,14 @@
                 on:click="{toggleShowCompleted(true)}"
                 data-testid="plans-pointed"
             >
-                {$_('pointed', { values: { count: pointedPlans.length } })}
+                {$LL.pointed({ count: pointedPlans.length })}
             </button>
         </li>
     </ul>
 
     {#each plansToShow as plan (plan.id)}
         <div
-            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 "
+            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
             data-testid="plan"
         >
             <div class="w-full lg:w-1/3 mb-4 lg:mb-0">
@@ -227,20 +226,20 @@
                 {#if plan.points !== ''}
                     <div
                         class="inline-block font-bold text-green-600 dark:text-lime-400
-                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded rtl:mr-2 ltr:ml-2"
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ms-2"
                         data-testid="plan-points"
                     >
                         {plan.points}
                     </div>
                 {/if}
             </div>
-            <div class="w-full lg:w-2/3 ltr:text-right rtl:text-left">
+            <div class="w-full lg:w-2/3 text-right">
                 <HollowButton
                     color="blue"
                     onClick="{togglePlanView(plan.id)}"
                     testid="plan-view"
                 >
-                    {$_('view')}
+                    {$LL.view()}
                 </HollowButton>
                 {#if isLeader}
                     {#if !plan.active}
@@ -249,7 +248,7 @@
                             onClick="{handlePlanDeletion(plan.id)}"
                             testid="plan-delete"
                         >
-                            {$_('delete')}
+                            {$LL.delete()}
                         </HollowButton>
                     {/if}
                     <HollowButton
@@ -257,14 +256,14 @@
                         onClick="{toggleAddPlan(plan.id)}"
                         testid="plan-edit"
                     >
-                        {$_('edit')}
+                        {$LL.edit()}
                     </HollowButton>
                     {#if !plan.active}
                         <HollowButton
                             onClick="{activatePlan(plan.id)}"
                             testid="plan-activate"
                         >
-                            {$_('activate')}
+                            {$LL.activate()}
                         </HollowButton>
                     {/if}
                 {/if}
@@ -273,18 +272,18 @@
     {/each}
     {#if showCompleted && totalPoints}
         <div
-            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 "
+            class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
         >
             <div class="w-full lg:w-2/3 mb-4 lg:mb-0">
                 <div
                     class="inline-block font-bold align-middle dark:text-gray-300"
                 >
-                    {$_('totalPoints')}:
+                    {$LL.totalPoints()}:
                 </div>
                 &nbsp;
                 <div
                     class="inline-block font-bold text-green-600 dark:text-lime-400
-                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded rtl:mr-2 ltr:ml-2"
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ms-2"
                 >
                     {totalPoints}
                 </div>

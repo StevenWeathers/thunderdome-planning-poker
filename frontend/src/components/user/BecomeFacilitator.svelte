@@ -1,7 +1,7 @@
-<script>
-    import SolidButton from '../SolidButton.svelte'
+<script lang="ts">
     import Modal from '../Modal.svelte'
-    import { _ } from '../../i18n.js'
+    import LL from '../../i18n/i18n-svelte'
+    import SolidButton from '../SolidButton.svelte'
 
     export let toggleBecomeFacilitator = () => {}
     export let handleBecomeFacilitator = () => {}
@@ -25,7 +25,7 @@
                 class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                 for="facilitatorCode"
             >
-                {$_('facilitatorCode')}
+                {$LL.facilitatorCode()}
             </label>
             <div class="control">
                 <input
@@ -39,8 +39,8 @@
             </div>
         </div>
 
-        <div class="ltr:text-right rtl:text-left">
-            <SolidButton type="submit">{$_('save')}</SolidButton>
+        <div class="text-right">
+            <SolidButton type="submit">{$LL.save()}</SolidButton>
         </div>
     </form>
 </Modal>

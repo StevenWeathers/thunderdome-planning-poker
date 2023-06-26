@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
     import PageLayout from '../components/PageLayout.svelte'
+    import { warrior } from '../stores'
+    import { validateName } from '../validationUtils'
+    import LL from '../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../config'
     import SolidButton from '../components/SolidButton.svelte'
-    import WarriorRegisterForm from '../components/user/UserRegisterForm.svelte'
-    import { warrior } from '../stores.js'
-    import { validateName } from '../validationUtils.js'
-    import { _ } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.js'
+    import UserRegisterForm from '../components/user/UserRegisterForm.svelte'
 
     export let router
     export let xfetch
@@ -69,9 +69,7 @@
                     })
                 })
                 .catch(function () {
-                    notifications.danger(
-                        $_('pages.createAccount.guestForm.createError'),
-                    )
+                    notifications.danger($LL.guestRegisterError())
                     eventTag('register_guest', 'engagement', 'failure')
                 })
         }
@@ -107,9 +105,7 @@
                 })
             })
             .catch(function () {
-                notifications.danger(
-                    $_('pages.createAccount.createAccountForm.createError'),
-                )
+                notifications.danger($LL.registerError())
                 eventTag('register_account', 'engagement', 'failure')
             })
     }
@@ -118,7 +114,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('register')} | {$_('appName')}</title>
+    <title>{$LL.register()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
@@ -126,18 +122,16 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            {$_('register')}
+            {$LL.register()}
         </h1>
         {#if battleId}
             <div
                 class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
                 text-center dark:text-white"
             >
-                {@html $_('pages.createAccount.loginForBattle', {
-                    values: {
-                        loginOpen: `<a href="${appRoutes.login}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
-                        loginClose: `</a>`,
-                    },
+                {@html $LL.loginForBattle[AppConfig.FriendlyUIVerbs]({
+                    loginOpen: `<a href="${appRoutes.login}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+                    loginClose: `</a>`,
                 })}
             </div>
         {/if}
@@ -146,11 +140,9 @@
                 class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
                 text-center dark:text-white"
             >
-                {@html $_('loginForRetro', {
-                    values: {
-                        loginOpen: `<a href="${appRoutes.login}/retro/${retroId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
-                        loginClose: `</a>`,
-                    },
+                {@html $LL.loginForRetro({
+                    loginOpen: `<a href="${appRoutes.login}/retro/${retroId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+                    loginClose: `</a>`,
                 })}
             </div>
         {/if}
@@ -159,11 +151,9 @@
                 class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
                 text-center dark:text-white"
             >
-                {@html $_('loginForStoryboard', {
-                    values: {
-                        loginOpen: `<a href="${appRoutes.login}/storyboard/${storyboardId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
-                        loginClose: `</a>`,
-                    },
+                {@html $LL.loginForStoryboard({
+                    loginOpen: `<a href="${appRoutes.login}/storyboard/${storyboardId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
+                    loginClose: `</a>`,
                 })}
             </div>
         {/if}
@@ -180,7 +170,7 @@
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl b-4 mb-2 md:mb-6
                         md:leading-tight text-center dark:text-white"
                     >
-                        {$_('pages.createAccount.guestForm.title')}
+                        {$LL.registerAsGuest()}
                     </h2>
 
                     <div class="mb-6">
@@ -188,15 +178,11 @@
                             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                             for="yourName1"
                         >
-                            {$_(
-                                'pages.createAccount.guestForm.fields.name.label',
-                            )}
+                            {$LL.name()}
                         </label>
                         <input
                             bind:value="{warriorName}"
-                            placeholder="{$_(
-                                'pages.createAccount.guestForm.fields.name.placeholder',
-                            )}"
+                            placeholder="{$LL.yourNamePlaceholder()}"
                             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -206,12 +192,12 @@
                         />
                     </div>
                     <div>
-                        <div class="ltr:text-right rtl:text-left">
+                        <div class="text-right">
                             <SolidButton
                                 type="submit"
                                 disabled="{registerDisabled}"
                             >
-                                {$_('pages.createAccount.guestForm.saveButton')}
+                                {$LL.register()}
                             </SolidButton>
                         </div>
                     </div>
@@ -228,18 +214,13 @@
                         class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
                         md:leading-tight text-center dark:text-white"
                     >
-                        {@html $_(
-                            'pages.createAccount.createAccountForm.title',
-                            {
-                                values: {
-                                    optionalOpen: `<span class="text-gray-500">`,
-                                    optionalClose: `</span>`,
-                                },
-                            },
-                        )}
+                        {@html $LL.createAccountFormTitle({
+                            optionalOpen: `<span class="text-gray-500">`,
+                            optionalClose: `</span>`,
+                        })}
                     </h2>
 
-                    <WarriorRegisterForm
+                    <UserRegisterForm
                         guestWarriorsName="{warriorName}"
                         handleSubmit="{createUserRegistered}"
                         notifications="{notifications}"
@@ -252,7 +233,7 @@
                     class="font-bold text-2xl md:text-3xl md:leading-tight
                     text-center dark:text-white"
                 >
-                    {$_('pages.createAccount.registrationDisabled')}
+                    {$LL.registrationDisabled()}
                 </h2>
             </div>
         {/if}

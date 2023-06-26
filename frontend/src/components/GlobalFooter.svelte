@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
     import GithubIcon from './icons/Github.svelte'
-    import { AppConfig } from '../config.js'
-    import { _ } from '../i18n.js'
+    import { AppConfig } from '../config'
+    import LL from '../i18n/i18n-svelte'
 
     const { AppVersion } = AppConfig
     const footerLinkClasses =
@@ -17,23 +17,19 @@
         href="https://github.com/StevenWeathers/thunderdome-planning-poker"
         class="{footerLinkClasses}"
     >
-        {$_('appName')}
+        {$LL.appName()}
     </a>
-    {@html $_('footer.authoredBy', {
-        values: {
-            authorOpen: `<a href="http://stevenweathers.com" class="${footerLinkClasses}">`,
-            authorClose: `</a>`,
-        },
+    {@html $LL.footerAuthoredBy({
+        authorOpen: `<a href="http://stevenweathers.com" class="${footerLinkClasses}">`,
+        authorClose: `</a>`,
     })}
     <br />
-    {@html $_('footer.license', {
-        values: {
-            licenseOpen: `<a href="http://www.apache.org/licenses/" class="${footerLinkClasses}">`,
-            licenseClose: `</a>`,
-        },
+    {@html $LL.footerLicense({
+        licenseOpen: `<a href="http://www.apache.org/licenses/" class="${footerLinkClasses}">`,
+        licenseClose: `</a>`,
     })}
     <br />
     <div class="text-sm text-gray-500 dark:text-gray-400">
-        {$_('appVersion', { values: { version: AppVersion } })}
+        {$LL.appVersion({ version: AppVersion })}
     </div>
 </footer>

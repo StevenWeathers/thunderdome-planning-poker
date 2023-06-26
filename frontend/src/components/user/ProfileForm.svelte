@@ -1,17 +1,24 @@
-<script>
+<script lang="ts">
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
-    import WarriorAvatar from './UserAvatar.svelte'
-    import LocaleSwitcher from '../LocaleSwitcher.svelte'
     import SolidButton from '../SolidButton.svelte'
-    import VerifiedIcon from '../icons/Verified.svelte'
+    import VerifiedIcon from '../icons/VerifiedIcon.svelte'
     import HollowButton from '../HollowButton.svelte'
-    import SetupMFA from '../user/SetupMFA.svelte'
+    import { countryList } from '../../country'
+    import { AppConfig } from '../../config'
+    import { validateName, validateUserIsAdmin } from '../../validationUtils'
+    import LL, { locale, setLocale } from '../../i18n/i18n-svelte'
+    import UserAvatar from './UserAvatar.svelte'
+    import SetupMFA from './SetupMFA.svelte'
     import DeleteConfirmation from '../DeleteConfirmation.svelte'
-    import { countryList } from '../../country.js'
-    import { AppConfig } from '../../config.js'
-    import { _, locale, setupI18n } from '../../i18n.js'
-    import { warrior } from '../../stores.js'
-    import { validateName, validateUserIsAdmin } from '../../validationUtils.js'
+    import { warrior } from '../../stores'
+    import LocaleSwitcher from '../LocaleSwitcher.svelte'
+    import type { Locales } from '../../i18n/i18n-types'
+    import { loadLocaleAsync } from '../../i18n/i18n-util.async'
+
+    const setupI18n = async (locale: Locales) => {
+        await loadLocaleAsync(locale)
+        setLocale(locale)
+    }
 
     export let profile = {
         id: '',
@@ -126,10 +133,10 @@
             .then(() => {
                 profile.mfaEnabled = false
                 toggleMfaRemove()
-                notifications.success($_('mfa2faRemoveSuccess'))
+                notifications.success($LL.mfa2faRemoveSuccess())
             })
             .catch(() => {
-                notifications.danger($_('mfa2faRemoveFailure'))
+                notifications.danger($LL.mfa2faRemoveFailure())
             })
     }
 
@@ -139,10 +146,10 @@
             .then(function () {
                 eventTag('user_verify_request', 'engagement', 'success')
 
-                notifications.success($_('requestVerifyEmailSuccess'))
+                notifications.success($LL.requestVerifyEmailSuccess())
             })
             .catch(function () {
-                notifications.danger($_('requestVerifyEmailFailure'))
+                notifications.danger($LL.requestVerifyEmailFailure())
                 eventTag('user_verify_request', 'engagement', 'failure')
             })
     }
@@ -157,14 +164,15 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourName"
         >
-            {$_('pages.warriorProfile.fields.name.label')}
+            {$LL.name()}
         </label>
         <input
             bind:value="{profile.name}"
-            placeholder="{$_('pages.warriorProfile.fields.name.placeholder')}"
+            placeholder="{$LL.yourNamePlaceholder()}"
             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+            rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+            focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
+            dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
             id="yourName"
             name="yourName"
             type="text"
@@ -178,25 +186,25 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourEmail"
         >
-            {$_('pages.warriorProfile.fields.email.label')}
+            {$LL.email()}
             {#if profile.verified}
                 <span
                     class="inline-block font-bold text-green-600
                                     border-green-500 border py-1 px-2 rounded
-                                    ltr:ml-1 rtl:mr-1"
+                                    ms-1"
                     data-testid="user-verified"
                 >
-                    {$_('pages.warriorProfile.fields.email.verified')}
+                    {$LL.verified()}
                     <VerifiedIcon class="inline fill-current h-4 w-4" />
                 </span>
             {:else if profile.rank !== 'GUEST'}
                 <button
-                    class="ltr:float-right rtl:float-left inline-block align-baseline font-bold text-sm text-blue-500
+                    class="float-right inline-block align-baseline font-bold text-sm text-blue-500
                                         hover:text-blue-800"
                     on:click="{requestVerifyEmail}"
                     data-testid="request-verify"
                     type="button"
-                    >{$_('requestVerifyEmail')}
+                    >{$LL.requestVerifyEmail()}
                 </button>
             {/if}
         </label>
@@ -216,15 +224,15 @@
     {#if profile.rank !== 'GUEST'}
         <div class="mb-4">
             <p class="block text-gray-700 dark:text-gray-400 font-bold mb-2">
-                {$_('mfa2faLabel')}
+                {$LL.mfa2faLabel()}
             </p>
             {#if !profile.mfaEnabled}
                 <HollowButton color="teal" onClick="{toggleMfaSetup}"
-                    >{$_('mfa2faSetup')}
+                    >{$LL.mfa2faSetup()}
                 </HollowButton>
             {:else}
                 <HollowButton color="red" onClick="{toggleMfaRemove}"
-                    >{$_('mfa2faRemove')}
+                    >{$LL.mfa2faRemove()}
                 </HollowButton>
             {/if}
         </div>
@@ -235,20 +243,20 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourCountry"
         >
-            {$_('pages.warriorProfile.fields.country.label')}
+            {$LL.country()}
         </label>
 
         <div class="relative">
             <select
                 bind:value="{profile.country}"
                 class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 id="yourCountry"
                 name="yourCountry"
             >
                 <option value="">
-                    {$_('pages.warriorProfile.fields.country.placeholder')}
+                    {$LL.chooseCountryPlaceholder()}
                 </option>
                 {#each countryList as item}
                     <option value="{item.abbrev}">
@@ -258,7 +266,7 @@
             </select>
             <div
                 class="pointer-events-none absolute inset-y-0
-                                ltr:right-0 rtl:left-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
+                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
             >
                 <DownCarrotIcon />
             </div>
@@ -267,14 +275,11 @@
 
     <div class="mb-4">
         <div class="text-gray-700 dark:text-gray-400 font-bold mb-2">
-            {$_('pages.warriorProfile.fields.locale.label')}
+            {$LL.locale()}
         </div>
         <LocaleSwitcher
             selectedLocale="{$locale}"
-            on:locale-changed="{e =>
-                setupI18n({
-                    withLocale: e.detail,
-                })}"
+            on:locale-changed="{e => setupI18n(e.detail)}"
         />
     </div>
 
@@ -283,13 +288,11 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourCompany"
         >
-            {$_('pages.warriorProfile.fields.company.label')}
+            {$LL.company()}
         </label>
         <input
             bind:value="{profile.company}"
-            placeholder="{$_(
-                'pages.warriorProfile.fields.company.placeholder',
-            )}"
+            placeholder="{$LL.companyPlaceholder()}"
             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -304,13 +307,11 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourJobTitle"
         >
-            {$_('pages.warriorProfile.fields.jobTitle.label')}
+            {$LL.jobTitle()}
         </label>
         <input
             bind:value="{profile.jobTitle}"
-            placeholder="{$_(
-                'pages.warriorProfile.fields.jobTitle.placeholder',
-            )}"
+            placeholder="{$LL.jobTitlePlaceholder()}"
             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -325,10 +326,12 @@
             <input
                 bind:checked="{profile.notificationsEnabled}"
                 type="checkbox"
-                class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
+                class="w-4 h-4 dark:accent-lime-400 me-1"
             />
             <span>
-                {$_('pages.warriorProfile.fields.enable_notifications.label')}
+                {$LL.enableBattleNotifications({
+                    friendly: AppConfig.FriendlyUIVerbs,
+                })}
             </span>
         </label>
     </div>
@@ -340,7 +343,7 @@
                                 mb-2"
                 for="yourAvatar"
             >
-                {$_('pages.warriorProfile.fields.avatar.label')}
+                {$LL.avatar()}
             </label>
             <div class="flex">
                 <div class="md:w-2/3 lg:w-3/4">
@@ -352,8 +355,8 @@
                         <select
                             bind:value="{profile.avatar}"
                             class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
-                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
+                                        text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
+                                        focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                             id="yourAvatar"
                             name="yourAvatar"
                         >
@@ -365,16 +368,16 @@
                         </select>
                         <div
                             class="pointer-events-none absolute
-                                            inset-y-0 ltr:right-0 rtl:left-0 flex items-center
+                                            inset-y-0 end-0 flex items-center
                                             px-2 text-gray-700 dark:text-gray-300"
                         >
                             <DownCarrotIcon />
                         </div>
                     </div>
                 </div>
-                <div class="md:w-1/3 lg:w-1/4 rtl:mr-1 ltr:ml-1">
-                    <span class="ltr:float-right rtl:float-left">
-                        <WarriorAvatar
+                <div class="md:w-1/3 lg:w-1/4 ms-1">
+                    <span class="float-right">
+                        <UserAvatar
                             warriorId="{profile.id}"
                             avatar="{profile.avatar}"
                             gravatarHash="{profile.gravatarHash}"
@@ -388,20 +391,20 @@
     {/if}
 
     <div>
-        <div class="ltr:text-right rtl:text-left">
+        <div class="text-right">
             {#if !ldapEnabled && !headerAuthEnabled && profile.rank !== 'GUEST' && toggleUpdatePassword}
                 <button
                     type="button"
                     class="inline-block align-baseline font-bold
-                                    text-sm text-blue-500 hover:text-blue-800 rtl:ml-4 ltr:mr-4"
+                                    text-sm text-blue-500 hover:text-blue-800 me-4"
                     on:click="{toggleUpdatePassword}"
                     data-testid="toggle-updatepassword"
                 >
-                    {$_('pages.warriorProfile.updatePasswordButton')}
+                    {$LL.updatePassword()}
                 </button>
             {/if}
             <SolidButton type="submit" disabled="{updateDisabled}">
-                {$_('pages.warriorProfile.saveProfileButton')}
+                {$LL.updateProfile()}
             </SolidButton>
         </div>
     </div>
@@ -421,7 +424,7 @@
     <DeleteConfirmation
         toggleDelete="{toggleMfaRemove}"
         handleDelete="{handleMfaRemove}"
-        confirmText="{$_('mfa2faRemoveText')}"
-        confirmBtnText="{$_('remove')}"
+        confirmText="{$LL.mfa2faRemoveText()}"
+        confirmBtnText="{$LL.remove()}"
     />
 {/if}

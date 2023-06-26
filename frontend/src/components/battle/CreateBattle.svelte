@@ -1,14 +1,14 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import SolidButton from '../SolidButton.svelte'
     import HollowButton from '../HollowButton.svelte'
     import JiraImport from './JiraImport.svelte'
-    import CsvImport from './CsvImport.svelte'
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
-    import { warrior as user } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { AppConfig, appRoutes } from '../../config.js'
+    import { warrior as user } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../../config'
+    import CsvImport from './CsvImport.svelte'
 
     export let notifications
     export let eventTag
@@ -38,7 +38,7 @@
     function addPlan() {
         plans.unshift({
             name: '',
-            type: $_('planTypeStory'),
+            type: $LL.planTypeStory(),
             referenceId: '',
             link: '',
             description: '',
@@ -102,14 +102,16 @@
                 if (Array.isArray(error)) {
                     error[1].json().then(function (result) {
                         notifications.danger(
-                            `${$_(
-                                'pages.myBattles.createBattle.createError',
-                            )} : ${result.error}`,
+                            `${$LL.createBattleError({
+                                friendly: AppConfig.FriendlyUIVerbs,
+                            })} : ${result.error}`,
                         )
                     })
                 } else {
                     notifications.danger(
-                        $_('pages.myBattles.createBattle.createError'),
+                        $LL.createBattleError({
+                            friendly: AppConfig.FriendlyUIVerbs,
+                        }),
                     )
                 }
                 eventTag('create_battle', 'engagement', 'failure')
@@ -123,7 +125,7 @@
                 teams = result.data
             })
             .catch(function () {
-                notifications.danger($_('getTeamsError'))
+                notifications.danger($LL.getTeamsError())
             })
     }
 
@@ -141,15 +143,15 @@
             class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
             for="battleName"
         >
-            {$_('pages.myBattles.createBattle.fields.name.label')}
+            {$LL.battleName({ friendly: AppConfig.FriendlyUIVerbs })}
         </label>
         <div class="control">
             <input
                 name="battleName"
                 bind:value="{battleName}"
-                placeholder="{$_(
-                    'pages.myBattles.createBattle.fields.name.placeholder',
-                )}"
+                placeholder="{$LL.battleNamePlaceholder({
+                    friendly: AppConfig.FriendlyUIVerbs,
+                })}"
                 class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -165,19 +167,19 @@
                 class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
                 for="selectedTeam"
             >
-                {$_('associateTeam')}
-                {#if !AppConfig.RequireTeams}{$_('optional')}{/if}
+                {$LL.associateTeam()}
+                {#if !AppConfig.RequireTeams}{$LL.optional()}{/if}
             </label>
             <div class="relative">
                 <select
                     bind:value="{selectedTeam}"
                     class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                     id="selectedTeam"
                     name="selectedTeam"
                 >
-                    <option value="" disabled>{$_('selectTeam')}</option>
+                    <option value="" disabled>{$LL.selectTeam()}</option>
                     {#each teams as team}
                         <option value="{team.id}">
                             {team.name}
@@ -185,7 +187,7 @@
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                    class="pointer-events-none absolute inset-y-0 end-0 flex
                 items-center px-2 text-gray-700 dark:text-gray-400"
                 >
                     <DownCarrotIcon />
@@ -198,17 +200,15 @@
         <h3
             class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
         >
-            {$_('pages.myBattles.createBattle.fields.allowedPointValues.label')}
+            {$LL.pointValuesAllowed()}
         </h3>
-        <div
-            class="control relative rtl:-ml-2 ltr:-mr-2 md:rtl:-ml-1 md:ltr:-mr-1"
-        >
+        <div class="control relative -me-2 md:-me-1">
             {#each allowedPointValues as point, pi}
                 <label
                     class="{points.includes(point)
                         ? checkedPointColor
                         : uncheckedPointColor}
-                    cursor-pointer font-bold border p-2 rtl:ml-2 ltr:mr-2 xl:rtl:ml-1 xl:mr-1 mb-2
+                    cursor-pointer font-bold border p-2 me-2 xl:me-1 mb-2
                     xl:mb-0 rounded inline-block"
                 >
                     <input
@@ -227,7 +227,7 @@
         <h3
             class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
         >
-            {$_('pages.myBattles.createBattle.fields.plans.label')}
+            {$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}
         </h3>
         <div class="control mb-4">
             <JiraImport
@@ -236,7 +236,7 @@
                 eventTag="{eventTag}"
             />
             <HollowButton onClick="{addPlan}">
-                {$_('pages.myBattles.createBattle.fields.plans.addButton')}
+                {$LL.addPlan({ friendly: AppConfig.FriendlyUIVerbs })}
             </HollowButton>
         </div>
         <div class="control mb-4">
@@ -253,9 +253,9 @@
                     <input
                         type="text"
                         bind:value="{plan.name}"
-                        placeholder="{$_(
-                            'pages.myBattles.createBattle.fields.plans.fields.name.placeholder',
-                        )}"
+                        placeholder="{$LL.planNamePlaceholder({
+                            friendly: AppConfig.FriendlyUIVerbs,
+                        })}"
                         class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -263,11 +263,9 @@
                     />
                 </div>
                 <div class="w-1/4">
-                    <div class="ltr:pl-2 rtl:pr-2">
+                    <div class="ps-2">
                         <HollowButton onClick="{removePlan(i)}" color="red">
-                            {$_(
-                                'pages.myBattles.createBattle.fields.plans.removeButton',
-                            )}
+                            {$LL.remove()}
                         </HollowButton>
                     </div>
                 </div>
@@ -280,28 +278,25 @@
             class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
             for="averageRounding"
         >
-            {$_('pages.myBattles.createBattle.fields.averageRounding.label')}
+            {$LL.pointAverageRounding()}
         </label>
         <div class="relative">
             <select
                 bind:value="{pointAverageRounding}"
                 class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 id="averageRounding"
                 name="averageRounding"
             >
                 {#each allowedPointAverages as item}
                     <option value="{item}">
-                        {$_(
-                            'pages.myBattles.createBattle.fields.averageRounding.' +
-                                item,
-                        )}
+                        {$LL.averageRoundingOptions[item]()}
                     </option>
                 {/each}
             </select>
             <div
-                class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                class="pointer-events-none absolute inset-y-0 end-0 flex
                 items-center px-2 text-gray-700 dark:text-gray-400"
             >
                 <DownCarrotIcon />
@@ -316,9 +311,9 @@
                 bind:checked="{autoFinishVoting}"
                 id="autoFinishVoting"
                 name="autoFinishVoting"
-                class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
+                class="w-4 h-4 dark:accent-lime-400 me-1"
             />
-            {$_('pages.myBattles.createBattle.fields.autoFinishVoting.label')}
+            {$LL.autoFinishVotingLabel({ friendly: AppConfig.FriendlyUIVerbs })}
         </label>
     </div>
 
@@ -329,7 +324,7 @@
                 bind:checked="{hideVoterIdentity}"
                 id="hideVoterIdentity"
                 name="hideVoterIdentity"
-                class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
+                class="w-4 h-4 dark:accent-lime-400 me-1"
             />
             Hide Voter Identity
         </label>
@@ -340,13 +335,13 @@
             class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
             for="joinCode"
         >
-            {$_('passCode')}
+            {$LL.passCode()}
         </label>
         <div class="control">
             <input
                 name="joinCode"
                 bind:value="{joinCode}"
-                placeholder="{$_('optionalPasscodePlaceholder')}"
+                placeholder="{$LL.optionalPasscodePlaceholder()}"
                 class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -360,22 +355,27 @@
             class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
             for="leaderCode"
         >
-            {$_('leaderPasscode')}
+            {$LL.leaderPasscode()}
         </label>
         <div class="control">
             <input
                 name="leaderCode"
                 bind:value="{leaderCode}"
-                placeholder="{$_('optionalLeadercodePlaceholder')}"
+                placeholder="{$LL.optionalLeadercodePlaceholder()}"
                 class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+            rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
+            focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
+            dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="leaderCode"
             />
         </div>
     </div>
 
-    <div class="ltr:text-right rtl:text-left">
-        <SolidButton type="submit">{$_('battleCreate')}</SolidButton>
+    <div class="text-right">
+        <SolidButton type="submit"
+            >{$LL.battleCreate({
+                friendly: AppConfig.FriendlyUIVerbs,
+            })}</SolidButton
+        >
     </div>
 </form>

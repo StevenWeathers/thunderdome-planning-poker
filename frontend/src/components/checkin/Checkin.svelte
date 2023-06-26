@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
     import Modal from '../Modal.svelte'
     import SolidButton from '../SolidButton.svelte'
-    import { quill } from '../../quill.js'
-    import { _ } from '../../i18n.js'
+    import { quill } from '../../quill'
+    import LL from '../../i18n/i18n-svelte'
 
     export let toggleCheckin = () => {}
     export let handleCheckin = () => {}
@@ -47,13 +47,13 @@
                     <div
                         class="text-gray-500 dark:text-gray-300 uppercase font-rajdhani tracking-wide text-2xl mb-2"
                     >
-                        {$_('yesterday')}
+                        {$LL.yesterday()}
                     </div>
                     <div class="bg-white">
                         <div
                             class="w-full"
                             use:quill="{{
-                                placeholder: `${$_('yesterdayPlaceholder')}`,
+                                placeholder: `${$LL.yesterdayPlaceholder()}`,
                                 content: yesterday,
                             }}"
                             on:text-change="{e => (yesterday = e.detail.html)}"
@@ -65,10 +65,10 @@
                     <div
                         class="text-gray-600 dark:text-gray-400 uppercase font-rajdhani text-xl tracking-wide mb-2"
                     >
-                        {$_('checkinMeetYesterdayGoalsQuestion')}
+                        {$LL.checkinMeetYesterdayGoalsQuestion()}
                     </div>
                     <div
-                        class="relative inline-block w-16 rtl:ml-2 ltr:mr-2 align-middle select-none transition duration-200 ease-in"
+                        class="relative inline-block w-16 me-2 align-middle select-none transition duration-200 ease-in"
                     >
                         <input
                             type="checkbox"
@@ -90,13 +90,13 @@
                     <div
                         class="text-gray-500 dark:text-gray-300 uppercase font-rajdhani tracking-wide text-2xl mb-2"
                     >
-                        {$_('today')}
+                        {$LL.today()}
                     </div>
                     <div class="bg-white">
                         <div
                             class="w-full"
                             use:quill="{{
-                                placeholder: `${$_('todayPlaceholder')}`,
+                                placeholder: `${$LL.todayPlaceholder()}`,
                                 content: today,
                             }}"
                             on:text-change="{e => (today = e.detail.html)}"
@@ -111,13 +111,13 @@
             <div
                 class="text-red-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
             >
-                {$_('blockers')}
+                {$LL.blockers()}
             </div>
             <div class="bg-white">
                 <div
                     class="w-full"
                     use:quill="{{
-                        placeholder: `${$_('blockersPlaceholder')}`,
+                        placeholder: `${$LL.blockersPlaceholder()}`,
                         content: blockers,
                     }}"
                     on:text-change="{e => (blockers = e.detail.html)}"
@@ -130,13 +130,13 @@
             <div
                 class="text-green-500 uppercase font-rajdhani tracking-wide text-2xl mb-2"
             >
-                {$_('discuss')}
+                {$LL.discuss()}
             </div>
             <div class="bg-white">
                 <div
                     class="w-full"
                     use:quill="{{
-                        placeholder: `${$_('discussPlaceholder')}`,
+                        placeholder: `${$LL.discussPlaceholder()}`,
                         content: discuss,
                     }}"
                     on:text-change="{e => (discuss = e.detail.html)}"
@@ -146,9 +146,9 @@
         </div>
 
         <div class="w-full">
-            <div class="ltr:text-right rtl:text-left">
+            <div class="text-right">
                 <SolidButton type="submit" testid="save"
-                    >{$_('save')}</SolidButton
+                    >{$LL.save()}</SolidButton
                 >
             </div>
         </div>

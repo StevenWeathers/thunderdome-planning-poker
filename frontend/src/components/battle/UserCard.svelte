@@ -1,14 +1,14 @@
-<script>
-    import VoteIcon from '../icons/VoteIcon.svelte'
+<script lang="ts">
     import LeaderIcon from '../icons/LeaderIcon.svelte'
-    import WarriorRankPrivate from '../icons/UserRankGuest.svelte'
-    import WarriorRankCorporal from '../icons/UserRankRegistered.svelte'
+    import WarriorRankPrivate from '../icons/UserRankGuestIcon.svelte'
+    import WarriorRankCorporal from '../icons/UserRankRegisteredIcon.svelte'
     import WarriorRankGeneral from '../icons/UserRankAdmin.svelte'
     import UserAvatar from '../user/UserAvatar.svelte'
+    import { AppConfig } from '../../config'
+    import LL from '../../i18n/i18n-svelte'
+    import { warrior as activeWarrior } from '../../stores'
+    import VoteIcon from '../icons/VoteIcon.svelte'
     import BecomeLeader from './BecomeLeader.svelte'
-    import { AppConfig } from '../../config.js'
-    import { _ } from '../../i18n.js'
-    import { warrior as activeWarrior } from '../../stores.js'
 
     export let voted = false
     export let warrior = {}
@@ -66,7 +66,7 @@
     data-username="{warrior.name}"
     data-userid="{warrior.id}"
 >
-    <div class="w-1/4 rtl:ml-2 ltr:mr-2">
+    <div class="w-1/4 me-2">
         <UserAvatar
             warriorId="{warrior.id}"
             avatar="{warrior.avatar}"
@@ -94,7 +94,7 @@
                     {#if autoFinishVoting && warrior.spectator}
                         <span
                             class="text-gray-600"
-                            title="{$_('spectator')}"
+                            title="{$LL.spectator()}"
                             data-testid="user-name"
                         >
                             {warrior.name}
@@ -115,9 +115,10 @@
                                 border-transparent"
                                 data-testid="user-demote"
                             >
-                                {$_('demote')}
+                                {$LL.demote()}
                             </button>
-                        {:else}&nbsp;{$_('pages.battle.warriorLeader')}{/if}
+                        {:else}&nbsp;{$LL.leader()}
+                        {/if}
                     </p>
                 {:else if isLeader}
                     <button
@@ -127,7 +128,7 @@
                         border-transparent"
                         data-testid="user-promote"
                     >
-                        {$_('promote')}
+                        {$LL.promote()}
                     </button>
                     {#if !warrior.spectator}
                         &nbsp;|&nbsp;
@@ -138,7 +139,7 @@
                             border-transparent"
                             data-testid="user-nudge"
                         >
-                            {$_('warriorNudge')}
+                            {$LL.warriorNudge()}
                         </button>
                     {/if}
                 {:else if warrior.id === $activeWarrior.id}
@@ -149,7 +150,7 @@
                         border-transparent"
                         data-testid="user-becomeleader"
                     >
-                        {$_('becomeLeader')}
+                        {$LL.becomeLeader()}
                     </button>
                 {/if}
                 {#if autoFinishVoting && warrior.id === $activeWarrior.id}
@@ -160,12 +161,12 @@
                         data-testid="user-togglespectator"
                     >
                         {#if !warrior.spectator}
-                            {$_('becomeSpectator')}
-                        {:else}{$_('becomeParticipant')}{/if}
+                            {$LL.becomeSpectator()}
+                        {:else}{$LL.becomeParticipant()}{/if}
                     </button>
                 {/if}
             </div>
-            <div class="w-1/4 ltr:text-right rtl:text-left">
+            <div class="w-1/4 text-right">
                 {#if !warrior.spectator}
                     {#if voted && points === ''}
                         <span class="text-green-500 dark:text-lime-400">
@@ -174,7 +175,7 @@
                     {:else if voted && points !== ''}
                         <span
                             class="font-bold text-green-600 dark:text-lime-400 border-green-500 dark:border-lime-500
-                            border p-2 rounded rtl:mr-2 ltr:ml-2"
+                            border p-2 rounded ms-2"
                             data-testid="user-points"
                         >
                             {points}

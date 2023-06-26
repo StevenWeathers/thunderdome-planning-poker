@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
     import ChevronLeftIcon from './icons/ChevronLeft.svelte'
     import ChevronRightIcon from './icons/ChevronRight.svelte'
-    import { createEventDispatcher } from 'svelte/internal'
+    import { createEventDispatcher } from 'svelte'
 
     const dispatch = createEventDispatcher()
 
@@ -53,11 +53,13 @@
 
 <div class="flex text-gray-700 dark:text-gray-400 text-lg">
     <div
-        class="h-12 w-12 rtl:ml-1 ltr:mr-1 flex justify-center items-center {current >
-        1
+        class="h-12 w-12 me-1 flex justify-center items-center {current > 1
             ? 'cursor-pointer'
             : 'text-gray-400 dark:text-gray-700'}"
+        role="button"
+        tabindex="0"
         on:click="{() => current > 1 && setCurrent(current - 1)}"
+        on:keypress="{() => current > 1 && setCurrent(current - 1)}"
     >
         <ChevronLeftIcon class="w-6 h-6" />
     </div>
@@ -70,7 +72,10 @@
                     ? `border-t-2 border-indigo-600 dark:border-yellow-400`
                     : 'border-t-2 border-slate-100 dark:border-gray-900'}
                 "
+                role="button"
+                tabindex="0"
                 on:click="{() => setCurrent(i)}"
+                on:keypress="{() => setCurrent(i)}"
             >
                 {i}
             </div>
@@ -84,11 +89,14 @@
         </div>
     </div>
     <div
-        class="h-12 w-12 rtl:mr-1 ltr:ml-1 flex justify-center items-center {current <
+        class="h-12 w-12 ms-1 flex justify-center items-center {current <
         num_pages
             ? 'cursor-pointer'
             : 'text-gray-400 dark:text-gray-700'}"
+        role="button"
+        tabindex="0"
         on:click="{() => current < num_pages && setCurrent(current + 1)}"
+        on:keypress="{() => current < num_pages && setCurrent(current + 1)}"
     >
         <ChevronRightIcon class="w-6 h-6" />
     </div>

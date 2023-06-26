@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import SolidButton from '../SolidButton.svelte'
     import Modal from '../Modal.svelte'
     import HollowButton from '../HollowButton.svelte'
@@ -30,7 +30,7 @@
                 Column Name
             </label>
             <input
-                class="bg-gray-100  dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                 focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="columnName"
@@ -41,12 +41,12 @@
             />
         </div>
         <div class="flex">
-            <div class="md:w-1/2 ltr:text-left rtl:text-right">
+            <div class="md:w-1/2 text-left">
                 <HollowButton color="red" onClick="{deleteColumn(column.id)}">
                     Delete Column
                 </HollowButton>
             </div>
-            <div class="md:w-1/2 ltr:text-right rtl:text-left">
+            <div class="md:w-1/2 text-right">
                 <SolidButton type="submit">Save</SolidButton>
             </div>
         </div>

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
 
     import PageLayout from '../components/PageLayout.svelte'
@@ -9,23 +9,23 @@
     import CreateBattle from '../components/battle/CreateBattle.svelte'
     import CreateRetro from '../components/retro/CreateRetro.svelte'
     import CreateStoryboard from '../components/storyboard/CreateStoryboard.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
     import CountryFlag from '../components/user/CountryFlag.svelte'
     import UserAvatar from '../components/user/UserAvatar.svelte'
-    import CommentIcon from '../components/icons/CommentIcon.svelte'
     import ActionComments from '../components/retro/ActionComments.svelte'
-    import { warrior } from '../stores.js'
-    import { _ } from '../i18n.js'
-    import { AppConfig, appRoutes } from '../config.js'
-    import { validateUserIsRegistered } from '../validationUtils.js'
+    import { warrior } from '../stores'
+    import LL from '../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../config'
+    import { validateUserIsRegistered } from '../validationUtils'
     import Table from '../components/table/Table.svelte'
     import HeadCol from '../components/table/HeadCol.svelte'
     import TableRow from '../components/table/TableRow.svelte'
     import RowCol from '../components/table/RowCol.svelte'
     import Modal from '../components/Modal.svelte'
     import Pagination from '../components/Pagination.svelte'
-    import CheckboxIcon from '../components/icons/CheckboxIcon.svelte'
     import EditActionItem from '../components/retro/EditActionItem.svelte'
+    import SolidButton from '../components/SolidButton.svelte'
+    import CheckboxIcon from '../components/icons/CheckboxIcon.svelte'
+    import CommentIcon from '../components/icons/CommentIcon.svelte'
 
     export let xfetch
     export let router
@@ -169,7 +169,7 @@
                 getUsers()
             })
             .catch(function () {
-                notifications.danger($_('teamGetError'))
+                notifications.danger($LL.teamGetError())
             })
     }
 
@@ -183,7 +183,7 @@
                 users = result.data
             })
             .catch(function () {
-                notifications.danger($_('teamGetUsersError'))
+                notifications.danger($LL.teamGetUsersError())
             })
     }
 
@@ -198,7 +198,11 @@
                     battles = result.data
                 })
                 .catch(function () {
-                    notifications.danger($_('teamGetBattlesError'))
+                    notifications.danger(
+                        $LL.teamGetBattlesError({
+                            friendly: AppConfig.FriendlyUIVerbs,
+                        }),
+                    )
                 })
         }
     }
@@ -214,7 +218,7 @@
                     retros = result.data
                 })
                 .catch(function () {
-                    notifications.danger($_('teamGetRetrosError'))
+                    notifications.danger($LL.teamGetRetrosError())
                 })
         }
     }
@@ -231,7 +235,7 @@
                     totalRetroActions = result.meta.count
                 })
                 .catch(function () {
-                    notifications.danger($_('teamGetRetroActionsError'))
+                    notifications.danger($LL.teamGetRetroActionsError())
                 })
         }
     }
@@ -248,7 +252,7 @@
                     storyboards = result.data
                 })
                 .catch(function () {
-                    notifications.danger($_('teamGetStoryboardsError'))
+                    notifications.danger($LL.teamGetStoryboardsError())
                 })
         }
     }
@@ -263,11 +267,11 @@
             .then(function () {
                 eventTag('team_add_user', 'engagement', 'success')
                 toggleAddUser()
-                notifications.success($_('userAddSuccess'))
+                notifications.success($LL.userAddSuccess())
                 getUsers()
             })
             .catch(function () {
-                notifications.danger($_('userAddError'))
+                notifications.danger($LL.userAddError())
                 eventTag('team_add_user', 'engagement', 'failure')
             })
     }
@@ -277,11 +281,11 @@
             .then(function () {
                 eventTag('team_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
-                notifications.success($_('userRemoveSuccess'))
+                notifications.success($LL.userRemoveSuccess())
                 getUsers()
             })
             .catch(function () {
-                notifications.danger($_('userRemoveError'))
+                notifications.danger($LL.userRemoveError())
                 eventTag('team_remove_user', 'engagement', 'failure')
             })
     }
@@ -291,11 +295,19 @@
             .then(function () {
                 eventTag('team_remove_battle', 'engagement', 'success')
                 toggleRemoveBattle(null)()
-                notifications.success($_('battleRemoveSuccess'))
+                notifications.success(
+                    $LL.battleRemoveSuccess({
+                        friendly: AppConfig.FriendlyUIVerbs,
+                    }),
+                )
                 getBattles()
             })
             .catch(function () {
-                notifications.danger($_('battleRemoveError'))
+                notifications.danger(
+                    $LL.battleRemoveError({
+                        friendly: AppConfig.FriendlyUIVerbs,
+                    }),
+                )
                 eventTag('team_remove_battle', 'engagement', 'failure')
             })
     }
@@ -305,11 +317,11 @@
             .then(function () {
                 eventTag('team_remove_retro', 'engagement', 'success')
                 toggleRemoveRetro(null)()
-                notifications.success($_('retroRemoveSuccess'))
+                notifications.success($LL.retroRemoveSuccess())
                 getRetros()
             })
             .catch(function () {
-                notifications.danger($_('retroRemoveError'))
+                notifications.danger($LL.retroRemoveError())
                 eventTag('team_remove_retro', 'engagement', 'failure')
             })
     }
@@ -321,11 +333,11 @@
             .then(function () {
                 eventTag('team_remove_storyboard', 'engagement', 'success')
                 toggleRemoveStoryboard(null)()
-                notifications.success($_('storyboardRemoveSuccess'))
+                notifications.success($LL.storyboardRemoveSuccess())
                 getStoryboards()
             })
             .catch(function () {
-                notifications.danger($_('storyboardRemoveError'))
+                notifications.danger($LL.storyboardRemoveError())
                 eventTag('team_remove_storyboard', 'engagement', 'failure')
             })
     }
@@ -337,11 +349,11 @@
             .then(function () {
                 eventTag('team_delete', 'engagement', 'success')
                 toggleDeleteTeam()
-                notifications.success($_('teamDeleteSuccess'))
+                notifications.success($LL.teamDeleteSuccess())
                 router.route(appRoutes.teams)
             })
             .catch(function () {
-                notifications.danger($_('teamDeleteError'))
+                notifications.danger($LL.teamDeleteError())
                 eventTag('team_delete', 'engagement', 'failure')
             })
     }
@@ -374,11 +386,11 @@
             .then(function () {
                 getRetrosActions()
                 toggleRetroActionEdit(null)()
-                notifications.success($_('updateActionItemSuccess'))
+                notifications.success($LL.updateActionItemSuccess())
                 eventTag('team_action_update', 'engagement', 'success')
             })
             .catch(function () {
-                notifications.danger($_('updateActionItemError'))
+                notifications.danger($LL.updateActionItemError())
                 eventTag('team_action_update', 'engagement', 'failure')
             })
     }
@@ -391,11 +403,11 @@
                 .then(function () {
                     getRetrosActions()
                     toggleRetroActionEdit(null)()
-                    notifications.success($_('deleteActionItemSuccess'))
+                    notifications.success($LL.deleteActionItemSuccess())
                     eventTag('team_action_delete', 'engagement', 'success')
                 })
                 .catch(function () {
-                    notifications.danger($_('deleteActionItemError'))
+                    notifications.danger($LL.deleteActionItemError())
                     eventTag('team_action_delete', 'engagement', 'failure')
                 })
         }
@@ -421,14 +433,14 @@
 </script>
 
 <svelte:head>
-    <title>{$_('team')} {team.name} | {$_('appName')}</title>
+    <title>{$LL.team()} {team.name} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
     <div class="flex mb-6 lg:mb-8">
         <div class="flex-1">
             <h1 class="text-3xl font-semibold font-rajdhani dark:text-white">
-                <span class="uppercase">{$_('team')}</span>
+                <span class="uppercase">{$LL.team()}</span>
                 <ChevronRight class="w-8 h-8" />
                 {team.name}
             </h1>
@@ -437,7 +449,7 @@
                 <div
                     class="text-xl font-semibold font-rajdhani dark:text-white"
                 >
-                    <span class="uppercase">{$_('organization')}</span>
+                    <span class="uppercase">{$LL.organization()}</span>
                     <ChevronRight />
                     <a
                         class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -448,7 +460,7 @@
                     {#if departmentId}
                         &nbsp;
                         <ChevronRight />
-                        <span class="uppercase">{$_('department')}</span>
+                        <span class="uppercase">{$LL.department()}</span>
                         <ChevronRight />
                         <a
                             class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
@@ -460,11 +472,11 @@
                 </div>
             {/if}
         </div>
-        <div class="flex-1 ltr:text-right rtl:text-left">
+        <div class="flex-1 text-right">
             <SolidButton
                 additionalClasses="font-rajdhani uppercase text-2xl"
                 href="{`${currentPageUrl}/checkin`}"
-                >{$_('checkins')}
+                >{$LL.checkins()}
             </SolidButton>
         </div>
     </div>
@@ -476,13 +488,15 @@
                     <h2
                         class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                     >
-                        {$_('battles')}
+                        {$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
                     </h2>
                 </div>
-                <div class="flex-1 ltr:text-right rtl:text-left">
+                <div class="flex-1 text-right">
                     {#if isTeamMember}
                         <SolidButton onClick="{toggleCreateBattle}"
-                            >{$_('battleCreate')}
+                            >{$LL.battleCreate({
+                                friendly: AppConfig.FriendlyUIVerbs,
+                            })}
                         </SolidButton>
                     {/if}
                 </div>
@@ -503,9 +517,7 @@
                                     >{battle.name}</span
                                 >
                             </div>
-                            <div
-                                class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
-                            >
+                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                                 {#if isAdmin}
                                     <HollowButton
                                         onClick="{toggleRemoveBattle(
@@ -513,13 +525,15 @@
                                         )}"
                                         color="red"
                                     >
-                                        {$_('remove')}
+                                        {$LL.remove()}
                                     </HollowButton>
                                 {/if}
                                 <HollowButton
                                     href="{appRoutes.battle}/{battle.id}"
                                 >
-                                    {$_('battleJoin')}
+                                    {$LL.battleJoin({
+                                        friendly: AppConfig.FriendlyUIVerbs,
+                                    })}
                                 </HollowButton>
                             </div>
                         </div>
@@ -548,13 +562,13 @@
                     <h2
                         class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                     >
-                        {$_('retros')}
+                        {$LL.retros()}
                     </h2>
                 </div>
-                <div class="flex-1 ltr:text-right rtl:text-left">
+                <div class="flex-1 text-right">
                     {#if isTeamMember}
                         <SolidButton onClick="{toggleCreateRetro}"
-                            >{$_('createRetro')}
+                            >{$LL.createRetro()}
                         </SolidButton>
                     {/if}
                 </div>
@@ -575,21 +589,19 @@
                                     >{retro.name}</span
                                 >
                             </div>
-                            <div
-                                class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
-                            >
+                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                                 {#if isAdmin}
                                     <HollowButton
                                         onClick="{toggleRemoveRetro(retro.id)}"
                                         color="red"
                                     >
-                                        {$_('remove')}
+                                        {$LL.remove()}
                                     </HollowButton>
                                 {/if}
                                 <HollowButton
                                     href="{appRoutes.retro}/{retro.id}"
                                 >
-                                    {$_('joinRetro')}
+                                    {$LL.joinRetro()}
                                 </HollowButton>
                             </div>
                         </div>
@@ -603,12 +615,12 @@
                         <h3
                             class="text-xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                         >
-                            {$_('retroActionItems')}
+                            {$LL.retroActionItems()}
                         </h3>
 
-                        <div class="ltr:text-right rtl:text-left mb-4">
+                        <div class="text-right mb-4">
                             <div
-                                class="relative inline-block w-10 rtl:ml-2 ltr:mr-2 align-middle select-none transition duration-200 ease-in"
+                                class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
                             >
                                 <input
                                     type="checkbox"
@@ -627,16 +639,16 @@
                             <label
                                 for="completedActionItems"
                                 class="dark:text-gray-300"
-                                >{$_('showCompletedActionItems')}</label
+                                >{$LL.showCompletedActionItems()}</label
                             >
                         </div>
                     </div>
 
                     <Table>
                         <tr slot="header">
-                            <HeadCol>{$_('actionItem')}</HeadCol>
-                            <HeadCol>{$_('completed')}</HeadCol>
-                            <HeadCol>{$_('comments')}</HeadCol>
+                            <HeadCol>{$LL.actionItem()}</HeadCol>
+                            <HeadCol>{$LL.completed()}</HeadCol>
+                            <HeadCol>{$LL.comments()}</HeadCol>
                             <HeadCol />
                         </tr>
                         <tbody
@@ -662,7 +674,7 @@
                                         <div
                                             class="bg-white dark:bg-gray-800 border-2 rounded-md
                                             border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                            justify-center items-center rtl:ml-2 ltr:mr-2
+                                            justify-center items-center me-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
                                         >
                                             <CheckboxIcon />
@@ -683,15 +695,13 @@
                                         </button>
                                     </RowCol>
                                     <RowCol>
-                                        <div
-                                            class="ltr:text-right rtl:text-left"
-                                        >
+                                        <div class="text-right">
                                             <HollowButton
                                                 color="teal"
                                                 onClick="{toggleRetroActionEdit(
                                                     item.id,
                                                 )}"
-                                                >{$_('edit')}
+                                                >{$LL.edit()}
                                             </HollowButton>
                                         </div>
                                     </RowCol>
@@ -734,13 +744,13 @@
                     <h2
                         class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                     >
-                        {$_('storyboards')}
+                        {$LL.storyboards()}
                     </h2>
                 </div>
-                <div class="flex-1 ltr:text-right rtl:text-left">
+                <div class="flex-1 text-right">
                     {#if isTeamMember}
                         <SolidButton onClick="{toggleCreateStoryboard}"
-                            >{$_('createStoryboard')}
+                            >{$LL.createStoryboard()}
                         </SolidButton>
                     {/if}
                 </div>
@@ -761,9 +771,7 @@
                                     >{storyboard.name}</span
                                 >
                             </div>
-                            <div
-                                class="w-full md:w-1/2 md:mb-0 md:ltr:text-right md:rtl:text-left"
-                            >
+                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                                 {#if isAdmin}
                                     <HollowButton
                                         onClick="{toggleRemoveStoryboard(
@@ -771,13 +779,13 @@
                                         )}"
                                         color="red"
                                     >
-                                        {$_('remove')}
+                                        {$LL.remove()}
                                     </HollowButton>
                                 {/if}
                                 <HollowButton
                                     href="{appRoutes.storyboard}/{storyboard.id}"
                                 >
-                                    {$_('joinStoryboard')}
+                                    {$LL.joinStoryboard()}
                                 </HollowButton>
                             </div>
                         </div>
@@ -805,17 +813,17 @@
                 <h2
                     class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
                 >
-                    {$_('users')}
+                    {$LL.users()}
                 </h2>
             </div>
             <div class="w-1/5">
-                <div class="ltr:text-right rtl:text-left">
+                <div class="text-right">
                     {#if isAdmin}
                         <SolidButton
                             onClick="{toggleAddUser}"
                             testid="user-add"
                         >
-                            {$_('userAdd')}
+                            {$LL.userAdd()}
                         </SolidButton>
                     {/if}
                 </div>
@@ -825,16 +833,16 @@
         <Table>
             <tr slot="header">
                 <HeadCol>
-                    {$_('name')}
+                    {$LL.name()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('email')}
+                    {$LL.email()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('role')}
+                    {$LL.role()}
                 </HeadCol>
                 <HeadCol type="action">
-                    <span class="sr-only">{$_('actions')}</span>
+                    <span class="sr-only">{$LL.actions()}</span>
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
@@ -851,7 +859,7 @@
                                         class="h-10 w-10 rounded-full"
                                     />
                                 </div>
-                                <div class="rtl:mr-4 ltr:ml-4">
+                                <div class="ms-4">
                                     <div
                                         class="font-medium text-gray-900 dark:text-gray-200"
                                     >
@@ -887,7 +895,7 @@
                                     onClick="{toggleRemoveUser(user.id)}"
                                     color="red"
                                 >
-                                    {$_('remove')}
+                                    {$LL.remove()}
                                 </HollowButton>
                             {/if}
                         </RowCol>
@@ -900,7 +908,7 @@
     {#if isAdmin && !organizationId && !departmentId}
         <div class="w-full text-center mt-8">
             <HollowButton onClick="{toggleDeleteTeam}" color="red">
-                {$_('deleteTeam')}
+                {$LL.deleteTeam()}
             </HollowButton>
         </div>
     {/if}
@@ -914,8 +922,8 @@
             toggleDelete="{toggleRemoveUser(null)}"
             handleDelete="{handleUserRemove}"
             permanent="{false}"
-            confirmText="{$_('removeUserConfirmText')}"
-            confirmBtnText="{$_('removeUser')}"
+            confirmText="{$LL.removeUserConfirmText()}"
+            confirmBtnText="{$LL.removeUser()}"
         />
     {/if}
 
@@ -924,8 +932,12 @@
             toggleDelete="{toggleRemoveBattle(null)}"
             handleDelete="{handleBattleRemove}"
             permanent="{false}"
-            confirmText="{$_('removeBattleConfirmText')}"
-            confirmBtnText="{$_('removeBattle')}"
+            confirmText="{$LL.removeBattleConfirmText({
+                friendly: AppConfig.FriendlyUIVerbs,
+            })}"
+            confirmBtnText="{$LL.removeBattle({
+                friendly: AppConfig.FriendlyUIVerbs,
+            })}"
         />
     {/if}
 
@@ -934,8 +946,8 @@
             toggleDelete="{toggleRemoveRetro(null)}"
             handleDelete="{handleRetroRemove}"
             permanent="{false}"
-            confirmText="{$_('removeRetroConfirmText')}"
-            confirmBtnText="{$_('removeRetro')}"
+            confirmText="{$LL.removeRetroConfirmText()}"
+            confirmBtnText="{$LL.removeRetro()}"
         />
     {/if}
 
@@ -944,8 +956,8 @@
             toggleDelete="{toggleRemoveStoryboard(null)}"
             handleDelete="{handleStoryboardRemove}"
             permanent="{false}"
-            confirmText="{$_('removeStoryboardConfirmText')}"
-            confirmBtnText="{$_('removeStoryboard')}"
+            confirmText="{$LL.removeStoryboardConfirmText()}"
+            confirmBtnText="{$LL.removeStoryboard()}"
         />
     {/if}
 
@@ -953,8 +965,8 @@
         <DeleteConfirmation
             toggleDelete="{toggleDeleteTeam}"
             handleDelete="{handleDeleteTeam}"
-            confirmText="{$_('deleteTeamConfirmText')}"
-            confirmBtnText="{$_('deleteTeam')}"
+            confirmText="{$LL.deleteTeamConfirmText()}"
+            confirmBtnText="{$LL.deleteTeam()}"
         />
     {/if}
 

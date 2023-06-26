@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
     import SolidButton from './SolidButton.svelte'
     import Modal from './Modal.svelte'
-    import { _ } from '../i18n.js'
+    import LL from '../i18n/i18n-svelte'
 
     export let confirmText = ''
     export let confirmBtnText = 'Confirm Delete'
@@ -16,19 +16,19 @@
             {confirmText}
             {#if permanent}
                 <br />
-                {$_('cannotBeUndone')}
+                {$LL.cannotBeUndone()}
             {/if}
         </p>
     </div>
-    <div class="ltr:text-right rtl:text-left">
+    <div class="text-right">
         <button
             type="button"
             class="inline-block align-baseline font-bold text-sm text-blue-500
-            hover:text-blue-800 rtl:ml-4 ltr:mr-4"
+            hover:text-blue-800 me-4"
             on:click="{toggleDelete}"
             data-testid="confirm-cancel"
         >
-            {$_('cancel')}
+            {$LL.cancel()}
         </button>
         <SolidButton
             onClick="{handleDelete}"

@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
     import Modal from '../Modal.svelte'
     import DownCarrotIcon from '../icons/ChevronDown.svelte'
+    import LL from '../../i18n/i18n-svelte'
     import SolidButton from '../SolidButton.svelte'
-    import { _ } from '../../i18n.js'
 
     export let toggleCreate = () => {}
     export let handleCreate = () => {}
@@ -55,14 +55,15 @@
                 class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
                 for="alertName"
             >
-                {$_('name')}
+                {$LL.name()}
             </label>
             <input
                 bind:value="{alertName}"
-                placeholder="{$_('alertNamePlaceholder')}"
+                placeholder="{$LL.alertNamePlaceholder()}"
                 class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
+                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="alertName"
                 name="alertName"
                 required
@@ -74,7 +75,7 @@
                 class="block font-bold mb-2 dark:text-gray-400"
                 for="alertType"
             >
-                {$_('type')}
+                {$LL.type()}
             </label>
             <div class="relative">
                 <select
@@ -83,18 +84,18 @@
                     bind:value="{alertType}"
                     required
                     class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 ltr:pr-8 rtl:pl-8 rounded leading-tight
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
                 focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
                 >
                     <option value="" disabled>
-                        {$_('alertTypePlaceholder')}
+                        {$LL.alertTypePlaceholder()}
                     </option>
                     {#each alertTypes as aType}
                         <option value="{aType}">{aType}</option>
                     {/each}
                 </select>
                 <div
-                    class="pointer-events-none absolute inset-y-0 ltr:right-0 rtl:left-0 flex
+                    class="pointer-events-none absolute inset-y-0 end-0 flex
                     items-center px-2 text-gray-700"
                 >
                     <DownCarrotIcon />
@@ -107,14 +108,15 @@
                 class="block text-gray-700 font-bold mb-2 dark:text-gray-400"
                 for="alertContent"
             >
-                {$_('alertContent')}
+                {$LL.alertContent()}
             </label>
             <input
                 bind:value="{content}"
-                placeholder="{$_('alertContentPlaceholder')}"
+                placeholder="{$LL.alertContentPlaceholder()}"
                 class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
+                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                 id="alertContent"
                 name="alertContent"
                 required
@@ -128,9 +130,9 @@
                     bind:checked="{active}"
                     id="active"
                     name="active"
-                    class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
+                    class="w-4 h-4 dark:accent-lime-400 me-1"
                 />
-                {$_('active')}
+                {$LL.active()}
             </label>
         </div>
         <div class="mb-4">
@@ -140,9 +142,9 @@
                     bind:checked="{registeredOnly}"
                     id="registeredOnly"
                     name="registeredOnly"
-                    class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
+                    class="w-4 h-4 dark:accent-lime-400 me-1"
                 />
-                {$_('alertRegisteredOnly')}
+                {$LL.alertRegisteredOnly()}
             </label>
         </div>
         <div class="mb-4">
@@ -152,16 +154,16 @@
                     bind:checked="{allowDismiss}"
                     id="allowDismiss"
                     name="allowDismiss"
-                    class="w-4 h-4 dark:accent-lime-400 rtl:ml-1 ltr:mr-1"
+                    class="w-4 h-4 dark:accent-lime-400 me-1"
                 />
-                {$_('alertAllowDismiss')}
+                {$LL.alertAllowDismiss()}
             </label>
         </div>
 
         <div>
-            <div class="ltr:text-right rtl:text-left">
+            <div class="text-right">
                 <SolidButton type="submit" disabled="{createDisabled}">
-                    {$_('alertSave')}
+                    {$LL.alertSave()}
                 </SolidButton>
             </div>
         </div>

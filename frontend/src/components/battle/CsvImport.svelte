@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
     import HollowButton from '../HollowButton.svelte'
-    import { AppConfig } from '../../config.js'
-    import { _ } from '../../i18n.js'
+    import { AppConfig } from '../../config'
+    import LL from '../../i18n/i18n-svelte'
 
     export let notifications
     export let eventTag = () => {}
@@ -17,7 +17,7 @@
             return
         }
         if (file.type !== 'text/csv') {
-            notifications.danger($_('importCsvFileBadFileTypeError'))
+            notifications.danger($LL.importCsvFileBadFileTypeError())
             eventTag(
                 'Csv_import_failed',
                 'battle',
@@ -49,13 +49,13 @@
                     )
                 }
             } catch (e) {
-                notifications.danger($_('importCsvFileReadFileError'))
+                notifications.danger($LL.importCsvFileReadFileError())
                 eventTag('Csv_import_failed', 'battle', `error reading file`)
             }
         }
 
         reader.onerror = () => {
-            notifications.danger($_('importCsvFileReadFileError'))
+            notifications.danger($LL.importCsvFileReadFileError())
             eventTag('Csv_import_failed', 'battle', `error reading file`)
         }
     }
@@ -92,11 +92,11 @@
 {#if allowCsvImport}
     <HollowButton
         type="label"
-        additionalClasses="rtl:ml-2 ltr:mr-2"
+        additionalClasses="me-2"
         color="purple"
         labelFor="csvimport"
     >
-        {$_('importCsv')}
+        {$LL.importCsv({ friendly: AppConfig.FriendlyUIVerbs })}
         <input
             type="file"
             on:change="{uploadFile}"

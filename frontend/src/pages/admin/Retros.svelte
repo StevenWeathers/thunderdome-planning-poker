@@ -1,17 +1,16 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
-
-    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import Pagination from '../../components/Pagination.svelte'
-    import HollowButton from '../../components/HollowButton.svelte'
-    import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.js'
-    import { validateUserIsAdmin } from '../../validationUtils.js'
-    import Table from '../../components/table/Table.svelte'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
     import HeadCol from '../../components/table/HeadCol.svelte'
+    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
+    import Table from '../../components/table/Table.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
     import RowCol from '../../components/table/RowCol.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
 
     export let xfetch
     export let router
@@ -35,7 +34,7 @@
                 retroCount = result.meta.count
             })
             .catch(function () {
-                notifications.danger($_('getRetrosErrorMessage'))
+                notifications.danger($LL.getRetrosErrorMessage())
             })
     }
 
@@ -64,7 +63,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('retros')} {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$LL.retros()} {$LL.admin()} | {$LL.appName()}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="retros">
@@ -72,14 +71,14 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            {$_('retros')}
+            {$LL.retros()}
         </h1>
     </div>
 
     <div class="w-full">
-        <div class="ltr:text-right rtl:text-left mb-4">
+        <div class="text-right mb-4">
             <div
-                class="relative inline-block w-10 rtl:ml-2 ltr:mr-2 align-middle select-none transition duration-200 ease-in"
+                class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
             >
                 <input
                     type="checkbox"
@@ -96,23 +95,23 @@
                 </label>
             </div>
             <label for="activeRetros" class="dark:text-gray-300"
-                >{$_('showActiveRetros')}</label
+                >{$LL.showActiveRetros()}</label
             >
         </div>
 
         <Table>
             <tr slot="header">
                 <HeadCol>
-                    {$_('name')}
+                    {$LL.name()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('dateCreated')}
+                    {$LL.dateCreated()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('dateUpdated')}
+                    {$LL.dateUpdated()}
                 </HeadCol>
                 <HeadCol type="action">
-                    <span class="sr-only">{$_('actions')}</span>
+                    <span class="sr-only">{$LL.actions()}</span>
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
@@ -133,7 +132,7 @@
                         </RowCol>
                         <RowCol type="action">
                             <HollowButton href="{appRoutes.retro}/{retro.id}">
-                                {$_('joinRetro')}
+                                {$LL.joinRetro()}
                             </HollowButton>
                         </RowCol>
                     </TableRow>

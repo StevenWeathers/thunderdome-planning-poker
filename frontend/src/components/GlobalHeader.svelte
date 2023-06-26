@@ -1,18 +1,25 @@
-<script>
+<script lang="ts">
     import HollowButton from './HollowButton.svelte'
-    import SolidButton from './SolidButton.svelte'
-    import LocaleSwitcher from './LocaleSwitcher.svelte'
     import UserIcon from './icons/UserIcon.svelte'
     import { validateUserIsAdmin } from '../validationUtils'
-    import { _, locale, setupI18n } from '../i18n.js'
-    import { warrior } from '../stores.js'
-    import { AppConfig, appRoutes } from '../config.js'
+    import { warrior } from '../stores'
+    import { AppConfig, appRoutes } from '../config'
+    import LL, { locale, setLocale } from '../i18n/i18n-svelte'
+    import SolidButton from './SolidButton.svelte'
+    import type { Locales } from '../i18n/i18n-types'
+    import { loadLocaleAsync } from '../i18n/i18n-util.async'
+    import LocaleSwitcher from './LocaleSwitcher.svelte'
 
     export let xfetch
     export let router
     export let eventTag
     export let notifications
     export let currentPage
+
+    const setupI18n = async (locale: Locales) => {
+        await loadLocaleAsync(locale)
+        setLocale(locale)
+    }
 
     const {
         AllowRegistration,
@@ -45,7 +52,7 @@
                 })
             })
             .catch(function () {
-                notifications.danger($_('logoutError'))
+                notifications.danger($LL.logoutError(AppConfig.FriendlyUIVerbs))
                 eventTag('logout', 'engagement', 'failure')
             })
     }
@@ -70,15 +77,15 @@
                 } else {
                     warrior.create(newUser)
                     eventTag('login', 'engagement', 'success', () => {
-                        setupI18n({
-                            withLocale: newUser.locale,
-                        })
+                        setupI18n(newUser.locale)
                         router.route(appRoutes.battles, true)
                     })
                 }
             })
             .catch(function (err) {
-                notifications.danger($_('pages.login.authError'))
+                notifications.danger(
+                    $LL.authError({ friendly: AppConfig.FriendlyUIVerbs }),
+                )
                 eventTag('login', 'engagement', 'failure')
             })
     }
@@ -95,10 +102,7 @@
         <div class="flex justify-between">
             <div class="flex space-x-7 rtl:space-x-reverse">
                 <div>
-                    <a
-                        href="{appRoutes.landing}"
-                        class="block my-3 rtl:ml-10 ltr:mr-10"
-                    >
+                    <a href="{appRoutes.landing}" class="block my-3 me-10">
                         <img
                             src="{PathPrefix}/img/logo.svg"
                             alt="Thunderdome"
@@ -118,40 +122,42 @@
                                     ? activePageClass
                                     : pageClass}"
                             >
-                                {$_('battles')}
+                                {$LL.battles({
+                                    friendly: AppConfig.FriendlyUIVerbs,
+                                })}
                             </a>
                         {/if}
                         {#if FeatureRetro}
                             <a
                                 href="{appRoutes.retros}"
-                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
                                 'retros'
                                     ? activePageClass
                                     : pageClass}"
                             >
-                                {$_('retros')}
+                                {$LL.retros()}
                             </a>
                         {/if}
                         {#if FeatureStoryboard}
                             <a
                                 href="{appRoutes.storyboards}"
-                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ==
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
                                 'storyboards'
                                     ? activePageClass
                                     : pageClass}"
                             >
-                                {$_('storyboards')}
+                                {$LL.storyboards()}
                             </a>
                         {/if}
                         {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
                             <a
                                 href="{appRoutes.teams}"
-                                class="pt-6 pb-4 px-4  border-b-4 {currentPage ===
+                                class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
                                 'teams'
                                     ? activePageClass
                                     : pageClass}"
                             >
-                                {$_('teams')}
+                                {$LL.teams()}
                             </a>
                         {/if}
                         {#if validateUserIsAdmin($warrior)}
@@ -162,7 +168,7 @@
                                     ? activePageClass
                                     : pageClass}"
                             >
-                                {$_('pages.admin.nav')}
+                                {$LL.admin()}
                             </a>
                         {/if}
                     {/if}
@@ -177,26 +183,26 @@
                             <SolidButton
                                 additionalClasses="uppercase text-md lg:text-lg"
                                 onClick="{headerLogin}"
-                                >{$_('pages.login.nav')}</SolidButton
+                                >{$LL.login()}</SolidButton
                             >
                         {:else}
                             <a
                                 href="{appRoutes.login}"
                                 class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 text-lg lg:text-xl"
-                                >{$_('pages.login.nav')}</a
+                                >{$LL.login()}</a
                             >
                         {/if}
                         {#if AllowRegistration}
                             <SolidButton
                                 href="{appRoutes.register}"
                                 additionalClasses="uppercase text-md lg:text-lg"
-                                >{$_('pages.createAccount.nav')}</SolidButton
+                                >{$LL.createAccount()}</SolidButton
                             >
                         {/if}
                     </div>
                 {:else}
                     <span
-                        class="font-bold rtl:ml-2 ltr:mr-2 text-lg lg:text-xl inline-block max-w-48 truncate"
+                        class="font-bold me-2 text-lg lg:text-xl inline-block max-w-48 truncate"
                     >
                         <UserIcon class="h-5 w-5" />
                         <a
@@ -208,13 +214,13 @@
                         <a
                             href="{appRoutes.login}"
                             class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 uppercase text-xl"
-                            >{$_('pages.login.nav')}</a
+                            >{$LL.login()}</a
                         >
                         {#if AllowRegistration}
                             <SolidButton
                                 href="{appRoutes.register}"
                                 additionalClasses="uppercase text-md lg:text-lg"
-                                >{$_('pages.createAccount.nav')}</SolidButton
+                                >{$LL.createAccount()}</SolidButton
                             >
                         {/if}
                     {:else}
@@ -223,17 +229,14 @@
                             onClick="{logoutWarrior}"
                             additionalClasses="uppercase text-md lg:text-lg"
                         >
-                            {$_('logout')}
+                            {$LL.logout()}
                         </HollowButton>
                     {/if}
                 {/if}
                 <LocaleSwitcher
-                    class="rtl:mr-2 ltr:ml-2 text-lg lg:text-xl"
+                    class="ms-2 text-lg lg:text-xl"
                     selectedLocale="{$locale}"
-                    on:locale-changed="{e =>
-                        setupI18n({
-                            withLocale: e.detail,
-                        })}"
+                    on:locale-changed="{e => setupI18n(e.detail)}"
                 />
             </div>
             <div class="lg:hidden flex items-center">
@@ -271,7 +274,9 @@
                                 href="{appRoutes.battles}"
                                 class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
-                                {$_('battles')}
+                                {$LL.battles({
+                                    friendly: AppConfig.FriendlyUIVerbs,
+                                })}
                             </a>
                         </li>
                     {/if}
@@ -281,7 +286,7 @@
                                 href="{appRoutes.retros}"
                                 class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
-                                {$_('retros')}
+                                {$LL.retros()}
                             </a>
                         </li>
                     {/if}
@@ -291,7 +296,7 @@
                                 href="{appRoutes.storyboards}"
                                 class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
-                                {$_('storyboards')}
+                                {$LL.storyboards()}
                             </a>
                         </li>
                     {/if}
@@ -301,7 +306,7 @@
                                 href="{appRoutes.organizations}"
                                 class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
-                                {$_('teams')}
+                                {$LL.teams()}
                             </a>
                         </li>
                     {/if}
@@ -311,7 +316,7 @@
                                 href="{appRoutes.admin}"
                                 class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
-                                {$_('pages.admin.nav')}
+                                {$LL.admin()}
                             </a>
                         </li>
                     {/if}
@@ -321,7 +326,7 @@
                             href="{appRoutes.login}"
                             class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                         >
-                            {$_('pages.login.nav')}
+                            {$LL.login()}
                         </a>
                     </li>
                     {#if AllowRegistration}
@@ -330,7 +335,7 @@
                                 href="{appRoutes.register}"
                                 class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
-                                {$_('pages.createAccount.nav')}
+                                {$LL.createAccount()}
                             </a>
                         </li>
                     {/if}
@@ -338,9 +343,7 @@
             </ul>
             <div class="font-rajdhani font-semibold mx-4 my-2 dark:text-white">
                 {#if $warrior.name}
-                    <span
-                        class="font-bold rtl:ml-2 ltr:mr-2 text-lg lg:text-xl"
-                    >
+                    <span class="font-bold me-2 text-lg lg:text-xl">
                         <UserIcon class="h-5 w-5" />
                         <a
                             href="{appRoutes.profile}"
@@ -351,13 +354,13 @@
                         <a
                             href="{appRoutes.login}"
                             class="py-2 px-2 text-gray-700 dark:text-gray-400 hover:text-green-600 transition duration-300 uppercase text-lg uppercase"
-                            >{$_('pages.login.nav')}</a
+                            >{$LL.login()}</a
                         >
                         {#if AllowRegistration}
                             <SolidButton
                                 href="{appRoutes.register}"
                                 additionalClasses="uppercase text-md lg:text-lg"
-                                >{$_('pages.createAccount.nav')}</SolidButton
+                                >{$LL.createAccount()}</SolidButton
                             >
                         {/if}
                     {:else}
@@ -366,17 +369,14 @@
                             onClick="{logoutWarrior}"
                             additionalClasses="uppercase text-md lg:text-lg"
                         >
-                            {$_('logout')}
+                            {$LL.logout()}
                         </HollowButton>
                     {/if}
                 {/if}
                 <LocaleSwitcher
                     class="mt-4 block text-xl w-full"
                     selectedLocale="{$locale}"
-                    on:locale-changed="{e =>
-                        setupI18n({
-                            withLocale: e.detail,
-                        })}"
+                    on:locale-changed="{e => setupI18n(e.detail)}"
                 />
             </div>
         </div>

@@ -1,25 +1,24 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
-
-    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
-    import CreateWarrior from '../../components/user/CreateUser.svelte'
-    import Pagination from '../../components/Pagination.svelte'
-    import CountryFlag from '../../components/user/CountryFlag.svelte'
-    import VerifiedIcon from '../../components/icons/Verified.svelte'
-    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import SolidButton from '../../components/SolidButton.svelte'
-    import UserAvatar from '../../components/user/UserAvatar.svelte'
-    import ProfileForm from '../../components/user/ProfileForm.svelte'
-    import Modal from '../../components/Modal.svelte'
-    import { warrior } from '../../stores.js'
-    import { _ } from '../../i18n.js'
-    import { appRoutes } from '../../config.js'
-    import { validateUserIsAdmin } from '../../validationUtils.js'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../../config'
+    import { validateUserIsAdmin } from '../../validationUtils'
     import Table from '../../components/table/Table.svelte'
     import HeadCol from '../../components/table/HeadCol.svelte'
-    import RowCol from '../../components/table/RowCol.svelte'
+    import AdminPageLayout from '../../components/AdminPageLayout.svelte'
     import TableRow from '../../components/table/TableRow.svelte'
+    import RowCol from '../../components/table/RowCol.svelte'
+    import UserAvatar from '../../components/user/UserAvatar.svelte'
+    import CountryFlag from '../../components/user/CountryFlag.svelte'
+    import VerifiedIcon from '../../components/icons/VerifiedIcon.svelte'
+    import Pagination from '../../components/Pagination.svelte'
+    import ProfileForm from '../../components/user/ProfileForm.svelte'
+    import Modal from '../../components/Modal.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
+    import CreateUser from '../../components/user/CreateUser.svelte'
 
     export let xfetch
     export let router
@@ -73,7 +72,7 @@
                 toggleCreateUser()
             })
             .catch(function () {
-                notifications.danger($_('createUserError'))
+                notifications.danger($LL.createUserError())
                 eventTag('admin_create_warrior', 'engagement', 'failure')
             })
     }
@@ -86,7 +85,7 @@
             : '/api/admin/users?'
 
         if (isSearch && searchEmail.length < 3) {
-            notifications.danger($_('searchLengthError'))
+            notifications.danger($LL.searchLengthError())
             return
         }
 
@@ -97,7 +96,7 @@
                 totalUsers = result.meta.count
             })
             .catch(function () {
-                notifications.danger($_('getUsersError'))
+                notifications.danger($LL.getUsersError())
             })
     }
 
@@ -108,13 +107,13 @@
         })
             .then(res => res.json())
             .then(function () {
-                notifications.success($_('pages.warriorProfile.updateSuccess'))
+                notifications.success($LL.profileUpdateSuccess())
                 eventTag('update_profile', 'engagement', 'success')
                 getUsers()
                 toggleUserEdit({})()
             })
             .catch(function () {
-                notifications.danger($_('pages.warriorProfile.errorUpdating'))
+                notifications.danger($LL.profileErrorUpdating())
                 eventTag('update_profile', 'engagement', 'failure')
             })
     }
@@ -128,7 +127,7 @@
                     getUsers()
                 })
                 .catch(function () {
-                    notifications.danger($_('promoteUserError'))
+                    notifications.danger($LL.promoteUserError())
                     eventTag('admin_promote_warrior', 'engagement', 'failure')
                 })
         }
@@ -143,7 +142,7 @@
                     getUsers()
                 })
                 .catch(function () {
-                    notifications.danger($_('demoteUserError'))
+                    notifications.danger($LL.demoteUserError())
                     eventTag('admin_demote_warrior', 'engagement', 'failure')
                 })
         }
@@ -220,7 +219,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('users')} {$_('pages.admin.title')} | {$_('appName')}</title>
+    <title>{$LL.users()} {$LL.admin()} | {$LL.appName()}</title>
 </svelte:head>
 
 <AdminPageLayout activePage="users">
@@ -228,7 +227,7 @@
         <h1
             class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
         >
-            {$_('users')}
+            {$LL.users()}
         </h1>
     </div>
 
@@ -236,34 +235,38 @@
         <div class="flex w-full">
             <div class="w-2/5">
                 <h2 class="text-2xl md:text-3xl font-bold mb-4 dark:text-white">
-                    {$_('pages.admin.registeredWarriors.title')}
+                    {$LL.registeredUsers()}
                 </h2>
             </div>
             <div class="w-3/5">
-                <div class="ltr:text-right rtl:text-left flex w-full">
+                <div class="text-right flex w-full">
                     <div class="w-3/4">
                         <form on:submit="{onSearchSubmit}" name="searchUsers">
                             <div class="mb-4">
                                 <label class="mb-2" for="searchEmail">
                                     <input
                                         bind:value="{searchEmail}"
-                                        placeholder="{$_('email')}"
-                                        class="border-2 border-slate-100 dark:border-gray-800 bg-gray-300 dark:bg-gray-800 appearance-none
-                    rounded py-2 px-3 text-gray-600 dark:text-gray-400 leading-tight
-                    focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+                                        placeholder="{$LL.email()}"
+                                        class="border-2 border-slate-100 dark:border-gray-800 bg-gray-300 dark:bg-gray-800
+                        appearance-none
+                        rounded py-2 px-3 text-gray-600 dark:text-gray-400 leading-tight
+                        focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500
+                        focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                                         id="searchEmail"
                                         name="searchEmail"
                                     />
                                 </label>
                                 <SolidButton type="submit">
-                                    {$_('search')}
+                                    {$LL.search()}
                                 </SolidButton>
                             </div>
                         </form>
                     </div>
                     <div class="w-1/4">
                         <HollowButton onClick="{toggleCreateUser}">
-                            {$_('warriorCreate')}
+                            {$LL.warriorCreate({
+                                friendly: AppConfig.FriendlyUIVerbs,
+                            })}
                         </HollowButton>
                     </div>
                 </div>
@@ -273,19 +276,19 @@
         <Table>
             <tr slot="header">
                 <HeadCol>
-                    {$_('name')}
+                    {$LL.name()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('email')}
+                    {$LL.email()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('pages.admin.registeredWarriors.company')}
+                    {$LL.company()}
                 </HeadCol>
                 <HeadCol>
-                    {$_('pages.admin.registeredWarriors.rank')}
+                    {$LL.type()}
                 </HeadCol>
                 <HeadCol type="action">
-                    <span class="sr-only">{$_('actions')}</span>
+                    <span class="sr-only">{$LL.actions()}</span>
                 </HeadCol>
             </tr>
             <tbody slot="body" let:class="{className}" class="{className}">
@@ -302,7 +305,7 @@
                                         class="h-10 w-10 rounded-full"
                                     />
                                 </div>
-                                <div class="rtl:mr-4 ltr:ml-4">
+                                <div class="ms-4">
                                     <div
                                         class="text-sm font-medium text-gray-900"
                                     >
@@ -329,9 +332,7 @@
                             {#if user.verified}
                                 <span
                                     class="text-green-600"
-                                    title="{$_(
-                                        'pages.admin.registeredWarriors.verified',
-                                    )}"
+                                    title="{$LL.verified()}"
                                 >
                                     <VerifiedIcon />
                                 </span>
@@ -360,14 +361,14 @@
                                     onClick="{promoteUser(user.id)}"
                                     color="blue"
                                 >
-                                    {$_('promote')}
+                                    {$LL.promote()}
                                 </HollowButton>
                             {:else}
                                 <HollowButton
                                     onClick="{demoteUser(user.id)}"
                                     color="blue"
                                 >
-                                    {$_('demote')}
+                                    {$LL.demote()}
                                 </HollowButton>
                             {/if}
                             {#if !user.disabled}
@@ -389,13 +390,13 @@
                                 color="green"
                                 onClick="{toggleUserEdit(user)}"
                             >
-                                {$_('edit')}
+                                {$LL.edit()}
                             </HollowButton>
                             <HollowButton
                                 color="red"
                                 onClick="{toggleDeleteUser(user.id)}"
                             >
-                                {$_('delete')}
+                                {$LL.delete()}
                             </HollowButton>
                         </RowCol>
                     </TableRow>
@@ -416,7 +417,7 @@
     </div>
 
     {#if showCreateUser}
-        <CreateWarrior
+        <CreateUser
             toggleCreate="{toggleCreateUser}"
             handleCreate="{createUser}"
             notifications
@@ -439,8 +440,8 @@
         <DeleteConfirmation
             toggleDelete="{toggleDeleteUser(null)}"
             handleDelete="{handleDeleteUser}"
-            confirmText="{$_('pages.warriorProfile.delete.warningStatement')}"
-            confirmBtnText="{$_('pages.warriorProfile.delete.confirmButton')}"
+            confirmText="{$LL.deleteAccountWarningStatement()}"
+            confirmBtnText="{$LL.deleteConfirmButton()}"
         />
     {/if}
 </AdminPageLayout>

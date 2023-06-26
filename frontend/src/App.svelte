@@ -1,16 +1,15 @@
-<script>
+<script lang="ts">
     import './app.css'
     import './unreset.css'
     import '../../node_modules/quill/dist/quill.core.css'
     import '../../node_modules/quill/dist/quill.snow.css'
     import Navaid from 'navaid'
-    import { onDestroy } from 'svelte'
+    import { onDestroy, onMount } from 'svelte'
 
-    import { dir, isLocaleLoaded, setupI18n } from './i18n.js'
-    import { AppConfig, appRoutes } from './config.js'
-    import apiclient from './apiclient.js'
-    import { warrior } from './stores.js'
-    import eventTag from './eventTag.js'
+    import { AppConfig, appRoutes } from './config'
+    import apiclient from './apiclient'
+    import { dir, warrior } from './stores'
+    import eventTag from './eventTag'
 
     import Notifications from './components/Notifications.svelte'
     import GlobalHeader from './components/GlobalHeader.svelte'
@@ -49,6 +48,9 @@
     import AdminRetro from './pages/admin/Retro.svelte'
     import AdminStoryboards from './pages/admin/Storyboards.svelte'
     import AdminStoryboard from './pages/admin/Storyboard.svelte'
+    import { setLocale } from './i18n/i18n-svelte'
+    import { detectLocale } from './i18n/i18n-util'
+    import { loadLocaleAsync } from './i18n/i18n-util.async'
 
     const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig
 
@@ -59,9 +61,6 @@
         activeWarrior = w
     })
 
-    setupI18n({
-        withLocale: activeWarrior ? activeWarrior.locale : 'en',
-    })
     $: if (document.dir !== $dir) {
         document.dir = $dir
     }
@@ -436,6 +435,12 @@
         })
     }
 
+    onMount(async () => {
+        const detectedLocale = activeWarrior.locale || detectLocale()
+        await loadLocaleAsync(detectedLocale)
+        setLocale(detectedLocale)
+    })
+
     onDestroy(router.unlisten)
 </script>
 
@@ -447,31 +452,27 @@
 
 <Notifications bind:this="{notifications}" />
 
-{#if $isLocaleLoaded}
-    <header class="w-full">
-        <GlobalAlerts registered="{!!activeWarrior.name}" />
+<header class="w-full">
+    <GlobalAlerts registered="{!!activeWarrior.name}" />
 
-        <GlobalHeader
-            router="{router}"
-            eventTag="{eventTag}"
-            xfetch="{xfetch}"
-            notifications="{notifications}"
-            currentPage="{currentPage.name}"
-        />
-    </header>
+    <GlobalHeader
+        router="{router}"
+        eventTag="{eventTag}"
+        xfetch="{xfetch}"
+        notifications="{notifications}"
+        currentPage="{currentPage.name}"
+    />
+</header>
 
-    <main class="flex-grow flex flex-wrap flex-col">
-        <svelte:component
-            this="{currentPage.route}"
-            {...currentPage.params}
-            notifications="{notifications}"
-            router="{router}"
-            eventTag="{eventTag}"
-            xfetch="{xfetch}"
-        />
-    </main>
+<main class="flex-grow flex flex-wrap flex-col">
+    <svelte:component
+        this="{currentPage.route}"
+        {...currentPage.params}
+        notifications="{notifications}"
+        router="{router}"
+        eventTag="{eventTag}"
+        xfetch="{xfetch}"
+    />
+</main>
 
-    <GlobalFooter />
-{:else}
-    <p>Loading...</p>
-{/if}
+<GlobalFooter />

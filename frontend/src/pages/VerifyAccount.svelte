@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
     import PageLayout from '../components/PageLayout.svelte'
-    import { _ } from '../i18n.js'
+    import LL from '../i18n/i18n-svelte'
 
     export let xfetch
     export let eventTag
@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-    <title>{$_('verifyAccount')} | {$_('appName')}</title>
+    <title>{$LL.verifyAccount()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
@@ -34,9 +34,9 @@
                     role="alert"
                 >
                     <strong class="font-bold">
-                        {$_('verifyAccountVerifiedTitle')}
+                        {$LL.verifyAccountVerifiedTitle()}
                     </strong>
-                    <p>{$_('verifyAccountVerifiedThanks')}</p>
+                    <p>{$LL.verifyAccountVerifiedThanks()}</p>
                 </div>
             {:else if verficationError}
                 <div
@@ -45,14 +45,14 @@
                     role="alert"
                 >
                     <strong class="font-bold">
-                        {$_('verifyAccountFailedTitle')}
+                        {$LL.verifyAccountFailedTitle()}
                     </strong>
-                    <p>{$_('verifyAccountFailedError')}</p>
+                    <p>{$LL.verifyAccountFailedError()}</p>
                 </div>
             {:else}
                 <div class="text-center">
                     <h1 class="text-4xl text-teal-500 leading-tight font-bold">
-                        {$_('verifyAccountLoading')}
+                        {$LL.verifyAccountLoading()}
                     </h1>
                 </div>
             {/if}

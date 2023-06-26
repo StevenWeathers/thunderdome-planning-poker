@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     export let itemIndex = 0
 </script>
 

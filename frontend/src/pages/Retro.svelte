@@ -1,29 +1,28 @@
-<script>
+<script lang="ts">
     import Sockette from 'sockette'
     import { onDestroy, onMount } from 'svelte'
-
-    import PageLayout from '../components/PageLayout.svelte'
-    import UserCard from '../components/retro/UserCard.svelte'
     import HollowButton from '../components/HollowButton.svelte'
     import ChevronRight from '../components/icons/ChevronRight.svelte'
     import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
     import SolidButton from '../components/SolidButton.svelte'
-    import CheckCircle from '../components/icons/CheckCircle.svelte'
-    import CheckboxIcon from '../components/icons/CheckboxIcon.svelte'
-    import PencilIcon from '../components/icons/PencilIcon.svelte'
-    import RetroItemForm from '../components/retro/ItemForm.svelte'
-    import GroupPhase from '../components/retro/GroupPhase.svelte'
-    import VotePhase from '../components/retro/VotePhase.svelte'
-    import Export from '../components/retro/Export.svelte'
-    import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
-    import InviteUser from '../components/retro/InviteUser.svelte'
     import EditRetro from '../components/retro/EditRetro.svelte'
     import EditActionItem from '../components/retro/EditActionItem.svelte'
-    import GroupedItems from '../components/retro/GroupedItems.svelte'
     import { AppConfig, appRoutes, PathPrefix } from '../config'
-    import { warrior as user } from '../stores.js'
-    import { _ } from '../i18n'
+    import { warrior as user } from '../stores'
     import BecomeFacilitator from '../components/user/BecomeFacilitator.svelte'
+    import LL from '../i18n/i18n-svelte'
+    import Export from '../components/retro/Export.svelte'
+    import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
+    import GroupPhase from '../components/retro/GroupPhase.svelte'
+    import ItemForm from '../components/retro/ItemForm.svelte'
+    import VotePhase from '../components/retro/VotePhase.svelte'
+    import GroupedItems from '../components/retro/GroupedItems.svelte'
+    import CheckCircleIcon from '../components/icons/CheckCircleIcon.svelte'
+    import PencilIcon from '../components/icons/EditIcon.svelte'
+    import CheckboxIcon from '../components/icons/CheckboxIcon.svelte'
+    import UserCard from '../components/retro/UserCard.svelte'
+    import InviteUser from '../components/retro/InviteUser.svelte'
+    import PageLayout from '../components/PageLayout.svelte'
 
     export let retroId
     export let notifications
@@ -114,7 +113,7 @@
                 JoinPassRequired = true
                 break
             case 'join_code_incorrect':
-                notifications.danger($_('incorrectPassCode'))
+                notifications.danger($LL.incorrectPassCode())
                 break
             case 'init':
                 JoinPassRequired = false
@@ -191,7 +190,7 @@
                 break
             case 'conceded':
                 // retro over, goodbye.
-                notifications.warning($_('retroDeleted'))
+                notifications.warning($LL.retroDeleted())
                 router.route(appRoutes.retros)
                 break
             default:
@@ -221,7 +220,7 @@
                     })
                 } else if (e.code === 4003) {
                     eventTag('socket_duplicate', 'retro', '', () => {
-                        notifications.danger($_('duplicateRetroSession'))
+                        notifications.danger($LL.duplicateRetroSession())
                         router.route(`${appRoutes.retros}`)
                     })
                 } else if (e.code === 4002) {
@@ -505,7 +504,7 @@
 </style>
 
 <svelte:head>
-    <title>{$_('retro')} {retro.name} | {$_('appName')}</title>
+    <title>{$LL.retro()} {retro.name} | {$LL.appName()}</title>
 </svelte:head>
 
 {#if retro.name && !socketReconnecting && !socketError}
@@ -519,7 +518,7 @@
                     {retro.name}
                 </h1>
             </div>
-            <div class="w-3/4 ltr:text-right rtl:text-left">
+            <div class="w-3/4 text-right">
                 <div>
                     {#if retro.phase === 'completed'}
                         <SolidButton
@@ -528,9 +527,9 @@
                             testid="retro-export"
                         >
                             {#if showExport}
-                                {$_('back')}
+                                {$LL.back()}
                             {:else}
-                                {$_('export')}
+                                {$LL.export()}
                             {/if}
                         </SolidButton>
                     {/if}
@@ -541,7 +540,7 @@
                                 onClick="{setPhase(null)}"
                                 testid="retro-nextphase"
                             >
-                                {$_('nextPhase')}
+                                {$LL.nextPhase()}
                             </SolidButton>
                         {/if}
 
@@ -550,16 +549,16 @@
                             onClick="{toggleEditRetro}"
                             testid="retro-edit"
                         >
-                            {$_('editRetro')}
+                            {$LL.editRetro()}
                         </HollowButton>
 
                         <HollowButton
                             color="red"
                             onClick="{toggleDeleteRetro}"
-                            class="rtl:ml-2 ltr:mr-2"
+                            class="me-2"
                             testid="retro-delete"
                         >
-                            {$_('deleteRetro')}
+                            {$LL.deleteRetro()}
                         </HollowButton>
                     {:else}
                         <HollowButton
@@ -567,14 +566,14 @@
                             onClick="{toggleBecomeFacilitator}"
                             testid="become-facilitator"
                         >
-                            {$_('becomeFacilitator')}
+                            {$LL.becomeFacilitator()}
                         </HollowButton>
                         <HollowButton
                             color="red"
                             onClick="{abandonRetro}"
                             testid="retro-leave"
                         >
-                            {$_('leaveRetro')}
+                            {$LL.leaveRetro()}
                         </HollowButton>
                     {/if}
                 </div>
@@ -590,7 +589,7 @@
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
                         <button on:click="{setPhase('intro')}"
-                            >{$_('primeDirective')}</button
+                            >{$LL.primeDirective()}</button
                         >
                     </div>
                     <div class="flex-initial px-1">
@@ -602,7 +601,7 @@
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
                         <button on:click="{setPhase('brainstorm')}"
-                            >{$_('brainstorm')}</button
+                            >{$LL.brainstorm()}</button
                         >
                     </div>
                     <div class="flex-initial px-1">
@@ -613,7 +612,7 @@
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
                         <button on:click="{setPhase('group')}"
-                            >{$_('group')}</button
+                            >{$LL.group()}</button
                         >
                     </div>
                     <div class="flex-initial px-1">
@@ -624,7 +623,7 @@
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
                         <button on:click="{setPhase('vote')}"
-                            >{$_('vote')}</button
+                            >{$LL.vote()}</button
                         >
                     </div>
                     <div class="flex-initial px-1">
@@ -635,7 +634,7 @@
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
                         <button on:click="{setPhase('action')}"
-                            >{$_('actionItems')}</button
+                            >{$LL.actionItems()}</button
                         >
                     </div>
                     <div class="flex-initial px-1">
@@ -646,22 +645,20 @@
                             'border-b-2 border-blue-500 dark:border-yellow-400 text-gray-800 dark:text-gray-200'}"
                     >
                         <button on:click="{setPhase('completed')}"
-                            >{$_('done')}</button
+                            >{$LL.done()}</button
                         >
                     </div>
                 </div>
             </div>
-            <div
-                class="w-1/2 ltr:text-right rtl:text-left text-gray-600 dark:text-gray-400"
-            >
+            <div class="w-1/2 text-right text-gray-600 dark:text-gray-400">
                 {#if retro.phase === 'brainstorm'}
-                    {$_('brainstormPhaseDescription')}
+                    {$LL.brainstormPhaseDescription()}
                 {:else if retro.phase === 'group'}
-                    {$_('groupPhaseDescription')}
+                    {$LL.groupPhaseDescription()}
                 {:else if retro.phase === 'vote'}
-                    {$_('votePhaseDescription')}
+                    {$LL.votePhaseDescription()}
                 {:else if retro.phase === 'action'}
-                    {$_('actionPhaseDescription')}
+                    {$LL.actionPhaseDescription()}
                 {/if}
             </div>
         </div>
@@ -690,7 +687,7 @@
                                 their skills and abilities, the resources
                                 available, and the situation at hand."
                             </p>
-                            <p class="tracking-wider md:text-lg lg:text-xl ">
+                            <p class="tracking-wider md:text-lg lg:text-xl">
                                 &mdash;Norm Kerth, Project Retrospectives: A
                                 Handbook for Team Review <a
                                     href="https://retrospectivewiki.org/index.php?title=The_Prime_Directive"
@@ -706,37 +703,31 @@
                     {/if}
                     {#if retro.phase === 'brainstorm'}
                         <div class="w-full grid gap-4 grid-cols-3">
-                            <RetroItemForm
+                            <ItemForm
                                 handleSubmit="{handleItemAdd}"
                                 handleDelete="{handleItemDelete}"
                                 itemType="worked"
-                                newItemPlaceholder="{$_(
-                                    'retroWorkedPlaceholder',
-                                )}"
+                                newItemPlaceholder="{$LL.retroWorkedPlaceholder()}"
                                 phase="{retro.phase}"
                                 isFacilitator="{isFacilitator}"
                                 items="{workedItems}"
                                 feedbackVisibility="{retro.brainstormVisibility}"
                             />
-                            <RetroItemForm
+                            <ItemForm
                                 handleSubmit="{handleItemAdd}"
                                 handleDelete="{handleItemDelete}"
                                 itemType="improve"
-                                newItemPlaceholder="{$_(
-                                    'retroImprovePlaceholder',
-                                )}"
+                                newItemPlaceholder="{$LL.retroImprovePlaceholder()}"
                                 phase="{retro.phase}"
                                 isFacilitator="{isFacilitator}"
                                 items="{improveItems}"
                                 feedbackVisibility="{retro.brainstormVisibility}"
                             />
-                            <RetroItemForm
+                            <ItemForm
                                 handleSubmit="{handleItemAdd}"
                                 handleDelete="{handleItemDelete}"
                                 itemType="question"
-                                newItemPlaceholder="{$_(
-                                    'retroQuestionPlaceholder',
-                                )}"
+                                newItemPlaceholder="{$LL.retroQuestionPlaceholder()}"
                                 phase="{retro.phase}"
                                 isFacilitator="{isFacilitator}"
                                 items="{questionItems}"
@@ -778,13 +769,11 @@
                             </div>
                         </div>
                         <div class="w-full md:w-1/3">
-                            <div class="ltr:pl-4 rtl:pr-4">
+                            <div class="ps-4">
                                 {#if retro.phase === 'action'}
                                     <div class="flex items-center mb-4">
-                                        <div
-                                            class="flex-shrink ltr:pr-2 rtl:pl-2"
-                                        >
-                                            <CheckCircle
+                                        <div class="flex-shrink pe-2">
+                                            <CheckCircleIcon
                                                 class="w-8 h-8 text-indigo-500 dark:text-violet-400"
                                             />
                                         </div>
@@ -794,9 +783,7 @@
                                             >
                                                 <input
                                                     bind:value="{actionItem}"
-                                                    placeholder="{$_(
-                                                        'actionItemPlaceholder',
-                                                    )}"
+                                                    placeholder="{$LL.actionItemPlaceholder()}"
                                                     class="dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-2 appearance-none rounded py-2
                     px-3 text-gray-700 dark:text-gray-400 leading-tight focus:outline-none
                     focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 dark:focus:border-yellow-400 w-full"
@@ -814,7 +801,7 @@
                                 {/if}
                                 {#each retro.actionItems as item, i}
                                     <div
-                                        class="mb-2 p-2 bg-white dark:bg-gray-800 shadow ltr:border-l-4 rtl:border-r-4 border-indigo-500 dark:border-violet-400"
+                                        class="mb-2 p-2 bg-white dark:bg-gray-800 shadow border-s-4 border-indigo-500 dark:border-violet-400"
                                     >
                                         <div class="flex items-center">
                                             <div class="flex-shrink">
@@ -822,7 +809,7 @@
                                                     on:click="{toggleActionEdit(
                                                         item.id,
                                                     )}"
-                                                    class="ltr:pr-2 rtl:pl-2 pt-1 text-gray-500 dark:text-gray-400
+                                                    class="pe-2 pt-1 text-gray-500 dark:text-gray-400
                                                 hover:text-blue-500"
                                                 >
                                                     <PencilIcon />
@@ -831,7 +818,7 @@
                                             <div
                                                 class="flex-grow dark:text-white"
                                             >
-                                                <div class="ltr:pr-2 rtl:pl-2">
+                                                <div class="pe-2">
                                                     {item.content}
                                                 </div>
                                             </div>
@@ -850,7 +837,7 @@
                                                 <div
                                                     class="bg-white dark:bg-gray-800 border-2 rounded-md
                                             border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                            justify-center items-center rtl:ml-2 ltr:mr-2
+                                            justify-center items-center me-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
                                                 >
                                                     <CheckboxIcon />
@@ -911,11 +898,11 @@
                                         class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
                                         for="battleJoinCode"
                                     >
-                                        {$_('passCodeRequired')}
+                                        {$LL.passCodeRequired()}
                                     </label>
                                     <input
                                         bind:value="{joinPasscode}"
-                                        placeholder="{$_('enterPasscode')}"
+                                        placeholder="{$LL.enterPasscode()}"
                                         class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -926,9 +913,9 @@
                                     />
                                 </div>
 
-                                <div class="ltr:text-right rtl:text-left">
+                                <div class="text-right">
                                     <SolidButton type="submit"
-                                        >{$_('joinRetro')}</SolidButton
+                                        >{$LL.joinRetro()}</SolidButton
                                     >
                                 </div>
                             </form>
@@ -938,15 +925,15 @@
                     <h1
                         class="text-5xl text-orange-500 leading-tight font-bold"
                     >
-                        {$_('reloadingRetro')}
+                        {$LL.reloadingRetro()}
                     </h1>
                 {:else if socketError}
                     <h1 class="text-5xl text-red-500 leading-tight font-bold">
-                        {$_('retroJoinError')}
+                        {$LL.retroJoinError()}
                     </h1>
                 {:else}
                     <h1 class="text-5xl text-green-500 leading-tight font-bold">
-                        {$_('loadingRetro')}
+                        {$LL.loadingRetro()}
                     </h1>
                 {/if}
             </div>
@@ -970,8 +957,8 @@
     <DeleteConfirmation
         toggleDelete="{toggleDeleteRetro}"
         handleDelete="{concedeRetro}"
-        confirmText="{$_('confirmDeleteRetro')}"
-        confirmBtnText="{$_('deleteRetro')}"
+        confirmText="{$LL.confirmDeleteRetro()}"
+        confirmBtnText="{$LL.deleteRetro()}"
     />
 {/if}
 

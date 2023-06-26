@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
+    import { validateName, validatePasswords } from '../../validationUtils'
+    import LL from '../../i18n/i18n-svelte'
     import SolidButton from '../SolidButton.svelte'
-    import { validateName, validatePasswords } from '../../validationUtils.js'
-    import { _ } from '../../i18n.js'
 
     export let notifications
     export let handleSubmit
@@ -56,13 +56,11 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourName2"
         >
-            {$_('pages.createAccount.createAccountForm.fields.name.label')}
+            {$LL.name()}
         </label>
         <input
             bind:value="{warriorName}"
-            placeholder="{$_(
-                'pages.createAccount.createAccountForm.fields.name.placeholder',
-            )}"
+            placeholder="{$LL.userNamePlaceholder()}"
             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -77,13 +75,11 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourEmail"
         >
-            {$_('pages.createAccount.createAccountForm.fields.email.label')}
+            {$LL.email()}
         </label>
         <input
             bind:value="{warriorEmail}"
-            placeholder="{$_(
-                'pages.createAccount.createAccountForm.fields.email.placeholder',
-            )}"
+            placeholder="{$LL.enterYourEmail()}"
             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -99,13 +95,11 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourPassword1"
         >
-            {$_('pages.createAccount.createAccountForm.fields.password.label')}
+            {$LL.password()}
         </label>
         <input
             bind:value="{warriorPassword1}"
-            placeholder="{$_(
-                'pages.createAccount.createAccountForm.fields.password.placeholder',
-            )}"
+            placeholder="{$LL.passwordPlaceholder()}"
             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -121,15 +115,11 @@
             class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
             for="yourPassword2"
         >
-            {$_(
-                'pages.createAccount.createAccountForm.fields.confirmPassword.label',
-            )}
+            {$LL.confirmPassword()}
         </label>
         <input
             bind:value="{warriorPassword2}"
-            placeholder="{$_(
-                'pages.createAccount.createAccountForm.fields.confirmPassword.placeholder',
-            )}"
+            placeholder="{$LL.confirmPasswordPlaceholder()}"
             class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
                 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
                 focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
@@ -141,9 +131,9 @@
     </div>
 
     <div>
-        <div class="ltr:text-right rtl:text-left">
+        <div class="text-right">
             <SolidButton type="submit" disabled="{createDisabled}">
-                {$_('pages.createAccount.createAccountForm.saveButton')}
+                {$LL.create()}
             </SolidButton>
         </div>
     </div>

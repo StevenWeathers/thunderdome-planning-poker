@@ -1,6 +1,6 @@
-<script>
-    import { countryMap } from '../../country.js'
-    import { _ } from '../../i18n.js'
+<script lang="ts">
+    import { countryMap } from '../../country'
+    import LL from '../../i18n/i18n-svelte'
 
     export let country = ''
     export let additionalClass = ''
@@ -15,7 +15,7 @@
     width="{width}"
     height="{height}"
     alt="{countryMap[country]}
-    {$_('flag')}"
+    {$LL.flag()}"
     title="{countryMap[country]}"
     class="{additionalClass}"
 />
