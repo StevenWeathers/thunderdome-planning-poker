@@ -2,12 +2,13 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-	"github.com/spf13/viper"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/spf13/viper"
 
 	"github.com/gorilla/mux"
 )

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 

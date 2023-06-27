@@ -118,7 +118,7 @@ func (s *Service) handleLowercaseUserEmails() http.HandlerFunc {
 
 		s.Logger.Info("Lowercased user emails", zap.Int("count", len(lowercasedUsers)))
 		for _, u := range lowercasedUsers {
-			s.Email.SendEmailUpdate(u.Name, u.Email)
+			_ = s.Email.SendEmailUpdate(u.Name, u.Email)
 		}
 
 		mergedUsers, err := s.UserService.MergeDuplicateAccounts(r.Context())
@@ -129,7 +129,7 @@ func (s *Service) handleLowercaseUserEmails() http.HandlerFunc {
 
 		s.Logger.Info("Merged user accounts", zap.Int("count", len(mergedUsers)))
 		for _, u := range mergedUsers {
-			s.Email.SendMergedUpdate(u.Name, u.Email)
+			_ = s.Email.SendMergedUpdate(u.Name, u.Email)
 		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)

@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"strings"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
-	"strings"
 
 	"go.uber.org/zap"
 )
@@ -21,7 +22,7 @@ type BattleService struct {
 	HTMLSanitizerPolicy *bluemonday.Policy
 }
 
-//CreateBattle creates a new story pointing session (battle)
+// CreateBattle creates a new story pointing session (battle)
 func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
@@ -97,7 +98,7 @@ func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, Battl
 	return b, nil
 }
 
-//TeamCreateBattle creates a new story pointing session (battle) associated to a team
+// TeamCreateBattle creates a new story pointing session (battle) associated to a team
 func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string

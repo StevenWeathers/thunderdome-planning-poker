@@ -2,9 +2,10 @@ package http
 
 import (
 	"context"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"net/http"
 	"strings"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/gorilla/mux"
 )

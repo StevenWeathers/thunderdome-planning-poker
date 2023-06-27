@@ -1,17 +1,17 @@
-import {derived, writable} from 'svelte/store'
+import { derived, writable } from 'svelte/store'
 import Cookies from 'js-cookie'
-import {AppConfig, rtlLanguages} from './config'
-import {locale} from "./i18n/i18n-svelte";
+import { AppConfig, rtlLanguages } from './config'
+import { locale } from './i18n/i18n-svelte'
 
-const {PathPrefix, CookieName} = AppConfig
+const { PathPrefix, CookieName } = AppConfig
 const cookiePath = `${PathPrefix}/`
 
 declare global {
-    let ActiveAlerts: any;
+    let ActiveAlerts: any
 }
 
 function initWarrior() {
-    const {subscribe, set, update} = writable(
+    const { subscribe, set, update } = writable(
         JSON.parse(Cookies.get(CookieName) || '{}'),
     )
 
@@ -34,7 +34,7 @@ function initWarrior() {
             update(w => (w = warrior))
         },
         delete: () => {
-            Cookies.remove(CookieName, {path: cookiePath})
+            Cookies.remove(CookieName, { path: cookiePath })
             set({})
         },
     }
@@ -44,7 +44,7 @@ export const warrior = initWarrior()
 
 function initActiveAlerts() {
     const activeAlerts = typeof ActiveAlerts != 'undefined' ? ActiveAlerts : []
-    const {subscribe, update} = writable(activeAlerts)
+    const { subscribe, update } = writable(activeAlerts)
 
     return {
         subscribe,
@@ -59,7 +59,7 @@ export const activeAlerts = initActiveAlerts()
 function initDismissedAlerts() {
     const dismissKey = 'dismissed_alerts'
     const dismissedAlerts = JSON.parse(localStorage.getItem(dismissKey)) || []
-    const {subscribe, update} = writable(dismissedAlerts)
+    const { subscribe, update } = writable(dismissedAlerts)
 
     return {
         subscribe,

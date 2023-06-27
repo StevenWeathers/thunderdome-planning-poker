@@ -3,9 +3,10 @@ package checkin
 import (
 	"context"
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"net/http"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"go.uber.org/zap"
 
@@ -61,8 +62,11 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
-	c.ws.SetReadDeadline(time.Now().Add(pongWait))
-	c.ws.SetPongHandler(func(string) error { c.ws.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	_ = c.ws.SetReadDeadline(time.Now().Add(pongWait))
+	c.ws.SetPongHandler(func(string) error {
+		_ = c.ws.SetReadDeadline(time.Now().Add(pongWait))
+		return nil
+	})
 
 	for {
 		var badEvent bool
@@ -111,7 +115,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 // write a message with the given message type and payload.
 func (c *connection) write(mt int, payload []byte) error {
-	c.ws.SetWriteDeadline(time.Now().Add(writeWait))
+	_ = c.ws.SetWriteDeadline(time.Now().Add(writeWait))
 	return c.ws.WriteMessage(mt, payload)
 }
 
@@ -121,13 +125,13 @@ func (sub *subscription) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		c.ws.Close()
+		_ = c.ws.Close()
 	}()
 	for {
 		select {
 		case message, ok := <-c.send:
 			if !ok {
-				c.write(websocket.CloseMessage, []byte{})
+				_ = c.write(websocket.CloseMessage, []byte{})
 				return
 			}
 			if err := c.write(websocket.TextMessage, message); err != nil {

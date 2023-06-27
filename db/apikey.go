@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"strings"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"go.uber.org/zap"
 )
