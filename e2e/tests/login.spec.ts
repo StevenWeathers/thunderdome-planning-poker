@@ -1,11 +1,11 @@
-import { expect, test } from '../fixtures/user-sessions'
-import { LoginPage } from '../fixtures/login-page'
-import { registeredUser } from '../fixtures/db/registered-user'
+import {expect, test} from '../fixtures/user-sessions'
+import {LoginPage} from '../fixtures/login-page'
+import {registeredUser} from '../fixtures/db/registered-user'
 
 test.describe('The Login Page', () => {
     test('should navigate to my battles page and reflect name in header', async ({
-        page,
-    }) => {
+                                                                                     page,
+                                                                                 }) => {
         const loginPage = new LoginPage(page)
         await loginPage.goto()
         await loginPage.login(registeredUser.email, registeredUser.password)
