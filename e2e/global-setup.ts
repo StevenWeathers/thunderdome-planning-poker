@@ -1,13 +1,13 @@
-import {chromium, expect, FullConfig} from '@playwright/test'
-import {RegisterPage} from './fixtures/register-page'
-import {LoginPage} from './fixtures/login-page'
-import {setupDB} from './fixtures/db/setup'
-import {setupAdminUser} from './fixtures/db/admin-user'
-import {setupRegisteredUser} from './fixtures/db/registered-user'
-import {setupDeleteRegisteredUser} from './fixtures/db/registered-delete-user'
-import {setupVerifiedUser} from './fixtures/db/verified-user'
-import {setupAPIUser} from './fixtures/db/api-user'
-import {setupAdminAPIUser} from './fixtures/db/adminapi-user'
+import { chromium, expect, FullConfig } from '@playwright/test'
+import { RegisterPage } from './fixtures/register-page'
+import { LoginPage } from './fixtures/login-page'
+import { setupDB } from './fixtures/db/setup'
+import { setupAdminUser } from './fixtures/db/admin-user'
+import { setupRegisteredUser } from './fixtures/db/registered-user'
+import { setupDeleteRegisteredUser } from './fixtures/db/registered-delete-user'
+import { setupVerifiedUser } from './fixtures/db/verified-user'
+import { setupAPIUser } from './fixtures/db/api-user'
+import { setupAdminAPIUser } from './fixtures/db/adminapi-user'
 
 async function globalSetup(config: FullConfig) {
     const pool = setupDB({
@@ -38,7 +38,7 @@ async function globalSetup(config: FullConfig) {
     await expect(adminLoginPage.page.locator('h1')).toHaveText('My Battles')
     await adminLoginPage.page
         .context()
-        .storageState({path: 'storage/adminStorageState.json'})
+        .storageState({ path: 'storage/adminStorageState.json' })
 
     const registeredPage = await browser.newPage({
         baseURL: baseUrl,
@@ -53,7 +53,7 @@ async function globalSetup(config: FullConfig) {
     )
     await registeredRegisterPage.page
         .context()
-        .storageState({path: 'storage/registeredStorageState.json'})
+        .storageState({ path: 'storage/registeredStorageState.json' })
 
     const verifiedPage = await browser.newPage({
         baseURL: baseUrl,
@@ -66,7 +66,7 @@ async function globalSetup(config: FullConfig) {
     await expect(userVerifiedPage.page.locator('h1')).toHaveText('My Battles')
     await userVerifiedPage.page
         .context()
-        .storageState({path: 'storage/verifiedStorageState.json'})
+        .storageState({ path: 'storage/verifiedStorageState.json' })
 
     const guestPage = await browser.newPage({
         baseURL: baseUrl,
@@ -77,7 +77,7 @@ async function globalSetup(config: FullConfig) {
     await expect(guestRegisterPage.page.locator('h1')).toHaveText('My Battles')
     await guestRegisterPage.page
         .context()
-        .storageState({path: 'storage/guestStorageState.json'})
+        .storageState({ path: 'storage/guestStorageState.json' })
 
     const deleteGuestPage = await browser.newPage({
         baseURL: baseUrl,
@@ -85,10 +85,12 @@ async function globalSetup(config: FullConfig) {
     const deleteGuestRegisterPage = new RegisterPage(deleteGuestPage)
     await deleteGuestRegisterPage.goto()
     await deleteGuestRegisterPage.createGuestUser('E2E Delete Guest')
-    await expect(deleteGuestRegisterPage.page.locator('h1')).toHaveText('My Battles')
+    await expect(deleteGuestRegisterPage.page.locator('h1')).toHaveText(
+        'My Battles',
+    )
     await deleteGuestRegisterPage.page
         .context()
-        .storageState({path: 'storage/deleteGuestStorageState.json'})
+        .storageState({ path: 'storage/deleteGuestStorageState.json' })
 
     const deleteRegPage = await browser.newPage({
         baseURL: baseUrl,
@@ -103,7 +105,7 @@ async function globalSetup(config: FullConfig) {
     )
     await deleteRegisteredPage.page
         .context()
-        .storageState({path: 'storage/deleteRegisteredStorageState.json'})
+        .storageState({ path: 'storage/deleteRegisteredStorageState.json' })
 
     await browser.close()
 }

@@ -4,11 +4,12 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 
@@ -81,7 +82,9 @@ func main() {
 			zap.String("version", version),
 		),
 	)
-	defer zlog.Sync()
+	defer func() {
+		_ = zlog.Sync()
+	}()
 	logger := otelzap.New(zlog)
 
 	embedUseOS = len(os.Args) > 1 && os.Args[1] == "live"
@@ -95,7 +98,9 @@ func main() {
 			viper.GetString("otel.collector_url"),
 			viper.GetBool("otel.insecure_mode"),
 		)
-		defer cleanup(context.Background())
+		defer func() {
+			_ = cleanup(context.Background())
+		}()
 	}
 
 	cookieHashKey := viper.GetString("http.cookie_hashkey")

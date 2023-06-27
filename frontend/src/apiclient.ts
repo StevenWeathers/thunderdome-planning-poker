@@ -1,4 +1,4 @@
-import {PathPrefix} from './config'
+import { PathPrefix } from './config'
 
 /**
  * Extends fetch with common inputs e.g. credentials, content-type
@@ -12,7 +12,7 @@ export default function (handle401) {
      * @param {object} config the optional fetch config e.g. body for post
      */
     return function (endpoint, customConfig: any = {}) {
-        const headers = {'content-type': 'application/json'}
+        const headers = { 'content-type': 'application/json' }
 
         const config: RequestInit = {
             method: customConfig.body ? 'POST' : 'GET',

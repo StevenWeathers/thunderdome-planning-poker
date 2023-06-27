@@ -33,7 +33,7 @@ func (s *Service) SendWelcome(UserName string, UserEmail string, VerifyID string
 		},
 	)
 	if err != nil {
-		s.Logger.Error("Error Generating Welcome Service HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Welcome Email HTML", zap.Error(err))
 
 		return err
 	}
@@ -45,7 +45,7 @@ func (s *Service) SendWelcome(UserName string, UserEmail string, VerifyID string
 		emailBody,
 	)
 	if sendErr != nil {
-		s.Logger.Error("Error sending Welcome Service", zap.Error(sendErr))
+		s.Logger.Error("Error sending Welcome Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -80,7 +80,7 @@ func (s *Service) SendEmailVerification(UserName string, UserEmail string, Verif
 		},
 	)
 	if err != nil {
-		s.Logger.Error("Error Generating Verification Service HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Verification Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -91,7 +91,7 @@ func (s *Service) SendEmailVerification(UserName string, UserEmail string, Verif
 		emailBody,
 	)
 	if sendErr != nil {
-		s.Logger.Error("Error sending Verification Service", zap.Error(sendErr))
+		s.Logger.Error("Error sending Verification Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -125,7 +125,7 @@ func (s *Service) SendForgotPassword(UserName string, UserEmail string, ResetID 
 		},
 	)
 	if err != nil {
-		s.Logger.Error("Error Generating Forgot Password Service HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Forgot Password Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -136,7 +136,7 @@ func (s *Service) SendForgotPassword(UserName string, UserEmail string, ResetID 
 		emailBody,
 	)
 	if sendErr != nil {
-		s.Logger.Error("Error sending Forgot Password Service", zap.Error(sendErr))
+		s.Logger.Error("Error sending Forgot Password Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -163,7 +163,7 @@ func (s *Service) SendPasswordReset(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		s.Logger.Error("Error Generating Reset Password Service HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Reset Password Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -174,7 +174,7 @@ func (s *Service) SendPasswordReset(UserName string, UserEmail string) error {
 		emailBody,
 	)
 	if sendErr != nil {
-		s.Logger.Error("Error sending Reset Password Service", zap.Error(sendErr))
+		s.Logger.Error("Error sending Reset Password Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -201,7 +201,7 @@ func (s *Service) SendPasswordUpdate(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		s.Logger.Error("Error Generating Update Password Service HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Update Password Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -212,7 +212,7 @@ func (s *Service) SendPasswordUpdate(UserName string, UserEmail string) error {
 		emailBody,
 	)
 	if sendErr != nil {
-		s.Logger.Error("Error sending Update Password Service", zap.Error(sendErr))
+		s.Logger.Error("Error sending Update Password Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -239,7 +239,7 @@ func (s *Service) SendDeleteConfirmation(UserName string, UserEmail string) erro
 		},
 	)
 	if err != nil {
-		s.Logger.Error("Error Generating Delete Account Confirmation Service HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Delete Account Confirmation Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -250,7 +250,7 @@ func (s *Service) SendDeleteConfirmation(UserName string, UserEmail string) erro
 		emailBody,
 	)
 	if sendErr != nil {
-		s.Logger.Error("Error sending Delete Account Confirmation Service", zap.Error(sendErr))
+		s.Logger.Error("Error sending Delete Account Confirmation Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -277,7 +277,7 @@ func (s *Service) SendEmailUpdate(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		s.Logger.Error("Error Generating Service Update Service HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Service Update Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -288,7 +288,7 @@ func (s *Service) SendEmailUpdate(UserName string, UserEmail string) error {
 		emailBody,
 	)
 	if sendErr != nil {
-		s.Logger.Error("Error sending Service Update Service", zap.Error(sendErr))
+		s.Logger.Error("Error sending Service Update Email", zap.Error(sendErr))
 		return sendErr
 	}
 
@@ -315,7 +315,7 @@ func (s *Service) SendMergedUpdate(UserName string, UserEmail string) error {
 		},
 	)
 	if err != nil {
-		s.Logger.Error("Error Generating Update Merged Service Service HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Update Merged Service Email HTML", zap.Error(err))
 		return err
 	}
 
@@ -326,7 +326,7 @@ func (s *Service) SendMergedUpdate(UserName string, UserEmail string) error {
 		emailBody,
 	)
 	if sendErr != nil {
-		s.Logger.Error("Error sending Update Merged Service", zap.Error(sendErr))
+		s.Logger.Error("Error sending Update Merged Email", zap.Error(sendErr))
 		return sendErr
 	}
 

@@ -106,7 +106,7 @@ func (s *Service) handleUserCreate() http.HandlerFunc {
 			return
 		}
 
-		s.Email.SendWelcome(user.Name, user.Email, VerifyID)
+		_ = s.Email.SendWelcome(user.Name, user.Email, VerifyID)
 
 		s.Success(w, r, http.StatusOK, newUser, nil)
 	}
@@ -279,7 +279,7 @@ func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 			return
 		}
 
-		s.Email.SendPasswordUpdate(UserName, UserEmail)
+		_ = s.Email.SendPasswordUpdate(UserName, UserEmail)
 
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}

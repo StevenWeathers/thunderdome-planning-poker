@@ -1,4 +1,4 @@
-import {Locator, Page} from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 
 export class LoginPage {
     readonly page: Page
@@ -18,6 +18,6 @@ export class LoginPage {
     async login(email, password) {
         await this.emailField.fill(email)
         await this.passwordField.fill(password)
-        await this.page.getByRole('button', {name: 'Login'}).click()
+        await this.page.getByRole('button', { name: 'Login' }).click()
     }
 }

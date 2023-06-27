@@ -2,11 +2,12 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-	"github.com/spf13/viper"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+	"github.com/spf13/viper"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/battle"
 
@@ -264,6 +265,19 @@ func (s *Service) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		var plan = planRequestBody{}
+		jsonErr := json.Unmarshal(body, &plan)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(plan)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 

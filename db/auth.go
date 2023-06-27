@@ -7,9 +7,10 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"image/png"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
-	"image/png"
 
 	"github.com/pquerna/otp/totp"
 	"go.uber.org/zap"

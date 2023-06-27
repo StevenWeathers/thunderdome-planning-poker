@@ -4,12 +4,18 @@
 
 ### Frontend
 
-- Prettier formats all frontend code on commit, always adhere to this
+- Follow Typescript and Svelte best practices
 
 ### Go
 
 - [Code Review Comments guide](https://github.com/golang/go/wiki/CodeReviewComments) from the Go project should be
   followed
+
+### Format code before commit
+
+Run `make format` to format all go and frontend code before commit
+
+- not doing so can result in a failed build on GitHub
 
 ## Building and running with Docker (preferred solution)
 
@@ -67,7 +73,7 @@ npm run build
 ### Build for current OS
 
 ```
-swag init -g api/api.go -o swaggerdocs
+swag init -g http/http.go -o swaggerdocs
 go build
 ```
 
@@ -107,5 +113,5 @@ Adding new locale's involves just a few steps.
    the values.
 2. Second, the locale will need to be added to the locales list used by switcher component
    in ```frontend/config.js``` ```locales``` object
-3. Run `npm run i18n-ci` to generate the new locale types used by the build process
+3. Run `npm run locales` to generate the new locale types used by the build process
 4. commit changes and open PR

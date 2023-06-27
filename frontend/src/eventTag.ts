@@ -1,5 +1,5 @@
 declare global {
-    let gtag: any;
+    let gtag: any
 }
 
 // we don't want timeouts to google analytics to hold up page routing
@@ -17,8 +17,7 @@ function createFunctionWithTimeout(callback, opt_timeout?) {
     return fn
 }
 
-export default function (action, category, label, cb = function () {
-}) {
+export default function (action, category, label, cb = function () {}) {
     // provide fallback should gtag not be available
     const t =
         gtag ||

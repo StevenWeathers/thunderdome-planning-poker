@@ -2,10 +2,11 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/spf13/viper"
 )
@@ -392,7 +393,7 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 			return
 		}
 
-		s.Email.SendWelcome(UserName, UserEmail, VerifyID)
+		_ = s.Email.SendWelcome(UserName, UserEmail, VerifyID)
 
 		if ActiveUserID != "" {
 			s.clearUserCookies(w)
@@ -451,7 +452,7 @@ func (s *Service) handleForgotPassword() http.HandlerFunc {
 
 		ResetID, UserName, resetErr := s.AuthService.UserResetRequest(r.Context(), UserEmail)
 		if resetErr == nil {
-			s.Email.SendForgotPassword(UserName, UserEmail, ResetID)
+			_ = s.Email.SendForgotPassword(UserName, UserEmail, ResetID)
 		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
@@ -501,7 +502,7 @@ func (s *Service) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		s.Email.SendPasswordReset(UserName, UserEmail)
+		_ = s.Email.SendPasswordReset(UserName, UserEmail)
 
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}
@@ -551,7 +552,7 @@ func (s *Service) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		s.Email.SendPasswordUpdate(UserName, UserEmail)
+		_ = s.Email.SendPasswordUpdate(UserName, UserEmail)
 
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}

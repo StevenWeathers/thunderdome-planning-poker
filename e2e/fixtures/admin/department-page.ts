@@ -1,4 +1,4 @@
-import {Page} from '@playwright/test'
+import { Page } from '@playwright/test'
 
 export class AdminDepartmentPage {
     readonly page: Page
@@ -8,6 +8,8 @@ export class AdminDepartmentPage {
     }
 
     async goto(orgId, deptId) {
-        await this.page.goto(`/admin/organizations/${orgId}/department/${deptId}`)
+        await this.page.goto(
+            `/admin/organizations/${orgId}/department/${deptId}`,
+        )
     }
 }

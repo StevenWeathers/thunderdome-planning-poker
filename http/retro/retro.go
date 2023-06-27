@@ -2,9 +2,10 @@ package retro
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
-	"net/http"
 )
 
 // Service provides retro service

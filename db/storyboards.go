@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
@@ -18,7 +19,7 @@ type StoryboardService struct {
 	AESHashKey string
 }
 
-//CreateStoryboard adds a new storyboard
+// CreateStoryboard adds a new storyboard
 func (d *StoryboardService) CreateStoryboard(ctx context.Context, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*thunderdome.Storyboard, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string
@@ -61,7 +62,7 @@ func (d *StoryboardService) CreateStoryboard(ctx context.Context, OwnerID string
 	return b, nil
 }
 
-//TeamCreateStoryboard adds a new storyboard associated to a team
+// TeamCreateStoryboard adds a new storyboard associated to a team
 func (d *StoryboardService) TeamCreateStoryboard(ctx context.Context, TeamID string, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*thunderdome.Storyboard, error) {
 	var encryptedJoinCode string
 	var encryptedFacilitatorCode string

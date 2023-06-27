@@ -2,9 +2,10 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"io"
 	"net/http"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/gorilla/mux"
 )

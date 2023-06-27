@@ -2,13 +2,14 @@ package main
 
 import (
 	"embed"
+	"io/fs"
+	"net/http"
+	"os"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 	api "github.com/StevenWeathers/thunderdome-planning-poker/http"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/spf13/viper"
-	"io/fs"
-	"net/http"
-	"os"
 )
 
 //go:embed dist

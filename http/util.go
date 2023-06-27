@@ -6,12 +6,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"html/template"
 	"io/fs"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/spf13/viper"

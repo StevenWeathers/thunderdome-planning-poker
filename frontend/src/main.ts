@@ -2,7 +2,7 @@ import App from './App.svelte'
 
 declare global {
     interface Window {
-        app: any;
+        app: any
     }
 }
 

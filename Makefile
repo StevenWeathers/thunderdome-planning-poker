@@ -7,6 +7,7 @@ SWAGGERGEN=swag init -g http/http.go -o swaggerdocs
 SWAGGERDOCS=swaggerdocs
 GOFMT=gofmt
 GOIMPORTS=goimports
+NPM_FORMAT=npm run format
 BINARY_NAME=thunderdome-planning-poker
 BINARY_UNIX=$(BINARY_NAME)_unix
 BINARY_WINDOWS=thunderdome-planning-poker.exe
@@ -31,8 +32,9 @@ clean:
 	rm -rf $(SWAGGERDOCS)
 
 format:
-	$(GOFMT) -s -w */*.go
-	$(GOIMPORTS) -w */*.go
+	$(GOFMT) -s -w .
+	$(GOIMPORTS) -w .
+	$(NPM_FORMAT)
 
 testgo:
 	go test `go list ./... | grep -v swaggerdocs`

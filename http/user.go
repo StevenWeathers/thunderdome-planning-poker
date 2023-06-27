@@ -3,14 +3,15 @@ package http
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/anthonynsimon/bild/transform"
-	"github.com/ipsn/go-adorable"
-	"github.com/o1egl/govatar"
 	"image"
 	"image/png"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/anthonynsimon/bild/transform"
+	"github.com/ipsn/go-adorable"
+	"github.com/o1egl/govatar"
 
 	"github.com/gorilla/mux"
 )
@@ -183,7 +184,7 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 			return
 		}
 
-		s.Email.SendDeleteConfirmation(User.Name, User.Email)
+		_ = s.Email.SendDeleteConfirmation(User.Name, User.Email)
 
 		// don't clear admins user cookies when deleting other users
 		if UserID == UserCookieID {
@@ -214,7 +215,7 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 			return
 		}
 
-		s.Email.SendEmailVerification(User.Name, User.Email, VerifyId)
+		_ = s.Email.SendEmailVerification(User.Name, User.Email, VerifyId)
 
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}

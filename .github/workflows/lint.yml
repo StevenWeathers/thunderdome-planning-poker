@@ -1,0 +1,56 @@
+name: lint
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+permissions:
+  contents: read
+  # Optional: allow read access to pull request. Use with `only-new-issues` option.
+  # pull-requests: read
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [ '1.20' ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Check formatting
+        uses: Jerome1337/gofmt-action@v1.0.5
+        with:
+          gofmt-path: '.'
+          gofmt-flags: '-l -d'
+
+      - name: Goimports Check
+        uses: DarthBenro008/goimports-check-action@v0.1.0
+        with:
+          root-path: './'
+  ui:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ "18.5.0" ]
+
+    steps:
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - run: npm ci --no-optional
+      - run: npm run prettier

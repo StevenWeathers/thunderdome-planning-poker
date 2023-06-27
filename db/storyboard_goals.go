@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/json"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"go.uber.org/zap"
