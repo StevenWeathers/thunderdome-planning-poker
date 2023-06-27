@@ -92,7 +92,7 @@
         <ul class="flex" data-testid="admin-nav">
             {#each pages as page}
                 {#if page.enabled}
-                    <li class="me-3">
+                    <li class="ms-3">
                         <a
                             class="admin-nav-pill {activePage ===
                             page.name.toLowerCase().replace(' ', '')
