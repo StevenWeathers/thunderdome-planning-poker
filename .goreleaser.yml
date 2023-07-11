@@ -10,7 +10,7 @@ before:
     # Build dependencies
     - make build-deps
 builds:
-  - env: [CGO_ENABLED=0]
+  - env: [ CGO_ENABLED=0 ]
     goos:
       - linux
       - windows
@@ -21,55 +21,48 @@ builds:
 universal_binaries:
   - replace: true
 dockers:
-    - image_templates: 
+  - image_templates:
       - "stevenweathers/{{.ProjectName}}:{{ .Tag }}-amd64"
       - "stevenweathers/{{.ProjectName}}:latest-amd64"
       - "ghcr.io/stevenweathers/{{.ProjectName}}:{{ .Tag }}-amd64"
       - "ghcr.io/stevenweathers/{{.ProjectName}}:latest-amd64"
-      dockerfile: "build/gorDockerfile"
-      use: buildx
-      build_flag_templates:
+    dockerfile: "build/gorDockerfile"
+    use: buildx
+    build_flag_templates:
       - --platform=linux/amd64
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.url=https://github.com/StevenWeathers/{{.ProjectName}}
       - --label=org.opencontainers.image.source=https://github.com/StevenWeathers/{{.ProjectName}}
-    - image_templates: 
+  - image_templates:
       - "stevenweathers/{{.ProjectName}}:{{ .Tag }}-arm64v8"
       - "stevenweathers/{{.ProjectName}}:latest-arm64v8"
       - "ghcr.io/stevenweathers/{{.ProjectName}}:{{ .Tag }}-arm64v8"
       - "ghcr.io/stevenweathers/{{.ProjectName}}:latest-arm64v8"
-      goarch: arm64
-      dockerfile: "build/gorDockerfile"
-      use: buildx
-      build_flag_templates:
+    goarch: arm64
+    dockerfile: "build/gorDockerfile"
+    use: buildx
+    build_flag_templates:
       - --platform=linux/arm64/v8
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.url=https://github.com/StevenWeathers/{{.ProjectName}}
       - --label=org.opencontainers.image.source=https://github.com/StevenWeathers/{{.ProjectName}}
 docker_manifests:
-    - name_template: stevenweathers/{{.ProjectName}}:latest
-      image_templates:
+  - name_template: stevenweathers/{{.ProjectName}}:latest
+    image_templates:
       - stevenweathers/{{.ProjectName}}:latest-amd64
       - stevenweathers/{{.ProjectName}}:latest-arm64v8
-    - name_template: stevenweathers/{{.ProjectName}}:{{ .Tag }}
-      image_templates:
+  - name_template: stevenweathers/{{.ProjectName}}:{{ .Tag }}
+    image_templates:
       - stevenweathers/{{.ProjectName}}:{{ .Tag }}-amd64
       - stevenweathers/{{.ProjectName}}:{{ .Tag }}-arm64v8
-    - name_template: ghcr.io/stevenweathers/{{.ProjectName}}:latest
-      image_templates:
+  - name_template: ghcr.io/stevenweathers/{{.ProjectName}}:latest
+    image_templates:
       - ghcr.io/stevenweathers/{{.ProjectName}}:latest-amd64
       - ghcr.io/stevenweathers/{{.ProjectName}}:latest-arm64v8
-    - name_template: ghcr.io/stevenweathers/{{.ProjectName}}:{{ .Tag }}
-      image_templates:
+  - name_template: ghcr.io/stevenweathers/{{.ProjectName}}:{{ .Tag }}
+    image_templates:
       - ghcr.io/stevenweathers/{{.ProjectName}}:{{ .Tag }}-amd64
       - ghcr.io/stevenweathers/{{.ProjectName}}:{{ .Tag }}-arm64v8
-archives:
-- replacements:
-    darwin: Darwin
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -78,6 +71,6 @@ changelog:
   sort: asc
   filters:
     exclude:
-    - '^docs:'
-    - '^test:'
+      - '^docs:'
+      - '^test:'
 dist: release
