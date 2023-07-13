@@ -107,7 +107,7 @@
         color="blue"
         labelFor="jiraimport"
     >
-        {$LL.importJiraXML({ friendly: AppConfig.FriendlyUIVerbs })}
+        {$LL.selectFile()}
         <input
             type="file"
             on:change="{uploadFile}"

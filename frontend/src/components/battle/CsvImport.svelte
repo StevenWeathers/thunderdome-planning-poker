@@ -96,7 +96,7 @@
         color="purple"
         labelFor="csvimport"
     >
-        {$LL.importCsv({ friendly: AppConfig.FriendlyUIVerbs })}
+        {$LL.selectFile()}
         <input
             type="file"
             on:change="{uploadFile}"

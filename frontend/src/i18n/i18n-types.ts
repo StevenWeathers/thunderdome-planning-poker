@@ -2308,6 +2308,15 @@ type RootTranslation = {
      * C​h​o​o​s​e​ ​y​o​u​r​ ​p​r​e​f​e​r​r​e​d​ ​l​o​c​a​l​e​ ​(​o​p​t​i​o​n​a​l​)
      */
     chooseLocalePlaceholder: string
+    /**
+     * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​I​m​p​o​r​t​ ​P​l​a​n​s​,​ ​t​r​u​e​:​I​m​p​o​r​t​ ​S​t​o​r​i​e​s​}​}
+     * @param {'false' | 'true'} friendly
+     */
+    importPlans: RequiredParams<`friendly|{false:${string}, true:${string}}`>
+    /**
+     * S​e​l​e​c​t​ ​f​i​l​e​.​.​.
+     */
+    selectFile: string
 }
 
 export type TranslationFunctions = {
@@ -4569,6 +4578,14 @@ export type TranslationFunctions = {
      * Choose your preferred locale (optional)
      */
     chooseLocalePlaceholder: () => LocalizedString
+    /**
+     * {friendly|{false:Import Plans, true:Import Stories}}
+     */
+    importPlans: (arg: { friendly: 'false' | 'true' }) => LocalizedString
+    /**
+     * Select file...
+     */
+    selectFile: () => LocalizedString
 }
 
 export type Formatters = {}
