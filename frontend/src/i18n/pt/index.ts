@@ -624,6 +624,8 @@ const pt: Translation = {
         false: 'Clean Battles older than {daysOld} days',
     },
     chooseLocalePlaceholder: 'Choose your preferred locale (optional)',
+    importPlans: '{friendly|{false:Import Plans, true:Import Stories}}',
+    selectFile: 'Select file...',
 }
 
 export default pt

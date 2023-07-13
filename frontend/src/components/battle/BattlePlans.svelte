@@ -8,15 +8,14 @@
     import Bars2 from '../icons/Bars2.svelte'
     import ChevronDown from '../icons/ChevronDown.svelte'
     import DoubleChevronDown from '../icons/DoubleChevronDown.svelte'
-    import CsvImport from './CsvImport.svelte'
-    import JiraImport from './JiraImport.svelte'
     import AddPlan from './AddPlan.svelte'
     import ViewPlan from './ViewPlan.svelte'
     import { AppConfig } from '../../config'
+    import ImportModal from './ImportModal.svelte'
 
     export let plans = []
     export let isLeader = false
-    export let sendSocketEvent = () => {}
+    export let sendSocketEvent = (event: string, value: string) => {}
     export let eventTag
     export let notifications
 
@@ -66,6 +65,11 @@
     let showViewPlan = false
     let selectedPlan = { ...defaultPlan }
     let showCompleted = false
+    let showImport = false
+
+    const toggleImport = () => {
+        showImport = !showImport
+    }
 
     const toggleAddPlan = planId => () => {
         if (planId) {
@@ -143,18 +147,9 @@
         </div>
         <div class="w-2/3 text-right">
             {#if isLeader}
-                <CsvImport
-                    handlePlanAdd="{handlePlanAdd}"
-                    notifications="{notifications}"
-                    eventTag="{eventTag}"
-                    testid="plans-Csvimport"
-                />
-                <JiraImport
-                    handlePlanAdd="{handlePlanAdd}"
-                    notifications="{notifications}"
-                    eventTag="{eventTag}"
-                    testid="plans-importjira"
-                />
+                <HollowButton onClick="{toggleImport}" color="blue">
+                    {$LL.importPlans({ friendly: AppConfig.FriendlyUIVerbs })}
+                </HollowButton>
                 <HollowButton onClick="{toggleAddPlan()}" testid="plans-add">
                     {$LL.planAdd({ friendly: AppConfig.FriendlyUIVerbs })}
                 </HollowButton>
@@ -320,5 +315,14 @@
         description="{selectedPlan.description}"
         acceptanceCriteria="{selectedPlan.acceptanceCriteria}"
         priority="{selectedPlan.priority}"
+    />
+{/if}
+
+{#if showImport}
+    <ImportModal
+        notifications="{notifications}"
+        eventTag="{eventTag}"
+        toggleImport="{toggleImport}"
+        handlePlanAdd="{handlePlanAdd}"
     />
 {/if}
