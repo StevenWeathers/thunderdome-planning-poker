@@ -303,7 +303,7 @@
                     {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
                         <li>
                             <a
-                                href="{appRoutes.organizations}"
+                                href="{appRoutes.teams}"
                                 class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
                                 {$LL.teams()}
