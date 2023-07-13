@@ -1,5 +1,5 @@
-# .github/workflows/goreleaser.yml
-name: goreleaser
+# .github/workflows/ci.yml
+name: ci
 
 on:
   push:
@@ -10,7 +10,6 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
-
 
 jobs:
   build:
