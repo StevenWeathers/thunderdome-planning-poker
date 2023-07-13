@@ -12,15 +12,9 @@
 name: "CodeQL"
 
 on:
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ main ]
+  workflow_call:
   schedule:
     - cron: '28 23 * * 1'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
 jobs:
   analyze:
