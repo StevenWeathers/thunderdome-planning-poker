@@ -17,13 +17,15 @@ function createFunctionWithTimeout(callback, opt_timeout?) {
     return fn
 }
 
-export default function (action, category, label, cb = function () {}) {
+export default function (action, category, label, cb = function () {
+}) {
     // provide fallback should gtag not be available
-    const t =
-        gtag ||
-        function (evt, action, opts) {
-            cb()
-        }
+    let t = function (evt, action, opts) {
+        cb()
+    }
+    if (typeof gtag !== "undefined") {
+        t = gtag
+    }
 
     t('event', action, {
         event_category: category,
