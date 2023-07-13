@@ -2,13 +2,13 @@
 name: goreleaser
 
 on:
-  - workflow_run:
-      workflows: [ "build", "CodeQL" , "lint", "test" ]
-      branches: [ main ]
-      tags:
-        - '*'
-      types:
-        - completed
+  workflow_run:
+    workflows: [ "build", "CodeQL" , "lint", "test" ]
+    branches: [ main ]
+    tags:
+      - '*'
+    types:
+      - completed
 
 
 jobs:
