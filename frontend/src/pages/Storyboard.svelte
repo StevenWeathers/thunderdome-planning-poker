@@ -27,6 +27,7 @@
     import EditIcon from '../components/icons/EditIcon.svelte'
     import CommentIcon from '../components/icons/CommentIcon.svelte'
     import PageLayout from '../components/PageLayout.svelte'
+    import GoalEstimate from '../components/storyboard/GoalEstimate.svelte'
 
     export let storyboardId
     export let notifications
@@ -124,6 +125,7 @@
                             for (let story of column.stories) {
                                 if (story.id === activeStory.id) {
                                     activeStory = story
+                                    activeStoryFound = true
                                     break
                                 }
                             }
@@ -887,7 +889,9 @@
                                             additionalClasses="me-1"
                                         />
                                     {/if}
-                                </button>{goal.name}
+                                </button>{goal.name}&nbsp;<GoalEstimate
+                                    columns="{goal.columns}"
+                                />
                             </h2>
                         </div>
                     </div>
