@@ -56,15 +56,10 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - run: go install github.com/swaggo/swag/cmd/swag@v1.8.3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
         with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci --no-optional
-      - run: npm run build --if-present
-        env:
-          CI: true
+          name: build-artifacts
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
@@ -74,4 +69,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Clear
         if: always()
-        run: rm -f ${ HOME }/.docker/config.json
+        run: rm -f ${HOME}/.docker/config.json

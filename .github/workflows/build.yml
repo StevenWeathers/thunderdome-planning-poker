@@ -64,16 +64,16 @@ jobs:
       - name: Generate swagger docs
         run: swag init -g http/http.go -o swaggerdocs
 
-      #      - name: Test
-      #        run: go test `go list ./... | grep -v swaggerdocs`
-
       - name: Build
         run: go build -v .
 
-      #      - name: golangci-lint
-      #        uses: golangci/golangci-lint-action@v3
-      #        with:
-      #          version: v1.29
+      - name: Archive build artifacts
+          uses: actions/upload-artifact@v3
+          with:
+            name: build-artifacts
+            path: |
+              dist
+              swaggerdocs
 
       - name: Run Thunderdome application
         run: ./thunderdome-planning-poker &
@@ -94,7 +94,7 @@ jobs:
         env:
           DB_HOST: ${{ matrix.db-host }}
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: playwright-report
