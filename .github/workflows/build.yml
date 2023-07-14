@@ -68,12 +68,12 @@ jobs:
         run: go build -v .
 
       - name: Archive build artifacts
-          uses: actions/upload-artifact@v3
-          with:
-            name: build-artifacts
-            path: |
-              dist
-              swaggerdocs
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            dist
+            swaggerdocs
 
       - name: Run Thunderdome application
         run: ./thunderdome-planning-poker &
