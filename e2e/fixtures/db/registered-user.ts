@@ -8,7 +8,7 @@ export const registeredUser = {
 
 const seed = async pool => {
     const newUser = await pool.query(
-        `SELECT userid, verifyid FROM register_user($1, $2, $3, $4);`,
+        `SELECT userid, verifyid FROM thunderdome.user_register($1, $2, $3, $4);`,
         [
             registeredUser.name,
             registeredUser.email,
@@ -25,12 +25,15 @@ const seed = async pool => {
 }
 
 const teardown = async pool => {
-    const oldUser = await pool.query(`SELECT id FROM users WHERE email = $1;`, [
-        registeredUser.email,
-    ])
+    const oldUser = await pool.query(
+        `SELECT id FROM thunderdome.users WHERE email = $1;`,
+        [registeredUser.email],
+    )
 
     if (oldUser.rows.length) {
-        await pool.query('call delete_user($1);', [oldUser.rows[0].id])
+        await pool.query('DELETE FROM thunderdome.users WHERE id = $1;', [
+            oldUser.rows[0].id,
+        ])
     }
 
     return {}

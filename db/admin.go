@@ -23,14 +23,14 @@ func (d *AdminService) GetAppStats(ctx context.Context) (*thunderdome.Applicatio
 		SELECT
 			unregistered_user_count,
 			registered_user_count,
-			battle_count,
-			plan_count,
+			poker_count,
+			poker_story_count,
 			organization_count,
 			department_count,
 			team_count,
 			apikey_count,
-			active_battle_count,
-			active_battle_user_count,
+			active_poker_count,
+			active_poker_user_count,
 			team_checkins_count,
 			retro_count,
 			active_retro_count,
@@ -44,7 +44,7 @@ func (d *AdminService) GetAppStats(ctx context.Context) (*thunderdome.Applicatio
 			storyboard_column_count,
 			storyboard_story_count,
 			storyboard_persona_count
-		FROM get_app_stats();
+		FROM thunderdome.appstats_get();
 		`,
 	).Scan(
 		&Appstats.UnregisteredCount,

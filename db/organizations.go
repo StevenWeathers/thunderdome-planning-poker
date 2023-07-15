@@ -22,7 +22,9 @@ func (d *OrganizationService) OrganizationGet(ctx context.Context, OrgID string)
 	var org = &thunderdome.Organization{}
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM organization_get_by_id($1)`,
+		`SELECT o.id, o.name, o.created_date, o.updated_date
+        FROM thunderdome.organization o
+        WHERE o.id = $1;`,
 		OrgID,
 	).Scan(
 		&org.Id,
@@ -43,7 +45,9 @@ func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID s
 	var role string
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT role FROM organization_get_user_role($1, $2)`,
+		`SELECT ou.role
+    FROM thunderdome.organization_user ou
+    WHERE ou.organization_id = $2 AND ou.user_id = $1;`,
 		UserID,
 		OrgID,
 	).Scan(
@@ -61,7 +65,13 @@ func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID s
 func (d *OrganizationService) OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.Organization {
 	var organizations = make([]*thunderdome.Organization, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM organization_list_by_user($1, $2, $3);`,
+		`SELECT o.id, o.name, o.created_date, o.updated_date
+        FROM thunderdome.organization_user ou
+        LEFT JOIN thunderdome.organization o ON ou.organization_id = o.id
+        WHERE ou.user_id = $1
+        ORDER BY created_date
+		LIMIT $2
+		OFFSET $3;`,
 		UserID,
 		Limit,
 		Offset,
@@ -95,7 +105,7 @@ func (d *OrganizationService) OrganizationCreate(ctx context.Context, UserID str
 	o := &thunderdome.Organization{}
 
 	err := d.DB.QueryRowContext(ctx, `
-		SELECT id, name, created_date, updated_date FROM organization_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM thunderdome.organization_create($1, $2);`,
 		UserID,
 		OrgName,
 	).Scan(&o.Id, &o.Name, &o.CreatedDate, &o.UpdatedDate)
@@ -112,7 +122,13 @@ func (d *OrganizationService) OrganizationCreate(ctx context.Context, UserID str
 func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.OrganizationUser {
 	var users = make([]*thunderdome.OrganizationUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, email, role, avatar FROM organization_user_list($1, $2, $3);`,
+		`SELECT u.id, u.name, COALESCE(u.email, ''), ou.role, u.avatar
+        FROM thunderdome.organization_user ou
+        LEFT JOIN thunderdome.users u ON ou.user_id = u.id
+        WHERE ou.organization_id = $1
+        ORDER BY ou.created_date
+		LIMIT $2
+		OFFSET $3;`,
 		OrgID,
 		Limit,
 		Offset,
@@ -146,7 +162,7 @@ func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID st
 // OrganizationAddUser adds a user to an organization
 func (d *OrganizationService) OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
-		`SELECT organization_user_add($1, $2, $3);`,
+		`INSERT INTO thunderdome.organization_user (organization_id, user_id, role) VALUES ($1, $2, $3);`,
 		OrgID,
 		UserID,
 		Role,
@@ -163,7 +179,7 @@ func (d *OrganizationService) OrganizationAddUser(ctx context.Context, OrgID str
 // OrganizationRemoveUser removes a user from a organization
 func (d *OrganizationService) OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`CALL organization_user_remove($1, $2);`,
+		`CALL thunderdome.organization_user_remove($1, $2);`,
 		OrganizationID,
 		UserID,
 	)
@@ -180,7 +196,13 @@ func (d *OrganizationService) OrganizationRemoveUser(ctx context.Context, Organi
 func (d *OrganizationService) OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Team {
 	var teams = make([]*thunderdome.Team, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM organization_team_list($1, $2, $3);`,
+		`SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM thunderdome.organization_team ot
+        LEFT JOIN thunderdome.team t ON ot.team_id = t.id
+        WHERE ot.organization_id = $1
+        ORDER BY t.created_date
+		LIMIT $2
+		OFFSET $3;`,
 		OrgID,
 		Limit,
 		Offset,
@@ -214,7 +236,7 @@ func (d *OrganizationService) OrganizationTeamCreate(ctx context.Context, OrgID 
 	t := &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx, `
-		SELECT id, name, created_date, updated_date FROM organization_team_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM thunderdome.organization_team_create($1, $2);`,
 		OrgID,
 		TeamName,
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
@@ -233,7 +255,10 @@ func (d *OrganizationService) OrganizationTeamUserRole(ctx context.Context, User
 	var teamRole string
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT orgRole, teamRole FROM organization_team_user_role($1, $2, $3)`,
+		`SELECT ou.role AS orgRole, COALESCE(tu.role, '') AS teamRole
+        FROM thunderdome.organization_user ou
+        LEFT JOIN thunderdome.team_user tu ON tu.user_id = $1 AND tu.team_id = $3
+        WHERE ou.organization_id = $2 AND ou.user_id = $1;`,
 		UserID,
 		OrgID,
 		TeamID,
@@ -252,7 +277,7 @@ func (d *OrganizationService) OrganizationTeamUserRole(ctx context.Context, User
 // OrganizationDelete deletes an organization
 func (d *OrganizationService) OrganizationDelete(ctx context.Context, OrgID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`CALL organization_delete($1);`,
+		`CALL thunderdome.organization_delete($1);`,
 		OrgID,
 	)
 
@@ -268,7 +293,11 @@ func (d *OrganizationService) OrganizationDelete(ctx context.Context, OrgID stri
 func (d *OrganizationService) OrganizationList(ctx context.Context, Limit int, Offset int) []*thunderdome.Organization {
 	var organizations = make([]*thunderdome.Organization, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM organization_list($1, $2);`,
+		`SELECT o.id, o.name, o.created_date, o.updated_date
+        FROM thunderdome.organization o
+        ORDER BY o.created_date
+		LIMIT $1
+		OFFSET $2;`,
 		Limit,
 		Offset,
 	)

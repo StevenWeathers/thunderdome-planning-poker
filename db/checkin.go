@@ -32,9 +32,9 @@ func (d *CheckinService) CheckinList(ctx context.Context, TeamId string, Date st
  		COALESCE(
 			json_agg(tcc ORDER BY tcc.created_date) FILTER (WHERE tcc.id IS NOT NULL), '[]'
 		) AS comments
-		FROM team_checkin tc
-		LEFT JOIN users u ON tc.user_id = u.id
-		LEFT JOIN team_checkin_comment tcc ON tcc.checkin_id = tc.id
+		FROM thunderdome.team_checkin tc
+		LEFT JOIN thunderdome.users u ON tc.user_id = u.id
+		LEFT JOIN thunderdome.team_checkin_comment tcc ON tcc.checkin_id = tc.id
 		WHERE tc.team_id = $1
 		AND date(tc.created_date AT TIME ZONE $3) = $2
 		GROUP BY tc.id, u.id;
@@ -95,7 +95,7 @@ func (d *CheckinService) CheckinCreate(
 ) error {
 	var userCount int
 	// target user must be on team to check in
-	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
+	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
 		TeamId,
 		UserId,
 	).Scan(&userCount)
@@ -111,7 +111,7 @@ func (d *CheckinService) CheckinCreate(
 	SanitizedBlockers := d.HTMLSanitizerPolicy.Sanitize(Blockers)
 	SanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(Discuss)
 
-	if _, err := d.DB.Exec(`INSERT INTO team_checkin
+	if _, err := d.DB.Exec(`INSERT INTO thunderdome.team_checkin
 		(team_id, user_id, yesterday, today, blockers, discuss, goals_met)
 		VALUES ($1, $2, $3, $4, $5, $6, $7);
 		`,
@@ -142,7 +142,7 @@ func (d *CheckinService) CheckinUpdate(
 	SanitizedDiscuss := d.HTMLSanitizerPolicy.Sanitize(Discuss)
 
 	if _, err := d.DB.ExecContext(ctx, `
-		UPDATE team_checkin
+		UPDATE thunderdome.team_checkin
 		SET Yesterday = $2, today = $3, blockers = $4, discuss = $5, goals_met = $6
 		WHERE id = $1;
 		`,
@@ -162,7 +162,7 @@ func (d *CheckinService) CheckinUpdate(
 // CheckinDelete deletes a team checkin
 func (d *CheckinService) CheckinDelete(ctx context.Context, CheckinId string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM team_checkin WHERE id = $1;`,
+		`DELETE FROM thunderdome.team_checkin WHERE id = $1;`,
 		CheckinId,
 	)
 
@@ -183,7 +183,7 @@ func (d *CheckinService) CheckinComment(
 ) error {
 	var userCount int
 	// target user must be on team to comment on checkin
-	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
+	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
 		TeamId,
 		UserId,
 	).Scan(&userCount)
@@ -195,7 +195,7 @@ func (d *CheckinService) CheckinComment(
 	}
 
 	if _, err := d.DB.ExecContext(ctx, `
-		INSERT INTO team_checkin_comment (checkin_id, user_id, comment) VALUES ($1, $2, $3);
+		INSERT INTO thunderdome.team_checkin_comment (checkin_id, user_id, comment) VALUES ($1, $2, $3);
 		`,
 		CheckinId,
 		UserId,
@@ -211,7 +211,7 @@ func (d *CheckinService) CheckinComment(
 func (d *CheckinService) CheckinCommentEdit(ctx context.Context, TeamId string, UserId string, CommentId string, Comment string) error {
 	var userCount int
 	// target user must be on team to comment on checkin
-	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM team_user WHERE team_id = $1 AND user_id = $2;`,
+	usrErr := d.DB.QueryRowContext(ctx, `SELECT count(user_id) FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
 		TeamId,
 		UserId,
 	).Scan(&userCount)
@@ -223,7 +223,7 @@ func (d *CheckinService) CheckinCommentEdit(ctx context.Context, TeamId string, 
 	}
 
 	_, err := d.DB.ExecContext(ctx,
-		`UPDATE team_checkin_comment SET comment = $2, updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.team_checkin_comment SET comment = $2, updated_date = NOW() WHERE id = $1;`,
 		CommentId,
 		Comment,
 	)
@@ -238,7 +238,7 @@ func (d *CheckinService) CheckinCommentEdit(ctx context.Context, TeamId string, 
 // CheckinCommentDelete deletes a team checkin comment
 func (d *CheckinService) CheckinCommentDelete(ctx context.Context, CommentId string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM team_checkin_comment WHERE id = $1;`,
+		`DELETE FROM thunderdome.team_checkin_comment WHERE id = $1;`,
 		CommentId,
 	)
 

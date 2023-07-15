@@ -53,7 +53,7 @@ func (d *RetroService) RetroCreate(OwnerID string, RetroName string, Format stri
 	}
 
 	e := d.DB.QueryRow(
-		`SELECT * FROM create_retro($1, $2, $3, $4, $5, $6, $7);`,
+		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7);`,
 		OwnerID,
 		RetroName,
 		Format,
@@ -63,7 +63,7 @@ func (d *RetroService) RetroCreate(OwnerID string, RetroName string, Format stri
 		BrainstormVisibility,
 	).Scan(&b.Id)
 	if e != nil {
-		d.Logger.Error("create_retro query error", zap.Error(e))
+		d.Logger.Error("retro_create query error", zap.Error(e))
 		return nil, errors.New("error creating retro")
 	}
 
@@ -104,7 +104,7 @@ func (d *RetroService) TeamRetroCreate(ctx context.Context, TeamID string, Owner
 	}
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT * FROM team_create_retro($1, $2, $3, $4, $5, $6, $7, $8);`,
+		`SELECT * FROM thunderdome.team_create_retro($1, $2, $3, $4, $5, $6, $7, $8);`,
 		TeamID,
 		OwnerID,
 		RetroName,
@@ -143,7 +143,10 @@ func (d *RetroService) EditRetro(RetroID string, RetroName string, JoinCode stri
 		encryptedFacilitatorCode = EncryptedCode
 	}
 
-	if _, err := d.DB.Exec(`call edit_retro($1, $2, $3, $4, $5, $6);`,
+	if _, err := d.DB.Exec(`UPDATE thunderdome.retro
+    SET name = $2, join_code = $3, facilitator_code = $4, max_votes = $5,
+        brainstorm_visibility = $6, updated_date = NOW()
+    WHERE id = $1;`,
 		RetroID, RetroName, encryptedJoinCode, encryptedFacilitatorCode, maxVotes, brainstormVisibility,
 	); err != nil {
 		d.Logger.Error("update retro error", zap.Error(err))
@@ -174,9 +177,9 @@ func (d *RetroService) RetroGet(RetroID string, UserID string) (*thunderdome.Ret
 			r.id, r.name, r.owner_id, r.format, r.phase, COALESCE(r.join_code, ''), COALESCE(r.facilitator_code, ''),
 			r.max_votes, r.brainstorm_visibility, r.created_date, r.updated_date,
 			CASE WHEN COUNT(rf) = 0 THEN '[]'::json ELSE array_to_json(array_agg(rf.user_id)) END AS facilitators
-		FROM retro r 
-		LEFT JOIN retro_facilitator rf ON r.id = rf.retro_id
-		WHERE id = $1
+		FROM thunderdome.retro r 
+		LEFT JOIN thunderdome.retro_facilitator rf ON r.id = rf.retro_id
+		WHERE r.id = $1
 		GROUP BY r.id`,
 		RetroID,
 	).Scan(
@@ -233,7 +236,10 @@ func (d *RetroService) RetroGet(RetroID string, UserID string) (*thunderdome.Ret
 func (d *RetroService) RetroGetByUser(UserID string) ([]*thunderdome.Retro, error) {
 	var retros = make([]*thunderdome.Retro, 0)
 	retroRows, retrosErr := d.DB.Query(`
-		SELECT * FROM get_retros_by_user($1);
+		SELECT b.id, b.name, b.owner_id, b.format, b.phase, b.created_date, b.updated_date
+		FROM thunderdome.retro b
+		LEFT JOIN thunderdome.retro_user su ON b.id = su.retro_id WHERE su.user_id = $1 AND su.abandoned = false
+		GROUP BY b.id ORDER BY b.created_date DESC;
 	`, UserID)
 	if retrosErr != nil {
 		return nil, retrosErr
@@ -266,14 +272,14 @@ func (d *RetroService) RetroGetByUser(UserID string) ([]*thunderdome.Retro, erro
 func (d *RetroService) RetroConfirmFacilitator(RetroID string, userID string) error {
 	var facilitatorId string
 	var role string
-	err := d.DB.QueryRow("SELECT type FROM users WHERE id = $1", userID).Scan(&role)
+	err := d.DB.QueryRow("SELECT type FROM thunderdome.users WHERE id = $1", userID).Scan(&role)
 	if err != nil {
 		d.Logger.Error("error getting user role", zap.Error(err))
 		return errors.New("unable to get user role")
 	}
 
 	err = d.DB.QueryRow(
-		"SELECT user_id FROM retro_facilitator WHERE retro_id = $1 AND user_id = $2",
+		"SELECT user_id FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2",
 		RetroID, userID).Scan(&facilitatorId)
 	if err != nil && role != "ADMIN" {
 		d.Logger.Error("get RetroConfirmFacilitator error", zap.Error(err))
@@ -287,7 +293,12 @@ func (d *RetroService) RetroConfirmFacilitator(RetroID string, userID string) er
 func (d *RetroService) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 	var users = make([]*thunderdome.RetroUser, 0)
 	rows, err := d.DB.Query(
-		`SELECT * FROM get_retro_users($1);`,
+		`SELECT
+			u.id, u.name, su.active, u.avatar, COALESCE(u.email, '')
+		FROM thunderdome.retro_user su
+		LEFT JOIN thunderdome.users u ON su.user_id = u.id
+		WHERE su.retro_id = $1
+		ORDER BY u.name;`,
 		RetroID,
 	)
 	if err == nil {
@@ -314,7 +325,7 @@ func (d *RetroService) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 func (d *RetroService) GetRetroFacilitators(RetroID string) []string {
 	var facilitators = make([]string, 0)
 	rows, err := d.DB.Query(
-		`SELECT user_id FROM retro_facilitator WHERE retro_id = $1;`,
+		`SELECT user_id FROM thunderdome.retro_facilitator WHERE retro_id = $1;`,
 		RetroID,
 	)
 	if err == nil {
@@ -335,7 +346,7 @@ func (d *RetroService) GetRetroFacilitators(RetroID string) []string {
 // RetroAddUser adds a user by ID to the retro by ID
 func (d *RetroService) RetroAddUser(RetroID string, UserID string) ([]*thunderdome.RetroUser, error) {
 	if _, err := d.DB.Exec(
-		`INSERT INTO retro_user (retro_id, user_id, active)
+		`INSERT INTO thunderdome.retro_user (retro_id, user_id, active)
 		VALUES ($1, $2, true)
 		ON CONFLICT (retro_id, user_id) DO UPDATE SET active = true, abandoned = false`,
 		RetroID,
@@ -352,8 +363,9 @@ func (d *RetroService) RetroAddUser(RetroID string, UserID string) ([]*thunderdo
 // RetroFacilitatorAdd adds a retro facilitator
 func (d *RetroService) RetroFacilitatorAdd(RetroID string, UserID string) ([]string, error) {
 	if _, err := d.DB.Exec(
-		`call retro_add_facilitator($1, $2);`, RetroID, UserID); err != nil {
-		d.Logger.Error("call retro_add_facilitator error", zap.Error(err))
+		`INSERT INTO thunderdome.retro_facilitator (retro_id, user_id) VALUES ($1, $2);`,
+		RetroID, UserID); err != nil {
+		d.Logger.Error("insert retro facilitator error", zap.Error(err))
 		return nil, errors.New("unable to add facilitator")
 	}
 
@@ -365,8 +377,9 @@ func (d *RetroService) RetroFacilitatorAdd(RetroID string, UserID string) ([]str
 // RetroFacilitatorRemove removes a retro facilitator
 func (d *RetroService) RetroFacilitatorRemove(RetroID string, UserID string) ([]string, error) {
 	if _, err := d.DB.Exec(
-		`call retro_remove_facilitator($1, $2);`, RetroID, UserID); err != nil {
-		d.Logger.Error("call retro_remove_facilitator error", zap.Error(err))
+		`DELETE FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2;`,
+		RetroID, UserID); err != nil {
+		d.Logger.Error("delete retro facilitator error", zap.Error(err))
 		return nil, errors.New("unable to remove facilitator")
 	}
 
@@ -378,12 +391,12 @@ func (d *RetroService) RetroFacilitatorRemove(RetroID string, UserID string) ([]
 // RetroRetreatUser removes a user from the current retro by ID
 func (d *RetroService) RetroRetreatUser(RetroID string, UserID string) []*thunderdome.RetroUser {
 	if _, err := d.DB.Exec(
-		`UPDATE retro_user SET active = false WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
+		`UPDATE thunderdome.retro_user SET active = false WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
 		d.Logger.Error("update retro user active false error", zap.Error(err))
 	}
 
 	if _, err := d.DB.Exec(
-		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
+		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
 		d.Logger.Error("update user last active timestamp error", zap.Error(err))
 	}
 
@@ -395,13 +408,13 @@ func (d *RetroService) RetroRetreatUser(RetroID string, UserID string) []*thunde
 // RetroAbandon removes a user from the current retro by ID and sets abandoned true
 func (d *RetroService) RetroAbandon(RetroID string, UserID string) ([]*thunderdome.RetroUser, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE retro_user SET active = false, abandoned = true WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
+		`UPDATE thunderdome.retro_user SET active = false, abandoned = true WHERE retro_id = $1 AND user_id = $2`, RetroID, UserID); err != nil {
 		d.Logger.Error("update retro user abandoned true error", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.DB.Exec(
-		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
+		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
 		d.Logger.Error("update user last active timestamp error", zap.Error(err))
 		return nil, err
 	}
@@ -415,8 +428,8 @@ func (d *RetroService) RetroAbandon(RetroID string, UserID string) ([]*thunderdo
 func (d *RetroService) RetroAdvancePhase(RetroID string, Phase string) (*thunderdome.Retro, error) {
 	var b thunderdome.Retro
 	if _, err := d.DB.Exec(
-		`call set_retro_phase($1, $2);`, RetroID, Phase); err != nil {
-		d.Logger.Error("call set_retro_phase error", zap.Error(err))
+		`UPDATE thunderdome.retro SET updated_date = NOW(), phase = $2 WHERE id = $1;`, RetroID, Phase); err != nil {
+		d.Logger.Error("CALL thunderdome.set_retro_phase error", zap.Error(err))
 		return nil, errors.New("Unable to advance phase")
 	}
 
@@ -433,8 +446,8 @@ func (d *RetroService) RetroAdvancePhase(RetroID string, Phase string) (*thunder
 // RetroDelete removes all retro associations and the retro itself from DB by Id
 func (d *RetroService) RetroDelete(RetroID string) error {
 	if _, err := d.DB.Exec(
-		`call delete_retro($1);`, RetroID); err != nil {
-		d.Logger.Error("call delete_retro error", zap.Error(err))
+		`DELETE FROM thunderdome.retro WHERE id = $1;`, RetroID); err != nil {
+		d.Logger.Error("delete retro error", zap.Error(err))
 		return err
 	}
 
@@ -447,7 +460,7 @@ func (d *RetroService) GetRetroUserActiveStatus(RetroID string, UserID string) e
 
 	err := d.DB.QueryRow(`
 		SELECT coalesce(active, FALSE)
-		FROM retro_user
+		FROM thunderdome.retro_user
 		WHERE user_id = $2 AND retro_id = $1;`,
 		RetroID,
 		UserID,
@@ -471,7 +484,7 @@ func (d *RetroService) GetRetros(Limit int, Offset int) ([]*thunderdome.Retro, i
 	var Count int
 
 	e := d.DB.QueryRow(
-		"SELECT COUNT(*) FROM retro;",
+		"SELECT COUNT(*) FROM thunderdome.retro;",
 	).Scan(
 		&Count,
 	)
@@ -481,7 +494,7 @@ func (d *RetroService) GetRetros(Limit int, Offset int) ([]*thunderdome.Retro, i
 
 	rows, retrosErr := d.DB.Query(`
 		SELECT r.id, r.name, r.format, r.phase, r.created_date, r.updated_date
-		FROM retro r
+		FROM thunderdome.retro r
 		GROUP BY r.id ORDER BY r.created_date DESC
 		LIMIT $1 OFFSET $2;
 	`, Limit, Offset)
@@ -517,7 +530,7 @@ func (d *RetroService) GetActiveRetros(Limit int, Offset int) ([]*thunderdome.Re
 	var Count int
 
 	e := d.DB.QueryRow(
-		"SELECT COUNT(DISTINCT ru.retro_id) FROM retro_user ru WHERE ru.active IS TRUE;",
+		"SELECT COUNT(DISTINCT ru.retro_id) FROM thunderdome.retro_user ru WHERE ru.active IS TRUE;",
 	).Scan(
 		&Count,
 	)
@@ -527,8 +540,8 @@ func (d *RetroService) GetActiveRetros(Limit int, Offset int) ([]*thunderdome.Re
 
 	rows, retrosErr := d.DB.Query(`
 		SELECT r.id, r.name, r.format, r.phase, r.created_date, r.updated_date
-		FROM retro_user ru
-		LEFT JOIN retro r ON r.id = ru.retro_id
+		FROM thunderdome.retro_user ru
+		LEFT JOIN thunderdome.retro r ON r.id = ru.retro_id
 		WHERE ru.active IS TRUE GROUP BY r.id
 		LIMIT $1 OFFSET $2;
 	`, Limit, Offset)
@@ -563,7 +576,7 @@ func (d *RetroService) GetRetroFacilitatorCode(RetroID string) (string, error) {
 	var EncryptedCode string
 
 	if err := d.DB.QueryRow(`
-		SELECT COALESCE(facilitator_code, '') FROM retro
+		SELECT COALESCE(facilitator_code, '') FROM thunderdome.retro
 		WHERE id = $1`,
 		RetroID,
 	).Scan(&EncryptedCode); err != nil {
@@ -585,10 +598,10 @@ func (d *RetroService) GetRetroFacilitatorCode(RetroID string) (string, error) {
 // CleanRetros deletes retros older than {DaysOld} days
 func (d *RetroService) CleanRetros(ctx context.Context, DaysOld int) error {
 	if _, err := d.DB.ExecContext(ctx,
-		`call clean_retros($1);`,
+		`DELETE FROM thunderdome.retro WHERE updated_date < (NOW() - $1 * interval '1 day');`,
 		DaysOld,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("call clean_retros", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("CALL thunderdome.clean_retros", zap.Error(err))
 		return errors.New("error attempting to clean retros")
 	}
 

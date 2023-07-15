@@ -8,7 +8,7 @@ const verifiedUser = {
 
 const seed = async pool => {
     const newUser = await pool.query(
-        `SELECT userid, verifyid FROM register_user($1, $2, $3, $4);`,
+        `SELECT userid, verifyid FROM thunderdome.user_register($1, $2, $3, $4);`,
         [
             verifiedUser.name,
             verifiedUser.email,
@@ -17,7 +17,7 @@ const seed = async pool => {
         ],
     )
 
-    await pool.query('call verify_user_account($1);', [
+    await pool.query('call thunderdome.user_account_verify($1);', [
         newUser.rows[0].verifyid,
     ])
     const id = newUser.rows[0].userid
@@ -29,12 +29,15 @@ const seed = async pool => {
 }
 
 const teardown = async pool => {
-    const oldUser = await pool.query(`SELECT id FROM users WHERE email = $1;`, [
-        verifiedUser.email,
-    ])
+    const oldUser = await pool.query(
+        `SELECT id FROM thunderdome.users WHERE email = $1;`,
+        [verifiedUser.email],
+    )
 
     if (oldUser.rows.length) {
-        await pool.query('call delete_user($1);', [oldUser.rows[0].id])
+        await pool.query('DELETE FROM thunderdome.users WHERE id = $1;', [
+            oldUser.rows[0].id,
+        ])
     }
 
     return {}

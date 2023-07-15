@@ -8,9 +8,11 @@ import (
 // CreateStoryboardColumn adds a new column to a Storyboard
 func (d *StoryboardService) CreateStoryboardColumn(StoryboardID string, GoalID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`call create_storyboard_column($1, $2);`, StoryboardID, GoalID,
+		`INSERT INTO thunderdome.storyboard_column (storyboard_id, goal_id, sort_order) 
+		VALUES ($1, $2, ((SELECT coalesce(MAX(sort_order), 0) FROM thunderdome.storyboard_column WHERE goal_id = $2) + 1));`,
+		StoryboardID, GoalID,
 	); err != nil {
-		d.Logger.Error("call create_storyboard_column error", zap.Error(err))
+		d.Logger.Error("CALL thunderdome.create_storyboard_column error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -21,12 +23,11 @@ func (d *StoryboardService) CreateStoryboardColumn(StoryboardID string, GoalID s
 // ReviseStoryboardColumn revises a storyboard column
 func (d *StoryboardService) ReviseStoryboardColumn(StoryboardID string, UserID string, ColumnID string, ColumnName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`call revise_storyboard_column($1, $2, $3);`,
-		StoryboardID,
+		`UPDATE thunderdome.storyboard_column SET name = $2, updated_date = NOW() WHERE id = $1;`,
 		ColumnID,
 		ColumnName,
 	); err != nil {
-		d.Logger.Error("call revise_storyboard_column error", zap.Error(err))
+		d.Logger.Error("CALL thunderdome.revise_storyboard_column error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -37,8 +38,8 @@ func (d *StoryboardService) ReviseStoryboardColumn(StoryboardID string, UserID s
 // DeleteStoryboardColumn removes a column from the current board by ID
 func (d *StoryboardService) DeleteStoryboardColumn(StoryboardID string, userID string, ColumnID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
-		`call delete_storyboard_column($1);`, ColumnID); err != nil {
-		d.Logger.Error("call delete_storyboard_column error", zap.Error(err))
+		`CALL thunderdome.sb_column_delete($1);`, ColumnID); err != nil {
+		d.Logger.Error("CALL thunderdome.sb_column_delete error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)

@@ -50,7 +50,7 @@ func (d *APIKeyService) GenerateApiKey(ctx context.Context, UserID string, KeyNa
 	}
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT createdDate FROM user_apikey_add($1, $2, $3);`,
+		`INSERT INTO thunderdome.api_key (id, name, user_id) VALUES ($1, $2, $3) RETURNING created_date;`,
 		keyID,
 		KeyName,
 		UserID,
@@ -67,7 +67,7 @@ func (d *APIKeyService) GenerateApiKey(ctx context.Context, UserID string, KeyNa
 func (d *APIKeyService) GetUserApiKeys(ctx context.Context, UserID string) ([]*thunderdome.APIKey, error) {
 	var APIKeys = make([]*thunderdome.APIKey, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		"SELECT id, name, user_id, active, created_date, updated_date FROM api_keys WHERE user_id = $1 ORDER BY created_date",
+		"SELECT id, name, user_id, active, created_date, updated_date FROM thunderdome.api_key WHERE user_id = $1 ORDER BY created_date",
 		UserID,
 	)
 	if err == nil {
@@ -100,7 +100,8 @@ func (d *APIKeyService) GetUserApiKeys(ctx context.Context, UserID string) ([]*t
 // UpdateUserApiKey updates a user api key (active column only)
 func (d *APIKeyService) UpdateUserApiKey(ctx context.Context, UserID string, KeyID string, Active bool) ([]*thunderdome.APIKey, error) {
 	if _, err := d.DB.ExecContext(ctx,
-		`CALL user_apikey_update($1, $2, $3);`, KeyID, UserID, Active); err != nil {
+		`UPDATE thunderdome.api_key SET active = $3, updated_date = NOW() WHERE id = $1 AND user_id = $2;`,
+		KeyID, UserID, Active); err != nil {
 		d.Logger.Ctx(ctx).Error("UpdateUserApiKey query error", zap.Error(err))
 		return nil, err
 	}
@@ -117,8 +118,9 @@ func (d *APIKeyService) UpdateUserApiKey(ctx context.Context, UserID string, Key
 // DeleteUserApiKey removes a users api key
 func (d *APIKeyService) DeleteUserApiKey(ctx context.Context, UserID string, KeyID string) ([]*thunderdome.APIKey, error) {
 	if _, err := d.DB.ExecContext(ctx,
-		`CALL user_apikey_delete($1, $2);`, KeyID, UserID); err != nil {
-		d.Logger.Ctx(ctx).Error("call user_apikey_delete error", zap.Error(err))
+		`DELETE FROM thunderdome.api_key WHERE id = $1 AND user_id = $2;`,
+		KeyID, UserID); err != nil {
+		d.Logger.Ctx(ctx).Error("CALL thunderdome.user_apikey_delete error", zap.Error(err))
 		return nil, err
 	}
 
@@ -141,8 +143,8 @@ func (d *APIKeyService) GetApiKeyUser(ctx context.Context, APK string) (*thunder
 
 	e := d.DB.QueryRowContext(ctx, `
 		SELECT u.id, u.name, u.email, u.type, u.avatar, u.verified, u.notifications_enabled, COALESCE(u.country, ''), COALESCE(u.locale, ''), COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.created_date, u.updated_date, u.last_active 
-		FROM api_keys ak
-		LEFT JOIN users u ON u.id = ak.user_id
+		FROM thunderdome.api_key ak
+		LEFT JOIN thunderdome.users u ON u.id = ak.user_id
 		WHERE ak.id = $1 AND ak.active = true
 `,
 		keyID,
@@ -175,8 +177,12 @@ func (d *APIKeyService) GetApiKeyUser(ctx context.Context, APK string) (*thunder
 func (d *APIKeyService) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thunderdome.UserAPIKey {
 	var APIKeys = make([]*thunderdome.UserAPIKey, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, user_id, user_name, user_email, active, created_date, updated_date
-		FROM apikeys_list($1, $2);`,
+		`SELECT apk.id, apk.name, u.id, u.name, u.email, apk.active, apk.created_date, apk.updated_date
+		FROM thunderdome.api_key apk
+		LEFT JOIN thunderdome.users u ON apk.user_id = u.id
+		ORDER BY apk.created_date
+		LIMIT $1
+		OFFSET $2;`,
 		Limit,
 		Offset,
 	)
