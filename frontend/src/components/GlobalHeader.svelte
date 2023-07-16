@@ -78,7 +78,7 @@
                     warrior.create(newUser)
                     eventTag('login', 'engagement', 'success', () => {
                         setupI18n(newUser.locale)
-                        router.route(appRoutes.battles, true)
+                        router.route(appRoutes.games, true)
                     })
                 }
             })
@@ -116,7 +116,7 @@
                     {#if $warrior.name}
                         {#if FeaturePoker}
                             <a
-                                href="{appRoutes.battles}"
+                                href="{appRoutes.games}"
                                 class="pt-6 pb-4 px-4 border-b-4 {currentPage ===
                                 'battles'
                                     ? activePageClass
@@ -271,7 +271,7 @@
                     {#if FeaturePoker}
                         <li>
                             <a
-                                href="{appRoutes.battles}"
+                                href="{appRoutes.games}"
                                 class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
                             >
                                 {$LL.battles({
