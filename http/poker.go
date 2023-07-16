@@ -33,7 +33,7 @@ func (s *Service) handleGetUserGames() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		battles, Count, err := s.PokerDataSvc.GetBattlesByUser(UserID, Limit, Offset)
+		battles, Count, err := s.PokerDataSvc.GetGamesByUser(UserID, Limit, Offset)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
@@ -115,7 +115,7 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 		// if battle created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newBattle, err = s.PokerDataSvc.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+				newBattle, err = s.PokerDataSvc.TeamCreateGame(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 				if err != nil {
 					s.Failure(w, r, http.StatusInternalServerError, err)
 					return
@@ -125,7 +125,7 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newBattle, err = s.PokerDataSvc.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+			newBattle, err = s.PokerDataSvc.CreateGame(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 			if err != nil {
 				s.Failure(w, r, http.StatusInternalServerError, err)
 				return
@@ -134,7 +134,7 @@ func (s *Service) handlePokerCreate() http.HandlerFunc {
 
 		// when battleLeaders array is passed add additional leaders to battle
 		if len(b.BattleLeaders) > 0 {
-			updatedLeaders, err := s.PokerDataSvc.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
+			updatedLeaders, err := s.PokerDataSvc.AddFacilitatorsByEmail(ctx, newBattle.Id, b.BattleLeaders)
 			if err != nil {
 				s.Logger.Error("error adding additional battle leaders")
 			} else {
@@ -168,9 +168,9 @@ func (s *Service) handleGetPokerGames() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Battles, Count, err = s.PokerDataSvc.GetActiveBattles(Limit, Offset)
+			Battles, Count, err = s.PokerDataSvc.GetActiveGames(Limit, Offset)
 		} else {
-			Battles, Count, err = s.PokerDataSvc.GetBattles(Limit, Offset)
+			Battles, Count, err = s.PokerDataSvc.GetGames(Limit, Offset)
 		}
 
 		if err != nil {
@@ -211,7 +211,7 @@ func (s *Service) handleGetPokerGame() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		b, err := s.PokerDataSvc.GetBattle(BattleId, UserId)
+		b, err := s.PokerDataSvc.GetGame(BattleId, UserId)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
@@ -219,7 +219,7 @@ func (s *Service) handleGetPokerGame() http.HandlerFunc {
 
 		// don't allow retrieving battle details if battle has JoinCode and user hasn't joined yet
 		if b.JoinCode != "" {
-			UserErr := s.PokerDataSvc.GetBattleUserActiveStatus(BattleId, UserId)
+			UserErr := s.PokerDataSvc.GetUserActiveStatus(BattleId, UserId)
 			if UserErr != nil && UserType != adminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
 				return

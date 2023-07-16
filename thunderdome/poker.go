@@ -61,35 +61,35 @@ type Story struct {
 }
 
 type PokerDataSvc interface {
-	CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*Poker, error)
-	TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*Poker, error)
-	ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, LeaderCode string) error
-	GetBattleLeaderCode(BattleID string) (string, error)
-	GetBattle(BattleID string, UserID string) (*Poker, error)
-	GetBattlesByUser(UserID string, Limit int, Offset int) ([]*Poker, int, error)
-	ConfirmLeader(BattleID string, UserID string) error
-	GetBattleUserActiveStatus(BattleID string, UserID string) error
-	GetBattleUsers(BattleID string) []*PokerUser
-	GetBattleActiveUsers(BattleID string) []*PokerUser
-	AddUserToBattle(BattleID string, UserID string) ([]*PokerUser, error)
-	RetreatUser(BattleID string, UserID string) []*PokerUser
-	AbandonBattle(BattleID string, UserID string) ([]*PokerUser, error)
-	SetBattleLeader(BattleID string, LeaderID string) ([]string, error)
-	DemoteBattleLeader(BattleID string, LeaderID string) ([]string, error)
-	ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*PokerUser, error)
-	DeleteBattle(BattleID string) error
-	AddBattleLeadersByEmail(ctx context.Context, BattleID string, LeaderEmails []string) ([]string, error)
-	GetBattles(Limit int, Offset int) ([]*Poker, int, error)
-	GetActiveBattles(Limit int, Offset int) ([]*Poker, int, error)
-	CleanBattles(ctx context.Context, DaysOld int) error
-	GetPlans(BattleID string, UserID string) []*Story
-	CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*Story, error)
-	ActivatePlanVoting(BattleID string, PlanID string) ([]*Story, error)
-	SetVote(BattleID string, UserID string, PlanID string, VoteValue string) (BattlePlans []*Story, AllUsersVoted bool)
-	RetractVote(BattleID string, UserID string, PlanID string) ([]*Story, error)
-	EndPlanVoting(BattleID string, PlanID string) ([]*Story, error)
-	SkipPlan(BattleID string, PlanID string) ([]*Story, error)
-	RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*Story, error)
-	BurnPlan(BattleID string, PlanID string) ([]*Story, error)
-	FinalizePlan(BattleID string, PlanID string, PlanPoints string) ([]*Story, error)
+	CreateGame(ctx context.Context, FacilitatorID string, Name string, PointValuesAllowed []string, Stories []*Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*Poker, error)
+	TeamCreateGame(ctx context.Context, TeamID string, FacilitatorID string, Name string, PointValuesAllowed []string, Stories []*Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*Poker, error)
+	UpdateGame(PokerID string, Name string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, FacilitatorCode string) error
+	GetFacilitatorCode(PokerID string) (string, error)
+	GetGame(PokerID string, UserID string) (*Poker, error)
+	GetGamesByUser(UserID string, Limit int, Offset int) ([]*Poker, int, error)
+	ConfirmFacilitator(BattleID string, UserID string) error
+	GetUserActiveStatus(PokerID string, UserID string) error
+	GetUsers(PokerID string) []*PokerUser
+	GetActiveUsers(PokerID string) []*PokerUser
+	AddUser(PokerID string, UserID string) ([]*PokerUser, error)
+	RetreatUser(PokerID string, UserID string) []*PokerUser
+	AbandonGame(PokerID string, UserID string) ([]*PokerUser, error)
+	AddFacilitator(PokerID string, UserID string) ([]string, error)
+	RemoveFacilitator(PokerID string, UserID string) ([]string, error)
+	ToggleSpectator(PokerID string, UserID string, Spectator bool) ([]*PokerUser, error)
+	DeleteGame(PokerID string) error
+	AddFacilitatorsByEmail(ctx context.Context, PokerID string, FacilitatorEmails []string) ([]string, error)
+	GetGames(Limit int, Offset int) ([]*Poker, int, error)
+	GetActiveGames(Limit int, Offset int) ([]*Poker, int, error)
+	PurgeOldGames(ctx context.Context, DaysOld int) error
+	GetStories(PokerID string, UserID string) []*Story
+	CreateStory(PokerID string, Name string, Type string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*Story, error)
+	ActivateStoryVoting(PokerID string, StoryID string) ([]*Story, error)
+	SetVote(PokerID string, UserID string, StoryID string, VoteValue string) (BattlePlans []*Story, AllUsersVoted bool)
+	RetractVote(PokerID string, UserID string, StoryID string) ([]*Story, error)
+	EndStoryVoting(PokerID string, StoryID string) ([]*Story, error)
+	SkipStory(PokerID string, StoryID string) ([]*Story, error)
+	UpdateStory(PokerID string, StoryID string, Name string, Type string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*Story, error)
+	DeleteStory(PokerID string, StoryID string) ([]*Story, error)
+	FinalizeStory(PokerID string, StoryID string, Points string) ([]*Story, error)
 }

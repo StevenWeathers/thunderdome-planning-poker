@@ -116,7 +116,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 		// confirm leader for any operation that requires it
 		if _, ok := leaderOnlyOperations[eventType]; ok && !badEvent {
-			err := b.BattleService.ConfirmLeader(BattleID, UserID)
+			err := b.BattleService.ConfirmFacilitator(BattleID, UserID)
 			if err != nil {
 				badEvent = true
 			}
@@ -235,14 +235,14 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		}
 
 		// make sure battle is legit
-		battle, battleErr := b.BattleService.GetBattle(battleID, User.Id)
+		battle, battleErr := b.BattleService.GetGame(battleID, User.Id)
 		if battleErr != nil {
 			b.handleSocketClose(ctx, ws, 4004, "battle not found")
 			return
 		}
 
 		// check users battle active status
-		UserErr := b.BattleService.GetBattleUserActiveStatus(battleID, User.Id)
+		UserErr := b.BattleService.GetUserActiveStatus(battleID, User.Id)
 		if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
 			usrErrMsg := UserErr.Error()
 
@@ -290,7 +290,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			ss := subscription{c, battleID, User.Id}
 			h.register <- ss
 
-			Users, _ := b.BattleService.AddUserToBattle(ss.arena, User.Id)
+			Users, _ := b.BattleService.AddUser(ss.arena, User.Id)
 			UpdatedUsers, _ := json.Marshal(Users)
 
 			Battle, _ := json.Marshal(battle)
@@ -312,7 +312,7 @@ func (b *Service) APIEvent(ctx context.Context, arenaID string, UserID, eventTyp
 
 	// confirm leader for any operation that requires it
 	if _, ok := leaderOnlyOperations[eventType]; ok {
-		err := b.BattleService.ConfirmLeader(arenaID, UserID)
+		err := b.BattleService.ConfirmFacilitator(arenaID, UserID)
 		if err != nil {
 			return err
 		}

@@ -29,9 +29,9 @@ type TeamDataSvc interface {
 	TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error)
 	TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*TeamUser, int, error)
 	TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error
-	TeamBattleList(ctx context.Context, TeamID string, Limit int, Offset int) []*Poker
-	TeamAddBattle(ctx context.Context, TeamID string, BattleID string) error
-	TeamRemoveBattle(ctx context.Context, TeamID string, BattleID string) error
+	TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*Poker
+	TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error
+	TeamRemovePoker(ctx context.Context, TeamID string, PokerID string) error
 	TeamDelete(ctx context.Context, TeamID string) error
 	TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) []*Retro
 	TeamAddRetro(ctx context.Context, TeamID string, RetroID string) error

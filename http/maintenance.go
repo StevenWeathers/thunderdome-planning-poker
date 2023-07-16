@@ -20,7 +20,7 @@ func (s *Service) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_battles_days_old")
 
-		err := s.PokerDataSvc.CleanBattles(r.Context(), DaysOld)
+		err := s.PokerDataSvc.PurgeOldGames(r.Context(), DaysOld)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return

@@ -256,7 +256,7 @@ func (s *Service) handleGetTeamBattles() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Battles := s.TeamDataSvc.TeamBattleList(r.Context(), TeamID, Limit, Offset)
+		Battles := s.TeamDataSvc.TeamPokerList(r.Context(), TeamID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Battles, nil)
 	}
@@ -285,7 +285,7 @@ func (s *Service) handleTeamRemoveBattle() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamDataSvc.TeamRemoveBattle(r.Context(), TeamID, BattleID)
+		err := s.TeamDataSvc.TeamRemovePoker(r.Context(), TeamID, BattleID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return

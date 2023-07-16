@@ -206,9 +206,9 @@ func (d *TeamService) TeamRemoveUser(ctx context.Context, TeamID string, UserID 
 	return nil
 }
 
-// TeamBattleList gets a list of team battles
-func (d *TeamService) TeamBattleList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Poker {
-	var battles = make([]*thunderdome.Poker, 0)
+// TeamPokerList gets a list of team poker games
+func (d *TeamService) TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Poker {
+	var pokers = make([]*thunderdome.Poker, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT b.id, b.name
         FROM thunderdome.team_poker tb
@@ -233,22 +233,22 @@ func (d *TeamService) TeamBattleList(ctx context.Context, TeamID string, Limit i
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("team_poker list query scan error", zap.Error(err))
 			} else {
-				battles = append(battles, &tb)
+				pokers = append(pokers, &tb)
 			}
 		}
 	} else {
 		d.Logger.Ctx(ctx).Error("team_poker list query error", zap.Error(err))
 	}
 
-	return battles
+	return pokers
 }
 
-// TeamAddBattle adds a battle to a team
-func (d *TeamService) TeamAddBattle(ctx context.Context, TeamID string, BattleID string) error {
+// TeamAddPoker adds a poker game to a team
+func (d *TeamService) TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.team_poker (team_id, poker_id) VALUES ($1, $2);`,
 		TeamID,
-		BattleID,
+		PokerID,
 	)
 
 	if err != nil {
@@ -259,12 +259,12 @@ func (d *TeamService) TeamAddBattle(ctx context.Context, TeamID string, BattleID
 	return nil
 }
 
-// TeamRemoveBattle removes a battle from a team
-func (d *TeamService) TeamRemoveBattle(ctx context.Context, TeamID string, BattleID string) error {
+// TeamRemovePoker removes a poker game from a team
+func (d *TeamService) TeamRemovePoker(ctx context.Context, TeamID string, PokerID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team_poker WHERE poker_id = $2 AND team_id = $1;`,
 		TeamID,
-		BattleID,
+		PokerID,
 	)
 
 	if err != nil {
