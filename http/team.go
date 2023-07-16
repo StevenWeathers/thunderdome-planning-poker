@@ -32,7 +32,7 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 		TeamID := vars["teamId"]
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 
-		Team, err := s.TeamService.TeamGet(r.Context(), TeamID)
+		Team, err := s.TeamDataSvc.TeamGet(r.Context(), TeamID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -64,7 +64,7 @@ func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.TeamService.TeamListByUser(r.Context(), UserID, Limit, Offset)
+		Teams := s.TeamDataSvc.TeamListByUser(r.Context(), UserID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -85,7 +85,7 @@ func (s *Service) handleGetTeamUsers() http.HandlerFunc {
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users, UserCount, err := s.TeamService.TeamUserList(r.Context(), TeamID, Limit, Offset)
+		Users, UserCount, err := s.TeamDataSvc.TeamUserList(r.Context(), TeamID, Limit, Offset)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 		}
@@ -139,7 +139,7 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 		}
 
-		NewTeam, err := s.TeamService.TeamCreate(r.Context(), UserID, team.Name)
+		NewTeam, err := s.TeamDataSvc.TeamCreate(r.Context(), UserID, team.Name)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -191,13 +191,13 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := s.UserService.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := s.UserDataSvc.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, err := s.TeamService.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
+		_, err := s.TeamDataSvc.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -230,7 +230,7 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamService.TeamRemoveUser(r.Context(), TeamID, UserID)
+		err := s.TeamDataSvc.TeamRemoveUser(r.Context(), TeamID, UserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -246,7 +246,7 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 // @Tags team
 // @Produce  json
 // @Param teamId path string true "the team ID"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.Battle}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Poker}
 // @Security ApiKeyAuth
 // @Router /teams/{teamId}/battles [get]
 func (s *Service) handleGetTeamBattles() http.HandlerFunc {
@@ -256,14 +256,14 @@ func (s *Service) handleGetTeamBattles() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Battles := s.TeamService.TeamBattleList(r.Context(), TeamID, Limit, Offset)
+		Battles := s.TeamDataSvc.TeamBattleList(r.Context(), TeamID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Battles, nil)
 	}
 }
 
 // handleTeamRemoveBattle handles removing battle from a team
-// @Summary Remove Team Battle
+// @Summary Remove Team Poker
 // @Description Remove a battle from the team
 // @Tags team
 // @Produce  json
@@ -285,7 +285,7 @@ func (s *Service) handleTeamRemoveBattle() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamService.TeamRemoveBattle(r.Context(), TeamID, BattleID)
+		err := s.TeamDataSvc.TeamRemoveBattle(r.Context(), TeamID, BattleID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -316,7 +316,7 @@ func (s *Service) handleDeleteTeam() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamService.TeamDelete(r.Context(), TeamID)
+		err := s.TeamDataSvc.TeamDelete(r.Context(), TeamID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -341,7 +341,7 @@ func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Retrospectives := s.TeamService.TeamRetroList(r.Context(), TeamID, Limit, Offset)
+		Retrospectives := s.TeamDataSvc.TeamRetroList(r.Context(), TeamID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Retrospectives, nil)
 	}
@@ -370,7 +370,7 @@ func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamService.TeamRemoveRetro(r.Context(), TeamID, RetrospectiveID)
+		err := s.TeamDataSvc.TeamRemoveRetro(r.Context(), TeamID, RetrospectiveID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -393,7 +393,7 @@ func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Storyboards := s.TeamService.TeamStoryboardList(r.Context(), TeamID, Limit, Offset)
+		Storyboards := s.TeamDataSvc.TeamStoryboardList(r.Context(), TeamID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Storyboards, nil)
 	}
@@ -422,7 +422,7 @@ func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamService.TeamRemoveStoryboard(r.Context(), TeamID, StoryboardID)
+		err := s.TeamDataSvc.TeamRemoveStoryboard(r.Context(), TeamID, StoryboardID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -453,7 +453,7 @@ func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 		query := r.URL.Query()
 		Completed, _ := strconv.ParseBool(query.Get("completed"))
 
-		Actions, Count, err = s.RetroService.GetTeamRetroActions(TeamID, Limit, Offset, Completed)
+		Actions, Count, err = s.RetroDataSvc.GetTeamRetroActions(TeamID, Limit, Offset, Completed)
 
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)

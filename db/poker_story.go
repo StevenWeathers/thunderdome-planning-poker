@@ -10,8 +10,8 @@ import (
 )
 
 // GetPlans retrieves plans for given battle
-func (d *BattleService) GetPlans(BattleID string, UserID string) []*thunderdome.Plan {
-	var plans = make([]*thunderdome.Plan, 0)
+func (d *PokerService) GetPlans(BattleID string, UserID string) []*thunderdome.Story {
+	var plans = make([]*thunderdome.Story, 0)
 	planRows, plansErr := d.DB.Query(
 		`SELECT
 			id, name, type, reference_id, link, description, acceptance_criteria, priority, points, active, skipped, votestart_time, voteend_time, votes
@@ -27,7 +27,7 @@ func (d *BattleService) GetPlans(BattleID string, UserID string) []*thunderdome.
 			var Link sql.NullString
 			var Description sql.NullString
 			var AcceptanceCriteria sql.NullString
-			var p = &thunderdome.Plan{
+			var p = &thunderdome.Story{
 				Votes:   make([]*thunderdome.Vote, 0),
 				Active:  false,
 				Skipped: false,
@@ -62,7 +62,7 @@ func (d *BattleService) GetPlans(BattleID string, UserID string) []*thunderdome.
 }
 
 // CreatePlan adds a new plan to a battle
-func (d *BattleService) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*thunderdome.Plan, error) {
+func (d *PokerService) CreatePlan(BattleID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*thunderdome.Story, error) {
 	SanitizedDescription := d.HTMLSanitizerPolicy.Sanitize(Description)
 	SanitizedAcceptanceCriteria := d.HTMLSanitizerPolicy.Sanitize(AcceptanceCriteria)
 	// default priority should be 99 for sort order purposes
@@ -83,7 +83,7 @@ func (d *BattleService) CreatePlan(BattleID string, PlanName string, PlanType st
 }
 
 // ActivatePlanVoting sets the plan by ID to active, wipes any previous votes/points, and disables votingLock
-func (d *BattleService) ActivatePlanVoting(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
+func (d *PokerService) ActivatePlanVoting(BattleID string, PlanID string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_story_activate($1, $2);`, BattleID, PlanID,
 	); err != nil {
@@ -96,7 +96,7 @@ func (d *BattleService) ActivatePlanVoting(BattleID string, PlanID string) ([]*t
 }
 
 // SetVote sets a users vote for the plan
-func (d *BattleService) SetVote(BattleID string, UserID string, PlanID string, VoteValue string) (BattlePlans []*thunderdome.Plan, AllUsersVoted bool) {
+func (d *PokerService) SetVote(BattleID string, UserID string, PlanID string, VoteValue string) (BattlePlans []*thunderdome.Story, AllUsersVoted bool) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_user_vote_set($1, $2, $3);`, PlanID, UserID, VoteValue); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_user_vote_set error", zap.Error(err))
@@ -129,7 +129,7 @@ func (d *BattleService) SetVote(BattleID string, UserID string, PlanID string, V
 }
 
 // RetractVote removes a users vote for the plan
-func (d *BattleService) RetractVote(BattleID string, UserID string, PlanID string) ([]*thunderdome.Plan, error) {
+func (d *PokerService) RetractVote(BattleID string, UserID string, PlanID string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_user_vote_retract($1, $2);`, PlanID, UserID); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_vote_retract error", zap.Error(err))
@@ -142,7 +142,7 @@ func (d *BattleService) RetractVote(BattleID string, UserID string, PlanID strin
 }
 
 // EndPlanVoting sets plan to active: false
-func (d *BattleService) EndPlanVoting(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
+func (d *PokerService) EndPlanVoting(BattleID string, PlanID string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_plan_voting_stop($1, $2);`, BattleID, PlanID); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_plan_voting_stop error", zap.Error(err))
@@ -154,7 +154,7 @@ func (d *BattleService) EndPlanVoting(BattleID string, PlanID string) ([]*thunde
 }
 
 // SkipPlan sets plan to active: false and unsets battle's activePlanId
-func (d *BattleService) SkipPlan(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
+func (d *PokerService) SkipPlan(BattleID string, PlanID string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_vote_skip($1, $2);`, BattleID, PlanID); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_vote_skip error", zap.Error(err))
@@ -166,7 +166,7 @@ func (d *BattleService) SkipPlan(BattleID string, PlanID string) ([]*thunderdome
 }
 
 // RevisePlan updates the plan by ID
-func (d *BattleService) RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*thunderdome.Plan, error) {
+func (d *PokerService) RevisePlan(BattleID string, PlanID string, PlanName string, PlanType string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*thunderdome.Story, error) {
 	SanitizedDescription := d.HTMLSanitizerPolicy.Sanitize(Description)
 	SanitizedAcceptanceCriteria := d.HTMLSanitizerPolicy.Sanitize(AcceptanceCriteria)
 	// default priority should be 99 for sort order purposes
@@ -196,7 +196,7 @@ func (d *BattleService) RevisePlan(BattleID string, PlanID string, PlanName stri
 }
 
 // BurnPlan removes a plan from the current battle by ID
-func (d *BattleService) BurnPlan(pokerID string, storyID string) ([]*thunderdome.Plan, error) {
+func (d *PokerService) BurnPlan(pokerID string, storyID string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_story_delete($1, $2);`, pokerID, storyID); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_story_delete error", zap.Error(err))
@@ -208,7 +208,7 @@ func (d *BattleService) BurnPlan(pokerID string, storyID string) ([]*thunderdome
 }
 
 // FinalizePlan sets plan to active: false
-func (d *BattleService) FinalizePlan(BattleID string, PlanID string, PlanPoints string) ([]*thunderdome.Plan, error) {
+func (d *PokerService) FinalizePlan(BattleID string, PlanID string, PlanPoints string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_story_finalize($1, $2, $3);`, BattleID, PlanID, PlanPoints); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_story_finalize error", zap.Error(err))

@@ -78,7 +78,7 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newRetro, err = s.RetroService.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+				newRetro, err = s.RetroDataSvc.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					return
@@ -88,7 +88,7 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newRetro, err = s.RetroService.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+			newRetro, err = s.RetroDataSvc.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
@@ -116,7 +116,7 @@ func (s *Service) handleRetroGet() http.HandlerFunc {
 		RetroID := vars["retroId"]
 		UserID := r.Context().Value(contextKeyUserID).(string)
 
-		re, err := s.RetroService.RetroGet(RetroID, UserID)
+		re, err := s.RetroDataSvc.RetroGet(RetroID, UserID)
 
 		if err != nil {
 			http.NotFound(w, r)
@@ -145,7 +145,7 @@ func (s *Service) handleRetrosGetByUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		retros, err := s.RetroService.RetroGetByUser(UserID)
+		retros, err := s.RetroDataSvc.RetroGetByUser(UserID)
 		if err != nil {
 			http.NotFound(w, r)
 			return
@@ -177,9 +177,9 @@ func (s *Service) handleGetRetros() http.HandlerFunc {
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Retros, Count, err = s.RetroService.GetActiveRetros(Limit, Offset)
+			Retros, Count, err = s.RetroDataSvc.GetActiveRetros(Limit, Offset)
 		} else {
-			Retros, Count, err = s.RetroService.GetRetros(Limit, Offset)
+			Retros, Count, err = s.RetroDataSvc.GetRetros(Limit, Offset)
 		}
 
 		if err != nil {
@@ -356,7 +356,7 @@ func (s *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 			return
 		}
 
-		action, err := s.RetroService.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
+		action, err := s.RetroDataSvc.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -421,7 +421,7 @@ func (s *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 			return
 		}
 
-		action, err := s.RetroService.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
+		action, err := s.RetroDataSvc.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -466,7 +466,7 @@ func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 			return
 		}
 
-		action, err := s.RetroService.RetroActionCommentDelete(RetroID, ActionID, CommentID)
+		action, err := s.RetroDataSvc.RetroActionCommentDelete(RetroID, ActionID, CommentID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return

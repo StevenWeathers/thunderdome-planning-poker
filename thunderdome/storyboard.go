@@ -78,7 +78,7 @@ type StoryboardPersona struct {
 	Description string `json:"description"`
 }
 
-type StoryboardService interface {
+type StoryboardDataSvc interface {
 	CreateStoryboard(ctx context.Context, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*Storyboard, error)
 	TeamCreateStoryboard(ctx context.Context, TeamID string, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*Storyboard, error)
 	EditStoryboard(StoryboardID string, StoryboardName string, JoinCode string, FacilitatorCode string) error

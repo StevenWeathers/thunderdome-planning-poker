@@ -1,4 +1,4 @@
-package battle
+package poker
 
 type message struct {
 	data  []byte

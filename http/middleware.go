@@ -20,7 +20,7 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		if apiKey != "" && s.Config.ExternalAPIEnabled {
 			var apiKeyErr error
-			User, apiKeyErr = s.APIKeyService.GetApiKeyUser(ctx, apiKey)
+			User, apiKeyErr = s.ApiKeyDataSvc.GetApiKeyUser(ctx, apiKey)
 			if apiKeyErr != nil {
 				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
 				return
@@ -34,7 +34,7 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 
 			if SessionId != "" {
 				var userErr error
-				User, userErr = s.AuthService.GetSessionUser(ctx, SessionId)
+				User, userErr = s.AuthDataSvc.GetSessionUser(ctx, SessionId)
 				if userErr != nil {
 					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
@@ -47,7 +47,7 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 				}
 
 				var userErr error
-				User, userErr = s.UserService.GetGuestUser(ctx, UserID)
+				User, userErr = s.UserDataSvc.GetGuestUser(ctx, UserID)
 				if userErr != nil {
 					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 					return
@@ -132,7 +132,7 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		EntityUser, EntityUserErr := s.UserService.GetUser(ctx, EntityUserID)
+		EntityUser, EntityUserErr := s.UserDataSvc.GetUser(ctx, EntityUserID)
 		if EntityUserErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
 			return
@@ -164,7 +164,7 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = s.OrganizationService.OrganizationUserRole(ctx, UserID, OrgID)
+			Role, UserErr = s.OrganizationDataSvc.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
@@ -196,7 +196,7 @@ func (s *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr := s.OrganizationService.OrganizationUserRole(ctx, UserID, OrgID)
+			Role, UserErr := s.OrganizationDataSvc.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
@@ -239,7 +239,7 @@ func (s *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, TeamRole, UserErr = s.OrganizationService.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
+			OrgRole, TeamRole, UserErr = s.OrganizationDataSvc.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -280,7 +280,7 @@ func (s *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, TeamRole, UserErr := s.OrganizationService.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
+			OrgRole, TeamRole, UserErr := s.OrganizationDataSvc.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -325,7 +325,7 @@ func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var DepartmentRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, UserErr = s.OrganizationService.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
+			OrgRole, DepartmentRole, UserErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
@@ -366,7 +366,7 @@ func (s *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var DepartmentRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, UserErr := s.OrganizationService.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
+			OrgRole, DepartmentRole, UserErr := s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
@@ -418,7 +418,7 @@ func (s *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationService.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
+			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationDataSvc.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -468,7 +468,7 @@ func (s *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var TeamRole string
 		if UserType != adminUserType {
 			var UserErr error
-			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationService.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
+			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationDataSvc.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -509,7 +509,7 @@ func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = s.TeamService.TeamUserRole(ctx, UserID, TeamID)
+			Role, UserErr = s.TeamDataSvc.TeamUserRole(ctx, UserID, TeamID)
 			if UserType != adminUserType && UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
@@ -541,7 +541,7 @@ func (s *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var Role string
 		if UserType != adminUserType {
 			var UserErr error
-			Role, UserErr = s.TeamService.TeamUserRole(ctx, UserID, TeamID)
+			Role, UserErr = s.TeamDataSvc.TeamUserRole(ctx, UserID, TeamID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return

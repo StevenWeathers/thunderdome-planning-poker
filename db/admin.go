@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// AdminService represents a PostgreSQL implementation of thunderdome.AdminService.
+// AdminService represents a PostgreSQL implementation of thunderdome.AdminDataSvc.
 type AdminService struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
@@ -49,14 +49,14 @@ func (d *AdminService) GetAppStats(ctx context.Context) (*thunderdome.Applicatio
 	).Scan(
 		&Appstats.UnregisteredCount,
 		&Appstats.RegisteredCount,
-		&Appstats.BattleCount,
-		&Appstats.PlanCount,
+		&Appstats.PokerCount,
+		&Appstats.PokerStoryCount,
 		&Appstats.OrganizationCount,
 		&Appstats.DepartmentCount,
 		&Appstats.TeamCount,
 		&Appstats.APIKeyCount,
-		&Appstats.ActiveBattleCount,
-		&Appstats.ActiveBattleUserCount,
+		&Appstats.ActivePokerCount,
+		&Appstats.ActivePokerUserCount,
 		&Appstats.TeamCheckinsCount,
 		&Appstats.RetroCount,
 		&Appstats.ActiveRetroCount,

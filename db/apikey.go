@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// APIKeyService represents a PostgreSQL implementation of thunderdome.APIKeyService.
+// APIKeyService represents a PostgreSQL implementation of thunderdome.APIKeyDataSvc.
 type APIKeyService struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger

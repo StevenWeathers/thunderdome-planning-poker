@@ -21,7 +21,7 @@ type TeamUser struct {
 	GravatarHash string `json:"gravatarHash"`
 }
 
-type TeamService interface {
+type TeamDataSvc interface {
 	TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error)
 	TeamGet(ctx context.Context, TeamID string) (*Team, error)
 	TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*Team
@@ -29,7 +29,7 @@ type TeamService interface {
 	TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error)
 	TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*TeamUser, int, error)
 	TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error
-	TeamBattleList(ctx context.Context, TeamID string, Limit int, Offset int) []*Battle
+	TeamBattleList(ctx context.Context, TeamID string, Limit int, Offset int) []*Poker
 	TeamAddBattle(ctx context.Context, TeamID string, BattleID string) error
 	TeamRemoveBattle(ctx context.Context, TeamID string, BattleID string) error
 	TeamDelete(ctx context.Context, TeamID string) error

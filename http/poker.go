@@ -9,31 +9,31 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/spf13/viper"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/http/battle"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/poker"
 
 	"github.com/gorilla/mux"
 )
 
-// handleGetUserBattles looks up battles associated with UserID
-// @Summary Get Battles
-// @Description get list of battles for the user
-// @Tags battle
+// handleGetUserGames looks up poker games associated with UserID
+// @Summary Get PokerGames
+// @Description get list of poker games for the user
+// @Tags poker
 // @Produce  json
-// @Param userId path string true "the user ID to get battles for"
+// @Param userId path string true "the user ID to get poker games for"
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.Battle}
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Poker}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /users/{userId}/battles [get]
-func (s *Service) handleGetUserBattles() http.HandlerFunc {
+func (s *Service) handleGetUserGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		battles, Count, err := s.BattleService.GetBattlesByUser(UserID, Limit, Offset)
+		battles, Count, err := s.PokerDataSvc.GetBattlesByUser(UserID, Limit, Offset)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
@@ -50,28 +50,28 @@ func (s *Service) handleGetUserBattles() http.HandlerFunc {
 }
 
 type battleRequestBody struct {
-	BattleName           string              `json:"name" validate:"required"`
-	PointValuesAllowed   []string            `json:"pointValuesAllowed" validate:"required"`
-	AutoFinishVoting     bool                `json:"autoFinishVoting"`
-	Plans                []*thunderdome.Plan `json:"plans"`
-	PointAverageRounding string              `json:"pointAverageRounding" validate:"required,oneof=ceil round floor"`
-	HideVoterIdentity    bool                `json:"hideVoterIdentity"`
-	BattleLeaders        []string            `json:"battleLeaders"`
-	JoinCode             string              `json:"joinCode"`
-	LeaderCode           string              `json:"leaderCode"`
+	BattleName           string               `json:"name" validate:"required"`
+	PointValuesAllowed   []string             `json:"pointValuesAllowed" validate:"required"`
+	AutoFinishVoting     bool                 `json:"autoFinishVoting"`
+	Plans                []*thunderdome.Story `json:"plans"`
+	PointAverageRounding string               `json:"pointAverageRounding" validate:"required,oneof=ceil round floor"`
+	HideVoterIdentity    bool                 `json:"hideVoterIdentity"`
+	BattleLeaders        []string             `json:"battleLeaders"`
+	JoinCode             string               `json:"joinCode"`
+	LeaderCode           string               `json:"leaderCode"`
 }
 
-// handleBattleCreate handles creating a battle (arena)
-// @Summary Create Battle
-// @Description Create a battle associated to the user
-// @Tags battle
+// handlePokerCreate handles creating a poker game
+// @Summary Create Poker Game
+// @Description Create a poker game associated to the user
+// @Tags poker
 // @Produce  json
 // @Param userId path string true "the user ID"
 // @Param orgId path string false "the organization ID"
 // @Param departmentId path string false "the department ID"
 // @Param teamId path string false "the team ID"
-// @Param battle body battleRequestBody false "new battle object"
-// @Success 200 object standardJsonResponse{data=thunderdome.Battle}
+// @Param battle body battleRequestBody false "new poker game object"
+// @Success 200 object standardJsonResponse{data=thunderdome.Poker}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
@@ -79,7 +79,7 @@ type battleRequestBody struct {
 // @Router /teams/{teamId}/users/{userId}/battles [post]
 // @Router /{orgId}/teams/{teamId}/users/{userId}/battles [post]
 // @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles [post]
-func (s *Service) handleBattleCreate() http.HandlerFunc {
+func (s *Service) handlePokerCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		vars := mux.Vars(r)
@@ -110,12 +110,12 @@ func (s *Service) handleBattleCreate() http.HandlerFunc {
 			return
 		}
 
-		var newBattle *thunderdome.Battle
+		var newBattle *thunderdome.Poker
 		var err error
 		// if battle created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newBattle, err = s.BattleService.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+				newBattle, err = s.PokerDataSvc.TeamCreateBattle(ctx, TeamID, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 				if err != nil {
 					s.Failure(w, r, http.StatusInternalServerError, err)
 					return
@@ -125,7 +125,7 @@ func (s *Service) handleBattleCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newBattle, err = s.BattleService.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
+			newBattle, err = s.PokerDataSvc.CreateBattle(ctx, UserID, b.BattleName, b.PointValuesAllowed, b.Plans, b.AutoFinishVoting, b.PointAverageRounding, b.JoinCode, b.LeaderCode, b.HideVoterIdentity)
 			if err != nil {
 				s.Failure(w, r, http.StatusInternalServerError, err)
 				return
@@ -134,11 +134,11 @@ func (s *Service) handleBattleCreate() http.HandlerFunc {
 
 		// when battleLeaders array is passed add additional leaders to battle
 		if len(b.BattleLeaders) > 0 {
-			updatedLeaders, err := s.BattleService.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
+			updatedLeaders, err := s.PokerDataSvc.AddBattleLeadersByEmail(ctx, newBattle.Id, b.BattleLeaders)
 			if err != nil {
 				s.Logger.Error("error adding additional battle leaders")
 			} else {
-				newBattle.Leaders = updatedLeaders
+				newBattle.Facilitators = updatedLeaders
 			}
 		}
 
@@ -146,31 +146,31 @@ func (s *Service) handleBattleCreate() http.HandlerFunc {
 	}
 }
 
-// handleGetBattles gets a list of battles
-// @Summary Get Battles
-// @Description get list of battles
-// @Tags battle
+// handleGetPokerGames gets a list of poker games
+// @Summary Get Poker Games
+// @Description get list of poker games
+// @Tags poker
 // @Produce  json
 // @Param limit query int false "Max number of results to return"
 // @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Param active query boolean false "Only active battles"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.Battle}
+// @Param active query boolean false "Only active poker games"
+// @Success 200 object standardJsonResponse{data=[]thunderdome.Poker}
 // @Failure 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles [get]
-func (s *Service) handleGetBattles() http.HandlerFunc {
+func (s *Service) handleGetPokerGames() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
 		var err error
 		var Count int
-		var Battles []*thunderdome.Battle
+		var Battles []*thunderdome.Poker
 		Active, _ := strconv.ParseBool(query.Get("active"))
 
 		if Active {
-			Battles, Count, err = s.BattleService.GetActiveBattles(Limit, Offset)
+			Battles, Count, err = s.PokerDataSvc.GetActiveBattles(Limit, Offset)
 		} else {
-			Battles, Count, err = s.BattleService.GetBattles(Limit, Offset)
+			Battles, Count, err = s.PokerDataSvc.GetBattles(Limit, Offset)
 		}
 
 		if err != nil {
@@ -188,18 +188,18 @@ func (s *Service) handleGetBattles() http.HandlerFunc {
 	}
 }
 
-// handleGetBattle gets the battle by ID
-// @Summary Get Battle
-// @Description get battle by ID
-// @Tags battle
+// handleGetPokerGame gets the poker game by ID
+// @Summary Get Poker Game
+// @Description get poker game by ID
+// @Tags poker
 // @Produce  json
-// @Param battleId path string true "the battle ID to get"
-// @Success 200 object standardJsonResponse{data=thunderdome.Battle}
+// @Param battleId path string true "the poker game ID to get"
+// @Success 200 object standardJsonResponse{data=thunderdome.Poker}
 // @Failure 403 object standardJsonResponse{}
 // @Failure 404 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId} [get]
-func (s *Service) handleGetBattle() http.HandlerFunc {
+func (s *Service) handleGetPokerGame() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleId := vars["battleId"]
@@ -211,7 +211,7 @@ func (s *Service) handleGetBattle() http.HandlerFunc {
 		UserId := r.Context().Value(contextKeyUserID).(string)
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		b, err := s.BattleService.GetBattle(BattleId, UserId)
+		b, err := s.PokerDataSvc.GetBattle(BattleId, UserId)
 		if err != nil {
 			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
 			return
@@ -219,7 +219,7 @@ func (s *Service) handleGetBattle() http.HandlerFunc {
 
 		// don't allow retrieving battle details if battle has JoinCode and user hasn't joined yet
 		if b.JoinCode != "" {
-			UserErr := s.BattleService.GetBattleUserActiveStatus(BattleId, UserId)
+			UserErr := s.PokerDataSvc.GetBattleUserActiveStatus(BattleId, UserId)
 			if UserErr != nil && UserType != adminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_BATTLE"))
 				return
@@ -239,19 +239,19 @@ type planRequestBody struct {
 	AcceptanceCriteria string `json:"acceptanceCriteria"`
 }
 
-// handleBattlePlanAdd handles adding a plan to battle
-// @Summary Create Battle Plan
-// @Description Creates a battle plan
-// @Param battleId path string true "the battle ID"
-// @Param plan body planRequestBody true "new plan object"
-// @Tags battle
+// handlePokerStoryAdd handles adding a plan to poker
+// @Summary Create Poker Story
+// @Description Creates a poker story
+// @Param battleId path string true "the poker game ID"
+// @Param plan body planRequestBody true "new story object"
+// @Tags poker
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId}/plans [post]
-func (s *Service) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
+func (s *Service) handlePokerStoryAdd(b *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]
@@ -291,18 +291,18 @@ func (s *Service) handleBattlePlanAdd(b *battle.Service) http.HandlerFunc {
 	}
 }
 
-// handleBattleDelete handles deleting a battle
-// @Summary Delete Battle
-// @Description Deletes a battle
-// @Param battleId path string true "the battle ID"
-// @Tags battle
+// handlePokerDelete handles deleting a poker game
+// @Summary Delete Poker Game
+// @Description Deletes a poker game
+// @Param battleId path string true "the poker game ID"
+// @Tags poker
 // @Produce  json
 // @Success 200 object standardJsonResponse{}
 // @Success 403 object standardJsonResponse{}
 // @Success 500 object standardJsonResponse{}
 // @Security ApiKeyAuth
 // @Router /battles/{battleId} [delete]
-func (s *Service) handleBattleDelete(b *battle.Service) http.HandlerFunc {
+func (s *Service) handlePokerDelete(b *poker.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		BattleID := vars["battleId"]

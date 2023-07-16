@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// TeamService represents a PostgreSQL implementation of thunderdome.TeamService.
+// TeamService represents a PostgreSQL implementation of thunderdome.TeamDataSvc.
 type TeamService struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
@@ -207,8 +207,8 @@ func (d *TeamService) TeamRemoveUser(ctx context.Context, TeamID string, UserID 
 }
 
 // TeamBattleList gets a list of team battles
-func (d *TeamService) TeamBattleList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Battle {
-	var battles = make([]*thunderdome.Battle, 0)
+func (d *TeamService) TeamBattleList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Poker {
+	var battles = make([]*thunderdome.Poker, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT b.id, b.name
         FROM thunderdome.team_poker tb
@@ -225,7 +225,7 @@ func (d *TeamService) TeamBattleList(ctx context.Context, TeamID string, Limit i
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var tb thunderdome.Battle
+			var tb thunderdome.Poker
 
 			if err := rows.Scan(
 				&tb.Id,

@@ -342,21 +342,21 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 		return AuthedUser, SessionId, err
 	}
 
-	AuthedUser, err = s.UserService.GetUserByEmail(ctx, useremail)
+	AuthedUser, err = s.UserDataSvc.GetUserByEmail(ctx, useremail)
 
 	if AuthedUser == nil {
 		s.Logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		AuthedUser, verifyID, err := s.UserService.CreateUserRegistered(ctx, usercn, useremail, "", "")
+		AuthedUser, verifyID, err := s.UserDataSvc.CreateUserRegistered(ctx, usercn, useremail, "", "")
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		err = s.AuthService.VerifyUserAccount(ctx, verifyID)
+		err = s.AuthDataSvc.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		SessionId, err = s.AuthService.CreateSession(ctx, AuthedUser.Id)
+		SessionId, err = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return AuthedUser, SessionId, err
@@ -366,7 +366,7 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = s.AuthService.CreateSession(ctx, AuthedUser.Id)
+		SessionId, sessErr = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id)
 		if sessErr != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err
@@ -382,21 +382,21 @@ func (s *Service) authAndCreateUserHeader(ctx context.Context, username string, 
 	var SessionId string
 	var sessErr error
 
-	AuthedUser, err := s.UserService.GetUserByEmail(ctx, useremail)
+	AuthedUser, err := s.UserDataSvc.GetUserByEmail(ctx, useremail)
 
 	if AuthedUser == nil {
 		s.Logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		AuthedUser, verifyID, err := s.UserService.CreateUserRegistered(ctx, username, useremail, "", "")
+		AuthedUser, verifyID, err := s.UserDataSvc.CreateUserRegistered(ctx, username, useremail, "", "")
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		err = s.AuthService.VerifyUserAccount(ctx, verifyID)
+		err = s.AuthDataSvc.VerifyUserAccount(ctx, verifyID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		SessionId, err = s.AuthService.CreateSession(ctx, AuthedUser.Id)
+		SessionId, err = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return AuthedUser, SessionId, err
@@ -406,7 +406,7 @@ func (s *Service) authAndCreateUserHeader(ctx context.Context, username string, 
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = s.AuthService.CreateSession(ctx, AuthedUser.Id)
+		SessionId, sessErr = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id)
 		if sessErr != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err

@@ -31,7 +31,7 @@ func (s *Service) handleSessionUserProfile() http.HandlerFunc {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := s.UserService.GetUser(ctx, UserID)
+		User, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
 		if UserErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
@@ -57,7 +57,7 @@ func (s *Service) handleUserProfile() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, UserErr := s.UserService.GetUser(r.Context(), UserID)
+		User, UserErr := s.UserDataSvc.GetUser(r.Context(), UserID)
 		if UserErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
@@ -122,7 +122,7 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 				s.Failure(w, r, http.StatusBadRequest, vErr)
 				return
 			}
-			updateErr := s.UserService.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+			updateErr := s.UserDataSvc.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			if updateErr != nil {
 				s.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
@@ -134,9 +134,9 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 					s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 					return
 				}
-				updateErr = s.UserService.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = s.UserDataSvc.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			} else {
-				updateErr = s.UserService.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = s.UserDataSvc.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
 			}
 			if updateErr != nil {
 				s.Failure(w, r, http.StatusInternalServerError, updateErr)
@@ -144,7 +144,7 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 			}
 		}
 
-		user, UserErr := s.UserService.GetUser(ctx, UserID)
+		user, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
 		if UserErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
@@ -172,13 +172,13 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 		ctx := r.Context()
 		UserCookieID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := s.UserService.GetUser(ctx, UserID)
+		User, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
 		if UserErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
-		updateErr := s.UserService.DeleteUser(ctx, UserID)
+		updateErr := s.UserDataSvc.DeleteUser(ctx, UserID)
 		if updateErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
@@ -209,7 +209,7 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, VerifyId, err := s.AuthService.UserVerifyRequest(r.Context(), UserID)
+		User, VerifyId, err := s.AuthDataSvc.UserVerifyRequest(r.Context(), UserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -230,7 +230,7 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 // @Router /active-countries [get]
 func (s *Service) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		countries, err := s.UserService.GetActiveCountries(r.Context())
+		countries, err := s.UserDataSvc.GetActiveCountries(r.Context())
 
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)

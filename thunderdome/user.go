@@ -26,7 +26,7 @@ type User struct {
 	MFAEnabled           bool      `json:"mfaEnabled"`
 }
 
-type UserService interface {
+type UserDataSvc interface {
 	GetUser(ctx context.Context, UserID string) (*User, error)
 	GetGuestUser(ctx context.Context, UserID string) (*User, error)
 	GetUserByEmail(ctx context.Context, UserEmail string) (*User, error)

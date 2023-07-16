@@ -54,7 +54,7 @@ func (s *Service) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		authedUser, sessionId, err := s.AuthService.AuthUser(r.Context(), u.Email, u.Password)
+		authedUser, sessionId, err := s.AuthDataSvc.AuthUser(r.Context(), u.Email, u.Password)
 		if err != nil {
 			userErr := err.Error()
 			if userErr == "USER_NOT_FOUND" || userErr == "INVALID_PASSWORD" || userErr == "USER_DISABLED" {
@@ -232,7 +232,7 @@ func (s *Service) handleMFALogin() http.HandlerFunc {
 			return
 		}
 
-		err := s.AuthService.MFATokenValidate(r.Context(), u.SessionId, u.Passcode)
+		err := s.AuthDataSvc.MFATokenValidate(r.Context(), u.SessionId, u.Passcode)
 		if err != nil {
 			s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_AUTHENTICATOR_TOKEN"))
 			return
@@ -262,7 +262,7 @@ func (s *Service) handleLogout() http.HandlerFunc {
 			return
 		}
 
-		err := s.AuthService.DeleteSession(r.Context(), SessionId)
+		err := s.AuthDataSvc.DeleteSession(r.Context(), SessionId)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -314,7 +314,7 @@ func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 			return
 		}
 
-		newUser, err := s.UserService.CreateUserGuest(r.Context(), u.Name)
+		newUser, err := s.UserDataSvc.CreateUserGuest(r.Context(), u.Name)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -387,7 +387,7 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, err := s.UserService.CreateUserRegistered(r.Context(), UserName, UserEmail, UserPassword, ActiveUserID)
+		newUser, VerifyID, err := s.UserDataSvc.CreateUserRegistered(r.Context(), UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -399,7 +399,7 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 			s.clearUserCookies(w)
 		}
 
-		SessionID, err := s.AuthService.CreateSession(r.Context(), newUser.Id)
+		SessionID, err := s.AuthDataSvc.CreateSession(r.Context(), newUser.Id)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -450,7 +450,7 @@ func (s *Service) handleForgotPassword() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		ResetID, UserName, resetErr := s.AuthService.UserResetRequest(r.Context(), UserEmail)
+		ResetID, UserName, resetErr := s.AuthDataSvc.UserResetRequest(r.Context(), UserEmail)
 		if resetErr == nil {
 			_ = s.Email.SendForgotPassword(UserName, UserEmail, ResetID)
 		}
@@ -496,7 +496,7 @@ func (s *Service) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, resetErr := s.AuthService.UserResetPassword(r.Context(), u.ResetID, u.Password1)
+		UserName, UserEmail, resetErr := s.AuthDataSvc.UserResetPassword(r.Context(), u.ResetID, u.Password1)
 		if resetErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, resetErr)
 			return
@@ -546,7 +546,7 @@ func (s *Service) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := s.AuthService.UserUpdatePassword(r.Context(), UserID, u.Password1)
+		UserName, UserEmail, updateErr := s.AuthDataSvc.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
@@ -592,7 +592,7 @@ func (s *Service) handleAccountVerification() http.HandlerFunc {
 			return
 		}
 
-		verifyErr := s.AuthService.VerifyUserAccount(r.Context(), u.VerifyID)
+		verifyErr := s.AuthDataSvc.VerifyUserAccount(r.Context(), u.VerifyID)
 		if verifyErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, verifyErr)
 			return
@@ -613,13 +613,13 @@ func (s *Service) handleMFASetupGenerate() http.HandlerFunc {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		u, err := s.UserService.GetUser(ctx, UserID)
+		u, err := s.UserDataSvc.GetUser(ctx, UserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		secret, png64, err := s.AuthService.MFASetupGenerate(u.Email)
+		secret, png64, err := s.AuthDataSvc.MFASetupGenerate(u.Email)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -675,7 +675,7 @@ func (s *Service) handleMFASetupValidate() http.HandlerFunc {
 		}
 		res := result{Result: "SUCCESS"}
 
-		err := s.AuthService.MFASetupValidate(ctx, UserID, v.Secret, v.Passcode)
+		err := s.AuthDataSvc.MFASetupValidate(ctx, UserID, v.Secret, v.Passcode)
 		if err != nil {
 			res.Result = err.Error()
 		}
@@ -695,7 +695,7 @@ func (s *Service) handleMFARemove() http.HandlerFunc {
 		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 
-		err := s.AuthService.MFARemove(ctx, UserID)
+		err := s.AuthDataSvc.MFARemove(ctx, UserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return

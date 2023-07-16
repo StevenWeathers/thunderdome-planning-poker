@@ -33,7 +33,7 @@ type alertRequestBody struct {
 func (s *Service) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
-		Alerts, Count, err := s.AlertService.AlertsList(r.Context(), Limit, Offset)
+		Alerts, Count, err := s.AlertDataSvc.AlertsList(r.Context(), Limit, Offset)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -80,13 +80,13 @@ func (s *Service) handleAlertCreate() http.HandlerFunc {
 			return
 		}
 
-		err := s.AlertService.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := s.AlertDataSvc.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = s.AlertService.GetActiveAlerts(r.Context())
+		ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(r.Context())
 
 		s.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -132,13 +132,13 @@ func (s *Service) handleAlertUpdate() http.HandlerFunc {
 			return
 		}
 
-		err := s.AlertService.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := s.AlertDataSvc.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = s.AlertService.GetActiveAlerts(r.Context())
+		ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(r.Context())
 
 		s.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -164,13 +164,13 @@ func (s *Service) handleAlertDelete() http.HandlerFunc {
 			return
 		}
 
-		err := s.AlertService.AlertDelete(r.Context(), AlertID)
+		err := s.AlertDataSvc.AlertDelete(r.Context(), AlertID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = s.AlertService.GetActiveAlerts(r.Context())
+		ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(r.Context())
 
 		s.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}

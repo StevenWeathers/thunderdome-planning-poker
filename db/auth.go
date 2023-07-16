@@ -16,7 +16,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// AuthService represents a PostgreSQL implementation of thunderdome.AuthService.
+// AuthService represents a PostgreSQL implementation of thunderdome.AuthDataSvc.
 type AuthService struct {
 	DB         *sql.DB
 	Logger     *otelzap.Logger

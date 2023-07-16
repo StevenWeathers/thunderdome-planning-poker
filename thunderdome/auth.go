@@ -2,7 +2,7 @@ package thunderdome
 
 import "context"
 
-type AuthService interface {
+type AuthDataSvc interface {
 	AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*User, string, error)
 	UserResetRequest(ctx context.Context, UserEmail string) (resetID string, UserName string, resetErr error)
 	UserResetPassword(ctx context.Context, ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error)

@@ -73,7 +73,7 @@ type server struct {
 	cookie       *securecookie.SecureCookie
 	db           *db.Database
 	logger       *otelzap.Logger
-	AlertService thunderdome.AlertService
+	AlertService thunderdome.AlertDataSvc
 }
 
 func main() {

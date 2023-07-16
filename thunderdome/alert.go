@@ -17,7 +17,7 @@ type Alert struct {
 	UpdatedDate    time.Time `json:"updatedDate" db:"updated_date"`
 }
 
-type AlertService interface {
+type AlertDataSvc interface {
 	GetActiveAlerts(ctx context.Context) []interface{}
 	AlertsList(ctx context.Context, Limit int, Offset int) ([]*Alert, int, error)
 	AlertsCreate(ctx context.Context, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error

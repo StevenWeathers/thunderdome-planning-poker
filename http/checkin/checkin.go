@@ -14,10 +14,10 @@ type Service struct {
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
-	UserService           thunderdome.UserService
-	AuthService           thunderdome.AuthService
-	CheckinService        thunderdome.CheckinService
-	TeamService           thunderdome.TeamService
+	UserService           thunderdome.UserDataSvc
+	AuthService           thunderdome.AuthDataSvc
+	CheckinService        thunderdome.CheckinDataSvc
+	TeamService           thunderdome.TeamDataSvc
 }
 
 // New returns a new retro with websocket hub/client and event handlers
@@ -25,8 +25,8 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserService, authService thunderdome.AuthService,
-	checkinService thunderdome.CheckinService, teamService thunderdome.TeamService,
+	userService thunderdome.UserDataSvc, authService thunderdome.AuthDataSvc,
+	checkinService thunderdome.CheckinDataSvc, teamService thunderdome.TeamDataSvc,
 ) *Service {
 	c := &Service{
 		logger:                logger,

@@ -15,16 +15,16 @@ import (
 	"go.uber.org/zap"
 )
 
-// BattleService represents a PostgreSQL implementation of thunderdome.BattleService.
-type BattleService struct {
+// PokerService represents a PostgreSQL implementation of thunderdome.PokerDataSvc.
+type PokerService struct {
 	DB                  *sql.DB
 	Logger              *otelzap.Logger
 	AESHashKey          string
 	HTMLSanitizerPolicy *bluemonday.Policy
 }
 
-// CreateBattle creates a new story pointing session (battle)
-func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
+// CreateBattle creates a new story pointing session
+func (d *PokerService) CreateBattle(ctx context.Context, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Poker, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -45,20 +45,20 @@ func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, Battl
 		encryptedLeaderCode = EncryptedCode
 	}
 
-	var b = &thunderdome.Battle{
+	var b = &thunderdome.Poker{
 		Name:                 BattleName,
-		Users:                make([]*thunderdome.BattleUser, 0),
-		Plans:                make([]*thunderdome.Plan, 0),
+		Users:                make([]*thunderdome.PokerUser, 0),
+		Stories:              make([]*thunderdome.Story, 0),
 		VotingLocked:         true,
 		PointValuesAllowed:   PointValuesAllowed,
 		AutoFinishVoting:     AutoFinishVoting,
 		PointAverageRounding: PointAverageRounding,
 		HideVoterIdentity:    HideVoterIdentity,
-		Leaders:              make([]string, 0),
+		Facilitators:         make([]string, 0),
 		JoinCode:             JoinCode,
-		LeaderCode:           LeaderCode,
+		FacilitatorCode:      LeaderCode,
 	}
-	b.Leaders = append(b.Leaders, LeaderID)
+	b.Facilitators = append(b.Facilitators, LeaderID)
 
 	e := d.DB.QueryRowContext(ctx,
 		`SELECT pokerid FROM thunderdome.poker_create($1, $2, $3, $4, $5, $6, $7, $8);`,
@@ -94,13 +94,13 @@ func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, Battl
 		}
 	}
 
-	b.Plans = Plans
+	b.Stories = Plans
 
 	return b, nil
 }
 
-// TeamCreateBattle creates a new story pointing session (battle) associated to a team
-func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Plan, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Battle, error) {
+// TeamCreateBattle creates a new story pointing session associated to a team
+func (d *PokerService) TeamCreateBattle(ctx context.Context, TeamID string, LeaderID string, BattleName string, PointValuesAllowed []string, Plans []*thunderdome.Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, LeaderCode string, HideVoterIdentity bool) (*thunderdome.Poker, error) {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -121,20 +121,20 @@ func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, Lea
 		encryptedLeaderCode = EncryptedCode
 	}
 
-	var b = &thunderdome.Battle{
+	var b = &thunderdome.Poker{
 		Name:                 BattleName,
-		Users:                make([]*thunderdome.BattleUser, 0),
-		Plans:                make([]*thunderdome.Plan, 0),
+		Users:                make([]*thunderdome.PokerUser, 0),
+		Stories:              make([]*thunderdome.Story, 0),
 		VotingLocked:         true,
 		PointValuesAllowed:   PointValuesAllowed,
 		AutoFinishVoting:     AutoFinishVoting,
 		PointAverageRounding: PointAverageRounding,
 		HideVoterIdentity:    HideVoterIdentity,
-		Leaders:              make([]string, 0),
+		Facilitators:         make([]string, 0),
 		JoinCode:             JoinCode,
-		LeaderCode:           LeaderCode,
+		FacilitatorCode:      LeaderCode,
 	}
-	b.Leaders = append(b.Leaders, LeaderID)
+	b.Facilitators = append(b.Facilitators, LeaderID)
 
 	e := d.DB.QueryRowContext(ctx,
 		`SELECT pokerid FROM thunderdome.team_create_poker($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
@@ -171,13 +171,13 @@ func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, Lea
 		}
 	}
 
-	b.Plans = Plans
+	b.Stories = Plans
 
 	return b, nil
 }
 
 // ReviseBattle updates the battle by ID
-func (d *BattleService) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, LeaderCode string) error {
+func (d *PokerService) ReviseBattle(BattleID string, BattleName string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, LeaderCode string) error {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -212,7 +212,7 @@ func (d *BattleService) ReviseBattle(BattleID string, BattleName string, PointVa
 }
 
 // GetBattleLeaderCode retrieve the battle leader_code
-func (d *BattleService) GetBattleLeaderCode(BattleID string) (string, error) {
+func (d *PokerService) GetBattleLeaderCode(BattleID string) (string, error) {
 	var EncryptedLeaderCode string
 
 	if err := d.DB.QueryRow(`
@@ -236,15 +236,15 @@ func (d *BattleService) GetBattleLeaderCode(BattleID string) (string, error) {
 }
 
 // GetBattle gets a battle by ID
-func (d *BattleService) GetBattle(BattleID string, UserID string) (*thunderdome.Battle, error) {
-	var b = &thunderdome.Battle{
+func (d *PokerService) GetBattle(BattleID string, UserID string) (*thunderdome.Poker, error) {
+	var b = &thunderdome.Poker{
 		Id:                 BattleID,
-		Users:              make([]*thunderdome.BattleUser, 0),
-		Plans:              make([]*thunderdome.Plan, 0),
+		Users:              make([]*thunderdome.PokerUser, 0),
+		Stories:            make([]*thunderdome.Story, 0),
 		VotingLocked:       true,
 		PointValuesAllowed: make([]string, 0),
 		AutoFinishVoting:   true,
-		Leaders:            make([]string, 0),
+		Facilitators:       make([]string, 0),
 	}
 
 	// get battle
@@ -282,11 +282,11 @@ func (d *BattleService) GetBattle(BattleID string, UserID string) (*thunderdome.
 		return nil, errors.New("not found")
 	}
 
-	_ = json.Unmarshal([]byte(leaders), &b.Leaders)
+	_ = json.Unmarshal([]byte(leaders), &b.Facilitators)
 	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-	b.ActivePlanID = ActivePlanID.String
+	b.ActiveStoryID = ActivePlanID.String
 
-	isBattleLeader := contains(b.Leaders, UserID)
+	isBattleLeader := contains(b.Facilitators, UserID)
 
 	if JoinCode != "" {
 		DecryptedCode, codeErr := decrypt(JoinCode, d.AESHashKey)
@@ -301,19 +301,19 @@ func (d *BattleService) GetBattle(BattleID string, UserID string) (*thunderdome.
 		if codeErr != nil {
 			return nil, errors.New("unable to decode leader_code")
 		}
-		b.LeaderCode = DecryptedCode
+		b.FacilitatorCode = DecryptedCode
 	}
 
 	b.Users = d.GetBattleUsers(BattleID)
-	b.Plans = d.GetPlans(BattleID, UserID)
+	b.Stories = d.GetPlans(BattleID, UserID)
 
 	return b, nil
 }
 
 // GetBattlesByUser gets a list of battles by UserID
-func (d *BattleService) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
+func (d *PokerService) GetBattlesByUser(UserID string, Limit int, Offset int) ([]*thunderdome.Poker, int, error) {
 	var Count int
-	var battles = make([]*thunderdome.Battle, 0)
+	var battles = make([]*thunderdome.Poker, 0)
 
 	e := d.DB.QueryRow(`
 		SELECT COUNT(*) FROM thunderdome.poker b
@@ -348,13 +348,13 @@ func (d *BattleService) GetBattlesByUser(UserID string, Limit int, Offset int) (
 		var pv string
 		var leaders string
 		var ActivePlanID sql.NullString
-		var b = &thunderdome.Battle{
-			Users:              make([]*thunderdome.BattleUser, 0),
-			Plans:              make([]*thunderdome.Plan, 0),
+		var b = &thunderdome.Poker{
+			Users:              make([]*thunderdome.PokerUser, 0),
+			Stories:            make([]*thunderdome.Story, 0),
 			VotingLocked:       true,
 			PointValuesAllowed: make([]string, 0),
 			AutoFinishVoting:   true,
-			Leaders:            make([]string, 0),
+			Facilitators:       make([]string, 0),
 		}
 		if err := battleRows.Scan(
 			&b.Id,
@@ -371,10 +371,10 @@ func (d *BattleService) GetBattlesByUser(UserID string, Limit int, Offset int) (
 		); err != nil {
 			d.Logger.Error("error getting poker by user", zap.Error(e))
 		} else {
-			_ = json.Unmarshal([]byte(plans), &b.Plans)
+			_ = json.Unmarshal([]byte(plans), &b.Stories)
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
-			b.ActivePlanID = ActivePlanID.String
+			_ = json.Unmarshal([]byte(leaders), &b.Facilitators)
+			b.ActiveStoryID = ActivePlanID.String
 			battles = append(battles, b)
 		}
 	}
@@ -383,7 +383,7 @@ func (d *BattleService) GetBattlesByUser(UserID string, Limit int, Offset int) (
 }
 
 // ConfirmLeader confirms the user is a leader of the battle
-func (d *BattleService) ConfirmLeader(BattleID string, UserID string) error {
+func (d *PokerService) ConfirmLeader(BattleID string, UserID string) error {
 	var leaderID string
 	var role string
 	err := d.DB.QueryRow("SELECT type FROM thunderdome.users WHERE id = $1", UserID).Scan(&role)
@@ -402,7 +402,7 @@ func (d *BattleService) ConfirmLeader(BattleID string, UserID string) error {
 }
 
 // GetBattleUserActiveStatus checks battle active status of User for given battle
-func (d *BattleService) GetBattleUserActiveStatus(BattleID string, UserID string) error {
+func (d *PokerService) GetBattleUserActiveStatus(BattleID string, UserID string) error {
 	var active bool
 
 	e := d.DB.QueryRow(`
@@ -426,8 +426,8 @@ func (d *BattleService) GetBattleUserActiveStatus(BattleID string, UserID string
 }
 
 // GetBattleUsers retrieves the users for a given battle
-func (d *BattleService) GetBattleUsers(BattleID string) []*thunderdome.BattleUser {
-	var users = make([]*thunderdome.BattleUser, 0)
+func (d *PokerService) GetBattleUsers(BattleID string) []*thunderdome.PokerUser {
+	var users = make([]*thunderdome.PokerUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
 			u.id, u.name, u.type, u.avatar, pu.active, pu.spectator, COALESCE(u.email, '')
@@ -440,7 +440,7 @@ func (d *BattleService) GetBattleUsers(BattleID string) []*thunderdome.BattleUse
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w thunderdome.BattleUser
+			var w thunderdome.PokerUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
 				d.Logger.Error("error getting poker users", zap.Error(err))
 			} else {
@@ -458,8 +458,8 @@ func (d *BattleService) GetBattleUsers(BattleID string) []*thunderdome.BattleUse
 }
 
 // GetBattleActiveUsers retrieves the active users for a given battle
-func (d *BattleService) GetBattleActiveUsers(BattleID string) []*thunderdome.BattleUser {
-	var users = make([]*thunderdome.BattleUser, 0)
+func (d *PokerService) GetBattleActiveUsers(BattleID string) []*thunderdome.PokerUser {
+	var users = make([]*thunderdome.PokerUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
 			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, '')
@@ -472,7 +472,7 @@ func (d *BattleService) GetBattleActiveUsers(BattleID string) []*thunderdome.Bat
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var w thunderdome.BattleUser
+			var w thunderdome.PokerUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
 				d.Logger.Error("error getting active poker users", zap.Error(err))
 			} else {
@@ -490,7 +490,7 @@ func (d *BattleService) GetBattleActiveUsers(BattleID string) []*thunderdome.Bat
 }
 
 // AddUserToBattle adds a user by ID to the battle by ID
-func (d *BattleService) AddUserToBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
+func (d *PokerService) AddUserToBattle(BattleID string, UserID string) ([]*thunderdome.PokerUser, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.poker_user (poker_id, user_id, active)
 		VALUES ($1, $2, true)
@@ -507,7 +507,7 @@ func (d *BattleService) AddUserToBattle(BattleID string, UserID string) ([]*thun
 }
 
 // RetreatUser removes a user from the current battle by ID
-func (d *BattleService) RetreatUser(BattleID string, UserID string) []*thunderdome.BattleUser {
+func (d *PokerService) RetreatUser(BattleID string, UserID string) []*thunderdome.PokerUser {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.poker_user SET active = false WHERE poker_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
 		d.Logger.Error("error updating poker user to active false", zap.Error(err))
@@ -524,7 +524,7 @@ func (d *BattleService) RetreatUser(BattleID string, UserID string) []*thunderdo
 }
 
 // AbandonBattle removes a user from the current battle by ID and sets abandoned true
-func (d *BattleService) AbandonBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
+func (d *PokerService) AbandonBattle(BattleID string, UserID string) ([]*thunderdome.PokerUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.poker_user SET active = false, abandoned = true WHERE poker_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
 		d.Logger.Error("error updating battle user to abandoned", zap.Error(err))
@@ -543,7 +543,7 @@ func (d *BattleService) AbandonBattle(BattleID string, UserID string) ([]*thunde
 }
 
 // SetBattleLeader sets the leaderId for the battle
-func (d *BattleService) SetBattleLeader(BattleID string, LeaderID string) ([]string, error) {
+func (d *PokerService) SetBattleLeader(BattleID string, LeaderID string) ([]string, error) {
 	leaders := make([]string, 0)
 
 	// set battle leader
@@ -577,7 +577,7 @@ func (d *BattleService) SetBattleLeader(BattleID string, LeaderID string) ([]str
 }
 
 // DemoteBattleLeader removes a user from battle leaders
-func (d *BattleService) DemoteBattleLeader(BattleID string, LeaderID string) ([]string, error) {
+func (d *PokerService) DemoteBattleLeader(BattleID string, LeaderID string) ([]string, error) {
 	leaders := make([]string, 0)
 
 	// set battle leader
@@ -611,7 +611,7 @@ func (d *BattleService) DemoteBattleLeader(BattleID string, LeaderID string) ([]
 }
 
 // ToggleSpectator changes a battle users spectator status
-func (d *BattleService) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*thunderdome.BattleUser, error) {
+func (d *PokerService) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*thunderdome.PokerUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.poker_user SET spectator = $3 WHERE poker_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
 		d.Logger.Error("update poker user spectator error", zap.Error(err))
@@ -629,7 +629,7 @@ func (d *BattleService) ToggleSpectator(BattleID string, UserID string, Spectato
 }
 
 // DeleteBattle removes all battle associations and the battle itself by BattleID
-func (d *BattleService) DeleteBattle(BattleID string) error {
+func (d *PokerService) DeleteBattle(BattleID string) error {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.poker WHERE id = $1;`, BattleID); err != nil {
 		d.Logger.Error("delete poker error", zap.Error(err))
@@ -640,7 +640,7 @@ func (d *BattleService) DeleteBattle(BattleID string) error {
 }
 
 // AddBattleLeadersByEmail adds additional battle leaders using provided emails for matches
-func (d *BattleService) AddBattleLeadersByEmail(ctx context.Context, BattleID string, LeaderEmails []string) ([]string, error) {
+func (d *PokerService) AddBattleLeadersByEmail(ctx context.Context, BattleID string, LeaderEmails []string) ([]string, error) {
 	var leaders string
 	var newLeaders []string
 
@@ -664,8 +664,8 @@ func (d *BattleService) AddBattleLeadersByEmail(ctx context.Context, BattleID st
 }
 
 // GetBattles gets a list of battles
-func (d *BattleService) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
-	var battles = make([]*thunderdome.Battle, 0)
+func (d *PokerService) GetBattles(Limit int, Offset int) ([]*thunderdome.Poker, int, error) {
+	var battles = make([]*thunderdome.Poker, 0)
 	var Count int
 
 	e := d.DB.QueryRow(
@@ -694,13 +694,13 @@ func (d *BattleService) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle
 		var pv string
 		var leaders string
 		var ActivePlanID sql.NullString
-		var b = &thunderdome.Battle{
-			Users:              make([]*thunderdome.BattleUser, 0),
-			Plans:              make([]*thunderdome.Plan, 0),
+		var b = &thunderdome.Poker{
+			Users:              make([]*thunderdome.PokerUser, 0),
+			Stories:            make([]*thunderdome.Story, 0),
 			VotingLocked:       true,
 			PointValuesAllowed: make([]string, 0),
 			AutoFinishVoting:   true,
-			Leaders:            make([]string, 0),
+			Facilitators:       make([]string, 0),
 		}
 		if err := battleRows.Scan(
 			&b.Id,
@@ -717,8 +717,8 @@ func (d *BattleService) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle
 			d.Logger.Error("get poker games query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
-			b.ActivePlanID = ActivePlanID.String
+			_ = json.Unmarshal([]byte(leaders), &b.Facilitators)
+			b.ActiveStoryID = ActivePlanID.String
 			battles = append(battles, b)
 		}
 	}
@@ -727,8 +727,8 @@ func (d *BattleService) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle
 }
 
 // GetActiveBattles gets a list of active battles
-func (d *BattleService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.Battle, int, error) {
-	var battles = make([]*thunderdome.Battle, 0)
+func (d *PokerService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.Poker, int, error) {
+	var battles = make([]*thunderdome.Poker, 0)
 	var Count int
 
 	e := d.DB.QueryRow(
@@ -758,13 +758,13 @@ func (d *BattleService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.
 		var pv string
 		var leaders string
 		var ActivePlanID sql.NullString
-		var b = &thunderdome.Battle{
-			Users:              make([]*thunderdome.BattleUser, 0),
-			Plans:              make([]*thunderdome.Plan, 0),
+		var b = &thunderdome.Poker{
+			Users:              make([]*thunderdome.PokerUser, 0),
+			Stories:            make([]*thunderdome.Story, 0),
 			VotingLocked:       true,
 			PointValuesAllowed: make([]string, 0),
 			AutoFinishVoting:   true,
-			Leaders:            make([]string, 0),
+			Facilitators:       make([]string, 0),
 		}
 		if err := battleRows.Scan(
 			&b.Id,
@@ -781,8 +781,8 @@ func (d *BattleService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.
 			d.Logger.Error("get active poker games query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
-			b.ActivePlanID = ActivePlanID.String
+			_ = json.Unmarshal([]byte(leaders), &b.Facilitators)
+			b.ActiveStoryID = ActivePlanID.String
 			battles = append(battles, b)
 		}
 	}
@@ -791,7 +791,7 @@ func (d *BattleService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.
 }
 
 // CleanBattles deletes battles older than {DaysOld} days
-func (d *BattleService) CleanBattles(ctx context.Context, DaysOld int) error {
+func (d *PokerService) CleanBattles(ctx context.Context, DaysOld int) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.poker WHERE last_active < (NOW() - $1 * interval '1 day');`,
 		DaysOld,

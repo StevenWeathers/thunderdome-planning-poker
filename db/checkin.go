@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// CheckinService represents a PostgreSQL implementation of thunderdome.CheckinService.
+// CheckinService represents a PostgreSQL implementation of thunderdome.CheckinDataSvc.
 type CheckinService struct {
 	DB                  *sql.DB
 	Logger              *otelzap.Logger

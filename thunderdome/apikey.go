@@ -31,7 +31,7 @@ type UserAPIKey struct {
 	UpdatedDate time.Time `json:"updatedDate"`
 }
 
-type APIKeyService interface {
+type APIKeyDataSvc interface {
 	GenerateApiKey(ctx context.Context, UserID string, KeyName string) (*APIKey, error)
 	GetUserApiKeys(ctx context.Context, UserID string) ([]*APIKey, error)
 	GetApiKeyUser(ctx context.Context, APK string) (*User, error)

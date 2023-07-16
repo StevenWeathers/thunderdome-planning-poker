@@ -1,5 +1,5 @@
-// Package battle provides websocket event handlers for Thunderdome
-package battle
+// Package poker provides Poker Game http handlers for Thunderdome
+package poker
 
 import (
 	"context"
@@ -15,9 +15,9 @@ type Service struct {
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	validateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	eventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
-	UserService           thunderdome.UserService
-	AuthService           thunderdome.AuthService
-	BattleService         thunderdome.BattleService
+	UserService           thunderdome.UserDataSvc
+	AuthService           thunderdome.AuthDataSvc
+	BattleService         thunderdome.PokerDataSvc
 }
 
 // New returns a new battle with websocket hub/client and event handlers
@@ -25,8 +25,8 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserService, authService thunderdome.AuthService,
-	battleService thunderdome.BattleService,
+	userService thunderdome.UserDataSvc, authService thunderdome.AuthDataSvc,
+	battleService thunderdome.PokerDataSvc,
 ) *Service {
 	b := &Service{
 		logger:                logger,
