@@ -96,7 +96,7 @@ func (d *PokerService) ActivateStoryVoting(PokerID string, StoryID string) ([]*t
 }
 
 // SetVote sets a users vote for the story
-func (d *PokerService) SetVote(PokerID string, UserID string, StoryID string, VoteValue string) (BattlePlans []*thunderdome.Story, AllUsersVoted bool) {
+func (d *PokerService) SetVote(PokerID string, UserID string, StoryID string, VoteValue string) (Stories []*thunderdome.Story, AllUsersVoted bool) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.poker_user_vote_set($1, $2, $3);`, StoryID, UserID, VoteValue); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_user_vote_set error", zap.Error(err))

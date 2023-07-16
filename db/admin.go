@@ -15,7 +15,7 @@ type AdminService struct {
 	Logger *otelzap.Logger
 }
 
-// GetAppStats gets counts of common application metrics such as users and battles
+// GetAppStats gets counts of common application metrics such as users and poker games
 func (d *AdminService) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStats, error) {
 	var Appstats thunderdome.ApplicationStats
 

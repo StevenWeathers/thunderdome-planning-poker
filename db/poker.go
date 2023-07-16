@@ -247,12 +247,12 @@ func (d *PokerService) GetGame(PokerID string, UserID string) (*thunderdome.Poke
 		Facilitators:       make([]string, 0),
 	}
 
-	// get battle
-	var ActivePlanID sql.NullString
+	// get game
+	var ActiveStoryID sql.NullString
 	var pv string
-	var leaders string
+	var facilitators string
 	var JoinCode string
-	var LeaderCode string
+	var FacilitatorCode string
 	e := d.DB.QueryRow(
 		`
 		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.hide_voter_identity, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''), b.created_date, b.updated_date,
@@ -266,27 +266,27 @@ func (d *PokerService) GetGame(PokerID string, UserID string) (*thunderdome.Poke
 		&b.Id,
 		&b.Name,
 		&b.VotingLocked,
-		&ActivePlanID,
+		&ActiveStoryID,
 		&pv,
 		&b.AutoFinishVoting,
 		&b.PointAverageRounding,
 		&b.HideVoterIdentity,
 		&JoinCode,
-		&LeaderCode,
+		&FacilitatorCode,
 		&b.CreatedDate,
 		&b.UpdatedDate,
-		&leaders,
+		&facilitators,
 	)
 	if e != nil {
 		d.Logger.Error("error getting poker", zap.Error(e))
 		return nil, errors.New("not found")
 	}
 
-	_ = json.Unmarshal([]byte(leaders), &b.Facilitators)
+	_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
 	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-	b.ActiveStoryID = ActivePlanID.String
+	b.ActiveStoryID = ActiveStoryID.String
 
-	isBattleLeader := contains(b.Facilitators, UserID)
+	isFacilitator := contains(b.Facilitators, UserID)
 
 	if JoinCode != "" {
 		DecryptedCode, codeErr := decrypt(JoinCode, d.AESHashKey)
@@ -296,8 +296,8 @@ func (d *PokerService) GetGame(PokerID string, UserID string) (*thunderdome.Poke
 		b.JoinCode = DecryptedCode
 	}
 
-	if LeaderCode != "" && isBattleLeader {
-		DecryptedCode, codeErr := decrypt(LeaderCode, d.AESHashKey)
+	if FacilitatorCode != "" && isFacilitator {
+		DecryptedCode, codeErr := decrypt(FacilitatorCode, d.AESHashKey)
 		if codeErr != nil {
 			return nil, errors.New("unable to decode leader_code")
 		}
@@ -313,7 +313,7 @@ func (d *PokerService) GetGame(PokerID string, UserID string) (*thunderdome.Poke
 // GetGamesByUser gets a list of games by UserID
 func (d *PokerService) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thunderdome.Poker, int, error) {
 	var Count int
-	var battles = make([]*thunderdome.Poker, 0)
+	var games = make([]*thunderdome.Poker, 0)
 
 	e := d.DB.QueryRow(`
 		SELECT COUNT(*) FROM thunderdome.poker b
@@ -326,7 +326,7 @@ func (d *PokerService) GetGamesByUser(UserID string, Limit int, Offset int) ([]*
 		return nil, Count, e
 	}
 
-	battleRows, battlesErr := d.DB.Query(`
+	gameRows, gamesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS stories,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators
@@ -338,16 +338,16 @@ func (d *PokerService) GetGamesByUser(UserID string, Limit int, Offset int) ([]*
 		GROUP BY b.id ORDER BY b.created_date DESC
 		LIMIT $2 OFFSET $3
 	`, UserID, Limit, Offset)
-	if battlesErr != nil {
+	if gamesErr != nil {
 		return nil, Count, errors.New("not found")
 	}
 
-	defer battleRows.Close()
-	for battleRows.Next() {
-		var plans string
+	defer gameRows.Close()
+	for gameRows.Next() {
+		var stories string
 		var pv string
-		var leaders string
-		var ActivePlanID sql.NullString
+		var facilitators string
+		var ActiveStoryID sql.NullString
 		var b = &thunderdome.Poker{
 			Users:              make([]*thunderdome.PokerUser, 0),
 			Stories:            make([]*thunderdome.Story, 0),
@@ -356,35 +356,35 @@ func (d *PokerService) GetGamesByUser(UserID string, Limit int, Offset int) ([]*
 			AutoFinishVoting:   true,
 			Facilitators:       make([]string, 0),
 		}
-		if err := battleRows.Scan(
+		if err := gameRows.Scan(
 			&b.Id,
 			&b.Name,
 			&b.VotingLocked,
-			&ActivePlanID,
+			&ActiveStoryID,
 			&pv,
 			&b.AutoFinishVoting,
 			&b.PointAverageRounding,
 			&b.CreatedDate,
 			&b.UpdatedDate,
-			&plans,
-			&leaders,
+			&stories,
+			&facilitators,
 		); err != nil {
 			d.Logger.Error("error getting poker by user", zap.Error(e))
 		} else {
-			_ = json.Unmarshal([]byte(plans), &b.Stories)
+			_ = json.Unmarshal([]byte(stories), &b.Stories)
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-			_ = json.Unmarshal([]byte(leaders), &b.Facilitators)
-			b.ActiveStoryID = ActivePlanID.String
-			battles = append(battles, b)
+			_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
+			b.ActiveStoryID = ActiveStoryID.String
+			games = append(games, b)
 		}
 	}
 
-	return battles, Count, nil
+	return games, Count, nil
 }
 
 // ConfirmFacilitator confirms the user is a facilitator of the game
-func (d *PokerService) ConfirmFacilitator(BattleID string, UserID string) error {
-	var leaderID string
+func (d *PokerService) ConfirmFacilitator(PokerID string, UserID string) error {
+	var facilitatorID string
 	var role string
 	err := d.DB.QueryRow("SELECT type FROM thunderdome.users WHERE id = $1", UserID).Scan(&role)
 	if err != nil {
@@ -392,7 +392,7 @@ func (d *PokerService) ConfirmFacilitator(BattleID string, UserID string) error 
 		return errors.New("unable to get user role")
 	}
 
-	e := d.DB.QueryRow("SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1 AND user_id = $2", BattleID, UserID).Scan(&leaderID)
+	e := d.DB.QueryRow("SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1 AND user_id = $2", PokerID, UserID).Scan(&facilitatorID)
 	if e != nil && role != "ADMIN" {
 		d.Logger.Error("error confirming poker facilitator", zap.Error(e))
 		return errors.New("not a poker facilitator")
@@ -527,7 +527,7 @@ func (d *PokerService) RetreatUser(PokerID string, UserID string) []*thunderdome
 func (d *PokerService) AbandonGame(PokerID string, UserID string) ([]*thunderdome.PokerUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.poker_user SET active = false, abandoned = true WHERE poker_id = $1 AND user_id = $2`, PokerID, UserID); err != nil {
-		d.Logger.Error("error updating battle user to abandoned", zap.Error(err))
+		d.Logger.Error("error updating game user to abandoned", zap.Error(err))
 		return nil, err
 	}
 
@@ -544,9 +544,8 @@ func (d *PokerService) AbandonGame(PokerID string, UserID string) ([]*thunderdom
 
 // AddFacilitator makes a user a facilitator of the game
 func (d *PokerService) AddFacilitator(PokerID string, UserID string) ([]string, error) {
-	leaders := make([]string, 0)
+	facilitators := make([]string, 0)
 
-	// set battle leader
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.poker_facilitator (poker_id, user_id) VALUES ($1, $2);`,
 		PokerID, UserID); err != nil {
@@ -554,33 +553,32 @@ func (d *PokerService) AddFacilitator(PokerID string, UserID string) ([]string, 
 		return nil, errors.New("unable to make facilitator")
 	}
 
-	leaderRows, leadersErr := d.DB.Query(`
+	rows, facilitatorErr := d.DB.Query(`
 		SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1;
 	`, PokerID)
-	if leadersErr != nil {
-		return leaders, nil
+	if facilitatorErr != nil {
+		return facilitators, nil
 	}
 
-	defer leaderRows.Close()
-	for leaderRows.Next() {
+	defer rows.Close()
+	for rows.Next() {
 		var leader string
-		if err := leaderRows.Scan(
+		if err := rows.Scan(
 			&leader,
 		); err != nil {
 			d.Logger.Error("poker_facilitator query scan error", zap.Error(err))
 		} else {
-			leaders = append(leaders, leader)
+			facilitators = append(facilitators, leader)
 		}
 	}
 
-	return leaders, nil
+	return facilitators, nil
 }
 
 // RemoveFacilitator removes a user from game facilitators
 func (d *PokerService) RemoveFacilitator(PokerID string, UserID string) ([]string, error) {
-	leaders := make([]string, 0)
+	facilitators := make([]string, 0)
 
-	// set battle leader
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.poker_facilitator WHERE poker_id = $1 AND user_id = $2;`,
 		PokerID, UserID); err != nil {
@@ -588,26 +586,26 @@ func (d *PokerService) RemoveFacilitator(PokerID string, UserID string) ([]strin
 		return nil, errors.New("unable to delete facilitator")
 	}
 
-	leaderRows, leadersErr := d.DB.Query(`
+	rows, facilitatorErr := d.DB.Query(`
 		SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1;
 	`, PokerID)
-	if leadersErr != nil {
-		return leaders, nil
+	if facilitatorErr != nil {
+		return facilitators, nil
 	}
 
-	defer leaderRows.Close()
-	for leaderRows.Next() {
+	defer rows.Close()
+	for rows.Next() {
 		var leader string
-		if err := leaderRows.Scan(
+		if err := rows.Scan(
 			&leader,
 		); err != nil {
 			d.Logger.Error("poker_facilitator query scan error", zap.Error(err))
 		} else {
-			leaders = append(leaders, leader)
+			facilitators = append(facilitators, leader)
 		}
 	}
 
-	return leaders, nil
+	return facilitators, nil
 }
 
 // ToggleSpectator changes a game users spectator status
@@ -641,8 +639,8 @@ func (d *PokerService) DeleteGame(PokerID string) error {
 
 // AddFacilitatorsByEmail adds additional game facilitators by email
 func (d *PokerService) AddFacilitatorsByEmail(ctx context.Context, PokerID string, FacilitatorEmails []string) ([]string, error) {
-	var leaders string
-	var newLeaders []string
+	var facilitators string
+	var newFacilitators []string
 
 	for i, email := range FacilitatorEmails {
 		FacilitatorEmails[i] = sanitizeEmail(email)
@@ -652,20 +650,20 @@ func (d *PokerService) AddFacilitatorsByEmail(ctx context.Context, PokerID strin
 	e := d.DB.QueryRowContext(ctx,
 		`SELECT facilitators FROM thunderdome.poker_facilitator_add_by_email($1, $2);`,
 		PokerID, emails,
-	).Scan(&leaders)
+	).Scan(&facilitators)
 	if e != nil {
 		d.Logger.Error("poker_facilitator_add_by_email query error", zap.Error(e))
 		return nil, errors.New("error adding poker facilitator by email")
 	}
 
-	_ = json.Unmarshal([]byte(leaders), &newLeaders)
+	_ = json.Unmarshal([]byte(facilitators), &newFacilitators)
 
-	return newLeaders, nil
+	return newFacilitators, nil
 }
 
 // GetGames gets a list of games
 func (d *PokerService) GetGames(Limit int, Offset int) ([]*thunderdome.Poker, int, error) {
-	var battles = make([]*thunderdome.Poker, 0)
+	var games = make([]*thunderdome.Poker, 0)
 	var Count int
 
 	e := d.DB.QueryRow(
@@ -677,7 +675,7 @@ func (d *PokerService) GetGames(Limit int, Offset int) ([]*thunderdome.Poker, in
 		return nil, Count, e
 	}
 
-	battleRows, battlesErr := d.DB.Query(`
+	rows, gamesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM thunderdome.poker b
@@ -685,15 +683,15 @@ func (d *PokerService) GetGames(Limit int, Offset int) ([]*thunderdome.Poker, in
 		GROUP BY b.id ORDER BY b.created_date DESC
 		LIMIT $1 OFFSET $2;
 	`, Limit, Offset)
-	if battlesErr != nil {
-		return nil, Count, battlesErr
+	if gamesErr != nil {
+		return nil, Count, gamesErr
 	}
 
-	defer battleRows.Close()
-	for battleRows.Next() {
+	defer rows.Close()
+	for rows.Next() {
 		var pv string
-		var leaders string
-		var ActivePlanID sql.NullString
+		var facilitators string
+		var ActiveStoryID sql.NullString
 		var b = &thunderdome.Poker{
 			Users:              make([]*thunderdome.PokerUser, 0),
 			Stories:            make([]*thunderdome.Story, 0),
@@ -702,33 +700,33 @@ func (d *PokerService) GetGames(Limit int, Offset int) ([]*thunderdome.Poker, in
 			AutoFinishVoting:   true,
 			Facilitators:       make([]string, 0),
 		}
-		if err := battleRows.Scan(
+		if err := rows.Scan(
 			&b.Id,
 			&b.Name,
 			&b.VotingLocked,
-			&ActivePlanID,
+			&ActiveStoryID,
 			&pv,
 			&b.AutoFinishVoting,
 			&b.PointAverageRounding,
 			&b.CreatedDate,
 			&b.UpdatedDate,
-			&leaders,
+			&facilitators,
 		); err != nil {
 			d.Logger.Error("get poker games query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-			_ = json.Unmarshal([]byte(leaders), &b.Facilitators)
-			b.ActiveStoryID = ActivePlanID.String
-			battles = append(battles, b)
+			_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
+			b.ActiveStoryID = ActiveStoryID.String
+			games = append(games, b)
 		}
 	}
 
-	return battles, Count, nil
+	return games, Count, nil
 }
 
 // GetActiveGames gets a list of active games
 func (d *PokerService) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Poker, int, error) {
-	var battles = make([]*thunderdome.Poker, 0)
+	var games = make([]*thunderdome.Poker, 0)
 	var Count int
 
 	e := d.DB.QueryRow(
@@ -740,7 +738,7 @@ func (d *PokerService) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Pok
 		return nil, Count, e
 	}
 
-	battleRows, battlesErr := d.DB.Query(`
+	rows, gamesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM thunderdome.poker_user bu
@@ -749,15 +747,15 @@ func (d *PokerService) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Pok
 		WHERE bu.active IS TRUE GROUP BY b.id
 		LIMIT $1 OFFSET $2;
 	`, Limit, Offset)
-	if battlesErr != nil {
-		return nil, Count, battlesErr
+	if gamesErr != nil {
+		return nil, Count, gamesErr
 	}
 
-	defer battleRows.Close()
-	for battleRows.Next() {
+	defer rows.Close()
+	for rows.Next() {
 		var pv string
-		var leaders string
-		var ActivePlanID sql.NullString
+		var facilitators string
+		var ActiveStoryID sql.NullString
 		var b = &thunderdome.Poker{
 			Users:              make([]*thunderdome.PokerUser, 0),
 			Stories:            make([]*thunderdome.Story, 0),
@@ -766,28 +764,28 @@ func (d *PokerService) GetActiveGames(Limit int, Offset int) ([]*thunderdome.Pok
 			AutoFinishVoting:   true,
 			Facilitators:       make([]string, 0),
 		}
-		if err := battleRows.Scan(
+		if err := rows.Scan(
 			&b.Id,
 			&b.Name,
 			&b.VotingLocked,
-			&ActivePlanID,
+			&ActiveStoryID,
 			&pv,
 			&b.AutoFinishVoting,
 			&b.PointAverageRounding,
 			&b.CreatedDate,
 			&b.UpdatedDate,
-			&leaders,
+			&facilitators,
 		); err != nil {
 			d.Logger.Error("get active poker games query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-			_ = json.Unmarshal([]byte(leaders), &b.Facilitators)
-			b.ActiveStoryID = ActivePlanID.String
-			battles = append(battles, b)
+			_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
+			b.ActiveStoryID = ActiveStoryID.String
+			games = append(games, b)
 		}
 	}
 
-	return battles, Count, nil
+	return games, Count, nil
 }
 
 // PurgeOldGames deletes games older than {DaysOld} days
