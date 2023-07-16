@@ -11,7 +11,7 @@ import (
 func (d *RetroService) CreateRetroItem(RetroID string, UserID string, ItemType string, Content string) ([]*thunderdome.RetroItem, error) {
 	var groupId string
 	err := d.DB.QueryRow(
-		`INSERT INTO retro_group
+		`INSERT INTO thunderdome.retro_group
 		(retro_id)
 		VALUES ($1) RETURNING id;`,
 		RetroID,
@@ -22,7 +22,7 @@ func (d *RetroService) CreateRetroItem(RetroID string, UserID string, ItemType s
 	}
 
 	if _, err := d.DB.Exec(
-		`INSERT INTO retro_item
+		`INSERT INTO thunderdome.retro_item
 		(retro_id, group_id, type, content, user_id)
 		VALUES ($1, $2, $3, $4, $5);`,
 		RetroID, groupId, ItemType, Content, UserID,
@@ -38,7 +38,7 @@ func (d *RetroService) CreateRetroItem(RetroID string, UserID string, ItemType s
 // GroupRetroItem changes the group_id of retro item
 func (d *RetroService) GroupRetroItem(RetroID string, ItemId string, GroupId string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE retro_item SET group_id = $3 WHERE retro_id = $1 AND id = $2;`,
+		`UPDATE thunderdome.retro_item SET group_id = $3 WHERE retro_id = $1 AND id = $2;`,
 		RetroID, ItemId, GroupId,
 	); err != nil {
 		d.Logger.Error("update retro item error", zap.Error(err))
@@ -52,7 +52,7 @@ func (d *RetroService) GroupRetroItem(RetroID string, ItemId string, GroupId str
 // DeleteRetroItem removes item from the current board by ID
 func (d *RetroService) DeleteRetroItem(RetroID string, userID string, Type string, ItemID string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM retro_item WHERE id = $1 AND type = $2;`, ItemID, Type); err != nil {
+		`DELETE FROM thunderdome.retro_item WHERE id = $1 AND type = $2;`, ItemID, Type); err != nil {
 		d.Logger.Error("delete retro item error", zap.Error(err))
 	}
 
@@ -66,7 +66,7 @@ func (d *RetroService) GetRetroItems(RetroID string) []*thunderdome.RetroItem {
 	var items = make([]*thunderdome.RetroItem, 0)
 
 	itemRows, itemsErr := d.DB.Query(
-		`SELECT id, user_id, group_id, content, type FROM retro_item WHERE retro_id = $1 ORDER BY created_date ASC;`,
+		`SELECT id, user_id, group_id, content, type FROM thunderdome.retro_item WHERE retro_id = $1 ORDER BY created_date ASC;`,
 		RetroID,
 	)
 	if itemsErr == nil {
@@ -91,7 +91,7 @@ func (d *RetroService) GetRetroGroups(RetroID string) []*thunderdome.RetroGroup 
 	var groups = make([]*thunderdome.RetroGroup, 0)
 
 	itemRows, itemsErr := d.DB.Query(
-		`SELECT id, COALESCE(name, '') FROM retro_group WHERE retro_id = $1 ORDER BY created_date ASC;`,
+		`SELECT id, COALESCE(name, '') FROM thunderdome.retro_group WHERE retro_id = $1 ORDER BY created_date ASC;`,
 		RetroID,
 	)
 	if itemsErr == nil {
@@ -114,7 +114,7 @@ func (d *RetroService) GetRetroGroups(RetroID string) []*thunderdome.RetroGroup 
 // GroupNameChange changes retro item group name
 func (d *RetroService) GroupNameChange(RetroID string, GroupId string, Name string) ([]*thunderdome.RetroGroup, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE retro_group SET name = $3 WHERE retro_id = $1 AND id = $2;`,
+		`UPDATE thunderdome.retro_group SET name = $3 WHERE retro_id = $1 AND id = $2;`,
 		RetroID, GroupId, Name,
 	); err != nil {
 		d.Logger.Error("update retro group error", zap.Error(err))
@@ -130,7 +130,7 @@ func (d *RetroService) GetRetroVotes(RetroID string) []*thunderdome.RetroVote {
 	var votes = make([]*thunderdome.RetroVote, 0)
 
 	itemRows, itemsErr := d.DB.Query(
-		`SELECT group_id, user_id FROM retro_group_vote WHERE retro_id = $1;`,
+		`SELECT group_id, user_id FROM thunderdome.retro_group_vote WHERE retro_id = $1;`,
 		RetroID,
 	)
 	if itemsErr == nil {
@@ -156,7 +156,7 @@ func (d *RetroService) GroupUserVote(RetroID string, GroupID string, UserID stri
 	var maxVotes int
 	err := d.DB.QueryRow(
 		`SELECT r.max_votes
-				FROM retro r
+				FROM thunderdome.retro r
 				WHERE r.id = $1;`,
 		RetroID,
 	).Scan(&maxVotes)
@@ -166,7 +166,7 @@ func (d *RetroService) GroupUserVote(RetroID string, GroupID string, UserID stri
 
 	err = d.DB.QueryRow(
 		`SELECT count(rgv.group_id)
-				FROM retro_group_vote rgv
+				FROM thunderdome.retro_group_vote rgv
 				WHERE rgv.retro_id = $1 AND rgv.user_id = $2;`,
 		RetroID, UserID,
 	).Scan(&voteCount)
@@ -179,7 +179,7 @@ func (d *RetroService) GroupUserVote(RetroID string, GroupID string, UserID stri
 	}
 
 	if _, err = d.DB.Exec(
-		`INSERT INTO retro_group_vote
+		`INSERT INTO thunderdome.retro_group_vote
 		(retro_id, group_id, user_id)
 		VALUES ($1, $2, $3);`,
 		RetroID, GroupID, UserID,
@@ -195,7 +195,7 @@ func (d *RetroService) GroupUserVote(RetroID string, GroupID string, UserID stri
 // GroupUserSubtractVote deletes a user vote for the retro item group
 func (d *RetroService) GroupUserSubtractVote(RetroID string, GroupID string, UserID string) ([]*thunderdome.RetroVote, error) {
 	if _, err := d.DB.Exec(
-		`DELETE FROM retro_group_vote
+		`DELETE FROM thunderdome.retro_group_vote
 		WHERE retro_id = $1 AND group_id = $2 AND user_id = $3;`,
 		RetroID, GroupID, UserID,
 	); err != nil {

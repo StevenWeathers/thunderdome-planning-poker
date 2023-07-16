@@ -22,7 +22,9 @@ func (d *TeamService) TeamUserRole(ctx context.Context, UserID string, TeamID st
 	var teamRole string
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT role FROM team_get_user_role($1, $2)`,
+		`SELECT tu.role
+        FROM thunderdome.team_user tu
+        WHERE tu.team_id = $2 AND tu.user_id = $1;`,
 		UserID,
 		TeamID,
 	).Scan(
@@ -41,7 +43,9 @@ func (d *TeamService) TeamGet(ctx context.Context, TeamID string) (*thunderdome.
 	var team = &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM team_get_by_id($1)`,
+		`SELECT o.id, o.name, o.created_date, o.updated_date
+        FROM thunderdome.team o
+        WHERE o.id = $1;`,
 		TeamID,
 	).Scan(
 		&team.Id,
@@ -61,7 +65,13 @@ func (d *TeamService) TeamGet(ctx context.Context, TeamID string) (*thunderdome.
 func (d *TeamService) TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.Team {
 	var teams = make([]*thunderdome.Team, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM team_list_by_user($1, $2, $3);`,
+		`SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM thunderdome.team_user tu
+        LEFT JOIN thunderdome.team t ON tu.team_id = t.id
+        WHERE tu.user_id = $1
+        ORDER BY t.created_date
+		LIMIT $2
+		OFFSET $3;`,
 		UserID,
 		Limit,
 		Offset,
@@ -94,7 +104,7 @@ func (d *TeamService) TeamListByUser(ctx context.Context, UserID string, Limit i
 func (d *TeamService) TeamCreate(ctx context.Context, UserID string, TeamName string) (*thunderdome.Team, error) {
 	t := &thunderdome.Team{}
 	err := d.DB.QueryRowContext(ctx, `
-		SELECT id, name, created_date, updated_date FROM team_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM thunderdome.team_create($1, $2);`,
 		UserID,
 		TeamName,
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
@@ -110,7 +120,7 @@ func (d *TeamService) TeamCreate(ctx context.Context, UserID string, TeamName st
 // TeamAddUser adds a user to a team
 func (d *TeamService) TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
-		`SELECT team_user_add($1, $2, $3);`,
+		`INSERT INTO thunderdome.team_user (team_id, user_id, role) VALUES ($1, $2, $3);`,
 		TeamID,
 		UserID,
 		Role,
@@ -130,7 +140,7 @@ func (d *TeamService) TeamUserList(ctx context.Context, TeamID string, Limit int
 	var userCount int
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT count(user_id) FROM team_user WHERE team_id = $1;`,
+		`SELECT count(user_id) FROM thunderdome.team_user WHERE team_id = $1;`,
 		TeamID,
 	).Scan(&userCount)
 	if err != nil {
@@ -142,7 +152,13 @@ func (d *TeamService) TeamUserList(ctx context.Context, TeamID string, Limit int
 	}
 
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, email, role, avatar FROM team_user_list($1, $2, $3);`,
+		`SELECT u.id, u.name, COALESCE(u.email, ''), tu.role, u.avatar
+        FROM thunderdome.team_user tu
+        LEFT JOIN thunderdome.users u ON tu.user_id = u.id
+        WHERE tu.team_id = $1
+        ORDER BY tu.created_date
+		LIMIT $2
+		OFFSET $3;`,
 		TeamID,
 		Limit,
 		Offset,
@@ -177,7 +193,7 @@ func (d *TeamService) TeamUserList(ctx context.Context, TeamID string, Limit int
 // TeamRemoveUser removes a user from a team
 func (d *TeamService) TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`CALL team_user_remove($1, $2);`,
+		`DELETE FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
 		TeamID,
 		UserID,
 	)
@@ -194,7 +210,13 @@ func (d *TeamService) TeamRemoveUser(ctx context.Context, TeamID string, UserID 
 func (d *TeamService) TeamBattleList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Battle {
 	var battles = make([]*thunderdome.Battle, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name FROM team_battle_list($1, $2, $3);`,
+		`SELECT b.id, b.name
+        FROM thunderdome.team_poker tb
+        LEFT JOIN thunderdome.poker b ON tb.poker_id = b.id
+        WHERE tb.team_id = $1
+        ORDER BY tb.created_date DESC
+		LIMIT $2
+		OFFSET $3;`,
 		TeamID,
 		Limit,
 		Offset,
@@ -209,13 +231,13 @@ func (d *TeamService) TeamBattleList(ctx context.Context, TeamID string, Limit i
 				&tb.Id,
 				&tb.Name,
 			); err != nil {
-				d.Logger.Ctx(ctx).Error("team_battle_list query scan error", zap.Error(err))
+				d.Logger.Ctx(ctx).Error("team_poker list query scan error", zap.Error(err))
 			} else {
 				battles = append(battles, &tb)
 			}
 		}
 	} else {
-		d.Logger.Ctx(ctx).Error("team_battle_list query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("team_poker list query error", zap.Error(err))
 	}
 
 	return battles
@@ -224,13 +246,13 @@ func (d *TeamService) TeamBattleList(ctx context.Context, TeamID string, Limit i
 // TeamAddBattle adds a battle to a team
 func (d *TeamService) TeamAddBattle(ctx context.Context, TeamID string, BattleID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`SELECT team_battle_add($1, $2);`,
+		`INSERT INTO thunderdome.team_poker (team_id, poker_id) VALUES ($1, $2);`,
 		TeamID,
 		BattleID,
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_battle_add query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("team_poker add query error", zap.Error(err))
 		return err
 	}
 
@@ -240,13 +262,13 @@ func (d *TeamService) TeamAddBattle(ctx context.Context, TeamID string, BattleID
 // TeamRemoveBattle removes a battle from a team
 func (d *TeamService) TeamRemoveBattle(ctx context.Context, TeamID string, BattleID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`SELECT team_battle_remove($1, $2);`,
+		`DELETE FROM thunderdome.team_poker WHERE poker_id = $2 AND team_id = $1;`,
 		TeamID,
 		BattleID,
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_battle_remove query error", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("team_poker remove query error", zap.Error(err))
 		return err
 	}
 
@@ -256,7 +278,7 @@ func (d *TeamService) TeamRemoveBattle(ctx context.Context, TeamID string, Battl
 // TeamDelete deletes a team
 func (d *TeamService) TeamDelete(ctx context.Context, TeamID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`CALL team_delete($1);`,
+		`CALL thunderdome.team_delete($1);`,
 		TeamID,
 	)
 
@@ -272,7 +294,13 @@ func (d *TeamService) TeamDelete(ctx context.Context, TeamID string) error {
 func (d *TeamService) TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Retro {
 	var retros = make([]*thunderdome.Retro, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, format, phase FROM team_retro_list($1, $2, $3);`,
+		`SELECT b.id, b.name, b.format, b.phase
+        FROM thunderdome.team_retro tb
+        LEFT JOIN thunderdome.retro b ON tb.retro_id = b.id
+        WHERE tb.team_id = $1
+        ORDER BY tb.created_date DESC
+		LIMIT $2
+		OFFSET $3;`,
 		TeamID,
 		Limit,
 		Offset,
@@ -304,7 +332,7 @@ func (d *TeamService) TeamRetroList(ctx context.Context, TeamID string, Limit in
 // TeamAddRetro adds a retro to a team
 func (d *TeamService) TeamAddRetro(ctx context.Context, TeamID string, RetroID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`SELECT team_retro_add($1, $2);`,
+		`INSERT INTO thunderdome.team_retro (team_id, retro_id) VALUES ($1, $2);`,
 		TeamID,
 		RetroID,
 	)
@@ -320,7 +348,7 @@ func (d *TeamService) TeamAddRetro(ctx context.Context, TeamID string, RetroID s
 // TeamRemoveRetro removes a retro from a team
 func (d *TeamService) TeamRemoveRetro(ctx context.Context, TeamID string, RetroID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`SELECT team_retro_remove($1, $2);`,
+		`DELETE FROM thunderdome.team_retro WHERE retro_id = $2 AND team_id = $1;`,
 		TeamID,
 		RetroID,
 	)
@@ -337,7 +365,13 @@ func (d *TeamService) TeamRemoveRetro(ctx context.Context, TeamID string, RetroI
 func (d *TeamService) TeamStoryboardList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Storyboard {
 	var storyboards = make([]*thunderdome.Storyboard, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name FROM team_storyboard_list($1, $2, $3);`,
+		`SELECT b.id, b.name
+        FROM thunderdome.team_storyboard tb
+        LEFT JOIN thunderdome.storyboard b ON tb.storyboard_id = b.id
+        WHERE tb.team_id = $1
+        ORDER BY tb.created_date DESC
+		LIMIT $2
+		OFFSET $3;`,
 		TeamID,
 		Limit,
 		Offset,
@@ -367,7 +401,7 @@ func (d *TeamService) TeamStoryboardList(ctx context.Context, TeamID string, Lim
 // TeamAddStoryboard adds a storyboard to a team
 func (d *TeamService) TeamAddStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`SELECT team_storyboard_add($1, $2);`,
+		`INSERT INTO thunderdome.team_storyboard (team_id, storyboard_id) VALUES ($1, $2);`,
 		TeamID,
 		StoryboardID,
 	)
@@ -383,7 +417,7 @@ func (d *TeamService) TeamAddStoryboard(ctx context.Context, TeamID string, Stor
 // TeamRemoveStoryboard removes a storyboard from a team
 func (d *TeamService) TeamRemoveStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`SELECT team_storyboard_remove($1, $2);`,
+		`DELETE FROM thunderdome.team_storyboard WHERE storyboard_id = $2 AND team_id = $1;`,
 		TeamID,
 		StoryboardID,
 	)
@@ -401,14 +435,25 @@ func (d *TeamService) TeamList(ctx context.Context, Limit int, Offset int) ([]*t
 	var teams = make([]*thunderdome.Team, 0)
 	var count = 0
 
-	err := d.DB.QueryRowContext(ctx, `SELECT count FROM team_list_count();`).Scan(&count)
+	err := d.DB.QueryRowContext(ctx, `SELECT count(t.id)
+    FROM thunderdome.team t
+    LEFT JOIN thunderdome.department_team dt on t.id = dt.team_id
+    LEFT JOIN thunderdome.organization_team ot on t.id = ot.team_id
+    WHERE dt.team_id IS NULL AND ot.team_id IS NULL;`).Scan(&count)
 	if err != nil {
 		d.Logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
 		return teams, count
 	}
 
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM team_list($1, $2);`,
+		`SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM thunderdome.team t
+        LEFT JOIN thunderdome.department_team dt on t.id = dt.team_id
+        LEFT JOIN thunderdome.organization_team ot on t.id = ot.team_id
+        WHERE dt.team_id IS NULL AND ot.team_id IS NULL
+        ORDER BY t.created_date
+		LIMIT $1
+		OFFSET $2;`,
 		Limit,
 		Offset,
 	)

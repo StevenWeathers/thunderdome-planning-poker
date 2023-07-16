@@ -22,7 +22,7 @@ func (d *AlertService) GetActiveAlerts(ctx context.Context) []interface{} {
 	Alerts := make([]interface{}, 0)
 
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, type, content, active, allow_dismiss, registered_only FROM alert WHERE active IS TRUE;`,
+		`SELECT id, name, type, content, active, allow_dismiss, registered_only FROM thunderdome.alert WHERE active IS TRUE;`,
 	)
 
 	if err == nil {
@@ -55,7 +55,7 @@ func (d *AlertService) AlertsList(ctx context.Context, Limit int, Offset int) ([
 	var AlertCount int
 
 	e := d.DB.QueryRowContext(ctx,
-		"SELECT COUNT(*) FROM alert;",
+		"SELECT COUNT(*) FROM thunderdome.alert;",
 	).Scan(
 		&AlertCount,
 	)
@@ -65,7 +65,7 @@ func (d *AlertService) AlertsList(ctx context.Context, Limit int, Offset int) ([
 
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT id, name, type, content, active, allow_dismiss, registered_only, created_date, updated_date
-		FROM alert
+		FROM thunderdome.alert
 		LIMIT $1
 		OFFSET $2;
 		`,
@@ -103,7 +103,7 @@ func (d *AlertService) AlertsList(ctx context.Context, Limit int, Offset int) ([
 // AlertsCreate creates a global alert
 func (d *AlertService) AlertsCreate(ctx context.Context, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
 	if _, err := d.DB.ExecContext(ctx,
-		`INSERT INTO alert (name, type, content, active, allow_dismiss, registered_only)
+		`INSERT INTO thunderdome.alert (name, type, content, active, allow_dismiss, registered_only)
 		VALUES ($1, $2, $3, $4, $5, $6);
 		`,
 		Name,
@@ -124,7 +124,7 @@ func (d *AlertService) AlertsCreate(ctx context.Context, Name string, Type strin
 func (d *AlertService) AlertsUpdate(ctx context.Context, ID string, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`
-		UPDATE alert
+		UPDATE thunderdome.alert
 		SET name = $2, type = $3, content = $4, active = $5, allow_dismiss = $6, registered_only = $7
 		WHERE id = $1;
 		`,
@@ -146,7 +146,7 @@ func (d *AlertService) AlertsUpdate(ctx context.Context, ID string, Name string,
 // AlertDelete deletes a global alert
 func (d *AlertService) AlertDelete(ctx context.Context, AlertID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM alert WHERE id = $1;`,
+		`DELETE FROM thunderdome.alert WHERE id = $1;`,
 		AlertID,
 	)
 

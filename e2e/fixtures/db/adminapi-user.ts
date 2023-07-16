@@ -9,7 +9,7 @@ export const adminAPIUser = {
 
 const seed = async pool => {
     const newUser = await pool.query(
-        `SELECT userid, verifyid FROM register_user($1, $2, $3, $4);`,
+        `SELECT userid, verifyid FROM thunderdome.user_register($1, $2, $3, $4);`,
         [
             adminAPIUser.name,
             adminAPIUser.email,
@@ -19,12 +19,12 @@ const seed = async pool => {
     )
     const id = newUser.rows[0].userid
 
-    await pool.query('call verify_user_account($1);', [
+    await pool.query('call thunderdome.user_account_verify($1);', [
         newUser.rows[0].verifyid,
     ])
 
     await pool.query(
-        `INSERT INTO api_keys (id, user_id, name, active) VALUES ($1, $2, $3, TRUE);`,
+        `INSERT INTO thunderdome.api_key (id, user_id, name, active) VALUES ($1, $2, $3, TRUE);`,
         [
             'Gssy-ffy.e170ffced2ae5806aebc103f30255dc5cc1b9e203d6035aa817f2b7e6638f223',
             id,
@@ -39,12 +39,15 @@ const seed = async pool => {
 }
 
 const teardown = async pool => {
-    const oldUser = await pool.query(`SELECT id FROM users WHERE email = $1;`, [
-        adminAPIUser.email,
-    ])
+    const oldUser = await pool.query(
+        `SELECT id FROM thunderdome.users WHERE email = $1;`,
+        [adminAPIUser.email],
+    )
 
     if (oldUser.rows.length) {
-        await pool.query('call delete_user($1);', [oldUser.rows[0].id])
+        await pool.query('DELETE FROM thunderdome.users WHERE id = $1;', [
+            oldUser.rows[0].id,
+        ])
     }
 
     return {}

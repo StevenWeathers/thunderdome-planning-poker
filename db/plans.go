@@ -15,7 +15,7 @@ func (d *BattleService) GetPlans(BattleID string, UserID string) []*thunderdome.
 	planRows, plansErr := d.DB.Query(
 		`SELECT
 			id, name, type, reference_id, link, description, acceptance_criteria, priority, points, active, skipped, votestart_time, voteend_time, votes
-			FROM plans WHERE battle_id = $1 ORDER BY created_date
+			FROM thunderdome.poker_story WHERE poker_id = $1 ORDER BY created_date
 		`,
 		BattleID,
 	)
@@ -35,7 +35,7 @@ func (d *BattleService) GetPlans(BattleID string, UserID string) []*thunderdome.
 			if err := planRows.Scan(
 				&p.Id, &p.Name, &p.Type, &ReferenceID, &Link, &Description, &AcceptanceCriteria, &p.Priority, &p.Points, &p.Active, &p.Skipped, &p.VoteStartTime, &p.VoteEndTime, &v,
 			); err != nil {
-				d.Logger.Error("get battle plans query error", zap.Error(err))
+				d.Logger.Error("get poker stories query error", zap.Error(err))
 			} else {
 				p.ReferenceId = ReferenceID.String
 				p.Link = Link.String
@@ -43,7 +43,7 @@ func (d *BattleService) GetPlans(BattleID string, UserID string) []*thunderdome.
 				p.AcceptanceCriteria = AcceptanceCriteria.String
 				err = json.Unmarshal([]byte(v), &p.Votes)
 				if err != nil {
-					d.Logger.Error("get battle plans query scan error", zap.Error(err))
+					d.Logger.Error("get poker stories query scan error", zap.Error(err))
 				}
 
 				// don't send others vote values to client, prevent sneaky devs from peaking at votes
@@ -70,9 +70,11 @@ func (d *BattleService) CreatePlan(BattleID string, PlanName string, PlanType st
 		Priority = 99
 	}
 	if _, err := d.DB.Exec(
-		`call create_plan($1, $2, $3, $4, $5, $6, $7, $8);`, BattleID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority,
+		`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria, priority)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
+		BattleID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority,
 	); err != nil {
-		d.Logger.Error("call create_plan error", zap.Error(err))
+		d.Logger.Error("error creating poker story", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -83,9 +85,9 @@ func (d *BattleService) CreatePlan(BattleID string, PlanName string, PlanType st
 // ActivatePlanVoting sets the plan by ID to active, wipes any previous votes/points, and disables votingLock
 func (d *BattleService) ActivatePlanVoting(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
 	if _, err := d.DB.Exec(
-		`call activate_plan_voting($1, $2);`, BattleID, PlanID,
+		`CALL thunderdome.poker_story_activate($1, $2);`, BattleID, PlanID,
 	); err != nil {
-		d.Logger.Error("call activate_plan_voting error", zap.Error(err))
+		d.Logger.Error("CALL thunderdome.poker_story_activate error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -96,8 +98,8 @@ func (d *BattleService) ActivatePlanVoting(BattleID string, PlanID string) ([]*t
 // SetVote sets a users vote for the plan
 func (d *BattleService) SetVote(BattleID string, UserID string, PlanID string, VoteValue string) (BattlePlans []*thunderdome.Plan, AllUsersVoted bool) {
 	if _, err := d.DB.Exec(
-		`call set_user_vote($1, $2, $3);`, PlanID, UserID, VoteValue); err != nil {
-		d.Logger.Error("call set_user_vote error", zap.Error(err))
+		`CALL thunderdome.poker_user_vote_set($1, $2, $3);`, PlanID, UserID, VoteValue); err != nil {
+		d.Logger.Error("CALL thunderdome.poker_user_vote_set error", zap.Error(err))
 	}
 
 	Plans := d.GetPlans(BattleID, "")
@@ -129,8 +131,8 @@ func (d *BattleService) SetVote(BattleID string, UserID string, PlanID string, V
 // RetractVote removes a users vote for the plan
 func (d *BattleService) RetractVote(BattleID string, UserID string, PlanID string) ([]*thunderdome.Plan, error) {
 	if _, err := d.DB.Exec(
-		`call retract_user_vote($1, $2);`, PlanID, UserID); err != nil {
-		d.Logger.Error("call retract_user_vote error", zap.Error(err))
+		`CALL thunderdome.poker_user_vote_retract($1, $2);`, PlanID, UserID); err != nil {
+		d.Logger.Error("CALL thunderdome.poker_vote_retract error", zap.Error(err))
 		return nil, err
 	}
 
@@ -142,8 +144,8 @@ func (d *BattleService) RetractVote(BattleID string, UserID string, PlanID strin
 // EndPlanVoting sets plan to active: false
 func (d *BattleService) EndPlanVoting(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
 	if _, err := d.DB.Exec(
-		`call end_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
-		d.Logger.Error("call end_plan_voting error", zap.Error(err))
+		`CALL thunderdome.poker_plan_voting_stop($1, $2);`, BattleID, PlanID); err != nil {
+		d.Logger.Error("CALL thunderdome.poker_plan_voting_stop error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -154,8 +156,8 @@ func (d *BattleService) EndPlanVoting(BattleID string, PlanID string) ([]*thunde
 // SkipPlan sets plan to active: false and unsets battle's activePlanId
 func (d *BattleService) SkipPlan(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
 	if _, err := d.DB.Exec(
-		`call skip_plan_voting($1, $2);`, BattleID, PlanID); err != nil {
-		d.Logger.Error("call skip_plan_voting error", zap.Error(err))
+		`CALL thunderdome.poker_vote_skip($1, $2);`, BattleID, PlanID); err != nil {
+		d.Logger.Error("CALL thunderdome.poker_vote_skip error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -173,8 +175,19 @@ func (d *BattleService) RevisePlan(BattleID string, PlanID string, PlanName stri
 	}
 	// set PlanID to true
 	if _, err := d.DB.Exec(
-		`call revise_plan($1, $2, $3, $4, $5, $6, $7, $8);`, PlanID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority); err != nil {
-		d.Logger.Error("call revise_plan error", zap.Error(err))
+		`UPDATE thunderdome.poker_story
+    SET
+        updated_date = NOW(),
+        name = $2,
+        type = $3,
+        reference_id = $4,
+        link = $5,
+        description = $6,
+        acceptance_criteria = $7,
+        priority = $8
+    WHERE id = $1;`,
+		PlanID, PlanName, PlanType, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority); err != nil {
+		d.Logger.Error("error getting poker story", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")
@@ -183,13 +196,13 @@ func (d *BattleService) RevisePlan(BattleID string, PlanID string, PlanName stri
 }
 
 // BurnPlan removes a plan from the current battle by ID
-func (d *BattleService) BurnPlan(BattleID string, PlanID string) ([]*thunderdome.Plan, error) {
+func (d *BattleService) BurnPlan(pokerID string, storyID string) ([]*thunderdome.Plan, error) {
 	if _, err := d.DB.Exec(
-		`call delete_plan($1, $2);`, BattleID, PlanID); err != nil {
-		d.Logger.Error("call delete_plan error", zap.Error(err))
+		`CALL thunderdome.poker_story_delete($1, $2);`, pokerID, storyID); err != nil {
+		d.Logger.Error("CALL thunderdome.poker_story_delete error", zap.Error(err))
 	}
 
-	plans := d.GetPlans(BattleID, "")
+	plans := d.GetPlans(pokerID, "")
 
 	return plans, nil
 }
@@ -197,8 +210,8 @@ func (d *BattleService) BurnPlan(BattleID string, PlanID string) ([]*thunderdome
 // FinalizePlan sets plan to active: false
 func (d *BattleService) FinalizePlan(BattleID string, PlanID string, PlanPoints string) ([]*thunderdome.Plan, error) {
 	if _, err := d.DB.Exec(
-		`call finalize_plan($1, $2, $3);`, BattleID, PlanID, PlanPoints); err != nil {
-		d.Logger.Error("call finalize_plan error", zap.Error(err))
+		`CALL thunderdome.poker_story_finalize($1, $2, $3);`, BattleID, PlanID, PlanPoints); err != nil {
+		d.Logger.Error("CALL thunderdome.poker_story_finalize error", zap.Error(err))
 	}
 
 	plans := d.GetPlans(BattleID, "")

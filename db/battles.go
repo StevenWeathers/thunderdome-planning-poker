@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -31,7 +32,7 @@ func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, Battl
 	if JoinCode != "" {
 		EncryptedCode, codeErr := encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, errors.New("unable to create battle join_code")
+			return nil, errors.New("unable to create poker join_code")
 		}
 		encryptedJoinCode = EncryptedCode
 	}
@@ -39,7 +40,7 @@ func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, Battl
 	if LeaderCode != "" {
 		EncryptedCode, codeErr := encrypt(LeaderCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, errors.New("unable to create battle leader_code")
+			return nil, errors.New("unable to create poker leader_code")
 		}
 		encryptedLeaderCode = EncryptedCode
 	}
@@ -60,7 +61,7 @@ func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, Battl
 	b.Leaders = append(b.Leaders, LeaderID)
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT battleId FROM create_battle($1, $2, $3, $4, $5, $6, $7, $8);`,
+		`SELECT pokerid FROM thunderdome.poker_create($1, $2, $3, $4, $5, $6, $7, $8);`,
 		LeaderID,
 		BattleName,
 		string(pointValuesJSON),
@@ -71,15 +72,15 @@ func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, Battl
 		encryptedLeaderCode,
 	).Scan(&b.Id)
 	if e != nil {
-		d.Logger.Error("create_battle query error", zap.Error(e))
-		return nil, errors.New("error creating battle")
+		d.Logger.Error("poker_create query error", zap.Error(e))
+		return nil, errors.New("error creating poker")
 	}
 
 	for _, plan := range Plans {
 		plan.Votes = make([]*thunderdome.Vote, 0)
 
 		e := d.DB.QueryRowContext(ctx,
-			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 			b.Id,
 			plan.Name,
 			plan.Type,
@@ -89,7 +90,7 @@ func (d *BattleService) CreateBattle(ctx context.Context, LeaderID string, Battl
 			plan.AcceptanceCriteria,
 		).Scan(&plan.Id)
 		if e != nil {
-			d.Logger.Error("insert plans error", zap.Error(e))
+			d.Logger.Error("insert stories error", zap.Error(e))
 		}
 	}
 
@@ -107,7 +108,7 @@ func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, Lea
 	if JoinCode != "" {
 		EncryptedCode, codeErr := encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, errors.New("unable to create battle join_code")
+			return nil, errors.New("unable to create poker join_code")
 		}
 		encryptedJoinCode = EncryptedCode
 	}
@@ -115,7 +116,7 @@ func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, Lea
 	if LeaderCode != "" {
 		EncryptedCode, codeErr := encrypt(LeaderCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, errors.New("unable to create battle leader_code")
+			return nil, errors.New("unable to create poker leader_code")
 		}
 		encryptedLeaderCode = EncryptedCode
 	}
@@ -136,7 +137,7 @@ func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, Lea
 	b.Leaders = append(b.Leaders, LeaderID)
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT battleId FROM team_create_battle($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
+		`SELECT pokerid FROM thunderdome.team_create_poker($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
 		TeamID,
 		LeaderID,
 		BattleName,
@@ -148,15 +149,15 @@ func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, Lea
 		encryptedLeaderCode,
 	).Scan(&b.Id)
 	if e != nil {
-		d.Logger.Error("team_create_battle query error", zap.Error(e))
-		return nil, errors.New("error creating battle")
+		d.Logger.Error("team_create_poker query error", zap.Error(e))
+		return nil, errors.New("error creating poker")
 	}
 
 	for _, plan := range Plans {
 		plan.Votes = make([]*thunderdome.Vote, 0)
 
 		e := d.DB.QueryRowContext(ctx,
-			`INSERT INTO plans (battle_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 			b.Id,
 			plan.Name,
 			plan.Type,
@@ -166,7 +167,7 @@ func (d *BattleService) TeamCreateBattle(ctx context.Context, TeamID string, Lea
 			plan.AcceptanceCriteria,
 		).Scan(&plan.Id)
 		if e != nil {
-			d.Logger.Error("insert plans error", zap.Error(e))
+			d.Logger.Error("insert stories error", zap.Error(e))
 		}
 	}
 
@@ -184,7 +185,7 @@ func (d *BattleService) ReviseBattle(BattleID string, BattleName string, PointVa
 	if JoinCode != "" {
 		EncryptedCode, codeErr := encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
-			return errors.New("unable to revise battle join_code")
+			return errors.New("unable to revise poker join_code")
 		}
 		encryptedJoinCode = EncryptedCode
 	}
@@ -192,19 +193,19 @@ func (d *BattleService) ReviseBattle(BattleID string, BattleName string, PointVa
 	if LeaderCode != "" {
 		EncryptedCode, codeErr := encrypt(LeaderCode, d.AESHashKey)
 		if codeErr != nil {
-			return errors.New("unable to revise battle leadercode")
+			return errors.New("unable to revise poker leadercode")
 		}
 		encryptedLeaderCode = EncryptedCode
 	}
 
 	if _, err := d.DB.Exec(`
-		UPDATE battles
+		UPDATE thunderdome.poker
 		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, hide_voter_identity = $6, join_code = $7, leader_code = $8, updated_date = NOW()
 		WHERE id = $1`,
 		BattleID, BattleName, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding, HideVoterIdentity, encryptedJoinCode, encryptedLeaderCode,
 	); err != nil {
-		d.Logger.Error("update battle error", zap.Error(err))
-		return errors.New("unable to revise battle")
+		d.Logger.Error("update poker error", zap.Error(err))
+		return errors.New("unable to revise poker")
 	}
 
 	return nil
@@ -215,20 +216,20 @@ func (d *BattleService) GetBattleLeaderCode(BattleID string) (string, error) {
 	var EncryptedLeaderCode string
 
 	if err := d.DB.QueryRow(`
-		SELECT COALESCE(leader_code, '') FROM battles
+		SELECT COALESCE(leader_code, '') FROM thunderdome.poker
 		WHERE id = $1`,
 		BattleID,
 	).Scan(&EncryptedLeaderCode); err != nil {
-		d.Logger.Error("get battle leadercode error", zap.Error(err))
-		return "", errors.New("unable to retrieve battle leader_code")
+		d.Logger.Error("get poker leadercode error", zap.Error(err))
+		return "", errors.New("unable to retrieve poker leader_code")
 	}
 
 	if EncryptedLeaderCode == "" {
-		return "", errors.New("unable to retrieve battle leader_code")
+		return "", errors.New("unable to retrieve poker leader_code")
 	}
 	DecryptedCode, codeErr := decrypt(EncryptedLeaderCode, d.AESHashKey)
 	if codeErr != nil {
-		return "", errors.New("unable to retrieve battle leader_code")
+		return "", errors.New("unable to retrieve poker leader_code")
 	}
 
 	return DecryptedCode, nil
@@ -254,10 +255,10 @@ func (d *BattleService) GetBattle(BattleID string, UserID string) (*thunderdome.
 	var LeaderCode string
 	e := d.DB.QueryRow(
 		`
-		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.hide_voter_identity, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''), b.created_date, b.updated_date,
+		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.hide_voter_identity, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''), b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
-		FROM battles b
-		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
+		FROM thunderdome.poker b
+		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
 		WHERE b.id = $1
 		GROUP BY b.id`,
 		BattleID,
@@ -277,7 +278,7 @@ func (d *BattleService) GetBattle(BattleID string, UserID string) (*thunderdome.
 		&leaders,
 	)
 	if e != nil {
-		d.Logger.Error("error getting battle", zap.Error(e))
+		d.Logger.Error("error getting poker", zap.Error(e))
 		return nil, errors.New("not found")
 	}
 
@@ -315,8 +316,8 @@ func (d *BattleService) GetBattlesByUser(UserID string, Limit int, Offset int) (
 	var battles = make([]*thunderdome.Battle, 0)
 
 	e := d.DB.QueryRow(`
-		SELECT COUNT(*) FROM battles b
-		LEFT JOIN battles_users bw ON b.id = bw.battle_id
+		SELECT COUNT(*) FROM thunderdome.poker b
+		LEFT JOIN thunderdome.poker_user bw ON b.id = bw.poker_id
 		WHERE bw.user_id = $1 AND bw.abandoned = false;
 	`, UserID).Scan(
 		&Count,
@@ -326,13 +327,13 @@ func (d *BattleService) GetBattlesByUser(UserID string, Limit int, Offset int) (
 	}
 
 	battleRows, battlesErr := d.DB.Query(`
-		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
-		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS plans,
-		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
-		FROM battles b
-		LEFT JOIN plans p ON b.id = p.battle_id
-		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
-		LEFT JOIN battles_users bw ON b.id = bw.battle_id
+		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
+		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS stories,
+		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators
+		FROM thunderdome.poker b
+		LEFT JOIN thunderdome.poker_story p ON b.id = p.poker_id
+		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
+		LEFT JOIN thunderdome.poker_user bw ON b.id = bw.poker_id
 		WHERE bw.user_id = $1 AND bw.abandoned = false
 		GROUP BY b.id ORDER BY b.created_date DESC
 		LIMIT $2 OFFSET $3
@@ -368,7 +369,7 @@ func (d *BattleService) GetBattlesByUser(UserID string, Limit int, Offset int) (
 			&plans,
 			&leaders,
 		); err != nil {
-			d.Logger.Error("error getting battle by user", zap.Error(e))
+			d.Logger.Error("error getting poker by user", zap.Error(e))
 		} else {
 			_ = json.Unmarshal([]byte(plans), &b.Plans)
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
@@ -385,16 +386,16 @@ func (d *BattleService) GetBattlesByUser(UserID string, Limit int, Offset int) (
 func (d *BattleService) ConfirmLeader(BattleID string, UserID string) error {
 	var leaderID string
 	var role string
-	err := d.DB.QueryRow("SELECT type FROM users WHERE id = $1", UserID).Scan(&role)
+	err := d.DB.QueryRow("SELECT type FROM thunderdome.users WHERE id = $1", UserID).Scan(&role)
 	if err != nil {
 		d.Logger.Error("error getting user role", zap.Error(err))
 		return errors.New("unable to get user role")
 	}
 
-	e := d.DB.QueryRow("SELECT user_id FROM battles_leaders WHERE battle_id = $1 AND user_id = $2", BattleID, UserID).Scan(&leaderID)
+	e := d.DB.QueryRow("SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1 AND user_id = $2", BattleID, UserID).Scan(&leaderID)
 	if e != nil && role != "ADMIN" {
-		d.Logger.Error("error confirming battle leader", zap.Error(e))
-		return errors.New("not a battle leader")
+		d.Logger.Error("error confirming poker facilitator", zap.Error(e))
+		return errors.New("not a poker facilitator")
 	}
 
 	return nil
@@ -406,8 +407,8 @@ func (d *BattleService) GetBattleUserActiveStatus(BattleID string, UserID string
 
 	e := d.DB.QueryRow(`
 		SELECT coalesce(active, FALSE)
-		FROM battles_users
-		WHERE user_id = $2 AND battle_id = $1;`,
+		FROM thunderdome.poker_user
+		WHERE user_id = $2 AND poker_id = $1;`,
 		BattleID,
 		UserID,
 	).Scan(
@@ -429,11 +430,11 @@ func (d *BattleService) GetBattleUsers(BattleID string) []*thunderdome.BattleUse
 	var users = make([]*thunderdome.BattleUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
-			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, '')
-		FROM battles_users bw
-		LEFT JOIN users w ON bw.user_id = w.id
-		WHERE bw.battle_id = $1
-		ORDER BY w.name`,
+			u.id, u.name, u.type, u.avatar, pu.active, pu.spectator, COALESCE(u.email, '')
+		FROM thunderdome.poker_user pu
+		LEFT JOIN thunderdome.users u ON pu.user_id = u.id
+		WHERE pu.poker_id = $1
+		ORDER BY u.name`,
 		BattleID,
 	)
 	if err == nil {
@@ -441,7 +442,7 @@ func (d *BattleService) GetBattleUsers(BattleID string) []*thunderdome.BattleUse
 		for rows.Next() {
 			var w thunderdome.BattleUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
-				d.Logger.Error("error getting battle users", zap.Error(err))
+				d.Logger.Error("error getting poker users", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -462,9 +463,9 @@ func (d *BattleService) GetBattleActiveUsers(BattleID string) []*thunderdome.Bat
 	rows, err := d.DB.Query(
 		`SELECT
 			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, '')
-		FROM battles_users bw
-		LEFT JOIN users w ON bw.user_id = w.id
-		WHERE bw.battle_id = $1 AND bw.active = true
+		FROM thunderdome.poker_user bw
+		LEFT JOIN thunderdome.users w ON bw.user_id = w.id
+		WHERE bw.poker_id = $1 AND bw.active = true
 		ORDER BY w.name`,
 		BattleID,
 	)
@@ -473,7 +474,7 @@ func (d *BattleService) GetBattleActiveUsers(BattleID string) []*thunderdome.Bat
 		for rows.Next() {
 			var w thunderdome.BattleUser
 			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
-				d.Logger.Error("error getting active battle users", zap.Error(err))
+				d.Logger.Error("error getting active poker users", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
 					w.GravatarHash = createGravatarHash(w.GravatarHash)
@@ -491,13 +492,13 @@ func (d *BattleService) GetBattleActiveUsers(BattleID string) []*thunderdome.Bat
 // AddUserToBattle adds a user by ID to the battle by ID
 func (d *BattleService) AddUserToBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
 	if _, err := d.DB.Exec(
-		`INSERT INTO battles_users (battle_id, user_id, active)
+		`INSERT INTO thunderdome.poker_user (poker_id, user_id, active)
 		VALUES ($1, $2, true)
-		ON CONFLICT (battle_id, user_id) DO UPDATE SET active = true, abandoned = false`,
+		ON CONFLICT (poker_id, user_id) DO UPDATE SET active = true, abandoned = false`,
 		BattleID,
 		UserID,
 	); err != nil {
-		d.Logger.Error("error adding user to battle", zap.Error(err))
+		d.Logger.Error("error adding user to poker", zap.Error(err))
 	}
 
 	users := d.GetBattleUsers(BattleID)
@@ -508,12 +509,12 @@ func (d *BattleService) AddUserToBattle(BattleID string, UserID string) ([]*thun
 // RetreatUser removes a user from the current battle by ID
 func (d *BattleService) RetreatUser(BattleID string, UserID string) []*thunderdome.BattleUser {
 	if _, err := d.DB.Exec(
-		`UPDATE battles_users SET active = false WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
-		d.Logger.Error("error updating battle user to active false", zap.Error(err))
+		`UPDATE thunderdome.poker_user SET active = false WHERE poker_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
+		d.Logger.Error("error updating poker user to active false", zap.Error(err))
 	}
 
 	if _, err := d.DB.Exec(
-		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
+		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
 		d.Logger.Error("error updating user last active timestamp", zap.Error(err))
 	}
 
@@ -525,13 +526,13 @@ func (d *BattleService) RetreatUser(BattleID string, UserID string) []*thunderdo
 // AbandonBattle removes a user from the current battle by ID and sets abandoned true
 func (d *BattleService) AbandonBattle(BattleID string, UserID string) ([]*thunderdome.BattleUser, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE battles_users SET active = false, abandoned = true WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
+		`UPDATE thunderdome.poker_user SET active = false, abandoned = true WHERE poker_id = $1 AND user_id = $2`, BattleID, UserID); err != nil {
 		d.Logger.Error("error updating battle user to abandoned", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.DB.Exec(
-		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
+		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
 		d.Logger.Error("error updating user last active timestamp", zap.Error(err))
 		return nil, err
 	}
@@ -547,13 +548,14 @@ func (d *BattleService) SetBattleLeader(BattleID string, LeaderID string) ([]str
 
 	// set battle leader
 	if _, err := d.DB.Exec(
-		`call set_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
-		d.Logger.Error("call set_battle_leader query error", zap.Error(err))
-		return nil, errors.New("unable to promote leader")
+		`INSERT INTO thunderdome.poker_facilitator (poker_id, user_id) VALUES ($1, $2);`,
+		BattleID, LeaderID); err != nil {
+		d.Logger.Error("set poker facilitator query error", zap.Error(err))
+		return nil, errors.New("unable to make facilitator")
 	}
 
 	leaderRows, leadersErr := d.DB.Query(`
-		SELECT user_id FROM battles_leaders WHERE battle_id = $1;
+		SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1;
 	`, BattleID)
 	if leadersErr != nil {
 		return leaders, nil
@@ -565,7 +567,7 @@ func (d *BattleService) SetBattleLeader(BattleID string, LeaderID string) ([]str
 		if err := leaderRows.Scan(
 			&leader,
 		); err != nil {
-			d.Logger.Error("battles_leaders query scan error", zap.Error(err))
+			d.Logger.Error("poker_facilitator query scan error", zap.Error(err))
 		} else {
 			leaders = append(leaders, leader)
 		}
@@ -580,13 +582,14 @@ func (d *BattleService) DemoteBattleLeader(BattleID string, LeaderID string) ([]
 
 	// set battle leader
 	if _, err := d.DB.Exec(
-		`call demote_battle_leader($1, $2);`, BattleID, LeaderID); err != nil {
-		d.Logger.Error("call demote_battle_leader query error", zap.Error(err))
-		return nil, errors.New("unable to demote leader")
+		`DELETE FROM thunderdome.poker_facilitator WHERE poker_id = $1 AND user_id = $2;`,
+		BattleID, LeaderID); err != nil {
+		d.Logger.Error("delete poker_facilitator query error", zap.Error(err))
+		return nil, errors.New("unable to delete facilitator")
 	}
 
 	leaderRows, leadersErr := d.DB.Query(`
-		SELECT user_id FROM battles_leaders WHERE battle_id = $1;
+		SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1;
 	`, BattleID)
 	if leadersErr != nil {
 		return leaders, nil
@@ -598,7 +601,7 @@ func (d *BattleService) DemoteBattleLeader(BattleID string, LeaderID string) ([]
 		if err := leaderRows.Scan(
 			&leader,
 		); err != nil {
-			d.Logger.Error("battles_leaders query scan error", zap.Error(err))
+			d.Logger.Error("poker_facilitator query scan error", zap.Error(err))
 		} else {
 			leaders = append(leaders, leader)
 		}
@@ -610,13 +613,13 @@ func (d *BattleService) DemoteBattleLeader(BattleID string, LeaderID string) ([]
 // ToggleSpectator changes a battle users spectator status
 func (d *BattleService) ToggleSpectator(BattleID string, UserID string, Spectator bool) ([]*thunderdome.BattleUser, error) {
 	if _, err := d.DB.Exec(
-		`UPDATE battles_users SET spectator = $3 WHERE battle_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
-		d.Logger.Error("update battle user spectator error", zap.Error(err))
+		`UPDATE thunderdome.poker_user SET spectator = $3 WHERE poker_id = $1 AND user_id = $2`, BattleID, UserID, Spectator); err != nil {
+		d.Logger.Error("update poker user spectator error", zap.Error(err))
 		return nil, err
 	}
 
 	if _, err := d.DB.Exec(
-		`UPDATE users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
+		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
 		d.Logger.Error("error updating user last active timestamp", zap.Error(err))
 	}
 
@@ -628,8 +631,8 @@ func (d *BattleService) ToggleSpectator(BattleID string, UserID string, Spectato
 // DeleteBattle removes all battle associations and the battle itself by BattleID
 func (d *BattleService) DeleteBattle(BattleID string) error {
 	if _, err := d.DB.Exec(
-		`call delete_battle($1);`, BattleID); err != nil {
-		d.Logger.Error("delete battle error", zap.Error(err))
+		`DELETE FROM thunderdome.poker WHERE id = $1;`, BattleID); err != nil {
+		d.Logger.Error("delete poker error", zap.Error(err))
 		return err
 	}
 
@@ -647,11 +650,12 @@ func (d *BattleService) AddBattleLeadersByEmail(ctx context.Context, BattleID st
 	emails := strings.Join(LeaderEmails[:], ",")
 
 	e := d.DB.QueryRowContext(ctx,
-		`select leaders FROM add_battle_leaders_by_email($1, $2);`, BattleID, emails,
+		`SELECT facilitators FROM thunderdome.poker_facilitator_add_by_email($1, $2);`,
+		BattleID, emails,
 	).Scan(&leaders)
 	if e != nil {
-		d.Logger.Error("add_battle_leaders_by_email query error", zap.Error(e))
-		return nil, errors.New("error creating battle")
+		d.Logger.Error("poker_facilitator_add_by_email query error", zap.Error(e))
+		return nil, errors.New("error adding poker facilitator by email")
 	}
 
 	_ = json.Unmarshal([]byte(leaders), &newLeaders)
@@ -665,7 +669,7 @@ func (d *BattleService) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle
 	var Count int
 
 	e := d.DB.QueryRow(
-		"SELECT COUNT(*) FROM battles;",
+		"SELECT COUNT(*) FROM thunderdome.poker;",
 	).Scan(
 		&Count,
 	)
@@ -674,10 +678,10 @@ func (d *BattleService) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle
 	}
 
 	battleRows, battlesErr := d.DB.Query(`
-		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
+		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
-		FROM battles b
-		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
+		FROM thunderdome.poker b
+		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
 		GROUP BY b.id ORDER BY b.created_date DESC
 		LIMIT $1 OFFSET $2;
 	`, Limit, Offset)
@@ -710,7 +714,7 @@ func (d *BattleService) GetBattles(Limit int, Offset int) ([]*thunderdome.Battle
 			&b.UpdatedDate,
 			&leaders,
 		); err != nil {
-			d.Logger.Error("get battles query error", zap.Error(err))
+			d.Logger.Error("get poker games query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
@@ -728,7 +732,7 @@ func (d *BattleService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.
 	var Count int
 
 	e := d.DB.QueryRow(
-		"SELECT COUNT(DISTINCT bu.battle_id) FROM battles_users bu WHERE bu.active IS TRUE;",
+		"SELECT COUNT(DISTINCT pu.poker_id) FROM thunderdome.poker_user pu WHERE pu.active IS TRUE;",
 	).Scan(
 		&Count,
 	)
@@ -737,11 +741,11 @@ func (d *BattleService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.
 	}
 
 	battleRows, battlesErr := d.DB.Query(`
-		SELECT b.id, b.name, b.voting_locked, b.active_plan_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
+		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
-		FROM battles_users bu
-		LEFT JOIN battles b ON b.id = bu.battle_id
-		LEFT JOIN battles_leaders bl ON b.id = bl.battle_id
+		FROM thunderdome.poker_user bu
+		LEFT JOIN thunderdome.poker b ON b.id = bu.poker_id
+		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
 		WHERE bu.active IS TRUE GROUP BY b.id
 		LIMIT $1 OFFSET $2;
 	`, Limit, Offset)
@@ -774,7 +778,7 @@ func (d *BattleService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.
 			&b.UpdatedDate,
 			&leaders,
 		); err != nil {
-			d.Logger.Error("get active battles query error", zap.Error(err))
+			d.Logger.Error("get active poker games query error", zap.Error(err))
 		} else {
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			_ = json.Unmarshal([]byte(leaders), &b.Leaders)
@@ -789,11 +793,10 @@ func (d *BattleService) GetActiveBattles(Limit int, Offset int) ([]*thunderdome.
 // CleanBattles deletes battles older than {DaysOld} days
 func (d *BattleService) CleanBattles(ctx context.Context, DaysOld int) error {
 	if _, err := d.DB.ExecContext(ctx,
-		`call clean_battles($1);`,
+		`DELETE FROM thunderdome.poker WHERE last_active < (NOW() - $1 * interval '1 day');`,
 		DaysOld,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("call clean_battles", zap.Error(err))
-		return errors.New("error attempting to clean battles")
+		return fmt.Errorf("error attempting to clean poker games: %v", err)
 	}
 
 	return nil

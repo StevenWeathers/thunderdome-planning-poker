@@ -18,7 +18,7 @@ func (d *AuthService) CreateSession(ctx context.Context, UserId string) (string,
 	}
 
 	if _, sessionErr := d.DB.ExecContext(ctx, `
-		INSERT INTO user_session (session_id, user_id, disabled) VALUES ($1, $2, (SELECT mfa_enabled FROM users WHERE id = $2));
+		INSERT INTO thunderdome.user_session (session_id, user_id, disabled) VALUES ($1, $2, (SELECT mfa_enabled FROM thunderdome.users WHERE id = $2));
 		`,
 		SessionId,
 		UserId,
@@ -33,7 +33,7 @@ func (d *AuthService) CreateSession(ctx context.Context, UserId string) (string,
 // EnableSession enables a user authenticated session
 func (d *AuthService) EnableSession(ctx context.Context, SessionId string) error {
 	if _, sessionErr := d.DB.ExecContext(ctx, `
-		UPDATE user_session SET disabled = false WHERE session_id = $1;
+		UPDATE thunderdome.user_session SET disabled = false WHERE session_id = $1;
 		`,
 		SessionId,
 	); sessionErr != nil {
@@ -49,8 +49,24 @@ func (d *AuthService) GetSessionUser(ctx context.Context, SessionId string) (*th
 	User := &thunderdome.User{}
 
 	e := d.DB.QueryRowContext(ctx, `
-		SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active 
-		FROM user_session_get($1);`,
+		SELECT
+        u.id,
+        u.name,
+        u.email,
+        u.type,
+        u.avatar,
+        u.verified,
+        u.notifications_enabled,
+        COALESCE(u.country, ''),
+        COALESCE(u.locale, ''),
+        COALESCE(u.company, ''),
+        COALESCE(u.job_title, ''),
+        u.created_date,
+        u.updated_date,
+        u.last_active
+    FROM thunderdome.user_session us
+    LEFT JOIN thunderdome.users u ON u.id = us.user_id
+    WHERE us.session_id = $1 AND NOW() < us.expire_date`,
 		SessionId,
 	).Scan(
 		&User.Id,
@@ -82,7 +98,7 @@ func (d *AuthService) GetSessionUser(ctx context.Context, SessionId string) (*th
 // DeleteSession deletes a user authenticated session
 func (d *AuthService) DeleteSession(ctx context.Context, SessionId string) error {
 	if _, sessionErr := d.DB.ExecContext(ctx, `
-		DELETE FROM user_session WHERE session_id = $1;
+		DELETE FROM thunderdome.user_session WHERE session_id = $1;
 		`,
 		SessionId,
 	); sessionErr != nil {

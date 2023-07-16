@@ -15,7 +15,10 @@ func (d *OrganizationService) DepartmentUserRole(ctx context.Context, UserID str
 	var departmentRole string
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT orgRole, departmentRole FROM department_get_user_role($1, $2, $3)`,
+		`SELECT ou.role AS orgRole, COALESCE(du.role, '') AS departmentRole
+        FROM thunderdome.organization_user ou
+        LEFT JOIN thunderdome.department_user du ON du.user_id = $1 AND du.department_id = $3
+        WHERE ou.organization_id = $2 AND ou.user_id = $1;`,
 		UserID,
 		OrgID,
 		DepartmentID,
@@ -36,7 +39,9 @@ func (d *OrganizationService) DepartmentGet(ctx context.Context, DepartmentID st
 	var org = &thunderdome.Department{}
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM department_get_by_id($1)`,
+		`SELECT od.id, od.name, od.created_date, od.updated_date
+        FROM thunderdome.organization_department od
+        WHERE od.id = $1;`,
 		DepartmentID,
 	).Scan(
 		&org.Id,
@@ -56,7 +61,12 @@ func (d *OrganizationService) DepartmentGet(ctx context.Context, DepartmentID st
 func (d *OrganizationService) OrganizationDepartmentList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Department {
 	var departments = make([]*thunderdome.Department, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM department_list($1, $2, $3);`,
+		`SELECT d.id, d.name, d.created_date, d.updated_date
+        FROM thunderdome.organization_department d
+        WHERE d.organization_id = $1
+        ORDER BY d.created_date
+		LIMIT $2
+		OFFSET $3;`,
 		OrgID,
 		Limit,
 		Offset,
@@ -90,7 +100,7 @@ func (d *OrganizationService) DepartmentCreate(ctx context.Context, OrgID string
 	od := &thunderdome.Department{}
 
 	err := d.DB.QueryRowContext(ctx, `
-		SELECT id, name, created_date, updated_date FROM department_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM thunderdome.department_create($1, $2);`,
 		OrgID,
 		OrgName,
 	).Scan(&od.Id, &od.Name, &od.CreatedDate, &od.UpdatedDate)
@@ -107,7 +117,13 @@ func (d *OrganizationService) DepartmentCreate(ctx context.Context, OrgID string
 func (d *OrganizationService) DepartmentTeamList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.Team {
 	var teams = make([]*thunderdome.Team, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, created_date, updated_date FROM department_team_list($1, $2, $3);`,
+		`SELECT t.id, t.name, t.created_date, t.updated_date
+        FROM thunderdome.department_team dt
+        LEFT JOIN thunderdome.team t ON dt.team_id = t.id
+        WHERE dt.department_id = $1
+        ORDER BY t.created_date
+		LIMIT $2
+		OFFSET $3;`,
 		DepartmentID,
 		Limit,
 		Offset,
@@ -141,7 +157,7 @@ func (d *OrganizationService) DepartmentTeamCreate(ctx context.Context, Departme
 	t := &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx, `
-		SELECT id, name, created_date, updated_date FROM department_team_create($1, $2);`,
+		SELECT id, name, created_date, updated_date FROM thunderdome.department_team_create($1, $2);`,
 		DepartmentID,
 		TeamName,
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
@@ -158,7 +174,13 @@ func (d *OrganizationService) DepartmentTeamCreate(ctx context.Context, Departme
 func (d *OrganizationService) DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.DepartmentUser {
 	var users = make([]*thunderdome.DepartmentUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT id, name, email, role, avatar FROM department_user_list($1, $2, $3);`,
+		`SELECT u.id, u.name, COALESCE(u.email, ''), du.role, u.avatar
+        FROM thunderdome.department_user du
+        LEFT JOIN thunderdome.users u ON du.user_id = u.id
+        WHERE du.department_id = $1
+        ORDER BY du.created_date
+		LIMIT $2
+		OFFSET $3;`,
 		DepartmentID,
 		Limit,
 		Offset,
@@ -192,7 +214,7 @@ func (d *OrganizationService) DepartmentUserList(ctx context.Context, Department
 // DepartmentAddUser adds a user to an organization department
 func (d *OrganizationService) DepartmentAddUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
-		`SELECT department_user_add($1, $2, $3);`,
+		`SELECT thunderdome.department_user_add($1, $2, $3);`,
 		DepartmentID,
 		UserID,
 		Role,
@@ -209,7 +231,7 @@ func (d *OrganizationService) DepartmentAddUser(ctx context.Context, DepartmentI
 // DepartmentRemoveUser removes a user from a department (and department teams)
 func (d *OrganizationService) DepartmentRemoveUser(ctx context.Context, DepartmentID string, UserID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`CALL department_user_remove($1, $2);`,
+		`CALL thunderdome.department_user_remove($1, $2);`,
 		DepartmentID,
 		UserID,
 	)
@@ -229,7 +251,11 @@ func (d *OrganizationService) DepartmentTeamUserRole(ctx context.Context, UserID
 	var teamRole string
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT orgRole, departmentRole, teamRole FROM department_team_user_role($1, $2, $3, $4)`,
+		`SELECT ou.role AS orgRole, COALESCE(du.role, '') AS departmentRole, COALESCE(tu.role, '') AS teamRole
+        FROM thunderdome.organization_user ou
+        LEFT JOIN thunderdome.department_user du ON du.user_id = $1 AND du.department_id = $3
+        LEFT JOIN thunderdome.team_user tu ON tu.user_id = $1 AND tu.team_id = $4
+        WHERE ou.organization_id = $2 AND ou.user_id = $1;`,
 		UserID,
 		OrgID,
 		DepartmentID,
@@ -250,7 +276,7 @@ func (d *OrganizationService) DepartmentTeamUserRole(ctx context.Context, UserID
 // DepartmentDelete deletes a department
 func (d *OrganizationService) DepartmentDelete(ctx context.Context, DepartmentID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`CALL department_delete($1);`,
+		`CALL thunderdome.department_delete($1);`,
 		DepartmentID,
 	)
 

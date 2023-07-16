@@ -91,17 +91,17 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
 
 	// on server start reset all users to active false for battles
 	if _, err := d.DB.Exec(
-		`call deactivate_all_users();`); err != nil {
-		d.Logger.Ctx(ctx).Error("call deactivate_all_users error", zap.Error(err))
+		`CALL thunderdome.users_deactivate_all();`); err != nil {
+		d.Logger.Ctx(ctx).Error("CALL thunderdome.deactivate_all_users error", zap.Error(err))
 	}
 
 	// on server start if admin email is specified set that user to admin type
 	if AdminEmail != "" {
 		if _, err := d.DB.Exec(
-			`call promote_user_by_email($1);`,
+			`UPDATE thunderdome.users SET type = 'ADMIN', updated_date = NOW() WHERE email = $1;`,
 			AdminEmail,
 		); err != nil {
-			d.Logger.Ctx(ctx).Error("call promote_user_by_email error", zap.Error(err), zap.String("admin_email", AdminEmail))
+			d.Logger.Ctx(ctx).Error("CALL thunderdome.promote_user_by_email error", zap.Error(err), zap.String("admin_email", AdminEmail))
 		}
 	}
 
