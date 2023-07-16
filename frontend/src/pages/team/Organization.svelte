@@ -1,54 +1,62 @@
 <script lang="ts">
     import { onMount } from 'svelte'
 
-    import PageLayout from '../components/PageLayout.svelte'
-    import HollowButton from '../components/HollowButton.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
-    import CreateTeam from '../components/user/CreateTeam.svelte'
-    import AddUser from '../components/user/AddUser.svelte'
-    import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
-    import ChevronRight from '../components/icons/ChevronRight.svelte'
-    import { warrior } from '../stores'
-    import LL from '../i18n/i18n-svelte'
-    import { appRoutes } from '../config'
-    import { validateUserIsRegistered } from '../validationUtils'
-    import RowCol from '../components/table/RowCol.svelte'
-    import TableRow from '../components/table/TableRow.svelte'
-    import HeadCol from '../components/table/HeadCol.svelte'
-    import Table from '../components/table/Table.svelte'
-    import UserAvatar from '../components/user/UserAvatar.svelte'
-    import CountryFlag from '../components/user/CountryFlag.svelte'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { appRoutes } from '../../config'
+    import { validateUserIsRegistered } from '../../validationUtils'
+    import RowCol from '../../components/table/RowCol.svelte'
+    import TableRow from '../../components/table/TableRow.svelte'
+    import HeadCol from '../../components/table/HeadCol.svelte'
+    import Table from '../../components/table/Table.svelte'
+    import ChevronRight from '../../components/icons/ChevronRight.svelte'
+    import UserAvatar from '../../components/user/UserAvatar.svelte'
+    import CountryFlag from '../../components/user/CountryFlag.svelte'
+    import CreateDepartment from '../../components/team/CreateDepartment.svelte'
+    import CreateTeam from '../../components/team/CreateTeam.svelte'
+    import AddUser from '../../components/user/AddUser.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
 
     export let xfetch
     export let router
     export let notifications
     export let eventTag
     export let organizationId
-    export let departmentId
 
+    const departmentsPageLimit = 1000
     const teamsPageLimit = 1000
     const usersPageLimit = 1000
 
     let organization = {
         id: organizationId,
         name: '',
+        createdDate: '',
+        updateDate: '',
     }
-    let department = {
-        id: departmentId,
-        name: '',
-    }
-    let departmentRole = ''
-    let organizationRole = ''
+    let role = 'MEMBER'
+    let departments = []
     let teams = []
     let users = []
+    let showCreateDepartment = false
     let showCreateTeam = false
     let showAddUser = false
     let showRemoveUser = false
     let removeUserId = null
     let showDeleteTeam = false
+    let showDeleteDepartment = false
+    let showDeleteOrganization = false
     let deleteTeamId = null
+    let deleteDeptId = null
     let teamsPage = 1
     let usersPage = 1
+    let departmentsPage = 1
+
+    function toggleCreateDepartment() {
+        showCreateDepartment = !showCreateDepartment
+    }
 
     function toggleCreateTeam() {
         showCreateTeam = !showCreateTeam
@@ -68,50 +76,90 @@
         deleteTeamId = teamId
     }
 
-    function getDepartment() {
-        xfetch(
-            `/api/organizations/${organizationId}/departments/${departmentId}`,
-        )
+    const toggleDeleteDepartment = deptId => () => {
+        showDeleteDepartment = !showDeleteDepartment
+        deleteDeptId = deptId
+    }
+
+    const toggleDeleteOrganization = () => {
+        showDeleteOrganization = !showDeleteOrganization
+    }
+
+    function getOrganization() {
+        xfetch(`/api/organizations/${organizationId}`)
             .then(res => res.json())
             .then(function (result) {
-                department = result.data.department
                 organization = result.data.organization
-                organizationRole = result.data.organizationRole
-                departmentRole = result.data.departmentRole
+                role = result.data.role
 
+                getDepartments()
                 getTeams()
                 getUsers()
             })
             .catch(function () {
-                notifications.danger($LL.departmentGetError())
+                notifications.danger($LL.organizationGetError())
+            })
+    }
+
+    function getDepartments() {
+        const departmentsOffset = (departmentsPage - 1) * departmentsPageLimit
+        xfetch(
+            `/api/organizations/${organizationId}/departments?limit=${departmentsPageLimit}&offset=${departmentsOffset}`,
+        )
+            .then(res => res.json())
+            .then(function (result) {
+                departments = result.data
+            })
+            .catch(function () {
+                notifications.danger($LL.organizationGetDepartmentsError())
             })
     }
 
     function getTeams() {
         const teamsOffset = (teamsPage - 1) * teamsPageLimit
         xfetch(
-            `/api/organizations/${organizationId}/departments/${departmentId}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
+            `/api/organizations/${organizationId}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
         )
             .then(res => res.json())
             .then(function (result) {
                 teams = result.data
             })
             .catch(function () {
-                notifications.danger($LL.departmentTeamsGetError())
+                notifications.danger($LL.organizationGetTeamsError())
             })
     }
 
     function getUsers() {
         const usersOffset = (usersPage - 1) * usersPageLimit
         xfetch(
-            `/api/organizations/${organizationId}/departments/${departmentId}/users?limit=${usersPageLimit}&offset=${usersOffset}`,
+            `/api/organizations/${organizationId}/users?limit=${usersPageLimit}&offset=${usersOffset}`,
         )
             .then(res => res.json())
             .then(function (result) {
                 users = result.data
             })
             .catch(function () {
-                notifications.danger($LL.departmentUsersGetError())
+                notifications.danger($LL.organizationGetUsersError())
+            })
+    }
+
+    function createDepartmentHandler(name) {
+        const body = {
+            name,
+        }
+
+        xfetch(`/api/organizations/${organizationId}/departments`, { body })
+            .then(res => res.json())
+            .then(function (result) {
+                eventTag('create_department', 'engagement', 'success', () => {
+                    router.route(
+                        `${appRoutes.organization}/${organizationId}/department/${result.data.id}`,
+                    )
+                })
+            })
+            .catch(function () {
+                notifications.danger($LL.departmentCreateError())
+                eventTag('create_department', 'engagement', 'failure')
             })
     }
 
@@ -120,20 +168,17 @@
             name,
         }
 
-        xfetch(
-            `/api/organizations/${organizationId}/departments/${departmentId}/teams`,
-            { body },
-        )
+        xfetch(`/api/organizations/${organizationId}/teams`, { body })
             .then(res => res.json())
             .then(function () {
-                eventTag('create_department_team', 'engagement', 'success')
+                eventTag('create_organization_team', 'engagement', 'success')
                 toggleCreateTeam()
                 notifications.success($LL.teamCreateSuccess())
                 getTeams()
             })
             .catch(function () {
                 notifications.danger($LL.teamCreateError())
-                eventTag('create_department_team', 'engagement', 'failure')
+                eventTag('create_organization_team', 'engagement', 'failure')
             })
     }
 
@@ -143,53 +188,91 @@
             role,
         }
 
-        xfetch(
-            `/api/organizations/${organizationId}/departments/${departmentId}/users`,
-            { body },
-        )
+        xfetch(`/api/organizations/${organizationId}/users`, { body })
             .then(function () {
-                eventTag('department_add_user', 'engagement', 'success')
+                eventTag('organization_add_user', 'engagement', 'success')
                 toggleAddUser()
                 notifications.success($LL.userAddSuccess())
                 getUsers()
             })
             .catch(function () {
                 notifications.danger($LL.userAddError())
-                eventTag('department_add_user', 'engagement', 'failure')
+                eventTag('organization_add_user', 'engagement', 'failure')
             })
     }
 
     function handleUserRemove() {
-        xfetch(
-            `/api/organizations/${organizationId}/departments/${departmentId}/users/${removeUserId}`,
-            { method: 'DELETE' },
-        )
+        xfetch(`/api/organizations/${organizationId}/users/${removeUserId}`, {
+            method: 'DELETE',
+        })
             .then(function () {
-                eventTag('department_remove_user', 'engagement', 'success')
+                eventTag('organization_remove_user', 'engagement', 'success')
                 toggleRemoveUser(null)()
                 notifications.success($LL.userRemoveSuccess())
                 getUsers()
             })
             .catch(function () {
                 notifications.danger($LL.userRemoveError())
-                eventTag('department_remove_user', 'engagement', 'failure')
+                eventTag('organization_remove_user', 'engagement', 'failure')
             })
     }
 
     function handleDeleteTeam() {
-        xfetch(
-            `/api/organizations/${organizationId}/departments/${departmentId}/teams/${deleteTeamId}`,
-            { method: 'DELETE' },
-        )
+        xfetch(`/api/organizations/${organizationId}/teams/${deleteTeamId}`, {
+            method: 'DELETE',
+        })
             .then(function () {
-                eventTag('department_delete_team', 'engagement', 'success')
+                eventTag('organization_delete_team', 'engagement', 'success')
                 toggleDeleteTeam(null)()
                 notifications.success($LL.teamDeleteSuccess())
                 getTeams()
             })
             .catch(function () {
                 notifications.danger($LL.teamDeleteError())
-                eventTag('department_delete_team', 'engagement', 'failure')
+                eventTag('organization_delete_team', 'engagement', 'failure')
+            })
+    }
+
+    function handleDeleteDepartment() {
+        xfetch(
+            `/api/organizations/${organizationId}/departments/${deleteDeptId}`,
+            {
+                method: 'DELETE',
+            },
+        )
+            .then(function () {
+                eventTag(
+                    'organization_delete_department',
+                    'engagement',
+                    'success',
+                )
+                toggleDeleteDepartment(null)()
+                notifications.success($LL.departmentDeleteSuccess())
+                getDepartments()
+            })
+            .catch(function () {
+                notifications.danger($LL.departmentDeleteError())
+                eventTag(
+                    'organization_delete_department',
+                    'engagement',
+                    'failure',
+                )
+            })
+    }
+
+    function handleDeleteOrganization() {
+        xfetch(`/api/organizations/${organizationId}`, {
+            method: 'DELETE',
+        })
+            .then(function () {
+                eventTag('organization_delete', 'engagement', 'success')
+                toggleDeleteTeam()
+                notifications.success($LL.organizationDeleteSuccess())
+                router.route(appRoutes.teams)
+            })
+            .catch(function () {
+                notifications.danger($LL.organizationDeleteError())
+                eventTag('organization_delete', 'engagement', 'failure')
             })
     }
 
@@ -199,32 +282,96 @@
             return
         }
 
-        getDepartment()
+        getOrganization()
     })
 
-    $: isAdmin = organizationRole === 'ADMIN' || departmentRole === 'ADMIN'
+    $: isAdmin = role === 'ADMIN'
 </script>
 
 <svelte:head>
-    <title>{$LL.department()} {department.name} | {$LL.appName()}</title>
+    <title>{$LL.organization()} {organization.name} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
-    <div class="mb-6 lg:mb-8 dark:text-white">
-        <h1 class="text-3xl font-semibold font-rajdhani">
-            <span class="uppercase">{$LL.department()}</span>
-            <ChevronRight class="w-8 h-8" />
-            {department.name}
-        </h1>
-        <div class="text-xl font-semibold font-rajdhani">
-            <span class="uppercase">{$LL.organization()}</span>
-            <ChevronRight />
-            <a
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                href="{appRoutes.organization}/{organization.id}"
-            >
-                {organization.name}
-            </a>
+    <h1 class="mb-4 text-3xl font-semibold font-rajdhani dark:text-white">
+        <span class="uppercase">{$LL.organization()}</span>
+        <ChevronRight class="w-8 h-8" />
+        {organization.name}
+    </h1>
+
+    <div class="w-full mb-6 lg:mb-8">
+        <div class="flex w-full">
+            <div class="w-4/5">
+                <h2
+                    class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+                >
+                    {$LL.departments()}
+                </h2>
+            </div>
+            <div class="w-1/5">
+                <div class="text-right">
+                    {#if isAdmin}
+                        <SolidButton onClick="{toggleCreateDepartment}">
+                            {$LL.departmentCreate()}
+                        </SolidButton>
+                    {/if}
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full">
+            <Table>
+                <tr slot="header">
+                    <HeadCol>
+                        {$LL.name()}
+                    </HeadCol>
+                    <HeadCol>
+                        {$LL.dateCreated()}
+                    </HeadCol>
+                    <HeadCol>
+                        {$LL.dateUpdated()}
+                    </HeadCol>
+                    <HeadCol type="action">
+                        <span class="sr-only">{$LL.actions()}</span>
+                    </HeadCol>
+                </tr>
+                <tbody slot="body" let:class="{className}" class="{className}">
+                    {#each departments as department, i}
+                        <TableRow itemIndex="{i}">
+                            <RowCol>
+                                <a
+                                    href="{appRoutes.organization}/{organizationId}/department/{department.id}"
+                                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                                >
+                                    {department.name}
+                                </a>
+                            </RowCol>
+                            <RowCol>
+                                {new Date(
+                                    department.createdDate,
+                                ).toLocaleString()}
+                            </RowCol>
+                            <RowCol>
+                                {new Date(
+                                    department.updatedDate,
+                                ).toLocaleString()}
+                            </RowCol>
+                            <RowCol type="action">
+                                {#if isAdmin}
+                                    <HollowButton
+                                        onClick="{toggleDeleteDepartment(
+                                            department.id,
+                                        )}"
+                                        color="red"
+                                    >
+                                        {$LL.delete()}
+                                    </HollowButton>
+                                {/if}
+                            </RowCol>
+                        </TableRow>
+                    {/each}
+                </tbody>
+            </Table>
         </div>
     </div>
 
@@ -269,7 +416,7 @@
                         <TableRow itemIndex="{i}">
                             <RowCol>
                                 <a
-                                    href="{appRoutes.organization}/{organizationId}/department/{departmentId}/team/{team.id}"
+                                    href="{appRoutes.organization}/{organizationId}/team/{team.id}"
                                     class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                                 >
                                     {team.name}
@@ -396,6 +543,21 @@
         </Table>
     </div>
 
+    {#if isAdmin}
+        <div class="w-full text-center mt-8">
+            <HollowButton onClick="{toggleDeleteOrganization}" color="red">
+                {$LL.deleteOrganization()}
+            </HollowButton>
+        </div>
+    {/if}
+
+    {#if showCreateDepartment}
+        <CreateDepartment
+            toggleCreate="{toggleCreateDepartment}"
+            handleCreate="{createDepartmentHandler}"
+        />
+    {/if}
+
     {#if showCreateTeam}
         <CreateTeam
             toggleCreate="{toggleCreateTeam}"
@@ -423,6 +585,24 @@
             handleDelete="{handleDeleteTeam}"
             confirmText="{$LL.deleteTeamConfirmText()}"
             confirmBtnText="{$LL.deleteTeam()}"
+        />
+    {/if}
+
+    {#if showDeleteDepartment}
+        <DeleteConfirmation
+            toggleDelete="{toggleDeleteDepartment(null)}"
+            handleDelete="{handleDeleteDepartment}"
+            confirmText="{$LL.deleteDepartmentConfirmText()}"
+            confirmBtnText="{$LL.deleteDepartment()}"
+        />
+    {/if}
+
+    {#if showDeleteOrganization}
+        <DeleteConfirmation
+            toggleDelete="{toggleDeleteOrganization}"
+            handleDelete="{handleDeleteOrganization}"
+            confirmText="{$LL.deleteOrganizationConfirmText()}"
+            confirmBtnText="{$LL.deleteOrganization()}"
         />
     {/if}
 </PageLayout>

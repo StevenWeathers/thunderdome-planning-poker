@@ -2,25 +2,25 @@
     import { onDestroy, onMount } from 'svelte'
     import Sockette from 'sockette'
 
-    import PageLayout from '../components/PageLayout.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
-    import Checkin from '../components/checkin/Checkin.svelte'
-    import ChevronRight from '../components/icons/ChevronRight.svelte'
-    import TrashIcon from '../components/icons/TrashIcon.svelte'
-    import Comments from '../components/checkin/Comments.svelte'
-    import Gauge from '../components/Gauge.svelte'
-    import LL from '../i18n/i18n-svelte'
-    import { warrior as user } from '../stores'
-    import { AppConfig, appRoutes, PathPrefix } from '../config'
-    import { validateUserIsRegistered } from '../validationUtils'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import Checkin from '../../components/checkin/Checkin.svelte'
+    import ChevronRight from '../../components/icons/ChevronRight.svelte'
+    import TrashIcon from '../../components/icons/TrashIcon.svelte'
+    import Comments from '../../components/checkin/Comments.svelte'
+    import Gauge from '../../components/Gauge.svelte'
+    import LL from '../../i18n/i18n-svelte'
+    import { warrior as user } from '../../stores'
+    import { AppConfig, appRoutes, PathPrefix } from '../../config'
+    import { validateUserIsRegistered } from '../../validationUtils'
     import {
         formatDayForInput,
         getTimezoneName,
         subtractDays,
-    } from '../dateUtils'
-    import UserAvatar from '../components/user/UserAvatar.svelte'
-    import BlockedPing from '../components/checkin/BlockedPing.svelte'
-    import EditIcon from '../components/icons/EditIcon.svelte'
+    } from '../../dateUtils'
+    import UserAvatar from '../../components/user/UserAvatar.svelte'
+    import BlockedPing from '../../components/checkin/BlockedPing.svelte'
+    import EditIcon from '../../components/icons/EditIcon.svelte'
 
     export let xfetch
     export let router

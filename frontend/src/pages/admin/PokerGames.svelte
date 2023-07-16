@@ -140,7 +140,7 @@
                             {new Date(battle.updatedDate).toLocaleString()}
                         </RowCol>
                         <RowCol type="action">
-                            <HollowButton href="{appRoutes.battle}/{battle.id}">
+                            <HollowButton href="{appRoutes.game}/{battle.id}">
                                 {$LL.battleJoin({
                                     friendly: AppConfig.FriendlyUIVerbs,
                                 })}

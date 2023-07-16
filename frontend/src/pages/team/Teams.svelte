@@ -1,18 +1,18 @@
 <script lang="ts">
     import { onMount } from 'svelte'
 
-    import PageLayout from '../components/PageLayout.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
-    import CreateOrganization from '../components/user/CreateOrganization.svelte'
-    import CreateTeam from '../components/user/CreateTeam.svelte'
-    import { warrior } from '../stores'
-    import LL from '../i18n/i18n-svelte'
-    import { AppConfig, appRoutes } from '../config'
-    import { validateUserIsRegistered } from '../validationUtils'
-    import RowCol from '../components/table/RowCol.svelte'
-    import TableRow from '../components/table/TableRow.svelte'
-    import HeadCol from '../components/table/HeadCol.svelte'
-    import Table from '../components/table/Table.svelte'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import CreateOrganization from '../../components/team/CreateOrganization.svelte'
+    import CreateTeam from '../../components/team/CreateTeam.svelte'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../../config'
+    import { validateUserIsRegistered } from '../../validationUtils'
+    import RowCol from '../../components/table/RowCol.svelte'
+    import TableRow from '../../components/table/TableRow.svelte'
+    import HeadCol from '../../components/table/HeadCol.svelte'
+    import Table from '../../components/table/Table.svelte'
 
     export let xfetch
     export let router

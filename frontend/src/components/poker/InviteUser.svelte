@@ -59,7 +59,7 @@
         appearance-none text-gray-700 dark:text-gray-400 focus:outline-none focus:bg-white
         focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
             type="text"
-            value="{hostname}{appRoutes.battle}/{battleId}"
+            value="{hostname}{appRoutes.game}/{battleId}"
             id="BattleLink"
             readonly
         />

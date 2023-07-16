@@ -95,7 +95,7 @@
             .then(function (result) {
                 const battle = result.data
                 eventTag('create_battle', 'engagement', 'success', () => {
-                    router.route(`${appRoutes.battle}/${battle.id}`)
+                    router.route(`${appRoutes.game}/${battle.id}`)
                 })
             })
             .catch(function (error) {

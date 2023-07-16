@@ -1,14 +1,14 @@
 <script lang="ts">
     import { onMount } from 'svelte'
 
-    import PageLayout from '../components/PageLayout.svelte'
-    import CreateBattle from '../components/battle/CreateBattle.svelte'
-    import HollowButton from '../components/HollowButton.svelte'
-    import { warrior } from '../stores'
-    import LL from '../i18n/i18n-svelte'
-    import { AppConfig, appRoutes } from '../config'
-    import LeaderIcon from '../components/icons/LeaderIcon.svelte'
-    import Pagination from '../components/Pagination.svelte'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import CreateBattle from '../../components/poker/CreatePokerGame.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../../config'
+    import LeaderIcon from '../../components/icons/LeaderIcon.svelte'
+    import Pagination from '../../components/Pagination.svelte'
 
     export let xfetch
     export let notifications
@@ -99,7 +99,7 @@
                             </div>
                         </div>
                         <div class="w-full md:w-1/2 md:mb-0 md:text-right">
-                            <HollowButton href="{appRoutes.battle}/{battle.id}">
+                            <HollowButton href="{appRoutes.game}/{battle.id}">
                                 {$LL.battleJoin({
                                     friendly: AppConfig.FriendlyUIVerbs,
                                 })}

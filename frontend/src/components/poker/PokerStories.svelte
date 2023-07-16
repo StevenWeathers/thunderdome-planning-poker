@@ -8,8 +8,8 @@
     import Bars2 from '../icons/Bars2.svelte'
     import ChevronDown from '../icons/ChevronDown.svelte'
     import DoubleChevronDown from '../icons/DoubleChevronDown.svelte'
-    import AddPlan from './AddPlan.svelte'
-    import ViewPlan from './ViewPlan.svelte'
+    import AddPlan from './AddStory.svelte'
+    import ViewPlan from './ViewStory.svelte'
     import { AppConfig } from '../../config'
     import ImportModal from './ImportModal.svelte'
 

@@ -1,28 +1,28 @@
 <script lang="ts">
     import { onMount } from 'svelte'
 
-    import PageLayout from '../components/PageLayout.svelte'
-    import { warrior as user } from '../stores'
-    import { appRoutes } from '../config'
-    import LL from '../i18n/i18n-svelte'
-    import HollowButton from '../components/HollowButton.svelte'
-    import CreateStoryboard from '../components/storyboard/CreateStoryboard.svelte'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import CreateRetro from '../../components/retro/CreateRetro.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
+    import { warrior as user } from '../../stores'
+    import { appRoutes } from '../../config'
+    import LL from '../../i18n/i18n-svelte'
 
     export let xfetch
     export let notifications
     export let router
     export let eventTag
 
-    let storyboards = []
+    let retros = []
 
-    xfetch(`/api/users/${$user.id}/storyboards`)
+    xfetch(`/api/users/${$user.id}/retros`)
         .then(res => res.json())
         .then(function (bs) {
-            storyboards = bs.data
+            retros = bs.data
         })
-        .catch(function (error) {
-            notifications.danger($LL.getStoryboardsErrorMessage())
-            eventTag('fetch_storyboards', 'engagement', 'failure')
+        .catch(function () {
+            notifications.danger($LL.getRetrosErrorMessage())
+            eventTag('fetch_retros', 'engagement', 'failure')
         })
 
     onMount(() => {
@@ -33,19 +33,19 @@
 </script>
 
 <svelte:head>
-    <title>{$LL.yourStoryboards()} | {$LL.appName()}</title>
+    <title>{$LL.yourRetros()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
     <h1
         class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
     >
-        {$LL.myStoryboards()}
+        {$LL.myRetros()}
     </h1>
 
     <div class="flex flex-wrap">
         <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
-            {#each storyboards as storyboard}
+            {#each retros as retro}
                 <div
                     class="bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
                         border-b"
@@ -55,20 +55,18 @@
                             class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight"
                         >
-                            <span data-testid="storyboard-name"
-                                >{storyboard.name}</span
-                            >
+                            <span data-testid="retro-name">{retro.name}</span>
                             <div
                                 class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
                             >
-                                {#if $user.id === storyboard.owner_id}{$LL.owner()}{/if}
+                                {#if $user.id === retro.ownerId}
+                                    {$LL.owner()}
+                                {/if}
                             </div>
                         </div>
                         <div class="w-full md:w-1/2 md:mb-0 md:text-right">
-                            <HollowButton
-                                href="{appRoutes.storyboard}/{storyboard.id}"
-                            >
-                                {$LL.joinStoryboard()}
+                            <HollowButton href="{appRoutes.retro}/{retro.id}">
+                                {$LL.joinRetro()}
                             </HollowButton>
                         </div>
                     </div>
@@ -83,9 +81,9 @@
                 <h2
                     class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
                 >
-                    {$LL.createAStoryboard()}
+                    {$LL.createARetro()}
                 </h2>
-                <CreateStoryboard
+                <CreateRetro
                     notifications="{notifications}"
                     router="{router}"
                     eventTag="{eventTag}"

@@ -32,8 +32,8 @@ const defaultAppRoutes = {
     resetPwd: `${PathPrefix}/reset-password`,
     verifyAct: `${PathPrefix}/verify-account`,
     profile: `${PathPrefix}/profile`,
-    battles: `${PathPrefix}/battles`,
-    battle: `${PathPrefix}/battle`,
+    games: `${PathPrefix}/battles`,
+    game: `${PathPrefix}/battle`,
     retros: `${PathPrefix}/retros`,
     retro: `${PathPrefix}/retro`,
     storyboards: `${PathPrefix}/storyboards`,
@@ -42,7 +42,7 @@ const defaultAppRoutes = {
     organization: `${PathPrefix}/organization`,
     team: `${PathPrefix}/team`,
     admin: `${PathPrefix}/admin`,
-    adminBattles: `${PathPrefix}/admin/battles`,
+    adminPokerGames: `${PathPrefix}/admin/battles`,
     adminRetros: `${PathPrefix}/admin/retros`,
     adminStoryboards: `${PathPrefix}/admin/storyboards`,
     adminTeams: `${PathPrefix}/admin/teams`,
@@ -53,8 +53,8 @@ const defaultAppRoutes = {
 }
 const friendlyAppRoutes = {
     ...defaultAppRoutes,
-    battles: `${PathPrefix}/games`,
-    battle: `${PathPrefix}/game`,
+    games: `${PathPrefix}/games`,
+    game: `${PathPrefix}/game`,
 }
 const appRoutes = FriendlyUIVerbs ? friendlyAppRoutes : defaultAppRoutes
 

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import PageLayout from '../components/PageLayout.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
-    import { warrior } from '../stores'
-    import { AppConfig, appRoutes } from '../config'
-    import LL from '../i18n/i18n-svelte'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import { warrior } from '../../stores'
+    import { AppConfig, appRoutes } from '../../config'
+    import LL from '../../i18n/i18n-svelte'
 
     export let router
     export let xfetch
@@ -27,10 +27,10 @@
     let mfaSessionId = null
 
     function targetPage() {
-        let tp = appRoutes.battles
+        let tp = appRoutes.games
 
         if (battleId) {
-            tp = `${appRoutes.battle}/${battleId}`
+            tp = `${appRoutes.game}/${battleId}`
         }
 
         if (retroId) {

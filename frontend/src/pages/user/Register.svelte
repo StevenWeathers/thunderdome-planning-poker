@@ -1,11 +1,11 @@
 <script lang="ts">
-    import PageLayout from '../components/PageLayout.svelte'
-    import { warrior } from '../stores'
-    import { validateName } from '../validationUtils'
-    import LL from '../i18n/i18n-svelte'
-    import { AppConfig, appRoutes } from '../config'
-    import SolidButton from '../components/SolidButton.svelte'
-    import UserRegisterForm from '../components/user/UserRegisterForm.svelte'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import { warrior } from '../../stores'
+    import { validateName } from '../../validationUtils'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../../config'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import UserRegisterForm from '../../components/user/UserRegisterForm.svelte'
 
     export let router
     export let xfetch
@@ -21,10 +21,10 @@
     let warriorName = $warrior.name || ''
 
     function targetPage() {
-        let tp = appRoutes.battles
+        let tp = appRoutes.games
 
         if (battleId) {
-            tp = `${appRoutes.battle}/${battleId}`
+            tp = `${appRoutes.game}/${battleId}`
         }
 
         if (retroId) {

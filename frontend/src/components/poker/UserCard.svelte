@@ -8,7 +8,7 @@
     import LL from '../../i18n/i18n-svelte'
     import { warrior as activeWarrior } from '../../stores'
     import VoteIcon from '../icons/VoteIcon.svelte'
-    import BecomeLeader from './BecomeLeader.svelte'
+    import BecomeLeader from './BecomeFacilitator.svelte'
 
     export let voted = false
     export let warrior = {}

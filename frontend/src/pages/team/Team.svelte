@@ -1,31 +1,31 @@
 <script lang="ts">
     import { onMount } from 'svelte'
 
-    import PageLayout from '../components/PageLayout.svelte'
-    import HollowButton from '../components/HollowButton.svelte'
-    import AddUser from '../components/user/AddUser.svelte'
-    import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
-    import ChevronRight from '../components/icons/ChevronRight.svelte'
-    import CreateBattle from '../components/battle/CreateBattle.svelte'
-    import CreateRetro from '../components/retro/CreateRetro.svelte'
-    import CreateStoryboard from '../components/storyboard/CreateStoryboard.svelte'
-    import CountryFlag from '../components/user/CountryFlag.svelte'
-    import UserAvatar from '../components/user/UserAvatar.svelte'
-    import ActionComments from '../components/retro/ActionComments.svelte'
-    import { warrior } from '../stores'
-    import LL from '../i18n/i18n-svelte'
-    import { AppConfig, appRoutes } from '../config'
-    import { validateUserIsRegistered } from '../validationUtils'
-    import Table from '../components/table/Table.svelte'
-    import HeadCol from '../components/table/HeadCol.svelte'
-    import TableRow from '../components/table/TableRow.svelte'
-    import RowCol from '../components/table/RowCol.svelte'
-    import Modal from '../components/Modal.svelte'
-    import Pagination from '../components/Pagination.svelte'
-    import EditActionItem from '../components/retro/EditActionItem.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
-    import CheckboxIcon from '../components/icons/CheckboxIcon.svelte'
-    import CommentIcon from '../components/icons/CommentIcon.svelte'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
+    import AddUser from '../../components/user/AddUser.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
+    import ChevronRight from '../../components/icons/ChevronRight.svelte'
+    import CreateBattle from '../../components/poker/CreatePokerGame.svelte'
+    import CreateRetro from '../../components/retro/CreateRetro.svelte'
+    import CreateStoryboard from '../../components/storyboard/CreateStoryboard.svelte'
+    import CountryFlag from '../../components/user/CountryFlag.svelte'
+    import UserAvatar from '../../components/user/UserAvatar.svelte'
+    import ActionComments from '../../components/retro/ActionComments.svelte'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes } from '../../config'
+    import { validateUserIsRegistered } from '../../validationUtils'
+    import Table from '../../components/table/Table.svelte'
+    import HeadCol from '../../components/table/HeadCol.svelte'
+    import TableRow from '../../components/table/TableRow.svelte'
+    import RowCol from '../../components/table/RowCol.svelte'
+    import Modal from '../../components/Modal.svelte'
+    import Pagination from '../../components/Pagination.svelte'
+    import EditActionItem from '../../components/retro/EditActionItem.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte'
+    import CommentIcon from '../../components/icons/CommentIcon.svelte'
 
     export let xfetch
     export let router
@@ -529,7 +529,7 @@
                                     </HollowButton>
                                 {/if}
                                 <HollowButton
-                                    href="{appRoutes.battle}/{battle.id}"
+                                    href="{appRoutes.game}/{battle.id}"
                                 >
                                     {$LL.battleJoin({
                                         friendly: AppConfig.FriendlyUIVerbs,

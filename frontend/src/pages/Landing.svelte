@@ -74,7 +74,7 @@
                         text-yellow-thunder py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
                         href="{$warrior.id
-                            ? appRoutes.battles
+                            ? appRoutes.games
                             : appRoutes.register}"
                     >
                         {$LL.battleCreate({

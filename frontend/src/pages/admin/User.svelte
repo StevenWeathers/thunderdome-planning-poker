@@ -323,7 +323,7 @@
                                 </RowCol>
                                 <RowCol type="action">
                                     <HollowButton
-                                        href="{appRoutes.battle}/{battle.id}"
+                                        href="{appRoutes.game}/{battle.id}"
                                     >
                                         {$LL.battleJoin({
                                             friendly: AppConfig.FriendlyUIVerbs,

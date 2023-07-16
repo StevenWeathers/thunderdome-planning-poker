@@ -53,7 +53,7 @@
         xfetch(`/api/battles/${battleId}`, { method: 'DELETE' })
             .then(res => res.json())
             .then(function () {
-                router.route(appRoutes.adminBattles)
+                router.route(appRoutes.adminPokerGames)
             })
             .catch(function () {
                 notifications.danger(

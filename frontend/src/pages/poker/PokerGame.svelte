@@ -1,21 +1,21 @@
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte'
 
-    import PageLayout from '../components/PageLayout.svelte'
-    import PointCard from '../components/battle/PointCard.svelte'
-    import BattlePlans from '../components/battle/BattlePlans.svelte'
-    import VoteResults from '../components/battle/VoteResults.svelte'
-    import HollowButton from '../components/HollowButton.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
-    import ExternalLinkIcon from '../components/icons/ExternalLinkIcon.svelte'
-    import EditBattle from '../components/battle/EditBattle.svelte'
-    import DeleteConfirmation from '../components/DeleteConfirmation.svelte'
-    import { warrior } from '../stores'
-    import LL from '../i18n/i18n-svelte'
-    import { AppConfig, appRoutes, PathPrefix } from '../config'
-    import UserCard from '../components/battle/UserCard.svelte'
-    import VotingControls from '../components/battle/VotingControls.svelte'
-    import InviteUser from '../components/battle/InviteUser.svelte'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import PointCard from '../../components/poker/PointCard.svelte'
+    import BattlePlans from '../../components/poker/PokerStories.svelte'
+    import VoteResults from '../../components/poker/VoteResults.svelte'
+    import HollowButton from '../../components/HollowButton.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import ExternalLinkIcon from '../../components/icons/ExternalLinkIcon.svelte'
+    import EditBattle from '../../components/poker/EditPokerGame.svelte'
+    import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
+    import { warrior } from '../../stores'
+    import LL from '../../i18n/i18n-svelte'
+    import { AppConfig, appRoutes, PathPrefix } from '../../config'
+    import UserCard from '../../components/poker/UserCard.svelte'
+    import VotingControls from '../../components/poker/VotingControls.svelte'
+    import InviteUser from '../../components/poker/InviteUser.svelte'
     import Sockette from 'sockette'
 
     export let battleId
@@ -238,11 +238,11 @@
                 battle.hideVoterIdentity = revisedBattle.hideVoterIdentity
                 break
             case 'battle_conceded':
-                // battle over, goodbye.
+                // poker over, goodbye.
                 notifications.warning(
                     $LL.battleDeleted({ friendly: AppConfig.FriendlyUIVerbs }),
                 )
-                router.route(appRoutes.battles)
+                router.route(appRoutes.games)
                 break
             case 'jab_warrior':
                 const warriorToJab = battle.users.find(
@@ -273,7 +273,7 @@
             onclose: e => {
                 if (e.code === 4004) {
                     eventTag('not_found', 'battle', '', () => {
-                        router.route(appRoutes.battles)
+                        router.route(appRoutes.games)
                     })
                 } else if (e.code === 4001) {
                     eventTag('socket_unauthorized', 'battle', '', () => {
@@ -287,11 +287,11 @@
                                 friendly: AppConfig.FriendlyUIVerbs,
                             }),
                         )
-                        router.route(`${appRoutes.battles}`)
+                        router.route(`${appRoutes.games}`)
                     })
                 } else if (e.code === 4002) {
                     eventTag('battle_warrior_abandoned', 'battle', '', () => {
-                        router.route(appRoutes.battles)
+                        router.route(appRoutes.games)
                     })
                 } else {
                     socketReconnecting = true

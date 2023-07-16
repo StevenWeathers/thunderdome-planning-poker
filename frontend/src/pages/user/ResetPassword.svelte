@@ -1,9 +1,9 @@
 <script lang="ts">
-    import PageLayout from '../components/PageLayout.svelte'
-    import SolidButton from '../components/SolidButton.svelte'
-    import { validatePasswords } from '../validationUtils'
-    import LL from '../i18n/i18n-svelte'
-    import { appRoutes } from '../config'
+    import PageLayout from '../../components/PageLayout.svelte'
+    import SolidButton from '../../components/SolidButton.svelte'
+    import { validatePasswords } from '../../validationUtils'
+    import LL from '../../i18n/i18n-svelte'
+    import { appRoutes } from '../../config'
 
     export let xfetch
     export let router

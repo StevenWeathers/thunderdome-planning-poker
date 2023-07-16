@@ -16,22 +16,22 @@
     import GlobalAlerts from './components/alert/GlobalAlerts.svelte'
     import GlobalFooter from './components/GlobalFooter.svelte'
     import Landing from './pages/Landing.svelte'
-    import Battles from './pages/Battles.svelte'
-    import Battle from './pages/Battle.svelte'
-    import Retros from './pages/Retros.svelte'
-    import Retro from './pages/Retro.svelte'
-    import Storyboards from './pages/Storyboards.svelte'
-    import Storyboard from './pages/Storyboard.svelte'
-    import Teams from './pages/Teams.svelte'
-    import Organization from './pages/Organization.svelte'
-    import Department from './pages/Department.svelte'
-    import Team from './pages/Team.svelte'
-    import TeamCheckin from './pages/TeamCheckin.svelte'
-    import Register from './pages/Register.svelte'
-    import Login from './pages/Login.svelte'
-    import ResetPassword from './pages/ResetPassword.svelte'
-    import VerifyAccount from './pages/VerifyAccount.svelte'
-    import WarriorProfile from './pages/UserProfile.svelte'
+    import Battles from './pages/poker/PokerGames.svelte'
+    import Battle from './pages/poker/PokerGame.svelte'
+    import Retros from './pages/retro/Retros.svelte'
+    import Retro from './pages/retro/Retro.svelte'
+    import Storyboards from './pages/storyboard/Storyboards.svelte'
+    import Storyboard from './pages/storyboard/Storyboard.svelte'
+    import Teams from './pages/team/Teams.svelte'
+    import Organization from './pages/team/Organization.svelte'
+    import Department from './pages/team/Department.svelte'
+    import Team from './pages/team/Team.svelte'
+    import TeamCheckin from './pages/team/TeamCheckin.svelte'
+    import Register from './pages/user/Register.svelte'
+    import Login from './pages/user/Login.svelte'
+    import ResetPassword from './pages/user/ResetPassword.svelte'
+    import VerifyAccount from './pages/user/VerifyAccount.svelte'
+    import WarriorProfile from './pages/user/UserProfile.svelte'
     import Admin from './pages/admin/Admin.svelte'
     import AdminUsers from './pages/admin/Users.svelte'
     import AdminUser from './pages/admin/User.svelte'
@@ -42,8 +42,8 @@
     import AdminTeam from './pages/admin/Team.svelte'
     import AdminApikeys from './pages/admin/ApiKeys.svelte'
     import AdminAlerts from './pages/admin/Alerts.svelte'
-    import AdminBattles from './pages/admin/Battles.svelte'
-    import AdminBattle from './pages/admin/Battle.svelte'
+    import AdminBattles from './pages/admin/PokerGames.svelte'
+    import AdminBattle from './pages/admin/PokerGame.svelte'
     import AdminRetros from './pages/admin/Retros.svelte'
     import AdminRetro from './pages/admin/Retro.svelte'
     import AdminStoryboards from './pages/admin/Storyboards.svelte'
@@ -288,28 +288,28 @@
     })
 
     if (FeaturePoker) {
-        router.on(appRoutes.battles, () => {
+        router.on(appRoutes.games, () => {
             currentPage = {
                 route: Battles,
                 params: {},
                 name: 'battles',
             }
         })
-        router.on(`${appRoutes.battle}/:battleId`, params => {
+        router.on(`${appRoutes.game}/:battleId`, params => {
             currentPage = {
                 route: Battle,
                 params,
                 name: 'battle',
             }
         })
-        router.on(`${appRoutes.adminBattles}`, () => {
+        router.on(`${appRoutes.adminPokerGames}`, () => {
             currentPage = {
                 route: AdminBattles,
                 params: {},
                 name: 'admin',
             }
         })
-        router.on(`${appRoutes.adminBattles}/:battleId`, params => {
+        router.on(`${appRoutes.adminPokerGames}/:battleId`, params => {
             currentPage = {
                 route: AdminBattle,
                 params: params,
