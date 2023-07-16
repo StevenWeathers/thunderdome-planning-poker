@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// StoryboardService represents a PostgreSQL implementation of thunderdome.StoryboardService.
+// StoryboardService represents a PostgreSQL implementation of thunderdome.StoryboardDataSvc.
 type StoryboardService struct {
 	DB         *sql.DB
 	Logger     *otelzap.Logger

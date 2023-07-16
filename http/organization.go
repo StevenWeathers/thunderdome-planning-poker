@@ -45,7 +45,7 @@ func (s *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := s.OrganizationService.OrganizationListByUser(r.Context(), UserID, Limit, Offset)
+		Organizations := s.OrganizationDataSvc.OrganizationListByUser(r.Context(), UserID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Organizations, nil)
 	}
@@ -73,7 +73,7 @@ func (s *Service) handleGetOrganizationByUser() http.HandlerFunc {
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
-		Organization, err := s.OrganizationService.OrganizationGet(ctx, OrgID)
+		Organization, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -122,7 +122,7 @@ func (s *Service) handleCreateOrganization() http.HandlerFunc {
 			return
 		}
 
-		Organization, err := s.OrganizationService.OrganizationCreate(r.Context(), UserID, team.Name)
+		Organization, err := s.OrganizationDataSvc.OrganizationCreate(r.Context(), UserID, team.Name)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -152,7 +152,7 @@ func (s *Service) handleGetOrganizationTeams() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.OrganizationService.OrganizationTeamList(r.Context(), OrgID, Limit, Offset)
+		Teams := s.OrganizationDataSvc.OrganizationTeamList(r.Context(), OrgID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -178,7 +178,7 @@ func (s *Service) handleGetOrganizationUsers() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.OrganizationService.OrganizationUserList(r.Context(), OrgID, Limit, Offset)
+		Teams := s.OrganizationDataSvc.OrganizationUserList(r.Context(), OrgID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -218,7 +218,7 @@ func (s *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 			return
 		}
 
-		NewTeam, err := s.OrganizationService.OrganizationTeamCreate(r.Context(), OrgID, team.Name)
+		NewTeam, err := s.OrganizationDataSvc.OrganizationTeamCreate(r.Context(), OrgID, team.Name)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -265,13 +265,13 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := s.UserService.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := s.UserDataSvc.GetUserByEmail(r.Context(), UserEmail)
 		if UserErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, err := s.OrganizationService.OrganizationAddUser(r.Context(), OrgID, User.Id, u.Role)
+		_, err := s.OrganizationDataSvc.OrganizationAddUser(r.Context(), OrgID, User.Id, u.Role)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -308,7 +308,7 @@ func (s *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := s.OrganizationService.OrganizationRemoveUser(r.Context(), OrgID, UserID)
+		err := s.OrganizationDataSvc.OrganizationRemoveUser(r.Context(), OrgID, UserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -344,13 +344,13 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		Organization, err := s.OrganizationService.OrganizationGet(r.Context(), OrgID)
+		Organization, err := s.OrganizationDataSvc.OrganizationGet(r.Context(), OrgID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Team, err := s.TeamService.TeamGet(ctx, TeamID)
+		Team, err := s.TeamDataSvc.TeamGet(ctx, TeamID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -407,19 +407,19 @@ func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := s.UserService.GetUserByEmail(ctx, UserEmail)
+		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		OrgRole, roleErr := s.OrganizationService.OrganizationUserRole(r.Context(), User.Id, OrgID)
+		OrgRole, roleErr := s.OrganizationDataSvc.OrganizationUserRole(r.Context(), User.Id, OrgID)
 		if OrgRole == "" || roleErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 
-		_, err := s.TeamService.TeamAddUser(ctx, TeamID, User.Id, u.Role)
+		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -450,7 +450,7 @@ func (s *Service) handleDeleteOrganization() http.HandlerFunc {
 			return
 		}
 
-		err := s.OrganizationService.OrganizationDelete(r.Context(), OrgID)
+		err := s.OrganizationDataSvc.OrganizationDelete(r.Context(), OrgID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return

@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// OrganizationService represents a PostgreSQL implementation of thunderdome.OrganizationService.
+// OrganizationService represents a PostgreSQL implementation of thunderdome.OrganizationDataSvc.
 type OrganizationService struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger

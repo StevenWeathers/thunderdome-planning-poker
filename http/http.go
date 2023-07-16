@@ -6,8 +6,8 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/http/battle"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/checkin"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/poker"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
 	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
@@ -67,17 +67,17 @@ type Service struct {
 	Email               thunderdome.EmailService
 	Cookie              *securecookie.SecureCookie
 	Logger              *otelzap.Logger
-	UserService         thunderdome.UserService
-	APIKeyService       thunderdome.APIKeyService
-	AlertService        thunderdome.AlertService
-	AuthService         thunderdome.AuthService
-	BattleService       thunderdome.BattleService
-	CheckinService      thunderdome.CheckinService
-	RetroService        thunderdome.RetroService
-	StoryboardService   thunderdome.StoryboardService
-	TeamService         thunderdome.TeamService
-	OrganizationService thunderdome.OrganizationService
-	AdminService        thunderdome.AdminService
+	UserDataSvc         thunderdome.UserDataSvc
+	ApiKeyDataSvc       thunderdome.APIKeyDataSvc
+	AlertDataSvc        thunderdome.AlertDataSvc
+	AuthDataSvc         thunderdome.AuthDataSvc
+	PokerDataSvc        thunderdome.PokerDataSvc
+	CheckinDataSvc      thunderdome.CheckinDataSvc
+	RetroDataSvc        thunderdome.RetroDataSvc
+	StoryboardDataSvc   thunderdome.StoryboardDataSvc
+	TeamDataSvc         thunderdome.TeamDataSvc
+	OrganizationDataSvc thunderdome.OrganizationDataSvc
+	AdminDataSvc        thunderdome.AdminDataSvc
 }
 
 // standardJsonResponse structure used for all restful APIs response body
@@ -125,10 +125,10 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	staticHandler := http.FileServer(HFS)
 
 	var a = &apiService
-	b := battle.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.BattleService)
-	rs := retro.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.RetroService)
-	sb := storyboard.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.StoryboardService)
-	tc := checkin.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserService, a.AuthService, a.CheckinService, a.TeamService)
+	poker := poker.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.PokerDataSvc)
+	rs := retro.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.RetroDataSvc)
+	sb := storyboard.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.StoryboardDataSvc)
+	tc := checkin.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.CheckinDataSvc, a.TeamDataSvc)
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
 
@@ -263,25 +263,25 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	// maintenance
 	apiRouter.HandleFunc("/maintenance/clean-guests", a.userOnly(a.adminOnly(a.handleCleanGuests()))).Methods("DELETE")
 	apiRouter.HandleFunc("/maintenance/lowercase-emails", a.userOnly(a.adminOnly(a.handleLowercaseUserEmails()))).Methods("PATCH")
-	// battle(s)
+	// poker games(s)
 	if a.Config.FeaturePoker {
-		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handleBattleCreate()))).Methods("POST")
-		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handleGetUserBattles()))).Methods("GET")
+		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handlePokerCreate()))).Methods("POST")
+		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handleGetUserGames()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.departmentTeamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.departmentTeamUserOnly(a.handleBattleCreate()))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.departmentTeamUserOnly(a.handlePokerCreate()))).Methods("POST")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles", a.userOnly(a.orgTeamOnly(a.handleGetTeamBattles()))).Methods("GET")
 		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/battles/{battleId}", a.userOnly(a.orgTeamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
-		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.orgTeamOnly(a.entityUserOnly(a.handleBattleCreate())))).Methods("POST")
+		orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users/{userId}/battles", a.userOnly(a.orgTeamOnly(a.entityUserOnly(a.handlePokerCreate())))).Methods("POST")
 		teamRouter.HandleFunc("/{teamId}/battles", a.userOnly(a.teamUserOnly(a.handleGetTeamBattles()))).Methods("GET")
 		teamRouter.HandleFunc("/{teamId}/battles/{battleId}", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveBattle()))).Methods("DELETE")
-		teamRouter.HandleFunc("/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handleBattleCreate())))).Methods("POST")
+		teamRouter.HandleFunc("/{teamId}/users/{userId}/battles", a.userOnly(a.teamUserOnly(a.entityUserOnly(a.handlePokerCreate())))).Methods("POST")
 		apiRouter.HandleFunc("/maintenance/clean-battles", a.userOnly(a.adminOnly(a.handleCleanBattles()))).Methods("DELETE")
-		apiRouter.HandleFunc("/battles", a.userOnly(a.adminOnly(a.handleGetBattles()))).Methods("GET")
-		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetBattle())).Methods("GET")
-		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleBattleDelete(b))).Methods("DELETE")
-		apiRouter.HandleFunc("/battles/{battleId}/plans", a.userOnly(a.handleBattlePlanAdd(b))).Methods("POST")
-		apiRouter.HandleFunc("/arena/{battleId}", b.ServeBattleWs())
+		apiRouter.HandleFunc("/battles", a.userOnly(a.adminOnly(a.handleGetPokerGames()))).Methods("GET")
+		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handleGetPokerGame())).Methods("GET")
+		apiRouter.HandleFunc("/battles/{battleId}", a.userOnly(a.handlePokerDelete(poker))).Methods("DELETE")
+		apiRouter.HandleFunc("/battles/{battleId}/plans", a.userOnly(a.handlePokerStoryAdd(poker))).Methods("POST")
+		apiRouter.HandleFunc("/arena/{battleId}", poker.ServeBattleWs())
 	}
 	// retro(s)
 	if a.Config.FeatureRetro {
@@ -350,7 +350,7 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 func (s *Service) handleIndex(FSS fs.FS, uiConfig thunderdome.UIConfig) http.HandlerFunc {
 	tmpl := s.getIndexTemplate(FSS)
 
-	ActiveAlerts = s.AlertService.GetActiveAlerts(context.Background()) // prime the active alerts cache
+	ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(context.Background()) // prime the active alerts cache
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		uiConfig.ActiveAlerts = ActiveAlerts // get the latest alerts from memory

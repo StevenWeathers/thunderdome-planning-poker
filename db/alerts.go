@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// AlertService represents a PostgreSQL implementation of thunderdome.AlertService.
+// AlertService represents a PostgreSQL implementation of thunderdome.AlertDataSvc.
 type AlertService struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger

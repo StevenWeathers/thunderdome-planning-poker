@@ -29,11 +29,11 @@ class UserPage {
         this.user = user.data
     }
 
-    public async createBattle(battle) {
+    public async createPokerGame(game) {
         const b = await this.page.request.post(
             `/api/users/${this.user.id}/battles`,
             {
-                data: battle,
+                data: game,
             },
         )
         const res = await b.json()

@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// UserService represents a PostgreSQL implementation of thunderdome.UserService.
+// UserService represents a PostgreSQL implementation of thunderdome.UserDataSvc.
 type UserService struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger

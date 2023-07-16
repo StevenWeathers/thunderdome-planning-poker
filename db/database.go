@@ -89,7 +89,7 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
 		d.Logger.Ctx(ctx).Error("db migration up error", zap.Error(err))
 	}
 
-	// on server start reset all users to active false for battles
+	// on server start reset all users to active false for games
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.users_deactivate_all();`); err != nil {
 		d.Logger.Ctx(ctx).Error("CALL thunderdome.deactivate_all_users error", zap.Error(err))

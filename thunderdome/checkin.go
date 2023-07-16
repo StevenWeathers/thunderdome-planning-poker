@@ -25,7 +25,7 @@ type CheckinComment struct {
 	UpdatedDate string `json:"updated_date"`
 }
 
-type CheckinService interface {
+type CheckinDataSvc interface {
 	CheckinList(ctx context.Context, TeamId string, Date string, TimeZone string) ([]*TeamCheckin, error)
 	CheckinCreate(ctx context.Context, TeamId string, UserId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error
 	CheckinUpdate(ctx context.Context, CheckinId string, Yesterday string, Today string, Blockers string, Discuss string, GoalsMet bool) error

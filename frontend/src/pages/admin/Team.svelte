@@ -327,7 +327,7 @@
                                         class="w-full md:w-1/2 md:mb-0 md:text-right"
                                     >
                                         <HollowButton
-                                            href="{appRoutes.battle}/{battle.id}"
+                                            href="{appRoutes.game}/{battle.id}"
                                         >
                                             {$LL.battleJoin({
                                                 friendly:

@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// RetroService represents a PostgreSQL implementation of thunderdome.RetroService.
+// RetroService represents a PostgreSQL implementation of thunderdome.RetroDataSvc.
 type RetroService struct {
 	DB         *sql.DB
 	Logger     *otelzap.Logger

@@ -14,9 +14,9 @@ type Service struct {
 	ValidateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error)
 	ValidateUserCookie    func(w http.ResponseWriter, r *http.Request) (string, error)
 	EventHandlers         map[string]func(context.Context, string, string, string) ([]byte, error, bool)
-	UserService           thunderdome.UserService
-	AuthService           thunderdome.AuthService
-	StoryboardService     thunderdome.StoryboardService
+	UserService           thunderdome.UserDataSvc
+	AuthService           thunderdome.AuthDataSvc
+	StoryboardService     thunderdome.StoryboardDataSvc
 }
 
 // New returns a new storyboard with websocket hub/client and event handlers
@@ -24,8 +24,8 @@ func New(
 	logger *otelzap.Logger,
 	validateSessionCookie func(w http.ResponseWriter, r *http.Request) (string, error),
 	validateUserCookie func(w http.ResponseWriter, r *http.Request) (string, error),
-	userService thunderdome.UserService, authService thunderdome.AuthService,
-	storyboardService thunderdome.StoryboardService,
+	userService thunderdome.UserDataSvc, authService thunderdome.AuthDataSvc,
+	storyboardService thunderdome.StoryboardDataSvc,
 ) *Service {
 	sb := &Service{
 		Logger:                logger,

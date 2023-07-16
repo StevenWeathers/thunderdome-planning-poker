@@ -38,7 +38,7 @@ type DepartmentUser struct {
 	GravatarHash string `json:"gravatarHash"`
 }
 
-type OrganizationService interface {
+type OrganizationDataSvc interface {
 	OrganizationGet(ctx context.Context, OrgID string) (*Organization, error)
 	OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error)
 	OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*Organization

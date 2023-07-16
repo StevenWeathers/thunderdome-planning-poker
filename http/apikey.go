@@ -29,7 +29,7 @@ func (s *Service) handleUserAPIKeys() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := s.APIKeyService.GetUserApiKeys(r.Context(), UserID)
+		APIKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(r.Context(), UserID)
 		if keysErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -85,7 +85,7 @@ func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := s.APIKeyService.GetUserApiKeys(ctx, UserID)
+		APIKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(ctx, UserID)
 		if keysErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -96,7 +96,7 @@ func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 			return
 		}
 
-		APIKey, keyErr := s.APIKeyService.GenerateApiKey(ctx, UserID, k.Name)
+		APIKey, keyErr := s.ApiKeyDataSvc.GenerateApiKey(ctx, UserID, k.Name)
 		if keyErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
@@ -153,7 +153,7 @@ func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := s.APIKeyService.UpdateUserApiKey(r.Context(), UserID, APK, k.Active)
+		APIKeys, keysErr := s.ApiKeyDataSvc.UpdateUserApiKey(r.Context(), UserID, APK, k.Active)
 		if keysErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
@@ -186,7 +186,7 @@ func (s *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 		}
 		APK := vars["keyID"]
 
-		APIKeys, keysErr := s.APIKeyService.DeleteUserApiKey(r.Context(), UserID, APK)
+		APIKeys, keysErr := s.ApiKeyDataSvc.DeleteUserApiKey(r.Context(), UserID, APK)
 		if keysErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return

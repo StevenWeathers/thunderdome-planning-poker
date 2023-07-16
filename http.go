@@ -94,7 +94,7 @@ func (s *server) routes() {
 	apkService := &db.APIKeyService{DB: s.db.DB, Logger: s.logger}
 	s.AlertService = &db.AlertService{DB: s.db.DB, Logger: s.logger}
 	authService := &db.AuthService{DB: s.db.DB, Logger: s.logger, AESHashkey: s.db.Config.AESHashkey}
-	battleService := &db.BattleService{
+	battleService := &db.PokerService{
 		DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey,
 		HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy,
 	}
@@ -111,17 +111,17 @@ func (s *server) routes() {
 		Email:               s.email,
 		Cookie:              s.cookie,
 		Logger:              s.logger,
-		UserService:         userService,
-		APIKeyService:       apkService,
-		AlertService:        s.AlertService,
-		AuthService:         authService,
-		BattleService:       battleService,
-		CheckinService:      checkinService,
-		RetroService:        retroService,
-		StoryboardService:   storyboardService,
-		TeamService:         teamService,
-		OrganizationService: organizationService,
-		AdminService:        adminService,
+		UserDataSvc:         userService,
+		ApiKeyDataSvc:       apkService,
+		AlertDataSvc:        s.AlertService,
+		AuthDataSvc:         authService,
+		PokerDataSvc:        battleService,
+		CheckinDataSvc:      checkinService,
+		RetroDataSvc:        retroService,
+		StoryboardDataSvc:   storyboardService,
+		TeamDataSvc:         teamService,
+		OrganizationDataSvc: organizationService,
+		AdminDataSvc:        adminService,
 		UIConfig:            uiConfig,
 	}
 

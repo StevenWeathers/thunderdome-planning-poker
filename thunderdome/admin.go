@@ -7,10 +7,10 @@ type ApplicationStats struct {
 	UnregisteredCount         int `json:"unregisteredUserCount"`
 	RegisteredCount           int `json:"registeredUserCount"`
 	APIKeyCount               int `json:"apikeyCount"`
-	BattleCount               int `json:"battleCount"`
-	ActiveBattleCount         int `json:"activeBattleCount"`
-	ActiveBattleUserCount     int `json:"activeBattleUserCount"`
-	PlanCount                 int `json:"planCount"`
+	PokerCount                int `json:"battleCount"`
+	ActivePokerCount          int `json:"activeBattleCount"`
+	ActivePokerUserCount      int `json:"activeBattleUserCount"`
+	PokerStoryCount           int `json:"planCount"`
 	OrganizationCount         int `json:"organizationCount"`
 	DepartmentCount           int `json:"departmentCount"`
 	TeamCount                 int `json:"teamCount"`
@@ -29,6 +29,6 @@ type ApplicationStats struct {
 	StoryboardPersonaCount    int `json:"storyboardPersonaCount"`
 }
 
-type AdminService interface {
+type AdminDataSvc interface {
 	GetAppStats(ctx context.Context) (*ApplicationStats, error)
 }

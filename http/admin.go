@@ -19,7 +19,7 @@ import (
 // @Router /admin/stats [get]
 func (s *Service) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		AppStats, err := s.AdminService.GetAppStats(r.Context())
+		AppStats, err := s.AdminDataSvc.GetAppStats(r.Context())
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -44,7 +44,7 @@ func (s *Service) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users, Count, err := s.UserService.GetRegisteredUsers(r.Context(), Limit, Offset)
+		Users, Count, err := s.UserDataSvc.GetRegisteredUsers(r.Context(), Limit, Offset)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -100,7 +100,7 @@ func (s *Service) handleUserCreate() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, err := s.UserService.CreateUser(r.Context(), user.Name, user.Email, user.Password1)
+		newUser, VerifyID, err := s.UserDataSvc.CreateUser(r.Context(), user.Name, user.Email, user.Password1)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -133,7 +133,7 @@ func (s *Service) handleUserPromote() http.HandlerFunc {
 			return
 		}
 
-		err := s.UserService.PromoteUser(r.Context(), UserID)
+		err := s.UserDataSvc.PromoteUser(r.Context(), UserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -163,7 +163,7 @@ func (s *Service) handleUserDemote() http.HandlerFunc {
 			return
 		}
 
-		err := s.UserService.DemoteUser(r.Context(), UserID)
+		err := s.UserDataSvc.DemoteUser(r.Context(), UserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -193,7 +193,7 @@ func (s *Service) handleUserDisable() http.HandlerFunc {
 			return
 		}
 
-		err := s.UserService.DisableUser(r.Context(), UserID)
+		err := s.UserDataSvc.DisableUser(r.Context(), UserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -223,7 +223,7 @@ func (s *Service) handleUserEnable() http.HandlerFunc {
 			return
 		}
 
-		err := s.UserService.EnableUser(r.Context(), UserID)
+		err := s.UserDataSvc.EnableUser(r.Context(), UserID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -273,7 +273,7 @@ func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := s.AuthService.UserUpdatePassword(r.Context(), UserID, u.Password1)
+		UserName, UserEmail, updateErr := s.AuthDataSvc.UserUpdatePassword(r.Context(), UserID, u.Password1)
 		if updateErr != nil {
 			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
@@ -304,7 +304,7 @@ func (s *Service) handleGetOrganizations() http.HandlerFunc {
 		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := s.OrganizationService.OrganizationList(r.Context(), Limit, Offset)
+		Organizations := s.OrganizationDataSvc.OrganizationList(r.Context(), Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Organizations, nil)
 	}
@@ -325,7 +325,7 @@ func (s *Service) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams, Count := s.TeamService.TeamList(r.Context(), Limit, Offset)
+		Teams, Count := s.TeamDataSvc.TeamList(r.Context(), Limit, Offset)
 
 		Meta := &pagination{
 			Count:  Count,
@@ -352,7 +352,7 @@ func (s *Service) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.APIKeyService.GetAPIKeys(r.Context(), Limit, Offset)
+		Teams := s.ApiKeyDataSvc.GetAPIKeys(r.Context(), Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -380,7 +380,7 @@ func (s *Service) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 			return
 		}
 
-		Users, Count, err := s.UserService.SearchRegisteredUsersByEmail(r.Context(), Search, Limit, Offset)
+		Users, Count, err := s.UserDataSvc.SearchRegisteredUsersByEmail(r.Context(), Search, Limit, Offset)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return

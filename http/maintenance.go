@@ -20,7 +20,7 @@ func (s *Service) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_battles_days_old")
 
-		err := s.BattleService.CleanBattles(r.Context(), DaysOld)
+		err := s.PokerDataSvc.PurgeOldGames(r.Context(), DaysOld)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -43,7 +43,7 @@ func (s *Service) handleCleanRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_retros_days_old")
 
-		err := s.RetroService.CleanRetros(r.Context(), DaysOld)
+		err := s.RetroDataSvc.CleanRetros(r.Context(), DaysOld)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -66,7 +66,7 @@ func (s *Service) handleCleanStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_storyboards_days_old")
 
-		err := s.StoryboardService.CleanStoryboards(r.Context(), DaysOld)
+		err := s.StoryboardDataSvc.CleanStoryboards(r.Context(), DaysOld)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -89,7 +89,7 @@ func (s *Service) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		DaysOld := viper.GetInt("config.cleanup_guests_days_old")
 
-		err := s.UserService.CleanGuests(r.Context(), DaysOld)
+		err := s.UserDataSvc.CleanGuests(r.Context(), DaysOld)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -110,7 +110,7 @@ func (s *Service) handleCleanGuests() http.HandlerFunc {
 // @Router /maintenance/lowercase-emails [patch]
 func (s *Service) handleLowercaseUserEmails() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		lowercasedUsers, err := s.UserService.LowercaseUserEmails(r.Context())
+		lowercasedUsers, err := s.UserDataSvc.LowercaseUserEmails(r.Context())
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -121,7 +121,7 @@ func (s *Service) handleLowercaseUserEmails() http.HandlerFunc {
 			_ = s.Email.SendEmailUpdate(u.Name, u.Email)
 		}
 
-		mergedUsers, err := s.UserService.MergeDuplicateAccounts(r.Context())
+		mergedUsers, err := s.UserDataSvc.MergeDuplicateAccounts(r.Context())
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
