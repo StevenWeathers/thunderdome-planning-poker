@@ -1,5 +1,5 @@
 import { expect, test } from '../fixtures/user-sessions'
-import { BattlePage } from '../fixtures/battle-page'
+import { PokerGamePage } from '../fixtures/poker-game-page'
 
 const allowedPointValues = ['0', '1', '2', '3', '5', '8', '13', '?']
 const pointAverageRounding = 'ceil'
@@ -7,105 +7,107 @@ const lokiPlan = { name: 'Defeat Loki', type: 'Story' }
 const thanosPlan = { name: 'Defeat Thanos', type: 'Epic' }
 const scarletPlan = { name: 'Defeat Scarlet Witch', type: 'Epic' }
 
-test.describe('Battle page', () => {
-    let battle = { id: '', name: 'e2e battle page tests' }
-    let battleWithPlan = { id: '' }
-    let battleAddPlan = { id: '' }
-    let battleEditPlan = { id: '' }
-    let battleDeletePlan = { id: '' }
-    let battleActivatePlan = { id: '' }
-    let battleSkipPlan = { id: '' }
-    let battleWithoutAutoVoting = { id: '' }
-    let battleWithAutoVoting = { id: '', name: '' }
-    let battleFinishVoting = { id: '' }
-    let battleSaveVoting = { id: '' }
-    let battleAbandon = { id: '' }
-    let battleCancelDelete = { id: '' }
-    let battleDelete = { id: '' }
+test.describe('Poker Game page', () => {
+    let poker = { id: '', name: 'e2e poker page tests' }
+    let pokerWithStory = { id: '' }
+    let pokerAddStory = { id: '' }
+    let pokerEditStory = { id: '' }
+    let pokerDeleteStory = { id: '' }
+    let pokerActivateStory = { id: '' }
+    let pokerSkipStory = { id: '' }
+    let pokerWithoutAutoVoting = { id: '' }
+    let pokerWithAutoVoting = { id: '', name: '' }
+    let pokerFinishVoting = { id: '' }
+    let pokerSaveVoting = { id: '' }
+    let pokerAbandon = { id: '' }
+    let pokerCancelDelete = { id: '' }
+    let pokerDelete = { id: '' }
 
     test.beforeAll(async ({ registeredPage, verifiedPage, adminPage }) => {
         const commonBattle = {
-            name: `${battle.name}`,
+            name: `${poker.name}`,
             pointValuesAllowed: [...allowedPointValues],
             pointAverageRounding: `${pointAverageRounding}`,
             plans: [],
             autoFinishVoting: false,
             battleLeaders: [`${adminPage.user.email}`],
         }
-        battle = await registeredPage.createBattle({
+        poker = await registeredPage.createPokerGame({
             ...commonBattle,
             plans: [lokiPlan],
         })
-        battleWithPlan = await registeredPage.createBattle({
+        pokerWithStory = await registeredPage.createPokerGame({
             ...commonBattle,
             plans: [lokiPlan],
         })
-        battleAddPlan = await registeredPage.createBattle({ ...commonBattle })
-        battleEditPlan = await registeredPage.createBattle({
+        pokerAddStory = await registeredPage.createPokerGame({
+            ...commonBattle,
+        })
+        pokerEditStory = await registeredPage.createPokerGame({
             ...commonBattle,
             plans: [thanosPlan],
         })
-        battleDeletePlan = await registeredPage.createBattle({
+        pokerDeleteStory = await registeredPage.createPokerGame({
             ...commonBattle,
             plans: [scarletPlan],
         })
-        battleActivatePlan = await registeredPage.createBattle({
+        pokerActivateStory = await registeredPage.createPokerGame({
             ...commonBattle,
             plans: [scarletPlan],
         })
-        battleSkipPlan = await registeredPage.createBattle({
+        pokerSkipStory = await registeredPage.createPokerGame({
             ...commonBattle,
             plans: [thanosPlan],
         })
-        battleWithoutAutoVoting = await registeredPage.createBattle({
+        pokerWithoutAutoVoting = await registeredPage.createPokerGame({
             ...commonBattle,
         })
-        battleWithAutoVoting = await verifiedPage.createBattle({
+        pokerWithAutoVoting = await verifiedPage.createPokerGame({
             ...commonBattle,
             autoFinishVoting: true,
         })
-        battleFinishVoting = await registeredPage.createBattle({
+        pokerFinishVoting = await registeredPage.createPokerGame({
             ...commonBattle,
             plans: [lokiPlan],
         })
-        battleSaveVoting = await registeredPage.createBattle({
+        pokerSaveVoting = await registeredPage.createPokerGame({
             ...commonBattle,
             plans: [lokiPlan],
         })
-        battleAbandon = await verifiedPage.createBattle({ ...commonBattle })
-        battleCancelDelete = await registeredPage.createBattle({
+        pokerAbandon = await verifiedPage.createPokerGame({ ...commonBattle })
+        pokerCancelDelete = await registeredPage.createPokerGame({
             ...commonBattle,
         })
-        battleDelete = await registeredPage.createBattle({ ...commonBattle })
+        pokerDelete = await registeredPage.createPokerGame({ ...commonBattle })
     })
 
     test('unauthenticated user redirects to register', async ({ page }) => {
-        const bp = new BattlePage(page)
-        await bp.goto(battle.id)
+        const bp = new PokerGamePage(page)
+        await bp.goto(poker.id)
 
         const title = bp.page.locator('h1')
         await expect(title).toHaveText('Register')
     })
 
     test('guest user successfully loads', async ({ guestPage }) => {
-        const bp = new BattlePage(guestPage.page)
-        await bp.goto(battle.id)
+        const bp = new PokerGamePage(guestPage.page)
+        await bp.goto(poker.id)
 
-        await expect(bp.battleTitle).toHaveText(battle.name)
+        await expect(bp.pageTitle).toHaveText(poker.name)
     })
 
     test('registered user successfully loads', async ({ registeredPage }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battle.id)
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(poker.id)
 
-        await expect(bp.battleTitle).toHaveText(battle.name)
+        await expect(bp.pageTitle).toHaveText(poker.name)
     })
 
     test('user cannot become spectator when autoFinishVoting is false', async ({
         registeredPage,
     }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleWithoutAutoVoting.id)
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerWithoutAutoVoting.id)
 
         await expect(bp.toggleSpectator).not.toBeVisible()
     })
@@ -113,8 +115,8 @@ test.describe('Battle page', () => {
     test('user can become spectator when autoFinishVoting is true', async ({
         registeredPage,
     }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleWithAutoVoting.id)
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerWithAutoVoting.id)
 
         const spectatorButton = bp.toggleSpectator
 
@@ -122,9 +124,9 @@ test.describe('Battle page', () => {
         await expect(spectatorButton).toHaveText('Become Participant')
     })
 
-    test('leader can demote user leader status', async ({ adminPage }) => {
-        const bp = new BattlePage(adminPage.page)
-        await bp.goto(battle.id)
+    test('facilitator can remove facilitator', async ({ adminPage }) => {
+        const bp = new PokerGamePage(adminPage.page)
+        await bp.goto(poker.id)
 
         const userDemoteBtn = bp.page
             .locator(
@@ -133,79 +135,81 @@ test.describe('Battle page', () => {
             .locator('[data-testid="user-demote"]')
 
         await expect(userDemoteBtn).toBeVisible()
-        await expect(bp.battleDeleteBtn).toBeVisible()
-        await expect(bp.addPlansBtn).toBeVisible()
-        await expect(bp.editPlanBtn).toBeVisible()
-        await expect(bp.deletePlanBtn).toBeVisible()
-        await expect(bp.activatePlanBtn).toBeVisible()
-        await expect(bp.viewPlanBtn).toBeVisible()
-        await expect(bp.abandonBattleBtn).not.toBeVisible()
+        await expect(bp.gameDeleteBtn).toBeVisible()
+        await expect(bp.addStoriesBtn).toBeVisible()
+        await expect(bp.editStoryBtn).toBeVisible()
+        await expect(bp.deleteStoryBtn).toBeVisible()
+        await expect(bp.activateStoryBtn).toBeVisible()
+        await expect(bp.viewStoryBtn).toBeVisible()
+        await expect(bp.abandonGameBtn).not.toBeVisible()
 
         // yes you can demote yourself!
         await userDemoteBtn.click()
 
         await expect(userDemoteBtn).not.toBeVisible()
-        await expect(bp.battleDeleteBtn).not.toBeVisible()
-        await expect(bp.addPlansBtn).not.toBeVisible()
-        await expect(bp.editPlanBtn).not.toBeVisible()
-        await expect(bp.deletePlanBtn).not.toBeVisible()
-        await expect(bp.activatePlanBtn).not.toBeVisible()
-        await expect(bp.viewPlanBtn).toBeVisible()
-        await expect(bp.abandonBattleBtn).toBeVisible()
+        await expect(bp.gameDeleteBtn).not.toBeVisible()
+        await expect(bp.addStoriesBtn).not.toBeVisible()
+        await expect(bp.editStoryBtn).not.toBeVisible()
+        await expect(bp.deleteStoryBtn).not.toBeVisible()
+        await expect(bp.activateStoryBtn).not.toBeVisible()
+        await expect(bp.viewStoryBtn).toBeVisible()
+        await expect(bp.abandonGameBtn).toBeVisible()
     })
 
-    test('user can abandon battle', async ({ registeredPage }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleAbandon.id)
+    test('user can abandon game', async ({ registeredPage }) => {
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerAbandon.id)
 
         await bp.page.click('[data-testid="battle-abandon"]')
         await expect(bp.page.locator('h1')).toHaveText('My Battles')
     })
 
-    test('should display existing plans', async ({ registeredPage }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleWithPlan.id)
+    test('should display existing stories', async ({ registeredPage }) => {
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerWithStory.id)
 
         await expect(
-            bp.planName.filter({ hasText: lokiPlan.name }),
+            bp.storyName.filter({ hasText: lokiPlan.name }),
         ).toBeVisible()
     })
 
-    test('should allow adding plans', async ({ registeredPage }) => {
+    test('should allow adding stories', async ({ registeredPage }) => {
         const newPlanName = 'Defeat Thanos'
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleAddPlan.id)
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerAddStory.id)
 
         await bp.addPlan(newPlanName)
-        await expect(bp.planName.filter({ hasText: newPlanName })).toBeVisible()
+        await expect(
+            bp.storyName.filter({ hasText: newPlanName }),
+        ).toBeVisible()
     })
 
-    test('should allow editing plans', async ({ registeredPage }) => {
+    test('should allow editing stories', async ({ registeredPage }) => {
         const newType = 'Story'
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleEditPlan.id)
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerEditStory.id)
 
         await expect(
-            bp.planType.filter({ hasText: thanosPlan.type }),
+            bp.storyType.filter({ hasText: thanosPlan.type }),
         ).toBeVisible()
-        await bp.editPlanBtn.click()
-        await bp.planTypeField.selectOption(newType)
-        await bp.savePlanBtn.click()
-        await expect(bp.planType.filter({ hasText: newType })).toBeVisible()
+        await bp.editStoryBtn.click()
+        await bp.storyTypeField.selectOption(newType)
+        await bp.saveStoryBtn.click()
+        await expect(bp.storyType.filter({ hasText: newType })).toBeVisible()
     })
 
-    test('should allow deleting plans', async ({ registeredPage }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleDeletePlan.id)
+    test('should allow deleting stories', async ({ registeredPage }) => {
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerDeleteStory.id)
 
-        await expect(bp.planName).toBeVisible()
-        await bp.deletePlanBtn.click()
-        await expect(bp.planName).not.toBeVisible()
+        await expect(bp.storyName).toBeVisible()
+        await bp.deleteStoryBtn.click()
+        await expect(bp.storyName).not.toBeVisible()
     })
 
-    test('should allow activating plans', async ({ registeredPage }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleActivatePlan.id)
+    test('should allow activating stories', async ({ registeredPage }) => {
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerActivateStory.id)
 
         await expect(
             bp.page.locator('[data-testid="currentplan-name"]'),
@@ -224,9 +228,9 @@ test.describe('Battle page', () => {
         ).toHaveCount(8)
     })
 
-    test('should allow skipping plan voting', async ({ registeredPage }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleSkipPlan.id)
+    test('should allow skipping story voting', async ({ registeredPage }) => {
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerSkipStory.id)
 
         await expect(
             bp.page.locator('[data-testid="currentplan-name"]'),
@@ -254,9 +258,9 @@ test.describe('Battle page', () => {
         ).toHaveCount(8)
     })
 
-    test('should allow finishing plan voting', async ({ registeredPage }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleFinishVoting.id)
+    test('should allow finishing story voting', async ({ registeredPage }) => {
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerFinishVoting.id)
 
         await expect(
             bp.page.locator('[data-testid="currentplan-name"]'),
@@ -309,11 +313,11 @@ test.describe('Battle page', () => {
         ).toHaveCount(8)
     })
 
-    test('should allow saving plan voting final points', async ({
+    test('should allow saving story voting final points', async ({
         registeredPage,
     }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleSaveVoting.id)
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerSaveVoting.id)
 
         await expect(
             bp.page.locator('[data-testid="plans-unpointed"]'),
@@ -363,26 +367,26 @@ test.describe('Battle page', () => {
         )
     })
 
-    test('delete battle confirmation cancel does not delete battle', async ({
+    test('delete game confirmation cancel does not delete game', async ({
         registeredPage,
     }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleCancelDelete.id)
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerCancelDelete.id)
 
-        await bp.battleDeleteBtn.click()
-        await bp.battleDeleteCancelBtn.click()
+        await bp.gameDeleteBtn.click()
+        await bp.gameDeleteCancelBtn.click()
 
-        await expect(bp.battleTitle).toHaveText(battle.name)
+        await expect(bp.pageTitle).toHaveText(poker.name)
     })
 
-    test('delete battle confirmation confirm deletes battle and redirects to battles page', async ({
+    test('delete game confirmation confirm deletes game and redirects to games page', async ({
         registeredPage,
     }) => {
-        const bp = new BattlePage(registeredPage.page)
-        await bp.goto(battleDelete.id)
+        const bp = new PokerGamePage(registeredPage.page)
+        await bp.goto(pokerDelete.id)
 
-        await bp.battleDeleteBtn.click()
-        await bp.battleDeleteConfirmBtn.click()
+        await bp.gameDeleteBtn.click()
+        await bp.gameDeleteConfirmBtn.click()
 
         await expect(bp.page.locator('h1')).toHaveText('My Battles')
     })

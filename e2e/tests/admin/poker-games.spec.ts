@@ -1,10 +1,10 @@
 import { expect, test } from '../../fixtures/user-sessions'
-import { AdminBattlesPage } from '../../fixtures/admin/battles-page'
+import { AdminGamesPage } from '../../fixtures/admin/battles-page'
 
-test.describe('The Admin Battles Page', () => {
+test.describe('The Admin Poker Games Page', () => {
     test.describe('Unauthenticated user', () => {
         test('redirects to login', async ({ page }) => {
-            const adminPage = new AdminBattlesPage(page)
+            const adminPage = new AdminGamesPage(page)
 
             await adminPage.goto()
 
@@ -15,7 +15,7 @@ test.describe('The Admin Battles Page', () => {
 
     test.describe('Guest user', () => {
         test('redirects to landing', async ({ guestPage }) => {
-            const adminPage = new AdminBattlesPage(guestPage.page)
+            const adminPage = new AdminGamesPage(guestPage.page)
 
             await adminPage.goto()
 
@@ -28,7 +28,7 @@ test.describe('The Admin Battles Page', () => {
 
     test.describe('Non Admin Registered User', () => {
         test('redirects to landing', async ({ registeredPage }) => {
-            const adminPage = new AdminBattlesPage(registeredPage.page)
+            const adminPage = new AdminGamesPage(registeredPage.page)
 
             await adminPage.goto()
 
@@ -40,8 +40,8 @@ test.describe('The Admin Battles Page', () => {
     })
 
     test.describe('Admin User', () => {
-        test('loads Battles page', async ({ adminPage }) => {
-            const ap = new AdminBattlesPage(adminPage.page)
+        test('loads Games page', async ({ adminPage }) => {
+            const ap = new AdminGamesPage(adminPage.page)
 
             await ap.goto()
 

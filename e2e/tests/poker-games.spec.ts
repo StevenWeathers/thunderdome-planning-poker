@@ -1,13 +1,13 @@
 import { test } from '../fixtures/user-sessions'
 import { expect } from '@playwright/test'
-import { BattlesPage } from '../fixtures/battles-page'
+import { PokerGamesPage } from '../fixtures/poker-games-page'
 
 const pageTitle = 'My Battles'
 
-test.describe('Battles page', () => {
+test.describe('Poker Games page', () => {
     test.describe('Unauthenticated user', () => {
         test('redirects to login', async ({ page }) => {
-            const battlesPage = new BattlesPage(page)
+            const battlesPage = new PokerGamesPage(page)
             await battlesPage.goto()
 
             const title = battlesPage.page.locator('[data-formtitle="login"]')
@@ -17,15 +17,15 @@ test.describe('Battles page', () => {
 
     test.describe('Guest user', () => {
         test('should load page', async ({ guestPage }) => {
-            const battlesPage = new BattlesPage(guestPage.page)
+            const battlesPage = new PokerGamesPage(guestPage.page)
             await battlesPage.goto()
             const title = battlesPage.page.locator('h1')
             await expect(title).toHaveText(pageTitle)
         })
 
-        test('should allow creating a battle', async ({ guestPage }) => {
-            const battleName = 'Test Battle'
-            const battlesPage = new BattlesPage(guestPage.page)
+        test('should allow creating a game', async ({ guestPage }) => {
+            const battleName = 'Test Game'
+            const battlesPage = new PokerGamesPage(guestPage.page)
             await battlesPage.goto()
 
             await battlesPage.createBattle({ name: battleName })
@@ -34,10 +34,10 @@ test.describe('Battles page', () => {
             await expect(battleTitle).toHaveText(battleName)
         })
 
-        test('should display battles', async ({ guestPage }) => {
-            const battleName = 'Test Display Battle'
+        test('should display games', async ({ guestPage }) => {
+            const battleName = 'Test Display Games'
 
-            const battlesPage = new BattlesPage(guestPage.page)
+            const battlesPage = new PokerGamesPage(guestPage.page)
             await battlesPage.goto()
 
             await battlesPage.createBattle({ name: battleName })
@@ -47,7 +47,7 @@ test.describe('Battles page', () => {
 
             await battlesPage.goto()
 
-            const title = await battlesPage.battleCardName.filter({
+            const title = await battlesPage.gameCardName.filter({
                 hasText: battleName,
             })
             await expect(title).toBeVisible()
@@ -56,15 +56,15 @@ test.describe('Battles page', () => {
 
     test.describe('Registered user', () => {
         test('should load page', async ({ registeredPage }) => {
-            const battlesPage = new BattlesPage(registeredPage.page)
+            const battlesPage = new PokerGamesPage(registeredPage.page)
             await battlesPage.goto()
             const title = battlesPage.page.locator('h1')
             await expect(title).toHaveText(pageTitle)
         })
 
-        test('should allow creating a battle', async ({ registeredPage }) => {
-            const battleName = 'Test Battle'
-            const battlesPage = new BattlesPage(registeredPage.page)
+        test('should allow creating a game', async ({ registeredPage }) => {
+            const battleName = 'Test Game'
+            const battlesPage = new PokerGamesPage(registeredPage.page)
             await battlesPage.goto()
 
             await battlesPage.createBattle({ name: battleName })
@@ -73,10 +73,10 @@ test.describe('Battles page', () => {
             await expect(battleTitle).toHaveText(battleName)
         })
 
-        test('should display battles', async ({ registeredPage }) => {
-            const battleName = 'Test Display Battle'
+        test('should display games', async ({ registeredPage }) => {
+            const battleName = 'Test Display Game'
 
-            const battlesPage = new BattlesPage(registeredPage.page)
+            const battlesPage = new PokerGamesPage(registeredPage.page)
             await battlesPage.goto()
 
             await battlesPage.createBattle({ name: battleName })
@@ -86,7 +86,7 @@ test.describe('Battles page', () => {
 
             await battlesPage.goto()
 
-            const title = await battlesPage.battleCardName.filter({
+            const title = await battlesPage.gameCardName.filter({
                 hasText: battleName,
             })
             await expect(title).toBeVisible()

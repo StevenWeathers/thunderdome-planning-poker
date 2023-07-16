@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test'
 
-export class AdminBattlesPage {
+export class AdminGamesPage {
     readonly page: Page
 
     constructor(page: Page) {

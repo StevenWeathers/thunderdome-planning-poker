@@ -39,7 +39,7 @@ test.afterAll(async ({}) => {
 })
 
 test.describe('registered user', () => {
-    test(`GET /users/{userId}/battles should return empty array when no battles associated to user`, async () => {
+    test(`GET /users/{userId}/battles should return empty array when no games associated to user`, async () => {
         const b = await adminApiContext.get(`users/${adminUser.id}/battles`)
         expect(b.ok()).toBeTruthy()
 
@@ -47,7 +47,7 @@ test.describe('registered user', () => {
         expect(battles.data).toMatchObject([])
     })
 
-    test(`POST /users/{userId}/battles should create battle`, async () => {
+    test(`POST /users/{userId}/battles should create game`, async () => {
         const pointValuesAllowed = ['0', '0.5', '1', '2', '3', '5', '8', '13']
         const battleName = 'Test API Create Battle'
         const pointAverageRounding = 'floor'
@@ -71,9 +71,9 @@ test.describe('registered user', () => {
         })
     })
 
-    test(`GET /users/{userId}/battles should return object in array when battles associated to user`, async () => {
+    test(`GET /users/{userId}/battles should return object in array when games associated to user`, async () => {
         const pointValuesAllowed = ['1', '2', '3', '5', '8', '13']
-        const battleName = 'Test API Battles'
+        const battleName = 'Test API Games'
         const pointAverageRounding = 'ceil'
         const autoFinishVoting = true
 
@@ -100,15 +100,15 @@ test.describe('registered user', () => {
         )
     })
 
-    test(`POST /teams/{teamId}/users/{userId}/battles should create battle`, async () => {
+    test(`POST /teams/{teamId}/users/{userId}/battles should create game`, async () => {
         const pointValuesAllowed = ['0', '0.5', '1', '2', '3', '5', '8', '13']
-        const battleName = 'Test API Create Battle'
+        const battleName = 'Test API Create Game'
         const pointAverageRounding = 'floor'
         const autoFinishVoting = false
 
         const t = await apiContext.post(`users/${user.id}/teams`, {
             data: {
-                name: 'test team create battle',
+                name: 'test team create game',
             },
         })
         const { data: team } = await t.json()
