@@ -507,7 +507,7 @@
                 <BoxList
                     items="{battles}"
                     itemType="battle"
-                    pageRoute="{appRoutes.battle}"
+                    pageRoute="{appRoutes.game}"
                     joinBtnText="{$LL.battleJoin({
                         friendly: AppConfig.FriendlyUIVerbs,
                     })}"

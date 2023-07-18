@@ -2,6 +2,8 @@
     import HollowButton from './HollowButton.svelte'
     import LL from '../i18n/i18n-svelte'
     import { warrior as user } from '../stores'
+    import LeaderIcon from './icons/LeaderIcon.svelte'
+    import { AppConfig } from '../config'
 
     export let items: Array<object> = []
     export let pageRoute: string = ''
@@ -9,7 +11,10 @@
     export let itemType: string = ''
     export let ownerField: string = 'owner_id'
     export let isAdmin: boolean = false
-    export let showOwner: boolean = false
+    export let showOwner: boolean = true
+    export let showFacilitatorIcon: boolean = false
+    export let facilitatorsKey: string = 'facilitators'
+    export let showCompletedStories: boolean = false
     export let toggleRemove: Function = id => () => {}
 </script>
 
@@ -23,6 +28,11 @@
                 class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
                             md:text-xl leading-tight"
             >
+                {#if showFacilitatorIcon}
+                    {#if item[facilitatorsKey].includes($user.id)}
+                        <LeaderIcon />&nbsp;
+                    {/if}
+                {/if}
                 <span data-testid="{itemType}-name">{item.name}</span>
                 {#if showOwner}
                     <div
@@ -31,6 +41,18 @@
                         {#if $user.id === item[ownerField]}
                             {$LL.owner()}
                         {/if}
+                    </div>
+                {/if}
+                {#if showCompletedStories}
+                    <div
+                        class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
+                    >
+                        {$LL.countPlansPointed[AppConfig.FriendlyUIVerbs]({
+                            totalPointed: item.plans.filter(
+                                p => p.points !== '',
+                            ).length,
+                            totalPlans: item.plans.length,
+                        })}
                     </div>
                 {/if}
             </div>

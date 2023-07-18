@@ -3,12 +3,11 @@
 
     import PageLayout from '../../components/PageLayout.svelte'
     import CreateBattle from '../../components/poker/CreatePokerGame.svelte'
-    import HollowButton from '../../components/HollowButton.svelte'
     import { warrior } from '../../stores'
     import LL from '../../i18n/i18n-svelte'
     import { AppConfig, appRoutes } from '../../config'
-    import LeaderIcon from '../../components/icons/LeaderIcon.svelte'
     import Pagination from '../../components/Pagination.svelte'
+    import BoxList from '../../components/BoxList.svelte'
 
     export let xfetch
     export let notifications
@@ -70,44 +69,18 @@
 
     <div class="flex flex-wrap">
         <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
-            {#each battles as battle}
-                <div
-                    class="bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
-                        border-b"
-                >
-                    <div class="flex flex-wrap items-center p-4">
-                        <div
-                            class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
-                            md:text-xl leading-tight"
-                        >
-                            {#if battle.leaders.includes($warrior.id)}
-                                <LeaderIcon />
-                                &nbsp;
-                            {/if}
-                            <span data-testid="battle-name">{battle.name}</span>
-                            <div
-                                class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
-                            >
-                                {$LL.countPlansPointed[
-                                    AppConfig.FriendlyUIVerbs
-                                ]({
-                                    totalPointed: battle.plans.filter(
-                                        p => p.points !== '',
-                                    ).length,
-                                    totalPlans: battle.plans.length,
-                                })}
-                            </div>
-                        </div>
-                        <div class="w-full md:w-1/2 md:mb-0 md:text-right">
-                            <HollowButton href="{appRoutes.game}/{battle.id}">
-                                {$LL.battleJoin({
-                                    friendly: AppConfig.FriendlyUIVerbs,
-                                })}
-                            </HollowButton>
-                        </div>
-                    </div>
-                </div>
-            {/each}
+            <BoxList
+                items="{battles}"
+                itemType="battle"
+                pageRoute="{appRoutes.game}"
+                joinBtnText="{$LL.battleJoin({
+                    friendly: AppConfig.FriendlyUIVerbs,
+                })}"
+                showOwner="{false}"
+                showFacilitatorIcon="{true}"
+                facilitatorsKey="leaders"
+                showCompletedStories="{true}"
+            />
             {#if battleCount > battlesPageLimit}
                 <div class="mt-6 pt-1 flex justify-center">
                     <Pagination
