@@ -1,0 +1,46 @@
+<script lang="ts">
+    import HollowButton from './HollowButton.svelte'
+    import LL from '../i18n/i18n-svelte'
+    import { warrior as user } from '../stores'
+
+    export let items: Array<object> = []
+    export let pageRoute: string = ''
+    export let joinBtnText: string = ''
+    export let itemType: string = ''
+    export let ownerField: string = 'owner_id'
+    export let isAdmin: boolean = false
+    export let toggleRemove: Function = id => () => {}
+</script>
+
+{#each items as item}
+    <div
+        class="w-full bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
+                        border-b"
+    >
+        <div class="flex flex-wrap items-center p-4">
+            <div
+                class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
+                            md:text-xl leading-tight"
+            >
+                <span data-testid="{itemType}-name">{item.name}</span>
+                <div
+                    class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
+                >
+                    {#if $user.id === item[ownerField]}
+                        {$LL.owner()}
+                    {/if}
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
+                {#if isAdmin}
+                    <HollowButton onClick="{toggleRemove(item.id)}" color="red">
+                        {$LL.remove()}
+                    </HollowButton>
+                {/if}
+                <HollowButton href="{pageRoute}/{item.id}">
+                    {joinBtnText}
+                </HollowButton>
+            </div>
+        </div>
+    </div>
+{/each}

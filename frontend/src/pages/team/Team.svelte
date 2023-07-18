@@ -26,6 +26,7 @@
     import SolidButton from '../../components/SolidButton.svelte'
     import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte'
     import CommentIcon from '../../components/icons/CommentIcon.svelte'
+    import BoxList from '../../components/BoxList.svelte'
 
     export let xfetch
     export let router
@@ -503,42 +504,16 @@
             </div>
 
             <div class="flex flex-wrap">
-                {#each battles as battle}
-                    <div
-                        class="w-full bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
-                        border-b"
-                    >
-                        <div class="flex flex-wrap items-center p-4">
-                            <div
-                                class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
-                            md:text-xl leading-tight"
-                            >
-                                <span data-testid="battle-name"
-                                    >{battle.name}</span
-                                >
-                            </div>
-                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
-                                {#if isAdmin}
-                                    <HollowButton
-                                        onClick="{toggleRemoveBattle(
-                                            battle.id,
-                                        )}"
-                                        color="red"
-                                    >
-                                        {$LL.remove()}
-                                    </HollowButton>
-                                {/if}
-                                <HollowButton
-                                    href="{appRoutes.game}/{battle.id}"
-                                >
-                                    {$LL.battleJoin({
-                                        friendly: AppConfig.FriendlyUIVerbs,
-                                    })}
-                                </HollowButton>
-                            </div>
-                        </div>
-                    </div>
-                {/each}
+                <BoxList
+                    items="{battles}"
+                    itemType="battle"
+                    pageRoute="{appRoutes.battle}"
+                    joinBtnText="{$LL.battleJoin({
+                        friendly: AppConfig.FriendlyUIVerbs,
+                    })}"
+                    isAdmin="{isAdmin}"
+                    toggleRemove="{toggleRemoveBattle}"
+                />
             </div>
         </div>
 
@@ -575,38 +550,14 @@
             </div>
 
             <div class="flex flex-wrap">
-                {#each retros as retro}
-                    <div
-                        class="w-full bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
-                        border-b"
-                    >
-                        <div class="flex flex-wrap items-center p-4">
-                            <div
-                                class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
-                            md:text-xl leading-tight"
-                            >
-                                <span data-testid="retro-name"
-                                    >{retro.name}</span
-                                >
-                            </div>
-                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
-                                {#if isAdmin}
-                                    <HollowButton
-                                        onClick="{toggleRemoveRetro(retro.id)}"
-                                        color="red"
-                                    >
-                                        {$LL.remove()}
-                                    </HollowButton>
-                                {/if}
-                                <HollowButton
-                                    href="{appRoutes.retro}/{retro.id}"
-                                >
-                                    {$LL.joinRetro()}
-                                </HollowButton>
-                            </div>
-                        </div>
-                    </div>
-                {/each}
+                <BoxList
+                    items="{retros}"
+                    itemType="retro"
+                    pageRoute="{appRoutes.retro}"
+                    joinBtnText="{$LL.joinRetro()}"
+                    isAdmin="{isAdmin}"
+                    toggleRemove="{toggleRemoveRetro}"
+                />
             </div>
 
             {#if retros.length}
@@ -757,40 +708,14 @@
             </div>
 
             <div class="flex flex-wrap">
-                {#each storyboards as storyboard}
-                    <div
-                        class="w-full bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg mb-2 border-gray-300 dark:border-gray-700
-                        border-b"
-                    >
-                        <div class="flex flex-wrap items-center p-4">
-                            <div
-                                class="w-full md:w-1/2 mb-4 md:mb-0 font-semibold
-                            md:text-xl leading-tight"
-                            >
-                                <span data-testid="storyboard-name"
-                                    >{storyboard.name}</span
-                                >
-                            </div>
-                            <div class="w-full md:w-1/2 md:mb-0 md:text-right">
-                                {#if isAdmin}
-                                    <HollowButton
-                                        onClick="{toggleRemoveStoryboard(
-                                            storyboard.id,
-                                        )}"
-                                        color="red"
-                                    >
-                                        {$LL.remove()}
-                                    </HollowButton>
-                                {/if}
-                                <HollowButton
-                                    href="{appRoutes.storyboard}/{storyboard.id}"
-                                >
-                                    {$LL.joinStoryboard()}
-                                </HollowButton>
-                            </div>
-                        </div>
-                    </div>
-                {/each}
+                <BoxList
+                    items="{storyboards}"
+                    itemType="storyboard"
+                    pageRoute="{appRoutes.storyboard}"
+                    joinBtnText="{$LL.joinStoryboard()}"
+                    isAdmin="{isAdmin}"
+                    toggleRemove="{toggleRemoveStoryboard}"
+                />
             </div>
         </div>
 
