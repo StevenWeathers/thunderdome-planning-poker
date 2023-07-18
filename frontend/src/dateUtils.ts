@@ -30,3 +30,43 @@ export const subtractDays = function (date, days) {
         date.getMilliseconds(),
     )
 }
+
+export const addTimeLeadZero = function (time) {
+    return ('0' + time).slice(-2)
+}
+
+export type TimeBetweenUnits = {
+    seconds: number
+    minutes: number
+    hours: number
+    days: number
+}
+
+export const timeUnitsBetween = function (
+    startDate,
+    endDate,
+): TimeBetweenUnits {
+    let delta = Math.abs(endDate - startDate) / 1000
+    const unitDivisions: Array<{
+        key: string
+        value: number
+    }> = [
+        { key: 'days', value: 24 * 60 * 60 },
+        { key: 'hours', value: 60 * 60 },
+        { key: 'minutes', value: 60 },
+        { key: 'seconds', value: 1 },
+    ]
+    return unitDivisions.reduce(
+        (acc: TimeBetweenUnits, arrValue) => (
+            (acc[arrValue.key] = Math.floor(delta / arrValue.value)),
+            (delta -= acc[arrValue.key] * arrValue.value),
+            acc
+        ),
+        {
+            seconds: 0,
+            minutes: 0,
+            hours: 0,
+            days: 0,
+        },
+    )
+}

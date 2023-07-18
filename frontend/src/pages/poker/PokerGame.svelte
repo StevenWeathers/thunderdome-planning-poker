@@ -1,14 +1,15 @@
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte'
+    import Sockette from 'sockette'
 
     import PageLayout from '../../components/PageLayout.svelte'
     import PointCard from '../../components/poker/PointCard.svelte'
-    import BattlePlans from '../../components/poker/PokerStories.svelte'
+    import PokerStories from '../../components/poker/PokerStories.svelte'
     import VoteResults from '../../components/poker/VoteResults.svelte'
     import HollowButton from '../../components/HollowButton.svelte'
     import SolidButton from '../../components/SolidButton.svelte'
     import ExternalLinkIcon from '../../components/icons/ExternalLinkIcon.svelte'
-    import EditBattle from '../../components/poker/EditPokerGame.svelte'
+    import EditPokerGame from '../../components/poker/EditPokerGame.svelte'
     import DeleteConfirmation from '../../components/DeleteConfirmation.svelte'
     import { warrior } from '../../stores'
     import LL from '../../i18n/i18n-svelte'
@@ -16,48 +17,63 @@
     import UserCard from '../../components/poker/UserCard.svelte'
     import VotingControls from '../../components/poker/VotingControls.svelte'
     import InviteUser from '../../components/poker/InviteUser.svelte'
-    import Sockette from 'sockette'
+    import VoteTimer from '../../components/poker/VoteTimer.svelte'
+    import type { PokerGame, PokerStory } from '../../types/poker'
 
-    export let battleId
+    export let battleId: string
     export let notifications
     export let eventTag
     export let router
 
     const { AllowRegistration, AllowGuests } = AppConfig
-    const loginOrRegister =
+    const loginOrRegister: string =
         AllowRegistration || AllowGuests ? appRoutes.register : appRoutes.login
 
-    const hostname = window.location.origin
-    const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws'
-    const defaultPlan = {
+    const hostname: string = window.location.origin
+    const socketExtension: string =
+        window.location.protocol === 'https:' ? 'wss' : 'ws'
+    const defaultStory: PokerStory = {
         id: '',
+        active: false,
+        points: '',
+        priority: 0,
+        skipped: false,
+        voteEndTime: undefined,
+        voteStartTime: undefined,
+        votes: undefined,
         name: '',
         type: '',
         referenceId: '',
         link: '',
         description: '',
         acceptanceCriteria: '',
-        hideVoterIdentity: false,
     }
 
-    let JoinPassRequired = false
-    let socketError = false
-    let socketReconnecting = false
-    let points = []
-    let vote = ''
-    let voteStartTime = new Date()
-    let battle = { leaders: [] }
-    let currentPlan = { ...defaultPlan }
-    let currentTime = new Date()
-    let showEditBattle = false
-    let showDeleteBattle = false
-    let isSpectator = false
-    let joinPasscode = ''
-
-    $: voteDuration =
-        battle.currentPlanId !== '' && battle.votingLocked === false
-            ? timeUnitsBetween(voteStartTime, currentTime)
-            : {}
+    let JoinPassRequired: boolean = false
+    let socketError: boolean = false
+    let socketReconnecting: boolean = false
+    let points: Array<string> = []
+    let vote: string = ''
+    let battle: PokerGame = {
+        leaders: [],
+        autoFinishVoting: false,
+        createdDate: undefined,
+        hideVoterIdentity: false,
+        id: '',
+        name: '',
+        plans: undefined,
+        pointAverageRounding: '',
+        pointValuesAllowed: undefined,
+        updatedDate: undefined,
+        users: undefined,
+        votingLocked: false,
+    }
+    let currentStory = { ...defaultStory }
+    let showEditBattle: boolean = false
+    let showDeleteBattle: boolean = false
+    let isSpectator: boolean = false
+    let joinPasscode: string = ''
+    let voteStartTime: Date = new Date()
 
     const onSocketMessage = function (evt) {
         const parsedEvent = JSON.parse(evt.data)
@@ -84,7 +100,7 @@
                     const warriorVote = activePlan.votes.find(
                         v => v.warriorId === $warrior.id,
                     ) || { vote: '' }
-                    currentPlan = activePlan
+                    currentStory = activePlan
                     voteStartTime = new Date(activePlan.voteStartTime)
                     vote = warriorVote.vote
                 }
@@ -138,7 +154,7 @@
             case 'plan_activated':
                 const updatedPlans = JSON.parse(parsedEvent.value)
                 const activePlan = updatedPlans.find(p => p.active)
-                currentPlan = activePlan
+                currentStory = activePlan
                 voteStartTime = new Date(activePlan.voteStartTime)
 
                 battle.plans = updatedPlans
@@ -148,7 +164,7 @@
                 break
             case 'plan_skipped':
                 const updatedPlans2 = JSON.parse(parsedEvent.value)
-                currentPlan = { ...defaultPlan }
+                currentStory = { ...defaultStory }
                 battle.plans = updatedPlans2
                 battle.activePlanId = ''
                 battle.votingLocked = true
@@ -198,7 +214,7 @@
             case 'plan_finalized':
                 battle.plans = JSON.parse(parsedEvent.value)
                 battle.activePlanId = ''
-                currentPlan = { ...defaultPlan }
+                currentStory = { ...defaultStory }
                 vote = ''
                 break
             case 'plan_revised':
@@ -207,7 +223,7 @@
                     const activePlan = battle.plans.find(
                         p => p.id === battle.activePlanId,
                     )
-                    currentPlan = activePlan
+                    currentStory = activePlan
                 }
                 break
             case 'plan_burned':
@@ -219,7 +235,7 @@
                         .length === 0
                 ) {
                     battle.activePlanId = ''
-                    currentPlan = { ...defaultPlan }
+                    currentStory = { ...defaultStory }
                 }
 
                 battle.plans = postBurnPlans
@@ -245,12 +261,12 @@
                 router.route(appRoutes.games)
                 break
             case 'jab_warrior':
-                const warriorToJab = battle.users.find(
+                const userToNudge = battle.users.find(
                     w => w.id === parsedEvent.value,
                 )
                 notifications.info(
                     `${$LL.warriorNudgeMessage({
-                        name: warriorToJab.name,
+                        name: userToNudge.name,
                     })}
     `,
                 )
@@ -362,7 +378,7 @@
         return voted !== undefined
     }
 
-    // Determine if we are showing warriors vote
+    // Determine if we are showing users vote
     function showVote(warriorId) {
         if (
             battle.hideVoterIdentity ||
@@ -371,13 +387,13 @@
         ) {
             return ''
         }
-        const plan = battle.plans.find(p => p.id === battle.activePlanId)
-        const voted = plan.votes.find(w => w.warriorId === warriorId)
+        const story = battle.plans.find(p => p.id === battle.activePlanId)
+        const voted = story.votes.find(w => w.warriorId === warriorId)
 
         return voted !== undefined ? voted.vote : ''
     }
 
-    // get highest vote from active plan
+    // get highest vote from active story
     function getHighestVote() {
         const voteCounts = {}
         points.forEach(p => {
@@ -462,38 +478,10 @@
         eventTag('auth_battle', 'battle', '')
     }
 
-    function timeUnitsBetween(startDate, endDate) {
-        let delta = Math.abs(endDate - startDate) / 1000
-        return [
-            ['days', 24 * 60 * 60],
-            ['hours', 60 * 60],
-            ['minutes', 60],
-            ['seconds', 1],
-        ].reduce(
-            (acc, [key, value]) => (
-                (acc[key] = Math.floor(delta / value)),
-                (delta -= acc[key] * value),
-                acc
-            ),
-            {},
-        )
-    }
-
-    function addTimeLeadZero(time) {
-        return ('0' + time).slice(-2)
-    }
-
     onMount(() => {
         if (!$warrior.id) {
             router.route(`${loginOrRegister}/battle/${battleId}`)
             return
-        }
-        const voteCounter = setInterval(() => {
-            currentTime = new Date()
-        }, 1000)
-
-        return () => {
-            clearInterval(voteCounter)
         }
     })
 </script>
@@ -512,9 +500,9 @@
                 <h1
                     class="text-4xl font-semibold font-rajdhani leading-tight dark:text-white flex items-center"
                 >
-                    {#if currentPlan.link}
+                    {#if currentStory.link}
                         <a
-                            href="{currentPlan.link}"
+                            href="{currentStory.link}"
                             target="_blank"
                             class="text-blue-800 dark:text-sky-400 inline-block"
                             data-testid="currentplan-link"
@@ -522,22 +510,22 @@
                             <ExternalLinkIcon class="w-8 h-8" />
                         </a>
                     {/if}
-                    {#if currentPlan.type}
+                    {#if currentStory.type}
                         &nbsp;<span
                             class="inline-block text-lg text-gray-500
                             border-gray-300 border px-1 rounded dark:text-gray-300 dark:border-gray-500"
                             data-testid="currentplan-type"
                         >
-                            {currentPlan.type}
+                            {currentStory.type}
                         </span>
                     {/if}
-                    {#if currentPlan.referenceId}
+                    {#if currentStory.referenceId}
                         &nbsp;<span data-testid="currentplan-refid"
-                            >[{currentPlan.referenceId}]</span
+                            >[{currentStory.referenceId}]</span
                         >
                     {/if}
                     &nbsp;<span data-testid="currentplan-name"
-                        >{#if currentPlan.name === ''}[{$LL.votingNotStarted()}]{:else}{currentPlan.name}{/if}</span
+                        >{#if currentStory.name === ''}[{$LL.votingNotStarted()}]{:else}{currentStory.name}{/if}</span
                     >
                 </h1>
                 <h2
@@ -547,19 +535,13 @@
                     {battle.name}
                 </h2>
             </div>
-            <div
-                class="w-full md:w-1/3 text-center md:text-right font-semibold
-                text-3xl md:text-4xl text-gray-700 dark:text-gray-300"
-                data-testid="vote-timer"
-            >
-                {#if voteDuration.seconds !== undefined}
-                    {#if voteDuration.hours !== 0}
-                        {addTimeLeadZero(voteDuration.hours)}:
-                    {/if}
-                    {addTimeLeadZero(voteDuration.minutes)}:{addTimeLeadZero(
-                        voteDuration.seconds,
-                    )}
-                {/if}
+
+            <div class="w-full md:w-1/3 text-center md:text-right">
+                <VoteTimer
+                    currentStoryId="{currentStory.id}"
+                    votingLocked="{battle.votingLocked}"
+                    voteStartTime="{voteStartTime}"
+                />
             </div>
         </div>
 
@@ -592,7 +574,7 @@
                     </div>
                 {/if}
 
-                <BattlePlans
+                <PokerStories
                     plans="{battle.plans}"
                     isLeader="{isLeader}"
                     sendSocketEvent="{sendSocketEvent}"
@@ -689,7 +671,7 @@
             </div>
         </div>
         {#if showEditBattle}
-            <EditBattle
+            <EditPokerGame
                 battleName="{battle.name}"
                 points="{points}"
                 votingLocked="{battle.votingLocked}"
