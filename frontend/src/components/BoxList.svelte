@@ -9,6 +9,7 @@
     export let itemType: string = ''
     export let ownerField: string = 'owner_id'
     export let isAdmin: boolean = false
+    export let showOwner: boolean = false
     export let toggleRemove: Function = id => () => {}
 </script>
 
@@ -23,13 +24,15 @@
                             md:text-xl leading-tight"
             >
                 <span data-testid="{itemType}-name">{item.name}</span>
-                <div
-                    class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
-                >
-                    {#if $user.id === item[ownerField]}
-                        {$LL.owner()}
-                    {/if}
-                </div>
+                {#if showOwner}
+                    <div
+                        class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
+                    >
+                        {#if $user.id === item[ownerField]}
+                            {$LL.owner()}
+                        {/if}
+                    </div>
+                {/if}
             </div>
             <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                 {#if isAdmin}

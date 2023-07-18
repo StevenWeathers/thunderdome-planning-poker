@@ -525,6 +525,7 @@
                     router="{router}"
                     eventTag="{eventTag}"
                     xfetch="{xfetch}"
+                    showOwner="{false}"
                 />
             </Modal>
         {/if}
@@ -557,6 +558,7 @@
                     joinBtnText="{$LL.joinRetro()}"
                     isAdmin="{isAdmin}"
                     toggleRemove="{toggleRemoveRetro}"
+                    showOwner="{false}"
                 />
             </div>
 
@@ -715,6 +717,7 @@
                     joinBtnText="{$LL.joinStoryboard()}"
                     isAdmin="{isAdmin}"
                     toggleRemove="{toggleRemoveStoryboard}"
+                    showOwner="{false}"
                 />
             </div>
         </div>
