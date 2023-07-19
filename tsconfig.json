@@ -1,13 +1,13 @@
 {
   "extends": "@tsconfig/svelte/tsconfig.json",
   "include": [
-    "frontend/src/**/*",
-    "frontend/src/node_modules"
+    "ui/src/**/*",
+    "ui/src/node_modules"
   ],
   "exclude": [
     "node_modules/*",
     "__sapper__/*",
-    "frontend/public/*"
+    "ui/public/*"
   ],
   "compilerOptions": {
     "sourceMap": true,

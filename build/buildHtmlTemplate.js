@@ -39,6 +39,6 @@ module.exports = async ({
     })
     .join('\n')
 
-  const htmlFile = fs.readFileSync(path.resolve(__dirname, '../frontend/public/index.html'), 'utf8')
+  const htmlFile = fs.readFileSync(path.resolve(__dirname, '../ui/public/index.html'), 'utf8')
   return htmlFile.replace('${title}', title).replace('${metas}', metas).replace('${links}', links).replace('${scripts}', scripts)
 }

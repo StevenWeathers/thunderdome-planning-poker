@@ -108,10 +108,10 @@ Run the server and visit [http://localhost:8080](http://localhost:8080)
 
 Adding new locale's involves just a few steps.
 
-1. First by copying the `frontend/src/i18n/en/index.ts` into the new locale folder
-   at `frontend/src/i18n/{locale}/index.ts` using the two letter locale code for the directory name and translating all
+1. First by copying the `ui/src/i18n/en/index.ts` into the new locale folder
+   at `ui/src/i18n/{locale}/index.ts` using the two letter locale code for the directory name and translating all
    the values.
 2. Second, the locale will need to be added to the locales list used by switcher component
-   in ```frontend/config.js``` ```locales``` object
+   in ```ui/config.js``` ```locales``` object
 3. Run `npm run locales` to generate the new locale types used by the build process
 4. commit changes and open PR

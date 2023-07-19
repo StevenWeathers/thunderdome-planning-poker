@@ -21,16 +21,19 @@ npm run cypress:open
 
 ## Frontend Unit Testing
 
-Frontend unit tests are run with [Jest](https://jestjs.io/) and utilize [@testing-library/svelte](https://testing-library.com/docs/svelte-testing-library/intro).
+Frontend unit tests are run with [Jest](https://jestjs.io/) and
+utilize [@testing-library/svelte](https://testing-library.com/docs/svelte-testing-library/intro).
 
 To run the tests `npm test` for a single run or `npm test:watch` to actively watch for test changes.
 
 ### Conventions for Frontend Unit Tests
 
-- Check out [Unit testing svelte component](https://sveltesociety.dev/recipes/testing-and-debugging/unit-testing-svelte-component/) guide
+- Check
+  out [Unit testing svelte component](https://sveltesociety.dev/recipes/testing-and-debugging/unit-testing-svelte-component/)
+  guide
 - Test files are named `{componentName}.test.js`
 - Test folders are named `__tests__` and live alongside the source code to which the test files are for
-  - Example `frontend/src/pages/__tests__/*.test.js` corresponds to `frontend/src/pages/*.svelte`
+    - Example `ui/src/pages/__tests__/*.test.js` corresponds to `ui/src/pages/*.svelte`
 - Snapshot testing should only be used for individual components not page components
 
 ## Go Unit Testing
