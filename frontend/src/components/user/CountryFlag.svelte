@@ -1,21 +1,21 @@
 <script lang="ts">
-    import { countryMap } from '../../country'
-    import LL from '../../i18n/i18n-svelte'
+  import { countryMap } from '../../country';
+  import LL from '../../i18n/i18n-svelte';
 
-    export let country = ''
-    export let additionalClass = ''
-    export let width = '64'
-    export let height = '48'
+  export let country = '';
+  export let additionalClass = '';
+  export let width = '64';
+  export let height = '48';
 </script>
 
 <img
-    src="https://flagcdn.com/64x48/{country.toLowerCase()}.png"
-    srcset="https://flagcdn.com/128x96/{country.toLowerCase()}.png 2x,
+  src="https://flagcdn.com/64x48/{country.toLowerCase()}.png"
+  srcset="https://flagcdn.com/128x96/{country.toLowerCase()}.png 2x,
     https://flagcdn.com/192x144/{country.toLowerCase()}.png 3x"
-    width="{width}"
-    height="{height}"
-    alt="{countryMap[country]}
+  width="{width}"
+  height="{height}"
+  alt="{countryMap[country]}
     {$LL.flag()}"
-    title="{countryMap[country]}"
-    class="{additionalClass}"
+  title="{countryMap[country]}"
+  class="{additionalClass}"
 />

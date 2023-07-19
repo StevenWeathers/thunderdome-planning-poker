@@ -1,22 +1,22 @@
 <script lang="ts">
-    let klass = 'h-6 w-6'
-    export { klass as class }
+  let klass = 'h-6 w-6';
+  export { klass as class };
 </script>
 
 <svg
-    class="inline {klass}"
-    fill="currentColor"
-    aria-hidden="true"
-    focusable="false"
-    data-prefix="fas"
-    data-icon="vote-yea"
-    role="img"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 640 512"
+  class="inline {klass}"
+  fill="currentColor"
+  aria-hidden="true"
+  focusable="false"
+  data-prefix="fas"
+  data-icon="vote-yea"
+  role="img"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 640 512"
 >
-    <path
-        fill="currentColor"
-        d="M608 320h-64v64h22.4c5.3 0 9.6 3.6 9.6 8v16c0 4.4-4.3 8-9.6
+  <path
+    fill="currentColor"
+    d="M608 320h-64v64h22.4c5.3 0 9.6 3.6 9.6 8v16c0 4.4-4.3 8-9.6
         8H73.6c-5.3 0-9.6-3.6-9.6-8v-16c0-4.4 4.3-8 9.6-8H96v-64H32c-17.7 0-32
         14.3-32 32v96c0 17.7 14.3 32 32 32h576c17.7 0 32-14.3
         32-32v-96c0-17.7-14.3-32-32-32zm-96

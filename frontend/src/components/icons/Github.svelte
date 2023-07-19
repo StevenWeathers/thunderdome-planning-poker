@@ -1,22 +1,22 @@
 <script lang="ts">
-    export let width = 16
-    export let klass = ''
+  export let width = 16;
+  export let klass = '';
 </script>
 
 <svg
-    aria-hidden="true"
-    focusable="false"
-    data-prefix="fab"
-    data-icon="github"
-    class="inline-block {klass}"
-    width="{width}"
-    role="img"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 496 512"
+  aria-hidden="true"
+  focusable="false"
+  data-prefix="fab"
+  data-icon="github"
+  class="inline-block {klass}"
+  width="{width}"
+  role="img"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 496 512"
 >
-    <path
-        fill="currentColor"
-        d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6
+  <path
+    fill="currentColor"
+    d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6
         5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6
         0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9
         2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6
@@ -36,5 +36,5 @@
         1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1
         1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0
         5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"
-    ></path>
+  ></path>
 </svg>

@@ -80,10 +80,10 @@
     "trailingComma": "all",
     "printWidth": 80,
     "proseWrap": "always",
-    "tabWidth": 4,
+    "tabWidth": 2,
     "useTabs": false,
     "bracketSpacing": true,
-    "semi": false,
+    "semi": true,
     "arrowParens": "avoid",
     "svelteSortOrder": "options-scripts-styles-markup",
     "svelteStrictMode": true

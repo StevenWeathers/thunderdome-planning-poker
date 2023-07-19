@@ -1,72 +1,72 @@
 export type StoryboardColor = {
-    color: string
-    legend: string
-}
+  color: string;
+  legend: string;
+};
 export type Storyboard = {
-    color_legend: Array<StoryboardColor>
-    createdDate: Date
-    facilitatorCode: string
-    facilitators: Array<string>
-    goals: Array<StoryboardGoal>
-    id: string
-    joinCode?: string
-    name: string
-    owner_id: string
-    personas: Array<StoryboardPersona>
-    updatedDate: Date
-    users: Array<StoryboardUser>
-}
+  color_legend: Array<StoryboardColor>;
+  createdDate: Date;
+  facilitatorCode: string;
+  facilitators: Array<string>;
+  goals: Array<StoryboardGoal>;
+  id: string;
+  joinCode?: string;
+  name: string;
+  owner_id: string;
+  personas: Array<StoryboardPersona>;
+  updatedDate: Date;
+  users: Array<StoryboardUser>;
+};
 
 export type StoryboardColumn = {
-    id: string
-    name: string
-    personas: Array<StoryboardPersona>
-    sort_order: number
-    stories: Array<StoryboardStory>
-}
+  id: string;
+  name: string;
+  personas: Array<StoryboardPersona>;
+  sort_order: number;
+  stories: Array<StoryboardStory>;
+};
 
 export type StoryboardGoal = {
-    columns: Array<StoryboardColumn>
-    id: string
-    name: string
-    personas: Array<StoryboardPersona>
-    sort_order: number
-}
+  columns: Array<StoryboardColumn>;
+  id: string;
+  name: string;
+  personas: Array<StoryboardPersona>;
+  sort_order: number;
+};
 
 export type StoryboardPersona = {
-    description: string
-    id: string
-    name: string
-    role: string
-}
+  description: string;
+  id: string;
+  name: string;
+  role: string;
+};
 
 export type StoryComment = {
-    comment: string
-    created_date: string
-    id: string
-    story_id: string
-    updated_date: Date
-    user_id: string
-}
+  comment: string;
+  created_date: string;
+  id: string;
+  story_id: string;
+  updated_date: Date;
+  user_id: string;
+};
 
 export type StoryboardStory = {
-    annotations: Array<string>
-    closed: boolean
-    color: string
-    comments: Array<StoryComment>
-    content: string
-    id: string
-    link: string
-    name: string
-    points: number
-    sort_order: number
-}
+  annotations: Array<string>;
+  closed: boolean;
+  color: string;
+  comments: Array<StoryComment>;
+  content: string;
+  id: string;
+  link: string;
+  name: string;
+  points: number;
+  sort_order: number;
+};
 
 export type StoryboardUser = {
-    abandoned: boolean
-    active: boolean
-    avatar: string
-    gravatarHash: string
-    id: string
-    name: string
-}
+  abandoned: boolean;
+  active: boolean;
+  avatar: string;
+  gravatarHash: string;
+  id: string;
+  name: string;
+};

@@ -5,220 +5,220 @@
 * scoped only to unreset class, for use with WYSIWYG html output
 */
 .unreset {
-    box-sizing: content-box;
-    line-height: normal;
+  box-sizing: content-box;
+  line-height: normal;
 
-    & p {
-        margin: 1em 0;
+  & p {
+    margin: 1em 0;
+  }
+
+  & blockquote,
+  & figure {
+    margin: 1em 40px;
+  }
+
+  & q {
+    quotes: '“' '”' '‘' '’';
+
+    &:before {
+      content: open-quote;
     }
 
-    & blockquote,
-    & figure {
-        margin: 1em 40px;
+    &:after {
+      content: close-quote;
     }
+  }
 
-    & q {
-        quotes: '“' '”' '‘' '’';
+  & hr {
+    border: 1px inset;
+    box-sizing: border-box;
+    margin: 0.5em auto;
+  }
 
-        &:before {
-            content: open-quote;
-        }
+  & h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0.67em 0;
+  }
 
-        &:after {
-            content: close-quote;
-        }
-    }
+  & h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 0.83em 0;
+  }
 
-    & hr {
-        border: 1px inset;
-        box-sizing: border-box;
-        margin: 0.5em auto;
-    }
+  & h3 {
+    font-size: 1.17em;
+    font-weight: bold;
+    margin: 1em 0;
+  }
 
-    & h1 {
-        font-size: 2em;
-        font-weight: bold;
-        margin: 0.67em 0;
-    }
+  & h4 {
+    font-size: 1em;
+    font-weight: bold;
+    margin: 1.33em 0;
+  }
 
-    & h2 {
-        font-size: 1.5em;
-        font-weight: bold;
-        margin: 0.83em 0;
-    }
+  & h5 {
+    font-size: 0.83em;
+    font-weight: bold;
+    margin: 1.67em 0;
+  }
 
-    & h3 {
-        font-size: 1.17em;
-        font-weight: bold;
-        margin: 1em 0;
-    }
+  & h6 {
+    font-size: 0.67em;
+    font-weight: bold;
+    margin: 2.33em 0;
+  }
 
-    & h4 {
-        font-size: 1em;
-        font-weight: bold;
-        margin: 1.33em 0;
-    }
+  & table {
+    border-collapse: separate;
+    border-spacing: 2px;
+    border-color: gray;
+  }
 
-    & h5 {
-        font-size: 0.83em;
-        font-weight: bold;
-        margin: 1.67em 0;
-    }
+  & thead,
+  & tbody,
+  & tfoot,
+  & tr {
+    border-color: inherit;
+    vertical-align: middle;
+  }
 
-    & h6 {
-        font-size: 0.67em;
-        font-weight: bold;
-        margin: 2.33em 0;
-    }
+  & td,
+  & th {
+    padding: 1px;
+    vertical-align: inherit;
+  }
 
-    & table {
-        border-collapse: separate;
-        border-spacing: 2px;
-        border-color: gray;
-    }
+  & th {
+    font-weight: bold;
+  }
 
-    & thead,
-    & tbody,
-    & tfoot,
-    & tr {
-        border-color: inherit;
-        vertical-align: middle;
-    }
+  & caption {
+    text-align: center;
+  }
 
-    & td,
-    & th {
-        padding: 1px;
-        vertical-align: inherit;
-    }
+  & ul,
+  & menu {
+    list-style-type: disc;
+    margin: 1em 0;
+    padding: 0 0 0 40px;
+  }
 
-    & th {
-        font-weight: bold;
-    }
+  & ol {
+    list-style-type: decimal;
+    margin: 1em 0;
+    padding: 0 0 0 40px;
+  }
 
-    & caption {
-        text-align: center;
+  & ul,
+  & ol {
+    & ul {
+      list-style-type: circle;
     }
 
     & ul,
-    & menu {
-        list-style-type: disc;
-        margin: 1em 0;
-        padding: 0 0 0 40px;
-    }
-
     & ol {
-        list-style-type: decimal;
-        margin: 1em 0;
-        padding: 0 0 0 40px;
+      & ul {
+        list-style-type: square;
+      }
     }
+  }
 
-    & ul,
-    & ol {
-        & ul {
-            list-style-type: circle;
-        }
-
-        & ul,
-        & ol {
-            & ul {
-                list-style-type: square;
-            }
-        }
-    }
-
+  & ul,
+  & ol,
+  & menu,
+  & dl {
     & ul,
     & ol,
     & menu,
     & dl {
-        & ul,
-        & ol,
-        & menu,
-        & dl {
-            margin: 0;
-        }
+      margin: 0;
     }
+  }
 
-    & ins {
-        background-color: transparent;
-        font-weight: inherit;
-        text-decoration: underline;
-    }
+  & ins {
+    background-color: transparent;
+    font-weight: inherit;
+    text-decoration: underline;
+  }
 
-    & b,
-    & strong {
-        font-weight: bold;
-    }
+  & b,
+  & strong {
+    font-weight: bold;
+  }
 
-    & i,
-    & cite,
-    & em,
-    & var,
-    & address,
-    & dfn {
-        font-style: italic;
-        font-weight: inherit;
-    }
+  & i,
+  & cite,
+  & em,
+  & var,
+  & address,
+  & dfn {
+    font-style: italic;
+    font-weight: inherit;
+  }
 
-    & abbr[title],
-    & dfn[title] {
-        border-bottom: 0;
-        cursor: default;
-        font-weight: inherit;
-    }
+  & abbr[title],
+  & dfn[title] {
+    border-bottom: 0;
+    cursor: default;
+    font-weight: inherit;
+  }
 
-    & tt,
-    & code,
-    & kbd,
-    & samp {
-        font-family: monospace;
-        font-weight: inherit;
-    }
+  & tt,
+  & code,
+  & kbd,
+  & samp {
+    font-family: monospace;
+    font-weight: inherit;
+  }
 
-    & pre {
-        font-family: monospace;
-        margin: 1em 0;
-        white-space: pre;
-    }
+  & pre {
+    font-family: monospace;
+    margin: 1em 0;
+    white-space: pre;
+  }
 
-    & mark {
-        background-color: yellow;
-        color: black;
-        font-style: normal;
-        font-weight: inherit;
-    }
+  & mark {
+    background-color: yellow;
+    color: black;
+    font-style: normal;
+    font-weight: inherit;
+  }
 
-    & big {
-        font-size: larger;
-        font-weight: inherit;
-    }
+  & big {
+    font-size: larger;
+    font-weight: inherit;
+  }
 
-    & small {
-        font-size: smaller;
-        font-weight: inherit;
-    }
+  & small {
+    font-size: smaller;
+    font-weight: inherit;
+  }
 
-    & sub,
-    & sup {
-        font-weight: inherit;
-        line-height: inherit;
-        position: static;
-    }
+  & sub,
+  & sup {
+    font-weight: inherit;
+    line-height: inherit;
+    position: static;
+  }
 
-    & sub {
-        font-size: smaller;
-        bottom: 0;
-        vertical-align: sub;
-    }
+  & sub {
+    font-size: smaller;
+    bottom: 0;
+    vertical-align: sub;
+  }
 
-    & sup {
-        font-size: smaller;
-        top: 0;
-        vertical-align: super;
-    }
+  & sup {
+    font-size: smaller;
+    top: 0;
+    vertical-align: super;
+  }
 
-    & ruby {
-        & > rt {
-            font-size: 50%;
-        }
+  & ruby {
+    & > rt {
+      font-size: 50%;
     }
+  }
 }
