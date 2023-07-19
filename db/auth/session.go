@@ -1,9 +1,11 @@
-package db
+package auth
 
 import (
 	"context"
 	"database/sql"
 	"errors"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -11,8 +13,8 @@ import (
 )
 
 // CreateSession creates a new user authenticated session
-func (d *AuthService) CreateSession(ctx context.Context, UserId string) (string, error) {
-	SessionId, err := randomBase64String(32)
+func (d *Service) CreateSession(ctx context.Context, UserId string) (string, error) {
+	SessionId, err := db.RandomBase64String(32)
 	if err != nil {
 		return "", err
 	}
@@ -31,7 +33,7 @@ func (d *AuthService) CreateSession(ctx context.Context, UserId string) (string,
 }
 
 // EnableSession enables a user authenticated session
-func (d *AuthService) EnableSession(ctx context.Context, SessionId string) error {
+func (d *Service) EnableSession(ctx context.Context, SessionId string) error {
 	if _, sessionErr := d.DB.ExecContext(ctx, `
 		UPDATE thunderdome.user_session SET disabled = false WHERE session_id = $1;
 		`,
@@ -45,7 +47,7 @@ func (d *AuthService) EnableSession(ctx context.Context, SessionId string) error
 }
 
 // GetSessionUser gets a user session by sessionId
-func (d *AuthService) GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error) {
+func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error) {
 	User := &thunderdome.User{}
 
 	e := d.DB.QueryRowContext(ctx, `
@@ -90,13 +92,13 @@ func (d *AuthService) GetSessionUser(ctx context.Context, SessionId string) (*th
 		return nil, errors.New("active session match not found")
 	}
 
-	User.GravatarHash = createGravatarHash(User.Email)
+	User.GravatarHash = db.CreateGravatarHash(User.Email)
 
 	return User, nil
 }
 
 // DeleteSession deletes a user authenticated session
-func (d *AuthService) DeleteSession(ctx context.Context, SessionId string) error {
+func (d *Service) DeleteSession(ctx context.Context, SessionId string) error {
 	if _, sessionErr := d.DB.ExecContext(ctx, `
 		DELETE FROM thunderdome.user_session WHERE session_id = $1;
 		`,

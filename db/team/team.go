@@ -1,9 +1,11 @@
-package db
+package team
 
 import (
 	"context"
 	"database/sql"
 	"errors"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
@@ -11,14 +13,14 @@ import (
 	"go.uber.org/zap"
 )
 
-// TeamService represents a PostgreSQL implementation of thunderdome.TeamDataSvc.
-type TeamService struct {
+// Service represents a PostgreSQL implementation of thunderdome.TeamDataSvc.
+type Service struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
 }
 
 // TeamUserRole gets a user's role in team
-func (d *TeamService) TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error) {
+func (d *Service) TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error) {
 	var teamRole string
 
 	err := d.DB.QueryRowContext(ctx,
@@ -39,7 +41,7 @@ func (d *TeamService) TeamUserRole(ctx context.Context, UserID string, TeamID st
 }
 
 // TeamGet gets a team
-func (d *TeamService) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team, error) {
+func (d *Service) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team, error) {
 	var team = &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx,
@@ -62,7 +64,7 @@ func (d *TeamService) TeamGet(ctx context.Context, TeamID string) (*thunderdome.
 }
 
 // TeamListByUser gets a list of teams the user is on
-func (d *TeamService) TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.Team {
+func (d *Service) TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.Team {
 	var teams = make([]*thunderdome.Team, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT t.id, t.name, t.created_date, t.updated_date
@@ -101,7 +103,7 @@ func (d *TeamService) TeamListByUser(ctx context.Context, UserID string, Limit i
 }
 
 // TeamCreate creates a team with current user as an ADMIN
-func (d *TeamService) TeamCreate(ctx context.Context, UserID string, TeamName string) (*thunderdome.Team, error) {
+func (d *Service) TeamCreate(ctx context.Context, UserID string, TeamName string) (*thunderdome.Team, error) {
 	t := &thunderdome.Team{}
 	err := d.DB.QueryRowContext(ctx, `
 		SELECT id, name, created_date, updated_date FROM thunderdome.team_create($1, $2);`,
@@ -118,7 +120,7 @@ func (d *TeamService) TeamCreate(ctx context.Context, UserID string, TeamName st
 }
 
 // TeamAddUser adds a user to a team
-func (d *TeamService) TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error) {
+func (d *Service) TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.team_user (team_id, user_id, role) VALUES ($1, $2, $3);`,
 		TeamID,
@@ -135,7 +137,7 @@ func (d *TeamService) TeamAddUser(ctx context.Context, TeamID string, UserID str
 }
 
 // TeamUserList gets a list of team users
-func (d *TeamService) TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.TeamUser, int, error) {
+func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.TeamUser, int, error) {
 	var users = make([]*thunderdome.TeamUser, 0)
 	var userCount int
 
@@ -178,7 +180,7 @@ func (d *TeamService) TeamUserList(ctx context.Context, TeamID string, Limit int
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("team_user_list query scan error", zap.Error(err))
 			} else {
-				usr.GravatarHash = createGravatarHash(usr.Email)
+				usr.GravatarHash = db.CreateGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}
@@ -191,7 +193,7 @@ func (d *TeamService) TeamUserList(ctx context.Context, TeamID string, Limit int
 }
 
 // TeamRemoveUser removes a user from a team
-func (d *TeamService) TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error {
+func (d *Service) TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team_user WHERE team_id = $1 AND user_id = $2;`,
 		TeamID,
@@ -207,7 +209,7 @@ func (d *TeamService) TeamRemoveUser(ctx context.Context, TeamID string, UserID 
 }
 
 // TeamPokerList gets a list of team poker games
-func (d *TeamService) TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Poker {
+func (d *Service) TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Poker {
 	var pokers = make([]*thunderdome.Poker, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT b.id, b.name
@@ -244,7 +246,7 @@ func (d *TeamService) TeamPokerList(ctx context.Context, TeamID string, Limit in
 }
 
 // TeamAddPoker adds a poker game to a team
-func (d *TeamService) TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error {
+func (d *Service) TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.team_poker (team_id, poker_id) VALUES ($1, $2);`,
 		TeamID,
@@ -260,7 +262,7 @@ func (d *TeamService) TeamAddPoker(ctx context.Context, TeamID string, PokerID s
 }
 
 // TeamRemovePoker removes a poker game from a team
-func (d *TeamService) TeamRemovePoker(ctx context.Context, TeamID string, PokerID string) error {
+func (d *Service) TeamRemovePoker(ctx context.Context, TeamID string, PokerID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team_poker WHERE poker_id = $2 AND team_id = $1;`,
 		TeamID,
@@ -276,7 +278,7 @@ func (d *TeamService) TeamRemovePoker(ctx context.Context, TeamID string, PokerI
 }
 
 // TeamDelete deletes a team
-func (d *TeamService) TeamDelete(ctx context.Context, TeamID string) error {
+func (d *Service) TeamDelete(ctx context.Context, TeamID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`CALL thunderdome.team_delete($1);`,
 		TeamID,
@@ -291,7 +293,7 @@ func (d *TeamService) TeamDelete(ctx context.Context, TeamID string) error {
 }
 
 // TeamRetroList gets a list of team retros
-func (d *TeamService) TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Retro {
+func (d *Service) TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Retro {
 	var retros = make([]*thunderdome.Retro, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT b.id, b.name, b.format, b.phase
@@ -330,7 +332,7 @@ func (d *TeamService) TeamRetroList(ctx context.Context, TeamID string, Limit in
 }
 
 // TeamAddRetro adds a retro to a team
-func (d *TeamService) TeamAddRetro(ctx context.Context, TeamID string, RetroID string) error {
+func (d *Service) TeamAddRetro(ctx context.Context, TeamID string, RetroID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.team_retro (team_id, retro_id) VALUES ($1, $2);`,
 		TeamID,
@@ -346,7 +348,7 @@ func (d *TeamService) TeamAddRetro(ctx context.Context, TeamID string, RetroID s
 }
 
 // TeamRemoveRetro removes a retro from a team
-func (d *TeamService) TeamRemoveRetro(ctx context.Context, TeamID string, RetroID string) error {
+func (d *Service) TeamRemoveRetro(ctx context.Context, TeamID string, RetroID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team_retro WHERE retro_id = $2 AND team_id = $1;`,
 		TeamID,
@@ -362,7 +364,7 @@ func (d *TeamService) TeamRemoveRetro(ctx context.Context, TeamID string, RetroI
 }
 
 // TeamStoryboardList gets a list of team storyboards
-func (d *TeamService) TeamStoryboardList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Storyboard {
+func (d *Service) TeamStoryboardList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Storyboard {
 	var storyboards = make([]*thunderdome.Storyboard, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT b.id, b.name
@@ -399,7 +401,7 @@ func (d *TeamService) TeamStoryboardList(ctx context.Context, TeamID string, Lim
 }
 
 // TeamAddStoryboard adds a storyboard to a team
-func (d *TeamService) TeamAddStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
+func (d *Service) TeamAddStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.team_storyboard (team_id, storyboard_id) VALUES ($1, $2);`,
 		TeamID,
@@ -415,7 +417,7 @@ func (d *TeamService) TeamAddStoryboard(ctx context.Context, TeamID string, Stor
 }
 
 // TeamRemoveStoryboard removes a storyboard from a team
-func (d *TeamService) TeamRemoveStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
+func (d *Service) TeamRemoveStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.team_storyboard WHERE storyboard_id = $2 AND team_id = $1;`,
 		TeamID,
@@ -431,7 +433,7 @@ func (d *TeamService) TeamRemoveStoryboard(ctx context.Context, TeamID string, S
 }
 
 // TeamList gets a list of teams
-func (d *TeamService) TeamList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Team, int) {
+func (d *Service) TeamList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Team, int) {
 	var teams = make([]*thunderdome.Team, 0)
 	var count = 0
 

@@ -1,9 +1,11 @@
-package db
+package user
 
 import (
 	"context"
 	"database/sql"
 	"errors"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
@@ -11,14 +13,14 @@ import (
 	"go.uber.org/zap"
 )
 
-// UserService represents a PostgreSQL implementation of thunderdome.UserDataSvc.
-type UserService struct {
+// Service represents a PostgreSQL implementation of thunderdome.UserDataSvc.
+type Service struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
 }
 
 // GetRegisteredUsers gets a list of registered users
-func (d *UserService) GetRegisteredUsers(ctx context.Context, Limit int, Offset int) ([]*thunderdome.User, int, error) {
+func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int) ([]*thunderdome.User, int, error) {
 	var users = make([]*thunderdome.User, 0)
 	var Count int
 
@@ -64,7 +66,7 @@ func (d *UserService) GetRegisteredUsers(ctx context.Context, Limit int, Offset 
 		); err != nil {
 			d.Logger.Ctx(ctx).Error("registered_users_list query scan error", zap.Error(err))
 		} else {
-			w.GravatarHash = createGravatarHash(w.Email)
+			w.GravatarHash = db.CreateGravatarHash(w.Email)
 			users = append(users, &w)
 		}
 	}
@@ -73,7 +75,7 @@ func (d *UserService) GetRegisteredUsers(ctx context.Context, Limit int, Offset 
 }
 
 // GetUser gets a user by ID
-func (d *UserService) GetUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
+func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
 	var w thunderdome.User
 	var UserEmail sql.NullString
 	var UserCountry sql.NullString
@@ -116,16 +118,16 @@ func (d *UserService) GetUser(ctx context.Context, UserID string) (*thunderdome.
 	w.Company = UserCompany.String
 	w.JobTitle = UserJobTitle.String
 	if w.Email != "" {
-		w.GravatarHash = createGravatarHash(w.Email)
+		w.GravatarHash = db.CreateGravatarHash(w.Email)
 	} else {
-		w.GravatarHash = createGravatarHash(w.Id)
+		w.GravatarHash = db.CreateGravatarHash(w.Id)
 	}
 
 	return &w, nil
 }
 
 // GetGuestUser gets a guest user by ID
-func (d *UserService) GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
+func (d *Service) GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
 	var w thunderdome.User
 	var UserEmail sql.NullString
 	var UserCountry sql.NullString
@@ -165,18 +167,18 @@ WHERE id = $1 AND type = 'GUEST';
 	w.Locale = UserLocale.String
 	w.Company = UserCompany.String
 	w.JobTitle = UserJobTitle.String
-	w.GravatarHash = createGravatarHash(w.Id)
+	w.GravatarHash = db.CreateGravatarHash(w.Id)
 
 	return &w, nil
 }
 
 // GetUserByEmail gets the user by email
-func (d *UserService) GetUserByEmail(ctx context.Context, UserEmail string) (*thunderdome.User, error) {
+func (d *Service) GetUserByEmail(ctx context.Context, UserEmail string) (*thunderdome.User, error) {
 	var w thunderdome.User
 
 	err := d.DB.QueryRowContext(ctx,
 		"SELECT id, name, email, type, verified, disabled FROM thunderdome.users WHERE LOWER(email) = $1",
-		sanitizeEmail(UserEmail),
+		db.SanitizeEmail(UserEmail),
 	).Scan(
 		&w.Id,
 		&w.Name,
@@ -190,13 +192,13 @@ func (d *UserService) GetUserByEmail(ctx context.Context, UserEmail string) (*th
 		return nil, errors.New("user email not found")
 	}
 
-	w.GravatarHash = createGravatarHash(w.Email)
+	w.GravatarHash = db.CreateGravatarHash(w.Email)
 
 	return &w, nil
 }
 
 // CreateUserGuest adds a new guest user
-func (d *UserService) CreateUserGuest(ctx context.Context, UserName string) (*thunderdome.User, error) {
+func (d *Service) CreateUserGuest(ctx context.Context, UserName string) (*thunderdome.User, error) {
 	var UserID string
 	err := d.DB.QueryRowContext(ctx, `INSERT INTO thunderdome.users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
 	if err != nil {
@@ -204,12 +206,12 @@ func (d *UserService) CreateUserGuest(ctx context.Context, UserName string) (*th
 		return nil, errors.New("unable to create new user")
 	}
 
-	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: createGravatarHash(UserID)}, nil
+	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: db.CreateGravatarHash(UserID)}, nil
 }
 
 // CreateUserRegistered adds a new registered user
-func (d *UserService) CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error) {
-	hashedPassword, hashErr := hashSaltPassword(UserPassword)
+func (d *Service) CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error) {
+	hashedPassword, hashErr := db.HashSaltPassword(UserPassword)
 	if hashErr != nil {
 		return nil, "", hashErr
 	}
@@ -217,13 +219,13 @@ func (d *UserService) CreateUserRegistered(ctx context.Context, UserName string,
 	var verifyID string
 	UserType := "REGISTERED"
 	UserAvatar := "robohash"
-	sanitizedEmail := sanitizeEmail(UserEmail)
+	sanitizedEmail := db.SanitizeEmail(UserEmail)
 	User := &thunderdome.User{
 		Name:         UserName,
 		Email:        sanitizedEmail,
 		Type:         UserType,
 		Avatar:       UserAvatar,
-		GravatarHash: createGravatarHash(UserEmail),
+		GravatarHash: db.CreateGravatarHash(UserEmail),
 	}
 
 	if ActiveUserID != "" {
@@ -257,8 +259,8 @@ func (d *UserService) CreateUserRegistered(ctx context.Context, UserName string,
 }
 
 // CreateUser adds a new registered user
-func (d *UserService) CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error) {
-	hashedPassword, hashErr := hashSaltPassword(UserPassword)
+func (d *Service) CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error) {
+	hashedPassword, hashErr := db.HashSaltPassword(UserPassword)
 	if hashErr != nil {
 		return nil, "", hashErr
 	}
@@ -266,13 +268,13 @@ func (d *UserService) CreateUser(ctx context.Context, UserName string, UserEmail
 	var verifyID string
 	UserType := "REGISTERED"
 	UserAvatar := "robohash"
-	sanitizedEmail := sanitizeEmail(UserEmail)
+	sanitizedEmail := db.SanitizeEmail(UserEmail)
 	User := &thunderdome.User{
 		Name:         UserName,
 		Email:        sanitizedEmail,
 		Type:         UserType,
 		Avatar:       UserAvatar,
-		GravatarHash: createGravatarHash(UserEmail),
+		GravatarHash: db.CreateGravatarHash(UserEmail),
 	}
 
 	err := d.DB.QueryRowContext(ctx,
@@ -291,7 +293,7 @@ func (d *UserService) CreateUser(ctx context.Context, UserName string, UserEmail
 }
 
 // UpdateUserProfile updates the users profile (excludes: email, password)
-func (d *UserService) UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *Service) UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
 	}
@@ -325,7 +327,7 @@ func (d *UserService) UpdateUserProfile(ctx context.Context, UserID string, User
 }
 
 // UpdateUserProfileLdap updates the users profile (excludes: username, email, password)
-func (d *UserService) UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *Service) UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
 	}
@@ -357,7 +359,7 @@ func (d *UserService) UpdateUserProfileLdap(ctx context.Context, UserID string, 
 }
 
 // UpdateUserAccount updates the users profile including email (excludes: password)
-func (d *UserService) UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *Service) UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
 	}
@@ -377,7 +379,7 @@ func (d *UserService) UpdateUserAccount(ctx context.Context, UserID string, User
 			WHERE id = $1;`,
 		UserID,
 		UserName,
-		sanitizeEmail(UserEmail),
+		db.SanitizeEmail(UserEmail),
 		UserAvatar,
 		NotificationsEnabled,
 		Country,
@@ -392,7 +394,7 @@ func (d *UserService) UpdateUserAccount(ctx context.Context, UserID string, User
 }
 
 // DeleteUser deletes a user
-func (d *UserService) DeleteUser(ctx context.Context, UserID string) error {
+func (d *Service) DeleteUser(ctx context.Context, UserID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.users WHERE id = $1;`,
 		UserID,
@@ -405,7 +407,7 @@ func (d *UserService) DeleteUser(ctx context.Context, UserID string) error {
 }
 
 // SearchRegisteredUsersByEmail retrieves the registered users filtered by email likeness
-func (d *UserService) SearchRegisteredUsersByEmail(ctx context.Context, Email string, Limit int, Offset int) ([]*thunderdome.User, int, error) {
+func (d *Service) SearchRegisteredUsersByEmail(ctx context.Context, Email string, Limit int, Offset int) ([]*thunderdome.User, int, error) {
 	var users = make([]*thunderdome.User, 0)
 	var count int
 
@@ -413,7 +415,7 @@ func (d *UserService) SearchRegisteredUsersByEmail(ctx context.Context, Email st
 		`
 		SELECT id, name, email, type, avatar, verified, country, company, job_title, count
 		FROM thunderdome.users_registered_email_search($1, $2, $3);`,
-		sanitizeEmail(Email),
+		db.SanitizeEmail(Email),
 		Limit,
 		Offset,
 	)
@@ -439,7 +441,7 @@ func (d *UserService) SearchRegisteredUsersByEmail(ctx context.Context, Email st
 		); err != nil {
 			d.Logger.Ctx(ctx).Error("users_registered_email_search query error", zap.Error(err))
 		} else {
-			w.GravatarHash = createGravatarHash(w.Email)
+			w.GravatarHash = db.CreateGravatarHash(w.Email)
 			users = append(users, &w)
 		}
 	}
@@ -448,7 +450,7 @@ func (d *UserService) SearchRegisteredUsersByEmail(ctx context.Context, Email st
 }
 
 // PromoteUser promotes a user to admin type
-func (d *UserService) PromoteUser(ctx context.Context, UserID string) error {
+func (d *Service) PromoteUser(ctx context.Context, UserID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.users SET type = 'ADMIN', updated_date = NOW() WHERE id = $1;`,
 		UserID,
@@ -461,7 +463,7 @@ func (d *UserService) PromoteUser(ctx context.Context, UserID string) error {
 }
 
 // DemoteUser demotes a user to registered type
-func (d *UserService) DemoteUser(ctx context.Context, UserID string) error {
+func (d *Service) DemoteUser(ctx context.Context, UserID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.users SET type = 'REGISTERED', updated_date = NOW() WHERE id = $1;`,
 		UserID,
@@ -474,7 +476,7 @@ func (d *UserService) DemoteUser(ctx context.Context, UserID string) error {
 }
 
 // DisableUser disables a user from logging in
-func (d *UserService) DisableUser(ctx context.Context, UserID string) error {
+func (d *Service) DisableUser(ctx context.Context, UserID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`CALL thunderdome.user_disable($1);`,
 		UserID,
@@ -487,7 +489,7 @@ func (d *UserService) DisableUser(ctx context.Context, UserID string) error {
 }
 
 // EnableUser enables a user allowing login
-func (d *UserService) EnableUser(ctx context.Context, UserID string) error {
+func (d *Service) EnableUser(ctx context.Context, UserID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.users SET disabled = false, updated_date = NOW()
         WHERE id = $1;`,
@@ -501,7 +503,7 @@ func (d *UserService) EnableUser(ctx context.Context, UserID string) error {
 }
 
 // CleanGuests deletes guest users older than {DaysOld} days
-func (d *UserService) CleanGuests(ctx context.Context, DaysOld int) error {
+func (d *Service) CleanGuests(ctx context.Context, DaysOld int) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.users WHERE last_active < (NOW() - $1 * interval '1 day') AND type = 'GUEST';`,
 		DaysOld,
@@ -515,7 +517,7 @@ func (d *UserService) CleanGuests(ctx context.Context, DaysOld int) error {
 
 // LowercaseUserEmails goes through and lower cases any user email that has uppercase letters
 // returning the list of updated users
-func (d *UserService) LowercaseUserEmails(ctx context.Context) ([]*thunderdome.User, error) {
+func (d *Service) LowercaseUserEmails(ctx context.Context) ([]*thunderdome.User, error) {
 	var users = make([]*thunderdome.User, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`UPDATE thunderdome.users u
@@ -554,7 +556,7 @@ func (d *UserService) LowercaseUserEmails(ctx context.Context) ([]*thunderdome.U
 
 // MergeDuplicateAccounts goes through and merges user accounts with duplicate emails that has uppercase letters
 // returning the list of merged users
-func (d *UserService) MergeDuplicateAccounts(ctx context.Context) ([]*thunderdome.User, error) {
+func (d *Service) MergeDuplicateAccounts(ctx context.Context) ([]*thunderdome.User, error) {
 	var users = make([]*thunderdome.User, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT name, email FROM thunderdome.user_merge_nonunique_accounts();`,
@@ -584,7 +586,7 @@ func (d *UserService) MergeDuplicateAccounts(ctx context.Context) ([]*thunderdom
 }
 
 // GetActiveCountries gets a list of user countries
-func (d *UserService) GetActiveCountries(ctx context.Context) ([]string, error) {
+func (d *Service) GetActiveCountries(ctx context.Context) ([]string, error) {
 	var countries = make([]string, 0)
 
 	rows, err := d.DB.QueryContext(ctx, `SELECT ac.country FROM thunderdome.active_countries ac;`)

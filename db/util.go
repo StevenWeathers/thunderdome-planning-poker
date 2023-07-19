@@ -17,8 +17,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// sanitizeEmail removes any non-valid email characters and lowercase's email
-func sanitizeEmail(email string) string {
+// SanitizeEmail removes any non-valid email characters and lowercase's email
+func SanitizeEmail(email string) string {
 	emailRegExp := regexp.MustCompile(`[^a-zA-Z0-9-_.@+]`)
 
 	return string(emailRegExp.ReplaceAll(
@@ -26,8 +26,8 @@ func sanitizeEmail(email string) string {
 	)
 }
 
-// contains checks if a string is present in a slice
-func contains(s []string, str string) bool {
+// Contains checks if a string is present in a slice
+func Contains(s []string, str string) bool {
 	for _, v := range s {
 		if v == str {
 			return true
@@ -57,8 +57,8 @@ func random(length int) ([]byte, error) {
 	return bytes, nil
 }
 
-// randomString returns a random secure string of X length
-func randomString(l int) (string, error) {
+// RandomString returns a random secure string of X length
+func RandomString(l int) (string, error) {
 	s, err := random(l)
 	if err != nil {
 		return "", err
@@ -66,8 +66,8 @@ func randomString(l int) (string, error) {
 	return string(s), nil
 }
 
-// randomBase64String returns a random secure string of X length base64 encoded
-func randomBase64String(l int) (string, error) {
+// RandomBase64String returns a random secure string of X length base64 encoded
+func RandomBase64String(l int) (string, error) {
 	s, err := random(l)
 	if err != nil {
 		return "", err
@@ -75,8 +75,8 @@ func randomBase64String(l int) (string, error) {
 	return base64.URLEncoding.EncodeToString(s), nil
 }
 
-// hashString hashes the string using SHA256 (not reversible)
-func hashString(s string) string {
+// HashString hashes the string using SHA256 (not reversible)
+func HashString(s string) string {
 	data := []byte(s)
 	hash := sha256.Sum256(data)
 	result := hex.EncodeToString(hash[:])
@@ -84,8 +84,8 @@ func hashString(s string) string {
 	return result
 }
 
-// hashSaltPassword takes a password byte then salt + hashes it returning a hash string
-func hashSaltPassword(UserPassword string) (string, error) {
+// HashSaltPassword takes a password byte then salt + hashes it returning a hash string
+func HashSaltPassword(UserPassword string) (string, error) {
 	pwd := []byte(UserPassword)
 	// Use GenerateFromPassword to hash & salt pwd.
 	// MinCost is just an integer constant provided by the bcrypt
@@ -101,8 +101,8 @@ func hashSaltPassword(UserPassword string) (string, error) {
 	return string(hash), nil
 }
 
-// comparePasswords takes a password hash and compares it to entered password
-func comparePasswords(hashedPwd string, password string) bool {
+// ComparePasswords takes a password hash and compares it to entered password
+func ComparePasswords(hashedPwd string, password string) bool {
 	// Since we'll be getting the hashed password from the DB it
 	// will be a string so we'll need to convert it to a byte slice
 	byteHash := []byte(hashedPwd)
@@ -112,9 +112,9 @@ func comparePasswords(hashedPwd string, password string) bool {
 	return err == nil
 }
 
-// checkPasswordCost checks the passwords stored hash for bcrypt cost
+// CheckPasswordCost checks the passwords stored hash for bcrypt cost
 // if it does not match current cost then return true and let auth update the hash
-func checkPasswordCost(hashedPwd string) bool {
+func CheckPasswordCost(hashedPwd string) bool {
 	byteHash := []byte(hashedPwd)
 
 	hashCost, costErr := bcrypt.Cost(byteHash)
@@ -132,8 +132,8 @@ func createHash(key string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-// encrypt data for storing securely
-func encrypt(data string, passphrase string) (string, error) {
+// Encrypt data for storing securely
+func Encrypt(data string, passphrase string) (string, error) {
 	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
@@ -147,8 +147,8 @@ func encrypt(data string, passphrase string) (string, error) {
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
-// decrypt data for sending to client
-func decrypt(data string, passphrase string) (string, error) {
+// Decrypt data for sending to client
+func Decrypt(data string, passphrase string) (string, error) {
 	dataByte, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
 		return "", err
@@ -174,8 +174,8 @@ func decrypt(data string, passphrase string) (string, error) {
 	return string(plaintext), nil
 }
 
-// createGravatarHash md5 hashes email for gravatar use
-func createGravatarHash(email string) string {
+// CreateGravatarHash md5 hashes email for gravatar use
+func CreateGravatarHash(email string) string {
 	gh := md5.Sum([]byte(email))
 	return hex.EncodeToString(gh[:])
 }

@@ -1,4 +1,4 @@
-package db
+package storyboard
 
 import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -6,7 +6,7 @@ import (
 )
 
 // CreateStoryboardStory adds a new story to a Storyboard
-func (d *StoryboardService) CreateStoryboardStory(StoryboardID string, GoalID string, ColumnID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) CreateStoryboardStory(StoryboardID string, GoalID string, ColumnID string, userID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.storyboard_story (storyboard_id, goal_id, column_id, sort_order) 
 		VALUES ($1, $2, $3, ((SELECT coalesce(MAX(sort_order), 0) FROM thunderdome.storyboard_story WHERE column_id = $3) + 1));`,
@@ -21,7 +21,7 @@ func (d *StoryboardService) CreateStoryboardStory(StoryboardID string, GoalID st
 }
 
 // ReviseStoryName updates the story name by ID
-func (d *StoryboardService) ReviseStoryName(StoryboardID string, userID string, StoryID string, StoryName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryName(StoryboardID string, userID string, StoryID string, StoryName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET name = $2, updated_date = NOW() WHERE id = $1;`,
 		StoryID,
@@ -36,7 +36,7 @@ func (d *StoryboardService) ReviseStoryName(StoryboardID string, userID string, 
 }
 
 // ReviseStoryContent updates the story content by ID
-func (d *StoryboardService) ReviseStoryContent(StoryboardID string, userID string, StoryID string, StoryContent string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryContent(StoryboardID string, userID string, StoryID string, StoryContent string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET content = $2, updated_date = NOW() WHERE id = $1;`,
 		StoryID,
@@ -51,7 +51,7 @@ func (d *StoryboardService) ReviseStoryContent(StoryboardID string, userID strin
 }
 
 // ReviseStoryColor updates the story color by ID
-func (d *StoryboardService) ReviseStoryColor(StoryboardID string, userID string, StoryID string, StoryColor string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryColor(StoryboardID string, userID string, StoryID string, StoryColor string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET color = $2, updated_date = NOW() WHERE id = $1;`,
 		StoryID,
@@ -66,7 +66,7 @@ func (d *StoryboardService) ReviseStoryColor(StoryboardID string, userID string,
 }
 
 // ReviseStoryPoints updates the story points by ID
-func (d *StoryboardService) ReviseStoryPoints(StoryboardID string, userID string, StoryID string, Points int) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryPoints(StoryboardID string, userID string, StoryID string, Points int) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET points = $2, updated_date = NOW() WHERE id = $1;`,
 		StoryID,
@@ -81,7 +81,7 @@ func (d *StoryboardService) ReviseStoryPoints(StoryboardID string, userID string
 }
 
 // ReviseStoryClosed updates the story closed status by ID
-func (d *StoryboardService) ReviseStoryClosed(StoryboardID string, userID string, StoryID string, Closed bool) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryClosed(StoryboardID string, userID string, StoryID string, Closed bool) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET closed = $2, updated_date = NOW() WHERE id = $1;`,
 		StoryID,
@@ -96,7 +96,7 @@ func (d *StoryboardService) ReviseStoryClosed(StoryboardID string, userID string
 }
 
 // ReviseStoryLink updates the story link by ID
-func (d *StoryboardService) ReviseStoryLink(StoryboardID string, userID string, StoryID string, Link string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseStoryLink(StoryboardID string, userID string, StoryID string, Link string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story SET link = $2, updated_date = NOW() WHERE id = $1;`,
 		StoryID,
@@ -111,7 +111,7 @@ func (d *StoryboardService) ReviseStoryLink(StoryboardID string, userID string, 
 }
 
 // MoveStoryboardStory moves the story by ID to Goal/Column by ID
-func (d *StoryboardService) MoveStoryboardStory(StoryboardID string, userID string, StoryID string, GoalID string, ColumnID string, PlaceBefore string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) MoveStoryboardStory(StoryboardID string, userID string, StoryID string, GoalID string, ColumnID string, PlaceBefore string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.sb_story_move($1, $2, $3, $4);`,
 		StoryID,
@@ -128,7 +128,7 @@ func (d *StoryboardService) MoveStoryboardStory(StoryboardID string, userID stri
 }
 
 // DeleteStoryboardStory removes a story from the current board by ID
-func (d *StoryboardService) DeleteStoryboardStory(StoryboardID string, userID string, StoryID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) DeleteStoryboardStory(StoryboardID string, userID string, StoryID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.sb_story_delete($1);`, StoryID); err != nil {
 		d.Logger.Error("CALL thunderdome.sb_story_delete error", zap.Error(err))
@@ -140,7 +140,7 @@ func (d *StoryboardService) DeleteStoryboardStory(StoryboardID string, userID st
 }
 
 // AddStoryComment adds a comment to a story
-func (d *StoryboardService) AddStoryComment(StoryboardID string, UserID string, StoryID string, Comment string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) AddStoryComment(StoryboardID string, UserID string, StoryID string, Comment string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.storyboard_story_comment (storyboard_id, story_id, user_id, comment) VALUES ($1, $2, $3, $4);`,
 		StoryboardID,
@@ -157,7 +157,7 @@ func (d *StoryboardService) AddStoryComment(StoryboardID string, UserID string, 
 }
 
 // EditStoryComment edits a story comment
-func (d *StoryboardService) EditStoryComment(StoryboardID string, CommentID string, Comment string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) EditStoryComment(StoryboardID string, CommentID string, Comment string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_story_comment SET comment = $2
         WHERE id = $1;`,
@@ -173,7 +173,7 @@ func (d *StoryboardService) EditStoryComment(StoryboardID string, CommentID stri
 }
 
 // DeleteStoryComment deletes a story comment
-func (d *StoryboardService) DeleteStoryComment(StoryboardID string, CommentID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) DeleteStoryComment(StoryboardID string, CommentID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.storyboard_story_comment WHERE id = $1;`,
 		CommentID,

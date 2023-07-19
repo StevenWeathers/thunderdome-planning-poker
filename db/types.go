@@ -22,8 +22,8 @@ type Config struct {
 	ConnMaxLifetime int
 }
 
-// Database contains all the methods to interact with DB
-type Database struct {
+// Service contains all the methods to interact with DB
+type Service struct {
 	Config              *Config
 	DB                  *sql.DB
 	HTMLSanitizerPolicy *bluemonday.Policy

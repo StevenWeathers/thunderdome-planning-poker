@@ -27,7 +27,7 @@ var fs embed.FS
 
 // New runs db migrations, sets up a db connection pool
 // and sets previously active users to false during startup
-func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
+func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Service {
 	ctx := context.Background()
 	dms, err := iofs.New(fs, "migrations")
 	if err != nil {
@@ -38,7 +38,7 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Database {
 	// Policy creation/editing is not safe to use in multiple goroutines
 	bmp := bluemonday.UGCPolicy()
 
-	var d = &Database{
+	var d = &Service{
 		// read environment variables and sets up database configuration values
 		Config:              config,
 		HTMLSanitizerPolicy: bmp,

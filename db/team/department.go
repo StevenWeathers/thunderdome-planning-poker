@@ -1,8 +1,10 @@
-package db
+package team
 
 import (
 	"context"
 	"errors"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -200,7 +202,7 @@ func (d *OrganizationService) DepartmentUserList(ctx context.Context, Department
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("department_user_list query scan error", zap.Error(err))
 			} else {
-				usr.GravatarHash = createGravatarHash(usr.Email)
+				usr.GravatarHash = db.CreateGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}

@@ -1,10 +1,12 @@
-package db
+package team
 
 import (
 	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/microcosm-cc/bluemonday"
@@ -68,7 +70,7 @@ func (d *CheckinService) CheckinList(ctx context.Context, TeamId string, Date st
 			); err != nil {
 				return nil, err
 			} else {
-				user.GravatarHash = createGravatarHash(user.GravatarHash)
+				user.GravatarHash = db.CreateGravatarHash(user.GravatarHash)
 				checkin.User = &user
 
 				Comments := make([]*thunderdome.CheckinComment, 0)

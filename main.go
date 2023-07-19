@@ -71,7 +71,7 @@ type server struct {
 	router       *mux.Router
 	email        thunderdome.EmailService
 	cookie       *securecookie.SecureCookie
-	db           *db.Database
+	db           *db.Service
 	logger       *otelzap.Logger
 	AlertService thunderdome.AlertDataSvc
 }

@@ -1,4 +1,4 @@
-package db
+package retro
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 )
 
 // CreateRetroItem adds a feedback item to the retro
-func (d *RetroService) CreateRetroItem(RetroID string, UserID string, ItemType string, Content string) ([]*thunderdome.RetroItem, error) {
+func (d *Service) CreateRetroItem(RetroID string, UserID string, ItemType string, Content string) ([]*thunderdome.RetroItem, error) {
 	var groupId string
 	err := d.DB.QueryRow(
 		`INSERT INTO thunderdome.retro_group
@@ -36,7 +36,7 @@ func (d *RetroService) CreateRetroItem(RetroID string, UserID string, ItemType s
 }
 
 // GroupRetroItem changes the group_id of retro item
-func (d *RetroService) GroupRetroItem(RetroID string, ItemId string, GroupId string) ([]*thunderdome.RetroItem, error) {
+func (d *Service) GroupRetroItem(RetroID string, ItemId string, GroupId string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.retro_item SET group_id = $3 WHERE retro_id = $1 AND id = $2;`,
 		RetroID, ItemId, GroupId,
@@ -50,7 +50,7 @@ func (d *RetroService) GroupRetroItem(RetroID string, ItemId string, GroupId str
 }
 
 // DeleteRetroItem removes item from the current board by ID
-func (d *RetroService) DeleteRetroItem(RetroID string, userID string, Type string, ItemID string) ([]*thunderdome.RetroItem, error) {
+func (d *Service) DeleteRetroItem(RetroID string, userID string, Type string, ItemID string) ([]*thunderdome.RetroItem, error) {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_item WHERE id = $1 AND type = $2;`, ItemID, Type); err != nil {
 		d.Logger.Error("delete retro item error", zap.Error(err))
@@ -62,7 +62,7 @@ func (d *RetroService) DeleteRetroItem(RetroID string, userID string, Type strin
 }
 
 // GetRetroItems retrieves retro items
-func (d *RetroService) GetRetroItems(RetroID string) []*thunderdome.RetroItem {
+func (d *Service) GetRetroItems(RetroID string) []*thunderdome.RetroItem {
 	var items = make([]*thunderdome.RetroItem, 0)
 
 	itemRows, itemsErr := d.DB.Query(
@@ -87,7 +87,7 @@ func (d *RetroService) GetRetroItems(RetroID string) []*thunderdome.RetroItem {
 }
 
 // GetRetroGroups retrieves retro groups
-func (d *RetroService) GetRetroGroups(RetroID string) []*thunderdome.RetroGroup {
+func (d *Service) GetRetroGroups(RetroID string) []*thunderdome.RetroGroup {
 	var groups = make([]*thunderdome.RetroGroup, 0)
 
 	itemRows, itemsErr := d.DB.Query(
@@ -112,7 +112,7 @@ func (d *RetroService) GetRetroGroups(RetroID string) []*thunderdome.RetroGroup 
 }
 
 // GroupNameChange changes retro item group name
-func (d *RetroService) GroupNameChange(RetroID string, GroupId string, Name string) ([]*thunderdome.RetroGroup, error) {
+func (d *Service) GroupNameChange(RetroID string, GroupId string, Name string) ([]*thunderdome.RetroGroup, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.retro_group SET name = $3 WHERE retro_id = $1 AND id = $2;`,
 		RetroID, GroupId, Name,
@@ -126,7 +126,7 @@ func (d *RetroService) GroupNameChange(RetroID string, GroupId string, Name stri
 }
 
 // GetRetroVotes gets retro votes
-func (d *RetroService) GetRetroVotes(RetroID string) []*thunderdome.RetroVote {
+func (d *Service) GetRetroVotes(RetroID string) []*thunderdome.RetroVote {
 	var votes = make([]*thunderdome.RetroVote, 0)
 
 	itemRows, itemsErr := d.DB.Query(
@@ -151,7 +151,7 @@ func (d *RetroService) GetRetroVotes(RetroID string) []*thunderdome.RetroVote {
 }
 
 // GroupUserVote inserts a user vote for the retro item group
-func (d *RetroService) GroupUserVote(RetroID string, GroupID string, UserID string) ([]*thunderdome.RetroVote, error) {
+func (d *Service) GroupUserVote(RetroID string, GroupID string, UserID string) ([]*thunderdome.RetroVote, error) {
 	var voteCount int
 	var maxVotes int
 	err := d.DB.QueryRow(
@@ -193,7 +193,7 @@ func (d *RetroService) GroupUserVote(RetroID string, GroupID string, UserID stri
 }
 
 // GroupUserSubtractVote deletes a user vote for the retro item group
-func (d *RetroService) GroupUserSubtractVote(RetroID string, GroupID string, UserID string) ([]*thunderdome.RetroVote, error) {
+func (d *Service) GroupUserSubtractVote(RetroID string, GroupID string, UserID string) ([]*thunderdome.RetroVote, error) {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_group_vote
 		WHERE retro_id = $1 AND group_id = $2 AND user_id = $3;`,
