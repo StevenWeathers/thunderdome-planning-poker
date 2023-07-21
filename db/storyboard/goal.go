@@ -1,4 +1,4 @@
-package db
+package storyboard
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 )
 
 // CreateStoryboardGoal adds a new goal to a Storyboard
-func (d *StoryboardService) CreateStoryboardGoal(StoryboardID string, userID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) CreateStoryboardGoal(StoryboardID string, userID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO
         thunderdome.storyboard_goal
@@ -26,7 +26,7 @@ func (d *StoryboardService) CreateStoryboardGoal(StoryboardID string, userID str
 }
 
 // ReviseGoalName updates the plan name by ID
-func (d *StoryboardService) ReviseGoalName(StoryboardID string, userID string, GoalID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) ReviseGoalName(StoryboardID string, userID string, GoalID string, GoalName string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_goal SET name = $2, updated_date = NOW() WHERE id = $1;`,
 		GoalID,
@@ -41,7 +41,7 @@ func (d *StoryboardService) ReviseGoalName(StoryboardID string, userID string, G
 }
 
 // DeleteStoryboardGoal removes a goal from the current board by ID
-func (d *StoryboardService) DeleteStoryboardGoal(StoryboardID string, userID string, GoalID string) ([]*thunderdome.StoryboardGoal, error) {
+func (d *Service) DeleteStoryboardGoal(StoryboardID string, userID string, GoalID string) ([]*thunderdome.StoryboardGoal, error) {
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.sb_goal_delete($1);`, GoalID); err != nil {
 		d.Logger.Error("CALL thunderdome.sb_goal_delete error", zap.Error(err))
@@ -53,7 +53,7 @@ func (d *StoryboardService) DeleteStoryboardGoal(StoryboardID string, userID str
 }
 
 // GetStoryboardGoals retrieves goals for given storyboard from db
-func (d *StoryboardService) GetStoryboardGoals(StoryboardID string) []*thunderdome.StoryboardGoal {
+func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.StoryboardGoal {
 	var goals = make([]*thunderdome.StoryboardGoal, 0)
 
 	goalRows, goalsErr := d.DB.Query(

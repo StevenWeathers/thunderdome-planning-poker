@@ -4,7 +4,7 @@
 FROM node:18.5 as builderNode
 
 RUN mkdir /webapp
-COPY ./frontend/ /webapp/frontend/
+COPY ./ui/ /webapp/ui/
 COPY ./build/*.js /webapp/build/
 COPY ./*.json /webapp/
 COPY ./*.js /webapp/

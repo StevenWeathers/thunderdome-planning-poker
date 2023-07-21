@@ -1,4 +1,4 @@
-package db
+package admin
 
 import (
 	"context"
@@ -9,14 +9,14 @@ import (
 	"go.uber.org/zap"
 )
 
-// AdminService represents a PostgreSQL implementation of thunderdome.AdminDataSvc.
-type AdminService struct {
+// Service represents a PostgreSQL implementation of thunderdome.AdminDataSvc.
+type Service struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
 }
 
 // GetAppStats gets counts of common application metrics such as users and poker games
-func (d *AdminService) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStats, error) {
+func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStats, error) {
 	var Appstats thunderdome.ApplicationStats
 
 	err := d.DB.QueryRowContext(ctx, `

@@ -1,9 +1,11 @@
-package db
+package team
 
 import (
 	"context"
 	"database/sql"
 	"errors"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
@@ -148,7 +150,7 @@ func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID st
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("organization_user_list query scan error", zap.Error(err))
 			} else {
-				usr.GravatarHash = createGravatarHash(usr.Email)
+				usr.GravatarHash = db.CreateGravatarHash(usr.Email)
 				users = append(users, &usr)
 			}
 		}

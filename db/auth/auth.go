@@ -1,4 +1,4 @@
-package db
+package auth
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"image/png"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
@@ -16,18 +18,18 @@ import (
 	"go.uber.org/zap"
 )
 
-// AuthService represents a PostgreSQL implementation of thunderdome.AuthDataSvc.
-type AuthService struct {
+// Service represents a PostgreSQL implementation of thunderdome.AuthDataSvc.
+type Service struct {
 	DB         *sql.DB
 	Logger     *otelzap.Logger
 	AESHashkey string
 }
 
 // AuthUser authenticate the user
-func (d *AuthService) AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*thunderdome.User, string, error) {
+func (d *Service) AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*thunderdome.User, string, error) {
 	var user thunderdome.User
 	var passHash string
-	sanitizedEmail := sanitizeEmail(UserEmail)
+	sanitizedEmail := db.SanitizeEmail(UserEmail)
 
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled FROM thunderdome.users WHERE LOWER(email) = $1`,
@@ -54,7 +56,7 @@ func (d *AuthService) AuthUser(ctx context.Context, UserEmail string, UserPasswo
 		}
 	}
 
-	if !comparePasswords(passHash, UserPassword) {
+	if !db.ComparePasswords(passHash, UserPassword) {
 		return nil, "", errors.New("INVALID_PASSWORD")
 	}
 
@@ -63,8 +65,8 @@ func (d *AuthService) AuthUser(ctx context.Context, UserEmail string, UserPasswo
 	}
 
 	// check to see if the bcrypt cost has been updated, if not do so
-	if checkPasswordCost(passHash) {
-		hashedPassword, hashErr := hashSaltPassword(UserPassword)
+	if db.CheckPasswordCost(passHash) {
+		hashedPassword, hashErr := db.HashSaltPassword(UserPassword)
 		if hashErr == nil {
 			_, updateErr := d.DB.Exec(`UPDATE thunderdome.users SET password = $2, last_active = NOW(), updated_date = NOW() WHERE id = $1;`, user.Id, hashedPassword)
 			if updateErr != nil {
@@ -82,7 +84,7 @@ func (d *AuthService) AuthUser(ctx context.Context, UserEmail string, UserPasswo
 }
 
 // UserResetRequest inserts a new user reset request
-func (d *AuthService) UserResetRequest(ctx context.Context, UserEmail string) (resetID string, UserName string, resetErr error) {
+func (d *Service) UserResetRequest(ctx context.Context, UserEmail string) (resetID string, UserName string, resetErr error) {
 	var ResetID sql.NullString
 	var UserID sql.NullString
 	var name sql.NullString
@@ -90,7 +92,7 @@ func (d *AuthService) UserResetRequest(ctx context.Context, UserEmail string) (r
 	e := d.DB.QueryRowContext(ctx, `
 		SELECT resetId, userId, userName FROM thunderdome.user_reset_create($1);
 		`,
-		sanitizeEmail(UserEmail),
+		db.SanitizeEmail(UserEmail),
 	).Scan(&ResetID, &UserID, &name)
 	if e != nil {
 		d.Logger.Ctx(ctx).Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))
@@ -101,11 +103,11 @@ func (d *AuthService) UserResetRequest(ctx context.Context, UserEmail string) (r
 }
 
 // UserResetPassword resets the user's password to a new password
-func (d *AuthService) UserResetPassword(ctx context.Context, ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error) {
+func (d *Service) UserResetPassword(ctx context.Context, ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error) {
 	var name sql.NullString
 	var email sql.NullString
 
-	hashedPassword, hashErr := hashSaltPassword(UserPassword)
+	hashedPassword, hashErr := db.HashSaltPassword(UserPassword)
 	if hashErr != nil {
 		return "", "", hashErr
 	}
@@ -134,7 +136,7 @@ func (d *AuthService) UserResetPassword(ctx context.Context, ResetID string, Use
 }
 
 // UserUpdatePassword updates a users password
-func (d *AuthService) UserUpdatePassword(ctx context.Context, UserID string, UserPassword string) (Name string, Email string, resetErr error) {
+func (d *Service) UserUpdatePassword(ctx context.Context, UserID string, UserPassword string) (Name string, Email string, resetErr error) {
 	var UserName sql.NullString
 	var UserEmail sql.NullString
 
@@ -151,7 +153,7 @@ func (d *AuthService) UserUpdatePassword(ctx context.Context, UserID string, Use
 		return "", "", UserErr
 	}
 
-	hashedPassword, hashErr := hashSaltPassword(UserPassword)
+	hashedPassword, hashErr := db.HashSaltPassword(UserPassword)
 	if hashErr != nil {
 		return "", "", hashErr
 	}
@@ -166,7 +168,7 @@ func (d *AuthService) UserUpdatePassword(ctx context.Context, UserID string, Use
 }
 
 // UserVerifyRequest inserts a new user verify request
-func (d *AuthService) UserVerifyRequest(ctx context.Context, UserId string) (*thunderdome.User, string, error) {
+func (d *Service) UserVerifyRequest(ctx context.Context, UserId string) (*thunderdome.User, string, error) {
 	var VerifyId string
 	user := &thunderdome.User{
 		Id: UserId,
@@ -198,7 +200,7 @@ func (d *AuthService) UserVerifyRequest(ctx context.Context, UserId string) (*th
 }
 
 // VerifyUserAccount updates a user account verified status
-func (d *AuthService) VerifyUserAccount(ctx context.Context, VerifyID string) error {
+func (d *Service) VerifyUserAccount(ctx context.Context, VerifyID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`CALL thunderdome.user_account_verify($1)`, VerifyID); err != nil {
 		return err
@@ -208,7 +210,7 @@ func (d *AuthService) VerifyUserAccount(ctx context.Context, VerifyID string) er
 }
 
 // MFASetupGenerate generates an MFA secret and QR code image base64
-func (d *AuthService) MFASetupGenerate(email string) (string, string, error) {
+func (d *Service) MFASetupGenerate(email string) (string, string, error) {
 	key, err := totp.Generate(totp.GenerateOpts{
 		Issuer:      "Thunderdome.dev",
 		AccountName: email,
@@ -233,7 +235,7 @@ func (d *AuthService) MFASetupGenerate(email string) (string, string, error) {
 
 // MFASetupValidate validates the MFA secret and authenticator token
 // if success enables the user mfa and stores the secret in db
-func (d *AuthService) MFASetupValidate(ctx context.Context, UserID string, secret string, passcode string) error {
+func (d *Service) MFASetupValidate(ctx context.Context, UserID string, secret string, passcode string) error {
 	if passcode == "" || secret == "" {
 		return errors.New("MISSING_SECRET_OR_PASSCODE")
 	}
@@ -243,7 +245,7 @@ func (d *AuthService) MFASetupValidate(ctx context.Context, UserID string, secre
 		return errors.New("INVALID_AUTHENTICATOR_TOKEN")
 	}
 
-	encryptedSecret, secretErr := encrypt(secret, d.AESHashkey)
+	encryptedSecret, secretErr := db.Encrypt(secret, d.AESHashkey)
 	if secretErr != nil {
 		return fmt.Errorf("error encrypting MFA secret: %w", secretErr)
 	}
@@ -257,7 +259,7 @@ func (d *AuthService) MFASetupValidate(ctx context.Context, UserID string, secre
 }
 
 // MFARemove removes MFA requirement from user
-func (d *AuthService) MFARemove(ctx context.Context, UserID string) error {
+func (d *Service) MFARemove(ctx context.Context, UserID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`CALL thunderdome.user_mfa_remove($1)`, UserID); err != nil {
 		return fmt.Errorf("error removing user MFA: %w", err)
@@ -267,7 +269,7 @@ func (d *AuthService) MFARemove(ctx context.Context, UserID string) error {
 }
 
 // MFATokenValidate validates the MFA secret and authenticator token for auth login
-func (d *AuthService) MFATokenValidate(ctx context.Context, SessionId string, passcode string) error {
+func (d *Service) MFATokenValidate(ctx context.Context, SessionId string, passcode string) error {
 	var encryptedSecret string
 
 	e := d.DB.QueryRowContext(ctx,
@@ -286,7 +288,7 @@ func (d *AuthService) MFATokenValidate(ctx context.Context, SessionId string, pa
 	if encryptedSecret == "" {
 		return errors.New("no secret to validate against")
 	}
-	decryptedSecret, secretErr := decrypt(encryptedSecret, d.AESHashkey)
+	decryptedSecret, secretErr := db.Decrypt(encryptedSecret, d.AESHashkey)
 	if secretErr != nil {
 		return errors.New("unable to decode MFA secret")
 	}

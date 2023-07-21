@@ -1,4 +1,4 @@
-package db
+package retro
 
 import (
 	"database/sql"
@@ -10,7 +10,7 @@ import (
 )
 
 // CreateRetroAction adds a new action to the retro
-func (d *RetroService) CreateRetroAction(RetroID string, UserID string, Content string) ([]*thunderdome.RetroAction, error) {
+func (d *Service) CreateRetroAction(RetroID string, UserID string, Content string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.retro_action (retro_id, content) VALUES ($1, $2);`, RetroID, Content,
 	); err != nil {
@@ -23,7 +23,7 @@ func (d *RetroService) CreateRetroAction(RetroID string, UserID string, Content 
 }
 
 // UpdateRetroAction updates an actions status
-func (d *RetroService) UpdateRetroAction(RetroID string, ActionID string, Content string, Completed bool) (Actions []*thunderdome.RetroAction, DeleteError error) {
+func (d *Service) UpdateRetroAction(RetroID string, ActionID string, Content string, Completed bool) (Actions []*thunderdome.RetroAction, DeleteError error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.retro_action SET completed = $2, content = $3, updated_date = NOW() WHERE id = $1;`, ActionID, Completed, Content); err != nil {
 		d.Logger.Error("update retro_action error", zap.Error(err))
@@ -35,7 +35,7 @@ func (d *RetroService) UpdateRetroAction(RetroID string, ActionID string, Conten
 }
 
 // DeleteRetroAction removes a goal from the current board by ID
-func (d *RetroService) DeleteRetroAction(RetroID string, userID string, ActionID string) ([]*thunderdome.RetroAction, error) {
+func (d *Service) DeleteRetroAction(RetroID string, userID string, ActionID string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_action WHERE id = $1;`, ActionID); err != nil {
 		d.Logger.Error("delete retro_action error", zap.Error(err))
@@ -47,7 +47,7 @@ func (d *RetroService) DeleteRetroAction(RetroID string, userID string, ActionID
 }
 
 // GetRetroActions retrieves retro actions from the DB
-func (d *RetroService) GetRetroActions(RetroID string) []*thunderdome.RetroAction {
+func (d *Service) GetRetroActions(RetroID string) []*thunderdome.RetroAction {
 	var actions = make([]*thunderdome.RetroAction, 0)
 
 	actionRows, actionsErr := d.DB.Query(
@@ -74,7 +74,7 @@ func (d *RetroService) GetRetroActions(RetroID string) []*thunderdome.RetroActio
 }
 
 // GetTeamRetroActions retrieves retro actions for the team
-func (d *RetroService) GetTeamRetroActions(TeamID string, Limit int, Offset int, Completed bool) ([]*thunderdome.RetroAction, int, error) {
+func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Completed bool) ([]*thunderdome.RetroAction, int, error) {
 	var actions = make([]*thunderdome.RetroAction, 0)
 
 	var Count int
@@ -134,7 +134,7 @@ func (d *RetroService) GetTeamRetroActions(TeamID string, Limit int, Offset int,
 }
 
 // RetroActionCommentAdd adds a comment to a retro action
-func (d *RetroService) RetroActionCommentAdd(RetroID string, ActionID string, UserID string, Comment string) ([]*thunderdome.RetroAction, error) {
+func (d *Service) RetroActionCommentAdd(RetroID string, ActionID string, UserID string, Comment string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.retro_action_comment (action_id, user_id, comment) VALUES ($1, $2, $3);`,
 		ActionID,
@@ -150,7 +150,7 @@ func (d *RetroService) RetroActionCommentAdd(RetroID string, ActionID string, Us
 }
 
 // RetroActionCommentEdit edits a retro action comment
-func (d *RetroService) RetroActionCommentEdit(RetroID string, ActionID string, CommentID string, Comment string) ([]*thunderdome.RetroAction, error) {
+func (d *Service) RetroActionCommentEdit(RetroID string, ActionID string, CommentID string, Comment string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.retro_action_comment SET comment = $2 WHERE id = $1;`,
 		CommentID,
@@ -165,7 +165,7 @@ func (d *RetroService) RetroActionCommentEdit(RetroID string, ActionID string, C
 }
 
 // RetroActionCommentDelete deletes a retro action comment
-func (d *RetroService) RetroActionCommentDelete(RetroID string, ActionID string, CommentID string) ([]*thunderdome.RetroAction, error) {
+func (d *Service) RetroActionCommentDelete(RetroID string, ActionID string, CommentID string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_action_comment WHERE id = $1;`,
 		CommentID,
@@ -179,7 +179,7 @@ func (d *RetroService) RetroActionCommentDelete(RetroID string, ActionID string,
 }
 
 // RetroActionAssigneeAdd adds an assignee to a retro action
-func (d *RetroService) RetroActionAssigneeAdd(RetroID string, ActionID string, UserID string) ([]*thunderdome.RetroAction, error) {
+func (d *Service) RetroActionAssigneeAdd(RetroID string, ActionID string, UserID string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.retro_action_assignee (action_id, user_id) VALUES ($1, $2);`,
 		ActionID,
@@ -194,7 +194,7 @@ func (d *RetroService) RetroActionAssigneeAdd(RetroID string, ActionID string, U
 }
 
 // RetroActionAssigneeDelete deletes a retro action assignee
-func (d *RetroService) RetroActionAssigneeDelete(RetroID string, ActionID string, UserID string) ([]*thunderdome.RetroAction, error) {
+func (d *Service) RetroActionAssigneeDelete(RetroID string, ActionID string, UserID string) ([]*thunderdome.RetroAction, error) {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_action_assignee WHERE action_id = $1 AND user_id = $2;`,
 		ActionID,

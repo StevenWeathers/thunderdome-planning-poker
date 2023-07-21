@@ -16,14 +16,15 @@
   "scripts": {
     "build": "rollup --config build/rollup.config.js",
     "autobuild": "rollup --config build/rollup.config.js -w",
-    "prettier": "prettier --check '{e2e,frontend}/**/*.{ts,json,svelte,css,html}'",
-    "prettier:fix": "prettier --write '{e2e,frontend}/**/*.{ts,json,svelte,css,html}'",
+    "prettier": "prettier --check '{e2e,ui}/**/*.{ts,json,svelte,css,html}'",
+    "prettier:fix": "prettier --write '{e2e,ui}/**/*.{ts,json,svelte,css,html}'",
     "format": "npm run prettier:fix",
-    "test": "jest frontend/src",
+    "test": "jest ui/src",
     "test:watch": "npm run test -- --watch",
     "test:snapshot": "npm test -- -u",
     "locales": "npx typesafe-i18n --no-watch",
-    "locales:watch": "typesafe-i18n"
+    "locales:watch": "typesafe-i18n",
+    "prepare": "husky install"
   },
   "dependencies": {
     "he": "^1.2.0",
@@ -94,7 +95,7 @@
     }
   },
   "lint-staged": {
-    "{e2e,frontend}/**/*.{ts, svelte, css, html}": [
+    "{e2e,ui}/**/*.{ts, svelte, css, html}": [
       "npm run prettier:fix",
       "git add"
     ]

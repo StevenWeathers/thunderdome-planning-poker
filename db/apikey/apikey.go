@@ -1,4 +1,4 @@
-package db
+package apikey
 
 import (
 	"context"
@@ -7,28 +7,30 @@ import (
 	"strings"
 	"time"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"go.uber.org/zap"
 )
 
-// APIKeyService represents a PostgreSQL implementation of thunderdome.APIKeyDataSvc.
-type APIKeyService struct {
+// Service represents a PostgreSQL implementation of thunderdome.APIKeyDataSvc.
+type Service struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
 }
 
 // GenerateApiKey generates a new API key for a User
-func (d *APIKeyService) GenerateApiKey(ctx context.Context, UserID string, KeyName string) (*thunderdome.APIKey, error) {
-	apiPrefix, prefixErr := randomString(8)
+func (d *Service) GenerateApiKey(ctx context.Context, UserID string, KeyName string) (*thunderdome.APIKey, error) {
+	apiPrefix, prefixErr := db.RandomString(8)
 	if prefixErr != nil {
 		err := errors.New("error generating api prefix")
 		d.Logger.Ctx(ctx).Error("error generating api prefix", zap.Error(prefixErr))
 		return nil, err
 	}
 
-	apiSecret, secretErr := randomString(32)
+	apiSecret, secretErr := db.RandomString(32)
 	if secretErr != nil {
 		err := errors.New("error generating api secret")
 		d.Logger.Ctx(ctx).Error("error generating api secret", zap.Error(prefixErr))
@@ -36,7 +38,7 @@ func (d *APIKeyService) GenerateApiKey(ctx context.Context, UserID string, KeyNa
 	}
 
 	key := apiPrefix + "." + apiSecret
-	hashedKey := hashString(key)
+	hashedKey := db.HashString(key)
 	keyID := apiPrefix + "." + hashedKey
 
 	APIKEY := &thunderdome.APIKey{
@@ -64,7 +66,7 @@ func (d *APIKeyService) GenerateApiKey(ctx context.Context, UserID string, KeyNa
 }
 
 // GetUserApiKeys gets a list of api keys for a user
-func (d *APIKeyService) GetUserApiKeys(ctx context.Context, UserID string) ([]*thunderdome.APIKey, error) {
+func (d *Service) GetUserApiKeys(ctx context.Context, UserID string) ([]*thunderdome.APIKey, error) {
 	var APIKeys = make([]*thunderdome.APIKey, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		"SELECT id, name, user_id, active, created_date, updated_date FROM thunderdome.api_key WHERE user_id = $1 ORDER BY created_date",
@@ -98,7 +100,7 @@ func (d *APIKeyService) GetUserApiKeys(ctx context.Context, UserID string) ([]*t
 }
 
 // UpdateUserApiKey updates a user api key (active column only)
-func (d *APIKeyService) UpdateUserApiKey(ctx context.Context, UserID string, KeyID string, Active bool) ([]*thunderdome.APIKey, error) {
+func (d *Service) UpdateUserApiKey(ctx context.Context, UserID string, KeyID string, Active bool) ([]*thunderdome.APIKey, error) {
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.api_key SET active = $3, updated_date = NOW() WHERE id = $1 AND user_id = $2;`,
 		KeyID, UserID, Active); err != nil {
@@ -116,7 +118,7 @@ func (d *APIKeyService) UpdateUserApiKey(ctx context.Context, UserID string, Key
 }
 
 // DeleteUserApiKey removes a users api key
-func (d *APIKeyService) DeleteUserApiKey(ctx context.Context, UserID string, KeyID string) ([]*thunderdome.APIKey, error) {
+func (d *Service) DeleteUserApiKey(ctx context.Context, UserID string, KeyID string) ([]*thunderdome.APIKey, error) {
 	if _, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.api_key WHERE id = $1 AND user_id = $2;`,
 		KeyID, UserID); err != nil {
@@ -134,11 +136,11 @@ func (d *APIKeyService) DeleteUserApiKey(ctx context.Context, UserID string, Key
 }
 
 // GetApiKeyUser checks to see if the API key exists and returns the User
-func (d *APIKeyService) GetApiKeyUser(ctx context.Context, APK string) (*thunderdome.User, error) {
+func (d *Service) GetApiKeyUser(ctx context.Context, APK string) (*thunderdome.User, error) {
 	User := &thunderdome.User{}
 
 	splitKey := strings.Split(APK, ".")
-	hashedKey := hashString(APK)
+	hashedKey := db.HashString(APK)
 	keyID := splitKey[0] + "." + hashedKey
 
 	e := d.DB.QueryRowContext(ctx, `
@@ -168,13 +170,13 @@ func (d *APIKeyService) GetApiKeyUser(ctx context.Context, APK string) (*thunder
 		return nil, errors.New("active API Key match not found")
 	}
 
-	User.GravatarHash = createGravatarHash(User.Email)
+	User.GravatarHash = db.CreateGravatarHash(User.Email)
 
 	return User, nil
 }
 
 // GetAPIKeys gets a list of api keys
-func (d *APIKeyService) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thunderdome.UserAPIKey {
+func (d *Service) GetAPIKeys(ctx context.Context, Limit int, Offset int) []*thunderdome.UserAPIKey {
 	var APIKeys = make([]*thunderdome.UserAPIKey, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT apk.id, apk.name, u.id, u.name, u.email, apk.active, apk.created_date, apk.updated_date

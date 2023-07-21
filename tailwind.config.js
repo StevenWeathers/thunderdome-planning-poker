@@ -1,6 +1,6 @@
 module.exports = {
   content: [
-    './frontend/src/**/*.{svelte,js}',
-    './frontend/public/index.html'
+    './ui/src/**/*.{svelte,js}',
+    './ui/public/index.html'
   ],
 }

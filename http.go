@@ -6,7 +6,16 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/db"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db/admin"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db/alert"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db/apikey"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db/auth"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db/poker"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db/retro"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db/storyboard"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db/team"
+	"github.com/StevenWeathers/thunderdome-planning-poker/db/user"
+
 	api "github.com/StevenWeathers/thunderdome-planning-poker/http"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/spf13/viper"
@@ -90,20 +99,20 @@ func (s *server) routes() {
 	}
 
 	// Create services.
-	userService := &db.UserService{DB: s.db.DB, Logger: s.logger}
-	apkService := &db.APIKeyService{DB: s.db.DB, Logger: s.logger}
-	s.AlertService = &db.AlertService{DB: s.db.DB, Logger: s.logger}
-	authService := &db.AuthService{DB: s.db.DB, Logger: s.logger, AESHashkey: s.db.Config.AESHashkey}
-	battleService := &db.PokerService{
+	userService := &user.Service{DB: s.db.DB, Logger: s.logger}
+	apkService := &apikey.Service{DB: s.db.DB, Logger: s.logger}
+	s.AlertService = &alert.Service{DB: s.db.DB, Logger: s.logger}
+	authService := &auth.Service{DB: s.db.DB, Logger: s.logger, AESHashkey: s.db.Config.AESHashkey}
+	battleService := &poker.Service{
 		DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey,
 		HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy,
 	}
-	checkinService := &db.CheckinService{DB: s.db.DB, Logger: s.logger, HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy}
-	retroService := &db.RetroService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
-	storyboardService := &db.StoryboardService{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
-	teamService := &db.TeamService{DB: s.db.DB, Logger: s.logger}
-	organizationService := &db.OrganizationService{DB: s.db.DB, Logger: s.logger}
-	adminService := &db.AdminService{DB: s.db.DB, Logger: s.logger}
+	checkinService := &team.CheckinService{DB: s.db.DB, Logger: s.logger, HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy}
+	retroService := &retro.Service{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
+	storyboardService := &storyboard.Service{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
+	teamService := &team.Service{DB: s.db.DB, Logger: s.logger}
+	organizationService := &team.OrganizationService{DB: s.db.DB, Logger: s.logger}
+	adminService := &admin.Service{DB: s.db.DB, Logger: s.logger}
 
 	a := api.Service{
 		Config:              httpConfig,

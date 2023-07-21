@@ -1,4 +1,4 @@
-package db
+package alert
 
 import (
 	"context"
@@ -11,14 +11,14 @@ import (
 	"go.uber.org/zap"
 )
 
-// AlertService represents a PostgreSQL implementation of thunderdome.AlertDataSvc.
-type AlertService struct {
+// Service represents a PostgreSQL implementation of thunderdome.AlertDataSvc.
+type Service struct {
 	DB     *sql.DB
 	Logger *otelzap.Logger
 }
 
 // GetActiveAlerts gets a list of active global alerts
-func (d *AlertService) GetActiveAlerts(ctx context.Context) []interface{} {
+func (d *Service) GetActiveAlerts(ctx context.Context) []interface{} {
 	Alerts := make([]interface{}, 0)
 
 	rows, err := d.DB.QueryContext(ctx,
@@ -50,7 +50,7 @@ func (d *AlertService) GetActiveAlerts(ctx context.Context) []interface{} {
 }
 
 // AlertsList gets a list of global alerts
-func (d *AlertService) AlertsList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Alert, int, error) {
+func (d *Service) AlertsList(ctx context.Context, Limit int, Offset int) ([]*thunderdome.Alert, int, error) {
 	Alerts := make([]*thunderdome.Alert, 0)
 	var AlertCount int
 
@@ -101,7 +101,7 @@ func (d *AlertService) AlertsList(ctx context.Context, Limit int, Offset int) ([
 }
 
 // AlertsCreate creates a global alert
-func (d *AlertService) AlertsCreate(ctx context.Context, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
+func (d *Service) AlertsCreate(ctx context.Context, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`INSERT INTO thunderdome.alert (name, type, content, active, allow_dismiss, registered_only)
 		VALUES ($1, $2, $3, $4, $5, $6);
@@ -121,7 +121,7 @@ func (d *AlertService) AlertsCreate(ctx context.Context, Name string, Type strin
 }
 
 // AlertsUpdate updates a global alert
-func (d *AlertService) AlertsUpdate(ctx context.Context, ID string, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
+func (d *Service) AlertsUpdate(ctx context.Context, ID string, Name string, Type string, Content string, Active bool, AllowDismiss bool, RegisteredOnly bool) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`
 		UPDATE thunderdome.alert
@@ -144,7 +144,7 @@ func (d *AlertService) AlertsUpdate(ctx context.Context, ID string, Name string,
 }
 
 // AlertDelete deletes a global alert
-func (d *AlertService) AlertDelete(ctx context.Context, AlertID string) error {
+func (d *Service) AlertDelete(ctx context.Context, AlertID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.alert WHERE id = $1;`,
 		AlertID,
