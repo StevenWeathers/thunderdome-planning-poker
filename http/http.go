@@ -6,11 +6,12 @@ import (
 	"io/fs"
 	"net/http"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/docs/swagger"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/checkin"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/poker"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/retro"
-	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
-	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -109,18 +110,18 @@ const (
 )
 
 // Init initializes the http handlers
-// @title Thunderdome API
-// @description Thunderdome Planning Poker API for both Internal and External use.
-// @description WARNING: Currently not considered stable and is subject to change until 1.0 is released.
-// @contact.name Steven Weathers
-// @contact.url https://github.com/StevenWeathers/thunderdome-planning-poker
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @version BETA
-// @query.collection.format multi
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name X-API-Key
+// @title                       Thunderdome API
+// @description                 Thunderdome Planning Poker API for both Internal and External use.
+// @description                 WARNING: Currently not considered stable and is subject to change until 1.0 is released.
+// @contact.name                Steven Weathers
+// @contact.url                 https://github.com/StevenWeathers/thunderdome-planning-poker
+// @license.name                Apache 2.0
+// @license.url                 http://www.apache.org/licenses/LICENSE-2.0.html
+// @version                     BETA
+// @query.collection.format     multi
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in                          header
+// @name                        X-API-Key
 func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	staticHandler := http.FileServer(HFS)
 
@@ -132,7 +133,7 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
 
-	swaggerdocs.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
+	swagger.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
 	// swagger docs for external API when enabled
 	if a.Config.ExternalAPIEnabled {
 		a.Router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))

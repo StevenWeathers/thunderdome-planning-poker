@@ -1,0 +1,5109 @@
+definitions:
+  http.actionCommentRequestBody:
+    properties:
+      comment:
+        type: string
+    required:
+    - comment
+    type: object
+  http.actionUpdateRequestBody:
+    properties:
+      completed:
+        example: false
+        type: boolean
+      content:
+        example: update documentation
+        type: string
+    required:
+    - content
+    type: object
+  http.alertRequestBody:
+    properties:
+      active:
+        type: boolean
+      allowDismiss:
+        type: boolean
+      content:
+        type: string
+      name:
+        type: string
+      registeredOnly:
+        type: boolean
+      type:
+        enum:
+        - ERROR
+        - ' INFO'
+        - ' NEW'
+        - ' SUCCESS'
+        - ' WARNING'
+        type: string
+    required:
+    - content
+    - name
+    - type
+    type: object
+  http.apikeyGenerateRequestBody:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  http.apikeyUpdateRequestBody:
+    properties:
+      active:
+        type: boolean
+    type: object
+  http.battleRequestBody:
+    properties:
+      autoFinishVoting:
+        type: boolean
+      battleLeaders:
+        items:
+          type: string
+        type: array
+      hideVoterIdentity:
+        type: boolean
+      joinCode:
+        type: string
+      leaderCode:
+        type: string
+      name:
+        type: string
+      plans:
+        items:
+          $ref: '#/definitions/thunderdome.Story'
+        type: array
+      pointAverageRounding:
+        enum:
+        - ceil
+        - round
+        - floor
+        type: string
+      pointValuesAllowed:
+        items:
+          type: string
+        type: array
+    required:
+    - name
+    - pointAverageRounding
+    - pointValuesAllowed
+    type: object
+  http.checkinCommentRequestBody:
+    properties:
+      comment:
+        type: string
+      userId:
+        type: string
+    required:
+    - comment
+    - userId
+    type: object
+  http.checkinCreateRequestBody:
+    properties:
+      blockers:
+        type: string
+      discuss:
+        type: string
+      goalsMet:
+        type: boolean
+      today:
+        type: string
+      userId:
+        type: string
+      yesterday:
+        type: string
+    required:
+    - userId
+    type: object
+  http.checkinUpdateRequestBody:
+    properties:
+      blockers:
+        type: string
+      discuss:
+        type: string
+      goalsMet:
+        type: boolean
+      today:
+        type: string
+      yesterday:
+        type: string
+    type: object
+  http.departmentResponse:
+    properties:
+      department:
+        $ref: '#/definitions/thunderdome.Department'
+      departmentRole:
+        type: string
+      organization:
+        $ref: '#/definitions/thunderdome.Organization'
+      organizationRole:
+        type: string
+    type: object
+  http.departmentTeamResponse:
+    properties:
+      department:
+        $ref: '#/definitions/thunderdome.Department'
+      departmentRole:
+        type: string
+      organization:
+        $ref: '#/definitions/thunderdome.Organization'
+      organizationRole:
+        type: string
+      team:
+        $ref: '#/definitions/thunderdome.Team'
+      teamRole:
+        type: string
+    type: object
+  http.forgotPasswordRequestBody:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  http.guestUserCreateRequestBody:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  http.loginResponse:
+    properties:
+      mfaRequired:
+        type: boolean
+      sessionId:
+        type: string
+      user:
+        $ref: '#/definitions/thunderdome.User'
+    type: object
+  http.mfaLoginRequestBody:
+    properties:
+      passcode:
+        type: string
+      sessionId:
+        type: string
+    required:
+    - passcode
+    - sessionId
+    type: object
+  http.mfaSetupValidateRequestBody:
+    properties:
+      passcode:
+        type: string
+      secret:
+        type: string
+    required:
+    - passcode
+    - secret
+    type: object
+  http.orgTeamResponse:
+    properties:
+      organization:
+        $ref: '#/definitions/thunderdome.Organization'
+      organizationRole:
+        type: string
+      team:
+        $ref: '#/definitions/thunderdome.Team'
+      teamRole:
+        type: string
+    type: object
+  http.organizationResponse:
+    properties:
+      organization:
+        $ref: '#/definitions/thunderdome.Organization'
+      role:
+        type: string
+    type: object
+  http.planRequestBody:
+    properties:
+      acceptanceCriteria:
+        type: string
+      description:
+        type: string
+      link:
+        type: string
+      planName:
+        type: string
+      referenceId:
+        type: string
+      type:
+        type: string
+    type: object
+  http.resetPasswordRequestBody:
+    properties:
+      password1:
+        maxLength: 72
+        minLength: 6
+        type: string
+      password2:
+        maxLength: 72
+        minLength: 6
+        type: string
+      resetId:
+        type: string
+    required:
+    - password1
+    - password2
+    - resetId
+    type: object
+  http.retroCreateRequestBody:
+    properties:
+      brainstormVisibility:
+        enum:
+        - visible
+        - concealed
+        - hidden
+        type: string
+      facilitatorCode:
+        example: likeaboss
+        type: string
+      format:
+        enum:
+        - worked_improve_question
+        example: worked_improve_question
+        type: string
+      joinCode:
+        example: iammadmax
+        type: string
+      maxVotes:
+        maximum: 9
+        minimum: 1
+        type: integer
+      retroName:
+        example: sprint 10 retro
+        type: string
+    required:
+    - brainstormVisibility
+    - format
+    - maxVotes
+    - retroName
+    type: object
+  http.standardJsonResponse:
+    properties:
+      data:
+        type: object
+      error:
+        type: string
+      meta:
+        type: object
+      success:
+        type: boolean
+    type: object
+  http.storyboardCreateRequestBody:
+    properties:
+      facilitatorCode:
+        type: string
+      joinCode:
+        type: string
+      storyboardName:
+        type: string
+    required:
+    - storyboardName
+    type: object
+  http.teamAddUserRequestBody:
+    properties:
+      email:
+        type: string
+      role:
+        enum:
+        - MEMBER
+        - ADMIN
+        type: string
+    required:
+    - email
+    - role
+    type: object
+  http.teamCreateRequestBody:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  http.teamResponse:
+    properties:
+      team:
+        $ref: '#/definitions/thunderdome.Team'
+      teamRole:
+        type: string
+    type: object
+  http.updatePasswordRequestBody:
+    properties:
+      password1:
+        maxLength: 72
+        minLength: 6
+        type: string
+      password2:
+        maxLength: 72
+        minLength: 6
+        type: string
+    required:
+    - password1
+    - password2
+    type: object
+  http.userCreateRequestBody:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password1:
+        maxLength: 72
+        minLength: 6
+        type: string
+      password2:
+        maxLength: 72
+        minLength: 6
+        type: string
+    required:
+    - email
+    - name
+    - password1
+    - password2
+    type: object
+  http.userLoginRequestBody:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 72
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  http.userRegisterRequestBody:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password1:
+        maxLength: 72
+        minLength: 6
+        type: string
+      password2:
+        maxLength: 72
+        minLength: 6
+        type: string
+    required:
+    - email
+    - name
+    - password1
+    - password2
+    type: object
+  http.userprofileUpdateRequestBody:
+    properties:
+      avatar:
+        maxLength: 128
+        type: string
+      company:
+        maxLength: 256
+        type: string
+      country:
+        type: string
+      email:
+        type: string
+      jobTitle:
+        maxLength: 128
+        type: string
+      locale:
+        type: string
+      name:
+        maxLength: 64
+        type: string
+      notificationsEnabled:
+        type: boolean
+    required:
+    - name
+    type: object
+  http.verificationRequestBody:
+    properties:
+      verifyId:
+        type: string
+    required:
+    - verifyId
+    type: object
+  thunderdome.APIKey:
+    properties:
+      active:
+        type: boolean
+      apiKey:
+        type: string
+      createdDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      prefix:
+        type: string
+      updatedDate:
+        type: string
+      userId:
+        type: string
+    type: object
+  thunderdome.Alert:
+    properties:
+      active:
+        type: boolean
+      allowDismiss:
+        type: boolean
+      content:
+        type: string
+      createdDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      registeredOnly:
+        type: boolean
+      type:
+        type: string
+      updatedDate:
+        type: string
+    type: object
+  thunderdome.ApplicationStats:
+    properties:
+      activeBattleCount:
+        type: integer
+      activeBattleUserCount:
+        type: integer
+      activeRetroCount:
+        type: integer
+      activeRetroUserCount:
+        type: integer
+      activeStoryboardCount:
+        type: integer
+      activeStoryboardUserCount:
+        type: integer
+      apikeyCount:
+        type: integer
+      battleCount:
+        type: integer
+      departmentCount:
+        type: integer
+      organizationCount:
+        type: integer
+      planCount:
+        type: integer
+      registeredUserCount:
+        type: integer
+      retroActionCount:
+        type: integer
+      retroCount:
+        type: integer
+      retroItemCount:
+        type: integer
+      storyboardColumnCount:
+        type: integer
+      storyboardCount:
+        type: integer
+      storyboardGoalCount:
+        type: integer
+      storyboardPersonaCount:
+        type: integer
+      storyboardStoryCount:
+        type: integer
+      teamCheckinsCount:
+        type: integer
+      teamCount:
+        type: integer
+      unregisteredUserCount:
+        type: integer
+    type: object
+  thunderdome.CheckinComment:
+    properties:
+      checkin_id:
+        type: string
+      comment:
+        type: string
+      created_date:
+        type: string
+      id:
+        type: string
+      updated_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  thunderdome.Color:
+    properties:
+      color:
+        type: string
+      legend:
+        type: string
+    type: object
+  thunderdome.Department:
+    properties:
+      createdDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedDate:
+        type: string
+    type: object
+  thunderdome.DepartmentUser:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      gravatarHash:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+    type: object
+  thunderdome.Organization:
+    properties:
+      createdDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedDate:
+        type: string
+    type: object
+  thunderdome.Poker:
+    properties:
+      activePlanId:
+        type: string
+      autoFinishVoting:
+        type: boolean
+      createdDate:
+        type: string
+      hideVoterIdentity:
+        type: boolean
+      id:
+        type: string
+      joinCode:
+        type: string
+      leaderCode:
+        type: string
+      leaders:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      plans:
+        items:
+          $ref: '#/definitions/thunderdome.Story'
+        type: array
+      pointAverageRounding:
+        type: string
+      pointValuesAllowed:
+        items:
+          type: string
+        type: array
+      updatedDate:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/thunderdome.PokerUser'
+        type: array
+      votingLocked:
+        type: boolean
+    type: object
+  thunderdome.PokerUser:
+    properties:
+      abandoned:
+        type: boolean
+      active:
+        type: boolean
+      avatar:
+        type: string
+      gravatarHash:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      rank:
+        type: string
+      spectator:
+        type: boolean
+    type: object
+  thunderdome.Retro:
+    properties:
+      actionItems:
+        items:
+          $ref: '#/definitions/thunderdome.RetroAction'
+        type: array
+      brainstormVisibility:
+        type: string
+      createdDate:
+        type: string
+      facilitatorCode:
+        type: string
+      facilitators:
+        items:
+          type: string
+        type: array
+      format:
+        type: string
+      groups:
+        items:
+          $ref: '#/definitions/thunderdome.RetroGroup'
+        type: array
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/thunderdome.RetroItem'
+        type: array
+      joinCode:
+        type: string
+      maxVotes:
+        type: integer
+      name:
+        type: string
+      ownerId:
+        type: string
+      phase:
+        type: string
+      updatedDate:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/thunderdome.RetroUser'
+        type: array
+      votes:
+        items:
+          $ref: '#/definitions/thunderdome.RetroVote'
+        type: array
+    type: object
+  thunderdome.RetroAction:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/thunderdome.RetroActionComment'
+        type: array
+      completed:
+        type: boolean
+      content:
+        type: string
+      id:
+        type: string
+      retroId:
+        type: string
+    type: object
+  thunderdome.RetroActionComment:
+    properties:
+      comment:
+        type: string
+      created_date:
+        type: string
+      id:
+        type: string
+      retro_id:
+        type: string
+      updated_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  thunderdome.RetroGroup:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  thunderdome.RetroItem:
+    properties:
+      content:
+        type: string
+      groupId:
+        type: string
+      id:
+        type: string
+      type:
+        type: string
+      userId:
+        type: string
+    type: object
+  thunderdome.RetroUser:
+    properties:
+      active:
+        type: boolean
+      avatar:
+        type: string
+      gravatarHash:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  thunderdome.RetroVote:
+    properties:
+      groupId:
+        type: string
+      userId:
+        type: string
+    type: object
+  thunderdome.Story:
+    properties:
+      acceptanceCriteria:
+        type: string
+      active:
+        type: boolean
+      description:
+        type: string
+      id:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+      points:
+        type: string
+      priority:
+        type: integer
+      referenceId:
+        type: string
+      skipped:
+        type: boolean
+      type:
+        type: string
+      voteEndTime:
+        type: string
+      voteStartTime:
+        type: string
+      votes:
+        items:
+          $ref: '#/definitions/thunderdome.Vote'
+        type: array
+    type: object
+  thunderdome.StoryComment:
+    properties:
+      comment:
+        type: string
+      created_date:
+        type: string
+      id:
+        type: string
+      story_id:
+        type: string
+      updated_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  thunderdome.Storyboard:
+    properties:
+      color_legend:
+        items:
+          $ref: '#/definitions/thunderdome.Color'
+        type: array
+      createdDate:
+        type: string
+      facilitatorCode:
+        type: string
+      facilitators:
+        items:
+          type: string
+        type: array
+      goals:
+        items:
+          $ref: '#/definitions/thunderdome.StoryboardGoal'
+        type: array
+      id:
+        type: string
+      joinCode:
+        type: string
+      name:
+        type: string
+      owner_id:
+        type: string
+      personas:
+        items:
+          $ref: '#/definitions/thunderdome.StoryboardPersona'
+        type: array
+      updatedDate:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/thunderdome.StoryboardUser'
+        type: array
+    type: object
+  thunderdome.StoryboardColumn:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      personas:
+        items:
+          $ref: '#/definitions/thunderdome.StoryboardPersona'
+        type: array
+      sort_order:
+        type: integer
+      stories:
+        items:
+          $ref: '#/definitions/thunderdome.StoryboardStory'
+        type: array
+    type: object
+  thunderdome.StoryboardGoal:
+    properties:
+      columns:
+        items:
+          $ref: '#/definitions/thunderdome.StoryboardColumn'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      personas:
+        items:
+          $ref: '#/definitions/thunderdome.StoryboardPersona'
+        type: array
+      sort_order:
+        type: integer
+    type: object
+  thunderdome.StoryboardPersona:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+    type: object
+  thunderdome.StoryboardStory:
+    properties:
+      annotations:
+        items:
+          type: string
+        type: array
+      closed:
+        type: boolean
+      color:
+        type: string
+      comments:
+        items:
+          $ref: '#/definitions/thunderdome.StoryComment'
+        type: array
+      content:
+        type: string
+      id:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+      points:
+        type: integer
+      sort_order:
+        type: integer
+    type: object
+  thunderdome.StoryboardUser:
+    properties:
+      abandoned:
+        type: boolean
+      active:
+        type: boolean
+      avatar:
+        type: string
+      gravatarHash:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  thunderdome.Team:
+    properties:
+      createdDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedDate:
+        type: string
+    type: object
+  thunderdome.TeamCheckin:
+    properties:
+      blockers:
+        type: string
+      comments:
+        items:
+          $ref: '#/definitions/thunderdome.CheckinComment'
+        type: array
+      createdDate:
+        type: string
+      discuss:
+        type: string
+      goalsMet:
+        type: boolean
+      id:
+        type: string
+      today:
+        type: string
+      updatedDate:
+        type: string
+      user:
+        $ref: '#/definitions/thunderdome.TeamUser'
+      yesterday:
+        type: string
+    type: object
+  thunderdome.TeamUser:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      gravatarHash:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+    type: object
+  thunderdome.User:
+    properties:
+      avatar:
+        type: string
+      company:
+        type: string
+      country:
+        type: string
+      createdDate:
+        type: string
+      disabled:
+        type: boolean
+      email:
+        type: string
+      gravatarHash:
+        type: string
+      id:
+        type: string
+      jobTitle:
+        type: string
+      lastActive:
+        type: string
+      locale:
+        type: string
+      mfaEnabled:
+        type: boolean
+      name:
+        type: string
+      notificationsEnabled:
+        type: boolean
+      rank:
+        type: string
+      updatedDate:
+        type: string
+      verified:
+        type: boolean
+    type: object
+  thunderdome.UserAPIKey:
+    properties:
+      active:
+        type: boolean
+      apiKey:
+        type: string
+      createdDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      prefix:
+        type: string
+      updatedDate:
+        type: string
+      userEmail:
+        type: string
+      userId:
+        type: string
+      userName:
+        type: string
+    type: object
+  thunderdome.Vote:
+    properties:
+      vote:
+        type: string
+      warriorId:
+        type: string
+    type: object
+info:
+  contact:
+    name: Steven Weathers
+    url: https://github.com/StevenWeathers/thunderdome-planning-poker
+  description: |-
+    Thunderdome Planning Poker API for both Internal and External use.
+    WARNING: Currently not considered stable and is subject to change until 1.0 is released.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Thunderdome API
+  version: BETA
+paths:
+  /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/battles:
+    post:
+      description: Create a poker game associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new poker game object
+        in: body
+        name: battle
+        schema:
+          $ref: '#/definitions/http.battleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Poker'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Poker Game
+      tags:
+      - poker
+  /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros:
+    post:
+      description: Create a retro associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new retro object
+        in: body
+        name: retro
+        schema:
+          $ref: '#/definitions/http.retroCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Retro'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Retro
+      tags:
+      - retro
+  /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards:
+    post:
+      description: Create a storyboard associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new storyboard object
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Storyboard'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Storyboard
+      tags:
+      - storyboard
+  /{orgId}/teams/{teamId}/users/{userId}/battles:
+    post:
+      description: Create a poker game associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new poker game object
+        in: body
+        name: battle
+        schema:
+          $ref: '#/definitions/http.battleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Poker'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Poker Game
+      tags:
+      - poker
+  /{orgId}/teams/{teamId}/users/{userId}/retros:
+    post:
+      description: Create a retro associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new retro object
+        in: body
+        name: retro
+        schema:
+          $ref: '#/definitions/http.retroCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Retro'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Retro
+      tags:
+      - retro
+  /{orgId}/teams/{teamId}/users/{userId}/storyboards:
+    post:
+      description: Create a storyboard associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new storyboard object
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Storyboard'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Storyboard
+      tags:
+      - storyboard
+  /active-countries:
+    get:
+      description: Gets a list of users countries
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Get Active Countries
+  /admin/apikeys:
+    get:
+      description: Get a list of users API Keys
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.UserAPIKey'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get API Keys
+      tags:
+      - admin
+  /admin/organizations:
+    get:
+      description: Get a list of organizations
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Organization'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organizations
+      tags:
+      - admin
+  /admin/search/users/email:
+    get:
+      description: Get list of registered users filtered by Email likeness
+      parameters:
+      - description: The user Email to search for
+        in: query
+        name: search
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.User'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Search Registered Users by Email
+      tags:
+      - admin
+  /admin/stats:
+    get:
+      description: Get application stats such as count of registered users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.ApplicationStats'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Application Stats
+      tags:
+      - admin
+  /admin/teams:
+    get:
+      description: Get a list of teams
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Team'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Teams
+      tags:
+      - admin
+  /admin/users:
+    get:
+      description: Get list of registered users
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.User'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Registered Users
+      tags:
+      - admin
+    post:
+      description: Create a registered user
+      parameters:
+      - description: new user object
+        in: body
+        name: newUser
+        required: true
+        schema:
+          $ref: '#/definitions/http.userCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Registered User
+      tags:
+      - admin
+  /admin/users/{userId}/demote:
+    patch:
+      description: Demotes a user from admin to registered
+      parameters:
+      - description: the user ID to demote
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Demote User
+      tags:
+      - admin
+  /admin/users/{userId}/disable:
+    patch:
+      description: Disable a user from logging in
+      parameters:
+      - description: the user ID to disable
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Disable User
+      tags:
+      - admin
+  /admin/users/{userId}/enable:
+    patch:
+      description: Enable a user to allow login
+      parameters:
+      - description: the user ID to enable
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Enable User
+      tags:
+      - admin
+  /admin/users/{userId}/password:
+    patch:
+      description: Updates the user's password
+      parameters:
+      - description: the user ID to update password for
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: update password object
+        in: body
+        name: passwords
+        schema:
+          $ref: '#/definitions/http.updatePasswordRequestBody'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Password
+      tags:
+      - admin
+  /admin/users/{userId}/promote/:
+    patch:
+      description: |-
+        Promotes a user to admin
+        Grants read and write access to administrative information
+      parameters:
+      - description: the user ID to promote
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Promotes User
+      tags:
+      - admin
+  /alerts:
+    get:
+      description: get list of alerts (global notices)
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Alert'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Alerts
+      tags:
+      - alert
+    post:
+      description: Creates an alert (global notice)
+      parameters:
+      - description: new alert object
+        in: body
+        name: alert
+        required: true
+        schema:
+          $ref: '#/definitions/http.alertRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns active alerts
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Alert'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Alert
+      tags:
+      - alert
+  /alerts/{alertId}:
+    delete:
+      description: Deletes an Alert
+      parameters:
+      - description: the alert ID to delete
+        in: path
+        name: alertId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns active alerts
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Alert'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Alert
+      tags:
+      - alert
+    put:
+      description: Updates an Alert
+      parameters:
+      - description: the alert ID to update
+        in: path
+        name: alertId
+        required: true
+        type: string
+      - description: alert object to update
+        in: body
+        name: alert
+        required: true
+        schema:
+          $ref: '#/definitions/http.alertRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns active alerts
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Alert'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Alert
+      tags:
+      - alert
+  /auth:
+    get:
+      description: |-
+        attempts to log the user in with provided credentials
+        *Endpoint only available when Header auth is enabled
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.loginResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Login Header
+      tags:
+      - auth
+    post:
+      description: |-
+        attempts to log the user in with provided credentials
+        *Endpoint only available when LDAP and header auth are not enabled
+      parameters:
+      - description: user login object
+        in: body
+        name: credentials
+        schema:
+          $ref: '#/definitions/http.userLoginRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.loginResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Login
+      tags:
+      - auth
+  /auth/forgot-password:
+    post:
+      description: Sends a forgot password reset Email to user
+      parameters:
+      - description: forgot password object
+        in: body
+        name: user
+        schema:
+          $ref: '#/definitions/http.forgotPasswordRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Forgot Password
+      tags:
+      - auth
+  /auth/guest:
+    post:
+      description: Registers a user as a guest (non-authenticated)
+      parameters:
+      - description: guest user object
+        in: body
+        name: user
+        schema:
+          $ref: '#/definitions/http.guestUserCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Create Guest User
+      tags:
+      - auth
+  /auth/ldap:
+    post:
+      description: |-
+        attempts to log the user in with provided credentials
+        *Endpoint only available when LDAP is enabled
+      parameters:
+      - description: user login object
+        in: body
+        name: credentials
+        schema:
+          $ref: '#/definitions/http.userLoginRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.loginResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Login LDAP
+      tags:
+      - auth
+  /auth/logout:
+    delete:
+      description: Logs the user out by deleting session cookies
+      responses:
+        "200":
+          description: ""
+      summary: Logout
+      tags:
+      - auth
+  /auth/mfa:
+    delete:
+      description: Removes MFA requirement from user auth
+      responses:
+        "200":
+          description: ""
+      summary: Remove MFA
+      tags:
+      - auth
+    post:
+      description: attempts to log the user in with provided MFA token
+      parameters:
+      - description: mfa login object
+        in: body
+        name: credentials
+        schema:
+          $ref: '#/definitions/http.mfaLoginRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: MFA Login
+      tags:
+      - auth
+  /auth/mfa/setup/generate:
+    post:
+      description: Generates MFA secret and QR Code
+      responses:
+        "200":
+          description: ""
+      summary: MFA Setup Generate secret and QR code
+      tags:
+      - auth
+  /auth/mfa/setup/validate:
+    post:
+      description: Validates the passcode for the MFA secret
+      parameters:
+      - description: verify object
+        in: body
+        name: verify
+        schema:
+          $ref: '#/definitions/http.mfaSetupValidateRequestBody'
+      responses:
+        "200":
+          description: ""
+      summary: Validate MFA Setup passcode
+      tags:
+      - auth
+  /auth/register:
+    post:
+      description: Registers a user (authenticated)
+      parameters:
+      - description: new user object
+        in: body
+        name: user
+        schema:
+          $ref: '#/definitions/http.userRegisterRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Create User
+      tags:
+      - auth
+  /auth/reset-password:
+    patch:
+      description: Resets the user's password
+      parameters:
+      - description: reset password object
+        in: body
+        name: reset
+        schema:
+          $ref: '#/definitions/http.resetPasswordRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Reset Password
+      tags:
+      - auth
+  /auth/update-password:
+    patch:
+      description: Updates the user's password
+      parameters:
+      - description: update password object
+        in: body
+        name: passwords
+        schema:
+          $ref: '#/definitions/http.updatePasswordRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Password
+      tags:
+      - auth
+  /auth/user:
+    get:
+      description: Gets a users profile by session user ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.User'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Session User Profile
+      tags:
+      - auth
+      - user
+  /auth/verify:
+    patch:
+      description: Updates the users verified Email status
+      parameters:
+      - description: verify object
+        in: body
+        name: verify
+        schema:
+          $ref: '#/definitions/http.verificationRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Verify User
+      tags:
+      - auth
+  /battles:
+    get:
+      description: get list of poker games
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      - description: Only active poker games
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Poker'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Poker Games
+      tags:
+      - poker
+  /battles/{battleId}:
+    delete:
+      description: Deletes a poker game
+      parameters:
+      - description: the poker game ID
+        in: path
+        name: battleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Poker Game
+      tags:
+      - poker
+    get:
+      description: get poker game by ID
+      parameters:
+      - description: the poker game ID to get
+        in: path
+        name: battleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Poker'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Poker Game
+      tags:
+      - poker
+  /battles/{battleId}/plans:
+    post:
+      description: Creates a poker story
+      parameters:
+      - description: the poker game ID
+        in: path
+        name: battleId
+        required: true
+        type: string
+      - description: new story object
+        in: body
+        name: plan
+        required: true
+        schema:
+          $ref: '#/definitions/http.planRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Poker Story
+      tags:
+      - poker
+  /maintenance/clean-battles:
+    delete:
+      description: Deletes battles older than {config.cleanup_battles_days_old} based
+        on last activity date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Clean Old Battles
+      tags:
+      - maintenance
+  /maintenance/clean-guests:
+    delete:
+      description: Deletes guest users older than {config.cleanup_guests_days_old}
+        based on last activity date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Clean Old Guests
+      tags:
+      - maintenance
+  /maintenance/clean-retros:
+    delete:
+      description: Deletes retros older than {config.cleanup_retros_days_old} based
+        on last activity date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Clean Old Retros
+      tags:
+      - maintenance
+  /maintenance/clean-storyboards:
+    delete:
+      description: Deletes storyboards older than {config.cleanup_storyboards_days_old}
+        based on last activity date
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Clean Old Storyboards
+      tags:
+      - maintenance
+  /maintenance/lowercase-emails:
+    patch:
+      description: Lowercases any user emails that have uppercase letters to prevent
+        duplicate Email registration
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Lowercase User Emails
+      tags:
+      - maintenance
+  /organizations/{orgId}:
+    delete:
+      description: Delete an Organization
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Organization
+      tags:
+      - organization
+    get:
+      description: Get an organization with user role
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.organizationResponse'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization
+      tags:
+      - organization
+  /organizations/{orgId}/departments:
+    get:
+      description: get list of organizations departments
+      parameters:
+      - description: the organization ID to get departments for
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Department'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Departments
+      tags:
+      - organization
+    post:
+      description: Create an organization department
+      parameters:
+      - description: the organization ID to create department for
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new department object
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Department'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Department
+      tags:
+      - organization
+  /organizations/{orgId}/departments/{departmentId}:
+    delete:
+      description: Delete a Department
+      parameters:
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Department
+      tags:
+      - organization
+    get:
+      description: Gets an organization department with users role
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID to get
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.departmentResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Department
+      tags:
+      - organization
+  /organizations/{orgId}/departments/{departmentId}/teams:
+    get:
+      description: Gets a list of organization department teams
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID to get teams for
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Team'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Department Teams
+      tags:
+      - organization
+    post:
+      description: Create a department team
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: new team object
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Team'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Department Team
+      tags:
+      - organization
+  /organizations/{orgId}/departments/{departmentId}/teams/{teamId}:
+    get:
+      description: Get a department team with users role
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.departmentTeamResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Department Team
+      tags:
+      - organization
+  /organizations/{orgId}/departments/{departmentId}/teams/{teamId}/users:
+    post:
+      description: Add a User to Department Team
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new team user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamAddUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Add Department Team User
+      tags:
+      - organization
+  /organizations/{orgId}/departments/{departmentId}/users:
+    get:
+      description: Get a list of organization department users
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.DepartmentUser'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Department Users
+      tags:
+      - organization
+    post:
+      description: Add a department User
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: new department user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamAddUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Add Department User
+      tags:
+      - organization
+  /organizations/{orgId}/departments/{departmentId}/users/{userId}:
+    delete:
+      description: Remove a department User
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove Department User
+      tags:
+      - organization
+  /organizations/{orgId}/teams:
+    get:
+      description: Get a list of organization teams
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Team'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Teams
+      tags:
+      - organization
+    post:
+      description: Create organization team with current user as admin
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new team object
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Team'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization Team
+      tags:
+      - organization
+  /organizations/{orgId}/teams/{teamId}:
+    get:
+      description: Get an organizations team with users roles
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: team id
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.orgTeamResponse'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Team
+      tags:
+      - organization
+  /organizations/{orgId}/teams/{teamId}/users:
+    post:
+      description: Add user to organization team as long as they are already in the
+        organization
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: team id
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new team user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamAddUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Add Org Team User
+      tags:
+      - organization
+  /organizations/{orgId}/users:
+    get:
+      description: get a list of organization users
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.User'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Organization Users
+      tags:
+      - organization
+    post:
+      description: Add user to organization
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: new organization user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamAddUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Add Org User
+      tags:
+      - organization
+  /organizations/{orgId}/users/{userId}:
+    delete:
+      description: Remove user from organization including departments and teams
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: user id
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove Org User
+      tags:
+      - organization
+  /retros:
+    get:
+      description: get list of retros
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      - description: Only active retros
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Retro'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retros
+      tags:
+      - retro
+  /retros/{retroId}:
+    delete:
+      description: Delete a retro
+      parameters:
+      - description: the retro ID
+        in: path
+        name: retroId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retro Delete
+      tags:
+      - retro
+    get:
+      description: get retro by ID
+      parameters:
+      - description: the retro ID to get
+        in: path
+        name: retroId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Retro'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retro
+      tags:
+      - retro
+  /retros/{retroId}/actions/{actionId}:
+    delete:
+      description: Delete a retro action item
+      parameters:
+      - description: the retro ID
+        in: path
+        name: retroId
+        required: true
+        type: string
+      - description: the action ID
+        in: path
+        name: actionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retro Action Item Delete
+      tags:
+      - retro
+    put:
+      description: Update a retro action item
+      parameters:
+      - description: the retro ID
+        in: path
+        name: retroId
+        required: true
+        type: string
+      - description: the action ID
+        in: path
+        name: actionId
+        required: true
+        type: string
+      - description: updated action item
+        in: body
+        name: actionItem
+        required: true
+        schema:
+          $ref: '#/definitions/http.actionUpdateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retro Action Item Update
+      tags:
+      - retro
+  /retros/{retroId}/actions/{actionId}/comments:
+    post:
+      description: Add a comment to a retro action item
+      parameters:
+      - description: the retro ID
+        in: path
+        name: retroId
+        required: true
+        type: string
+      - description: the action ID
+        in: path
+        name: actionId
+        required: true
+        type: string
+      - description: action comment
+        in: body
+        name: actionItem
+        required: true
+        schema:
+          $ref: '#/definitions/http.actionCommentRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retro Action Item Comment
+      tags:
+      - retro
+  /retros/{retroId}/actions/{actionId}/comments/{commentId}:
+    post:
+      description: Delete a comment from a retro action item
+      parameters:
+      - description: the retro ID
+        in: path
+        name: retroId
+        required: true
+        type: string
+      - description: the action ID
+        in: path
+        name: actionId
+        required: true
+        type: string
+      - description: the comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retro Action Item Comment Delete
+      tags:
+      - retro
+    put:
+      description: Edit a retro action item comment
+      parameters:
+      - description: the retro ID
+        in: path
+        name: retroId
+        required: true
+        type: string
+      - description: the action ID
+        in: path
+        name: actionId
+        required: true
+        type: string
+      - description: the comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      - description: action comment
+        in: body
+        name: actionItem
+        required: true
+        schema:
+          $ref: '#/definitions/http.actionCommentRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retro Action Item Comment Edit
+      tags:
+      - retro
+  /storyboards:
+    get:
+      description: get list of storyboards
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      - description: Only active storyboards
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Storyboard'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Storyboards
+      tags:
+      - storyboard
+  /storyboards/{storyboardId}:
+    delete:
+      description: Delete a storyboard
+      parameters:
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Storyboard Delete
+      tags:
+      - storyboard
+    get:
+      description: get storyboard by ID
+      parameters:
+      - description: the storyboard ID to get
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Storyboard'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Storyboard
+      tags:
+      - storyboard
+  /teams/{teamId}:
+    delete:
+      description: Delete a Team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team
+      tags:
+      - team
+    get:
+      description: Get a team with user role
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.teamResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team
+      tags:
+      - team
+  /teams/{teamId}/battles:
+    get:
+      description: Get a list of battles associated to the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Poker'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Battles
+      tags:
+      - team
+  /teams/{teamId}/battles/{battleId}:
+    delete:
+      description: Remove a battle from the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the battle ID
+        in: path
+        name: battleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove Team Poker
+      tags:
+      - team
+  /teams/{teamId}/checkins:
+    get:
+      description: Get a list of team checkins
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the date in YYYY-MM-DD format
+        in: query
+        name: date
+        type: string
+      - description: the timezone name e.g. America/New_York
+        in: query
+        name: tz
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.TeamCheckin'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Checkins
+      tags:
+      - team
+    post:
+      description: Creates a team user checkin
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new check in object
+        in: body
+        name: checkin
+        required: true
+        schema:
+          $ref: '#/definitions/http.checkinCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Checkin
+      tags:
+      - team
+  /teams/{teamId}/checkins/{checkinId}:
+    delete:
+      description: Deletes a team user checkin
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the checkin ID
+        in: path
+        name: checkinId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Checkin
+      tags:
+      - team
+    put:
+      description: Updates a team user checkin
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the checkin ID
+        in: path
+        name: checkinId
+        required: true
+        type: string
+      - description: updated check in object
+        in: body
+        name: checkin
+        required: true
+        schema:
+          $ref: '#/definitions/http.checkinUpdateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team Checkin
+      tags:
+      - team
+  /teams/{teamId}/checkins/{checkinId}/comments:
+    post:
+      description: Creates a team user checkin comment
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the checkin ID
+        in: path
+        name: checkinId
+        required: true
+        type: string
+      - description: comment object
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/http.checkinCommentRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team Checkin Comment
+      tags:
+      - team
+    put:
+      description: Edits a team user checkin comment
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the checkin ID
+        in: path
+        name: checkinId
+        required: true
+        type: string
+      - description: comment object
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/http.checkinCommentRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Edit Team Checkin Comment
+      tags:
+      - team
+  /teams/{teamId}/checkins/{checkinId}/comments/{commentId}:
+    delete:
+      description: Deletes a team user checkin comment
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the checkin ID
+        in: path
+        name: checkinId
+        required: true
+        type: string
+      - description: the comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Team Checkin Comment
+      tags:
+      - team
+  /teams/{teamId}/retro-actions:
+    get:
+      description: get list of retro actions
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      - description: Only completed retro actions
+        in: query
+        name: completed
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.RetroAction'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retro Actions
+      tags:
+      - team
+  /teams/{teamId}/retros:
+    get:
+      description: Get a list of retros associated to the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Retro'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Retros
+      tags:
+      - team
+  /teams/{teamId}/retros/{retroId}:
+    delete:
+      description: Remove a retro from the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the retro ID
+        in: path
+        name: retroId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove Team Retro
+      tags:
+      - team
+  /teams/{teamId}/storyboards:
+    get:
+      description: Get a list of storyboards associated to the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Storyboard'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team Storyboards
+      tags:
+      - team
+  /teams/{teamId}/storyboards/{storyboardId}:
+    delete:
+      description: Remove a storyboard from the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the storyboard ID
+        in: path
+        name: storyboardId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove Team Storyboard
+      tags:
+      - team
+  /teams/{teamId}/users:
+    get:
+      description: Get a list of users associated to the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.User'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team users
+      tags:
+      - team
+    post:
+      description: Adds a user to the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: new team user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamAddUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Add Team User
+      tags:
+      - team
+  /teams/{teamId}/users/{userId}:
+    delete:
+      description: Remove a user from the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove Team User
+      tags:
+      - team
+  /teams/{teamId}/users/{userId}/battles:
+    post:
+      description: Create a poker game associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new poker game object
+        in: body
+        name: battle
+        schema:
+          $ref: '#/definitions/http.battleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Poker'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Poker Game
+      tags:
+      - poker
+  /teams/{teamId}/users/{userId}/retros:
+    post:
+      description: Create a retro associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new retro object
+        in: body
+        name: retro
+        schema:
+          $ref: '#/definitions/http.retroCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Retro'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Retro
+      tags:
+      - retro
+  /teams/{teamId}/users/{userId}/storyboards:
+    post:
+      description: Create a storyboard associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new storyboard object
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Storyboard'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Storyboard
+      tags:
+      - storyboard
+  /users/{userId}:
+    delete:
+      description: Deletes a user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete User
+      tags:
+      - user
+    get:
+      description: Gets a users profile
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.User'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get User Profile
+      tags:
+      - user
+    put:
+      description: Update a users profile
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the user profile object to update
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.userprofileUpdateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.User'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update User Profile
+      tags:
+      - user
+  /users/{userId}/apikeys:
+    get:
+      description: get list of API keys for the user
+      parameters:
+      - description: the user ID to get API keys for
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.APIKey'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get API Keys
+      tags:
+      - apikey
+    post:
+      description: Generates an API key for the user
+      parameters:
+      - description: the user ID to generate API key for
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: new APIKey key object
+        in: body
+        name: key
+        required: true
+        schema:
+          $ref: '#/definitions/http.apikeyGenerateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.APIKey'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Generate API Key
+      tags:
+      - apikey
+  /users/{userId}/apikeys/{keyID}:
+    delete:
+      description: Deletes the API key
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        type: integer
+      - description: the API Key ID to update
+        in: path
+        name: keyID
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.APIKey'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete API Key
+      tags:
+      - apikey
+    put:
+      description: Updates the API key of the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the API Key ID to update
+        in: path
+        name: keyID
+        required: true
+        type: string
+      - description: APIKey key object to update
+        in: body
+        name: key
+        required: true
+        schema:
+          $ref: '#/definitions/http.apikeyUpdateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.APIKey'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update API Key
+      tags:
+      - apikey
+  /users/{userId}/battles:
+    get:
+      description: get list of poker games for the user
+      parameters:
+      - description: the user ID to get poker games for
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Poker'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get PokerGames
+      tags:
+      - poker
+    post:
+      description: Create a poker game associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new poker game object
+        in: body
+        name: battle
+        schema:
+          $ref: '#/definitions/http.battleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Poker'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Poker Game
+      tags:
+      - poker
+  /users/{userId}/organizations:
+    get:
+      description: Get list of organizations for the authenticated user
+      parameters:
+      - description: the user ID to get organizations for
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Organization'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Users Organizations
+      tags:
+      - organization
+    post:
+      description: Create organization with current user as admin
+      parameters:
+      - description: user id
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: new organization object
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Organization'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Organization
+      tags:
+      - organization
+  /users/{userId}/request-verify:
+    post:
+      description: Sends verification Email
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: Request Verification Email
+      tags:
+      - user
+  /users/{userId}/retros:
+    get:
+      description: get list of retros for the user
+      parameters:
+      - description: the user ID to get retros for
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Retro'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Retros by User
+      tags:
+      - retro
+    post:
+      description: Create a retro associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new retro object
+        in: body
+        name: retro
+        schema:
+          $ref: '#/definitions/http.retroCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Retro'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Retro
+      tags:
+      - retro
+  /users/{userId}/storyboards:
+    get:
+      description: get list of storyboards for the user
+      parameters:
+      - description: the user ID to get storyboards for
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Storyboard'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Storyboards
+      tags:
+      - storyboard
+    post:
+      description: Create a storyboard associated to the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the organization ID
+        in: path
+        name: orgId
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        type: string
+      - description: the team ID
+        in: path
+        name: teamId
+        type: string
+      - description: new storyboard object
+        in: body
+        name: storyboard
+        schema:
+          $ref: '#/definitions/http.storyboardCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Storyboard'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Storyboard
+      tags:
+      - storyboard
+  /users/{userId}/teams:
+    get:
+      description: Get a list of teams the user is a part of
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Team'
+                  type: array
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get User Teams
+      tags:
+      - team
+    post:
+      description: Creates a team with the current user as the team admin
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: new team object
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Team'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Team
+      tags:
+      - team
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: X-API-Key
+    type: apiKey
+swagger: "2.0"

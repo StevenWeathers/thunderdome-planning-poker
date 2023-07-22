@@ -1,18 +1,25 @@
 # Go parameters
 GOCMD=go
 NPMCMD=npm
-NPMBUILD=$(NPMCMD) run build
+GOMODS=$(GOCMD) mod download
+NPMMODS=cd ui && npm ci && cd ..
+NPMBUILD=$(NPMCMD) run build --prefix ui
+NPM_FORMAT=$(NPMCMD) run format --prefix ui
 GOBUILD=$(GOCMD) build
-SWAGGERGEN=swag init -g http/http.go -o swaggerdocs
-SWAGGERDOCS=swaggerdocs
+SWAGGERDOCS=docs/swagger
+SWAGGERGEN=swag init -g http/http.go -o $(SWAGGERDOCS)
+SWAGFORMAT=swag fmt
 GOFMT=gofmt
 GOIMPORTS=goimports
-NPM_FORMAT=npm run format
 BINARY_NAME=thunderdome-planning-poker
 BINARY_UNIX=$(BINARY_NAME)_unix
 BINARY_WINDOWS=thunderdome-planning-poker.exe
 
 all: build
+install:
+	$(GOMODS)
+	$(GOCMD) install github.com/swaggo/swag/cmd/swag@1.8.3
+	$(NPMMODS)
 build-deps: 
 	$(NPMBUILD)
 	$(SWAGGERGEN)
@@ -27,17 +34,21 @@ clean:
 	rm -f $(BINARY_NAME)
 	rm -f $(BINARY_UNIX)
 	rm -f $(BINARY_WINDOWS)
-	rm -rf dist
+	rm -rf ui/dist
 	rm -rf release
 	rm -rf $(SWAGGERDOCS)
 
 format:
 	$(GOFMT) -s -w .
 	$(GOIMPORTS) -w .
+	$(SWAGFMT)
 	$(NPM_FORMAT)
 
+generate:
+	$(SWAGGERGEN)
+
 testgo:
-	go test `go list ./... | grep -v swaggerdocs`
+	go test `go list ./... | grep -v $(SWAGGERDOCS)`
 # Cross compilation
 build-linux:
 	$(SWAGGERGEN)

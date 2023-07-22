@@ -23,16 +23,16 @@ type loginResponse struct {
 }
 
 // handleLogin attempts to log in the user
-// @Summary Login
-// @Description attempts to log the user in with provided credentials
-// @Description *Endpoint only available when LDAP and header auth are not enabled
-// @Tags auth
-// @Produce  json
-// @Param credentials body userLoginRequestBody false "user login object"
-// @Success 200 object standardJsonResponse{data=loginResponse}
-// @Failure 401 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Router /auth [post]
+// @Summary      Login
+// @Description  attempts to log the user in with provided credentials
+// @Description  *Endpoint only available when LDAP and header auth are not enabled
+// @Tags         auth
+// @Produce      json
+// @Param        credentials  body    userLoginRequestBody  false  "user login object"
+// @Success      200          object  standardJsonResponse{data=loginResponse}
+// @Failure      401          object  standardJsonResponse{}
+// @Failure      500          object  standardJsonResponse{}
+// @Router       /auth [post]
 func (s *Service) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
@@ -88,16 +88,16 @@ func (s *Service) handleLogin() http.HandlerFunc {
 
 // handleLdapLogin attempts to authenticate the user by looking up and authenticating
 // via ldap, and then creates the user if not existing and logs them in
-// @Summary Login LDAP
-// @Description attempts to log the user in with provided credentials
-// @Description *Endpoint only available when LDAP is enabled
-// @Tags auth
-// @Produce json
-// @Param credentials body userLoginRequestBody false "user login object"
-// @Success 200 object standardJsonResponse{data=loginResponse}
-// @Failure 401 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Router /auth/ldap [post]
+// @Summary      Login LDAP
+// @Description  attempts to log the user in with provided credentials
+// @Description  *Endpoint only available when LDAP is enabled
+// @Tags         auth
+// @Produce      json
+// @Param        credentials  body    userLoginRequestBody  false  "user login object"
+// @Success      200          object  standardJsonResponse{data=loginResponse}
+// @Failure      401          object  standardJsonResponse{}
+// @Failure      500          object  standardJsonResponse{}
+// @Router       /auth/ldap [post]
 func (s *Service) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
@@ -148,15 +148,15 @@ func (s *Service) handleLdapLogin() http.HandlerFunc {
 
 // handleHeaderLogin authenticates the user by looking at configurable headers
 // and then creates the user if one does not exist and logs them in
-// @Summary Login Header
-// @Description attempts to log the user in with provided credentials
-// @Description *Endpoint only available when Header auth is enabled
-// @Tags auth
-// @Produce json
-// @Success 200 object standardJsonResponse{data=loginResponse}
-// @Failure 401 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Router /auth [get]
+// @Summary      Login Header
+// @Description  attempts to log the user in with provided credentials
+// @Description  *Endpoint only available when Header auth is enabled
+// @Tags         auth
+// @Produce      json
+// @Success      200  object  standardJsonResponse{data=loginResponse}
+// @Failure      401  object  standardJsonResponse{}
+// @Failure      500  object  standardJsonResponse{}
+// @Router       /auth [get]
 func (s *Service) handleHeaderLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		viper.GetString("auth.ldap.url")
@@ -202,15 +202,15 @@ type mfaLoginRequestBody struct {
 }
 
 // handleMFALogin attempts to log in the user with MFA token
-// @Summary MFA Login
-// @Description attempts to log the user in with provided MFA token
-// @Tags auth
-// @Produce  json
-// @Param credentials body mfaLoginRequestBody false "mfa login object"
-// @Success 200 object standardJsonResponse{}
-// @Failure 401 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Router /auth/mfa [post]
+// @Summary      MFA Login
+// @Description  attempts to log the user in with provided MFA token
+// @Tags         auth
+// @Produce      json
+// @Param        credentials  body    mfaLoginRequestBody  false  "mfa login object"
+// @Success      200          object  standardJsonResponse{}
+// @Failure      401          object  standardJsonResponse{}
+// @Failure      500          object  standardJsonResponse{}
+// @Router       /auth/mfa [post]
 func (s *Service) handleMFALogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
@@ -249,11 +249,11 @@ func (s *Service) handleMFALogin() http.HandlerFunc {
 }
 
 // handleLogout clears the user Cookie(s) ending session
-// @Summary Logout
-// @Description Logs the user out by deleting session cookies
-// @Tags auth
-// @Success 200
-// @Router /auth/logout [delete]
+// @Summary      Logout
+// @Description  Logs the user out by deleting session cookies
+// @Tags         auth
+// @Success      200
+// @Router       /auth/logout [delete]
 func (s *Service) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		SessionId, cookieErr := s.validateSessionCookie(w, r)
@@ -278,15 +278,15 @@ type guestUserCreateRequestBody struct {
 }
 
 // handleCreateGuestUser registers a user as a guest user
-// @Summary Create Guest User
-// @Description Registers a user as a guest (non-authenticated)
-// @Tags auth
-// @Produce json
-// @Param user body guestUserCreateRequestBody false "guest user object"
-// @Success 200 object standardJsonResponse{data=thunderdome.User}
-// @Failure 400 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Router /auth/guest [post]
+// @Summary      Create Guest User
+// @Description  Registers a user as a guest (non-authenticated)
+// @Tags         auth
+// @Produce      json
+// @Param        user  body    guestUserCreateRequestBody  false  "guest user object"
+// @Success      200   object  standardJsonResponse{data=thunderdome.User}
+// @Failure      400   object  standardJsonResponse{}
+// @Failure      500   object  standardJsonResponse{}
+// @Router       /auth/guest [post]
 func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowGuests := viper.GetBool("config.allow_guests")
@@ -338,15 +338,15 @@ type userRegisterRequestBody struct {
 }
 
 // handleUserRegistration registers a new authenticated user
-// @Summary Create User
-// @Description Registers a user (authenticated)
-// @Tags auth
-// @Produce json
-// @Param user body userRegisterRequestBody false "new user object"
-// @Success 200 object standardJsonResponse{data=thunderdome.User}
-// @Failure 400 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Router /auth/register [post]
+// @Summary      Create User
+// @Description  Registers a user (authenticated)
+// @Tags         auth
+// @Produce      json
+// @Param        user  body    userRegisterRequestBody  false  "new user object"
+// @Success      200   object  standardJsonResponse{data=thunderdome.User}
+// @Failure      400   object  standardJsonResponse{}
+// @Failure      500   object  standardJsonResponse{}
+// @Router       /auth/register [post]
 func (s *Service) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		AllowRegistration := viper.GetBool("config.allow_registration")
@@ -420,13 +420,13 @@ type forgotPasswordRequestBody struct {
 }
 
 // handleForgotPassword attempts to send a password reset Email
-// @Summary Forgot Password
-// @Description Sends a forgot password reset Email to user
-// @Tags auth
-// @Produce json
-// @Param user body forgotPasswordRequestBody false "forgot password object"
-// @Success 200 object standardJsonResponse{}
-// @Router /auth/forgot-password [post]
+// @Summary      Forgot Password
+// @Description  Sends a forgot password reset Email to user
+// @Tags         auth
+// @Produce      json
+// @Param        user  body    forgotPasswordRequestBody  false  "forgot password object"
+// @Success      200   object  standardJsonResponse{}
+// @Router       /auth/forgot-password [post]
 func (s *Service) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
@@ -466,15 +466,15 @@ type resetPasswordRequestBody struct {
 }
 
 // handleResetPassword attempts to reset a user's password
-// @Summary Reset Password
-// @Description Resets the user's password
-// @Tags auth
-// @Produce json
-// @Param reset body resetPasswordRequestBody false "reset password object"
-// @Success 200 object standardJsonResponse{}
-// @Success 400 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Router /auth/reset-password [patch]
+// @Summary      Reset Password
+// @Description  Resets the user's password
+// @Tags         auth
+// @Produce      json
+// @Param        reset  body    resetPasswordRequestBody  false  "reset password object"
+// @Success      200    object  standardJsonResponse{}
+// @Success      400    object  standardJsonResponse{}
+// @Success      500    object  standardJsonResponse{}
+// @Router       /auth/reset-password [patch]
 func (s *Service) handleResetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
@@ -514,16 +514,16 @@ type updatePasswordRequestBody struct {
 }
 
 // handleUpdatePassword attempts to update a user's password
-// @Summary Update Password
-// @Description Updates the user's password
-// @Tags auth
-// @Produce json
-// @Param passwords body updatePasswordRequestBody false "update password object"
-// @Success 200 object standardJsonResponse{}
-// @Success 400 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /auth/update-password [patch]
+// @Summary      Update Password
+// @Description  Updates the user's password
+// @Tags         auth
+// @Produce      json
+// @Param        passwords  body    updatePasswordRequestBody  false  "update password object"
+// @Success      200        object  standardJsonResponse{}
+// @Success      400        object  standardJsonResponse{}
+// @Success      500        object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /auth/update-password [patch]
 func (s *Service) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserID := r.Context().Value(contextKeyUserID).(string)
@@ -563,14 +563,14 @@ type verificationRequestBody struct {
 }
 
 // handleAccountVerification attempts to verify a users account
-// @Summary Verify User
-// @Description Updates the users verified Email status
-// @Tags auth
-// @Produce json
-// @Param verify body verificationRequestBody false "verify object"
-// @Success 200 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Router /auth/verify [patch]
+// @Summary      Verify User
+// @Description  Updates the users verified Email status
+// @Tags         auth
+// @Produce      json
+// @Param        verify  body    verificationRequestBody  false  "verify object"
+// @Success      200     object  standardJsonResponse{}
+// @Success      500     object  standardJsonResponse{}
+// @Router       /auth/verify [patch]
 func (s *Service) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, bodyErr := io.ReadAll(r.Body)
@@ -603,11 +603,11 @@ func (s *Service) handleAccountVerification() http.HandlerFunc {
 }
 
 // handleMFASetupGenerate generates the MFA secret and QR code for setup
-// @Summary MFA Setup Generate secret and QR code
-// @Description Generates MFA secret and QR Code
-// @Tags auth
-// @Success 200
-// @Router /auth/mfa/setup/generate [post]
+// @Summary      MFA Setup Generate secret and QR code
+// @Description  Generates MFA secret and QR Code
+// @Tags         auth
+// @Success      200
+// @Router       /auth/mfa/setup/generate [post]
 func (s *Service) handleMFASetupGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -640,12 +640,12 @@ type mfaSetupValidateRequestBody struct {
 }
 
 // handleMFASetupValidate validates the passcode for MFA secret during setup
-// @Summary Validate MFA Setup passcode
-// @Description Validates the passcode for the MFA secret
-// @Param verify body mfaSetupValidateRequestBody false "verify object"
-// @Tags auth
-// @Success 200
-// @Router /auth/mfa/setup/validate [post]
+// @Summary      Validate MFA Setup passcode
+// @Description  Validates the passcode for the MFA secret
+// @Param        verify  body  mfaSetupValidateRequestBody  false  "verify object"
+// @Tags         auth
+// @Success      200
+// @Router       /auth/mfa/setup/validate [post]
 func (s *Service) handleMFASetupValidate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -685,11 +685,11 @@ func (s *Service) handleMFASetupValidate() http.HandlerFunc {
 }
 
 // handleMFARemove removes MFA requirement from user auth
-// @Summary Remove MFA
-// @Description Removes MFA requirement from user auth
-// @Tags auth
-// @Success 200
-// @Router /auth/mfa [delete]
+// @Summary      Remove MFA
+// @Description  Removes MFA requirement from user auth
+// @Tags         auth
+// @Success      200
+// @Router       /auth/mfa [delete]
 func (s *Service) handleMFARemove() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()

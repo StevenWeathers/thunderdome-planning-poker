@@ -9,16 +9,16 @@ import (
 )
 
 // handleUserAPIKeys handles getting user API keys
-// @Summary Get API Keys
-// @Description get list of API keys for the user
-// @Tags apikey
-// @Produce  json
-// @Param userId path string true "the user ID to get API keys for"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.APIKey}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/apikeys [get]
+// @Summary      Get API Keys
+// @Description  get list of API keys for the user
+// @Tags         apikey
+// @Produce      json
+// @Param        userId  path    string  true  "the user ID to get API keys for"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.APIKey}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/apikeys [get]
 func (s *Service) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -44,17 +44,17 @@ type apikeyGenerateRequestBody struct {
 }
 
 // handleAPIKeyGenerate handles generating an API key for a user
-// @Summary Generate API Key
-// @Description Generates an API key for the user
-// @Tags apikey
-// @Produce  json
-// @Param userId path string true "the user ID to generate API key for"
-// @Param key body apikeyGenerateRequestBody true "new APIKey key object"
-// @Success 200 object standardJsonResponse{data=thunderdome.APIKey}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/apikeys [post]
+// @Summary      Generate API Key
+// @Description  Generates an API key for the user
+// @Tags         apikey
+// @Produce      json
+// @Param        userId  path    string                     true  "the user ID to generate API key for"
+// @Param        key     body    apikeyGenerateRequestBody  true  "new APIKey key object"
+// @Success      200     object  standardJsonResponse{data=thunderdome.APIKey}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/apikeys [post]
 func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -111,18 +111,18 @@ type apikeyUpdateRequestBody struct {
 }
 
 // handleUserAPIKeyUpdate handles updating a users API key
-// @Summary Update API Key
-// @Description Updates the API key of the user
-// @Tags apikey
-// @Produce  json
-// @Param userId path string true "the user ID"
-// @Param keyID path string true "the API Key ID to update"
-// @Param key body apikeyUpdateRequestBody true "APIKey key object to update"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.APIKey}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/apikeys/{keyID} [put]
+// @Summary      Update API Key
+// @Description  Updates the API key of the user
+// @Tags         apikey
+// @Produce      json
+// @Param        userId  path    string                   true  "the user ID"
+// @Param        keyID   path    string                   true  "the API Key ID to update"
+// @Param        key     body    apikeyUpdateRequestBody  true  "APIKey key object to update"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.APIKey}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/apikeys/{keyID} [put]
 func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -164,17 +164,17 @@ func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 }
 
 // handleUserAPIKeyDelete handles deleting a users API key
-// @Summary Delete API Key
-// @Description Deletes the API key
-// @Tags apikey
-// @Produce  json
-// @Param userId path int false "the user ID"
-// @Param keyID path int false "the API Key ID to update"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.APIKey}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/apikeys/{keyID} [delete]
+// @Summary      Delete API Key
+// @Description  Deletes the API key
+// @Tags         apikey
+// @Produce      json
+// @Param        userId  path    int  false  "the user ID"
+// @Param        keyID   path    int  false  "the API Key ID to update"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.APIKey}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/apikeys/{keyID} [delete]
 func (s *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

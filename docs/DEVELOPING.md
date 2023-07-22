@@ -27,7 +27,7 @@ docker-compose up --build
 
 ### Using Docker without Compose
 
-This solution will require you to pass environment variables or setup the config file, as well as setup and manage the
+This solution will require you to pass environment variables or set up the config file, as well as setup and manage the
 DB yourself.
 
 ```
@@ -52,8 +52,8 @@ DB_NAME=
 
 ```
 go mod download
-go install github.com/swaggo/swag/cmd/swag@1.7.4
-npm install
+go install github.com/swaggo/swag/cmd/swag@1.8.3
+cd ui && npm install
 ```
 
 ## Build with Make
@@ -67,21 +67,31 @@ make build
 ### Build static assets
 
 ```
-npm run build
+npm run build --prefix ui
 ```
 
 ### Build for current OS
 
 ```
-swag init -g http/http.go -o swaggerdocs
+swag init -g http/http.go -o docs/swagger
 go build
 ```
 
 ## Running with Watch (uses webapp dist files on OS instead of embedded)
 
 ```
-npm run autobuild
+npm run autobuild --prefix ui
 make dev-go
+```
+
+## Restful API Changes
+
+The restful API is documented using swagger, any changes to that documentation require regenerating the docs with the
+following commands and committing the updated docs with the changes.
+
+```bash
+swag fmt
+swag init -g http/http.go -o docs/swagger
 ```
 
 ## Creating SQL Migrations
@@ -113,5 +123,5 @@ Adding new locale's involves just a few steps.
    the values.
 2. Second, the locale will need to be added to the locales list used by switcher component
    in ```ui/config.js``` ```locales``` object
-3. Run `npm run locales` to generate the new locale types used by the build process
+3. Run `npm run locales` in `ui` directory to generate the new locale types used by the build process
 4. commit changes and open PR
