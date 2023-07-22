@@ -42,9 +42,11 @@ docker pull stevenweathers/thunderdome-planning-poker
 # Guides
 
 - [Configuring Thunderdome](docs/CONFIGURATION.md)
-- [Contributing Guide](docs/CONTRIBUTING.md)
-- [Developing Guide](docs/DEVELOPING.md) for setting up local development
-- [Testing Guide](docs/TESTING.md)
+- [Contributing Guide](docs/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull
+  requests to us.
+- [Developing Guide](docs/DEVELOPING.md) for details on setting up your local and required steps for code changes.
+- [Testing Guide](docs/TESTING.md) for details on how to test (unit and end to end) changes made to Thunderdome.
+- [Security Policy](docs/SECURITY.md) for details on how to submit a vulnerability report.
 
 # Upgrading from v1 to v2 major release
 
@@ -52,8 +54,8 @@ If you're currently running a 1.x.x release version of Thunderdome you will need
 2.x.x release version. If you're creating a fresh instance of Thunderdome you can ignore this section.
 
 - Review the completely rewritten APIs if you're using the API feature to integrate with Thunderdome.
-- Run the latest available 1.x.x release, this will run any SQL migrations that levelset the SQL schema for 2.x.x.
-- Run latest available 2.x.x release, this will run any SQL migrations since 2.0.0, however will not run any 1.x.x
+- Run the latest available 1.x.x release, this will run any SQL migrations that level set the SQL schema for 2.x.x.
+- Run the latest available 2.x.x release, this will run any SQL migrations since 2.0.0, however will not run any 1.x.x
   migrations.
 - Update any integrations using the APIs as they have been completely rewritten.
 
