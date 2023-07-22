@@ -47,22 +47,15 @@ jobs:
         uses: actions/checkout@v3
 
       - run: npm ci --no-optional
-      #      - run: npm test
+        working-directory: ui
       - run: npm run build
+        working-directory: ui
         env:
           CI: true
 
       - name: Get dependencies
         run: |
           go mod download
-          if [ -f Gopkg.toml ]; then
-              curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-              dep ensure
-          fi
-          go install github.com/swaggo/swag/cmd/swag@v1.7.4
-
-      - name: Generate swagger docs
-        run: swag init -g http/http.go -o swaggerdocs
 
       - name: Build
         run: go build -v .
@@ -72,8 +65,8 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            dist
-            swaggerdocs
+            ui/dist
+            docs/swagger
 
       - name: Run Thunderdome application
         run: ./thunderdome-planning-poker &

@@ -46,4 +46,6 @@ jobs:
         uses: actions/checkout@v3
 
       - run: npm ci --no-optional
+        working-directory: ui
       - run: npm run prettier
+        working-directory: ui

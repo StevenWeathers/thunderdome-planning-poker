@@ -1,8 +1,8 @@
 <script lang="ts">
   import './app.css';
   import './unreset.css';
-  import '../../node_modules/quill/dist/quill.core.css';
-  import '../../node_modules/quill/dist/quill.snow.css';
+  import '../node_modules/quill/dist/quill.core.css';
+  import '../node_modules/quill/dist/quill.snow.css';
   import Navaid from 'navaid';
   import { onDestroy, onMount } from 'svelte';
 

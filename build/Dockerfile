@@ -5,10 +5,7 @@ FROM node:18.5 as builderNode
 
 RUN mkdir /webapp
 COPY ./ui/ /webapp/ui/
-COPY ./build/*.js /webapp/build/
-COPY ./*.json /webapp/
-COPY ./*.js /webapp/
-WORKDIR /webapp
+WORKDIR /webapp/ui
 # install node packages
 RUN npm set progress=false
 RUN npm ci --no-optional
@@ -26,6 +23,7 @@ RUN apk update && apk add --no-cache git ca-certificates
 # Create appuser
 RUN adduser -D -g '' appuser
 # Copy the go source
+COPY ./docs/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/docs/
 COPY ./http/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/http/
 COPY ./db/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/db/
 COPY ./email/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/email/
@@ -33,15 +31,13 @@ COPY ./thunderdome/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-p
 COPY ./*.go $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 COPY ./go.mod $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 COPY ./go.sum $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
+COPY ./ui/*.go $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/ui/
 # Copy our static assets
-COPY --from=builderNode /webapp/dist $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/dist
+COPY --from=builderNode /webapp/ui/dist $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/ui/dist
 # Set working dir
 WORKDIR $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 # Fetch dependencies.
 RUN go mod download
-# Generate swagger docs
-RUN go install github.com/swaggo/swag/cmd/swag@v1.8.3
-RUN swag init -g http/http.go -o swaggerdocs
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -ldflags "-X main.version=$BUILD_VERSION" -o /go/bin/thunderdome
 ############################

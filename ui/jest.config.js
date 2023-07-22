@@ -5,7 +5,7 @@ module.exports = {
     '^.+\\.svelte$': [
       'svelte-jester',
       {
-        'preprocess': '/build/svelte.config.js'
+        'preprocess': '../build/svelte.config.js'
       }
     ],
     '^.+\\.ts$': 'ts-jest'

@@ -6,11 +6,12 @@ import (
 	"io/fs"
 	"net/http"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/docs/swagger"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/checkin"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/poker"
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/retro"
-	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
-	"github.com/StevenWeathers/thunderdome-planning-poker/swaggerdocs"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -132,7 +133,7 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
 
-	swaggerdocs.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
+	swagger.SwaggerInfo.BasePath = a.Config.PathPrefix + "/api"
 	// swagger docs for external API when enabled
 	if a.Config.ExternalAPIEnabled {
 		a.Router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(httpSwagger.URL(swaggerJsonPath)))

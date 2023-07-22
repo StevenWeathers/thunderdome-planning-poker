@@ -15,7 +15,7 @@ const typescript = require('@rollup/plugin-typescript')
 const production = !process.env.ROLLUP_WATCH
 
 module.exports = {
-  input: 'ui/src/main.ts',
+  input: 'src/main.ts',
   output: {
     sourcemap: !production,
     name: 'thunderdome',
@@ -61,7 +61,7 @@ module.exports = {
     copy({
       targets: [
         {
-          src: 'ui/public/img',
+          src: 'public/img',
           dest: 'dist'
         },
       ]

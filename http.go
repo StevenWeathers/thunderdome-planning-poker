@@ -1,11 +1,6 @@
 package main
 
 import (
-	"embed"
-	"io/fs"
-	"net/http"
-	"os"
-
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/admin"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/alert"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/apikey"
@@ -15,31 +10,15 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/storyboard"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/team"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/user"
+	"github.com/StevenWeathers/thunderdome-planning-poker/ui"
 
 	api "github.com/StevenWeathers/thunderdome-planning-poker/http"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/spf13/viper"
 )
 
-//go:embed dist
-var f embed.FS
-
-func (s *server) getFileSystem(useOS bool) (http.FileSystem, fs.FS) {
-	if useOS {
-		s.logger.Info("using live mode")
-		return http.FS(os.DirFS("dist")), os.DirFS("dist")
-	}
-
-	fsys, err := fs.Sub(f, "dist")
-	if err != nil {
-		panic(err)
-	}
-
-	return http.FS(fsys), fsys
-}
-
 func (s *server) routes() {
-	HFS, FSS := s.getFileSystem(embedUseOS)
+	HFS, FSS := ui.New(embedUseOS)
 
 	httpConfig := &api.Config{
 		AppDomain:                 s.config.AppDomain,

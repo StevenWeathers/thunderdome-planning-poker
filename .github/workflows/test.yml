@@ -21,8 +21,8 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v3
 
-      - name: Copy swagger docs dummy file and Create dummy dist/index.html
-        run: mkdir swaggerdocs && cp build/swaggerdocs_dummy.go swaggerdocs/docs.go && mkdir dist && touch dist/index.html
+      - name: Copy swagger docs dummy file and Create dummy ui/dist/index.html
+        run: mkdir ui/dist && touch ui/dist/index.html
 
       - name: Test
-        run: go test `go list ./... | grep -v swaggerdocs`
+        run: go test `go list ./... | grep -v docs/swagger`
