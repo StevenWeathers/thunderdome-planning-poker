@@ -24,23 +24,23 @@ type retroCreateRequestBody struct {
 }
 
 // handleRetroCreate handles creating a retro
-// @Summary Create Retro
-// @Description Create a retro associated to the user
-// @Tags retro
-// @Produce  json
-// @Param userId path string true "the user ID"
-// @Param orgId path string false "the organization ID"
-// @Param departmentId path string false "the department ID"
-// @Param teamId path string false "the team ID"
-// @Param retro body retroCreateRequestBody false "new retro object"
-// @Success 200 object standardJsonResponse{data=thunderdome.Retro}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/retros [post]
-// @Router /teams/{teamId}/users/{userId}/retros [post]
-// @Router /{orgId}/teams/{teamId}/users/{userId}/retros [post]
-// @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
+// @Summary      Create Retro
+// @Description  Create a retro associated to the user
+// @Tags         retro
+// @Produce      json
+// @Param        userId        path    string                  true   "the user ID"
+// @Param        orgId         path    string                  false  "the organization ID"
+// @Param        departmentId  path    string                  false  "the department ID"
+// @Param        teamId        path    string                  false  "the team ID"
+// @Param        retro         body    retroCreateRequestBody  false  "new retro object"
+// @Success      200           object  standardJsonResponse{data=thunderdome.Retro}
+// @Failure      403           object  standardJsonResponse{}
+// @Failure      500           object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/retros [post]
+// @Router       /teams/{teamId}/users/{userId}/retros [post]
+// @Router       /{orgId}/teams/{teamId}/users/{userId}/retros [post]
+// @Router       /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/retros [post]
 func (s *Service) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -100,16 +100,16 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 }
 
 // handleRetroGet looks up retro or returns notfound status
-// @Summary Get Retro
-// @Description get retro by ID
-// @Tags retro
-// @Produce  json
-// @Param retroId path string true "the retro ID to get"
-// @Success 200 object standardJsonResponse{data=thunderdome.Retro}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 404 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /retros/{retroId} [get]
+// @Summary      Get Retro
+// @Description  get retro by ID
+// @Tags         retro
+// @Produce      json
+// @Param        retroId  path    string  true  "the retro ID to get"
+// @Success      200      object  standardJsonResponse{data=thunderdome.Retro}
+// @Failure      403      object  standardJsonResponse{}
+// @Failure      404      object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros/{retroId} [get]
 func (s *Service) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -128,18 +128,18 @@ func (s *Service) handleRetroGet() http.HandlerFunc {
 }
 
 // handleRetrosGetByUser looks up retros associated with userID
-// @Summary Get Retros by User
-// @Description get list of retros for the user
-// @Tags retro
-// @Produce  json
-// @Param userId path string true "the user ID to get retros for"
-// @Param limit query int false "Max number of results to return"
-// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.Retro}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 404 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/retros [get]
+// @Summary      Get Retros by User
+// @Description  get list of retros for the user
+// @Tags         retro
+// @Produce      json
+// @Param        userId  path    string  true   "the user ID to get retros for"
+// @Param        limit   query   int     false  "Max number of results to return"
+// @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.Retro}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      404     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/retros [get]
 func (s *Service) handleRetrosGetByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -156,17 +156,17 @@ func (s *Service) handleRetrosGetByUser() http.HandlerFunc {
 }
 
 // handleGetRetros gets a list of retros
-// @Summary Get Retros
-// @Description get list of retros
-// @Tags retro
-// @Produce  json
-// @Param limit query int false "Max number of results to return"
-// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Param active query boolean false "Only active retros"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.Retro}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /retros [get]
+// @Summary      Get Retros
+// @Description  get list of retros
+// @Tags         retro
+// @Produce      json
+// @Param        limit   query   int      false  "Max number of results to return"
+// @Param        offset  query   int      false  "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param        active  query   boolean  false  "Only active retros"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.Retro}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros [get]
 func (s *Service) handleGetRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
@@ -204,18 +204,18 @@ type actionUpdateRequestBody struct {
 }
 
 // handleRetroActionUpdate handles updating a retro action item
-// @Summary Retro Action Item Update
-// @Description Update a retro action item
-// @Param retroId path string true "the retro ID"
-// @Param actionId path string true "the action ID"
-// @Param actionItem body actionUpdateRequestBody true "updated action item"
-// @Tags retro
-// @Produce  json
-// @Success 200 object standardJsonResponse{}
-// @Success 403 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /retros/{retroId}/actions/{actionId} [put]
+// @Summary      Retro Action Item Update
+// @Description  Update a retro action item
+// @Param        retroId     path  string                   true  "the retro ID"
+// @Param        actionId    path  string                   true  "the action ID"
+// @Param        actionItem  body  actionUpdateRequestBody  true  "updated action item"
+// @Tags         retro
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros/{retroId}/actions/{actionId} [put]
 func (s *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionUpdateRequestBody{}
@@ -260,17 +260,17 @@ func (s *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 }
 
 // handleRetroActionDelete handles deleting a retro action item
-// @Summary Retro Action Item Delete
-// @Description Delete a retro action item
-// @Param retroId path string true "the retro ID"
-// @Param actionId path string true "the action ID"
-// @Tags retro
-// @Produce  json
-// @Success 200 object standardJsonResponse{}
-// @Success 403 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /retros/{retroId}/actions/{actionId} [delete]
+// @Summary      Retro Action Item Delete
+// @Description  Delete a retro action item
+// @Param        retroId   path  string  true  "the retro ID"
+// @Param        actionId  path  string  true  "the action ID"
+// @Tags         retro
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros/{retroId}/actions/{actionId} [delete]
 func (s *Service) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -308,18 +308,18 @@ type actionCommentRequestBody struct {
 }
 
 // handleRetroActionCommentAdd handles adding a comment to a retro action item
-// @Summary Retro Action Item Comment
-// @Description Add a comment to a retro action item
-// @Param retroId path string true "the retro ID"
-// @Param actionId path string true "the action ID"
-// @Param actionItem body actionCommentRequestBody true "action comment"
-// @Tags retro
-// @Produce  json
-// @Success 200 object standardJsonResponse{}
-// @Success 403 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /retros/{retroId}/actions/{actionId}/comments [post]
+// @Summary      Retro Action Item Comment
+// @Description  Add a comment to a retro action item
+// @Param        retroId     path  string                    true  "the retro ID"
+// @Param        actionId    path  string                    true  "the action ID"
+// @Param        actionItem  body  actionCommentRequestBody  true  "action comment"
+// @Tags         retro
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros/{retroId}/actions/{actionId}/comments [post]
 func (s *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
@@ -367,19 +367,19 @@ func (s *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 }
 
 // handleRetroActionCommentEdit handles editing a retro action item comment
-// @Summary Retro Action Item Comment Edit
-// @Description Edit a retro action item comment
-// @Param retroId path string true "the retro ID"
-// @Param actionId path string true "the action ID"
-// @Param commentId path string true "the comment ID"
-// @Param actionItem body actionCommentRequestBody true "action comment"
-// @Tags retro
-// @Produce  json
-// @Success 200 object standardJsonResponse{}
-// @Success 403 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [put]
+// @Summary      Retro Action Item Comment Edit
+// @Description  Edit a retro action item comment
+// @Param        retroId     path  string                    true  "the retro ID"
+// @Param        actionId    path  string                    true  "the action ID"
+// @Param        commentId   path  string                    true  "the comment ID"
+// @Param        actionItem  body  actionCommentRequestBody  true  "action comment"
+// @Tags         retro
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros/{retroId}/actions/{actionId}/comments/{commentId} [put]
 func (s *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
@@ -432,18 +432,18 @@ func (s *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 }
 
 // handleRetroActionCommentDelete handles delete a comment from a retro action item
-// @Summary Retro Action Item Comment Delete
-// @Description Delete a comment from a retro action item
-// @Param retroId path string true "the retro ID"
-// @Param actionId path string true "the action ID"
-// @Param commentId path string true "the comment ID"
-// @Tags retro
-// @Produce  json
-// @Success 200 object standardJsonResponse{}
-// @Success 403 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /retros/{retroId}/actions/{actionId}/comments/{commentId} [post]
+// @Summary      Retro Action Item Comment Delete
+// @Description  Delete a comment from a retro action item
+// @Param        retroId    path  string  true  "the retro ID"
+// @Param        actionId   path  string  true  "the action ID"
+// @Param        commentId  path  string  true  "the comment ID"
+// @Tags         retro
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros/{retroId}/actions/{actionId}/comments/{commentId} [post]
 func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -477,16 +477,16 @@ func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 }
 
 // handleRetroDelete handles deleting a retro
-// @Summary Retro Delete
-// @Description Delete a retro
-// @Param retroId path string true "the retro ID"
-// @Tags retro
-// @Produce  json
-// @Success 200 object standardJsonResponse{}
-// @Success 403 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /retros/{retroId} [delete]
+// @Summary      Retro Delete
+// @Description  Delete a retro
+// @Param        retroId  path  string  true  "the retro ID"
+// @Tags         retro
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros/{retroId} [delete]
 func (s *Service) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

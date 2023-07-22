@@ -87,9 +87,10 @@ make dev-go
 ## Restful API Changes
 
 The restful API is documented using swagger, any changes to that documentation require regenerating the docs with the
-following command and committing the updated docs with the changes.
+following commands and committing the updated docs with the changes.
 
 ```bash
+swag fmt
 swag init -g http/http.go -o docs/swagger
 ```
 

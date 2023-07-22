@@ -1,11 +1,14 @@
 # Go parameters
 GOCMD=go
 NPMCMD=npm
+GOMODS=$(GOCMD) mod download
+NPMMODS=cd ui && npm ci && cd ..
 NPMBUILD=$(NPMCMD) run build --prefix ui
 NPM_FORMAT=$(NPMCMD) run format --prefix ui
 GOBUILD=$(GOCMD) build
 SWAGGERDOCS=docs/swagger
 SWAGGERGEN=swag init -g http/http.go -o $(SWAGGERDOCS)
+SWAGFORMAT=swag fmt
 GOFMT=gofmt
 GOIMPORTS=goimports
 BINARY_NAME=thunderdome-planning-poker
@@ -13,6 +16,10 @@ BINARY_UNIX=$(BINARY_NAME)_unix
 BINARY_WINDOWS=thunderdome-planning-poker.exe
 
 all: build
+install:
+	$(GOMODS)
+	$(GOCMD) install github.com/swaggo/swag/cmd/swag@1.8.3
+	$(NPMMODS)
 build-deps: 
 	$(NPMBUILD)
 	$(SWAGGERGEN)
@@ -34,6 +41,7 @@ clean:
 format:
 	$(GOFMT) -s -w .
 	$(GOIMPORTS) -w .
+	$(SWAGFMT)
 	$(NPM_FORMAT)
 
 generate:

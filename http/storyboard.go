@@ -20,23 +20,23 @@ type storyboardCreateRequestBody struct {
 }
 
 // handleStoryboardCreate handles creating a storyboard (arena)
-// @Summary Create Storyboard
-// @Description Create a storyboard associated to the user
-// @Tags storyboard
-// @Produce  json
-// @Param userId path string true "the user ID"
-// @Param orgId path string false "the organization ID"
-// @Param departmentId path string false "the department ID"
-// @Param teamId path string false "the team ID"
-// @Param storyboard body storyboardCreateRequestBody false "new storyboard object"
-// @Success 200 object standardJsonResponse{data=thunderdome.Storyboard}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/storyboards [post]
-// @Router /teams/{teamId}/users/{userId}/storyboards [post]
-// @Router /{orgId}/teams/{teamId}/users/{userId}/storyboards [post]
-// @Router /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards [post]
+// @Summary      Create Storyboard
+// @Description  Create a storyboard associated to the user
+// @Tags         storyboard
+// @Produce      json
+// @Param        userId        path    string                       true   "the user ID"
+// @Param        orgId         path    string                       false  "the organization ID"
+// @Param        departmentId  path    string                       false  "the department ID"
+// @Param        teamId        path    string                       false  "the team ID"
+// @Param        storyboard    body    storyboardCreateRequestBody  false  "new storyboard object"
+// @Success      200           object  standardJsonResponse{data=thunderdome.Storyboard}
+// @Failure      403           object  standardJsonResponse{}
+// @Failure      500           object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/storyboards [post]
+// @Router       /teams/{teamId}/users/{userId}/storyboards [post]
+// @Router       /{orgId}/teams/{teamId}/users/{userId}/storyboards [post]
+// @Router       /{orgId}/departments/{departmentId}/teams/{teamId}/users/{userId}/storyboards [post]
 func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -96,16 +96,16 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 }
 
 // handleStoryboardGet gets the storyboard by ID
-// @Summary Get Storyboard
-// @Description get storyboard by ID
-// @Tags storyboard
-// @Produce  json
-// @Param storyboardId path string true "the storyboard ID to get"
-// @Success 200 object standardJsonResponse{data=thunderdome.Storyboard}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 404 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /storyboards/{storyboardId} [get]
+// @Summary      Get Storyboard
+// @Description  get storyboard by ID
+// @Tags         storyboard
+// @Produce      json
+// @Param        storyboardId  path    string  true  "the storyboard ID to get"
+// @Success      200           object  standardJsonResponse{data=thunderdome.Storyboard}
+// @Failure      403           object  standardJsonResponse{}
+// @Failure      404           object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /storyboards/{storyboardId} [get]
 func (s *Service) handleStoryboardGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -138,18 +138,18 @@ func (s *Service) handleStoryboardGet() http.HandlerFunc {
 }
 
 // handleGetUserStoryboards looks up storyboards associated with UserID
-// @Summary Get Storyboards
-// @Description get list of storyboards for the user
-// @Tags storyboard
-// @Produce  json
-// @Param userId path string true "the user ID to get storyboards for"
-// @Param limit query int false "Max number of results to return"
-// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.Storyboard}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 404 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/storyboards [get]
+// @Summary      Get Storyboards
+// @Description  get list of storyboards for the user
+// @Tags         storyboard
+// @Produce      json
+// @Param        userId  path    string  true   "the user ID to get storyboards for"
+// @Param        limit   query   int     false  "Max number of results to return"
+// @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.Storyboard}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      404     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/storyboards [get]
 func (s *Service) handleGetUserStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
@@ -173,17 +173,17 @@ func (s *Service) handleGetUserStoryboards() http.HandlerFunc {
 }
 
 // handleGetStoryboards gets a list of storyboards
-// @Summary Get Storyboards
-// @Description get list of storyboards
-// @Tags storyboard
-// @Produce  json
-// @Param limit query int false "Max number of results to return"
-// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Param active query boolean false "Only active storyboards"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.Storyboard}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /storyboards [get]
+// @Summary      Get Storyboards
+// @Description  get list of storyboards
+// @Tags         storyboard
+// @Produce      json
+// @Param        limit   query   int      false  "Max number of results to return"
+// @Param        offset  query   int      false  "Starting point to return rows from, should be multiplied by limit or 0"
+// @Param        active  query   boolean  false  "Only active storyboards"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.Storyboard}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /storyboards [get]
 func (s *Service) handleGetStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Limit, Offset := getLimitOffsetFromRequest(r)
@@ -215,16 +215,16 @@ func (s *Service) handleGetStoryboards() http.HandlerFunc {
 }
 
 // handleStoryboardDelete handles deleting a storyboard
-// @Summary Storyboard Delete
-// @Description Delete a storyboard
-// @Param storyboardId path string true "the storyboard ID"
-// @Tags storyboard
-// @Produce  json
-// @Success 200 object standardJsonResponse{}
-// @Success 403 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /storyboards/{storyboardId} [delete]
+// @Summary      Storyboard Delete
+// @Description  Delete a storyboard
+// @Param        storyboardId  path  string  true  "the storyboard ID"
+// @Tags         storyboard
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /storyboards/{storyboardId} [delete]
 func (s *Service) handleStoryboardDelete(sb *storyboard.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

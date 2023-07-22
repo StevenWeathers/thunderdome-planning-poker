@@ -23,17 +23,17 @@ type orgTeamResponse struct {
 }
 
 // handleGetOrganizationsByUser gets a list of organizations the user is a part of
-// @Summary Get Users Organizations
-// @Description Get list of organizations for the authenticated user
-// @Tags organization
-// @Produce  json
-// @Param userId path string true "the user ID to get organizations for"
-// @Param limit query int false "Max number of results to return"
-// @Param offset query int false "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.Organization}
-// @Failure 403 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/organizations [get]
+// @Summary      Get Users Organizations
+// @Description  Get list of organizations for the authenticated user
+// @Tags         organization
+// @Produce      json
+// @Param        userId  path    string  true   "the user ID to get organizations for"
+// @Param        limit   query   int     false  "Max number of results to return"
+// @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.Organization}
+// @Failure      403     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/organizations [get]
 func (s *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
@@ -52,16 +52,16 @@ func (s *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 }
 
 // handleGetOrganizationByUser gets an organization with user role
-// @Summary Get Organization
-// @Description Get an organization with user role
-// @Tags organization
-// @Produce  json
-// @Param orgId path string true "organization id"
-// @Success 200 object standardJsonResponse{data=organizationResponse}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /organizations/{orgId} [get]
+// @Summary      Get Organization
+// @Description  Get an organization with user role
+// @Tags         organization
+// @Produce      json
+// @Param        orgId  path    string  true  "organization id"
+// @Success      200    object  standardJsonResponse{data=organizationResponse}
+// @Failure      403    object  standardJsonResponse{}
+// @Failure      500    object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId} [get]
 func (s *Service) handleGetOrganizationByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
@@ -89,17 +89,17 @@ func (s *Service) handleGetOrganizationByUser() http.HandlerFunc {
 }
 
 // handleCreateOrganization handles creating an organization with current user as admin
-// @Summary Create Organization
-// @Description Create organization with current user as admin
-// @Tags organization
-// @Produce  json
-// @Param userId path string true "user id"
-// @Param organization body teamCreateRequestBody true "new organization object"
-// @Success 200 object standardJsonResponse{data=thunderdome.Organization}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /users/{userId}/organizations [post]
+// @Summary      Create Organization
+// @Description  Create organization with current user as admin
+// @Tags         organization
+// @Produce      json
+// @Param        userId        path    string                 true  "user id"
+// @Param        organization  body    teamCreateRequestBody  true  "new organization object"
+// @Success      200           object  standardJsonResponse{data=thunderdome.Organization}
+// @Failure      403           object  standardJsonResponse{}
+// @Failure      500           object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/organizations [post]
 func (s *Service) handleCreateOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
@@ -133,15 +133,15 @@ func (s *Service) handleCreateOrganization() http.HandlerFunc {
 }
 
 // handleGetOrganizationTeams gets a list of teams associated to the organization
-// @Summary Get Organization Teams
-// @Description Get a list of organization teams
-// @Tags organization
-// @Produce  json
-// @Param orgId path string true "organization id"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.Team}
-// @Failure 403 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /organizations/{orgId}/teams [get]
+// @Summary      Get Organization Teams
+// @Description  Get a list of organization teams
+// @Tags         organization
+// @Produce      json
+// @Param        orgId  path    string  true  "organization id"
+// @Success      200    object  standardJsonResponse{data=[]thunderdome.Team}
+// @Failure      403    object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/teams [get]
 func (s *Service) handleGetOrganizationTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
@@ -159,15 +159,15 @@ func (s *Service) handleGetOrganizationTeams() http.HandlerFunc {
 }
 
 // handleGetOrganizationUsers gets a list of users associated to the organization
-// @Summary Get Organization Users
-// @Description get a list of organization users
-// @Tags organization
-// @Produce  json
-// @Param orgId path string true "organization id"
-// @Success 200 object standardJsonResponse{data=[]thunderdome.User}
-// @Failure 403 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /organizations/{orgId}/users [get]
+// @Summary      Get Organization Users
+// @Description  get a list of organization users
+// @Tags         organization
+// @Produce      json
+// @Param        orgId  path    string  true  "organization id"
+// @Success      200    object  standardJsonResponse{data=[]thunderdome.User}
+// @Failure      403    object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/users [get]
 func (s *Service) handleGetOrganizationUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
@@ -185,17 +185,17 @@ func (s *Service) handleGetOrganizationUsers() http.HandlerFunc {
 }
 
 // handleCreateOrganizationTeam handles creating an organization team
-// @Summary Create Organization Team
-// @Description Create organization team with current user as admin
-// @Tags organization
-// @Produce  json
-// @Param orgId path string true "organization id"
-// @Param team body teamCreateRequestBody true "new team object"
-// @Success 200 object standardJsonResponse{data=thunderdome.Team}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /organizations/{orgId}/teams [post]
+// @Summary      Create Organization Team
+// @Description  Create organization team with current user as admin
+// @Tags         organization
+// @Produce      json
+// @Param        orgId  path    string                 true  "organization id"
+// @Param        team   body    teamCreateRequestBody  true  "new team object"
+// @Success      200    object  standardJsonResponse{data=thunderdome.Team}
+// @Failure      403    object  standardJsonResponse{}
+// @Failure      500    object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/teams [post]
 func (s *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
@@ -229,17 +229,17 @@ func (s *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 }
 
 // handleOrganizationAddUser handles adding user to an organization
-// @Summary Add Org User
-// @Description Add user to organization
-// @Tags organization
-// @Produce  json
-// @Param orgId path string true "organization id"
-// @Param user body teamAddUserRequestBody true "new organization user object"
-// @Success 200 object standardJsonResponse{}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /organizations/{orgId}/users [post]
+// @Summary      Add Org User
+// @Description  Add user to organization
+// @Tags         organization
+// @Produce      json
+// @Param        orgId  path    string                  true  "organization id"
+// @Param        user   body    teamAddUserRequestBody  true  "new organization user object"
+// @Success      200    object  standardJsonResponse{}
+// @Failure      403    object  standardJsonResponse{}
+// @Failure      500    object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/users [post]
 func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
@@ -282,17 +282,17 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 }
 
 // handleOrganizationRemoveUser handles removing user from an organization (including departments, teams)
-// @Summary Remove Org User
-// @Description Remove user from organization including departments and teams
-// @Tags organization
-// @Produce  json
-// @Param orgId path string true "organization id"
-// @Param userId path string true "user id"
-// @Success 200 object standardJsonResponse{}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /organizations/{orgId}/users/{userId} [delete]
+// @Summary      Remove Org User
+// @Description  Remove user from organization including departments and teams
+// @Tags         organization
+// @Produce      json
+// @Param        orgId   path    string  true  "organization id"
+// @Param        userId  path    string  true  "user id"
+// @Success      200     object  standardJsonResponse{}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/users/{userId} [delete]
 func (s *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
@@ -319,17 +319,17 @@ func (s *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 }
 
 // handleGetOrganizationTeamByUser gets a team with users roles
-// @Summary Get Organization Team
-// @Description Get an organizations team with users roles
-// @Tags organization
-// @Produce  json
-// @Param orgId path string true "organization id"
-// @Param teamId path string true "team id"
-// @Success 200 object standardJsonResponse{data=orgTeamResponse}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /organizations/{orgId}/teams/{teamId} [get]
+// @Summary      Get Organization Team
+// @Description  Get an organizations team with users roles
+// @Tags         organization
+// @Produce      json
+// @Param        orgId   path    string  true  "organization id"
+// @Param        teamId  path    string  true  "team id"
+// @Success      200     object  standardJsonResponse{data=orgTeamResponse}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/teams/{teamId} [get]
 func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -368,18 +368,18 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 }
 
 // handleOrganizationTeamAddUser handles adding user to a team so long as they are in the organization
-// @Summary Add Org Team User
-// @Description Add user to organization team as long as they are already in the organization
-// @Tags organization
-// @Produce  json
-// @Param orgId path string true "organization id"
-// @Param teamId path string true "team id"
-// @Param user body teamAddUserRequestBody true "new team user object"
-// @Success 200 object standardJsonResponse{}
-// @Failure 403 object standardJsonResponse{}
-// @Failure 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /organizations/{orgId}/teams/{teamId}/users [post]
+// @Summary      Add Org Team User
+// @Description  Add user to organization team as long as they are already in the organization
+// @Tags         organization
+// @Produce      json
+// @Param        orgId   path    string                  true  "organization id"
+// @Param        teamId  path    string                  true  "team id"
+// @Param        user    body    teamAddUserRequestBody  true  "new team user object"
+// @Success      200     object  standardJsonResponse{}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/teams/{teamId}/users [post]
 func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !s.Config.OrganizationsEnabled {
@@ -430,16 +430,16 @@ func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 }
 
 // handleDeleteOrganization handles deleting an organization
-// @Summary Delete Organization
-// @Description Delete an Organization
-// @Tags organization
-// @Produce  json
-// @Param orgId path string true "the organization ID"
-// @Success 200 object standardJsonResponse{}
-// @Success 403 object standardJsonResponse{}
-// @Success 500 object standardJsonResponse{}
-// @Security ApiKeyAuth
-// @Router /organizations/{orgId} [delete]
+// @Summary      Delete Organization
+// @Description  Delete an Organization
+// @Tags         organization
+// @Produce      json
+// @Param        orgId  path    string  true  "the organization ID"
+// @Success      200    object  standardJsonResponse{}
+// @Success      403    object  standardJsonResponse{}
+// @Success      500    object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId} [delete]
 func (s *Service) handleDeleteOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
