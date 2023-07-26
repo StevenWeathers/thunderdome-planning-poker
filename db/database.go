@@ -18,7 +18,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/lib/pq" // necessary for postgres
+	_ "github.com/jackc/pgx/v5/stdlib" // necessary for postgres
 	"github.com/microcosm-cc/bluemonday"
 )
 
@@ -55,7 +55,7 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Service {
 		d.Config.SSLMode,
 	)
 
-	pdb, err := otelsql.Open("postgres", psqlInfo, otelsql.WithAttributes(
+	pdb, err := otelsql.Open("pgx", psqlInfo, otelsql.WithAttributes(
 		semconv.DBSystemPostgreSQL,
 	))
 	if err != nil {
