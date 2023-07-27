@@ -55,7 +55,7 @@ func (d *Service) RetroCreate(OwnerID string, RetroName string, Format string, J
 	}
 
 	e := d.DB.QueryRow(
-		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7);`,
+		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7, null);`,
 		OwnerID,
 		RetroName,
 		Format,
@@ -106,8 +106,7 @@ func (d *Service) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID st
 	}
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT * FROM thunderdome.team_create_retro($1, $2, $3, $4, $5, $6, $7, $8);`,
-		TeamID,
+		`SELECT * FROM thunderdome.retro_create($1, $2, $3, $4, $5, $6, $7, $8);`,
 		OwnerID,
 		RetroName,
 		Format,
@@ -115,6 +114,7 @@ func (d *Service) TeamRetroCreate(ctx context.Context, TeamID string, OwnerID st
 		encryptedFacilitatorCode,
 		MaxVotes,
 		BrainstormVisibility,
+		TeamID,
 	).Scan(&b.Id)
 	if e != nil {
 		d.Logger.Error("team_create_retro query error", zap.Error(e))

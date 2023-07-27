@@ -98,7 +98,20 @@ func (d *Service) ActivateStoryVoting(PokerID string, StoryID string) ([]*thunde
 // SetVote sets a users vote for the story
 func (d *Service) SetVote(PokerID string, UserID string, StoryID string, VoteValue string) (Stories []*thunderdome.Story, AllUsersVoted bool) {
 	if _, err := d.DB.Exec(
-		`CALL thunderdome.poker_user_vote_set($1, $2, $3);`, StoryID, UserID, VoteValue); err != nil {
+		`UPDATE thunderdome.poker_story p1
+		SET votes = (
+			SELECT json_agg(data)
+			FROM (
+				SELECT coalesce(newVote."warriorId", oldVote."warriorId") AS "warriorId", coalesce(newVote.vote, oldVote.vote) AS vote
+				FROM jsonb_populate_recordset(null::thunderdome.UsersVote,p1.votes) AS oldVote
+				FULL JOIN jsonb_populate_recordset(null::thunderdome.UsersVote,
+					('[{"warriorId":"'|| $2::TEXT ||'", "vote":"'|| $3 ||'"}]')::JSONB
+				) AS newVote
+				ON newVote."warriorId" = oldVote."warriorId"
+			) data
+		)
+		WHERE p1.id = $1;`,
+		StoryID, UserID, VoteValue); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_user_vote_set error", zap.Error(err))
 	}
 
@@ -131,7 +144,17 @@ func (d *Service) SetVote(PokerID string, UserID string, StoryID string, VoteVal
 // RetractVote removes a users vote for the story
 func (d *Service) RetractVote(PokerID string, UserID string, StoryID string) ([]*thunderdome.Story, error) {
 	if _, err := d.DB.Exec(
-		`CALL thunderdome.poker_user_vote_retract($1, $2);`, StoryID, UserID); err != nil {
+		`UPDATE thunderdome.poker_story p1
+		SET votes = (
+			SELECT coalesce(json_agg(data), '[]'::JSON)
+			FROM (
+				SELECT coalesce(oldVote."warriorId") AS "warriorId", coalesce(oldVote.vote) AS vote
+				FROM jsonb_populate_recordset(null::thunderdome.UsersVote,p1.votes) AS oldVote
+				WHERE oldVote."warriorId" != $2
+			) data
+		)
+		WHERE p1.id = $1;
+    `, StoryID, UserID); err != nil {
 		d.Logger.Error("CALL thunderdome.poker_vote_retract error", zap.Error(err))
 		return nil, err
 	}

@@ -63,7 +63,7 @@ func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name str
 	b.Facilitators = append(b.Facilitators, FacilitatorID)
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT pokerid FROM thunderdome.poker_create($1, $2, $3, $4, $5, $6, $7, $8);`,
+		`SELECT pokerid FROM thunderdome.poker_create($1, $2, $3, $4, $5, $6, $7, $8, null);`,
 		FacilitatorID,
 		Name,
 		string(pointValuesJSON),
@@ -139,8 +139,7 @@ func (d *Service) TeamCreateGame(ctx context.Context, TeamID string, Facilitator
 	b.Facilitators = append(b.Facilitators, FacilitatorID)
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT pokerid FROM thunderdome.team_create_poker($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
-		TeamID,
+		`SELECT pokerid FROM thunderdome.poker_create($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
 		FacilitatorID,
 		Name,
 		string(pointValuesJSON),
@@ -149,6 +148,7 @@ func (d *Service) TeamCreateGame(ctx context.Context, TeamID string, Facilitator
 		HideVoterIdentity,
 		encryptedJoinCode,
 		encryptedLeaderCode,
+		TeamID,
 	).Scan(&b.Id)
 	if e != nil {
 		d.Logger.Error("team_create_poker query error", zap.Error(e))

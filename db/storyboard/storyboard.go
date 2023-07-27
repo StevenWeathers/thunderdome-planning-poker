@@ -50,7 +50,7 @@ func (d *Service) CreateStoryboard(ctx context.Context, OwnerID string, Storyboa
 	}
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT * FROM thunderdome.sb_create($1, $2, $3, $4);`,
+		`SELECT * FROM thunderdome.sb_create($1, $2, $3, $4, null);`,
 		OwnerID,
 		StoryboardName,
 		encryptedJoinCode,
@@ -93,12 +93,12 @@ func (d *Service) TeamCreateStoryboard(ctx context.Context, TeamID string, Owner
 	}
 
 	e := d.DB.QueryRowContext(ctx,
-		`SELECT * FROM thunderdome.team_create_storyboard($1, $2, $3, $4, $5);`,
-		TeamID,
+		`SELECT * FROM thunderdome.sb_create($1, $2, $3, $4, $5);`,
 		OwnerID,
 		StoryboardName,
 		encryptedJoinCode,
 		encryptedFacilitatorCode,
+		TeamID,
 	).Scan(&b.Id)
 	if e != nil {
 		d.Logger.Error("team_create_storyboard query error", zap.Error(e))
