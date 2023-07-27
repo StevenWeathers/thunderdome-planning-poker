@@ -80,8 +80,8 @@ func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Comp
 	var Count int
 
 	e := d.DB.QueryRow(
-		`SELECT COUNT(ra.*) FROM thunderdome.team_retro tr
-				LEFT JOIN thunderdome.retro_action ra ON ra.retro_id = tr.retro_id
+		`SELECT COUNT(ra.*) FROM thunderdome.retro tr
+				LEFT JOIN thunderdome.retro_action ra ON ra.retro_id = tr.id
 				WHERE tr.team_id = $1 AND ra.completed = $2;`,
 		TeamID,
 		Completed,
@@ -99,7 +99,7 @@ func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Comp
 				) AS comments
 				FROM thunderdome.retro_action ra
 				LEFT JOIN thunderdome.retro_action_comment rac ON rac.action_id = ra.id
-				WHERE ra.retro_id IN (SELECT retro_id FROM thunderdome.team_retro WHERE team_id = $1) AND ra.completed = $2
+				WHERE ra.retro_id IN (SELECT id FROM thunderdome.retro WHERE team_id = $1) AND ra.completed = $2
 				GROUP BY ra.id, ra.created_date
 				ORDER BY ra.created_date DESC
 				LIMIT $3 OFFSET $4;`,

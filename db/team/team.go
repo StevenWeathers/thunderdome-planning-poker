@@ -212,11 +212,10 @@ func (d *Service) TeamRemoveUser(ctx context.Context, TeamID string, UserID stri
 func (d *Service) TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Poker {
 	var pokers = make([]*thunderdome.Poker, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT b.id, b.name
-        FROM thunderdome.team_poker tb
-        LEFT JOIN thunderdome.poker b ON tb.poker_id = b.id
-        WHERE tb.team_id = $1
-        ORDER BY tb.created_date DESC
+		`SELECT p.id, p.name
+        FROM thunderdome.poker p
+        WHERE p.team_id = $1
+        ORDER BY p.created_date DESC
 		LIMIT $2
 		OFFSET $3;`,
 		TeamID,
@@ -248,7 +247,7 @@ func (d *Service) TeamPokerList(ctx context.Context, TeamID string, Limit int, O
 // TeamAddPoker adds a poker game to a team
 func (d *Service) TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`INSERT INTO thunderdome.team_poker (team_id, poker_id) VALUES ($1, $2);`,
+		`UPDATE thunderdome.poker SET team_id = $1 WHERE id = $2;`,
 		TeamID,
 		PokerID,
 	)
@@ -264,7 +263,7 @@ func (d *Service) TeamAddPoker(ctx context.Context, TeamID string, PokerID strin
 // TeamRemovePoker removes a poker game from a team
 func (d *Service) TeamRemovePoker(ctx context.Context, TeamID string, PokerID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.team_poker WHERE poker_id = $2 AND team_id = $1;`,
+		`UPDATE thunderdome.poker SET team_id = null WHERE id = $2 AND team_id = $1;`,
 		TeamID,
 		PokerID,
 	)
@@ -280,7 +279,7 @@ func (d *Service) TeamRemovePoker(ctx context.Context, TeamID string, PokerID st
 // TeamDelete deletes a team
 func (d *Service) TeamDelete(ctx context.Context, TeamID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`CALL thunderdome.team_delete($1);`,
+		`DELETE FROM thunderdome.team WHERE id = $1;`,
 		TeamID,
 	)
 
@@ -296,11 +295,10 @@ func (d *Service) TeamDelete(ctx context.Context, TeamID string) error {
 func (d *Service) TeamRetroList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Retro {
 	var retros = make([]*thunderdome.Retro, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT b.id, b.name, b.format, b.phase
-        FROM thunderdome.team_retro tb
-        LEFT JOIN thunderdome.retro b ON tb.retro_id = b.id
-        WHERE tb.team_id = $1
-        ORDER BY tb.created_date DESC
+		`SELECT r.id, r.name, r.format, r.phase
+        FROM thunderdome.retro r
+        WHERE r.team_id = $1
+        ORDER BY r.created_date DESC
 		LIMIT $2
 		OFFSET $3;`,
 		TeamID,
@@ -334,7 +332,7 @@ func (d *Service) TeamRetroList(ctx context.Context, TeamID string, Limit int, O
 // TeamAddRetro adds a retro to a team
 func (d *Service) TeamAddRetro(ctx context.Context, TeamID string, RetroID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`INSERT INTO thunderdome.team_retro (team_id, retro_id) VALUES ($1, $2);`,
+		`UPDATE thunderdome.retro SET team_id = $1 WHERE id = $2;`,
 		TeamID,
 		RetroID,
 	)
@@ -350,7 +348,7 @@ func (d *Service) TeamAddRetro(ctx context.Context, TeamID string, RetroID strin
 // TeamRemoveRetro removes a retro from a team
 func (d *Service) TeamRemoveRetro(ctx context.Context, TeamID string, RetroID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.team_retro WHERE retro_id = $2 AND team_id = $1;`,
+		`UPDATE thunderdome.retro SET team_id = $1 WHERE id = $2;`,
 		TeamID,
 		RetroID,
 	)
@@ -367,11 +365,10 @@ func (d *Service) TeamRemoveRetro(ctx context.Context, TeamID string, RetroID st
 func (d *Service) TeamStoryboardList(ctx context.Context, TeamID string, Limit int, Offset int) []*thunderdome.Storyboard {
 	var storyboards = make([]*thunderdome.Storyboard, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT b.id, b.name
-        FROM thunderdome.team_storyboard tb
-        LEFT JOIN thunderdome.storyboard b ON tb.storyboard_id = b.id
-        WHERE tb.team_id = $1
-        ORDER BY tb.created_date DESC
+		`SELECT s.id, s.name
+        FROM thunderdome.storyboard s
+        WHERE s.team_id = $1
+        ORDER BY s.created_date DESC
 		LIMIT $2
 		OFFSET $3;`,
 		TeamID,
@@ -403,7 +400,7 @@ func (d *Service) TeamStoryboardList(ctx context.Context, TeamID string, Limit i
 // TeamAddStoryboard adds a storyboard to a team
 func (d *Service) TeamAddStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`INSERT INTO thunderdome.team_storyboard (team_id, storyboard_id) VALUES ($1, $2);`,
+		`UPDATE thunderdome.storyboard SET team_id = $1 WHERE id = $2;`,
 		TeamID,
 		StoryboardID,
 	)
@@ -419,7 +416,7 @@ func (d *Service) TeamAddStoryboard(ctx context.Context, TeamID string, Storyboa
 // TeamRemoveStoryboard removes a storyboard from a team
 func (d *Service) TeamRemoveStoryboard(ctx context.Context, TeamID string, StoryboardID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`DELETE FROM thunderdome.team_storyboard WHERE storyboard_id = $2 AND team_id = $1;`,
+		`UPDATE thunderdome.storyboard SET team_id = $1 WHERE id = $2;`,
 		TeamID,
 		StoryboardID,
 	)
@@ -439,9 +436,7 @@ func (d *Service) TeamList(ctx context.Context, Limit int, Offset int) ([]*thund
 
 	err := d.DB.QueryRowContext(ctx, `SELECT count(t.id)
     FROM thunderdome.team t
-    LEFT JOIN thunderdome.department_team dt on t.id = dt.team_id
-    LEFT JOIN thunderdome.organization_team ot on t.id = ot.team_id
-    WHERE dt.team_id IS NULL AND ot.team_id IS NULL;`).Scan(&count)
+    WHERE t.department_id IS NULL AND t.organization_id IS NULL;`).Scan(&count)
 	if err != nil {
 		d.Logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
 		return teams, count
@@ -450,9 +445,7 @@ func (d *Service) TeamList(ctx context.Context, Limit int, Offset int) ([]*thund
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT t.id, t.name, t.created_date, t.updated_date
         FROM thunderdome.team t
-        LEFT JOIN thunderdome.department_team dt on t.id = dt.team_id
-        LEFT JOIN thunderdome.organization_team ot on t.id = ot.team_id
-        WHERE dt.team_id IS NULL AND ot.team_id IS NULL
+        WHERE t.department_id IS NULL AND t.organization_id IS NULL
         ORDER BY t.created_date
 		LIMIT $1
 		OFFSET $2;`,

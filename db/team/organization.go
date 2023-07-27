@@ -199,9 +199,8 @@ func (d *OrganizationService) OrganizationTeamList(ctx context.Context, OrgID st
 	var teams = make([]*thunderdome.Team, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT t.id, t.name, t.created_date, t.updated_date
-        FROM thunderdome.organization_team ot
-        LEFT JOIN thunderdome.team t ON ot.team_id = t.id
-        WHERE ot.organization_id = $1
+        FROM thunderdome.team t
+        WHERE t.organization_id = $1
         ORDER BY t.created_date
 		LIMIT $2
 		OFFSET $3;`,
@@ -238,9 +237,10 @@ func (d *OrganizationService) OrganizationTeamCreate(ctx context.Context, OrgID 
 	t := &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx, `
-		SELECT id, name, created_date, updated_date FROM thunderdome.organization_team_create($1, $2);`,
-		OrgID,
+		INSERT INTO thunderdome.team (name, organization_id) 
+		VALUES ($1, $2) RETURNING id, name, created_date, updated_date;`,
 		TeamName,
+		OrgID,
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
@@ -279,7 +279,7 @@ func (d *OrganizationService) OrganizationTeamUserRole(ctx context.Context, User
 // OrganizationDelete deletes an organization
 func (d *OrganizationService) OrganizationDelete(ctx context.Context, OrgID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`CALL thunderdome.organization_delete($1);`,
+		`DELETE FROM thunderdome.organization WHERE id = $1;`,
 		OrgID,
 	)
 

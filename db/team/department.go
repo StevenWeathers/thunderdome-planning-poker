@@ -102,9 +102,10 @@ func (d *OrganizationService) DepartmentCreate(ctx context.Context, OrgID string
 	od := &thunderdome.Department{}
 
 	err := d.DB.QueryRowContext(ctx, `
-		SELECT id, name, created_date, updated_date FROM thunderdome.department_create($1, $2);`,
-		OrgID,
+		INSERT INTO thunderdome.organization_department (name, organization_id)
+		 VALUES ($1, $2) RETURNING id, name, created_date, updated_date;`,
 		OrgName,
+		OrgID,
 	).Scan(&od.Id, &od.Name, &od.CreatedDate, &od.UpdatedDate)
 
 	if err != nil {
@@ -120,9 +121,8 @@ func (d *OrganizationService) DepartmentTeamList(ctx context.Context, Department
 	var teams = make([]*thunderdome.Team, 0)
 	rows, err := d.DB.QueryContext(ctx,
 		`SELECT t.id, t.name, t.created_date, t.updated_date
-        FROM thunderdome.department_team dt
-        LEFT JOIN thunderdome.team t ON dt.team_id = t.id
-        WHERE dt.department_id = $1
+        FROM thunderdome.team t
+        WHERE t.department_id = $1
         ORDER BY t.created_date
 		LIMIT $2
 		OFFSET $3;`,
@@ -159,9 +159,10 @@ func (d *OrganizationService) DepartmentTeamCreate(ctx context.Context, Departme
 	t := &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx, `
-		SELECT id, name, created_date, updated_date FROM thunderdome.department_team_create($1, $2);`,
-		DepartmentID,
+		INSERT INTO thunderdome.team (name, department_id) 
+		VALUES ($1, $2) RETURNING id, name, created_date, updated_date;`,
 		TeamName,
+		DepartmentID,
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
@@ -278,7 +279,7 @@ func (d *OrganizationService) DepartmentTeamUserRole(ctx context.Context, UserID
 // DepartmentDelete deletes a department
 func (d *OrganizationService) DepartmentDelete(ctx context.Context, DepartmentID string) error {
 	_, err := d.DB.ExecContext(ctx,
-		`CALL thunderdome.department_delete($1);`,
+		`DELETE FROM thunderdome.organization_department WHERE id = $1;`,
 		DepartmentID,
 	)
 

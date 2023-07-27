@@ -57,7 +57,48 @@ func (d *Service) GetStoryboardGoals(StoryboardID string) []*thunderdome.Storybo
 	var goals = make([]*thunderdome.StoryboardGoal, 0)
 
 	goalRows, goalsErr := d.DB.Query(
-		`SELECT * FROM thunderdome.sb_goals_get($1);`,
+		`SELECT
+            sg.id,
+            sg.sort_order,
+            sg.name,
+            COALESCE(json_agg(to_jsonb(t) - 'goal_id' ORDER BY t.sort_order) FILTER (WHERE t.id IS NOT NULL), '[]') AS columns,
+            COALESCE(json_agg(to_jsonb(sgp) - 'goal_id') FILTER (WHERE sgp.goal_id IS NOT NULL), '[]') AS personas
+        FROM thunderdome.storyboard_goal sg
+        LEFT JOIN (
+            SELECT
+                sc.*,
+                COALESCE(
+                    json_agg(stss ORDER BY stss.sort_order) FILTER (WHERE stss.id IS NOT NULL), '[]'
+                ) AS stories,
+                COALESCE(
+                    json_agg(scp) FILTER (WHERE scp.column_id IS NOT NULL), '[]'
+                ) AS personas
+            FROM thunderdome.storyboard_column sc
+            LEFT JOIN (
+                SELECT cp.column_id, sp.*
+                FROM thunderdome.storyboard_column_persona cp
+                LEFT JOIN thunderdome.storyboard_persona sp ON sp.id = cp.persona_id
+            ) scp ON scp.column_id = sc.id
+            LEFT JOIN (
+                SELECT
+                    ss.*,
+                    COALESCE(
+                        json_agg(stcm ORDER BY stcm.created_date) FILTER (WHERE stcm.id IS NOT NULL), '[]'
+                    ) AS comments
+                FROM thunderdome.storyboard_story ss
+                LEFT JOIN thunderdome.storyboard_story_comment stcm ON stcm.story_id = ss.id
+                GROUP BY ss.id
+            ) stss ON stss.column_id = sc.id
+            GROUP BY sc.id
+        ) t ON t.goal_id = sg.id
+        LEFT JOIN (
+            SELECT gp.goal_id, sp.*
+            FROM thunderdome.storyboard_goal_persona gp
+            LEFT JOIN thunderdome.storyboard_persona sp ON sp.id = gp.persona_id
+        ) sgp ON sgp.goal_id = sg.id
+        WHERE sg.storyboard_id = $1
+        GROUP BY sg.id
+        ORDER BY sg.sort_order;`,
 		StoryboardID,
 	)
 	if goalsErr == nil {
