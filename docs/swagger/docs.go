@@ -7508,6 +7508,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "teamId": {
+                    "type": "string"
+                },
                 "updatedDate": {
                     "type": "string"
                 },

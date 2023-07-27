@@ -32,6 +32,7 @@ type Poker struct {
 	HideVoterIdentity    bool         `json:"hideVoterIdentity"`
 	JoinCode             string       `json:"joinCode"`
 	FacilitatorCode      string       `json:"leaderCode,omitempty"`
+	TeamID               string       `json:"teamId"`
 	CreatedDate          time.Time    `json:"createdDate"`
 	UpdatedDate          time.Time    `json:"updatedDate"`
 }
@@ -63,7 +64,7 @@ type Story struct {
 type PokerDataSvc interface {
 	CreateGame(ctx context.Context, FacilitatorID string, Name string, PointValuesAllowed []string, Stories []*Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*Poker, error)
 	TeamCreateGame(ctx context.Context, TeamID string, FacilitatorID string, Name string, PointValuesAllowed []string, Stories []*Story, AutoFinishVoting bool, PointAverageRounding string, JoinCode string, FacilitatorCode string, HideVoterIdentity bool) (*Poker, error)
-	UpdateGame(PokerID string, Name string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, FacilitatorCode string) error
+	UpdateGame(PokerID string, Name string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, FacilitatorCode string, TeamID string) error
 	GetFacilitatorCode(PokerID string) (string, error)
 	GetGame(PokerID string, UserID string) (*Poker, error)
 	GetGamesByUser(UserID string, Limit int, Offset int) ([]*Poker, int, error)

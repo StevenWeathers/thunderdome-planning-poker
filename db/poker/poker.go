@@ -135,6 +135,7 @@ func (d *Service) TeamCreateGame(ctx context.Context, TeamID string, Facilitator
 		Facilitators:         make([]string, 0),
 		JoinCode:             JoinCode,
 		FacilitatorCode:      FacilitatorCode,
+		TeamID:               TeamID,
 	}
 	b.Facilitators = append(b.Facilitators, FacilitatorID)
 
@@ -179,7 +180,7 @@ func (d *Service) TeamCreateGame(ctx context.Context, TeamID string, Facilitator
 }
 
 // UpdateGame updates the game by ID
-func (d *Service) UpdateGame(PokerID string, Name string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, FacilitatorCode string) error {
+func (d *Service) UpdateGame(PokerID string, Name string, PointValuesAllowed []string, AutoFinishVoting bool, PointAverageRounding string, HideVoterIdentity bool, JoinCode string, FacilitatorCode string, TeamID string) error {
 	var pointValuesJSON, _ = json.Marshal(PointValuesAllowed)
 	var encryptedJoinCode string
 	var encryptedLeaderCode string
@@ -202,9 +203,11 @@ func (d *Service) UpdateGame(PokerID string, Name string, PointValuesAllowed []s
 
 	if _, err := d.DB.Exec(`
 		UPDATE thunderdome.poker
-		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5, hide_voter_identity = $6, join_code = $7, leader_code = $8, updated_date = NOW()
+		SET name = $2, point_values_allowed = $3, auto_finish_voting = $4, point_average_rounding = $5,
+		 hide_voter_identity = $6, join_code = $7, leader_code = $8, updated_date = NOW(), team_id = NULLIF($9, '')::uuid
 		WHERE id = $1`,
-		PokerID, Name, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding, HideVoterIdentity, encryptedJoinCode, encryptedLeaderCode,
+		PokerID, Name, string(pointValuesJSON), AutoFinishVoting, PointAverageRounding,
+		HideVoterIdentity, encryptedJoinCode, encryptedLeaderCode, TeamID,
 	); err != nil {
 		d.Logger.Error("update poker error", zap.Error(err))
 		return errors.New("unable to revise poker")
@@ -250,14 +253,15 @@ func (d *Service) GetGame(PokerID string, UserID string) (*thunderdome.Poker, er
 	}
 
 	// get game
-	var ActiveStoryID sql.NullString
 	var pv string
 	var facilitators string
 	var JoinCode string
 	var FacilitatorCode string
 	e := d.DB.QueryRow(
 		`
-		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.hide_voter_identity, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''), b.created_date, b.updated_date,
+		SELECT b.id, b.name, b.voting_locked, COALESCE(b.active_story_id::text, ''), b.point_values_allowed, b.auto_finish_voting, 
+		b.point_average_rounding, b.hide_voter_identity, COALESCE(b.join_code, ''), COALESCE(b.leader_code, ''),
+		 COALESCE(b.team_id::text, ''), b.created_date, b.updated_date,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS leaders
 		FROM thunderdome.poker b
 		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
@@ -268,13 +272,14 @@ func (d *Service) GetGame(PokerID string, UserID string) (*thunderdome.Poker, er
 		&b.Id,
 		&b.Name,
 		&b.VotingLocked,
-		&ActiveStoryID,
+		&b.ActiveStoryID,
 		&pv,
 		&b.AutoFinishVoting,
 		&b.PointAverageRounding,
 		&b.HideVoterIdentity,
 		&JoinCode,
 		&FacilitatorCode,
+		&b.TeamID,
 		&b.CreatedDate,
 		&b.UpdatedDate,
 		&facilitators,
@@ -286,7 +291,6 @@ func (d *Service) GetGame(PokerID string, UserID string) (*thunderdome.Poker, er
 
 	_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
 	_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-	b.ActiveStoryID = ActiveStoryID.String
 
 	isFacilitator := db.Contains(b.Facilitators, UserID)
 
@@ -329,7 +333,8 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 	}
 
 	gameRows, gamesErr := d.DB.Query(`
-		SELECT b.id, b.name, b.voting_locked, b.active_story_id, b.point_values_allowed, b.auto_finish_voting, b.point_average_rounding, b.created_date, b.updated_date,
+		SELECT b.id, b.name, b.voting_locked, COALESCE(b.active_story_id::text, ''), b.point_values_allowed, b.auto_finish_voting,
+		 b.point_average_rounding, b.created_date, b.updated_date,
 		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS stories,
 		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators
 		FROM thunderdome.poker b
@@ -349,7 +354,6 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 		var stories string
 		var pv string
 		var facilitators string
-		var ActiveStoryID sql.NullString
 		var b = &thunderdome.Poker{
 			Users:              make([]*thunderdome.PokerUser, 0),
 			Stories:            make([]*thunderdome.Story, 0),
@@ -362,7 +366,7 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 			&b.Id,
 			&b.Name,
 			&b.VotingLocked,
-			&ActiveStoryID,
+			&b.ActiveStoryID,
 			&pv,
 			&b.AutoFinishVoting,
 			&b.PointAverageRounding,
@@ -376,7 +380,7 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 			_ = json.Unmarshal([]byte(stories), &b.Stories)
 			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
 			_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
-			b.ActiveStoryID = ActiveStoryID.String
+
 			games = append(games, b)
 		}
 	}

@@ -607,6 +607,8 @@ definitions:
         items:
           type: string
         type: array
+      teamId:
+        type: string
       updatedDate:
         type: string
       users:

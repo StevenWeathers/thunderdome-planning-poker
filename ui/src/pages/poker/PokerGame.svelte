@@ -24,6 +24,7 @@
   export let notifications;
   export let eventTag;
   export let router;
+  export let xfetch;
 
   const { AllowRegistration, AllowGuests } = AppConfig;
   const loginOrRegister: string =
@@ -67,6 +68,7 @@
     updatedDate: undefined,
     users: undefined,
     votingLocked: false,
+    teamId: '',
   };
   let currentStory = { ...defaultStory };
   let showEditBattle: boolean = false;
@@ -251,6 +253,7 @@
         battle.pointAverageRounding = revisedBattle.pointAverageRounding;
         battle.joinCode = revisedBattle.joinCode;
         battle.hideVoterIdentity = revisedBattle.hideVoterIdentity;
+        battle.teamId = revisedBattle.teamId;
         break;
       case 'battle_conceded':
         // poker over, goodbye.
@@ -669,6 +672,9 @@
         toggleEditBattle="{toggleEditBattle}"
         joinCode="{battle.joinCode}"
         leaderCode="{battle.leaderCode}"
+        teamId="{battle.teamId}"
+        notifications="{notifications}"
+        xfetch="{xfetch}"
       />
     {/if}
   {:else if JoinPassRequired}

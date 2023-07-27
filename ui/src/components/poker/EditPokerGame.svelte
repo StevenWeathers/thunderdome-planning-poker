@@ -4,12 +4,14 @@
   import DownCarrotIcon from '../icons/ChevronDown.svelte';
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
+  import { warrior as user } from '../../stores';
+  import { onMount } from 'svelte';
 
   const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];
 
   export let toggleEditBattle = () => {};
-  export let handleBattleEdit = () => {};
+  export let handleBattleEdit = (battle: any) => {};
   export let points = [];
   export let battleName = '';
   export let votingLocked = false;
@@ -18,11 +20,27 @@
   export let joinCode = '';
   export let leaderCode = '';
   export let hideVoterIdentity = false;
+  export let teamId = '';
+  export let notifications: any;
+  export let xfetch: any;
 
   let checkedPointColor =
     'border-green-500 bg-green-100 text-green-600 dark:bg-gray-900 dark:text-lime-500 dark:border-lime-500';
   let uncheckedPointColor =
     'border-gray-300 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300';
+
+  let teams = [];
+
+  function getTeams() {
+    xfetch(`/api/users/${$user.id}/teams?limit=100`)
+      .then(res => res.json())
+      .then(function (result) {
+        teams = result.data;
+      })
+      .catch(function () {
+        notifications.danger($LL.getTeamsError());
+      });
+  }
 
   function saveBattle(e) {
     e.preventDefault();
@@ -39,10 +57,15 @@
       hideVoterIdentity,
       joinCode,
       leaderCode,
+      teamId,
     };
 
     handleBattleEdit(battle);
   }
+
+  onMount(() => {
+    getTeams();
+  });
 </script>
 
 <Modal
@@ -206,6 +229,39 @@
                 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
           id="leaderCode"
         />
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label
+        class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"
+        for="selectedTeam"
+      >
+        {$LL.associateTeam()}
+        {#if !AppConfig.RequireTeams}{$LL.optional()}{/if}
+      </label>
+      <div class="relative">
+        <select
+          bind:value="{teamId}"
+          class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                  text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
+                  focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
+          id="selectedTeam"
+          name="selectedTeam"
+        >
+          <option value="" disabled>{$LL.selectTeam()}</option>
+          {#each teams as team}
+            <option value="{team.id}">
+              {team.name}
+            </option>
+          {/each}
+        </select>
+        <div
+          class="pointer-events-none absolute inset-y-0 end-0 flex
+                  items-center px-2 text-gray-700 dark:text-gray-400"
+        >
+          <DownCarrotIcon />
+        </div>
       </div>
     </div>
 

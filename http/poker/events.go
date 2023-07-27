@@ -149,6 +149,7 @@ func (b *Service) Revise(ctx context.Context, BattleID string, UserID string, Ev
 		HideVoterIdentity    bool     `json:"hideVoterIdentity"`
 		JoinCode             string   `json:"joinCode"`
 		LeaderCode           string   `json:"leaderCode"`
+		TeamID               string   `json:"teamId"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &rb)
 	if err != nil {
@@ -164,6 +165,7 @@ func (b *Service) Revise(ctx context.Context, BattleID string, UserID string, Ev
 		rb.HideVoterIdentity,
 		rb.JoinCode,
 		rb.LeaderCode,
+		rb.TeamID,
 	)
 	if err != nil {
 		return nil, err, false

@@ -14,6 +14,7 @@ export type PokerGame = {
   updatedDate: Date;
   users: Array<PokerUser>;
   votingLocked: boolean;
+  teamId?: string;
 };
 
 export type PokerStory = {
