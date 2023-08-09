@@ -239,7 +239,7 @@ type planRequestBody struct {
 	AcceptanceCriteria string `json:"acceptanceCriteria"`
 }
 
-// handlePokerStoryAdd handles adding a plan to poker
+// handlePokerStoryAdd handles adding a story to poker
 // @Summary      Create Poker Story
 // @Description  Creates a poker story
 // @Param        battleId  path  string           true  "the poker game ID"
@@ -282,6 +282,45 @@ func (s *Service) handlePokerStoryAdd(b *poker.Service) http.HandlerFunc {
 		}
 
 		err := b.APIEvent(r.Context(), BattleID, UserID, "add_plan", string(body))
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handlePokerStoryAdd handles deleting a story from poker
+// @Summary      Delete Poker Story
+// @Description  Deletes a poker story
+// @Param        battleId  path  string           true  "the poker game ID"
+// @Param        planId    path  string           true  "the story ID"
+// @Tags         poker
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /battles/{battleId}/plans/{planId} [delete]
+func (s *Service) handlePokerStoryDelete(b *poker.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		BattleID := vars["battleId"]
+		idErr := validate.Var(BattleID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		PlanID := vars["planId"]
+		pidErr := validate.Var(PlanID, "required,uuid")
+		if pidErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, pidErr.Error()))
+			return
+		}
+		UserID := r.Context().Value(contextKeyUserID).(string)
+
+		err := b.APIEvent(r.Context(), BattleID, UserID, "burn_plan", PlanID)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
