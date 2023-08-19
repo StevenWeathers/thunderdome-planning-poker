@@ -54,15 +54,11 @@ func (d *Service) GetRetroActions(RetroID string) []*thunderdome.RetroAction {
 
 	actionRows, actionsErr := d.DB.Query(
 		`SELECT a.id, a.content, a.completed,
- 		COALESCE(json_agg(to_jsonb(t) - 'action_id') FILTER (WHERE t.id IS NOT NULL), '[]') AS assignees
+ 		COALESCE(json_agg(json_build_object('id', u.id, 'name', u.name, 'email', COALESCE(u.email, ''), 'avatar', u.avatar))
+ 		 FILTER (WHERE u.id IS NOT NULL), '[]') AS assignees
 		FROM thunderdome.retro_action a
-		LEFT JOIN LATERAL (
-			SELECT t.action_id, u.id, u.name, u.email, u.avatar
-			FROM thunderdome.retro_action_assignee as t
-			JOIN thunderdome.users u ON t.user_id = u.id
-			WHERE 
-				a.id = t.action_id
-		) as t ON 1=1
+		LEFT JOIN thunderdome.retro_action_assignee as t ON t.action_id = a.id
+		LEFT JOIN thunderdome.users u ON t.user_id = u.id
 		WHERE a.retro_id = $1
 		GROUP BY a.id
 		ORDER BY MAX(a.created_date) ASC;`,
@@ -124,16 +120,12 @@ func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Comp
 				COALESCE(
 					json_agg(rac ORDER BY rac.created_date) FILTER (WHERE rac.id IS NOT NULL), '[]'
 				) AS comments,
-				COALESCE(json_agg(to_jsonb(t) - 'action_id') FILTER (WHERE t.id IS NOT NULL), '[]') AS assignees
+				COALESCE(json_agg(json_build_object('id', u.id, 'name', u.name, 'email', COALESCE(u.email, ''), 'avatar', u.avatar))
+ 		 			FILTER (WHERE u.id IS NOT NULL), '[]') AS assignees
 				FROM thunderdome.retro_action ra
 				LEFT JOIN thunderdome.retro_action_comment rac ON rac.action_id = ra.id
-				LEFT JOIN LATERAL (
-					SELECT t.action_id, u.id, u.name, u.email, u.avatar
-					FROM thunderdome.retro_action_assignee as t
-					JOIN thunderdome.users u ON t.user_id = u.id 
-					WHERE 
-						ra.id = t.action_id
-				) as t ON 1=1
+				LEFT JOIN thunderdome.retro_action_assignee as t ON t.action_id = ra.id
+				LEFT JOIN thunderdome.users u ON t.user_id = u.id
 				WHERE ra.retro_id IN (SELECT id FROM thunderdome.retro WHERE team_id = $1) AND ra.completed = $2
 				GROUP BY ra.id, ra.created_date
 				ORDER BY ra.created_date DESC
