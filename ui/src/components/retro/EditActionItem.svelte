@@ -143,9 +143,9 @@
       </div>
     </div>
     {#if action.assignees.length}
-      <div class="flex w-full mt-4">
+      <div class="grid grid-cols-2 gap-4 mt-4">
         {#each action.assignees as assignee}
-          <div class="flex w-1/2 text-gray-700 dark:text-gray-400 mb-2">
+          <div class="flex text-gray-700 dark:text-gray-400 mb-2">
             <div class="w-1/4">
               <UserAvatar
                 warriorId="{assignee.id}"
