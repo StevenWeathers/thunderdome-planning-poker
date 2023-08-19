@@ -12,6 +12,7 @@ type Color struct {
 type RetroUser struct {
 	ID           string `json:"id"`
 	Name         string `json:"name"`
+	Email        string `json:"email"`
 	Active       bool   `json:"active"`
 	Avatar       string `json:"avatar"`
 	GravatarHash string `json:"gravatarHash"`

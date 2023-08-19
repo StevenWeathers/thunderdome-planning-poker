@@ -127,7 +127,7 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 
 	var a = &apiService
 	pokerSvc := poker.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.PokerDataSvc)
-	retroSvc := retro.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.RetroDataSvc)
+	retroSvc := retro.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.RetroDataSvc, a.Email)
 	storyboardSvc := storyboard.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.StoryboardDataSvc)
 	checkinSvc := checkin.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.CheckinDataSvc, a.TeamDataSvc)
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"

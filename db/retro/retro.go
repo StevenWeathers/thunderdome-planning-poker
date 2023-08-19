@@ -307,11 +307,11 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w thunderdome.RetroUser
-			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
+			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.Email); err != nil {
 				d.Logger.Error("get retro users error", zap.Error(err))
 			} else {
-				if w.GravatarHash != "" {
-					w.GravatarHash = db.CreateGravatarHash(w.GravatarHash)
+				if w.Email != "" {
+					w.GravatarHash = db.CreateGravatarHash(w.Email)
 				} else {
 					w.GravatarHash = db.CreateGravatarHash(w.ID)
 				}
@@ -429,8 +429,11 @@ func (d *Service) RetroAbandon(RetroID string, UserID string) ([]*thunderdome.Re
 // RetroAdvancePhase sets the phase for the retro
 func (d *Service) RetroAdvancePhase(RetroID string, Phase string) (*thunderdome.Retro, error) {
 	var b thunderdome.Retro
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.retro SET updated_date = NOW(), phase = $2 WHERE id = $1;`, RetroID, Phase); err != nil {
+	err := d.DB.QueryRow(
+		`UPDATE thunderdome.retro SET updated_date = NOW(), phase = $2 WHERE id = $1 RETURNING name;`,
+		RetroID, Phase,
+	).Scan(&b.Name)
+	if err != nil {
 		d.Logger.Error("CALL thunderdome.set_retro_phase error", zap.Error(err))
 		return nil, errors.New("Unable to advance phase")
 	}
