@@ -23,6 +23,7 @@
   import UserCard from '../../components/retro/UserCard.svelte';
   import InviteUser from '../../components/retro/InviteUser.svelte';
   import PageLayout from '../../components/PageLayout.svelte';
+  import UserAvatar from '../../components/user/UserAvatar.svelte';
 
   export let retroId;
   export let notifications;
@@ -785,6 +786,16 @@
                       </div>
                       <div class="flex-grow dark:text-white">
                         <div class="pe-2">
+                          {#each item.assignees as assignee}
+                            <UserAvatar
+                              warriorId="{assignee.id}"
+                              gravatarHash="{assignee.gravatarHash}"
+                              avatar="{assignee.avatar}"
+                              userName="{assignee.name}"
+                              width="24"
+                              class="inline-block me-2"
+                            />
+                          {/each}
                           {item.content}
                         </div>
                       </div>

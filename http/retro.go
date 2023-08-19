@@ -303,6 +303,128 @@ func (s *Service) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 	}
 }
 
+type actionAddAssigneeRequestBody struct {
+	ActionID string `json:"id" swaggerignore:"true" validate:"required,uuid"`
+	UserID   string `json:"user_id" validate:"required,uuid"`
+}
+
+// handleRetroActionAssigneeAdd handles adding a retro action assignee
+// @Summary      Retro Action Add Assignee
+// @Description  Add a retro action assignee
+// @Param        retroId     path  string                   true  "the retro ID"
+// @Param        actionId    path  string                   true  "the action ID"
+// @Param        actionItem  body  actionAddAssigneeRequestBody  true  "updated action item"
+// @Tags         retro
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros/{retroId}/actions/{actionId}/assignees [post]
+func (s *Service) handleRetroActionAssigneeAdd(rs *retro.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var ra = actionAddAssigneeRequestBody{}
+
+		vars := mux.Vars(r)
+		RetroID := vars["retroId"]
+		idErr := validate.Var(RetroID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		ActionID := vars["actionId"]
+		UserID := r.Context().Value(contextKeyUserID).(string)
+
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+		jsonErr := json.Unmarshal(body, &ra)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		ra.ActionID = ActionID
+		inputErr := validate.Struct(ra)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+		updatedActionJson, _ := json.Marshal(ra)
+
+		err := rs.APIEvent(r.Context(), RetroID, UserID, "action_assignee_add", string(updatedActionJson))
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+type actionRemoveAssigneeRequestBody struct {
+	ActionID string `json:"id" swaggerignore:"true" validate:"required,uuid"`
+	UserID   string `json:"user_id" validate:"required,uuid"`
+}
+
+// handleRetroActionAssigneeRemove handles removing a retro action assignee
+// @Summary      Retro Action Remove Assignee
+// @Description  Remove an assignee from a retro action
+// @Param        retroId     path  string                   true  "the retro ID"
+// @Param        actionId    path  string                   true  "the action ID"
+// @Param        actionItem  body  actionRemoveAssigneeRequestBody  true  "updated action item"
+// @Tags         retro
+// @Produce      json
+// @Success      200  object  standardJsonResponse{}
+// @Success      403  object  standardJsonResponse{}
+// @Success      500  object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /retros/{retroId}/actions/{actionId}/assignees [delete]
+func (s *Service) handleRetroActionAssigneeRemove(rs *retro.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var ra = actionRemoveAssigneeRequestBody{}
+
+		vars := mux.Vars(r)
+		RetroID := vars["retroId"]
+		idErr := validate.Var(RetroID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+		ActionID := vars["actionId"]
+		UserID := r.Context().Value(contextKeyUserID).(string)
+
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+		jsonErr := json.Unmarshal(body, &ra)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		ra.ActionID = ActionID
+		inputErr := validate.Struct(ra)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+		updatedActionJson, _ := json.Marshal(ra)
+
+		err := rs.APIEvent(r.Context(), RetroID, UserID, "action_assignee_remove", string(updatedActionJson))
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 type actionCommentRequestBody struct {
 	Comment string `json:"comment" validate:"required"`
 }

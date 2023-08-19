@@ -21,6 +21,7 @@
     warriorId="{user.id}"
     avatar="{user.avatar}"
     gravatarHash="{user.gravatarHash}"
+    userName="{user.name}"
   />
   <p
     class="ms-2 text-l font-bold leading-tight truncate"

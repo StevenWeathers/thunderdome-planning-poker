@@ -71,6 +71,7 @@
       warriorId="{warrior.id}"
       avatar="{warrior.avatar}"
       gravatarHash="{warrior.gravatarHash}"
+      userName="{warrior.name}"
       class="rounded-full"
       width="68"
     />

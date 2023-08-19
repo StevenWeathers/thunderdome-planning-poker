@@ -3323,6 +3323,128 @@ const docTemplate = `{
                 }
             }
         },
+        "/retros/{retroId}/actions/{actionId}/assignees": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Add a retro action assignee",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retro"
+                ],
+                "summary": "Retro Action Add Assignee",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the retro ID",
+                        "name": "retroId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the action ID",
+                        "name": "actionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated action item",
+                        "name": "actionItem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.actionAddAssigneeRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Remove an assignee from a retro action",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "retro"
+                ],
+                "summary": "Retro Action Remove Assignee",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the retro ID",
+                        "name": "retroId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the action ID",
+                        "name": "actionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated action item",
+                        "name": "actionItem",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.actionRemoveAssigneeRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/retros/{retroId}/actions/{actionId}/comments": {
             "post": {
                 "security": [
@@ -6659,6 +6781,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "http.actionAddAssigneeRequestBody": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "http.actionCommentRequestBody": {
             "type": "object",
             "required": [
@@ -6666,6 +6799,17 @@ const docTemplate = `{
             ],
             "properties": {
                 "comment": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.actionRemoveAssigneeRequestBody": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -7688,6 +7832,12 @@ const docTemplate = `{
         "thunderdome.RetroAction": {
             "type": "object",
             "properties": {
+                "assignees": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/thunderdome.User"
+                    }
+                },
                 "comments": {
                     "type": "array",
                     "items": {

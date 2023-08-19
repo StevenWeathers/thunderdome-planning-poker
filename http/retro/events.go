@@ -184,6 +184,50 @@ func (b *Service) UpdateAction(ctx context.Context, RetroID string, UserID strin
 	return msg, nil, false
 }
 
+// ActionAddAssignee adds a retro action assignee
+func (b *Service) ActionAddAssignee(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		ActionID string `json:"id"`
+		UserID   string `json:"user_id"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
+
+	items, err := b.RetroService.RetroActionAssigneeAdd(RetroID, rs.ActionID, rs.UserID)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(items)
+	msg := createSocketEvent("action_updated", string(updatedItems), "")
+
+	return msg, nil, false
+}
+
+// ActionRemoveAssignee removes a retro action assignee
+func (b *Service) ActionRemoveAssignee(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		ActionID string `json:"id"`
+		UserID   string `json:"user_id"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
+
+	items, err := b.RetroService.RetroActionAssigneeDelete(RetroID, rs.ActionID, rs.UserID)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(items)
+	msg := createSocketEvent("action_updated", string(updatedItems), "")
+
+	return msg, nil, false
+}
+
 // DeleteAction deletes a retro action
 func (b *Service) DeleteAction(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {

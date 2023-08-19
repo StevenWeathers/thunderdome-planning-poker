@@ -574,6 +574,7 @@
                           warriorId="{checkin.user.id}"
                           avatar="{checkin.user.avatar}"
                           gravatarHash="{checkin.user.gravatarHash}"
+                          userName="{checkin.user.name}"
                           options="{{
                             class: 'w-full h-full rounded-full',
                           }}"

@@ -602,7 +602,16 @@
                 <TableRow itemIndex="{i}">
                   <RowCol>
                     <div class="whitespace-pre-wrap">
-                      {item.content}
+                      {#each item.assignees as assignee}
+                        <UserAvatar
+                          warriorId="{assignee.id}"
+                          gravatarHash="{assignee.gravatarHash}"
+                          avatar="{assignee.avatar}"
+                          userName="{assignee.name}"
+                          width="24"
+                          class="inline-block me-2"
+                        />
+                      {/each}{item.content}
                     </div>
                   </RowCol>
                   <RowCol>
@@ -763,6 +772,7 @@
                     warriorId="{user.id}"
                     avatar="{user.avatar}"
                     gravatarHash="{user.gravatarHash}"
+                    userName="{user.name}"
                     width="48"
                     class="h-10 w-10 rounded-full"
                   />

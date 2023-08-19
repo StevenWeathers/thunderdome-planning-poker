@@ -8,6 +8,7 @@
   export let warriorId = '';
   export let gravatarHash = '';
   export let avatar = '';
+  export let userName = '';
   export let width = 48;
   export { klass as class };
   export let options = {};
@@ -17,6 +18,7 @@
   <img
     src="https://avatars.dicebear.com/api/{avatar}/{warriorId}.svg?w={width}"
     alt="{$LL.avatarAltText()}"
+    title="{userName}"
     class="{klass}"
     {...options}
   />
@@ -26,6 +28,7 @@
       src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar}&r=g"
       alt="{$LL.avatarAltText()}"
       class="{klass}"
+      title="{userName}"
       {...options}
     />
   {:else}
@@ -33,6 +36,7 @@
       src="https://gravatar.com/avatar/{warriorId}?s={width}&d={avatar}&r=g"
       alt="{$LL.avatarAltText()}"
       class="{klass}"
+      title="{userName}"
       {...options}
     />
   {/if}
@@ -41,6 +45,7 @@
     src="https://robohash.org/{warriorId}.png?set={avatar}&size={width}x{width}"
     alt="{$LL.avatarAltText()}"
     class="{klass}"
+    title="{userName}"
     {...options}
   />
 {:else if AvatarService === 'govatar'}
@@ -48,6 +53,7 @@
     src="{PathPrefix}/avatar/{width}/{warriorId}/{avatar}"
     alt="{$LL.avatarAltText()}"
     class="{klass}"
+    title="{userName}"
     {...options}
   />
 {:else if AvatarService === 'goadorable'}
@@ -55,6 +61,7 @@
     src="{PathPrefix}/avatar/{width}/{warriorId}"
     alt="{$LL.avatarAltText()}"
     class="{klass}"
+    title="{userName}"
     {...options}
   />
 {/if}
