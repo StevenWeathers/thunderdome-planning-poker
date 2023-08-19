@@ -3,7 +3,7 @@
   import Modal from '../Modal.svelte';
   import HollowButton from '../HollowButton.svelte';
   import UserIcon from '../icons/UserIcon.svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
 
   export let toggleStoryForm = () => {};
@@ -432,8 +432,8 @@
             </HollowButton>
           {:else}
             <HollowButton color="green" onClick="{markOpen}"
-              >Reopen story</HollowButton
-            >
+              >Reopen story
+            </HollowButton>
           {/if}
         </div>
         <div class="text-right">

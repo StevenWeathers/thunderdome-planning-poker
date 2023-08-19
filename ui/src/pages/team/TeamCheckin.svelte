@@ -10,7 +10,7 @@
   import Comments from '../../components/checkin/Comments.svelte';
   import Gauge from '../../components/Gauge.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
   import {

@@ -3,7 +3,7 @@
 
   import PageLayout from '../../components/PageLayout.svelte';
   import CreateBattle from '../../components/poker/CreatePokerGame.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import Pagination from '../../components/Pagination.svelte';
@@ -23,7 +23,7 @@
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
 
     xfetch(
-      `/api/users/${$warrior.id}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
+      `/api/users/${$user.id}/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
     )
       .then(res => res.json())
       .then(function (result) {
@@ -46,7 +46,7 @@
   };
 
   onMount(() => {
-    if (!$warrior.id) {
+    if (!$user.id) {
       router.route(appRoutes.login);
       return;
     }

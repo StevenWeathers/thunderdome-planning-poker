@@ -8,7 +8,7 @@
   import AddUser from '../../components/user/AddUser.svelte';
   import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
@@ -192,7 +192,7 @@
   }
 
   onMount(() => {
-    if (!$warrior.id || !validateUserIsRegistered($warrior)) {
+    if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
       return;
     }

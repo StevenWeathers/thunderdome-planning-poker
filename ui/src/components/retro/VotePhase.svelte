@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import ThumbsUp from '../icons/ThumbsUp.svelte';
 
   export let groups = [];

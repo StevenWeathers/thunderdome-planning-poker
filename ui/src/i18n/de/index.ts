@@ -617,6 +617,7 @@ const de: Translation = {
   chooseLocalePlaceholder: 'Choose your preferred locale (optional)',
   importPlans: '{friendly|{false:Import Plans, true:Import Stories}}',
   selectFile: 'Select file...',
+  theme: 'Theme',
 };
 
 export default de;

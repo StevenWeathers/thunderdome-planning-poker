@@ -17,7 +17,7 @@
   import EditStoryboard from '../../components/storyboard/EditStoryboard.svelte';
   import UpCarrotIcon from '../../components/icons/ChevronUp.svelte';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import BecomeFacilitator from '../../components/BecomeFacilitator.svelte';
   import UsersIcon from '../../components/icons/UsersIcon.svelte';

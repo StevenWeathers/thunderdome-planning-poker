@@ -24,6 +24,7 @@ type User struct {
 	LastActive           time.Time `json:"lastActive"`
 	Disabled             bool      `json:"disabled"`
 	MFAEnabled           bool      `json:"mfaEnabled"`
+	Theme                string    `json:"theme"`
 }
 
 type UserDataSvc interface {
@@ -35,9 +36,9 @@ type UserDataSvc interface {
 	CreateUser(ctx context.Context, UserName string, UserEmail string, UserPassword string) (NewUser *User, VerifyID string, RegisterErr error)
 	CreateUserGuest(ctx context.Context, UserName string) (*User, error)
 	CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *User, VerifyID string, RegisterErr error)
-	UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error
-	UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error
-	UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error
+	UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error
+	UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error
+	UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error
 	PromoteUser(ctx context.Context, UserID string) error
 	DemoteUser(ctx context.Context, UserID string) error
 	DisableUser(ctx context.Context, UserID string) error

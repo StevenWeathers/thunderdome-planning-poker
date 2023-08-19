@@ -4,7 +4,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import HollowButton from '../../components/HollowButton.svelte';
   import SolidButton from '../../components/SolidButton.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
@@ -266,7 +266,7 @@
   }
 
   onMount(() => {
-    if (!$warrior.id || !validateUserIsRegistered($warrior)) {
+    if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
       return;
     }

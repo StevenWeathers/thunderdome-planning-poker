@@ -4,7 +4,7 @@
   import LL from '../i18n/i18n-svelte';
 
   import { AppConfig, appRoutes } from '../config';
-  import { warrior } from '../stores';
+  import { user } from '../stores';
 
   export let xfetch;
   export let eventTag;
@@ -73,7 +73,7 @@
                         hover:bg-transparent hover:text-gray-800 font-semibold
                         text-yellow-thunder py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
-            href="{$warrior.id ? appRoutes.games : appRoutes.register}"
+            href="{$user.id ? appRoutes.games : appRoutes.register}"
           >
             {$LL.battleCreate({
               friendly: AppConfig.FriendlyUIVerbs,
@@ -205,7 +205,7 @@
                         hover:bg-transparent hover:text-gray-800 font-semibold
                         text-teal-400 py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
-            href="{$warrior.id ? appRoutes.retros : appRoutes.register}"
+            href="{$user.id ? appRoutes.retros : appRoutes.register}"
           >
             Create Retro
           </a>
@@ -280,7 +280,7 @@
                         hover:bg-transparent hover:text-gray-800 font-semibold
                         text-violet-400 py-4 px-10 border
                         hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
-            href="{$warrior.id ? appRoutes.storyboards : appRoutes.register}"
+            href="{$user.id ? appRoutes.storyboards : appRoutes.register}"
           >
             Create Storyboard
           </a>

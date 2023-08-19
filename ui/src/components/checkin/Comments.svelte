@@ -2,7 +2,7 @@
   import CommentIcon from '../icons/CommentIcon.svelte';
   import SolidButton from '../SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import Comment from './Comment.svelte';
 
   export let checkin = {};

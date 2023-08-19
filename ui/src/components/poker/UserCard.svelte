@@ -6,7 +6,7 @@
   import UserAvatar from '../user/UserAvatar.svelte';
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import { warrior as activeWarrior } from '../../stores';
+  import { user as sessionUser } from '../../stores';
   import VoteIcon from '../icons/VoteIcon.svelte';
   import BecomeLeader from './BecomeFacilitator.svelte';
 
@@ -142,7 +142,7 @@
               {$LL.warriorNudge()}
             </button>
           {/if}
-        {:else if warrior.id === $activeWarrior.id}
+        {:else if warrior.id === $sessionUser.id}
           <button
             on:click="{toggleBecomeLeader}"
             class="inline-block align-baseline text-sm
@@ -153,7 +153,7 @@
             {$LL.becomeLeader()}
           </button>
         {/if}
-        {#if autoFinishVoting && warrior.id === $activeWarrior.id}
+        {#if autoFinishVoting && warrior.id === $sessionUser.id}
           <button
             on:click="{toggleSpectator}"
             class="inline-block align-baseline text-sm text-blue-500

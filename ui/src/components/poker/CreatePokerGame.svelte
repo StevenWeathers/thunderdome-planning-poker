@@ -5,7 +5,7 @@
   import HollowButton from '../HollowButton.svelte';
   import JiraImport from './JiraImport.svelte';
   import DownCarrotIcon from '../icons/ChevronDown.svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import CsvImport from './CsvImport.svelte';

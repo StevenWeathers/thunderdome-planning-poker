@@ -1,6 +1,6 @@
 <script lang="ts">
   import UserAvatar from '../user/UserAvatar.svelte';
-  import { warrior } from '../../stores';
+  import { user as sessionUser } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
 
   export let user = {};
@@ -31,14 +31,14 @@
     {#if facilitators.includes(user.id)}
       <div class="text-indigo-500 dark:text-violet-400">
         {$LL.facilitator()}
-        {#if facilitators.includes($warrior.id)}
+        {#if facilitators.includes($sessionUser.id)}
           <button
             class="text-red-500 text-sm"
             on:click="{handleRemoveFacilitator(user.id)}">{$LL.remove()}</button
           >
         {/if}
       </div>
-    {:else if facilitators.includes($warrior.id)}
+    {:else if facilitators.includes($sessionUser.id)}
       <div>
         <button
           class="text-blue-500 dark:text-sky-400 text-sm"

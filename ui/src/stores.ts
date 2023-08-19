@@ -40,7 +40,7 @@ function initWarrior() {
   };
 }
 
-export const warrior = initWarrior();
+export const user = initWarrior();
 
 function initActiveAlerts() {
   const activeAlerts = typeof ActiveAlerts != 'undefined' ? ActiveAlerts : [];

@@ -4,7 +4,7 @@
   import DownCarrotIcon from '../icons/ChevronDown.svelte';
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import { onMount } from 'svelte';
 
   const allowedPointValues = AppConfig.AllowedPointValues;

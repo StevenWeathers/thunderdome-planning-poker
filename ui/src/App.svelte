@@ -8,7 +8,7 @@
 
   import { AppConfig, appRoutes } from './config';
   import apiclient from './apiclient';
-  import { dir, warrior } from './stores';
+  import { dir, user } from './stores';
   import eventTag from './eventTag';
 
   import Notifications from './components/Notifications.svelte';
@@ -57,7 +57,7 @@
   let notifications;
 
   let activeWarrior;
-  warrior.subscribe(w => {
+  user.subscribe(w => {
     activeWarrior = w;
   });
 
@@ -428,7 +428,9 @@
 
   function handle401(skipRedirect) {
     eventTag('session_expired', 'engagement', 'unauthorized', () => {
-      warrior.delete();
+      user.delete();
+      localStorage.removeItem('theme');
+      window.setTheme();
       if (!skipRedirect) {
         router.route(appRoutes.login);
       }
@@ -443,12 +445,6 @@
 
   onDestroy(router.unlisten);
 </script>
-
-<style lang="postcss" global>
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
-</style>
 
 <Notifications bind:this="{notifications}" />
 

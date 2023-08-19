@@ -1,7 +1,7 @@
 <script lang="ts">
   import HollowButton from './HollowButton.svelte';
   import LL from '../i18n/i18n-svelte';
-  import { warrior as user } from '../stores';
+  import { user } from '../stores';
   import LeaderIcon from './icons/LeaderIcon.svelte';
   import { AppConfig } from '../config';
 

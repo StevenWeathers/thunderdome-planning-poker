@@ -11,7 +11,7 @@
   import ExternalLinkIcon from '../../components/icons/ExternalLinkIcon.svelte';
   import EditPokerGame from '../../components/poker/EditPokerGame.svelte';
   import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
   import UserCard from '../../components/poker/UserCard.svelte';
@@ -92,7 +92,7 @@
         battle = JSON.parse(parsedEvent.value);
         points = battle.pointValuesAllowed;
         const { spectator = false } =
-          battle.users.find(w => w.id === $warrior.id) || {};
+          battle.users.find(w => w.id === $user.id) || {};
         isSpectator = spectator;
 
         if (battle.activePlanId !== '') {
@@ -100,7 +100,7 @@
             p => p.id === battle.activePlanId,
           );
           const warriorVote = activePlan.votes.find(
-            v => v.warriorId === $warrior.id,
+            v => v.warriorId === $user.id,
           ) || {
             vote: '',
           };
@@ -117,10 +117,10 @@
         const joinedWarrior = battle.users.find(
           w => w.id === parsedEvent.warriorId,
         );
-        if (joinedWarrior.id === $warrior.id) {
+        if (joinedWarrior.id === $user.id) {
           isSpectator = joinedWarrior.spectator;
         }
-        if ($warrior.notificationsEnabled) {
+        if ($user.notificationsEnabled) {
           notifications.success(
             `${$LL.warriorJoined[AppConfig.FriendlyUIVerbs]({
               name: joinedWarrior.name,
@@ -136,7 +136,7 @@
         );
         battle.users = JSON.parse(parsedEvent.value);
 
-        if ($warrior.notificationsEnabled) {
+        if ($user.notificationsEnabled) {
           notifications.danger(
             `${$LL.warriorRetreated[AppConfig.FriendlyUIVerbs]({
               name: leftWarrior.name,
@@ -147,7 +147,7 @@
         break;
       case 'users_updated':
         battle.users = JSON.parse(parsedEvent.value);
-        const updatedWarrior = battle.users.find(w => w.id === $warrior.id);
+        const updatedWarrior = battle.users.find(w => w.id === $user.id);
         isSpectator = updatedWarrior.spectator;
         break;
       case 'plan_added':
@@ -171,7 +171,7 @@
         battle.activePlanId = '';
         battle.votingLocked = true;
         vote = '';
-        if ($warrior.notificationsEnabled) {
+        if ($user.notificationsEnabled) {
           notifications.warning(
             $LL.planSkipped({
               friendly: AppConfig.FriendlyUIVerbs,
@@ -183,7 +183,7 @@
         const votedWarrior = battle.users.find(
           w => w.id === parsedEvent.warriorId,
         );
-        if ($warrior.notificationsEnabled) {
+        if ($user.notificationsEnabled) {
           notifications.success(
             `${$LL.warriorVoted({
               name: votedWarrior.name,
@@ -198,7 +198,7 @@
         const devotedWarrior = battle.users.find(
           w => w.id === parsedEvent.warriorId,
         );
-        if ($warrior.notificationsEnabled) {
+        if ($user.notificationsEnabled) {
           notifications.warning(
             `${$LL.warriorRetractedVote({
               name: devotedWarrior.name,
@@ -293,7 +293,7 @@
           });
         } else if (e.code === 4001) {
           eventTag('socket_unauthorized', 'battle', '', () => {
-            warrior.delete();
+            user.delete();
             router.route(`${loginOrRegister}/battle/${battleId}`);
           });
         } else if (e.code === 4003) {
@@ -437,7 +437,7 @@
   $: showVotingResults =
     battle.activePlanId !== '' && battle.votingLocked === true;
 
-  $: isLeader = battle.leaders.includes($warrior.id);
+  $: isLeader = battle.leaders.includes($user.id);
 
   function concedeBattle() {
     eventTag('concede_battle', 'battle', '', () => {
@@ -474,7 +474,7 @@
   }
 
   onMount(() => {
-    if (!$warrior.id) {
+    if (!$user.id) {
       router.route(`${loginOrRegister}/battle/${battleId}`);
       return;
     }

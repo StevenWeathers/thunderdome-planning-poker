@@ -3,7 +3,7 @@
   import ClipboardIcon from '../icons/ClipboardIcon.svelte';
   import Modal from '../Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
 
   export let handleApiKeyCreate = () => {};
   export let toggleCreateApiKey = () => {};
@@ -27,7 +27,7 @@
       name: keyName,
     };
 
-    xfetch(`/api/users/${$warrior.id}/apikeys`, { body })
+    xfetch(`/api/users/${$user.id}/apikeys`, { body })
       .then(res => res.json())
       .then(function (result) {
         handleApiKeyCreate();

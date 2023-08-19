@@ -1,6 +1,7 @@
 module.exports = {
+  darkMode: 'class',
   content: [
-    './src/**/*.{svelte,js}',
+    './src/**/*.{svelte,ts,js}',
     './public/index.html'
   ],
 }

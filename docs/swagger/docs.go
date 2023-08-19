@@ -7273,6 +7273,10 @@ const docTemplate = `{
                 },
                 "notificationsEnabled": {
                     "type": "boolean"
+                },
+                "theme": {
+                    "type": "string",
+                    "maxLength": 5
                 }
             }
         },
@@ -8178,6 +8182,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "rank": {
+                    "type": "string"
+                },
+                "theme": {
                     "type": "string"
                 },
                 "updatedDate": {

@@ -5,7 +5,7 @@
   import SolidButton from '../../components/SolidButton.svelte';
   import CreateOrganization from '../../components/team/CreateOrganization.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
@@ -41,7 +41,7 @@
   function getOrganizations() {
     const orgsOffset = (organizationsPage - 1) * organizationsPageLimit;
     xfetch(
-      `/api/users/${$warrior.id}/organizations?limit=${organizationsPageLimit}&offset=${orgsOffset}`,
+      `/api/users/${$user.id}/organizations?limit=${organizationsPageLimit}&offset=${orgsOffset}`,
     )
       .then(res => res.json())
       .then(function (result) {
@@ -55,7 +55,7 @@
   function getTeams() {
     const teamsOffset = (teamsPage - 1) * teamsPageLimit;
     xfetch(
-      `/api/users/${$warrior.id}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
+      `/api/users/${$user.id}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
     )
       .then(res => res.json())
       .then(function (result) {
@@ -71,7 +71,7 @@
       name,
     };
 
-    xfetch(`/api/users/${$warrior.id}/organizations`, { body })
+    xfetch(`/api/users/${$user.id}/organizations`, { body })
       .then(res => res.json())
       .then(function (result) {
         eventTag('create_organization', 'engagement', 'success', () => {
@@ -89,7 +89,7 @@
       name,
     };
 
-    xfetch(`/api/users/${$warrior.id}/teams`, { body })
+    xfetch(`/api/users/${$user.id}/teams`, { body })
       .then(res => res.json())
       .then(function (result) {
         eventTag('create_team', 'engagement', 'success', () => {
@@ -103,7 +103,7 @@
   }
 
   onMount(() => {
-    if (!$warrior.id || !validateUserIsRegistered($warrior)) {
+    if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
       return;
     }

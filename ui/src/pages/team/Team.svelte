@@ -12,7 +12,7 @@
   import CountryFlag from '../../components/user/CountryFlag.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import ActionComments from '../../components/retro/ActionComments.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
@@ -412,7 +412,7 @@
   }
 
   onMount(() => {
-    if (!$warrior.id || !validateUserIsRegistered($warrior)) {
+    if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
       return;
     }

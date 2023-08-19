@@ -11,7 +11,7 @@
   import ShieldExclamationIcon from '../../components/icons/ShieldExclamationIcon.svelte';
   import CheckCircleIcon from '../../components/icons/CheckCircleIcon.svelte';
   import FrownCircleIcon from '../../components/icons/FrownCircleIcon.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
@@ -148,11 +148,11 @@
   }
 
   onMount(() => {
-    if (!$warrior.id) {
+    if (!$user.id) {
       router.route(appRoutes.login);
       return;
     }
-    if (!validateUserIsAdmin($warrior)) {
+    if (!validateUserIsAdmin($user)) {
       router.route(appRoutes.landing);
       return;
     }

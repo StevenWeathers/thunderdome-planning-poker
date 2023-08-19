@@ -16,6 +16,7 @@ export type User = {
   rank: string;
   updatedDate: string;
   verified: boolean;
+  theme: string;
 };
 
 export type UserAPIKey = {

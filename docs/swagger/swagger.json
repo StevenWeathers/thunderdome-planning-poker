@@ -7264,6 +7264,10 @@
                 },
                 "notificationsEnabled": {
                     "type": "boolean"
+                },
+                "theme": {
+                    "type": "string",
+                    "maxLength": 5
                 }
             }
         },
@@ -8169,6 +8173,9 @@
                     "type": "boolean"
                 },
                 "rank": {
+                    "type": "string"
+                },
+                "theme": {
                     "type": "string"
                 },
                 "updatedDate": {

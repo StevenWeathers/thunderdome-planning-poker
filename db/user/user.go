@@ -77,46 +77,37 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 // GetUser gets a user by ID
 func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
 	var w thunderdome.User
-	var UserEmail sql.NullString
-	var UserCountry sql.NullString
-	var UserLocale sql.NullString
-	var UserCompany sql.NullString
-	var UserJobTitle sql.NullString
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT id, name, email, type, avatar, verified,
-			notifications_enabled, country, locale, company, job_title,
-			created_date, updated_date, last_active, disabled, mfa_enabled
+		`SELECT id, name, COALESCE(email, ''), type, avatar, verified,
+			notifications_enabled, COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''), 
+			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, mfa_enabled, theme
 			FROM thunderdome.users WHERE id = $1`,
 		UserID,
 	).Scan(
 		&w.Id,
 		&w.Name,
-		&UserEmail,
+		&w.Email,
 		&w.Type,
 		&w.Avatar,
 		&w.Verified,
 		&w.NotificationsEnabled,
-		&UserCountry,
-		&UserLocale,
-		&UserCompany,
-		&UserJobTitle,
+		&w.Country,
+		&w.Locale,
+		&w.Company,
+		&w.JobTitle,
 		&w.CreatedDate,
 		&w.UpdatedDate,
 		&w.LastActive,
 		&w.Disabled,
 		&w.MFAEnabled,
+		&w.Theme,
 	)
 	if err != nil {
 		d.Logger.Ctx(ctx).Error("get user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
-	w.Email = UserEmail.String
-	w.Country = UserCountry.String
-	w.Locale = UserLocale.String
-	w.Company = UserCompany.String
-	w.JobTitle = UserJobTitle.String
 	if w.Email != "" {
 		w.GravatarHash = db.CreateGravatarHash(w.Email)
 	} else {
@@ -129,14 +120,10 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 // GetGuestUser gets a guest user by ID
 func (d *Service) GetGuestUser(ctx context.Context, UserID string) (*thunderdome.User, error) {
 	var w thunderdome.User
-	var UserEmail sql.NullString
-	var UserCountry sql.NullString
-	var UserLocale sql.NullString
-	var UserCompany sql.NullString
-	var UserJobTitle sql.NullString
 
 	err := d.DB.QueryRowContext(ctx, `
-SELECT id, name, email, type, avatar, verified, notifications_enabled, country, locale, company, job_title, created_date, updated_date, last_active
+SELECT id, name, COALESCE(email, ''), type, avatar, verified, notifications_enabled,
+ COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''), COALESCE(job_title, ''), created_date, updated_date, last_active, theme
 FROM thunderdome.users
 WHERE id = $1 AND type = 'GUEST';
 `,
@@ -144,29 +131,25 @@ WHERE id = $1 AND type = 'GUEST';
 	).Scan(
 		&w.Id,
 		&w.Name,
-		&UserEmail,
+		&w.Email,
 		&w.Type,
 		&w.Avatar,
 		&w.Verified,
 		&w.NotificationsEnabled,
-		&UserCountry,
-		&UserLocale,
-		&UserCompany,
-		&UserJobTitle,
+		&w.Country,
+		&w.Locale,
+		&w.Company,
+		&w.JobTitle,
 		&w.CreatedDate,
 		&w.UpdatedDate,
 		&w.LastActive,
+		&w.Theme,
 	)
 	if err != nil {
 		d.Logger.Ctx(ctx).Error("get guest user query error", zap.Error(err))
 		return nil, errors.New("user not found")
 	}
 
-	w.Email = UserEmail.String
-	w.Country = UserCountry.String
-	w.Locale = UserLocale.String
-	w.Company = UserCompany.String
-	w.JobTitle = UserJobTitle.String
 	w.GravatarHash = db.CreateGravatarHash(w.Id)
 
 	return &w, nil
@@ -293,9 +276,12 @@ func (d *Service) CreateUser(ctx context.Context, UserName string, UserEmail str
 }
 
 // UpdateUserProfile updates the users profile (excludes: email, password)
-func (d *Service) UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *Service) UpdateUserProfile(ctx context.Context, UserID string, UserName string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
+	}
+	if Theme == "" {
+		Theme = "auto"
 	}
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.users
@@ -307,6 +293,7 @@ func (d *Service) UpdateUserProfile(ctx context.Context, UserID string, UserName
 			locale = $6,
 			company = $7,
 			job_title = $8,
+			theme = $9,
 			last_active = NOW(),
 			updated_date = NOW()
 		WHERE id = $1;`,
@@ -318,6 +305,7 @@ func (d *Service) UpdateUserProfile(ctx context.Context, UserID string, UserName
 		Locale,
 		Company,
 		JobTitle,
+		Theme,
 	); err != nil {
 		d.Logger.Ctx(ctx).Error("user_profile_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
@@ -327,9 +315,12 @@ func (d *Service) UpdateUserProfile(ctx context.Context, UserID string, UserName
 }
 
 // UpdateUserProfileLdap updates the users profile (excludes: username, email, password)
-func (d *Service) UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *Service) UpdateUserProfileLdap(ctx context.Context, UserID string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
+	}
+	if Theme == "" {
+		Theme = "auto"
 	}
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.users
@@ -340,6 +331,7 @@ func (d *Service) UpdateUserProfileLdap(ctx context.Context, UserID string, User
 				locale = $5,
 				company = $6,
 				job_title = $7,
+				theme = $8,
 				last_active = NOW(),
 				updated_date = NOW()
 			WHERE id = $1;`,
@@ -350,6 +342,7 @@ func (d *Service) UpdateUserProfileLdap(ctx context.Context, UserID string, User
 		Locale,
 		Company,
 		JobTitle,
+		Theme,
 	); err != nil {
 		d.Logger.Ctx(ctx).Error("user_profile_ldap_update query error", zap.Error(err))
 		return errors.New("error attempting to update users profile")
@@ -359,9 +352,12 @@ func (d *Service) UpdateUserProfileLdap(ctx context.Context, UserID string, User
 }
 
 // UpdateUserAccount updates the users profile including email (excludes: password)
-func (d *Service) UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string) error {
+func (d *Service) UpdateUserAccount(ctx context.Context, UserID string, UserName string, UserEmail string, UserAvatar string, NotificationsEnabled bool, Country string, Locale string, Company string, JobTitle string, Theme string) error {
 	if UserAvatar == "" {
 		UserAvatar = "robohash"
+	}
+	if Theme == "" {
+		Theme = "auto"
 	}
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.users
@@ -374,6 +370,7 @@ func (d *Service) UpdateUserAccount(ctx context.Context, UserID string, UserName
 				locale = $7,
 				company = $8,
 				job_title = $9,
+				theme = $10,
 				last_active = NOW(),
 				updated_date = NOW()
 			WHERE id = $1;`,
@@ -386,6 +383,7 @@ func (d *Service) UpdateUserAccount(ctx context.Context, UserID string, UserName
 		Locale,
 		Company,
 		JobTitle,
+		Theme,
 	); err != nil {
 		return err
 	}

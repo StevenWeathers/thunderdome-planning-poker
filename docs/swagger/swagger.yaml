@@ -417,6 +417,9 @@ definitions:
         type: string
       notificationsEnabled:
         type: boolean
+      theme:
+        maxLength: 5
+        type: string
     required:
     - name
     type: object
@@ -1012,6 +1015,8 @@ definitions:
       notificationsEnabled:
         type: boolean
       rank:
+        type: string
+      theme:
         type: string
       updatedDate:
         type: string

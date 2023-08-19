@@ -10,7 +10,7 @@
   import UserAvatar from './UserAvatar.svelte';
   import SetupMFA from './SetupMFA.svelte';
   import DeleteConfirmation from '../DeleteConfirmation.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LocaleSwitcher from '../LocaleSwitcher.svelte';
   import type { Locales } from '../../i18n/i18n-types';
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
@@ -33,6 +33,7 @@
     gravatarHash: '',
     verified: false,
     mfaEnabled: false,
+    theme: 'auto',
   };
   export let handleUpdate = () => {};
   export let toggleUpdatePassword;
@@ -44,6 +45,7 @@
 
   const { AvatarService } = AppConfig;
 
+  const themes = ['auto', 'light', 'dark'];
   const configurableAvatarServices = [
     'dicebear',
     'gravatar',
@@ -95,6 +97,7 @@
       avatar: profile.avatar,
       locale: $locale,
       email: profile.email,
+      theme: profile.theme,
     };
 
     if (!validName.valid) {
@@ -148,7 +151,7 @@
   }
 
   $: updateDisabled = profile.name === '';
-  $: userIsAdmin = validateUserIsAdmin($warrior);
+  $: userIsAdmin = validateUserIsAdmin($user);
 </script>
 
 <form on:submit="{handleSubmit}" name="updateProfile">
@@ -312,6 +315,38 @@
       name="yourJobTitle"
       type="text"
     />
+  </div>
+
+  <div class="mb-4">
+    <label
+      class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
+      for="yourCountry"
+    >
+      {$LL.theme()}
+    </label>
+
+    <div class="relative">
+      <select
+        bind:value="{profile.theme}"
+        class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
+                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
+        id="theme"
+        name="theme"
+      >
+        {#each themes as theme}
+          <option value="{theme}">
+            {theme}
+          </option>
+        {/each}
+      </select>
+      <div
+        class="pointer-events-none absolute inset-y-0
+                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
+      >
+        <DownCarrotIcon />
+      </div>
+    </div>
   </div>
 
   <div class="mb-4">

@@ -5,6 +5,7 @@ GOMODS=$(GOCMD) mod download
 NPMMODS=cd ui && npm ci && cd ..
 NPMBUILD=$(NPMCMD) run build --prefix ui
 NPM_FORMAT=$(NPMCMD) run format --prefix ui
+GENI8N=$(NPMCMD) run locales --prefix ui
 GOBUILD=$(GOCMD) build
 SWAGGERDOCS=docs/swagger
 SWAGGERGEN=swag init -g http/http.go -o $(SWAGGERDOCS)
@@ -20,11 +21,12 @@ install:
 	$(GOMODS)
 	$(GOCMD) install github.com/swaggo/swag/cmd/swag@1.8.3
 	$(NPMMODS)
-build-deps: 
+
+build-deps:
 	$(NPMBUILD)
 	$(SWAGGERGEN)
 
-build: 
+build:
 	$(NPMBUILD)
 	$(SWAGGERGEN)
 	$(GOBUILD) -o $(BINARY_NAME) -v
@@ -45,10 +47,12 @@ format:
 	$(NPM_FORMAT)
 
 generate:
+	$(GENI8N)
 	$(SWAGGERGEN)
 
 testgo:
 	go test `go list ./... | grep -v $(SWAGGERDOCS)`
+
 # Cross compilation
 build-linux:
 	$(SWAGGERGEN)
@@ -58,16 +62,26 @@ build-windows:
 	$(SWAGGERGEN)
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -o $(BINARY_WINDOWS) -v
 
-dev: 
+dev:
+	$(GOFMT) -s -w .
+	$(GOIMPORTS) -w .
+	$(SWAGFMT)
+	$(NPM_FORMAT)
+	$(GENI8N)
 	$(NPMBUILD)
 	$(SWAGGERGEN)
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 	SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME) live
+
 dev-go:
+	$(GOFMT) -s -w .
+	$(GOIMPORTS) -w .
+	$(SWAGFMT)
 	$(SWAGGERGEN)
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 	SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME) live
+
 run:
 	SMTP_ENABLED="false" DB_HOST="localhost" APP_DOMAIN=".127.0.0.1" COOKIE_SECURE="false" ./$(BINARY_NAME)

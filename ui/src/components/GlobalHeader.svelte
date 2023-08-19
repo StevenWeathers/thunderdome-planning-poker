@@ -2,7 +2,7 @@
   import HollowButton from './HollowButton.svelte';
   import UserIcon from './icons/UserIcon.svelte';
   import { validateUserIsAdmin } from '../validationUtils';
-  import { warrior } from '../stores';
+  import { user } from '../stores';
   import { AppConfig, appRoutes } from '../config';
   import LL, { locale, setLocale } from '../i18n/i18n-svelte';
   import SolidButton from './SolidButton.svelte';
@@ -43,11 +43,13 @@
     showMobileMenu = !showMobileMenu;
   }
 
-  function logoutWarrior() {
+  function logoutUser() {
     xfetch('/api/auth/logout', { method: 'DELETE' })
       .then(function () {
         eventTag('logout', 'engagement', 'success', () => {
-          warrior.delete();
+          user.delete();
+          localStorage.removeItem('theme');
+          window.setTheme();
           router.route(appRoutes.landing, true);
         });
       })
@@ -75,7 +77,7 @@
           mfaUser = newUser;
           mfaSessionId = result.data.sessionId;
         } else {
-          warrior.create(newUser);
+          user.create(newUser);
           eventTag('login', 'engagement', 'success', () => {
             setupI18n(newUser.locale);
             router.route(appRoutes.games, true);
@@ -113,7 +115,7 @@
         <nav
           class="hidden lg:flex items-center space-x-1 rtl:space-x-reverse font-semibold font-rajdhani uppercase text-lg lg:text-xl"
         >
-          {#if $warrior.name}
+          {#if $user.name}
             {#if FeaturePoker}
               <a
                 href="{appRoutes.games}"
@@ -146,7 +148,7 @@
                 {$LL.storyboards()}
               </a>
             {/if}
-            {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
+            {#if $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
               <a
                 href="{appRoutes.teams}"
                 class="pt-6 pb-4 px-4 border-b-4 {currentPage === 'teams'
@@ -156,7 +158,7 @@
                 {$LL.teams()}
               </a>
             {/if}
-            {#if validateUserIsAdmin($warrior)}
+            {#if validateUserIsAdmin($user)}
               <a
                 href="{appRoutes.admin}"
                 class="pt-6 pb-4 px-4 border-b-4 {currentPage === 'admin'
@@ -172,7 +174,7 @@
       <div
         class="hidden lg:flex items-center space-x-3 rtl:space-x-reverse font-rajdhani font-semibold dark:text-gray-300"
       >
-        {#if !$warrior.name}
+        {#if !$user.name}
           <div class="uppercase">
             {#if HeaderAuthEnabled}
               <SolidButton
@@ -200,10 +202,10 @@
           >
             <UserIcon class="h-5 w-5" />
             <a href="{appRoutes.profile}" data-testid="userprofile-link"
-              >{$warrior.name}</a
+              >{$user.name}</a
             >
           </span>
-          {#if !$warrior.rank || $warrior.rank === 'GUEST' || $warrior.rank === 'PRIVATE'}
+          {#if !$user.rank || $user.rank === 'GUEST' || $user.rank === 'PRIVATE'}
             <a
               href="{appRoutes.login}"
               class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 uppercase text-xl"
@@ -219,7 +221,7 @@
           {:else}
             <HollowButton
               color="red"
-              onClick="{logoutWarrior}"
+              onClick="{logoutUser}"
               additionalClasses="uppercase text-md lg:text-lg"
             >
               {$LL.logout()}
@@ -256,7 +258,7 @@
   {#if showMobileMenu}
     <div class="lg:hidden py-2 border-t-2 border-gray-200 dark:border-gray-700">
       <ul class="font-rajdhani font-semibold uppercase text-lg dark:text-white">
-        {#if $warrior.name}
+        {#if $user.name}
           {#if FeaturePoker}
             <li>
               <a
@@ -289,7 +291,7 @@
               </a>
             </li>
           {/if}
-          {#if $warrior.rank !== 'GUEST' && $warrior.rank !== 'PRIVATE'}
+          {#if $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
             <li>
               <a
                 href="{appRoutes.teams}"
@@ -299,7 +301,7 @@
               </a>
             </li>
           {/if}
-          {#if validateUserIsAdmin($warrior)}
+          {#if validateUserIsAdmin($user)}
             <li>
               <a
                 href="{appRoutes.admin}"
@@ -331,14 +333,14 @@
         {/if}
       </ul>
       <div class="font-rajdhani font-semibold mx-4 my-2 dark:text-white">
-        {#if $warrior.name}
+        {#if $user.name}
           <span class="font-bold me-2 text-lg lg:text-xl">
             <UserIcon class="h-5 w-5" />
             <a href="{appRoutes.profile}" data-testid="m-userprofile-link"
-              >{$warrior.name}</a
+              >{$user.name}</a
             >
           </span>
-          {#if !$warrior.rank || $warrior.rank === 'GUEST' || $warrior.rank === 'PRIVATE'}
+          {#if !$user.rank || $user.rank === 'GUEST' || $user.rank === 'PRIVATE'}
             <a
               href="{appRoutes.login}"
               class="py-2 px-2 text-gray-700 dark:text-gray-400 hover:text-green-600 transition duration-300 uppercase text-lg uppercase"
@@ -354,7 +356,7 @@
           {:else}
             <HollowButton
               color="red"
-              onClick="{logoutWarrior}"
+              onClick="{logoutUser}"
               additionalClasses="uppercase text-md lg:text-lg"
             >
               {$LL.logout()}

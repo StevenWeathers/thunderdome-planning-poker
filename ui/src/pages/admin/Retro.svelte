@@ -3,7 +3,7 @@
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
@@ -57,11 +57,11 @@
   }
 
   onMount(() => {
-    if (!$warrior.id) {
+    if (!$user.id) {
       router.route(appRoutes.login);
       return;
     }
-    if (!validateUserIsAdmin($warrior)) {
+    if (!validateUserIsAdmin($user)) {
       router.route(appRoutes.landing);
       return;
     }

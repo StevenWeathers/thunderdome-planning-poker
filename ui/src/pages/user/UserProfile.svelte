@@ -5,7 +5,7 @@
   import UpdatePasswordForm from '../../components/user/UpdatePasswordForm.svelte';
   import HollowButton from '../../components/HollowButton.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import ProfileForm from '../../components/user/ProfileForm.svelte';
@@ -17,7 +17,7 @@
   export let notifications;
   export let eventTag;
 
-  let warriorProfile = {};
+  let userProfile = {};
   let apiKeys = [];
   let showApiKeyCreate = false;
   let showAccountDeletion = false;
@@ -36,10 +36,10 @@
   }
 
   function getProfile() {
-    xfetch(`/api/users/${$warrior.id}`)
+    xfetch(`/api/users/${$user.id}`)
       .then(res => res.json())
       .then(function (result) {
-        warriorProfile = result.data;
+        userProfile = result.data;
       })
       .catch(function () {
         notifications.danger($LL.profileErrorRetrieving());
@@ -47,23 +47,30 @@
       });
   }
 
-  function updateWarriorProfile(p) {
+  function updateUserProfile(p) {
     const body = {
       ...p,
     };
 
-    xfetch(`/api/users/${$warrior.id}`, { body, method: 'PUT' })
+    xfetch(`/api/users/${$user.id}`, { body, method: 'PUT' })
       .then(res => res.json())
       .then(function () {
-        warrior.update({
-          id: warriorProfile.id,
+        user.update({
+          id: userProfile.id,
           name: p.name,
-          email: warriorProfile.email,
-          rank: warriorProfile.rank,
+          email: userProfile.email,
+          rank: userProfile.rank,
           avatar: p.avatar,
           notificationsEnabled: p.notificationsEnabled,
           locale: p.locale,
         });
+
+        if (p.theme !== 'auto') {
+          localStorage.setItem('theme', p.theme);
+        } else {
+          localStorage.removeItem('theme');
+        }
+        window.setTheme();
 
         notifications.success($LL.profileUpdateSuccess());
         eventTag('update_profile', 'engagement', 'success');
@@ -74,7 +81,7 @@
       });
   }
 
-  function updateWarriorPassword(password1, password2) {
+  function updateUserPassword(password1, password2) {
     const body = {
       password1,
       password2,
@@ -93,7 +100,7 @@
   }
 
   function getApiKeys() {
-    xfetch(`/api/users/${$warrior.id}/apikeys`)
+    xfetch(`/api/users/${$user.id}/apikeys`)
       .then(res => res.json())
       .then(function (result) {
         apiKeys = result.data;
@@ -106,7 +113,7 @@
 
   function deleteApiKey(apk) {
     return function () {
-      xfetch(`/api/users/${$warrior.id}/apikeys/${apk}`, {
+      xfetch(`/api/users/${$user.id}/apikeys/${apk}`, {
         method: 'DELETE',
       })
         .then(res => res.json())
@@ -126,7 +133,7 @@
         active: !active,
       };
 
-      xfetch(`/api/users/${$warrior.id}/apikeys/${apk}`, {
+      xfetch(`/api/users/${$user.id}/apikeys/${apk}`, {
         body,
         method: 'PUT',
       })
@@ -146,9 +153,9 @@
   }
 
   function handleDeleteAccount() {
-    xfetch(`/api/users/${$warrior.id}`, { method: 'DELETE' })
+    xfetch(`/api/users/${$user.id}`, { method: 'DELETE' })
       .then(function () {
-        warrior.delete();
+        user.delete();
 
         eventTag('delete_warrior', 'engagement', 'success');
 
@@ -165,7 +172,7 @@
   }
 
   onMount(() => {
-    if (!$warrior.id) {
+    if (!$user.id) {
       router.route(appRoutes.login);
       return;
     }
@@ -196,8 +203,8 @@
           class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 md:p-6 mb-4"
         >
           <ProfileForm
-            profile="{warriorProfile}"
-            handleUpdate="{updateWarriorProfile}"
+            profile="{userProfile}"
+            handleUpdate="{updateUserProfile}"
             toggleUpdatePassword="{toggleUpdatePassword}"
             xfetch="{xfetch}"
             notifications="{notifications}"
@@ -218,7 +225,7 @@
           </div>
 
           <UpdatePasswordForm
-            handleUpdate="{updateWarriorPassword}"
+            handleUpdate="{updateUserPassword}"
             toggleForm="{toggleUpdatePassword}"
             notifications="{notifications}"
           />

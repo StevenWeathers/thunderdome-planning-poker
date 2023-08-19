@@ -6,7 +6,7 @@
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
   import Modal from '../../components/Modal.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
@@ -28,7 +28,7 @@
 
   let showUpdatePassword = false;
 
-  let user = {
+  let userDetails = {
     id: '',
     name: '',
     email: '',
@@ -53,7 +53,7 @@
     xfetch(`/api/users/${userId}`)
       .then(res => res.json())
       .then(function (result) {
-        user = result.data;
+        userDetails = result.data;
       })
       .catch(function () {
         notifications.danger($LL.getUserError());
@@ -158,11 +158,11 @@
   }
 
   onMount(() => {
-    if (!$warrior.id) {
+    if (!$user.id) {
       router.route(appRoutes.login);
       return;
     }
-    if (!validateUserIsAdmin($warrior)) {
+    if (!validateUserIsAdmin($user)) {
       router.route(appRoutes.landing);
       return;
     }
@@ -185,7 +185,7 @@
         <h1
           class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
         >
-          {user.name}
+          {userDetails.name}
         </h1>
       </div>
       <div class="flex-1 text-right">
@@ -226,9 +226,9 @@
               <div class="flex items-center flex-nowrap">
                 <div class="flex-shrink-0 h-10 w-10">
                   <UserAvatar
-                    warriorId="{user.id}"
-                    avatar="{user.avatar}"
-                    gravatarHash="{user.gravatarHash}"
+                    warriorId="{userDetails.id}"
+                    avatar="{userDetails.avatar}"
+                    gravatarHash="{userDetails.gravatarHash}"
                     width="48"
                     class="h-10 w-10 rounded-full"
                   />
@@ -236,10 +236,10 @@
               </div>
             </RowCol>
             <RowCol>
-              {#if user.country}
+              {#if userDetails.country}
                 &nbsp;
                 <CountryFlag
-                  country="{user.country}"
+                  country="{userDetails.country}"
                   additionalClass="inline-block"
                   width="32"
                   height="24"
@@ -247,24 +247,24 @@
               {/if}
             </RowCol>
             <RowCol>
-              {user.email}
-              {#if user.verified}
+              {userDetails.email}
+              {#if userDetails.verified}
                 <span class="text-green-600" title="{$LL.verified()}">
                   <VerifiedIcon />
                 </span>
               {/if}
             </RowCol>
             <RowCol>
-              {user.rank}
+              {userDetails.rank}
             </RowCol>
             <RowCol>
-              {new Date(user.createdDate).toLocaleString()}
+              {new Date(userDetails.createdDate).toLocaleString()}
             </RowCol>
             <RowCol>
-              {new Date(user.updatedDate).toLocaleString()}
+              {new Date(userDetails.updatedDate).toLocaleString()}
             </RowCol>
             <RowCol>
-              {new Date(user.lastActive).toLocaleString()}
+              {new Date(userDetails.lastActive).toLocaleString()}
             </RowCol>
           </TableRow>
         </tbody>

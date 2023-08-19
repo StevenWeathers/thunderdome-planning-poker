@@ -2,6 +2,7 @@ package email
 
 import (
 	"fmt"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/matcornic/hermes/v2"
 	"go.uber.org/zap"

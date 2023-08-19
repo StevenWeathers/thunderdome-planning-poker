@@ -4,7 +4,7 @@
   import AdminPageLayout from '../../components/AdminPageLayout.svelte';
   import HollowButton from '../../components/HollowButton.svelte';
   import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import RowCol from '../../components/table/RowCol.svelte';
@@ -171,11 +171,11 @@
   }
 
   onMount(() => {
-    if (!$warrior.id) {
+    if (!$user.id) {
       router.route(appRoutes.login);
       return;
     }
-    if (!validateUserIsAdmin($warrior)) {
+    if (!validateUserIsAdmin($user)) {
       router.route(appRoutes.landing);
       return;
     }

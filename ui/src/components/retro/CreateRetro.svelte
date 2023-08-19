@@ -3,7 +3,7 @@
 
   import SolidButton from '../SolidButton.svelte';
   import DownCarrotIcon from '../icons/ChevronDown.svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
 

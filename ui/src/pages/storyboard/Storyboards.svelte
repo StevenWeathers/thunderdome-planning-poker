@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
 
   import PageLayout from '../../components/PageLayout.svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import { appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import CreateStoryboard from '../../components/storyboard/CreateStoryboard.svelte';

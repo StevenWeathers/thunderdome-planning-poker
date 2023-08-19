@@ -2,7 +2,7 @@
   import SmileCircle from '../icons/SmileCircleIcon.svelte';
   import FrownCircle from '../icons/FrownCircleIcon.svelte';
   import QuestionCircle from '../icons/QuestionCircleIcon.svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import TrashIcon from '../icons/TrashIcon.svelte';
 

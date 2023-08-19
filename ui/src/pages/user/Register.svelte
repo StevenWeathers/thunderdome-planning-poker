@@ -1,6 +1,6 @@
 <script lang="ts">
   import PageLayout from '../../components/PageLayout.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import { validateName } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
@@ -18,7 +18,7 @@
   const guestsAllowed = AppConfig.AllowGuests;
   const registrationAllowed = AppConfig.AllowRegistration;
 
-  let warriorName = $warrior.name || '';
+  let warriorName = $user.name || '';
 
   function targetPage() {
     let tp = appRoutes.games;
@@ -57,7 +57,7 @@
         .then(res => res.json())
         .then(function (result) {
           const newWarrior = result.data;
-          warrior.create({
+          user.create({
             id: newWarrior.id,
             name: newWarrior.name,
             rank: newWarrior.rank,
@@ -92,7 +92,7 @@
       .then(res => res.json())
       .then(function (result) {
         const newWarrior = result.data;
-        warrior.create({
+        user.create({
           id: newWarrior.id,
           name: newWarrior.name,
           email: newWarrior.email,
@@ -159,7 +159,7 @@
     {/if}
   </div>
   <div class="flex flex-wrap justify-center">
-    {#if !$warrior.id && (guestsAllowed || registrationAllowed)}
+    {#if !$user.id && (guestsAllowed || registrationAllowed)}
       <div class="w-full md:w-1/2 px-4">
         <form
           on:submit="{createUserGuest}"

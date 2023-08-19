@@ -3,7 +3,7 @@
   import HollowButton from '../HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import UserIcon from '../icons/UserIcon.svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
 
   export let xfetch;
   export let eventTag;

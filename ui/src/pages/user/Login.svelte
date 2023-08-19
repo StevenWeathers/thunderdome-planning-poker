@@ -1,7 +1,7 @@
 <script lang="ts">
   import PageLayout from '../../components/PageLayout.svelte';
   import SolidButton from '../../components/SolidButton.svelte';
-  import { warrior } from '../../stores';
+  import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
 
@@ -12,6 +12,12 @@
   export let battleId;
   export let retroId;
   export let storyboardId;
+
+  declare global {
+    interface Window {
+      setTheme: Function;
+    }
+  }
 
   const { AllowRegistration, LdapEnabled } = AppConfig;
   const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth';
@@ -54,7 +60,7 @@
     xfetch('/api/auth/mfa', { body, skip401Redirect: true })
       .then(res => res.json())
       .then(function () {
-        warrior.create(mfaUser);
+        user.create(mfaUser);
         eventTag('login_mfa', 'engagement', 'success', () => {
           // setupI18n({
           //     withLocale: mfaUser.locale,
@@ -92,7 +98,11 @@
           mfaUser = newUser;
           mfaSessionId = result.data.sessionId;
         } else {
-          warrior.create(newUser);
+          user.create(newUser);
+          if (u.theme !== 'auto') {
+            localStorage.setItem('theme', u.theme);
+            window.setTheme();
+          }
           eventTag('login', 'engagement', 'success', () => {
             // setupI18n({
             //     withLocale: newUser.locale,

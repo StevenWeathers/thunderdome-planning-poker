@@ -76,6 +76,7 @@ type userprofileUpdateRequestBody struct {
 	Company              string `json:"company" validate:"max=256"`
 	JobTitle             string `json:"jobTitle" validate:"max=128"`
 	Email                string `json:"email" validate:"omitempty,email"`
+	Theme                string `json:"theme" validate:"max=5"`
 }
 
 // handleUserProfileUpdate attempts to update users profile
@@ -122,7 +123,7 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 				s.Failure(w, r, http.StatusBadRequest, vErr)
 				return
 			}
-			updateErr := s.UserDataSvc.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+			updateErr := s.UserDataSvc.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
 			if updateErr != nil {
 				s.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
@@ -134,9 +135,9 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 					s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "INVALID_USERNAME"))
 					return
 				}
-				updateErr = s.UserDataSvc.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = s.UserDataSvc.UpdateUserProfile(ctx, UserID, profile.Name, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
 			} else {
-				updateErr = s.UserDataSvc.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle)
+				updateErr = s.UserDataSvc.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
 			}
 			if updateErr != nil {
 				s.Failure(w, r, http.StatusInternalServerError, updateErr)

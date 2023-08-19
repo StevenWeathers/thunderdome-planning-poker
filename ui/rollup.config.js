@@ -9,8 +9,10 @@ const sveltePreprocess = require('svelte-preprocess')
 const html = require('@rollup/plugin-html')
 const template = require('./buildHtmlTemplate.js')
 const postcss = require('rollup-plugin-postcss')
-const postcssNesting = require('postcss-nesting')
 const typescript = require('@rollup/plugin-typescript')
+const tailwindcss = require('tailwindcss')
+const twnesting = require('tailwindcss/nesting')
+const postcssimport = require('postcss-import')
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -41,7 +43,7 @@ module.exports = {
     }),
     typescript({ sourceMap: !production }),
     postcss({
-      plugins: [postcssNesting(), (production && require('cssnano'))],
+      plugins: [postcssimport(), twnesting(), tailwindcss(), (production && require('cssnano'))],
       extract: true
     }),
     // If you have external dependencies installed from

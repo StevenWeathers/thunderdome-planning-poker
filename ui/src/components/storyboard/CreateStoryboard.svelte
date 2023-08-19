@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
 
   import SolidButton from '../SolidButton.svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import ChevronDown from '../icons/ChevronDown.svelte';

@@ -3,7 +3,7 @@
 
   import PageLayout from '../../components/PageLayout.svelte';
   import CreateRetro from '../../components/retro/CreateRetro.svelte';
-  import { warrior as user } from '../../stores';
+  import { user } from '../../stores';
   import { appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import BoxList from '../../components/BoxList.svelte';

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import HollowButton from '../../components/HollowButton.svelte';
-  import { activeAlerts, warrior } from '../../stores';
+  import { activeAlerts, user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
@@ -124,11 +124,11 @@
   };
 
   onMount(() => {
-    if (!$warrior.id) {
+    if (!$user.id) {
       router.route(appRoutes.login);
       return;
     }
-    if (!validateUserIsAdmin($warrior)) {
+    if (!validateUserIsAdmin($user)) {
       router.route(appRoutes.landing);
       return;
     }
