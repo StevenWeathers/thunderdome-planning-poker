@@ -107,7 +107,7 @@
 
   <div class="mt-4 pt-2 border-t border-gray-400 dark:border-gray-700">
     <div class="block text-gray-700 dark:text-gray-400 font-bold mb-4">
-      Assignees
+      {$LL.assignees()}
     </div>
     <div class="flex w-full gap-4">
       <div class="w-2/3 relative">
@@ -119,7 +119,7 @@
           id="assignee"
           name="assignee"
         >
-          <option value="" disabled>Select an assignee to add</option>
+          <option value="" disabled>{$LL.assigneeSelectPlaceholder()}</option>
           {#each assignableUsers as user}
             <option value="{user.id}">
               {user.name}
@@ -138,7 +138,7 @@
           onClick="{addAssignee}"
           disabled="{selectedAssignee === ''}"
         >
-          Add Assignee
+          {$LL.assigneeAdd()}
         </HollowButton>
       </div>
     </div>
