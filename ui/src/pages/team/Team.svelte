@@ -232,6 +232,10 @@
         .then(function (result) {
           retroActions = result.data;
           totalRetroActions = result.meta.count;
+          selectedAction =
+            selectedAction !== null
+              ? retroActions.find(r => r.id === selectedAction.id)
+              : null;
         })
         .catch(function () {
           notifications.danger($LL.teamGetRetroActionsError());
@@ -368,9 +372,11 @@
 
   let showRetroActionEdit = false;
   let selectedAction = null;
-  const toggleRetroActionEdit = id => () => {
+  let selectedActionRetroId = null;
+  const toggleRetroActionEdit = (retroId, id) => () => {
     showRetroActionEdit = !showRetroActionEdit;
     selectedAction = retroActions.find(r => r.id === id);
+    selectedActionRetroId = retroId;
   };
 
   function handleRetroActionEdit(action) {
@@ -407,6 +413,40 @@
         .catch(function () {
           notifications.danger($LL.deleteActionItemError());
           eventTag('team_action_delete', 'engagement', 'failure');
+        });
+    };
+  }
+
+  function handleRetroActionAssigneeAdd(retroId, actionId, userId) {
+    xfetch(`/api/retros/${retroId}/actions/${actionId}/assignees`, {
+      method: 'POST',
+      body: {
+        user_id: userId,
+      },
+    })
+      .then(function () {
+        getRetrosActions();
+        eventTag('team_action_assignee_add', 'engagement', 'success');
+      })
+      .catch(function () {
+        eventTag('team_action_assignee_add', 'engagement', 'failure');
+      });
+  }
+
+  function handleRetroActionAssigneeRemove(retroId, actionId, userId) {
+    return () => {
+      xfetch(`/api/retros/${retroId}/actions/${actionId}/assignees`, {
+        method: 'DELETE',
+        body: {
+          user_id: userId,
+        },
+      })
+        .then(function () {
+          getRetrosActions();
+          eventTag('team_action_assignee_remove', 'engagement', 'success');
+        })
+        .catch(function () {
+          eventTag('team_action_assignee_remove', 'engagement', 'failure');
         });
     };
   }
@@ -645,7 +685,7 @@
                     <div class="text-right">
                       <HollowButton
                         color="teal"
-                        onClick="{toggleRetroActionEdit(item.id)}"
+                        onClick="{toggleRetroActionEdit(item.retroId, item.id)}"
                         >{$LL.edit()}
                       </HollowButton>
                     </div>
@@ -884,7 +924,11 @@
       toggleEdit="{toggleRetroActionEdit(null)}"
       handleEdit="{handleRetroActionEdit}"
       handleDelete="{handleRetroActionDelete}"
+      assignableUsers="{users}"
       action="{selectedAction}"
+      handleAssigneeAdd="{handleRetroActionAssigneeAdd}"
+      handleAssigneeRemove="{handleRetroActionAssigneeRemove}"
+      retroId="{selectedActionRetroId}"
     />
   {/if}
 

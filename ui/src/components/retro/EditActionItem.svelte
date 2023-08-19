@@ -4,21 +4,40 @@
   import LL from '../../i18n/i18n-svelte';
   import CheckboxIcon from '../icons/CheckboxIcon.svelte';
   import HollowButton from '../HollowButton.svelte';
+  import UserAvatar from '../user/UserAvatar.svelte';
+  import TrashIcon from '../icons/TrashIcon.svelte';
+  import ChevronDown from '../icons/ChevronDown.svelte';
 
   export let toggleEdit = () => {};
-  export let handleEdit = () => {};
+  export let handleEdit = action => {};
   export let handleDelete = () => {};
+  export let handleAssigneeAdd = (retroId, actionId, userId) => {};
+  export let handleAssigneeRemove = (retroId, actionId, userId) => () => {};
+  export let retroId = '';
+  export let assignableUsers = [];
   export let action = {
+    id: '',
     content: '',
     completed: false,
+    assignees: [],
   };
 
-  let editAction = { ...action };
+  let selectedAssignee = '';
+
+  let editAction = {
+    id: action.id,
+    content: action.content,
+    completed: action.completed,
+  };
 
   const handleSubmit = e => {
     e.preventDefault();
 
     handleEdit(editAction);
+  };
+  const addAssignee = () => {
+    handleAssigneeAdd(retroId, action.id, selectedAssignee);
+    selectedAssignee = '';
   };
 </script>
 
@@ -85,4 +104,73 @@
       </div>
     </div>
   </form>
+
+  <div class="mt-4 pt-2 border-t border-gray-400 dark:border-gray-700">
+    <div class="block text-gray-700 dark:text-gray-400 font-bold mb-4">
+      Assignees
+    </div>
+    <div class="flex w-full gap-4">
+      <div class="w-2/3 relative">
+        <select
+          bind:value="{selectedAssignee}"
+          class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
+                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
+                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
+          id="assignee"
+          name="assignee"
+        >
+          <option value="" disabled>Select an assignee to add</option>
+          {#each assignableUsers as user}
+            <option value="{user.id}">
+              {user.name}
+            </option>
+          {/each}
+        </select>
+        <div
+          class="pointer-events-none absolute inset-y-0
+                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
+        >
+          <ChevronDown />
+        </div>
+      </div>
+      <div class="w-1/3">
+        <HollowButton
+          onClick="{addAssignee}"
+          disabled="{selectedAssignee === ''}"
+        >
+          Add Assignee
+        </HollowButton>
+      </div>
+    </div>
+    {#if action.assignees.length}
+      <div class="flex w-full mt-4">
+        {#each action.assignees as assignee}
+          <div class="flex w-1/2 text-gray-700 dark:text-gray-400 mb-2">
+            <div class="w-1/4">
+              <UserAvatar
+                warriorId="{assignee.id}"
+                gravatarHash="{assignee.gravatarHash}"
+                avatar="{assignee.avatar}"
+                userName="{assignee.name}"
+                class="inline-block me-2"
+              />
+            </div>
+            <div class="w-2/4 text-lg">{assignee.name}</div>
+            <div class="w-1/4 text-right">
+              <HollowButton
+                color="red"
+                onClick="{handleAssigneeRemove(
+                  retroId,
+                  action.id,
+                  assignee.id,
+                )}"
+              >
+                <TrashIcon />
+              </HollowButton>
+            </div>
+          </div>
+        {/each}
+      </div>
+    {/if}
+  </div>
 </Modal>

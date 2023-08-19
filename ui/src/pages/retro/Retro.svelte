@@ -174,6 +174,10 @@
       }
       case 'action_updated':
         retro.actionItems = JSON.parse(parsedEvent.value);
+        selectedAction =
+          selectedAction !== null
+            ? retro.actionItems.find(a => a.id === selectedAction.id)
+            : null;
         break;
       case 'facilitators_updated':
         retro.facilitators = JSON.parse(parsedEvent.value);
@@ -354,6 +358,25 @@
   const handleActionEdit = ({ id, content, completed }) => {
     handleActionUpdate(id, !completed, content)();
     toggleActionEdit(null)();
+  };
+
+  const handleAssigneeAdd = (retroId, actionId, userId) => {
+    sendSocketEvent(
+      'action_assignee_add',
+      JSON.stringify({
+        id: actionId,
+        user_id: userId,
+      }),
+    );
+  };
+  const handleAssigneeRemove = (retroId, actionId, userId) => () => {
+    sendSocketEvent(
+      'action_assignee_remove',
+      JSON.stringify({
+        id: actionId,
+        user_id: userId,
+      }),
+    );
   };
 
   const handleActionDelete =
@@ -936,6 +959,10 @@
     handleEdit="{handleActionEdit}"
     handleDelete="{handleActionDelete}"
     action="{selectedAction}"
+    assignableUsers="{retro.users}"
+    handleAssigneeAdd="{handleAssigneeAdd}"
+    handleAssigneeRemove="{handleAssigneeRemove}"
+    retroId="{retro.id}"
   />
 {/if}
 
