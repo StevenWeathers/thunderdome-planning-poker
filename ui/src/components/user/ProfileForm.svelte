@@ -409,6 +409,7 @@
               warriorId="{profile.id}"
               avatar="{profile.avatar}"
               gravatarHash="{profile.gravatarHash}"
+              userName="{profile.name}"
               width="48"
               class="rounded-full"
             />

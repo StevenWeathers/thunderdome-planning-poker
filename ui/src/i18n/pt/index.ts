@@ -622,6 +622,9 @@ const pt: Translation = {
   importPlans: '{friendly|{false:Import Plans, true:Import Stories}}',
   selectFile: 'Select file...',
   theme: 'Theme',
+  assignees: 'Assignees',
+  assigneeSelectPlaceholder: 'Select an assignee to add',
+  assigneeAdd: 'Add Assignee',
 };
 
 export default pt;

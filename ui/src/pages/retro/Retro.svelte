@@ -23,6 +23,7 @@
   import UserCard from '../../components/retro/UserCard.svelte';
   import InviteUser from '../../components/retro/InviteUser.svelte';
   import PageLayout from '../../components/PageLayout.svelte';
+  import UserAvatar from '../../components/user/UserAvatar.svelte';
 
   export let retroId;
   export let notifications;
@@ -173,6 +174,10 @@
       }
       case 'action_updated':
         retro.actionItems = JSON.parse(parsedEvent.value);
+        selectedAction =
+          selectedAction !== null
+            ? retro.actionItems.find(a => a.id === selectedAction.id)
+            : null;
         break;
       case 'facilitators_updated':
         retro.facilitators = JSON.parse(parsedEvent.value);
@@ -353,6 +358,25 @@
   const handleActionEdit = ({ id, content, completed }) => {
     handleActionUpdate(id, !completed, content)();
     toggleActionEdit(null)();
+  };
+
+  const handleAssigneeAdd = (retroId, actionId, userId) => {
+    sendSocketEvent(
+      'action_assignee_add',
+      JSON.stringify({
+        id: actionId,
+        user_id: userId,
+      }),
+    );
+  };
+  const handleAssigneeRemove = (retroId, actionId, userId) => () => {
+    sendSocketEvent(
+      'action_assignee_remove',
+      JSON.stringify({
+        id: actionId,
+        user_id: userId,
+      }),
+    );
   };
 
   const handleActionDelete =
@@ -785,6 +809,16 @@
                       </div>
                       <div class="flex-grow dark:text-white">
                         <div class="pe-2">
+                          {#each item.assignees as assignee}
+                            <UserAvatar
+                              warriorId="{assignee.id}"
+                              gravatarHash="{assignee.gravatarHash}"
+                              avatar="{assignee.avatar}"
+                              userName="{assignee.name}"
+                              width="24"
+                              class="inline-block me-2"
+                            />
+                          {/each}
                           {item.content}
                         </div>
                       </div>
@@ -925,6 +959,10 @@
     handleEdit="{handleActionEdit}"
     handleDelete="{handleActionDelete}"
     action="{selectedAction}"
+    assignableUsers="{retro.users}"
+    handleAssigneeAdd="{handleAssigneeAdd}"
+    handleAssigneeRemove="{handleAssigneeRemove}"
+    retroId="{retro.id}"
   />
 {/if}
 

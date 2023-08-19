@@ -24,6 +24,7 @@
     warriorId="{user.id}"
     avatar="{user.avatar}"
     gravatarHash="{user.gravatarHash}"
+    userName="{user.name}"
     class="mx-auto mb-2"
   />
   <div

@@ -229,6 +229,7 @@
                     warriorId="{userDetails.id}"
                     avatar="{userDetails.avatar}"
                     gravatarHash="{userDetails.gravatarHash}"
+                    userName="{user.name}"
                     width="48"
                     class="h-10 w-10 rounded-full"
                   />

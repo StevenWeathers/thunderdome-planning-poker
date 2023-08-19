@@ -61,6 +61,7 @@ type RetroAction struct {
 	Content   string                `json:"content" db:"content"`
 	Completed bool                  `json:"completed" db:"completed"`
 	Comments  []*RetroActionComment `json:"comments"`
+	Assignees []*User               `json:"assignees"`
 }
 
 // RetroActionComment A retro action comment by a user

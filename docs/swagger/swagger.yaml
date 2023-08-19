@@ -1,10 +1,24 @@
 definitions:
+  http.actionAddAssigneeRequestBody:
+    properties:
+      user_id:
+        type: string
+    required:
+    - user_id
+    type: object
   http.actionCommentRequestBody:
     properties:
       comment:
         type: string
     required:
     - comment
+    type: object
+  http.actionRemoveAssigneeRequestBody:
+    properties:
+      user_id:
+        type: string
+    required:
+    - user_id
     type: object
   http.actionUpdateRequestBody:
     properties:
@@ -691,6 +705,10 @@ definitions:
     type: object
   thunderdome.RetroAction:
     properties:
+      assignees:
+        items:
+          $ref: '#/definitions/thunderdome.User'
+        type: array
       comments:
         items:
           $ref: '#/definitions/thunderdome.RetroActionComment'
@@ -3401,6 +3419,85 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Retro Action Item Update
+      tags:
+      - retro
+  /retros/{retroId}/actions/{actionId}/assignees:
+    delete:
+      description: Remove an assignee from a retro action
+      parameters:
+      - description: the retro ID
+        in: path
+        name: retroId
+        required: true
+        type: string
+      - description: the action ID
+        in: path
+        name: actionId
+        required: true
+        type: string
+      - description: updated action item
+        in: body
+        name: actionItem
+        required: true
+        schema:
+          $ref: '#/definitions/http.actionRemoveAssigneeRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retro Action Remove Assignee
+      tags:
+      - retro
+    post:
+      description: Add a retro action assignee
+      parameters:
+      - description: the retro ID
+        in: path
+        name: retroId
+        required: true
+        type: string
+      - description: the action ID
+        in: path
+        name: actionId
+        required: true
+        type: string
+      - description: updated action item
+        in: body
+        name: actionItem
+        required: true
+        schema:
+          $ref: '#/definitions/http.actionAddAssigneeRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Retro Action Add Assignee
       tags:
       - retro
   /retros/{retroId}/actions/{actionId}/comments:

@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/db"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"go.uber.org/zap"
@@ -51,7 +53,19 @@ func (d *Service) GetRetroActions(RetroID string) []*thunderdome.RetroAction {
 	var actions = make([]*thunderdome.RetroAction, 0)
 
 	actionRows, actionsErr := d.DB.Query(
-		`SELECT id, content, completed FROM thunderdome.retro_action WHERE retro_id = $1 ORDER BY created_date ASC;`,
+		`SELECT a.id, a.content, a.completed,
+ 		COALESCE(json_agg(to_jsonb(t) - 'action_id') FILTER (WHERE t.id IS NOT NULL), '[]') AS assignees
+		FROM thunderdome.retro_action a
+		LEFT JOIN LATERAL (
+			SELECT t.action_id, u.id, u.name, u.email, u.avatar
+			FROM thunderdome.retro_action_assignee as t
+			JOIN thunderdome.users u ON t.user_id = u.id
+			WHERE 
+				a.id = t.action_id
+		) as t ON 1=1
+		WHERE a.retro_id = $1
+		GROUP BY a.id
+		ORDER BY MAX(a.created_date) ASC;`,
 		RetroID,
 	)
 	if actionsErr == nil {
@@ -61,10 +75,23 @@ func (d *Service) GetRetroActions(RetroID string) []*thunderdome.RetroAction {
 				ID:        "",
 				Content:   "",
 				Completed: false,
+				Assignees: make([]*thunderdome.User, 0),
 			}
-			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed); err != nil {
+			var assignees string
+			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed, &assignees); err != nil {
 				d.Logger.Error("get retro actions error", zap.Error(err))
 			} else {
+				jsonErr := json.Unmarshal([]byte(assignees), &ri.Assignees)
+				if jsonErr != nil {
+					d.Logger.Error("retro action assignees json error", zap.Error(jsonErr))
+				}
+				for i, assignee := range ri.Assignees {
+					if assignee.Email != "" {
+						ri.Assignees[i].GravatarHash = db.CreateGravatarHash(assignee.Email)
+					} else {
+						ri.Assignees[i].GravatarHash = db.CreateGravatarHash(assignee.Id)
+					}
+				}
 				actions = append(actions, ri)
 			}
 		}
@@ -96,9 +123,17 @@ func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Comp
 		`SELECT ra.id, ra.content, ra.completed, ra.retro_id,
 				COALESCE(
 					json_agg(rac ORDER BY rac.created_date) FILTER (WHERE rac.id IS NOT NULL), '[]'
-				) AS comments
+				) AS comments,
+				COALESCE(json_agg(to_jsonb(t) - 'action_id') FILTER (WHERE t.id IS NOT NULL), '[]') AS assignees
 				FROM thunderdome.retro_action ra
 				LEFT JOIN thunderdome.retro_action_comment rac ON rac.action_id = ra.id
+				LEFT JOIN LATERAL (
+					SELECT t.action_id, u.id, u.name, u.email, u.avatar
+					FROM thunderdome.retro_action_assignee as t
+					JOIN thunderdome.users u ON t.user_id = u.id 
+					WHERE 
+						ra.id = t.action_id
+				) as t ON 1=1
 				WHERE ra.retro_id IN (SELECT id FROM thunderdome.retro WHERE team_id = $1) AND ra.completed = $2
 				GROUP BY ra.id, ra.created_date
 				ORDER BY ra.created_date DESC
@@ -111,17 +146,30 @@ func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Comp
 	if err == nil && err != sql.ErrNoRows {
 		defer actionRows.Close()
 		for actionRows.Next() {
+			var ri = &thunderdome.RetroAction{
+				Comments:  make([]*thunderdome.RetroActionComment, 0),
+				Assignees: make([]*thunderdome.User, 0),
+			}
 			var comments string
-			var ri = &thunderdome.RetroAction{}
-			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed, &ri.RetroID, &comments); err != nil {
+			var assignees string
+			if err := actionRows.Scan(&ri.ID, &ri.Content, &ri.Completed, &ri.RetroID, &comments, &assignees); err != nil {
 				d.Logger.Error("get retro actions error", zap.Error(err))
 			} else {
-				Comments := make([]*thunderdome.RetroActionComment, 0)
-				jsonErr := json.Unmarshal([]byte(comments), &Comments)
+				jsonErr := json.Unmarshal([]byte(comments), &ri.Comments)
 				if jsonErr != nil {
 					d.Logger.Error("retro action comments json error", zap.Error(jsonErr))
 				}
-				ri.Comments = Comments
+				jsonErr = json.Unmarshal([]byte(assignees), &ri.Assignees)
+				if jsonErr != nil {
+					d.Logger.Error("retro action assignees json error", zap.Error(jsonErr))
+				}
+				for i, assignee := range ri.Assignees {
+					if assignee.Email != "" {
+						ri.Assignees[i].GravatarHash = db.CreateGravatarHash(assignee.Email)
+					} else {
+						ri.Assignees[i].GravatarHash = db.CreateGravatarHash(assignee.Id)
+					}
+				}
 				actions = append(actions, ri)
 			}
 		}
@@ -141,7 +189,7 @@ func (d *Service) RetroActionCommentAdd(RetroID string, ActionID string, UserID 
 		UserID,
 		Comment,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.retro_action_comment_add error", zap.Error(err))
+		d.Logger.Error("RetroActionCommentAdd error", zap.Error(err))
 	}
 
 	actions := d.GetRetroActions(RetroID)
@@ -156,7 +204,7 @@ func (d *Service) RetroActionCommentEdit(RetroID string, ActionID string, Commen
 		CommentID,
 		Comment,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.retro_action_comment_edit error", zap.Error(err))
+		d.Logger.Error("RetroActionCommentEdit error", zap.Error(err))
 	}
 
 	actions := d.GetRetroActions(RetroID)
@@ -170,7 +218,7 @@ func (d *Service) RetroActionCommentDelete(RetroID string, ActionID string, Comm
 		`DELETE FROM thunderdome.retro_action_comment WHERE id = $1;`,
 		CommentID,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.retro_action_comment_delete error", zap.Error(err))
+		d.Logger.Error("RetroActionCommentDelete error", zap.Error(err))
 	}
 
 	actions := d.GetRetroActions(RetroID)
@@ -185,7 +233,7 @@ func (d *Service) RetroActionAssigneeAdd(RetroID string, ActionID string, UserID
 		ActionID,
 		UserID,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.retro_action_assignee_add error", zap.Error(err))
+		d.Logger.Error("RetroActionAssigneeAdd error", zap.Error(err))
 	}
 
 	actions := d.GetRetroActions(RetroID)
@@ -200,7 +248,7 @@ func (d *Service) RetroActionAssigneeDelete(RetroID string, ActionID string, Use
 		ActionID,
 		UserID,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.retro_action_assignee_delete error", zap.Error(err))
+		d.Logger.Error("RetroActionAssigneeDelete error", zap.Error(err))
 	}
 
 	actions := d.GetRetroActions(RetroID)

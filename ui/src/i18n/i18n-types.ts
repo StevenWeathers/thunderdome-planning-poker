@@ -2321,6 +2321,18 @@ type RootTranslation = {
    * T​h​e​m​e
    */
   theme: string;
+  /**
+   * A​s​s​i​g​n​e​e​s
+   */
+  assignees: string;
+  /**
+   * S​e​l​e​c​t​ ​a​n​ ​a​s​s​i​g​n​e​e​ ​t​o​ ​a​d​d
+   */
+  assigneeSelectPlaceholder: string;
+  /**
+   * A​d​d​ ​A​s​s​i​g​n​e​e
+   */
+  assigneeAdd: string;
 };
 
 export type TranslationFunctions = {
@@ -4581,6 +4593,18 @@ export type TranslationFunctions = {
    * Theme
    */
   theme: () => LocalizedString;
+  /**
+   * Assignees
+   */
+  assignees: () => LocalizedString;
+  /**
+   * Select an assignee to add
+   */
+  assigneeSelectPlaceholder: () => LocalizedString;
+  /**
+   * Add Assignee
+   */
+  assigneeAdd: () => LocalizedString;
 };
 
 export type Formatters = {};

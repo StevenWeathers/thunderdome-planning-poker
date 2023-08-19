@@ -307,6 +307,8 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/retros/{retroId}", a.userOnly(a.handleRetroDelete(retroSvc))).Methods("DELETE")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}", a.userOnly(a.handleRetroActionUpdate(retroSvc))).Methods("PUT")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}", a.userOnly(a.handleRetroActionDelete(retroSvc))).Methods("DELETE")
+		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/assignees", a.userOnly(a.handleRetroActionAssigneeAdd(retroSvc))).Methods("POST")
+		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/assignees", a.userOnly(a.handleRetroActionAssigneeRemove(retroSvc))).Methods("DELETE")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments", a.userOnly(a.handleRetroActionCommentAdd())).Methods("POST")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments/{commentId}", a.userOnly(a.handleRetroActionCommentEdit())).Methods("PUT")
 		apiRouter.HandleFunc("/retros/{retroId}/actions/{actionId}/comments/{commentId}", a.userOnly(a.handleRetroActionCommentDelete())).Methods("DELETE")
