@@ -66,8 +66,8 @@ dev:
 	$(GOFMT) -s -w .
 	$(GOIMPORTS) -w .
 	$(SWAGFMT)
-	$(NPM_FORMAT)
 	$(GENI8N)
+	$(NPM_FORMAT)
 	$(NPMBUILD)
 	$(SWAGGERGEN)
 	$(GOBUILD) -o $(BINARY_NAME) -v
