@@ -1698,6 +1698,59 @@ const docTemplate = `{
                 }
             }
         },
+        "/battles/{battleId}/plans/{planId}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a poker story",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "poker"
+                ],
+                "summary": "Delete Poker Story",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the poker game ID",
+                        "name": "battleId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the story ID",
+                        "name": "planId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/maintenance/clean-battles": {
             "delete": {
                 "security": [
@@ -7712,6 +7765,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "avatar": {
+                    "type": "string"
+                },
+                "email": {
                     "type": "string"
                 },
                 "gravatarHash": {

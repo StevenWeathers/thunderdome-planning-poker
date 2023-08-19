@@ -742,6 +742,8 @@ definitions:
         type: boolean
       avatar:
         type: string
+      email:
+        type: string
       gravatarHash:
         type: string
       id:
@@ -2389,6 +2391,40 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create Poker Story
+      tags:
+      - poker
+  /battles/{battleId}/plans/{planId}:
+    delete:
+      description: Deletes a poker story
+      parameters:
+      - description: the poker game ID
+        in: path
+        name: battleId
+        required: true
+        type: string
+      - description: the story ID
+        in: path
+        name: planId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Poker Story
       tags:
       - poker
   /maintenance/clean-battles:

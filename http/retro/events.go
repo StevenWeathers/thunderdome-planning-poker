@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
 
 // CreateItem creates a retro item
@@ -221,6 +222,11 @@ func (b *Service) AdvancePhase(ctx context.Context, RetroID string, UserID strin
 	updatedItems, _ := json.Marshal(retro)
 	msg := createSocketEvent("phase_updated", string(updatedItems), "")
 
+	// if retro is completed send retro email to attendees
+	if rs.Phase == "completed" {
+		go b.SendCompletedEmails(retro)
+	}
+
 	return msg, nil, false
 }
 
@@ -339,6 +345,18 @@ func (b *Service) Abandon(ctx context.Context, RetroID string, UserID string, Ev
 	}
 
 	return nil, errors.New("ABANDONED_RETRO"), true
+}
+
+// SendCompletedEmails sends an email to attendees with the retro items and actions
+func (b *Service) SendCompletedEmails(retro *thunderdome.Retro) {
+	users := b.RetroService.RetroGetUsers(retro.Id)
+
+	for _, user := range users {
+		// don't send emails to guest's as they have no email
+		if user.Email != "" {
+			b.EmailService.SendRetroOverview(retro, user.Name, user.Email)
+		}
+	}
 }
 
 // socketEvent is the event structure used for socket messages
