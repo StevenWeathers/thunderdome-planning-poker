@@ -2333,6 +2333,11 @@ type RootTranslation = {
    * A​d​d​ ​A​s​s​i​g​n​e​e
    */
   assigneeAdd: string;
+  /**
+   * A​l​l​ ​(​{​c​o​u​n​t​}​)
+   * @param {unknown} count
+   */
+  allStoryWithCount: RequiredParams<'count'>;
 };
 
 export type TranslationFunctions = {
@@ -4605,6 +4610,10 @@ export type TranslationFunctions = {
    * Add Assignee
    */
   assigneeAdd: () => LocalizedString;
+  /**
+   * All ({count})
+   */
+  allStoryWithCount: (arg: { count: unknown }) => LocalizedString;
 };
 
 export type Formatters = {};

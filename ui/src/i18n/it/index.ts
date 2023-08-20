@@ -643,6 +643,7 @@ const it: Translation = {
   assignees: 'Assignees',
   assigneeSelectPlaceholder: 'Select an assignee to add',
   assigneeAdd: 'Add Assignee',
+  allStoryWithCount: 'All ({count})',
 };
 
 export default it;

@@ -65,7 +65,7 @@
   let showAddPlan = false;
   let showViewPlan = false;
   let selectedPlan = { ...defaultPlan };
-  let showCompleted = false;
+  let storysShow = 'unpointed';
   let showImport = false;
 
   const toggleImport = () => {
@@ -117,9 +117,9 @@
     eventTag('plan_burn', 'battle', '');
   };
 
-  const toggleShowCompleted = show => () => {
-    showCompleted = show;
-    eventTag('plans_show', 'battle', `completed: ${show}`);
+  const toggleShow = show => () => {
+    storysShow = show;
+    eventTag('plans_show', 'battle', `show: ${show}`);
   };
 
   $: pointedPlans = plans.filter(p => p.points !== '');
@@ -129,8 +129,6 @@
     return isNaN(currentPoints) ? previousValue : previousValue + currentPoints;
   }, 0);
   $: unpointedPlans = plans.filter(p => p.points === '');
-
-  $: plansToShow = showCompleted ? pointedPlans : unpointedPlans;
 
   // event handlers
   function handleDndConsider(e) {
@@ -186,28 +184,40 @@
   <ul
     class="flex border-b border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
   >
-    <li class="-mb-px {showCompleted ? '' : 'me-1'}">
+    <li class="-mb-px me-1">
       <button
-        class="{showCompleted
-          ? 'hover:text-blue-600 text-blue-400 dark:hover:text-sky-300 dark:text-sky-600'
-          : 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'}
+        class="{storysShow === 'unpointed'
+          ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
+          : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
                 bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
-        on:click="{toggleShowCompleted(false)}"
+        on:click="{toggleShow('unpointed')}"
         data-testid="plans-unpointed"
       >
         {$LL.unpointed({ count: unpointedPlans.length })}
       </button>
     </li>
-    <li class="me-1 {showCompleted ? 'me-1' : ''}">
+    <li class="me-1">
       <button
-        class="{showCompleted
+        class="{storysShow === 'pointed'
           ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
           : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
                 bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
-        on:click="{toggleShowCompleted(true)}"
+        on:click="{toggleShow('pointed')}"
         data-testid="plans-pointed"
       >
         {$LL.pointed({ count: pointedPlans.length })}
+      </button>
+    </li>
+    <li class="me-1">
+      <button
+        class="{storysShow === 'all'
+          ? 'border-b border-blue-500 dark:border-sky-300 text-blue-600 dark:text-sky-300 hover:text-blue-800 dark:hover:text-sky-600'
+          : 'hover:text-blue-600 dark:hover:text-sky-300 text-blue-400 dark:text-sky-600'}
+                  bg-white dark:bg-gray-800 inline-block py-4 px-4 font-semibold"
+        on:click="{toggleShow('all')}"
+        data-testid="plans-all"
+      >
+        {$LL.allStoryWithCount({ count: plans.length })}
       </button>
     </li>
   </ul>
@@ -223,15 +233,19 @@
         'outline-indigo-500',
         'dark:outline-yellow-400',
       ],
-      dragDisabled: !isLeader,
+      dragDisabled: !isLeader || storysShow !== 'all',
     }}"
     on:consider="{handleDndConsider}"
     on:finalize="{handleDndFinalize}"
   >
-    {#each plansToShow as plan (plan.id)}
+    {#each plans as plan (plan.id)}
       <div
-        class="relative flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800{isLeader
+        class="relative flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800{isLeader &&
+        storysShow === 'all'
           ? ' cursor-pointer'
+          : ''}{(plan.points === '' && storysShow === 'pointed') ||
+        (plan.points !== '' && storysShow === 'unpointed')
+          ? ' hidden'
           : ''}"
         data-testid="plan"
         data-storyid="{plan.id}"
@@ -387,7 +401,7 @@
       {/if}
     {/each}
   </div>
-  {#if showCompleted && totalPoints}
+  {#if storysShow === 'pointed' || storysShow === 'all'}
     <div
       class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
     >

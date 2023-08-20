@@ -154,6 +154,9 @@
       case 'plan_added':
         battle.plans = JSON.parse(parsedEvent.value);
         break;
+      case 'story_arranged':
+        battle.plans = JSON.parse(parsedEvent.value);
+        break;
       case 'plan_activated':
         const updatedPlans = JSON.parse(parsedEvent.value);
         const activePlan = updatedPlans.find(p => p.active);
