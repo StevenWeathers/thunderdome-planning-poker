@@ -70,8 +70,14 @@ func (d *Service) CreateStory(PokerID string, Name string, Type string, Referenc
 		Priority = 99
 	}
 	if _, err := d.DB.Exec(
-		`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria, priority)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
+		`INSERT INTO thunderdome.poker_story (
+		poker_id, name, type, reference_id, link, description, acceptance_criteria, priority, position)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (
+      coalesce(
+        (select max(position) from thunderdome.poker_story where poker_id = $1),
+        -1
+      ) + 1
+    ));`,
 		PokerID, Name, Type, ReferenceID, Link, SanitizedDescription, SanitizedAcceptanceCriteria, Priority,
 	); err != nil {
 		d.Logger.Error("error creating poker story", zap.Error(err))

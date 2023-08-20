@@ -59,6 +59,7 @@ type Story struct {
 	Skipped            bool      `json:"skipped"`
 	VoteStartTime      time.Time `json:"voteStartTime"`
 	VoteEndTime        time.Time `json:"voteEndTime"`
+	Position           int32     `json:"position"`
 }
 
 type PokerDataSvc interface {

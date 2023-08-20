@@ -48,6 +48,7 @@
     link: '',
     description: '',
     acceptanceCriteria: '',
+    position: 0,
   };
 
   let JoinPassRequired: boolean = false;
