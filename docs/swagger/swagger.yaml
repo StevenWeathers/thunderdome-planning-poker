@@ -795,6 +795,8 @@ definitions:
         type: string
       points:
         type: string
+      position:
+        type: integer
       priority:
         type: integer
       referenceId:

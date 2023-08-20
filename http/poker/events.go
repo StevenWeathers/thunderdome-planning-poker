@@ -19,7 +19,7 @@ func (b *Service) UserVote(ctx context.Context, BattleID string, UserID string, 
 	var msg []byte
 	var wv struct {
 		VoteValue        string `json:"voteValue"`
-		PlanID           string `json:"planId"`
+		StoryID          string `json:"planId"`
 		AutoFinishVoting bool   `json:"autoFinishVoting"`
 	}
 	err := json.Unmarshal([]byte(EventValue), &wv)
@@ -27,18 +27,18 @@ func (b *Service) UserVote(ctx context.Context, BattleID string, UserID string, 
 		return nil, err, false
 	}
 
-	Plans, AllVoted := b.BattleService.SetVote(BattleID, UserID, wv.PlanID, wv.VoteValue)
+	Storys, AllVoted := b.BattleService.SetVote(BattleID, UserID, wv.StoryID, wv.VoteValue)
 
-	updatedPlans, _ := json.Marshal(Plans)
-	msg = createSocketEvent("vote_activity", string(updatedPlans), UserID)
+	updatedStorys, _ := json.Marshal(Storys)
+	msg = createSocketEvent("vote_activity", string(updatedStorys), UserID)
 
 	if AllVoted && wv.AutoFinishVoting {
-		plans, err := b.BattleService.EndStoryVoting(BattleID, wv.PlanID)
+		plans, err := b.BattleService.EndStoryVoting(BattleID, wv.StoryID)
 		if err != nil {
 			return nil, err, false
 		}
-		updatedPlans, _ := json.Marshal(plans)
-		msg = createSocketEvent("voting_ended", string(updatedPlans), "")
+		updatedStorys, _ := json.Marshal(plans)
+		msg = createSocketEvent("voting_ended", string(updatedStorys), "")
 	}
 
 	return msg, nil, false
@@ -46,15 +46,15 @@ func (b *Service) UserVote(ctx context.Context, BattleID string, UserID string, 
 
 // UserVoteRetract handles retracting a user vote
 func (b *Service) UserVoteRetract(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
-	PlanID := EventValue
+	StoryID := EventValue
 
-	plans, err := b.BattleService.RetractVote(BattleID, UserID, PlanID)
+	plans, err := b.BattleService.RetractVote(BattleID, UserID, StoryID)
 	if err != nil {
 		return nil, err, false
 	}
 
-	updatedPlans, _ := json.Marshal(plans)
-	msg := createSocketEvent("vote_retracted", string(updatedPlans), UserID)
+	updatedStorys, _ := json.Marshal(plans)
+	msg := createSocketEvent("vote_retracted", string(updatedStorys), UserID)
 
 	return msg, nil, false
 }
@@ -127,14 +127,14 @@ func (b *Service) UserSpectatorToggle(ctx context.Context, BattleID string, User
 	return msg, nil, false
 }
 
-// PlanVoteEnd handles ending plan voting
-func (b *Service) PlanVoteEnd(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+// StoryVoteEnd handles ending plan voting
+func (b *Service) StoryVoteEnd(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	plans, err := b.BattleService.EndStoryVoting(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
-	updatedPlans, _ := json.Marshal(plans)
-	msg := createSocketEvent("voting_ended", string(updatedPlans), "")
+	updatedStorys, _ := json.Marshal(plans)
+	msg := createSocketEvent("voting_ended", string(updatedStorys), "")
 
 	return msg, nil, false
 }
@@ -190,8 +190,8 @@ func (b *Service) Delete(ctx context.Context, BattleID string, UserID string, Ev
 	return msg, nil, false
 }
 
-// PlanAdd adds a new plan to the battle
-func (b *Service) PlanAdd(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+// StoryAdd adds a new plan to the battle
+func (b *Service) StoryAdd(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var p struct {
 		Name               string `json:"planName"`
 		Type               string `json:"type"`
@@ -210,14 +210,14 @@ func (b *Service) PlanAdd(ctx context.Context, BattleID string, UserID string, E
 	if err != nil {
 		return nil, err, false
 	}
-	updatedPlans, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_added", string(updatedPlans), "")
+	updatedStorys, _ := json.Marshal(plans)
+	msg := createSocketEvent("plan_added", string(updatedStorys), "")
 
 	return msg, nil, false
 }
 
-// PlanRevise handles editing a battle plan
-func (b *Service) PlanRevise(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+// StoryRevise handles editing a battle plan
+func (b *Service) StoryRevise(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var p struct {
 		Id                 string `json:"planId"`
 		Name               string `json:"planName"`
@@ -237,50 +237,71 @@ func (b *Service) PlanRevise(ctx context.Context, BattleID string, UserID string
 	if err != nil {
 		return nil, err, false
 	}
-	updatedPlans, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_revised", string(updatedPlans), "")
+	updatedStorys, _ := json.Marshal(plans)
+	msg := createSocketEvent("plan_revised", string(updatedStorys), "")
 
 	return msg, nil, false
 }
 
-// PlanDelete handles deleting a plan
-func (b *Service) PlanDelete(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+// StoryDelete handles deleting a plan
+func (b *Service) StoryDelete(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	plans, err := b.BattleService.DeleteStory(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
-	updatedPlans, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_burned", string(updatedPlans), "")
+	updatedStorys, _ := json.Marshal(plans)
+	msg := createSocketEvent("plan_burned", string(updatedStorys), "")
 
 	return msg, nil, false
 }
 
-// PlanActivate handles activating a plan for voting
-func (b *Service) PlanActivate(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+// StoryArrange sets the position of the story relative to the beforeStory
+func (b *Service) StoryArrange(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var p struct {
+		StoryID       string `json:"story_id"`
+		BeforeStoryID string `json:"before_story_id"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &p)
+	if err != nil {
+		return nil, err, false
+	}
+
+	plans, err := b.BattleService.ArrangeStory(BattleID, p.StoryID, p.BeforeStoryID)
+	if err != nil {
+		return nil, err, false
+	}
+	updatedStorys, _ := json.Marshal(plans)
+	msg := createSocketEvent("story_arranged", string(updatedStorys), "")
+
+	return msg, nil, false
+}
+
+// StoryActivate handles activating a plan for voting
+func (b *Service) StoryActivate(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	plans, err := b.BattleService.ActivateStoryVoting(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
-	updatedPlans, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_activated", string(updatedPlans), "")
+	updatedStorys, _ := json.Marshal(plans)
+	msg := createSocketEvent("plan_activated", string(updatedStorys), "")
 
 	return msg, nil, false
 }
 
-// PlanSkip handles skipping a plan voting
-func (b *Service) PlanSkip(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+// StorySkip handles skipping a plan voting
+func (b *Service) StorySkip(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	plans, err := b.BattleService.SkipStory(BattleID, EventValue)
 	if err != nil {
 		return nil, err, false
 	}
-	updatedPlans, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_skipped", string(updatedPlans), "")
+	updatedStorys, _ := json.Marshal(plans)
+	msg := createSocketEvent("plan_skipped", string(updatedStorys), "")
 
 	return msg, nil, false
 }
 
-// PlanFinalize handles setting a plan point value
-func (b *Service) PlanFinalize(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
+// StoryFinalize handles setting a plan point value
+func (b *Service) StoryFinalize(ctx context.Context, BattleID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var p struct {
 		Id     string `json:"planId"`
 		Points string `json:"planPoints"`
@@ -294,8 +315,8 @@ func (b *Service) PlanFinalize(ctx context.Context, BattleID string, UserID stri
 	if err != nil {
 		return nil, err, false
 	}
-	updatedPlans, _ := json.Marshal(plans)
-	msg := createSocketEvent("plan_finalized", string(updatedPlans), "")
+	updatedStorys, _ := json.Marshal(plans)
+	msg := createSocketEvent("plan_finalized", string(updatedStorys), "")
 
 	return msg, nil, false
 }
