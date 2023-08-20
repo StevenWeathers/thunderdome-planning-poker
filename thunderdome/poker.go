@@ -59,6 +59,7 @@ type Story struct {
 	Skipped            bool      `json:"skipped"`
 	VoteStartTime      time.Time `json:"voteStartTime"`
 	VoteEndTime        time.Time `json:"voteEndTime"`
+	Position           int32     `json:"position"`
 }
 
 type PokerDataSvc interface {
@@ -92,5 +93,7 @@ type PokerDataSvc interface {
 	SkipStory(PokerID string, StoryID string) ([]*Story, error)
 	UpdateStory(PokerID string, StoryID string, Name string, Type string, ReferenceID string, Link string, Description string, AcceptanceCriteria string, Priority int32) ([]*Story, error)
 	DeleteStory(PokerID string, StoryID string) ([]*Story, error)
+	// ArrangeStory sets the position of the story relative to the story it's being placed before
+	ArrangeStory(PokerID string, StoryID string, BeforeStoryID string) ([]*Story, error)
 	FinalizeStory(PokerID string, StoryID string, Points string) ([]*Story, error)
 }

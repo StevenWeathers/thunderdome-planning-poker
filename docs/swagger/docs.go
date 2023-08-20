@@ -7970,6 +7970,9 @@ const docTemplate = `{
                 "points": {
                     "type": "string"
                 },
+                "position": {
+                    "type": "integer"
+                },
                 "priority": {
                     "type": "integer"
                 },

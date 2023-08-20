@@ -32,6 +32,7 @@ export type PokerStory = {
   voteEndTime: Date;
   voteStartTime: Date;
   votes: Array<PokerStoryVote>;
+  position: number;
 };
 
 export type PokerStoryVote = {

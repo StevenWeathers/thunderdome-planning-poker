@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import ExternalLinkIcon from '../icons/ExternalLinkIcon.svelte';
   import HollowButton from '../HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
@@ -130,6 +131,35 @@
   $: unpointedPlans = plans.filter(p => p.points === '');
 
   $: plansToShow = showCompleted ? pointedPlans : unpointedPlans;
+
+  // event handlers
+  function handleDndConsider(e) {
+    plans = e.detail.items;
+  }
+
+  function handleDndFinalize(e) {
+    const storyId = e.detail.info.id;
+
+    plans = e.detail.items;
+
+    const matchedStory = plans.find(i => i.id === storyId);
+
+    if (matchedStory) {
+      // determine what story to place story before
+      const matchedStoryIndex = plans.indexOf(matchedStory);
+      const sibling = plans[matchedStoryIndex + 1];
+      const placeBefore = sibling ? sibling.id : '';
+
+      sendSocketEvent(
+        'story_arrange',
+        JSON.stringify({
+          story_id: storyId,
+          before_story_id: placeBefore,
+        }),
+      );
+      eventTag('story_arrange', 'battle', '');
+    }
+  }
 </script>
 
 <div class="shadow-lg mb-4">
@@ -182,83 +212,181 @@
     </li>
   </ul>
 
-  {#each plansToShow as plan (plan.id)}
-    <div
-      class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
-      data-testid="plan"
-    >
-      <div class="w-full lg:w-1/3 mb-4 lg:mb-0">
-        <div class="inline-block font-bold align-middle dark:text-white">
-          {#if plan.link !== ''}
-            <a
-              href="{plan.link}"
-              target="_blank"
-              class="text-blue-800 dark:text-sky-400"
-            >
-              <ExternalLinkIcon />
-            </a>
-            &nbsp;
-          {/if}
-          <div
-            class="inline-block text-sm text-gray-500 dark:text-gray-300
+  <div
+    use:dndzone="{{
+      items: plans,
+      type: 'story',
+      dropTargetStyle: '',
+      dropTargetClasses: [
+        'outline',
+        'outline-2',
+        'outline-indigo-500',
+        'dark:outline-yellow-400',
+      ],
+      dragDisabled: !isLeader,
+    }}"
+    on:consider="{handleDndConsider}"
+    on:finalize="{handleDndFinalize}"
+  >
+    {#each plansToShow as plan (plan.id)}
+      <div
+        class="relative flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800{isLeader
+          ? ' cursor-pointer'
+          : ''}"
+        data-testid="plan"
+        data-storyid="{plan.id}"
+      >
+        <div class="w-full lg:w-1/3 mb-4 lg:mb-0">
+          <div class="inline-block font-bold align-middle dark:text-white">
+            {#if plan.link !== ''}
+              <a
+                href="{plan.link}"
+                target="_blank"
+                class="text-blue-800 dark:text-sky-400"
+              >
+                <ExternalLinkIcon />
+              </a>
+              &nbsp;
+            {/if}
+            <div
+              class="inline-block text-sm text-gray-500 dark:text-gray-300
                         border-gray-300 border px-1 rounded"
-            data-testid="plan-type"
-          >
-            {plan.type}
+              data-testid="plan-type"
+            >
+              {plan.type}
+            </div>
+            &nbsp;
+            {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
+            <svelte:component this="{priorities[plan.priority].icon}" />
+            <span data-testid="plan-name">{plan.name}</span>
           </div>
           &nbsp;
-          {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
-          <svelte:component this="{priorities[plan.priority].icon}" />
-          <span data-testid="plan-name">{plan.name}</span>
-        </div>
-        &nbsp;
-        {#if plan.points !== ''}
-          <div
-            class="inline-block font-bold text-green-600 dark:text-lime-400
+          {#if plan.points !== ''}
+            <div
+              class="inline-block font-bold text-green-600 dark:text-lime-400
                         border-green-500 dark:border-lime-400 border px-2 py-1 rounded ms-2"
-            data-testid="plan-points"
-          >
-            {plan.points}
-          </div>
-        {/if}
-      </div>
-      <div class="w-full lg:w-2/3 text-right">
-        <HollowButton
-          color="blue"
-          onClick="{togglePlanView(plan.id)}"
-          testid="plan-view"
-        >
-          {$LL.view()}
-        </HollowButton>
-        {#if isLeader}
-          {#if !plan.active}
-            <HollowButton
-              color="red"
-              onClick="{handlePlanDeletion(plan.id)}"
-              testid="plan-delete"
+              data-testid="plan-points"
             >
-              {$LL.delete()}
-            </HollowButton>
+              {plan.points}
+            </div>
           {/if}
+        </div>
+        <div class="w-full lg:w-2/3 text-right">
           <HollowButton
-            color="purple"
-            onClick="{toggleAddPlan(plan.id)}"
-            testid="plan-edit"
+            color="blue"
+            onClick="{togglePlanView(plan.id)}"
+            testid="plan-view"
           >
-            {$LL.edit()}
+            {$LL.view()}
           </HollowButton>
-          {#if !plan.active}
+          {#if isLeader}
+            {#if !plan.active}
+              <HollowButton
+                color="red"
+                onClick="{handlePlanDeletion(plan.id)}"
+                testid="plan-delete"
+              >
+                {$LL.delete()}
+              </HollowButton>
+            {/if}
             <HollowButton
-              onClick="{activatePlan(plan.id)}"
-              testid="plan-activate"
+              color="purple"
+              onClick="{toggleAddPlan(plan.id)}"
+              testid="plan-edit"
             >
-              {$LL.activate()}
+              {$LL.edit()}
             </HollowButton>
+            {#if !plan.active}
+              <HollowButton
+                onClick="{activatePlan(plan.id)}"
+                testid="plan-activate"
+              >
+                {$LL.activate()}
+              </HollowButton>
+            {/if}
           {/if}
-        {/if}
+        </div>
       </div>
-    </div>
-  {/each}
+      {#if plan[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+        <div
+          class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 cursor-pointer flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
+          data-testid="plan"
+          data-storyid="{plan.id}"
+        >
+          <div class="w-full lg:w-1/3 mb-4 lg:mb-0">
+            <div class="inline-block font-bold align-middle dark:text-white">
+              {#if plan.link !== ''}
+                <a
+                  href="{plan.link}"
+                  target="_blank"
+                  class="text-blue-800 dark:text-sky-400"
+                >
+                  <ExternalLinkIcon />
+                </a>
+                &nbsp;
+              {/if}
+              <div
+                class="inline-block text-sm text-gray-500 dark:text-gray-300
+                        border-gray-300 border px-1 rounded"
+                data-testid="plan-type"
+              >
+                {plan.type}
+              </div>
+              &nbsp;
+              {#if plan.referenceId}[{plan.referenceId}]&nbsp;{/if}
+              <svelte:component this="{priorities[plan.priority].icon}" />
+              <span data-testid="plan-name">{plan.name}</span>
+            </div>
+            &nbsp;
+            {#if plan.points !== ''}
+              <div
+                class="inline-block font-bold text-green-600 dark:text-lime-400
+                        border-green-500 dark:border-lime-400 border px-2 py-1 rounded ms-2"
+                data-testid="plan-points"
+              >
+                {plan.points}
+              </div>
+            {/if}
+          </div>
+          <div class="w-full lg:w-2/3 text-right">
+            <HollowButton
+              color="blue"
+              onClick="{togglePlanView(plan.id)}"
+              testid="plan-view"
+            >
+              {$LL.view()}
+            </HollowButton>
+            {#if isLeader}
+              {#if !plan.active}
+                <HollowButton
+                  color="red"
+                  onClick="{handlePlanDeletion(plan.id)}"
+                  testid="plan-delete"
+                >
+                  {$LL.delete()}
+                </HollowButton>
+              {/if}
+              <HollowButton
+                color="purple"
+                onClick="{toggleAddPlan(plan.id)}"
+                testid="plan-edit"
+              >
+                {$LL.edit()}
+              </HollowButton>
+              {#if !plan.active}
+                <HollowButton
+                  onClick="{activatePlan(plan.id)}"
+                  testid="plan-activate"
+                >
+                  {$LL.activate()}
+                </HollowButton>
+              {/if}
+            {/if}
+          </div>
+        </div>
+      {/if}
+    {/each}
+  </div>
   {#if showCompleted && totalPoints}
     <div
       class="flex flex-wrap items-center border-b border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-gray-800"
