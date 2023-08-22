@@ -3,10 +3,7 @@ package main
 import (
 	"context"
 	_ "embed"
-	"fmt"
-	"net/http"
 	"os"
-	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/admin"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/alert"
@@ -17,15 +14,13 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/storyboard"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/team"
 	"github.com/StevenWeathers/thunderdome-planning-poker/db/user"
-	api "github.com/StevenWeathers/thunderdome-planning-poker/http"
+	"github.com/StevenWeathers/thunderdome-planning-poker/http"
 	"github.com/StevenWeathers/thunderdome-planning-poker/ui"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/config"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
-
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -39,7 +34,6 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/email"
 	"go.uber.org/zap"
 
-	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 )
 
@@ -75,32 +69,9 @@ func main() {
 		}()
 	}
 
-	cookieHashKey := c.Http.CookieHashkey
-	pathPrefix := c.Http.PathPrefix
-	router := mux.NewRouter()
-
-	if pathPrefix != "" {
-		router = router.PathPrefix(pathPrefix).Subrouter()
-	}
-
-	router.Use(otelmux.Middleware("thunderdome"))
-
-	cookie := securecookie.New([]byte(cookieHashKey), nil)
 	ldapEnabled := c.Auth.Method == "ldap"
 	headerAuthEnabled := c.Auth.Method == "header"
 
-	e := email.New(&email.Config{
-		AppURL:       "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
-		SenderName:   "Thunderdome",
-		SmtpEnabled:  c.Smtp.Enabled,
-		SmtpHost:     c.Smtp.Host,
-		SmtpPort:     c.Smtp.Port,
-		SmtpSecure:   c.Smtp.Secure,
-		SmtpIdentity: c.Smtp.Identity,
-		SmtpUser:     c.Smtp.User,
-		SmtpPass:     c.Smtp.Pass,
-		SmtpSender:   c.Smtp.Sender,
-	}, logger)
 	d := db.New(c.Admin.Email, &db.Config{
 		Host:            c.Db.Host,
 		Port:            c.Db.Port,
@@ -113,82 +84,6 @@ func main() {
 		MaxOpenConns:    c.Db.MaxOpenConns,
 		ConnMaxLifetime: c.Db.ConnMaxLifetime,
 	}, logger)
-
-	HFS, FSS := ui.New(embedUseOS)
-
-	httpConfig := &api.Config{
-		AppDomain:                 c.Http.Domain,
-		FrontendCookieName:        c.Http.FrontendCookieName,
-		SecureCookieName:          c.Http.BackendCookieName,
-		SecureCookieFlag:          c.Http.SecureCookie,
-		SessionCookieName:         c.Http.SessionCookieName,
-		PathPrefix:                c.Http.PathPrefix,
-		ExternalAPIEnabled:        c.Config.AllowExternalApi,
-		ExternalAPIVerifyRequired: c.Config.ExternalApiVerifyRequired,
-		UserAPIKeyLimit:           c.Config.UserApikeyLimit,
-		LdapEnabled:               ldapEnabled,
-		HeaderAuthEnabled:         headerAuthEnabled,
-		FeaturePoker:              c.Feature.Poker,
-		FeatureRetro:              c.Feature.Retro,
-		FeatureStoryboard:         c.Feature.Storyboard,
-		OrganizationsEnabled:      c.Config.OrganizationsEnabled,
-		AvatarService:             c.Config.AvatarService,
-		EmbedUseOS:                embedUseOS,
-		CleanupBattlesDaysOld:     c.Config.CleanupBattlesDaysOld,
-		CleanupRetrosDaysOld:      c.Config.CleanupRetrosDaysOld,
-		CleanupStoryboardsDaysOld: c.Config.CleanupStoryboardsDaysOld,
-		CleanupGuestsDaysOld:      c.Config.CleanupGuestsDaysOld,
-		RequireTeams:              c.Config.RequireTeams,
-		AuthLdapUrl:               c.Auth.Ldap.Url,
-		AuthLdapUseTls:            c.Auth.Ldap.UseTls,
-		AuthLdapBindname:          c.Auth.Ldap.Bindname,
-		AuthLdapBindpass:          c.Auth.Ldap.Bindpass,
-		AuthLdapBasedn:            c.Auth.Ldap.Basedn,
-		AuthLdapFilter:            c.Auth.Ldap.Filter,
-		AuthLdapMailAttr:          c.Auth.Ldap.MailAttr,
-		AuthLdapCnAttr:            c.Auth.Ldap.CnAttr,
-		AuthHeaderUsernameHeader:  c.Auth.Header.UsernameHeader,
-		AllowGuests:               c.Config.AllowGuests,
-		AllowRegistration:         c.Config.AllowRegistration,
-		ShowActiveCountries:       c.Config.ShowActiveCountries,
-	}
-
-	appConfig := thunderdome.AppConfig{
-		AllowedPointValues:        c.Config.AllowedPointValues,
-		DefaultPointValues:        c.Config.DefaultPointValues,
-		ShowWarriorRank:           c.Config.ShowWarriorRank,
-		AvatarService:             c.Config.AvatarService,
-		ToastTimeout:              c.Config.ToastTimeout,
-		AllowGuests:               c.Config.AllowGuests,
-		AllowRegistration:         c.Config.AllowRegistration && c.Auth.Method == "normal",
-		AllowJiraImport:           c.Config.AllowJiraImport,
-		AllowCsvImport:            c.Config.AllowCsvImport,
-		DefaultLocale:             c.Config.DefaultLocale,
-		FriendlyUIVerbs:           c.Config.FriendlyUiVerbs,
-		OrganizationsEnabled:      c.Config.OrganizationsEnabled,
-		ExternalAPIEnabled:        c.Config.AllowExternalApi,
-		UserAPIKeyLimit:           c.Config.UserApikeyLimit,
-		AppVersion:                version,
-		CookieName:                c.Http.FrontendCookieName,
-		PathPrefix:                c.Http.PathPrefix,
-		CleanupGuestsDaysOld:      c.Config.CleanupGuestsDaysOld,
-		CleanupBattlesDaysOld:     c.Config.CleanupBattlesDaysOld,
-		CleanupRetrosDaysOld:      c.Config.CleanupRetrosDaysOld,
-		CleanupStoryboardsDaysOld: c.Config.CleanupStoryboardsDaysOld,
-		ShowActiveCountries:       c.Config.ShowActiveCountries,
-		LdapEnabled:               ldapEnabled,
-		HeaderAuthEnabled:         headerAuthEnabled,
-		FeaturePoker:              c.Feature.Poker,
-		FeatureRetro:              c.Feature.Retro,
-		FeatureStoryboard:         c.Feature.Storyboard,
-		RequireTeams:              c.Config.RequireTeams,
-	}
-
-	uiConfig := thunderdome.UIConfig{
-		AnalyticsEnabled: c.Analytics.Enabled,
-		AnalyticsID:      c.Analytics.ID,
-		AppConfig:        appConfig,
-	}
 
 	userService := &user.Service{DB: d.DB, Logger: logger}
 	apkService := &apikey.Service{DB: d.DB, Logger: logger}
@@ -205,11 +100,62 @@ func main() {
 	organizationService := &team.OrganizationService{DB: d.DB, Logger: logger}
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
 
-	a := api.Service{
-		Config:              httpConfig,
-		Router:              router,
-		Email:               e,
-		Cookie:              cookie,
+	HFS, FSS := ui.New(embedUseOS)
+	h := http.New(http.Service{
+		Config: &http.Config{
+			Port:                      c.Http.Port,
+			HttpWriteTimeout:          c.Http.WriteTimeout,
+			HttpReadTimeout:           c.Http.ReadTimeout,
+			HttpIdleTimeout:           c.Http.IdleTimeout,
+			HttpReadHeaderTimeout:     c.Http.ReadHeaderTimeout,
+			AppDomain:                 c.Http.Domain,
+			FrontendCookieName:        c.Http.FrontendCookieName,
+			SecureCookieName:          c.Http.BackendCookieName,
+			SecureCookieFlag:          c.Http.SecureCookie,
+			SessionCookieName:         c.Http.SessionCookieName,
+			PathPrefix:                c.Http.PathPrefix,
+			ExternalAPIEnabled:        c.Config.AllowExternalApi,
+			ExternalAPIVerifyRequired: c.Config.ExternalApiVerifyRequired,
+			UserAPIKeyLimit:           c.Config.UserApikeyLimit,
+			LdapEnabled:               ldapEnabled,
+			HeaderAuthEnabled:         headerAuthEnabled,
+			FeaturePoker:              c.Feature.Poker,
+			FeatureRetro:              c.Feature.Retro,
+			FeatureStoryboard:         c.Feature.Storyboard,
+			OrganizationsEnabled:      c.Config.OrganizationsEnabled,
+			AvatarService:             c.Config.AvatarService,
+			EmbedUseOS:                embedUseOS,
+			CleanupBattlesDaysOld:     c.Config.CleanupBattlesDaysOld,
+			CleanupRetrosDaysOld:      c.Config.CleanupRetrosDaysOld,
+			CleanupStoryboardsDaysOld: c.Config.CleanupStoryboardsDaysOld,
+			CleanupGuestsDaysOld:      c.Config.CleanupGuestsDaysOld,
+			RequireTeams:              c.Config.RequireTeams,
+			AuthLdapUrl:               c.Auth.Ldap.Url,
+			AuthLdapUseTls:            c.Auth.Ldap.UseTls,
+			AuthLdapBindname:          c.Auth.Ldap.Bindname,
+			AuthLdapBindpass:          c.Auth.Ldap.Bindpass,
+			AuthLdapBasedn:            c.Auth.Ldap.Basedn,
+			AuthLdapFilter:            c.Auth.Ldap.Filter,
+			AuthLdapMailAttr:          c.Auth.Ldap.MailAttr,
+			AuthLdapCnAttr:            c.Auth.Ldap.CnAttr,
+			AuthHeaderUsernameHeader:  c.Auth.Header.UsernameHeader,
+			AllowGuests:               c.Config.AllowGuests,
+			AllowRegistration:         c.Config.AllowRegistration,
+			ShowActiveCountries:       c.Config.ShowActiveCountries,
+		},
+		Email: email.New(&email.Config{
+			AppURL:       "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
+			SenderName:   "Thunderdome",
+			SmtpEnabled:  c.Smtp.Enabled,
+			SmtpHost:     c.Smtp.Host,
+			SmtpPort:     c.Smtp.Port,
+			SmtpSecure:   c.Smtp.Secure,
+			SmtpIdentity: c.Smtp.Identity,
+			SmtpUser:     c.Smtp.User,
+			SmtpPass:     c.Smtp.Pass,
+			SmtpSender:   c.Smtp.Sender,
+		}, logger),
+		Cookie:              securecookie.New([]byte(c.Http.CookieHashkey), nil),
 		Logger:              logger,
 		UserDataSvc:         userService,
 		ApiKeyDataSvc:       apkService,
@@ -222,23 +168,43 @@ func main() {
 		TeamDataSvc:         teamService,
 		OrganizationDataSvc: organizationService,
 		AdminDataSvc:        adminService,
-		UIConfig:            uiConfig,
-	}
+		UIConfig: thunderdome.UIConfig{
+			AnalyticsEnabled: c.Analytics.Enabled,
+			AnalyticsID:      c.Analytics.ID,
+			AppConfig: thunderdome.AppConfig{
+				AllowedPointValues:        c.Config.AllowedPointValues,
+				DefaultPointValues:        c.Config.DefaultPointValues,
+				ShowWarriorRank:           c.Config.ShowWarriorRank,
+				AvatarService:             c.Config.AvatarService,
+				ToastTimeout:              c.Config.ToastTimeout,
+				AllowGuests:               c.Config.AllowGuests,
+				AllowRegistration:         c.Config.AllowRegistration && c.Auth.Method == "normal",
+				AllowJiraImport:           c.Config.AllowJiraImport,
+				AllowCsvImport:            c.Config.AllowCsvImport,
+				DefaultLocale:             c.Config.DefaultLocale,
+				FriendlyUIVerbs:           c.Config.FriendlyUiVerbs,
+				OrganizationsEnabled:      c.Config.OrganizationsEnabled,
+				ExternalAPIEnabled:        c.Config.AllowExternalApi,
+				UserAPIKeyLimit:           c.Config.UserApikeyLimit,
+				AppVersion:                version,
+				CookieName:                c.Http.FrontendCookieName,
+				PathPrefix:                c.Http.PathPrefix,
+				CleanupGuestsDaysOld:      c.Config.CleanupGuestsDaysOld,
+				CleanupBattlesDaysOld:     c.Config.CleanupBattlesDaysOld,
+				CleanupRetrosDaysOld:      c.Config.CleanupRetrosDaysOld,
+				CleanupStoryboardsDaysOld: c.Config.CleanupStoryboardsDaysOld,
+				ShowActiveCountries:       c.Config.ShowActiveCountries,
+				LdapEnabled:               ldapEnabled,
+				HeaderAuthEnabled:         headerAuthEnabled,
+				FeaturePoker:              c.Feature.Poker,
+				FeatureRetro:              c.Feature.Retro,
+				FeatureStoryboard:         c.Feature.Storyboard,
+				RequireTeams:              c.Config.RequireTeams,
+			},
+		},
+	}, FSS, HFS)
 
-	api.Init(a, FSS, HFS)
-
-	srv := &http.Server{
-		Handler:           router,
-		Addr:              fmt.Sprintf(":%s", c.Http.Port),
-		WriteTimeout:      time.Duration(c.Http.WriteTimeout) * time.Second,
-		ReadTimeout:       time.Duration(c.Http.ReadTimeout) * time.Second,
-		IdleTimeout:       time.Duration(c.Http.IdleTimeout) * time.Second,
-		ReadHeaderTimeout: time.Duration(c.Http.ReadHeaderTimeout) * time.Second,
-	}
-
-	logger.Info("Access the WebUI via 127.0.0.1:" + c.Http.Port)
-
-	err := srv.ListenAndServe()
+	err := h.ListenAndServe()
 	if err != nil {
 		logger.Fatal(err.Error())
 	}

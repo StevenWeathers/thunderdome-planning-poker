@@ -3,8 +3,13 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"net/http"
+	"time"
+
+	"github.com/gorilla/mux"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
 
@@ -14,119 +19,10 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/securecookie"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
-var validate *validator.Validate
-
-// Config contains configuration values used by the APIs
-type Config struct {
-	// the domain of the application for cookie securing
-	AppDomain string
-	// PathPrefix allows the application to be run on a shared domain
-	PathPrefix string
-	// Whether the external API is enabled
-	ExternalAPIEnabled bool
-	// Whether the external API requires user verified email
-	ExternalAPIVerifyRequired bool
-	// Number of API keys a user can create
-	UserAPIKeyLimit int
-	// name of the cookie used exclusively by the UI
-	FrontendCookieName string
-	// name of the user cookie
-	SecureCookieName string
-	// name of the user session cookie used for authenticated sessions
-	SessionCookieName string
-	// controls whether the cookie is set to secure, only works over HTTPS
-	SecureCookieFlag bool
-	// Whether LDAP is enabled for authentication
-	LdapEnabled bool
-	// Whether header authentication is enabled
-	HeaderAuthEnabled bool
-	// Feature flag for Poker Planning
-	FeaturePoker bool
-	// Feature flag for Retrospectives
-	FeatureRetro bool
-	// Feature flag for Storyboards
-	FeatureStoryboard bool
-	// Whether Organizations (and Departments) feature is enabled
-	OrganizationsEnabled bool
-	// Which avatar service is utilized
-	AvatarService string
-	// Whether to use the OS filesystem or embedded
-	EmbedUseOS                bool
-	CleanupBattlesDaysOld     int
-	CleanupRetrosDaysOld      int
-	CleanupStoryboardsDaysOld int
-	CleanupGuestsDaysOld      int
-	RequireTeams              bool
-	AuthLdapUrl               string
-	AuthLdapUseTls            bool
-	AuthLdapBindname          string
-	AuthLdapBindpass          string
-	AuthLdapBasedn            string
-	AuthLdapFilter            string
-	AuthLdapMailAttr          string
-	AuthLdapCnAttr            string
-	AuthHeaderUsernameHeader  string
-	AuthHeaderEmailHeader     string
-	AllowGuests               bool
-	AllowRegistration         bool
-	ShowActiveCountries       bool
-}
-
-type Service struct {
-	Config              *Config
-	UIConfig            thunderdome.UIConfig
-	Router              *mux.Router
-	Email               thunderdome.EmailService
-	Cookie              *securecookie.SecureCookie
-	Logger              *otelzap.Logger
-	UserDataSvc         thunderdome.UserDataSvc
-	ApiKeyDataSvc       thunderdome.APIKeyDataSvc
-	AlertDataSvc        thunderdome.AlertDataSvc
-	AuthDataSvc         thunderdome.AuthDataSvc
-	PokerDataSvc        thunderdome.PokerDataSvc
-	CheckinDataSvc      thunderdome.CheckinDataSvc
-	RetroDataSvc        thunderdome.RetroDataSvc
-	StoryboardDataSvc   thunderdome.StoryboardDataSvc
-	TeamDataSvc         thunderdome.TeamDataSvc
-	OrganizationDataSvc thunderdome.OrganizationDataSvc
-	AdminDataSvc        thunderdome.AdminDataSvc
-}
-
-// standardJsonResponse structure used for all restful APIs response body
-type standardJsonResponse struct {
-	Success bool        `json:"success"`
-	Error   string      `json:"error"`
-	Data    interface{} `json:"data" swaggertype:"object"`
-	Meta    interface{} `json:"meta" swaggertype:"object"`
-}
-
-// pagination meta structure for query result pagination
-type pagination struct {
-	Count  int `json:"count"`
-	Limit  int `json:"limit"`
-	Offset int `json:"offset"`
-}
-
-type contextKey string
-
-const (
-	contextKeyUserID         contextKey = "userId"
-	contextKeyUserType       contextKey = "userType"
-	apiKeyHeaderName         string     = "X-API-Key"
-	contextKeyOrgRole        contextKey = "orgRole"
-	contextKeyDepartmentRole contextKey = "departmentRole"
-	contextKeyTeamRole       contextKey = "teamRole"
-	adminUserType            string     = "ADMIN"
-	guestUserType            string     = "GUEST"
-)
-
-// Init initializes the http handlers
+// New initializes the http handlers
 // @title                       Thunderdome API
 // @description                 Thunderdome Planning Poker API for both Internal and External use.
 // @description                 WARNING: Currently not considered stable and is subject to change until 1.0 is released.
@@ -139,10 +35,17 @@ const (
 // @securityDefinitions.apikey  ApiKeyAuth
 // @in                          header
 // @name                        X-API-Key
-func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
+func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	staticHandler := http.FileServer(HFS)
-
 	var a = &apiService
+	a.Router = mux.NewRouter()
+
+	if apiService.Config.PathPrefix != "" {
+		a.Router = a.Router.PathPrefix(apiService.Config.PathPrefix).Subrouter()
+	}
+
+	a.Router.Use(otelmux.Middleware("thunderdome"))
+
 	pokerSvc := poker.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.PokerDataSvc)
 	retroSvc := retro.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.RetroDataSvc, a.Email)
 	storyboardSvc := storyboard.New(a.Logger, a.validateSessionCookie, a.validateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.StoryboardDataSvc)
@@ -365,6 +268,21 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	a.Router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))
 
 	return a
+}
+
+func (s *Service) ListenAndServe() error {
+	srv := &http.Server{
+		Handler:           s.Router,
+		Addr:              fmt.Sprintf(":%s", s.Config.Port),
+		WriteTimeout:      time.Duration(s.Config.HttpWriteTimeout) * time.Second,
+		ReadTimeout:       time.Duration(s.Config.HttpReadTimeout) * time.Second,
+		IdleTimeout:       time.Duration(s.Config.HttpIdleTimeout) * time.Second,
+		ReadHeaderTimeout: time.Duration(s.Config.HttpReadHeaderTimeout) * time.Second,
+	}
+
+	s.Logger.Info("Access the WebUI via 127.0.0.1:" + s.Config.Port)
+
+	return srv.ListenAndServe()
 }
 
 // handleIndex parses the index html file, injecting any relevant data
