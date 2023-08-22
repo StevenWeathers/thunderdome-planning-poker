@@ -12,7 +12,6 @@ import (
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"github.com/matcornic/hermes/v2"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -36,13 +35,14 @@ var smtpAuth smtp.Auth
 type Config struct {
 	AppURL       string
 	SenderName   string
-	smtpHost     string
-	smtpPort     string
-	smtpSecure   bool
-	smtpIdentity string
-	smtpUser     string
-	smtpPass     string
-	smtpSender   string
+	SmtpHost     string
+	SmtpPort     string
+	SmtpSecure   bool
+	SmtpIdentity string
+	SmtpUser     string
+	SmtpPass     string
+	SmtpSender   string
+	SmtpEnabled  bool
 }
 
 // Service contains all the methods to send application emails
@@ -52,40 +52,29 @@ type Service struct {
 }
 
 // New creates a new instance of Service
-func New(AppDomain string, PathPrefix string, logger *otelzap.Logger) *Service {
-	var AppURL string = "https://" + AppDomain + PathPrefix + "/"
+func New(config *Config, logger *otelzap.Logger) *Service {
 	var s = &Service{
 		// read environment variables and sets up mailserver configuration values
-		Config: &Config{
-			AppURL:       AppURL,
-			SenderName:   "Thunderdome",
-			smtpHost:     viper.GetString("smtp.host"),
-			smtpPort:     viper.GetString("smtp.port"),
-			smtpSecure:   viper.GetBool("smtp.secure"),
-			smtpIdentity: viper.GetString("smtp.identity"),
-			smtpUser:     viper.GetString("smtp.user"),
-			smtpPass:     viper.GetString("smtp.pass"),
-			smtpSender:   viper.GetString("smtp.sender"),
-		},
+		Config: config,
 		Logger: logger,
 	}
 
 	// smtp server configuration.
-	smtpServerConfig = smtpServer{host: s.Config.smtpHost, port: s.Config.smtpPort}
+	smtpServerConfig = smtpServer{host: s.Config.SmtpHost, port: s.Config.SmtpPort}
 
 	// smtp sender info
 	smtpFrom = mail.Address{
 		Name:    s.Config.SenderName,
-		Address: s.Config.smtpSender,
+		Address: s.Config.SmtpSender,
 	}
 
 	// TLS config
 	tlsConfig = &tls.Config{
-		InsecureSkipVerify: !s.Config.smtpSecure,
-		ServerName:         s.Config.smtpHost,
+		InsecureSkipVerify: !s.Config.SmtpSecure,
+		ServerName:         s.Config.SmtpHost,
 	}
 
-	smtpAuth = smtp.PlainAuth(s.Config.smtpIdentity, s.Config.smtpUser, s.Config.smtpPass, s.Config.smtpHost)
+	smtpAuth = smtp.PlainAuth(s.Config.SmtpIdentity, s.Config.SmtpUser, s.Config.SmtpPass, s.Config.SmtpHost)
 
 	return s
 }
@@ -118,7 +107,7 @@ func (s *Service) generateBody(Body hermes.Body) (emailBody string, generateErr 
 
 // send - utility function to send emails
 func (s *Service) send(UserName string, UserEmail string, Subject string, Body string) error {
-	if !viper.GetBool("smtp.enabled") {
+	if !s.Config.SmtpEnabled {
 		return nil
 	}
 
@@ -154,7 +143,7 @@ func (s *Service) send(UserName string, UserEmail string, Subject string, Body s
 	}
 
 	// Auth
-	if s.Config.smtpSecure {
+	if s.Config.SmtpSecure {
 		if err = c.Auth(smtpAuth); err != nil {
 			s.Logger.Error("Error authenticating SMTP", zap.Error(err))
 			return err

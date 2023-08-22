@@ -1,14 +1,15 @@
-package main
+package config
 
 import (
 	"context"
+	"strings"
 
 	"github.com/spf13/viper"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
 // InitConfig initializes the application configuration
-func InitConfig(logger *otelzap.Logger) {
+func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
@@ -52,6 +53,9 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("smtp.port", "25")
 	viper.SetDefault("smtp.secure", true)
 	viper.SetDefault("smtp.sender", "no-reply@thunderdome.dev")
+	viper.SetDefault("smtp.user", "")
+	viper.SetDefault("smtp.pass", "")
+	viper.SetDefault("smtp.identity", "")
 
 	viper.SetDefault("config.aes_hashkey", "therevengers")
 	viper.SetDefault("config.allowedPointValues",
@@ -78,6 +82,8 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("config.organizations_enabled", true)
 	viper.SetDefault("config.require_teams", false)
 
+	viper.SetDefault("admin.email", "")
+
 	// feature flags
 	viper.SetDefault("feature.poker", true)
 	viper.SetDefault("feature.retro", true)
@@ -95,6 +101,11 @@ func InitConfig(logger *otelzap.Logger) {
 	viper.SetDefault("auth.header.usernameHeader", "Remote-User")
 	viper.SetDefault("auth.header.emailHeader", "Remote-Email")
 
+	// automatically load matching envs
+	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))
+	viper.AutomaticEnv()
+
+	// the following envs are not automatic because they didn't match the key structure
 	_ = viper.BindEnv("http.cookie_hashkey", "COOKIE_HASHKEY")
 	_ = viper.BindEnv("http.port", "PORT")
 	_ = viper.BindEnv("http.secure_cookie", "COOKIE_SECURE")
@@ -103,75 +114,9 @@ func InitConfig(logger *otelzap.Logger) {
 	_ = viper.BindEnv("http.frontend_cookie_name", "FRONTEND_COOKIE_NAME")
 	_ = viper.BindEnv("http.domain", "APP_DOMAIN")
 	_ = viper.BindEnv("http.path_prefix", "PATH_PREFIX")
-	_ = viper.BindEnv("http.write_timeout", "HTTP_WRITE_TIMEOUT")
-	_ = viper.BindEnv("http.read_timeout", "HTTP_READ_TIMEOUT")
-	_ = viper.BindEnv("http.idle_timeout", "HTTP_IDLE_TIMEOUT")
-	_ = viper.BindEnv("http.read_header_timeout", "HTTP_READ_HEADER_TIMEOUT")
-
-	_ = viper.BindEnv("analytics.enabled", "ANALYTICS_ENABLED")
-	_ = viper.BindEnv("analytics.id", "ANALYTICS_ID")
-	_ = viper.BindEnv("admin.email", "ADMIN_EMAIL")
-
-	_ = viper.BindEnv("otel.enabled", "OTEL_ENABLED")
-	_ = viper.BindEnv("otel.service_name", "OTEL_SERVICE_NAME")
-	_ = viper.BindEnv("otel.collector_url", "OTEL_COLLECTOR_URL")
-	_ = viper.BindEnv("otel.insecure_mode", "OTEL_INSECURE_MODE")
-
-	_ = viper.BindEnv("db.host", "DB_HOST")
-	_ = viper.BindEnv("db.port", "DB_PORT")
-	_ = viper.BindEnv("db.user", "DB_USER")
-	_ = viper.BindEnv("db.pass", "DB_PASS")
-	_ = viper.BindEnv("db.name", "DB_NAME")
-	_ = viper.BindEnv("db.sslmode", "DB_SSLMODE")
-	_ = viper.BindEnv("db.max_open_conns", "DB_MAX_OPEN_CONNS")
-	_ = viper.BindEnv("db.max_idle_conns", "DB_MAX_IDLE_CONNS")
-	_ = viper.BindEnv("db.conn_max_lifetime", "DB_CONN_MAX_LIFETIME")
-
-	_ = viper.BindEnv("smtp.enabled", "SMTP_ENABLED")
-	_ = viper.BindEnv("smtp.host", "SMTP_HOST")
-	_ = viper.BindEnv("smtp.port", "SMTP_PORT")
-	_ = viper.BindEnv("smtp.secure", "SMTP_SECURE")
-	_ = viper.BindEnv("smtp.identity", "SMTP_IDENTITY")
-	_ = viper.BindEnv("smtp.user", "SMTP_USER")
-	_ = viper.BindEnv("smtp.pass", "SMTP_PASS")
-	_ = viper.BindEnv("smtp.sender", "SMTP_SENDER")
-
-	_ = viper.BindEnv("config.aes_hashkey", "CONFIG_AES_HASHKEY")
 	_ = viper.BindEnv("config.allowedPointValues", "CONFIG_POINTS_ALLOWED")
 	_ = viper.BindEnv("config.defaultPointValues", "CONFIG_POINTS_DEFAULT")
 	_ = viper.BindEnv("config.show_warrior_rank", "CONFIG_SHOW_RANK")
-	_ = viper.BindEnv("config.avatar_service", "CONFIG_AVATAR_SERVICE")
-	_ = viper.BindEnv("config.toast_timeout", "CONFIG_TOAST_TIMEOUT")
-	_ = viper.BindEnv("config.allow_guests", "CONFIG_ALLOW_GUESTS")
-	_ = viper.BindEnv("config.allow_registration", "CONFIG_ALLOW_REGISTRATION")
-	_ = viper.BindEnv("config.allow_jira_import", "CONFIG_ALLOW_JIRA_IMPORT")
-	_ = viper.BindEnv("config.allow_CSV_import", "CONFIG_ALLOW_CSV_IMPORT")
-	_ = viper.BindEnv("config.default_locale", "CONFIG_DEFAULT_LOCALE")
-	_ = viper.BindEnv("config.friendly_ui_verbs", "CONFIG_FRIENDLY_UI_VERBS")
-	_ = viper.BindEnv("config.allow_external_api", "CONFIG_ALLOW_EXTERNAL_API")
-	_ = viper.BindEnv("config.external_api_verify_required", "CONFIG_EXTERNAL_API_VERIFY_REQUIRED")
-	_ = viper.BindEnv("config.user_apikey_limit", "CONFIG_USER_APIKEY_LIMIT")
-	_ = viper.BindEnv("config.show_active_countries", "CONFIG_SHOW_ACTIVE_COUNTRIES")
-	_ = viper.BindEnv("config.cleanup_battles_days_old", "CONFIG_CLEANUP_BATTLES_DAYS_OLD")
-	_ = viper.BindEnv("config.cleanup_guests_days_old", "CONFIG_CLEANUP_GUESTS_DAYS_OLD")
-	_ = viper.BindEnv("config.cleanup_retros_days_old", "CONFIG_CLEANUP_RETROS_DAYS_OLD")
-	_ = viper.BindEnv("config.cleanup_storyboards_days_old", "CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD")
-	_ = viper.BindEnv("config.organizations_enabled", "CONFIG_ORGANIZATIONS_ENABLED")
-	_ = viper.BindEnv("config.require_teams", "CONFIG_REQUIRE_TEAMS")
-
-	_ = viper.BindEnv("feature.poker", "FEATURE_POKER")
-	_ = viper.BindEnv("feature.retro", "FEATURE_RETRO")
-	_ = viper.BindEnv("feature.storyboard", "FEATURE_STORYBOARD")
-
-	_ = viper.BindEnv("auth.method", "AUTH_METHOD")
-	_ = viper.BindEnv("auth.ldap.url", "AUTH_LDAP_URL")
-	_ = viper.BindEnv("auth.ldap.use_tls", "AUTH_LDAP_USE_TLS")
-	_ = viper.BindEnv("auth.ldap.bindname", "AUTH_LDAP_BINDNAME")
-	_ = viper.BindEnv("auth.ldap.bindpass", "AUTH_LDAP_BINDPASS")
-	_ = viper.BindEnv("auth.ldap.basedn", "AUTH_LDAP_BASEDN")
-	_ = viper.BindEnv("auth.ldap.filter", "AUTH_LDAP_FILTER")
-	_ = viper.BindEnv("auth.ldap.mail_attr", "AUTH_LDAP_MAIL_ATTR")
-	_ = viper.BindEnv("auth.ldap.cn_attr", "AUTH_LDAP_CN_ATTR")
 	_ = viper.BindEnv("auth.header.usernameHeader", "AUTH_HEADER_USERNAME_HEADER")
 	_ = viper.BindEnv("auth.header.emailHeader", "AUTH_HEADER_EMAIL_HEADER")
 
@@ -181,4 +126,12 @@ func InitConfig(logger *otelzap.Logger) {
 			logger.Ctx(context.Background()).Fatal(err.Error())
 		}
 	}
+
+	var c Config
+	err = viper.Unmarshal(&c)
+	if err != nil {
+		logger.Ctx(context.Background()).Fatal(err.Error())
+	}
+
+	return c
 }
