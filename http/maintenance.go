@@ -3,7 +3,6 @@ package http
 import (
 	"net/http"
 
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -18,7 +17,7 @@ import (
 // @Router       /maintenance/clean-battles [delete]
 func (s *Service) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		DaysOld := viper.GetInt("config.cleanup_battles_days_old")
+		DaysOld := s.Config.CleanupBattlesDaysOld
 
 		err := s.PokerDataSvc.PurgeOldGames(r.Context(), DaysOld)
 		if err != nil {
@@ -41,7 +40,7 @@ func (s *Service) handleCleanBattles() http.HandlerFunc {
 // @Router       /maintenance/clean-retros [delete]
 func (s *Service) handleCleanRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		DaysOld := viper.GetInt("config.cleanup_retros_days_old")
+		DaysOld := s.Config.CleanupRetrosDaysOld
 
 		err := s.RetroDataSvc.CleanRetros(r.Context(), DaysOld)
 		if err != nil {
@@ -64,7 +63,7 @@ func (s *Service) handleCleanRetros() http.HandlerFunc {
 // @Router       /maintenance/clean-storyboards [delete]
 func (s *Service) handleCleanStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		DaysOld := viper.GetInt("config.cleanup_storyboards_days_old")
+		DaysOld := s.Config.CleanupStoryboardsDaysOld
 
 		err := s.StoryboardDataSvc.CleanStoryboards(r.Context(), DaysOld)
 		if err != nil {
@@ -87,7 +86,7 @@ func (s *Service) handleCleanStoryboards() http.HandlerFunc {
 // @Router       /maintenance/clean-guests [delete]
 func (s *Service) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		DaysOld := viper.GetInt("config.cleanup_guests_days_old")
+		DaysOld := s.Config.CleanupGuestsDaysOld
 
 		err := s.UserDataSvc.CleanGuests(r.Context(), DaysOld)
 		if err != nil {

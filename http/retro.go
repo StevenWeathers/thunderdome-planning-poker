@@ -6,10 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-	"github.com/spf13/viper"
-
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/retro"
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/gorilla/mux"
 )
@@ -48,7 +46,7 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 		UserID := vars["userId"]
 		TeamID, teamIdExists := vars["teamId"]
 
-		if !teamIdExists && viper.GetBool("config.require_teams") {
+		if !teamIdExists && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "RETRO_CREATION_REQUIRES_TEAM"))
 			return
 		}

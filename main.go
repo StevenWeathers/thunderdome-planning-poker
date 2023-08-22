@@ -192,6 +192,23 @@ func main() {
 		OrganizationsEnabled:      c.Config.OrganizationsEnabled,
 		AvatarService:             s.config.AvatarService,
 		EmbedUseOS:                embedUseOS,
+		CleanupBattlesDaysOld:     c.Config.CleanupBattlesDaysOld,
+		CleanupRetrosDaysOld:      c.Config.CleanupRetrosDaysOld,
+		CleanupStoryboardsDaysOld: c.Config.CleanupStoryboardsDaysOld,
+		CleanupGuestsDaysOld:      c.Config.CleanupGuestsDaysOld,
+		RequireTeams:              c.Config.RequireTeams,
+		AuthLdapUrl:               c.Auth.Ldap.Url,
+		AuthLdapUseTls:            c.Auth.Ldap.UseTls,
+		AuthLdapBindname:          c.Auth.Ldap.Bindname,
+		AuthLdapBindpass:          c.Auth.Ldap.Bindpass,
+		AuthLdapBasedn:            c.Auth.Ldap.Basedn,
+		AuthLdapFilter:            c.Auth.Ldap.Filter,
+		AuthLdapMailAttr:          c.Auth.Ldap.MailAttr,
+		AuthLdapCnAttr:            c.Auth.Ldap.CnAttr,
+		AuthHeaderUsernameHeader:  c.Auth.Header.UsernameHeader,
+		AllowGuests:               c.Config.AllowGuests,
+		AllowRegistration:         c.Config.AllowRegistration,
+		ShowActiveCountries:       c.Config.ShowActiveCountries,
 	}
 
 	appConfig := thunderdome.AppConfig{
