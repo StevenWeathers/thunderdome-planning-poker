@@ -16,7 +16,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
-	"github.com/spf13/viper"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
@@ -58,7 +57,25 @@ type Config struct {
 	// Which avatar service is utilized
 	AvatarService string
 	// Whether to use the OS filesystem or embedded
-	EmbedUseOS bool
+	EmbedUseOS                bool
+	CleanupBattlesDaysOld     int
+	CleanupRetrosDaysOld      int
+	CleanupStoryboardsDaysOld int
+	CleanupGuestsDaysOld      int
+	RequireTeams              bool
+	AuthLdapUrl               string
+	AuthLdapUseTls            bool
+	AuthLdapBindname          string
+	AuthLdapBindpass          string
+	AuthLdapBasedn            string
+	AuthLdapFilter            string
+	AuthLdapMailAttr          string
+	AuthLdapCnAttr            string
+	AuthHeaderUsernameHeader  string
+	AuthHeaderEmailHeader     string
+	AllowGuests               bool
+	AllowRegistration         bool
+	ShowActiveCountries       bool
 }
 
 type Service struct {
@@ -182,7 +199,7 @@ func Init(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		userRouter.HandleFunc("/{userId}/apikeys/{keyID}", a.userOnly(a.entityUserOnly(a.handleUserAPIKeyDelete()))).Methods("DELETE")
 	}
 	// country(s)
-	if viper.GetBool("config.show_active_countries") {
+	if a.Config.ShowActiveCountries {
 		apiRouter.HandleFunc("/active-countries", a.handleGetActiveCountries()).Methods("GET")
 	}
 	// org

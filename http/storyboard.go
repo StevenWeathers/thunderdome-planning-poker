@@ -8,8 +8,6 @@ import (
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/http/storyboard"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-	"github.com/spf13/viper"
-
 	"github.com/gorilla/mux"
 )
 
@@ -44,7 +42,7 @@ func (s *Service) handleStoryboardCreate() http.HandlerFunc {
 		UserID := vars["userId"]
 		TeamID, teamIdExists := vars["teamId"]
 
-		if !teamIdExists && viper.GetBool("config.require_teams") {
+		if !teamIdExists && s.Config.RequireTeams {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "STORYBOARD_CREATION_REQUIRES_TEAM"))
 			return
 		}

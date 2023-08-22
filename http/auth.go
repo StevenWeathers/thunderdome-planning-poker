@@ -7,8 +7,6 @@ import (
 	"strings"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-
-	"github.com/spf13/viper"
 )
 
 type userLoginRequestBody struct {
@@ -159,10 +157,8 @@ func (s *Service) handleLdapLogin() http.HandlerFunc {
 // @Router       /auth [get]
 func (s *Service) handleHeaderLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		viper.GetString("auth.ldap.url")
-
-		username := r.Header.Get(viper.GetString("auth.header.usernameHeader"))
-		useremail := r.Header.Get(viper.GetString("auth.header.emailHeader"))
+		username := r.Header.Get(s.Config.AuthHeaderUsernameHeader)
+		useremail := r.Header.Get(s.Config.AuthHeaderEmailHeader)
 
 		if username == "" {
 			s.Failure(w, r, http.StatusUnauthorized, Errorf(EUNAUTHORIZED, "MISSING_AUTH_HEADER"))
@@ -289,7 +285,7 @@ type guestUserCreateRequestBody struct {
 // @Router       /auth/guest [post]
 func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		AllowGuests := viper.GetBool("config.allow_guests")
+		AllowGuests := s.Config.AllowGuests
 		if !AllowGuests {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "GUESTS_USERS_DISABLED"))
 			return
@@ -349,7 +345,7 @@ type userRegisterRequestBody struct {
 // @Router       /auth/register [post]
 func (s *Service) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		AllowRegistration := viper.GetBool("config.allow_registration")
+		AllowRegistration := s.Config.AllowRegistration
 		if !AllowRegistration {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "USER_REGISTRATION_DISABLED"))
 		}

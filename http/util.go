@@ -15,7 +15,6 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/go-ldap/ldap/v3"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -292,13 +291,13 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 	var SessionId string
 	var sessErr error
 
-	l, err := ldap.DialURL(viper.GetString("auth.ldap.url"))
+	l, err := ldap.DialURL(s.Config.AuthLdapUrl)
 	if err != nil {
-		s.Logger.Ctx(ctx).Error("Failed connecting to ldap server at " + viper.GetString("auth.ldap.url"))
+		s.Logger.Ctx(ctx).Error("Failed connecting to ldap server at " + s.Config.AuthLdapUrl)
 		return AuthedUser, SessionId, err
 	}
 	defer l.Close()
-	if viper.GetBool("auth.ldap.use_tls") {
+	if s.Config.AuthLdapUseTls {
 		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed securing ldap connection", zap.Error(err))
@@ -306,18 +305,18 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 		}
 	}
 
-	if viper.GetString("auth.ldap.bindname") != "" {
-		err = l.Bind(viper.GetString("auth.ldap.bindname"), viper.GetString("auth.ldap.bindpass"))
+	if s.Config.AuthLdapBindname != "" {
+		err = l.Bind(s.Config.AuthLdapBindname, s.Config.AuthLdapBindpass)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed binding for authentication", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
 	}
 
-	searchRequest := ldap.NewSearchRequest(viper.GetString("auth.ldap.basedn"),
+	searchRequest := ldap.NewSearchRequest(s.Config.AuthLdapBasedn,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf(viper.GetString("auth.ldap.filter"), ldap.EscapeFilter(UserName)),
-		[]string{"dn", viper.GetString("auth.ldap.mail_attr"), viper.GetString("auth.ldap.cn_attr")},
+		fmt.Sprintf(s.Config.AuthLdapFilter, ldap.EscapeFilter(UserName)),
+		[]string{"dn", s.Config.AuthLdapMailAttr, s.Config.AuthLdapCnAttr},
 		nil,
 	)
 
@@ -333,8 +332,8 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 	}
 
 	userdn := sr.Entries[0].DN
-	useremail := sr.Entries[0].GetAttributeValue(viper.GetString("auth.ldap.mail_attr"))
-	usercn := sr.Entries[0].GetAttributeValue(viper.GetString("auth.ldap.cn_attr"))
+	useremail := sr.Entries[0].GetAttributeValue(s.Config.AuthLdapMailAttr)
+	usercn := sr.Entries[0].GetAttributeValue(s.Config.AuthLdapCnAttr)
 
 	err = l.Bind(userdn, UserPassword)
 	if err != nil {
