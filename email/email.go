@@ -33,16 +33,17 @@ var smtpAuth smtp.Auth
 
 // Config contains all the mail server values
 type Config struct {
-	AppURL       string
-	SenderName   string
-	SmtpHost     string
-	SmtpPort     string
-	SmtpSecure   bool
-	SmtpIdentity string
-	SmtpUser     string
-	SmtpPass     string
-	SmtpSender   string
-	SmtpEnabled  bool
+	AppURL            string
+	SenderName        string
+	SmtpHost          string
+	SmtpPort          string
+	SmtpSecure        bool
+	SmtpIdentity      string
+	SmtpUser          string
+	SmtpPass          string
+	SmtpSender        string
+	SmtpEnabled       bool
+	SmtpSkipTLSVerify bool
 }
 
 // Service contains all the methods to send application emails
@@ -70,7 +71,7 @@ func New(config *Config, logger *otelzap.Logger) *Service {
 
 	// TLS config
 	tlsConfig = &tls.Config{
-		InsecureSkipVerify: !s.Config.SmtpSecure,
+		InsecureSkipVerify: s.Config.SmtpSkipTLSVerify || !s.Config.SmtpSecure,
 		ServerName:         s.Config.SmtpHost,
 	}
 

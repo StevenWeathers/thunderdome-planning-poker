@@ -50,16 +50,17 @@ Thunderdome uses a Postgres database to store all data, the following configurat
 
 Thunderdome sends emails for user registration related activities, the following configuration options exist:
 
-| Option          | Environment Variable | Description                                                              | Default Value            |
-|-----------------|----------------------|--------------------------------------------------------------------------|--------------------------|
-| `smtp.enabled`  | SMTP_ENABLED         | Whether or not sending emails (e.g. welcome, forgot password) is enabled | true                     |
-| `smtp.host`     | SMTP_HOST            | Smtp server hostname.                                                    | localhost                |
-| `smtp.port`     | SMTP_PORT            | Smtp server port number.                                                 | 25                       |
-| `smtp.user`     | SMTP_USER            | Smtp server user.                                                        |                          |
-| `smtp.pass`     | SMTP_PASS            | Smtp server password.                                                    |                          |
-| `smtp.secure`   | SMTP_SECURE          | Set to authenticate with the Smtp server.                                | true                     |
-| `smtp.identity` | SMTP_IDENTITY        | Smtp server authorization identity. Usually unset.                       |                          |
-| `smtp.sender`   | SMTP_SENDER          | From address in emails sent by Thunderdome.                              | no-reply@thunderdome.dev |
+| Option                 | Environment Variable | Description                                                              | Default Value            |
+|------------------------|----------------------|--------------------------------------------------------------------------|--------------------------|
+| `smtp.enabled`         | SMTP_ENABLED         | Whether or not sending emails (e.g. welcome, forgot password) is enabled | true                     |
+| `smtp.host`            | SMTP_HOST            | Smtp server hostname.                                                    | localhost                |
+| `smtp.port`            | SMTP_PORT            | Smtp server port number.                                                 | 25                       |
+| `smtp.user`            | SMTP_USER            | Smtp server user.                                                        |                          |
+| `smtp.pass`            | SMTP_PASS            | Smtp server password.                                                    |                          |
+| `smtp.secure`          | SMTP_SECURE          | Set to authenticate with the Smtp server.                                | true                     |
+| `smtp.skip_tls_verify` | SMTP_SKIP_TLS_VERIFY | Set to true to skip TLS verification                                     | false                    |
+| `smtp.identity`        | SMTP_IDENTITY        | Smtp server authorization identity. Usually unset.                       |                          |
+| `smtp.sender`          | SMTP_SENDER          | From address in emails sent by Thunderdome.                              | no-reply@thunderdome.dev |
 
 ## Configure Admin Email
 
@@ -89,10 +90,8 @@ set that user as ADMIN role.
 | `config.toast_timeout`                | CONFIG_TOAST_TIMEOUT                | Number of milliseconds before notifications are hidden.                                                              | 1000                                                      |
 | `config.allow_guests`                 | CONFIG_ALLOW_GUESTS                 | Whether or not to allow guest (anonymous) users.                                                                     | true                                                      |
 | `config.allow_registration`           | CONFIG_ALLOW_REGISTRATION           | Whether or not to allow user registration (outside Admin).                                                           | true                                                      |
-| `config.allow_jira_import`            | CONFIG_ALLOW_JIRA_IMPORT            | Whether or not to allow import plans from JIRA XML.                                                                  |
-true                                                      |
-| `config.allow_csv_import`             | CONFIG_ALLOW_CSV_IMPORT             | Whether or not to allow import plans from a csv file                                                                 |
-true                                                      |
+| `config.allow_jira_import`            | CONFIG_ALLOW_JIRA_IMPORT            | Whether or not to allow import plans from JIRA XML.                                                                  | true                                                      |
+| `config.allow_csv_import`             | CONFIG_ALLOW_CSV_IMPORT             | Whether or not to allow import plans from a csv file                                                                 | true                                                      |
 | `config.default_locale`               | CONFIG_DEFAULT_LOCALE               | The default locale (language) for the UI                                                                             | en                                                        |
 | `config.friendly_ui_verbs`            | CONFIG_FRIENDLY_UI_VERBS            | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly                  | false                                                     |
 | `config.allow_external_api`           | CONFIG_ALLOW_EXTERNAL_API           | Whether or not to allow External API access                                                                          | true                                                      |

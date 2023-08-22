@@ -52,6 +52,7 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("smtp.host", "localhost")
 	viper.SetDefault("smtp.port", "25")
 	viper.SetDefault("smtp.secure", true)
+	viper.SetDefault("smtp.skip_tls_verify", false)
 	viper.SetDefault("smtp.sender", "no-reply@thunderdome.dev")
 	viper.SetDefault("smtp.user", "")
 	viper.SetDefault("smtp.pass", "")

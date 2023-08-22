@@ -56,14 +56,15 @@ type Db struct {
 }
 
 type Smtp struct {
-	Enabled  bool
-	Host     string
-	Port     string
-	Secure   bool
-	Sender   string
-	User     string
-	Pass     string
-	Identity string
+	Enabled       bool
+	Host          string
+	Port          string
+	Secure        bool
+	Sender        string
+	User          string
+	Pass          string
+	Identity      string
+	SkipTLSVerify bool `mapstructure:"skip_tls_verify"`
 }
 
 type AppConfig struct {
