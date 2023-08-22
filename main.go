@@ -48,47 +48,6 @@ var (
 	version = "dev"
 )
 
-// Config holds server global config values
-type Config struct {
-	// port the application server will listen on
-	ListenPort string
-	// the domain of the application for cookie securing
-	AppDomain string
-	// name of the cookie used exclusively by the UI
-	FrontendCookieName string
-	// email to promote a user to Admin type on app startup
-	// the user should already be registered for this to work
-	AdminEmail string
-	// Whether to enable Google Analytics tracking
-	AnalyticsEnabled bool
-	// ID used for Google Analytics
-	AnalyticsID string
-	// the app version
-	Version string
-	// Which avatar service is utilized
-	AvatarService string
-	// PathPrefix allows the application to be run on a shared domain
-	PathPrefix string
-	// Whether the external API is enabled
-	ExternalAPIEnabled bool
-	// Number of API keys a user can create
-	UserAPIKeyLimit int
-	// Whether LDAP is enabled for authentication
-	LdapEnabled bool
-	// Whether header authentication is enabled
-	HeaderAuthEnabled bool
-}
-
-type server struct {
-	config       *Config
-	router       *mux.Router
-	email        thunderdome.EmailService
-	cookie       *securecookie.SecureCookie
-	db           *db.Service
-	logger       *otelzap.Logger
-	AlertService thunderdome.AlertDataSvc
-}
-
 func main() {
 	zlog, _ := zap.NewProduction(
 		zap.Fields(
@@ -126,28 +85,11 @@ func main() {
 
 	router.Use(otelmux.Middleware("thunderdome"))
 
-	s := &server{
-		config: &Config{
-			ListenPort:         c.Http.Port,
-			AppDomain:          c.Http.Domain,
-			AdminEmail:         c.Admin.Email,
-			FrontendCookieName: c.Http.FrontendCookieName,
-			AnalyticsEnabled:   c.Analytics.Enabled,
-			AnalyticsID:        c.Analytics.ID,
-			Version:            version,
-			AvatarService:      c.Config.AvatarService,
-			PathPrefix:         pathPrefix,
-			ExternalAPIEnabled: c.Config.AllowExternalApi,
-			UserAPIKeyLimit:    c.Config.UserApikeyLimit,
-			LdapEnabled:        c.Auth.Method == "ldap",
-			HeaderAuthEnabled:  c.Auth.Method == "header",
-		},
-		router: router,
-		cookie: securecookie.New([]byte(cookieHashKey), nil),
-		logger: logger,
-	}
+	cookie := securecookie.New([]byte(cookieHashKey), nil)
+	ldapEnabled := c.Auth.Method == "ldap"
+	headerAuthEnabled := c.Auth.Method == "header"
 
-	s.email = email.New(&email.Config{
+	e := email.New(&email.Config{
 		AppURL:       "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
 		SenderName:   "Thunderdome",
 		SmtpEnabled:  c.Smtp.Enabled,
@@ -158,8 +100,8 @@ func main() {
 		SmtpUser:     c.Smtp.User,
 		SmtpPass:     c.Smtp.Pass,
 		SmtpSender:   c.Smtp.Sender,
-	}, s.logger)
-	s.db = db.New(s.config.AdminEmail, &db.Config{
+	}, logger)
+	d := db.New(c.Admin.Email, &db.Config{
 		Host:            c.Db.Host,
 		Port:            c.Db.Port,
 		User:            c.Db.User,
@@ -170,27 +112,27 @@ func main() {
 		MaxIdleConns:    c.Db.MaxIdleConns,
 		MaxOpenConns:    c.Db.MaxOpenConns,
 		ConnMaxLifetime: c.Db.ConnMaxLifetime,
-	}, s.logger)
+	}, logger)
 
 	HFS, FSS := ui.New(embedUseOS)
 
 	httpConfig := &api.Config{
-		AppDomain:                 s.config.AppDomain,
-		FrontendCookieName:        s.config.FrontendCookieName,
+		AppDomain:                 c.Http.Domain,
+		FrontendCookieName:        c.Http.FrontendCookieName,
 		SecureCookieName:          c.Http.BackendCookieName,
 		SecureCookieFlag:          c.Http.SecureCookie,
 		SessionCookieName:         c.Http.SessionCookieName,
-		PathPrefix:                s.config.PathPrefix,
-		ExternalAPIEnabled:        s.config.ExternalAPIEnabled,
+		PathPrefix:                c.Http.PathPrefix,
+		ExternalAPIEnabled:        c.Config.AllowExternalApi,
 		ExternalAPIVerifyRequired: c.Config.ExternalApiVerifyRequired,
-		UserAPIKeyLimit:           s.config.UserAPIKeyLimit,
-		LdapEnabled:               s.config.LdapEnabled,
-		HeaderAuthEnabled:         s.config.HeaderAuthEnabled,
+		UserAPIKeyLimit:           c.Config.UserApikeyLimit,
+		LdapEnabled:               ldapEnabled,
+		HeaderAuthEnabled:         headerAuthEnabled,
 		FeaturePoker:              c.Feature.Poker,
 		FeatureRetro:              c.Feature.Retro,
 		FeatureStoryboard:         c.Feature.Storyboard,
 		OrganizationsEnabled:      c.Config.OrganizationsEnabled,
-		AvatarService:             s.config.AvatarService,
+		AvatarService:             c.Config.AvatarService,
 		EmbedUseOS:                embedUseOS,
 		CleanupBattlesDaysOld:     c.Config.CleanupBattlesDaysOld,
 		CleanupRetrosDaysOld:      c.Config.CleanupRetrosDaysOld,
@@ -224,18 +166,18 @@ func main() {
 		DefaultLocale:             c.Config.DefaultLocale,
 		FriendlyUIVerbs:           c.Config.FriendlyUiVerbs,
 		OrganizationsEnabled:      c.Config.OrganizationsEnabled,
-		ExternalAPIEnabled:        s.config.ExternalAPIEnabled,
-		UserAPIKeyLimit:           s.config.UserAPIKeyLimit,
-		AppVersion:                s.config.Version,
-		CookieName:                s.config.FrontendCookieName,
-		PathPrefix:                s.config.PathPrefix,
+		ExternalAPIEnabled:        c.Config.AllowExternalApi,
+		UserAPIKeyLimit:           c.Config.UserApikeyLimit,
+		AppVersion:                version,
+		CookieName:                c.Http.FrontendCookieName,
+		PathPrefix:                c.Http.PathPrefix,
 		CleanupGuestsDaysOld:      c.Config.CleanupGuestsDaysOld,
 		CleanupBattlesDaysOld:     c.Config.CleanupBattlesDaysOld,
 		CleanupRetrosDaysOld:      c.Config.CleanupRetrosDaysOld,
 		CleanupStoryboardsDaysOld: c.Config.CleanupStoryboardsDaysOld,
 		ShowActiveCountries:       c.Config.ShowActiveCountries,
-		LdapEnabled:               s.config.LdapEnabled,
-		HeaderAuthEnabled:         s.config.HeaderAuthEnabled,
+		LdapEnabled:               ldapEnabled,
+		HeaderAuthEnabled:         headerAuthEnabled,
 		FeaturePoker:              c.Feature.Poker,
 		FeatureRetro:              c.Feature.Retro,
 		FeatureStoryboard:         c.Feature.Storyboard,
@@ -243,36 +185,35 @@ func main() {
 	}
 
 	uiConfig := thunderdome.UIConfig{
-		AnalyticsEnabled: s.config.AnalyticsEnabled,
-		AnalyticsID:      s.config.AnalyticsID,
+		AnalyticsEnabled: c.Analytics.Enabled,
+		AnalyticsID:      c.Analytics.ID,
 		AppConfig:        appConfig,
 	}
 
-	// Create services.
-	userService := &user.Service{DB: s.db.DB, Logger: s.logger}
-	apkService := &apikey.Service{DB: s.db.DB, Logger: s.logger}
-	s.AlertService = &alert.Service{DB: s.db.DB, Logger: s.logger}
-	authService := &auth.Service{DB: s.db.DB, Logger: s.logger, AESHashkey: s.db.Config.AESHashkey}
+	userService := &user.Service{DB: d.DB, Logger: logger}
+	apkService := &apikey.Service{DB: d.DB, Logger: logger}
+	alertService := &alert.Service{DB: d.DB, Logger: logger}
+	authService := &auth.Service{DB: d.DB, Logger: logger, AESHashkey: d.Config.AESHashkey}
 	battleService := &poker.Service{
-		DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey,
-		HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy,
+		DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey,
+		HTMLSanitizerPolicy: d.HTMLSanitizerPolicy,
 	}
-	checkinService := &team.CheckinService{DB: s.db.DB, Logger: s.logger, HTMLSanitizerPolicy: s.db.HTMLSanitizerPolicy}
-	retroService := &retro.Service{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
-	storyboardService := &storyboard.Service{DB: s.db.DB, Logger: s.logger, AESHashKey: s.db.Config.AESHashkey}
-	teamService := &team.Service{DB: s.db.DB, Logger: s.logger}
-	organizationService := &team.OrganizationService{DB: s.db.DB, Logger: s.logger}
-	adminService := &admin.Service{DB: s.db.DB, Logger: s.logger}
+	checkinService := &team.CheckinService{DB: d.DB, Logger: logger, HTMLSanitizerPolicy: d.HTMLSanitizerPolicy}
+	retroService := &retro.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
+	storyboardService := &storyboard.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
+	teamService := &team.Service{DB: d.DB, Logger: logger}
+	organizationService := &team.OrganizationService{DB: d.DB, Logger: logger}
+	adminService := &admin.Service{DB: d.DB, Logger: logger}
 
 	a := api.Service{
 		Config:              httpConfig,
-		Router:              s.router,
-		Email:               s.email,
-		Cookie:              s.cookie,
-		Logger:              s.logger,
+		Router:              router,
+		Email:               e,
+		Cookie:              cookie,
+		Logger:              logger,
 		UserDataSvc:         userService,
 		ApiKeyDataSvc:       apkService,
-		AlertDataSvc:        s.AlertService,
+		AlertDataSvc:        alertService,
 		AuthDataSvc:         authService,
 		PokerDataSvc:        battleService,
 		CheckinDataSvc:      checkinService,
@@ -287,19 +228,19 @@ func main() {
 	api.Init(a, FSS, HFS)
 
 	srv := &http.Server{
-		Handler:           s.router,
-		Addr:              fmt.Sprintf(":%s", s.config.ListenPort),
+		Handler:           router,
+		Addr:              fmt.Sprintf(":%s", c.Http.Port),
 		WriteTimeout:      time.Duration(c.Http.WriteTimeout) * time.Second,
 		ReadTimeout:       time.Duration(c.Http.ReadTimeout) * time.Second,
 		IdleTimeout:       time.Duration(c.Http.IdleTimeout) * time.Second,
 		ReadHeaderTimeout: time.Duration(c.Http.ReadHeaderTimeout) * time.Second,
 	}
 
-	s.logger.Info("Access the WebUI via 127.0.0.1:" + s.config.ListenPort)
+	logger.Info("Access the WebUI via 127.0.0.1:" + c.Http.Port)
 
 	err := srv.ListenAndServe()
 	if err != nil {
-		s.logger.Fatal(err.Error())
+		logger.Fatal(err.Error())
 	}
 }
 
