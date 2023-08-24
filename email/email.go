@@ -4,78 +4,53 @@ package email
 import (
 	"crypto/tls"
 	"fmt"
-	"net/mail"
-	"net/smtp"
 	"strconv"
 	"time"
+
+	"github.com/wneessen/go-mail"
+	"go.uber.org/zap"
 
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"github.com/matcornic/hermes/v2"
-	"go.uber.org/zap"
 )
-
-// smtpServer data to smtp server
-type smtpServer struct {
-	host string
-	port string
-}
-
-// Address URI to smtp server
-func (s *smtpServer) Address() string {
-	return s.host + ":" + s.port
-}
-
-var smtpServerConfig = smtpServer{}
-var tlsConfig = &tls.Config{}
-var smtpFrom = mail.Address{}
-var smtpAuth smtp.Auth
 
 // Config contains all the mail server values
 type Config struct {
 	AppURL            string
 	SenderName        string
 	SmtpHost          string
-	SmtpPort          string
+	SmtpPort          int
 	SmtpSecure        bool
-	SmtpIdentity      string
 	SmtpUser          string
 	SmtpPass          string
 	SmtpSender        string
 	SmtpEnabled       bool
 	SmtpSkipTLSVerify bool
+	SmtpAuth          string
 }
 
 // Service contains all the methods to send application emails
 type Service struct {
-	Config *Config
-	Logger *otelzap.Logger
+	Config    *Config
+	Logger    *otelzap.Logger
+	tlsConfig *tls.Config
+	authType  mail.SMTPAuthType
 }
 
 // New creates a new instance of Service
 func New(config *Config, logger *otelzap.Logger) *Service {
 	var s = &Service{
-		// read environment variables and sets up mailserver configuration values
+		// read environment variables and sets up mail server configuration values
 		Config: config,
 		Logger: logger,
 	}
 
-	// smtp server configuration.
-	smtpServerConfig = smtpServer{host: s.Config.SmtpHost, port: s.Config.SmtpPort}
-
-	// smtp sender info
-	smtpFrom = mail.Address{
-		Name:    s.Config.SenderName,
-		Address: s.Config.SmtpSender,
-	}
-
-	// TLS config
-	tlsConfig = &tls.Config{
+	s.authType = mail.SMTPAuthType(s.Config.SmtpAuth)
+	s.tlsConfig = &tls.Config{
 		InsecureSkipVerify: s.Config.SmtpSkipTLSVerify || !s.Config.SmtpSecure,
 		ServerName:         s.Config.SmtpHost,
 	}
-
-	smtpAuth = smtp.PlainAuth(s.Config.SmtpIdentity, s.Config.SmtpUser, s.Config.SmtpPass, s.Config.SmtpHost)
 
 	return s
 }
@@ -108,83 +83,42 @@ func (s *Service) generateBody(Body hermes.Body) (emailBody string, generateErr 
 
 // send - utility function to send emails
 func (s *Service) send(UserName string, UserEmail string, Subject string, Body string) error {
+	var err error
+	var c *mail.Client
 	if !s.Config.SmtpEnabled {
 		return nil
 	}
 
-	to := mail.Address{
-		Name:    UserName,
-		Address: UserEmail,
+	m := mail.NewMsg()
+	if err = m.From(s.Config.SmtpSender); err != nil {
+		s.Logger.Error(fmt.Sprintf("failed to set From address: %s", s.Config.SmtpSender), zap.Error(err))
+		return err
 	}
-
-	// Setup headers
-	headers := make(map[string]string)
-	headers["From"] = smtpFrom.String()
-	headers["To"] = to.String()
-	headers["Subject"] = Subject
-	headers["MIME-version"] = "1.0"
-	headers["Content-Type"] = "text/html"
-
-	// Setup message
-	message := ""
-	for k, v := range headers {
-		message += fmt.Sprintf("%s: %s\r\n", k, v)
-	}
-	message += "\r\n" + Body
-
-	c, err := smtp.Dial(smtpServerConfig.Address())
-	if err != nil {
-		s.Logger.Error("Error dialing SMTP", zap.Error(err))
+	if err = m.To(UserEmail); err != nil {
+		s.Logger.Error(fmt.Sprintf("failed to set To address: %s", UserEmail), zap.Error(err))
 		return err
 	}
 
-	tlsErr := c.StartTLS(tlsConfig)
-	if tlsErr != nil {
-		s.Logger.Error("Error starting TLS", zap.Error(tlsErr))
-	}
+	m.Subject(Subject)
+	m.SetBodyString(mail.TypeTextHTML, Body)
+	m.SetAddrHeaderIgnoreInvalid(mail.HeaderFrom, fmt.Sprintf("%s <%s>", s.Config.SenderName, s.Config.SmtpSender))
+	m.SetAddrHeaderIgnoreInvalid(mail.HeaderTo, fmt.Sprintf("%s <%s>", UserName, UserEmail))
 
-	// Auth
 	if s.Config.SmtpSecure {
-		if err = c.Auth(smtpAuth); err != nil {
-			s.Logger.Error("Error authenticating SMTP", zap.Error(err))
-			return err
-		}
+		c, err = mail.NewClient(s.Config.SmtpHost, mail.WithPort(s.Config.SmtpPort), mail.WithSMTPAuth(s.authType),
+			mail.WithUsername(s.Config.SmtpUser), mail.WithPassword(s.Config.SmtpPass), mail.WithTLSConfig(s.tlsConfig))
+	} else {
+		c, err = mail.NewClient(s.Config.SmtpHost, mail.WithPort(s.Config.SmtpPort), mail.WithTLSConfig(s.tlsConfig), mail.WithTLSPolicy(mail.TLSOpportunistic))
 	}
-
-	// To && From
-	if err = c.Mail(smtpFrom.Address); err != nil {
-		s.Logger.Error("Error setting SMTP from", zap.Error(err))
-		return err
-	}
-
-	if err = c.Rcpt(to.Address); err != nil {
-		s.Logger.Error("Error setting SMTP to", zap.Error(err))
-		return err
-	}
-
-	// Data
-	w, err := c.Data()
 	if err != nil {
-		s.Logger.Error("Error setting SMTP data", zap.Error(err))
+		s.Logger.Error("failed to create mail client", zap.Error(err))
 		return err
 	}
 
-	_, err = w.Write([]byte(message))
-	if err != nil {
-		s.Logger.Error("Error sending email", zap.Error(err))
+	if err = c.DialAndSend(m); err != nil {
+		s.Logger.Error("failed to send mail", zap.Error(err))
 		return err
 	}
 
-	err = w.Close()
-	if err != nil {
-		s.Logger.Error("Error closing SMTP", zap.Error(err))
-		return err
-	}
-
-	quitErr := c.Quit()
-	if quitErr != nil {
-		s.Logger.Error("Error quitting smtp server connection", zap.Error(quitErr))
-	}
-
-	return nil
+	return err
 }

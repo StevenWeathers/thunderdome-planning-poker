@@ -56,7 +56,7 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("smtp.sender", "no-reply@thunderdome.dev")
 	viper.SetDefault("smtp.user", "")
 	viper.SetDefault("smtp.pass", "")
-	viper.SetDefault("smtp.identity", "")
+	viper.SetDefault("smtp.auth", "PLAIN")
 
 	viper.SetDefault("config.aes_hashkey", "therevengers")
 	viper.SetDefault("config.allowedPointValues",

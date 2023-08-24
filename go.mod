@@ -44,6 +44,7 @@ require (
 	github.com/swaggo/swag v1.8.10
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.1.21
 	github.com/vanng822/go-premailer v1.20.1 // indirect
+	github.com/wneessen/go-mail v0.4.0
 	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.39.0
 	go.opentelemetry.io/otel v1.13.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.13.0

@@ -58,8 +58,8 @@ Thunderdome sends emails for user registration related activities, the following
 | `smtp.user`            | SMTP_USER            | Smtp server user.                                                        |                          |
 | `smtp.pass`            | SMTP_PASS            | Smtp server password.                                                    |                          |
 | `smtp.secure`          | SMTP_SECURE          | Set to authenticate with the Smtp server.                                | true                     |
+| `smtp.auth`            | SMTP_AUTH            | Auth method to use for smtp server                                       | PLAIN                    |
 | `smtp.skip_tls_verify` | SMTP_SKIP_TLS_VERIFY | Set to true to skip TLS verification                                     | false                    |
-| `smtp.identity`        | SMTP_IDENTITY        | Smtp server authorization identity. Usually unset.                       |                          |
 | `smtp.sender`          | SMTP_SENDER          | From address in emails sent by Thunderdome.                              | no-reply@thunderdome.dev |
 
 ## Configure Admin Email
