@@ -12,14 +12,11 @@ import (
 	"github.com/XSAM/otelsql"
 	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 
-	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"go.uber.org/zap"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v5/stdlib" // necessary for postgres
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/pressly/goose/v3"
 )
 
 //go:embed migrations/*.sql
@@ -29,10 +26,6 @@ var fs embed.FS
 // and sets previously active users to false during startup
 func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Service {
 	ctx := context.Background()
-	dms, err := iofs.New(fs, "migrations")
-	if err != nil {
-		logger.Ctx(ctx).Fatal("error loading db migrations", zap.Error(err))
-	}
 
 	// Do this once for each unique policy, and use the policy for the life of the program
 	// Policy creation/editing is not safe to use in multiple goroutines
@@ -73,20 +66,14 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Service {
 		d.Logger.Ctx(ctx).Error("RegisterDBStatsMetrics error", zap.Error(err))
 	}
 
-	driver, err := postgres.WithInstance(pdb, &postgres.Config{})
-	if err != nil {
-		d.Logger.Ctx(ctx).Error("db driver error", zap.Error(err))
+	goose.SetBaseFS(fs)
+
+	if err := goose.SetDialect("postgres"); err != nil {
+		d.Logger.Ctx(ctx).Error("goose set postgres dialect error", zap.Error(err))
 	}
-	m, err := migrate.NewWithInstance(
-		"iofs",
-		dms,
-		"postgres",
-		driver)
-	if err != nil {
-		d.Logger.Error("new db migration instance", zap.Error(err))
-	}
-	if err := m.Up(); err != nil && err.Error() != "no change" {
-		d.Logger.Ctx(ctx).Error("db migration up error", zap.Error(err))
+
+	if err := goose.Up(d.DB, "migrations", goose.WithAllowMissing()); err != nil {
+		d.Logger.Ctx(ctx).Error("migrations error", zap.Error(err))
 	}
 
 	// on server start reset all users to active false for games

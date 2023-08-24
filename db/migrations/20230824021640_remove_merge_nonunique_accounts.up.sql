@@ -1,1 +1,0 @@
-DROP FUNCTION thunderdome.user_merge_nonunique_accounts();

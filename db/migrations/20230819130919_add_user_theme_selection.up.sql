@@ -1,1 +1,0 @@
-ALTER TABLE thunderdome.users ADD COLUMN theme VARCHAR(5) DEFAULT 'auto' NOT NULL;

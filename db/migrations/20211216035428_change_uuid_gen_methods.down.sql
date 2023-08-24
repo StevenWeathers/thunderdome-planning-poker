@@ -1,9 +1,0 @@
-ALTER TABLE ONLY alert ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE ONLY battles ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE ONLY organization ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE ONLY organization_department ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE ONLY plans ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE ONLY team ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT uuid_generate_v4();
-ALTER TABLE ONLY user_reset ALTER COLUMN reset_id SET DEFAULT uuid_generate_v4();
-ALTER TABLE ONLY user_verify ALTER COLUMN verify_id SET DEFAULT uuid_generate_v4();
