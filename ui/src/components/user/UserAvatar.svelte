@@ -14,15 +14,7 @@
   export let options = {};
 </script>
 
-{#if AvatarService === 'dicebear'}
-  <img
-    src="https://avatars.dicebear.com/api/{avatar}/{warriorId}.svg?w={width}"
-    alt="{$LL.avatarAltText()}"
-    title="{userName}"
-    class="{klass}"
-    {...options}
-  />
-{:else if AvatarService === 'gravatar'}
+{#if AvatarService === 'gravatar'}
   {#if gravatarHash !== ''}
     <img
       src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar}&r=g"
