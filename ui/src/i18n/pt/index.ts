@@ -249,10 +249,6 @@ const pt: Translation = {
   logout: 'Sair',
   logoutError:
     '{friendly|{false:Erro encontrado ao tentar sair, true:Erro encontrado ao tentar fazer logout do usuário}}',
-  lowercaseEmailsError:
-    'Erro ao tentar normalizar e-mails de usuário em letras minúsculas',
-  lowercaseEmailsSuccess: 'E-mails de usuário em minúsculas com sucesso',
-  maintenanceLowercaseEmails: 'E-mails de usuário em minúsculas',
   makeFacilitator: 'Tornar Facilitador',
   mfa2faLabel: 'Autenticação 2FA/MFA',
   mfa2faRemove: 'Remover 2FA/MFA',

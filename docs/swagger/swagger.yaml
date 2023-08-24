@@ -2532,26 +2532,6 @@ paths:
       summary: Clean Old Storyboards
       tags:
       - maintenance
-  /maintenance/lowercase-emails:
-    patch:
-      description: Lowercases any user emails that have uppercase letters to prevent
-        duplicate Email registration
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Lowercase User Emails
-      tags:
-      - maintenance
   /organizations/{orgId}:
     delete:
       description: Delete an Organization

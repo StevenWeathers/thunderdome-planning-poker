@@ -241,9 +241,6 @@ const es: Translation = {
   logout: 'Logout',
   logoutError:
     '{friendly|{false:Error encountered attempting to logout warrior, true:Error encountered attempting to logout user}}',
-  lowercaseEmailsError: 'Error encountered lowercasing user emails',
-  lowercaseEmailsSuccess: 'Lowercased user emails successfully',
-  maintenanceLowercaseEmails: 'Lowercase User Emails',
   makeFacilitator: 'Make Facilitator',
   mfa2faLabel: '2FA/MFA Auth',
   mfa2faRemove: 'Remove 2FA/MFA',

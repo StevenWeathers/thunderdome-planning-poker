@@ -1875,37 +1875,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/maintenance/lowercase-emails": {
-            "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Lowercases any user emails that have uppercase letters to prevent duplicate Email registration",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "maintenance"
-                ],
-                "summary": "Lowercase User Emails",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/organizations/{orgId}": {
             "get": {
                 "security": [

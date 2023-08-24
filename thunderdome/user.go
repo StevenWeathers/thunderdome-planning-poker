@@ -45,7 +45,5 @@ type UserDataSvc interface {
 	EnableUser(ctx context.Context, UserID string) error
 	DeleteUser(ctx context.Context, UserID string) error
 	CleanGuests(ctx context.Context, DaysOld int) error
-	MergeDuplicateAccounts(ctx context.Context) ([]*User, error)
-	LowercaseUserEmails(ctx context.Context) ([]*User, error)
 	GetActiveCountries(ctx context.Context) ([]string, error)
 }

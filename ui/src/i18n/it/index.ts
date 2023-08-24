@@ -253,11 +253,6 @@ const it: Translation = {
   logout: 'Disconnettersi',
   logoutError:
     "{friendly|{false:Si è verificato un errore durante il logout del guerriero, true:Si è verificato un errore durante il logout dell'utente}}",
-  lowercaseEmailsError:
-    'Errore durante la conversione delle email degli utenti in minuscolo',
-  lowercaseEmailsSuccess:
-    'Email degli utenti convertite in minuscolo con successo',
-  maintenanceLowercaseEmails: 'Email degli utenti in minuscolo',
   makeFacilitator: 'Rendi Facilitatore',
   mfa2faLabel: 'Autenticazione 2FA/MFA',
   mfa2faRemove: 'Rimuovi 2FA/MFA',

@@ -183,7 +183,6 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	apiRouter.HandleFunc("/alerts/{alertId}", a.userOnly(a.adminOnly(a.handleAlertDelete()))).Methods("DELETE")
 	// maintenance
 	apiRouter.HandleFunc("/maintenance/clean-guests", a.userOnly(a.adminOnly(a.handleCleanGuests()))).Methods("DELETE")
-	apiRouter.HandleFunc("/maintenance/lowercase-emails", a.userOnly(a.adminOnly(a.handleLowercaseUserEmails()))).Methods("PATCH")
 	// poker games(s)
 	if a.Config.FeaturePoker {
 		userRouter.HandleFunc("/{userId}/battles", a.userOnly(a.entityUserOnly(a.handlePokerCreate()))).Methods("POST")

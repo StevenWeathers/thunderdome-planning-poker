@@ -246,9 +246,6 @@ const fr: Translation = {
   logout: 'Se déconnecter',
   logoutError:
     "{friendly|{false:Erreur lors de la tentative de déconnexion du guerrier, true:Erreur lors de la tentative de déconnexion de l'utilisateur}}",
-  lowercaseEmailsError: 'Error encountered lowercasing user emails',
-  lowercaseEmailsSuccess: 'Lowercased user emails successfully',
-  maintenanceLowercaseEmails: 'Emails utilisateurs en minuscule',
   makeFacilitator: 'Make Facilitator',
   mfa2faLabel: '2FA/MFA Auth',
   mfa2faRemove: 'Remove 2FA/MFA',
