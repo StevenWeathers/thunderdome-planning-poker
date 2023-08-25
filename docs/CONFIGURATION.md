@@ -32,7 +32,8 @@ For Thunderdome to work correctly the following configuration items are required
 
 ### Database configuration
 
-Thunderdome uses a Postgres database to store all data, the following configuration options exist:
+Thunderdome uses a Postgres (13 is the minimum required version) database to store all data, the following
+configuration options exist:
 
 | Option                     | Environment Variable | Description                                                                  | Default Value |
 | -------------------------- | -------------------- |------------------------------------------------------------------------------|---------------|
