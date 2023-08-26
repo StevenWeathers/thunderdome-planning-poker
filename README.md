@@ -48,16 +48,16 @@ docker pull stevenweathers/thunderdome-planning-poker
 - [Testing Guide](docs/TESTING.md) for details on how to test (unit and end to end) changes made to Thunderdome.
 - [Security Policy](docs/SECURITY.md) for details on how to submit a vulnerability report.
 
-# Upgrading from v1 to v2 major release
+# Upgrading from v2 to v3 major release
 
-If you're currently running a 1.x.x release version of Thunderdome you will need to do the following before running a
-2.x.x release version. If you're creating a fresh instance of Thunderdome you can ignore this section.
+If you're currently running a 2.x.x release version of Thunderdome you will need to do the following before running a
+3.x.x release version. If you're creating a fresh instance of Thunderdome you can ignore this section.
 
-- Review the completely rewritten APIs if you're using the API feature to integrate with Thunderdome.
-- Run the latest available 1.x.x release, this will run any SQL migrations that level set the SQL schema for 2.x.x.
-- Run the latest available 2.x.x release, this will run any SQL migrations since 2.0.0, however will not run any 1.x.x
+- Review the breaking changes introduced in 3.x which includes the removal of Dicebear Avatars service
+- If you use the included docker-compose file to run Thunderdome you will need to upgrade your postgres dataset to 15
+- Run the latest available 2.x.x release, this will run any SQL migrations that level set the SQL schema for 3.x.x.
+- Run the latest available 3.x.x release, this will run any SQL migrations since 3.0.0, however will not run any 2.x.x
   migrations.
-- Update any integrations using the APIs as they have been completely rewritten.
 
 # Donations
 

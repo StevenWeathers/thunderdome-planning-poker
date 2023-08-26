@@ -242,9 +242,6 @@ const de: Translation = {
   logout: 'Abmelden',
   logoutError:
     '{friendly|{false:Fehler beim Abmelden des Kriegers, true:Fehler beim Abmelden des Benutzers}}',
-  lowercaseEmailsError: 'Error encountered lowercasing user emails',
-  lowercaseEmailsSuccess: 'Lowercased user emails successfully',
-  maintenanceLowercaseEmails: 'Lowercase User Emails',
   makeFacilitator: 'Make Facilitator',
   mfa2faLabel: '2FA/MFA Auth',
   mfa2faRemove: 'Remove 2FA/MFA',

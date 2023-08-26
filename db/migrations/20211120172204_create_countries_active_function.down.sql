@@ -1,1 +1,0 @@
-DROP FUNCTION countries_active();

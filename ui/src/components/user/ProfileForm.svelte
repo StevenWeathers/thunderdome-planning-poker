@@ -46,38 +46,10 @@
   const { AvatarService } = AppConfig;
 
   const themes = ['auto', 'light', 'dark'];
-  const configurableAvatarServices = [
-    'dicebear',
-    'gravatar',
-    'robohash',
-    'govatar',
-  ];
+  const configurableAvatarServices = ['gravatar', 'robohash', 'govatar'];
   const isAvatarConfigurable =
     configurableAvatarServices.includes(AvatarService);
   const avatarOptions = {
-    dicebear: [
-      'adventurer',
-      'adventurer-neutral',
-      'avataaars',
-      'big-ears',
-      'big-ears-neutral',
-      'big-smile',
-      'bottts',
-      'croodles',
-      'croodles-neutral',
-      'female',
-      'gridy',
-      'human',
-      'identicon',
-      'jdenticon',
-      'male',
-      'micah',
-      'miniavs',
-      'open-peeps',
-      'personas',
-      'pixel-art',
-      'pixel-art-neutral',
-    ],
     gravatar: ['mp', 'identicon', 'monsterid', 'wavatar', 'retro', 'robohash'],
     robohash: ['set1', 'set2', 'set3', 'set4'],
     govatar: ['male', 'female'],

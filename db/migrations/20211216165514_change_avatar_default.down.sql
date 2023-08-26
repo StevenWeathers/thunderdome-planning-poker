@@ -1,1 +1,0 @@
-ALTER TABLE ONLY users ALTER COLUMN avatar SET DEFAULT 'identicon';

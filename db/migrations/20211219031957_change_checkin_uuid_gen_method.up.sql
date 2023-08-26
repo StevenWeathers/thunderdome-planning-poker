@@ -1,1 +1,0 @@
-ALTER TABLE ONLY team_checkin ALTER COLUMN id SET DEFAULT gen_random_uuid();

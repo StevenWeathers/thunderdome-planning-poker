@@ -133,20 +133,6 @@
       });
   }
 
-  function lowercaseEmails() {
-    xfetch('/api/maintenance/lowercase-emails', { method: 'PATCH' })
-      .then(function () {
-        eventTag('admin_lowercase_emails', 'engagement', 'success');
-        notifications.success($LL.lowercaseEmailsSuccess());
-
-        getAppStats();
-      })
-      .catch(function () {
-        notifications.danger($LL.lowercaseEmailsError());
-        eventTag('admin_lowercase_emails', 'engagement', 'failure');
-      });
-  }
-
   onMount(() => {
     if (!$user.id) {
       router.route(appRoutes.login);
@@ -718,22 +704,6 @@
           </div>
         </div>
       {/if}
-      <div
-        class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded shadow-lg p-2"
-      >
-        <div class="flex flex-row items-center">
-          <div class="flex-1 text-center">
-            <h5
-              class="font-bold uppercase text-gray-500 dark:text-gray-400 mb-2"
-            >
-              {$LL.maintenanceLowercaseEmails()}
-            </h5>
-            <HollowButton onClick="{lowercaseEmails}" color="red">
-              {$LL.execute()}
-            </HollowButton>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </AdminPageLayout>

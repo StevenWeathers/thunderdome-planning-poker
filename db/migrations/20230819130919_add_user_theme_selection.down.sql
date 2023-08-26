@@ -1,1 +1,0 @@
-ALTER TABLE thunderdome.users DROP COLUMN theme;

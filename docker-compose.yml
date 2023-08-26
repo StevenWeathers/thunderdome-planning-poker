@@ -25,8 +25,8 @@ services:
       DB_PASS: odinson
     volumes:
       - ./etc:/etc/thunderdome
-  db: 
-    image: postgres:13.2
+  db:
+    image: postgres:15
     restart: always
     environment:
       POSTGRES_DB: thunderdome
@@ -48,7 +48,7 @@ services:
       - asgard
 
 networks:
- asgard:
+  asgard:
 
 volumes:
   thunderdome_data:

@@ -2,8 +2,6 @@ package http
 
 import (
 	"net/http"
-
-	"go.uber.org/zap"
 )
 
 // handleCleanBattles handles cleaning up old battles (ADMIN Manually Triggered)
@@ -92,43 +90,6 @@ func (s *Service) handleCleanGuests() http.HandlerFunc {
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
-		}
-
-		s.Success(w, r, http.StatusOK, nil, nil)
-	}
-}
-
-// handleLowercaseUserEmails handles lowercasing any user emails that have any uppercase letters
-// @Summary      Lowercase User Emails
-// @Description  Lowercases any user emails that have uppercase letters to prevent duplicate Email registration
-// @Tags         maintenance
-// @Produce      json
-// @Success      200  object  standardJsonResponse{}
-// @Failure      500  object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /maintenance/lowercase-emails [patch]
-func (s *Service) handleLowercaseUserEmails() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		lowercasedUsers, err := s.UserDataSvc.LowercaseUserEmails(r.Context())
-		if err != nil {
-			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		s.Logger.Info("Lowercased user emails", zap.Int("count", len(lowercasedUsers)))
-		for _, u := range lowercasedUsers {
-			_ = s.Email.SendEmailUpdate(u.Name, u.Email)
-		}
-
-		mergedUsers, err := s.UserDataSvc.MergeDuplicateAccounts(r.Context())
-		if err != nil {
-			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		s.Logger.Info("Merged user accounts", zap.Int("count", len(mergedUsers)))
-		for _, u := range mergedUsers {
-			_ = s.Email.SendMergedUpdate(u.Name, u.Email)
 		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)

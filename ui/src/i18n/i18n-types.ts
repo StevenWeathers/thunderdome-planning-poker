@@ -927,18 +927,6 @@ type RootTranslation = {
    */
   logoutError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
   /**
-   * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​l​o​w​e​r​c​a​s​i​n​g​ ​u​s​e​r​ ​e​m​a​i​l​s
-   */
-  lowercaseEmailsError: string;
-  /**
-   * L​o​w​e​r​c​a​s​e​d​ ​u​s​e​r​ ​e​m​a​i​l​s​ ​s​u​c​c​e​s​s​f​u​l​l​y
-   */
-  lowercaseEmailsSuccess: string;
-  /**
-   * L​o​w​e​r​c​a​s​e​ ​U​s​e​r​ ​E​m​a​i​l​s
-   */
-  maintenanceLowercaseEmails: string;
-  /**
    * M​a​k​e​ ​F​a​c​i​l​i​t​a​t​o​r
    */
   makeFacilitator: string;
@@ -3231,18 +3219,6 @@ export type TranslationFunctions = {
    * {friendly|{false:Error encountered attempting to logout warrior, true:Error encountered attempting to logout user}}
    */
   logoutError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
-  /**
-   * Error encountered lowercasing user emails
-   */
-  lowercaseEmailsError: () => LocalizedString;
-  /**
-   * Lowercased user emails successfully
-   */
-  lowercaseEmailsSuccess: () => LocalizedString;
-  /**
-   * Lowercase User Emails
-   */
-  maintenanceLowercaseEmails: () => LocalizedString;
   /**
    * Make Facilitator
    */

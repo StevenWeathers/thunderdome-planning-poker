@@ -1,2 +1,0 @@
-ALTER TABLE battles ADD COLUMN join_code VARCHAR(128);
-ALTER TABLE battles ADD COLUMN leader_code VARCHAR(128);
