@@ -84,6 +84,10 @@ npm run autobuild --prefix ui
 make dev-go
 ```
 
+## Let the Pointing Battles begin!
+
+Run the server and visit [http://localhost:8080](http://localhost:8080)
+
 ## Restful API Changes
 
 The restful API is documented using swagger, any changes to that documentation require regenerating the docs with the
@@ -96,23 +100,19 @@ swag init -g http/http.go -o docs/swagger
 
 ## Creating SQL Migrations
 
-First install go-migrate tool
+First install [goose](https://github.com/pressly/goose) tool
 
 ```
-go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+go install github.com/pressly/goose/v3/cmd/goose@latest
 ```
 
-Generate new migration files
+Generate new migration file
 
 ```
-migrate create -ext sql -dir db/migrations SHORT_DESCRIPTIVE_FILNAME
+goose -dir db/migrations create SHORT_DESCRIPTIVE_FILNAME sql
 ```
 
-## Let the Pointing Battles begin!
-
-Run the server and visit [http://localhost:8080](http://localhost:8080)
-
-# Adding new Localizations
+## Adding new Localizations
 
 **Thunderdome** supports Locale selection on the UI (Default en-US)
 
