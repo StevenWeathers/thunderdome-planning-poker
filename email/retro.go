@@ -15,16 +15,16 @@ func (s *Service) SendRetroOverview(retro *thunderdome.Retro, UserName string, U
 	var retroImproveList string
 	var retroQuestionList string
 	for _, action := range retro.ActionItems {
-		retroActionsList += fmt.Sprintf("- %s\n", action.Content)
+		retroActionsList += formatRetroActionWithAssignee(action)
 	}
 	for _, item := range retro.Items {
 		switch item.Type {
 		case "worked":
-			retroWorksList += fmt.Sprintf("- %s\n", item.Content)
+			retroWorksList += formatRetroItemForMarkdownList(item.Content)
 		case "improve":
-			retroImproveList += fmt.Sprintf("- %s\n", item.Content)
+			retroImproveList += formatRetroItemForMarkdownList(item.Content)
 		case "question":
-			retroQuestionList += fmt.Sprintf("- %s\n", item.Content)
+			retroQuestionList += formatRetroItemForMarkdownList(item.Content)
 		}
 	}
 
