@@ -82,7 +82,13 @@ func (d *Service) CreateGame(ctx context.Context, FacilitatorID string, Name str
 		plan.Votes = make([]*thunderdome.Vote, 0)
 
 		e := d.DB.QueryRowContext(ctx,
-			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria, position) 
+					VALUES ($1, $2, $3, $4, $5, $6, $7, (
+					  coalesce(
+						(select max(position) from thunderdome.poker_story where poker_id = $1),
+						-1
+					  ) + 1
+					)) RETURNING id`,
 			b.Id,
 			plan.Name,
 			plan.Type,
@@ -160,7 +166,13 @@ func (d *Service) TeamCreateGame(ctx context.Context, TeamID string, Facilitator
 		plan.Votes = make([]*thunderdome.Vote, 0)
 
 		e := d.DB.QueryRowContext(ctx,
-			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+			`INSERT INTO thunderdome.poker_story (poker_id, name, type, reference_id, link, description, acceptance_criteria, position) 
+					VALUES ($1, $2, $3, $4, $5, $6, $7, (
+					  coalesce(
+						(select max(position) from thunderdome.poker_story where poker_id = $1),
+						-1
+					  ) + 1
+					)) RETURNING id`,
 			b.Id,
 			plan.Name,
 			plan.Type,
