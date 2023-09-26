@@ -344,8 +344,9 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 	AuthedUser, err = s.UserDataSvc.GetUserByEmail(ctx, useremail)
 
 	if AuthedUser == nil {
+		var verifyID string
 		s.Logger.Ctx(ctx).Error("User does not exist in database, auto-recruit", zap.String("useremail", sanitizeUserInputForLogs(useremail)))
-		AuthedUser, verifyID, err := s.UserDataSvc.CreateUserRegistered(ctx, usercn, useremail, "", "")
+		AuthedUser, verifyID, err = s.UserDataSvc.CreateUserRegistered(ctx, usercn, useremail, "", "")
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed auto-creating new user", zap.Error(err))
 			return AuthedUser, SessionId, err
