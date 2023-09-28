@@ -49,3 +49,7 @@ jobs:
         working-directory: ui
       - run: npm run prettier
         working-directory: ui
+      - run: npm ci --no-optional
+        working-directory: e2e
+      - run: npm run prettier
+        working-directory: e2e
