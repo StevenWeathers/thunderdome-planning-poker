@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from "@playwright/test";
 
 export class RetroPage {
   readonly page: Page;
@@ -22,36 +22,36 @@ export class RetroPage {
   readonly retroActionItemInput: Locator;
 
   constructor(page: Page) {
-    this.retroTitle = page.locator('h1');
-    this.retroEditBtn = page.getByRole('button', { name: 'Edit Retro' });
-    this.retroDeleteBtn = page.getByRole('button', {
-      name: 'Delete Retro',
+    this.retroTitle = page.locator("h1");
+    this.retroEditBtn = page.getByRole("button", { name: "Edit Retro" });
+    this.retroDeleteBtn = page.getByRole("button", {
+      name: "Delete Retro",
     });
-    this.retroDeleteConfirmBtn = page.locator('data-testid=confirm-confirm');
-    this.retroDeleteCancelBtn = page.locator('data-testid=confirm-cancel');
-    this.retroNextPhaseBtn = page.getByRole('button', {
-      name: 'Next Phase',
+    this.retroDeleteConfirmBtn = page.locator("data-testid=confirm-confirm");
+    this.retroDeleteCancelBtn = page.locator("data-testid=confirm-cancel");
+    this.retroNextPhaseBtn = page.getByRole("button", {
+      name: "Next Phase",
     });
-    this.retroPhasePrimeDirectiveBtn = page.getByRole('button', {
-      name: 'Prime Directive',
+    this.retroPhasePrimeDirectiveBtn = page.getByRole("button", {
+      name: "Prime Directive",
     });
-    this.retroPhaseBrainstormBtn = page.getByRole('button', {
-      name: 'Brainstorm',
+    this.retroPhaseBrainstormBtn = page.getByRole("button", {
+      name: "Brainstorm",
     });
-    this.retroPhaseGroupBtn = page.getByRole('button', { name: 'Group' });
-    this.retroPhaseVoteBtn = page.getByRole('button', { name: 'Vote' });
-    this.retroPhaseActionItemsBtn = page.getByRole('button', {
-      name: 'Action Items',
+    this.retroPhaseGroupBtn = page.getByRole("button", { name: "Group" });
+    this.retroPhaseVoteBtn = page.getByRole("button", { name: "Vote" });
+    this.retroPhaseActionItemsBtn = page.getByRole("button", {
+      name: "Action Items",
     });
-    this.retroPhaseDoneBtn = page.getByRole('button', { name: 'Done' });
-    this.retroExportBtn = page.getByRole('button', { name: 'Export' });
-    this.retroWorkedWellInput = page.getByPlaceholder('What worked well...');
+    this.retroPhaseDoneBtn = page.getByRole("button", { name: "Done" });
+    this.retroExportBtn = page.getByRole("button", { name: "Export" });
+    this.retroWorkedWellInput = page.getByPlaceholder("What worked well...");
     this.retroNeedsImprovementInput = page.getByPlaceholder(
-      'What needs improvement...',
+      "What needs improvement...",
     );
-    this.retroQuestionInput = page.getByPlaceholder('I want to ask...');
-    this.retroGroupNameInput = page.getByPlaceholder('Group Name');
-    this.retroActionItemInput = page.getByPlaceholder('Action item...');
+    this.retroQuestionInput = page.getByPlaceholder("I want to ask...");
+    this.retroGroupNameInput = page.getByPlaceholder("Group Name");
+    this.retroActionItemInput = page.getByPlaceholder("Action item...");
 
     this.page = page;
   }

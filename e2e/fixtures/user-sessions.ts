@@ -1,4 +1,4 @@
-import { Browser, Page, test as base } from '@playwright/test';
+import { Browser, Page, test as base } from "@playwright/test";
 
 class UserPage {
   page: Page;
@@ -24,7 +24,7 @@ class UserPage {
   }
 
   public async loadUser() {
-    const u = await this.page.request.get('/api/auth/user');
+    const u = await this.page.request.get("/api/auth/user");
     const user = await u.json();
     this.user = user.data;
   }
@@ -149,34 +149,34 @@ type MyFixtures = {
 
 export const test = base.extend<MyFixtures>({
   adminPage: async ({ browser }, use) => {
-    await use(await UserPage.create(browser, 'storage/adminStorageState.json'));
+    await use(await UserPage.create(browser, "storage/adminStorageState.json"));
   },
   registeredPage: async ({ browser }, use) => {
     await use(
-      await UserPage.create(browser, 'storage/registeredStorageState.json'),
+      await UserPage.create(browser, "storage/registeredStorageState.json"),
     );
   },
   verifiedPage: async ({ browser }, use) => {
     await use(
-      await UserPage.create(browser, 'storage/verifiedStorageState.json'),
+      await UserPage.create(browser, "storage/verifiedStorageState.json"),
     );
   },
   guestPage: async ({ browser }, use) => {
-    await use(await UserPage.create(browser, 'storage/guestStorageState.json'));
+    await use(await UserPage.create(browser, "storage/guestStorageState.json"));
   },
   deleteGuestPage: async ({ browser }, use) => {
     await use(
-      await UserPage.create(browser, 'storage/deleteGuestStorageState.json'),
+      await UserPage.create(browser, "storage/deleteGuestStorageState.json"),
     );
   },
   deleteRegisteredPage: async ({ browser }, use) => {
     await use(
       await UserPage.create(
         browser,
-        'storage/deleteRegisteredStorageState.json',
+        "storage/deleteRegisteredStorageState.json",
       ),
     );
   },
 });
 
-export { expect } from '@playwright/test';
+export { expect } from "@playwright/test";

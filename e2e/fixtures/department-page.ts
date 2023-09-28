@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from "@playwright/test";
 
 export class DepartmentPage {
   readonly page: Page;
@@ -7,8 +7,8 @@ export class DepartmentPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.createTeamButton = page.locator('button', {
-      hasText: 'Create Team',
+    this.createTeamButton = page.locator("button", {
+      hasText: "Create Team",
     });
     this.teamNameField = page.locator(
       'form[name="createTeam"] [name="teamName"]',
@@ -22,6 +22,6 @@ export class DepartmentPage {
   async createTeam({ name }) {
     await this.createTeamButton.click();
     await this.teamNameField.fill(name);
-    await this.teamNameField.press('Enter');
+    await this.teamNameField.press("Enter");
   }
 }

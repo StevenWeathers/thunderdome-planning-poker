@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from "@playwright/test";
 
 export class RetrosPage {
   readonly page: Page;
@@ -14,11 +14,11 @@ export class RetrosPage {
   }
 
   async goto() {
-    await this.page.goto('/retros');
+    await this.page.goto("/retros");
   }
 
   async createRetro({ name }) {
     await this.retroNameFormField.fill(name);
-    await this.retroNameFormField.press('Enter');
+    await this.retroNameFormField.press("Enter");
   }
 }

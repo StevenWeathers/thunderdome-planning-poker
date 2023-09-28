@@ -1,7 +1,7 @@
-import { expect, test } from '@playwright/test';
-import { adminAPIUser } from '../../fixtures/db/adminapi-user';
-import { apiUser } from '../../fixtures/db/api-user';
-import { baseUrl } from '../../playwright.config';
+import { expect, test } from "@playwright/test";
+import { adminAPIUser } from "../../fixtures/db/adminapi-user";
+import { apiUser } from "../../fixtures/db/api-user";
+import { baseUrl } from "../../playwright.config";
 
 const baseURL = `${baseUrl}/api/`;
 const userProfileEndpoint = `auth/user`;
@@ -16,13 +16,13 @@ test.beforeAll(async ({ playwright }) => {
   apiContext = await playwright.request.newContext({
     baseURL,
     extraHTTPHeaders: {
-      'X-API-Key': apiUser.apikey,
+      "X-API-Key": apiUser.apikey,
     },
   });
   adminApiContext = await playwright.request.newContext({
     baseURL,
     extraHTTPHeaders: {
-      'X-API-Key': adminAPIUser.apikey,
+      "X-API-Key": adminAPIUser.apikey,
     },
   });
   const au = await adminApiContext.get(userProfileEndpoint);
@@ -38,11 +38,11 @@ test.afterAll(async ({}) => {
   await apiContext.dispose();
 });
 
-test.describe('registered user', () => {
+test.describe("registered user", () => {
   test(`GET /organizations/{orgId}/departments should return empty array when no departments associated to user`, async () => {
     const o = await adminApiContext.post(`users/${user.id}/organizations`, {
       data: {
-        name: 'Test API Create Organization',
+        name: "Test API Create Organization",
       },
     });
     const organization = await o.json();
@@ -58,11 +58,11 @@ test.describe('registered user', () => {
   test(`POST /organizations/{orgId}/departments should create department`, async () => {
     const o = await apiContext.post(`users/${user.id}/organizations`, {
       data: {
-        name: 'Test API Create Organization',
+        name: "Test API Create Organization",
       },
     });
     const organization = await o.json();
-    const departmentName = 'Test API Create Department';
+    const departmentName = "Test API Create Department";
 
     const b = await apiContext.post(
       `organizations/${organization.data.id}/departments`,
@@ -82,12 +82,12 @@ test.describe('registered user', () => {
   test(`GET /organizations/{orgId}/departments should return object in array when departments associated to user`, async () => {
     const o = await apiContext.post(`users/${user.id}/organizations`, {
       data: {
-        name: 'Test API Create Organization',
+        name: "Test API Create Organization",
       },
     });
     const organization = await o.json();
 
-    const departmentName = 'Test API Departments';
+    const departmentName = "Test API Departments";
     const b = await apiContext.post(
       `organizations/${organization.data.id}/departments`,
       {

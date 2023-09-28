@@ -5,6 +5,7 @@ GOMODS=$(GOCMD) mod download
 NPMMODS=cd ui && npm ci && cd ..
 NPMBUILD=$(NPMCMD) run build --prefix ui
 NPM_FORMAT=$(NPMCMD) run format --prefix ui
+E2E_FORMAT=$(NPMCMD) run format --prefix e2e
 GENI8N=$(NPMCMD) run locales --prefix ui
 GOBUILD=$(GOCMD) build
 SWAGGERDOCS=docs/swagger
@@ -45,6 +46,7 @@ format:
 	$(GOIMPORTS) -w .
 	$(SWAGFMT)
 	$(NPM_FORMAT)
+	$(E2E_FORMAT)
 
 generate:
 	$(GENI8N)

@@ -1,27 +1,27 @@
-import { expect, test } from '../fixtures/user-sessions';
-import { PokerGamePage } from '../fixtures/poker-game-page';
+import { expect, test } from "../fixtures/user-sessions";
+import { PokerGamePage } from "../fixtures/poker-game-page";
 
-const allowedPointValues = ['0', '1', '2', '3', '5', '8', '13', '?'];
-const pointAverageRounding = 'ceil';
-const lokiPlan = { name: 'Defeat Loki', type: 'Story' };
-const thanosPlan = { name: 'Defeat Thanos', type: 'Epic' };
-const scarletPlan = { name: 'Defeat Scarlet Witch', type: 'Epic' };
+const allowedPointValues = ["0", "1", "2", "3", "5", "8", "13", "?"];
+const pointAverageRounding = "ceil";
+const lokiPlan = { name: "Defeat Loki", type: "Story" };
+const thanosPlan = { name: "Defeat Thanos", type: "Epic" };
+const scarletPlan = { name: "Defeat Scarlet Witch", type: "Epic" };
 
-test.describe('Poker Game page', () => {
-  let poker = { id: '', name: 'e2e poker page tests' };
-  let pokerWithStory = { id: '' };
-  let pokerAddStory = { id: '' };
-  let pokerEditStory = { id: '' };
-  let pokerDeleteStory = { id: '' };
-  let pokerActivateStory = { id: '' };
-  let pokerSkipStory = { id: '' };
-  let pokerWithoutAutoVoting = { id: '' };
-  let pokerWithAutoVoting = { id: '', name: '' };
-  let pokerFinishVoting = { id: '' };
-  let pokerSaveVoting = { id: '' };
-  let pokerAbandon = { id: '' };
-  let pokerCancelDelete = { id: '' };
-  let pokerDelete = { id: '' };
+test.describe("Poker Game page", () => {
+  let poker = { id: "", name: "e2e poker page tests" };
+  let pokerWithStory = { id: "" };
+  let pokerAddStory = { id: "" };
+  let pokerEditStory = { id: "" };
+  let pokerDeleteStory = { id: "" };
+  let pokerActivateStory = { id: "" };
+  let pokerSkipStory = { id: "" };
+  let pokerWithoutAutoVoting = { id: "" };
+  let pokerWithAutoVoting = { id: "", name: "" };
+  let pokerFinishVoting = { id: "" };
+  let pokerSaveVoting = { id: "" };
+  let pokerAbandon = { id: "" };
+  let pokerCancelDelete = { id: "" };
+  let pokerDelete = { id: "" };
 
   test.beforeAll(async ({ registeredPage, verifiedPage, adminPage }) => {
     const commonBattle = {
@@ -81,29 +81,29 @@ test.describe('Poker Game page', () => {
     pokerDelete = await registeredPage.createPokerGame({ ...commonBattle });
   });
 
-  test('unauthenticated user redirects to register', async ({ page }) => {
+  test("unauthenticated user redirects to register", async ({ page }) => {
     const bp = new PokerGamePage(page);
     await bp.goto(poker.id);
 
-    const title = bp.page.locator('h1');
-    await expect(title).toHaveText('Register');
+    const title = bp.page.locator("h1");
+    await expect(title).toHaveText("Register");
   });
 
-  test('guest user successfully loads', async ({ guestPage }) => {
+  test("guest user successfully loads", async ({ guestPage }) => {
     const bp = new PokerGamePage(guestPage.page);
     await bp.goto(poker.id);
 
     await expect(bp.pageTitle).toHaveText(poker.name);
   });
 
-  test('registered user successfully loads', async ({ registeredPage }) => {
+  test("registered user successfully loads", async ({ registeredPage }) => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(poker.id);
 
     await expect(bp.pageTitle).toHaveText(poker.name);
   });
 
-  test('user cannot become spectator when autoFinishVoting is false', async ({
+  test("user cannot become spectator when autoFinishVoting is false", async ({
     registeredPage,
   }) => {
     const bp = new PokerGamePage(registeredPage.page);
@@ -112,7 +112,7 @@ test.describe('Poker Game page', () => {
     await expect(bp.toggleSpectator).not.toBeVisible();
   });
 
-  test('user can become spectator when autoFinishVoting is true', async ({
+  test("user can become spectator when autoFinishVoting is true", async ({
     registeredPage,
   }) => {
     const bp = new PokerGamePage(registeredPage.page);
@@ -121,10 +121,10 @@ test.describe('Poker Game page', () => {
     const spectatorButton = bp.toggleSpectator;
 
     await spectatorButton.click();
-    await expect(spectatorButton).toHaveText('Become Participant');
+    await expect(spectatorButton).toHaveText("Become Participant");
   });
 
-  test('facilitator can remove facilitator', async ({ adminPage }) => {
+  test("facilitator can remove facilitator", async ({ adminPage }) => {
     const bp = new PokerGamePage(adminPage.page);
     await bp.goto(poker.id);
 
@@ -154,23 +154,23 @@ test.describe('Poker Game page', () => {
     await expect(bp.abandonGameBtn).toBeVisible();
   });
 
-  test('user can abandon game', async ({ registeredPage }) => {
+  test("user can abandon game", async ({ registeredPage }) => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerAbandon.id);
 
     await bp.page.click('[data-testid="battle-abandon"]');
-    await expect(bp.page.locator('h1')).toHaveText('My Battles');
+    await expect(bp.page.locator("h1")).toHaveText("My Battles");
   });
 
-  test('should display existing stories', async ({ registeredPage }) => {
+  test("should display existing stories", async ({ registeredPage }) => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerWithStory.id);
 
     await expect(bp.storyName.filter({ hasText: lokiPlan.name })).toBeVisible();
   });
 
-  test('should allow adding stories', async ({ registeredPage }) => {
-    const newPlanName = 'Defeat Thanos';
+  test("should allow adding stories", async ({ registeredPage }) => {
+    const newPlanName = "Defeat Thanos";
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerAddStory.id);
 
@@ -178,8 +178,8 @@ test.describe('Poker Game page', () => {
     await expect(bp.storyName.filter({ hasText: newPlanName })).toBeVisible();
   });
 
-  test('should allow editing stories', async ({ registeredPage }) => {
-    const newType = 'Story';
+  test("should allow editing stories", async ({ registeredPage }) => {
+    const newType = "Story";
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerEditStory.id);
 
@@ -192,7 +192,7 @@ test.describe('Poker Game page', () => {
     await expect(bp.storyType.filter({ hasText: newType })).toBeVisible();
   });
 
-  test('should allow deleting stories', async ({ registeredPage }) => {
+  test("should allow deleting stories", async ({ registeredPage }) => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerDeleteStory.id);
 
@@ -201,13 +201,13 @@ test.describe('Poker Game page', () => {
     await expect(bp.storyName).not.toBeVisible();
   });
 
-  test('should allow activating stories', async ({ registeredPage }) => {
+  test("should allow activating stories", async ({ registeredPage }) => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerActivateStory.id);
 
     await expect(
       bp.page.locator('[data-testid="currentplan-name"]'),
-    ).toContainText('[Voting not started]');
+    ).toContainText("[Voting not started]");
     await expect(
       bp.page.locator('[data-testid="pointCard"][data-locked="true"]'),
     ).toHaveCount(8);
@@ -222,13 +222,13 @@ test.describe('Poker Game page', () => {
     ).toHaveCount(8);
   });
 
-  test('should allow skipping story voting', async ({ registeredPage }) => {
+  test("should allow skipping story voting", async ({ registeredPage }) => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerSkipStory.id);
 
     await expect(
       bp.page.locator('[data-testid="currentplan-name"]'),
-    ).toContainText('[Voting not started]');
+    ).toContainText("[Voting not started]");
     await expect(
       bp.page.locator('[data-testid="pointCard"][data-locked="true"]'),
     ).toHaveCount(8);
@@ -246,19 +246,19 @@ test.describe('Poker Game page', () => {
 
     await expect(
       bp.page.locator('[data-testid="currentplan-name"]'),
-    ).toContainText('[Voting not started]');
+    ).toContainText("[Voting not started]");
     await expect(
       bp.page.locator('[data-testid="pointCard"][data-locked="true"]'),
     ).toHaveCount(8);
   });
 
-  test('should allow finishing story voting', async ({ registeredPage }) => {
+  test("should allow finishing story voting", async ({ registeredPage }) => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerFinishVoting.id);
 
     await expect(
       bp.page.locator('[data-testid="currentplan-name"]'),
-    ).toContainText('[Voting not started]');
+    ).toContainText("[Voting not started]");
     await expect(
       bp.page.locator('[data-testid="pointCard"][data-locked="true"]'),
     ).toHaveCount(8);
@@ -307,17 +307,17 @@ test.describe('Poker Game page', () => {
     ).toHaveCount(8);
   });
 
-  test('should allow saving story voting final points', async ({
+  test("should allow saving story voting final points", async ({
     registeredPage,
   }) => {
     const bp = new PokerGamePage(registeredPage.page);
     await bp.goto(pokerSaveVoting.id);
 
     await expect(bp.page.locator('[data-testid="plans-unpointed"]')).toHaveText(
-      'Unpointed (1)',
+      "Unpointed (1)",
     );
     await expect(bp.page.locator('[data-testid="plans-pointed"]')).toHaveText(
-      'Pointed (0)',
+      "Pointed (0)",
     );
     await expect(
       bp.page.locator('[data-testid="plan-points"]'),
@@ -325,7 +325,7 @@ test.describe('Poker Game page', () => {
 
     await expect(
       bp.page.locator('[data-testid="currentplan-name"]'),
-    ).toContainText('[Voting not started]');
+    ).toContainText("[Voting not started]");
     await bp.page.locator('[data-testid="plan-activate"]').click();
     await expect(
       bp.page.locator('[data-testid="currentplan-name"]'),
@@ -336,32 +336,32 @@ test.describe('Poker Game page', () => {
       bp.page.locator('[data-testid="voteresult-total"]'),
     ).toBeVisible();
 
-    await bp.page.locator('select[name="planPoints"]').selectOption('1');
+    await bp.page.locator('select[name="planPoints"]').selectOption("1");
     await bp.page.locator('[data-testid="voting-save"]').click();
 
     await expect(
       bp.page.locator('[data-testid="currentplan-name"]'),
-    ).toContainText('[Voting not started]');
+    ).toContainText("[Voting not started]");
     await expect(
       bp.page.locator('[data-testid="plan-name"]'),
     ).not.toBeVisible();
 
     await expect(bp.page.locator('[data-testid="plans-unpointed"]')).toHaveText(
-      'Unpointed (0)',
+      "Unpointed (0)",
     );
     await expect(bp.page.locator('[data-testid="plans-pointed"]')).toHaveText(
-      'Pointed (1)',
+      "Pointed (1)",
     );
     await bp.page.locator('[data-testid="plans-pointed"]').click();
     await expect(bp.page.locator('[data-testid="plan-name"]')).toHaveText(
       lokiPlan.name,
     );
     await expect(bp.page.locator('[data-testid="plan-points"]')).toHaveText(
-      '1',
+      "1",
     );
   });
 
-  test('delete game confirmation cancel does not delete game', async ({
+  test("delete game confirmation cancel does not delete game", async ({
     registeredPage,
   }) => {
     const bp = new PokerGamePage(registeredPage.page);
@@ -373,7 +373,7 @@ test.describe('Poker Game page', () => {
     await expect(bp.pageTitle).toHaveText(poker.name);
   });
 
-  test('delete game confirmation confirm deletes game and redirects to games page', async ({
+  test("delete game confirmation confirm deletes game and redirects to games page", async ({
     registeredPage,
   }) => {
     const bp = new PokerGamePage(registeredPage.page);
@@ -382,6 +382,6 @@ test.describe('Poker Game page', () => {
     await bp.gameDeleteBtn.click();
     await bp.gameDeleteConfirmBtn.click();
 
-    await expect(bp.page.locator('h1')).toHaveText('My Battles');
+    await expect(bp.page.locator("h1")).toHaveText("My Battles");
   });
 });

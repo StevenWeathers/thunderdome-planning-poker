@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from "@playwright/test";
 
 export class OrganizationPage {
   readonly page: Page;
@@ -9,11 +9,11 @@ export class OrganizationPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.createDepartmentButton = page.locator('button', {
-      hasText: 'Create Department',
+    this.createDepartmentButton = page.locator("button", {
+      hasText: "Create Department",
     });
-    this.createTeamButton = page.locator('button', {
-      hasText: 'Create Team',
+    this.createTeamButton = page.locator("button", {
+      hasText: "Create Team",
     });
     this.departmentNameFormField = page.locator(
       'form[name="createDepartment"] [name="departmentName"]',
@@ -30,12 +30,12 @@ export class OrganizationPage {
   async createDepartment({ name }) {
     await this.createDepartmentButton.click();
     await this.departmentNameFormField.fill(name);
-    await this.departmentNameFormField.press('Enter');
+    await this.departmentNameFormField.press("Enter");
   }
 
   async createTeam({ name }) {
     await this.createTeamButton.click();
     await this.teamNameField.fill(name);
-    await this.teamNameField.press('Enter');
+    await this.teamNameField.press("Enter");
   }
 }

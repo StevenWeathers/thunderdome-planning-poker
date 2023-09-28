@@ -1,11 +1,11 @@
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium, FullConfig } from "@playwright/test";
 
 async function globalTeardown(config: FullConfig) {
   const baseUrl = config.projects[0].use.baseURL;
   const browser = await chromium.launch();
 
   const adminContext = await browser.newContext({
-    storageState: 'storage/adminStorageState.json',
+    storageState: "storage/adminStorageState.json",
     baseURL: baseUrl,
   });
   const adminPage = await adminContext.newPage();
@@ -14,7 +14,7 @@ async function globalTeardown(config: FullConfig) {
   await adminPage.request.delete(`/api/users/${adminUser.data.id}`);
 
   const registeredContext = await browser.newContext({
-    storageState: 'storage/registeredStorageState.json',
+    storageState: "storage/registeredStorageState.json",
     baseURL: baseUrl,
   });
   const registeredPage = await registeredContext.newPage();
@@ -23,7 +23,7 @@ async function globalTeardown(config: FullConfig) {
   await registeredPage.request.delete(`/api/users/${registeredUser.data.id}`);
 
   const verifiedContext = await browser.newContext({
-    storageState: 'storage/verifiedStorageState.json',
+    storageState: "storage/verifiedStorageState.json",
     baseURL: baseUrl,
   });
   const verifiedPage = await verifiedContext.newPage();
@@ -32,7 +32,7 @@ async function globalTeardown(config: FullConfig) {
   await verifiedPage.request.delete(`/api/users/${verifiedUser.data.id}`);
 
   const guestContext = await browser.newContext({
-    storageState: 'storage/guestStorageState.json',
+    storageState: "storage/guestStorageState.json",
     baseURL: baseUrl,
   });
   const guestPage = await guestContext.newPage();
@@ -41,7 +41,7 @@ async function globalTeardown(config: FullConfig) {
   await guestPage.request.delete(`/api/users/${guestUser.data.id}`);
 
   const deleteGuestContext = await browser.newContext({
-    storageState: 'storage/deleteGuestStorageState.json',
+    storageState: "storage/deleteGuestStorageState.json",
     baseURL: baseUrl,
   });
   const deleteGuestPage = await deleteGuestContext.newPage();
@@ -50,7 +50,7 @@ async function globalTeardown(config: FullConfig) {
   await deleteGuestPage.request.delete(`/api/users/${deleteGuestUser.data.id}`);
 
   const deleteRegisteredContext = await browser.newContext({
-    storageState: 'storage/deleteRegisteredStorageState.json',
+    storageState: "storage/deleteRegisteredStorageState.json",
     baseURL: baseUrl,
   });
   const deleteRegisteredPage = await deleteRegisteredContext.newPage();

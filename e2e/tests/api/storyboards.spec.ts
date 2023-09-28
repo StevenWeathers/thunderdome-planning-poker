@@ -1,7 +1,7 @@
-import { expect, test } from '@playwright/test';
-import { adminAPIUser } from '../../fixtures/db/adminapi-user';
-import { apiUser } from '../../fixtures/db/api-user';
-import { baseUrl } from '../../playwright.config';
+import { expect, test } from "@playwright/test";
+import { adminAPIUser } from "../../fixtures/db/adminapi-user";
+import { apiUser } from "../../fixtures/db/api-user";
+import { baseUrl } from "../../playwright.config";
 
 const baseURL = `${baseUrl}/api/`;
 const userProfileEndpoint = `auth/user`;
@@ -16,13 +16,13 @@ test.beforeAll(async ({ playwright }) => {
   apiContext = await playwright.request.newContext({
     baseURL,
     extraHTTPHeaders: {
-      'X-API-Key': apiUser.apikey,
+      "X-API-Key": apiUser.apikey,
     },
   });
   adminApiContext = await playwright.request.newContext({
     baseURL,
     extraHTTPHeaders: {
-      'X-API-Key': adminAPIUser.apikey,
+      "X-API-Key": adminAPIUser.apikey,
     },
   });
   const au = await adminApiContext.get(userProfileEndpoint);
@@ -38,7 +38,7 @@ test.afterAll(async ({}) => {
   await apiContext.dispose();
 });
 
-test.describe('registered user', () => {
+test.describe("registered user", () => {
   test(`GET /users/{userId}/storyboards should return empty array when no storyboards associated to user`, async () => {
     const b = await adminApiContext.get(`users/${adminUser.id}/storyboards`);
     expect(b.ok()).toBeTruthy();
@@ -48,7 +48,7 @@ test.describe('registered user', () => {
   });
 
   test(`POST /users/{userId}/storyboards should create storyboard`, async () => {
-    const storyboardName = 'Test API Create Storyboard';
+    const storyboardName = "Test API Create Storyboard";
 
     const b = await apiContext.post(`users/${user.id}/storyboards`, {
       data: {
@@ -63,7 +63,7 @@ test.describe('registered user', () => {
   });
 
   test(`GET /users/{userId}/storyboards should return object in array when storyboards associated to user`, async () => {
-    const storyboardName = 'Test API Storyboards';
+    const storyboardName = "Test API Storyboards";
 
     const b = await apiContext.post(`users/${user.id}/storyboards`, {
       data: {
@@ -83,11 +83,11 @@ test.describe('registered user', () => {
   });
 
   test(`POST /teams/{teamId}/users/{userId}/storyboards should create storyboard`, async () => {
-    const storyboardName = 'Test API Create Team Storyboard';
+    const storyboardName = "Test API Create Team Storyboard";
 
     const t = await apiContext.post(`users/${user.id}/teams`, {
       data: {
-        name: 'test team create retro',
+        name: "test team create retro",
       },
     });
     const { data: team } = await t.json();

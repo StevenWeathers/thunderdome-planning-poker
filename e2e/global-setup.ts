@@ -1,21 +1,21 @@
-import { chromium, expect, FullConfig } from '@playwright/test';
-import { RegisterPage } from './fixtures/register-page';
-import { LoginPage } from './fixtures/login-page';
-import { setupDB } from './fixtures/db/setup';
-import { setupAdminUser } from './fixtures/db/admin-user';
-import { setupRegisteredUser } from './fixtures/db/registered-user';
-import { setupDeleteRegisteredUser } from './fixtures/db/registered-delete-user';
-import { setupVerifiedUser } from './fixtures/db/verified-user';
-import { setupAPIUser } from './fixtures/db/api-user';
-import { setupAdminAPIUser } from './fixtures/db/adminapi-user';
+import { chromium, expect, FullConfig } from "@playwright/test";
+import { RegisterPage } from "./fixtures/register-page";
+import { LoginPage } from "./fixtures/login-page";
+import { setupDB } from "./fixtures/db/setup";
+import { setupAdminUser } from "./fixtures/db/admin-user";
+import { setupRegisteredUser } from "./fixtures/db/registered-user";
+import { setupDeleteRegisteredUser } from "./fixtures/db/registered-delete-user";
+import { setupVerifiedUser } from "./fixtures/db/verified-user";
+import { setupAPIUser } from "./fixtures/db/api-user";
+import { setupAdminAPIUser } from "./fixtures/db/adminapi-user";
 
 async function globalSetup(config: FullConfig) {
   const pool = setupDB({
-    name: process.env.DB_NAME || 'thunderdome',
-    user: process.env.DB_USER || 'thor',
-    pass: process.env.DB_PASS || 'odinson',
-    port: process.env.DB_PORT || '5432',
-    host: process.env.DB_HOST || 'localhost',
+    name: process.env.DB_NAME || "thunderdome",
+    user: process.env.DB_USER || "thor",
+    pass: process.env.DB_PASS || "odinson",
+    port: process.env.DB_PORT || "5432",
+    host: process.env.DB_HOST || "localhost",
   });
 
   const baseUrl = config.projects[0].use.baseURL;
@@ -35,10 +35,10 @@ async function globalSetup(config: FullConfig) {
   const adminLoginPage = new LoginPage(adminPage);
   await adminLoginPage.goto();
   await adminLoginPage.login(au.email, au.password);
-  await expect(adminLoginPage.page.locator('h1')).toHaveText('My Battles');
+  await expect(adminLoginPage.page.locator("h1")).toHaveText("My Battles");
   await adminLoginPage.page
     .context()
-    .storageState({ path: 'storage/adminStorageState.json' });
+    .storageState({ path: "storage/adminStorageState.json" });
 
   const registeredPage = await browser.newPage({
     baseURL: baseUrl,
@@ -48,12 +48,12 @@ async function globalSetup(config: FullConfig) {
   const registeredRegisterPage = new LoginPage(registeredPage);
   await registeredRegisterPage.goto();
   await registeredRegisterPage.login(ru.email, ru.password);
-  await expect(registeredRegisterPage.page.locator('h1')).toHaveText(
-    'My Battles',
+  await expect(registeredRegisterPage.page.locator("h1")).toHaveText(
+    "My Battles",
   );
   await registeredRegisterPage.page
     .context()
-    .storageState({ path: 'storage/registeredStorageState.json' });
+    .storageState({ path: "storage/registeredStorageState.json" });
 
   const verifiedPage = await browser.newPage({
     baseURL: baseUrl,
@@ -63,34 +63,34 @@ async function globalSetup(config: FullConfig) {
   const userVerifiedPage = new LoginPage(verifiedPage);
   await userVerifiedPage.goto();
   await userVerifiedPage.login(vu.email, vu.password);
-  await expect(userVerifiedPage.page.locator('h1')).toHaveText('My Battles');
+  await expect(userVerifiedPage.page.locator("h1")).toHaveText("My Battles");
   await userVerifiedPage.page
     .context()
-    .storageState({ path: 'storage/verifiedStorageState.json' });
+    .storageState({ path: "storage/verifiedStorageState.json" });
 
   const guestPage = await browser.newPage({
     baseURL: baseUrl,
   });
   const guestRegisterPage = new RegisterPage(guestPage);
   await guestRegisterPage.goto();
-  await guestRegisterPage.createGuestUser('E2E Guest');
-  await expect(guestRegisterPage.page.locator('h1')).toHaveText('My Battles');
+  await guestRegisterPage.createGuestUser("E2E Guest");
+  await expect(guestRegisterPage.page.locator("h1")).toHaveText("My Battles");
   await guestRegisterPage.page
     .context()
-    .storageState({ path: 'storage/guestStorageState.json' });
+    .storageState({ path: "storage/guestStorageState.json" });
 
   const deleteGuestPage = await browser.newPage({
     baseURL: baseUrl,
   });
   const deleteGuestRegisterPage = new RegisterPage(deleteGuestPage);
   await deleteGuestRegisterPage.goto();
-  await deleteGuestRegisterPage.createGuestUser('E2E Delete Guest');
-  await expect(deleteGuestRegisterPage.page.locator('h1')).toHaveText(
-    'My Battles',
+  await deleteGuestRegisterPage.createGuestUser("E2E Delete Guest");
+  await expect(deleteGuestRegisterPage.page.locator("h1")).toHaveText(
+    "My Battles",
   );
   await deleteGuestRegisterPage.page
     .context()
-    .storageState({ path: 'storage/deleteGuestStorageState.json' });
+    .storageState({ path: "storage/deleteGuestStorageState.json" });
 
   const deleteRegPage = await browser.newPage({
     baseURL: baseUrl,
@@ -100,12 +100,12 @@ async function globalSetup(config: FullConfig) {
   const deleteRegisteredPage = new LoginPage(deleteRegPage);
   await deleteRegisteredPage.goto();
   await deleteRegisteredPage.login(dru.email, dru.password);
-  await expect(deleteRegisteredPage.page.locator('h1')).toHaveText(
-    'My Battles',
+  await expect(deleteRegisteredPage.page.locator("h1")).toHaveText(
+    "My Battles",
   );
   await deleteRegisteredPage.page
     .context()
-    .storageState({ path: 'storage/deleteRegisteredStorageState.json' });
+    .storageState({ path: "storage/deleteRegisteredStorageState.json" });
 
   await browser.close();
 }

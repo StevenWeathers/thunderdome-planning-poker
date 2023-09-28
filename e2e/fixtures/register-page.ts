@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from "@playwright/test";
 
 export class RegisterPage {
   readonly page: Page;
@@ -18,12 +18,12 @@ export class RegisterPage {
   }
 
   async goto() {
-    await this.page.goto('/register');
+    await this.page.goto("/register");
   }
 
   async createGuestUser(name) {
     await this.guestUserNameField.fill(name);
-    await this.guestUserNameField.press('Enter');
+    await this.guestUserNameField.press("Enter");
   }
 
   async createRegisteredUser(name, email, password1, password2) {
@@ -31,6 +31,6 @@ export class RegisterPage {
     await this.registeredUserEmailField.fill(email);
     await this.registeredUserPassword1Field.fill(password1);
     await this.registeredUserPassword2Field.fill(password2);
-    await this.registeredUserPassword2Field.press('Enter');
+    await this.registeredUserPassword2Field.press("Enter");
   }
 }

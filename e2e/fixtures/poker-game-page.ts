@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from "@playwright/test";
 
 export class PokerGamePage {
   readonly page: Page;
@@ -21,23 +21,23 @@ export class PokerGamePage {
   readonly saveStoryBtn: Locator;
 
   constructor(page: Page) {
-    this.pageTitle = page.locator('h2');
+    this.pageTitle = page.locator("h2");
     this.toggleSpectator = page.locator('[data-testid="user-togglespectator"]');
     this.userDemoteBtn = page.locator(`[data-testid="user-demote"]`);
     this.gameDeleteBtn = page.locator('[data-testid="battle-delete"]');
-    this.gameDeleteConfirmBtn = page.locator('data-testid=confirm-confirm');
-    this.gameDeleteCancelBtn = page.locator('data-testid=confirm-cancel');
+    this.gameDeleteConfirmBtn = page.locator("data-testid=confirm-confirm");
+    this.gameDeleteCancelBtn = page.locator("data-testid=confirm-cancel");
     this.addStoriesBtn = page.locator('[data-testid="plans-add"]');
     this.editStoryBtn = page.locator('[data-testid="plan-edit"]');
     this.deleteStoryBtn = page.locator('[data-testid="plan-delete"]');
     this.activateStoryBtn = page.locator('[data-testid="plan-activate"]');
     this.abandonGameBtn = page.locator('[data-testid="battle-abandon"]');
     this.viewStoryBtn = page.locator('[data-testid="plan-view"]');
-    this.storyName = page.locator('data-testid=plan-name');
-    this.storyType = page.locator('data-testid=plan-type');
-    this.storyNameField = page.locator('input[name=planName]');
-    this.storyTypeField = page.locator('select[name=planType]');
-    this.saveStoryBtn = page.locator('data-testid=plan-save');
+    this.storyName = page.locator("data-testid=plan-name");
+    this.storyType = page.locator("data-testid=plan-type");
+    this.storyNameField = page.locator("input[name=planName]");
+    this.storyTypeField = page.locator("select[name=planType]");
+    this.saveStoryBtn = page.locator("data-testid=plan-save");
 
     this.page = page;
   }

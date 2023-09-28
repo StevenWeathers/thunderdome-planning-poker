@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from "@playwright/test";
 
 export class StoryboardsPage {
   readonly page: Page;
@@ -14,11 +14,11 @@ export class StoryboardsPage {
   }
 
   async goto() {
-    await this.page.goto('/storyboards');
+    await this.page.goto("/storyboards");
   }
 
   async createStoryboard({ name }) {
     await this.storyboardNameFormField.fill(name);
-    await this.storyboardNameFormField.press('Enter');
+    await this.storyboardNameFormField.press("Enter");
   }
 }

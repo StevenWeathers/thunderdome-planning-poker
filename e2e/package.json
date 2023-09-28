@@ -4,12 +4,16 @@
   "description": "End to end testing for Thunderdome",
   "main": "index.js",
   "scripts": {
-    "test": "npx playwright test"
+    "test": "npx playwright test",
+    "prettier": "prettier --check '**/*.ts'",
+    "prettier:fix": "prettier --write '**/*.ts'",
+    "format": "npm run prettier:fix"
   },
   "author": "Steven Weathers",
   "license": "Apache-2.0",
   "devDependencies": {
     "@playwright/test": "^1.35.1",
-    "pg": "^8.11.0"
+    "pg": "^8.11.0",
+    "prettier": "^3.0.3"
   }
 }
