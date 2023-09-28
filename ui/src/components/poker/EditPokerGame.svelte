@@ -7,6 +7,7 @@
   import { user } from '../../stores';
   import { onMount } from 'svelte';
   import TextInput from '../TextInput.svelte';
+  import SelectInput from '../SelectInput.svelte';
 
   const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];
@@ -136,11 +137,8 @@
         {$LL.pointAverageRounding()}
       </label>
       <div class="relative">
-        <select
+        <SelectInput
           bind:value="{pointAverageRounding}"
-          class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
-                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
           id="averageRounding"
           name="averageRounding"
         >
@@ -149,7 +147,7 @@
               {$LL.averageRoundingOptions[item]()}
             </option>
           {/each}
-        </select>
+        </SelectInput>
         <div
           class="pointer-events-none absolute inset-y-0 end-0 flex
                     items-center px-2 text-gray-700 dark:text-gray-400"
@@ -230,29 +228,14 @@
         {$LL.associateTeam()}
         {#if !AppConfig.RequireTeams}{$LL.optional()}{/if}
       </label>
-      <div class="relative">
-        <select
-          bind:value="{teamId}"
-          class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                  text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
-                  focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
-          id="selectedTeam"
-          name="selectedTeam"
-        >
-          <option value="" disabled>{$LL.selectTeam()}</option>
-          {#each teams as team}
-            <option value="{team.id}">
-              {team.name}
-            </option>
-          {/each}
-        </select>
-        <div
-          class="pointer-events-none absolute inset-y-0 end-0 flex
-                  items-center px-2 text-gray-700 dark:text-gray-400"
-        >
-          <DownCarrotIcon />
-        </div>
-      </div>
+      <SelectInput bind:value="{teamId}" id="selectedTeam" name="selectedTeam">
+        <option value="" disabled>{$LL.selectTeam()}</option>
+        {#each teams as team}
+          <option value="{team.id}">
+            {team.name}
+          </option>
+        {/each}
+      </SelectInput>
     </div>
 
     <div class="text-right">

@@ -1,9 +1,9 @@
 <script lang="ts">
   import SolidButton from '../SolidButton.svelte';
   import Modal from '../Modal.svelte';
-  import DownCarrotIcon from '../icons/ChevronDown.svelte';
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../TextInput.svelte';
+  import SelectInput from '../SelectInput.svelte';
 
   export let toggleEditRetro = () => {};
   export let handleRetroEdit = () => {};
@@ -124,28 +124,17 @@
       >
         {$LL.brainstormPhaseFeedbackVisibility()}
       </label>
-      <div class="relative">
-        <select
-          bind:value="{brainstormVisibility}"
-          class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
-                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
-          id="brainstormVisibility"
-          name="brainstormVisibility"
-        >
-          {#each brainstormVisibilityOptions as item}
-            <option value="{item.value}">
-              {item.label}
-            </option>
-          {/each}
-        </select>
-        <div
-          class="pointer-events-none absolute inset-y-0 end-0 flex
-                items-center px-2 text-gray-700 dark:text-gray-400"
-        >
-          <DownCarrotIcon />
-        </div>
-      </div>
+      <SelectInput
+        bind:value="{brainstormVisibility}"
+        id="brainstormVisibility"
+        name="brainstormVisibility"
+      >
+        {#each brainstormVisibilityOptions as item}
+          <option value="{item.value}">
+            {item.label}
+          </option>
+        {/each}
+      </SelectInput>
     </div>
 
     <div class="text-right">

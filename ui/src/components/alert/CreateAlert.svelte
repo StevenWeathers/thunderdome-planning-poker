@@ -1,9 +1,9 @@
 <script lang="ts">
   import Modal from '../Modal.svelte';
-  import DownCarrotIcon from '../icons/ChevronDown.svelte';
   import LL from '../../i18n/i18n-svelte';
   import SolidButton from '../SolidButton.svelte';
   import TextInput from '../TextInput.svelte';
+  import SelectInput from '../SelectInput.svelte';
 
   export let toggleCreate = () => {};
   export let handleCreate = () => {};
@@ -71,30 +71,19 @@
       <label class="block font-bold mb-2 dark:text-gray-400" for="alertType">
         {$LL.type()}
       </label>
-      <div class="relative">
-        <select
-          name="alertType"
-          id="alertType"
-          bind:value="{alertType}"
-          required
-          class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
-                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
-        >
-          <option value="" disabled>
-            {$LL.alertTypePlaceholder()}
-          </option>
-          {#each alertTypes as aType}
-            <option value="{aType}">{aType}</option>
-          {/each}
-        </select>
-        <div
-          class="pointer-events-none absolute inset-y-0 end-0 flex
-                    items-center px-2 text-gray-700"
-        >
-          <DownCarrotIcon />
-        </div>
-      </div>
+      <SelectInput
+        name="alertType"
+        id="alertType"
+        bind:value="{alertType}"
+        required
+      >
+        <option value="" disabled>
+          {$LL.alertTypePlaceholder()}
+        </option>
+        {#each alertTypes as aType}
+          <option value="{aType}">{aType}</option>
+        {/each}
+      </SelectInput>
     </div>
 
     <div class="mb-4">

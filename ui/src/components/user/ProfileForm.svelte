@@ -1,5 +1,4 @@
 <script lang="ts">
-  import DownCarrotIcon from '../icons/ChevronDown.svelte';
   import SolidButton from '../SolidButton.svelte';
   import VerifiedIcon from '../icons/VerifiedIcon.svelte';
   import HollowButton from '../HollowButton.svelte';
@@ -15,6 +14,7 @@
   import type { Locales } from '../../i18n/i18n-types';
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
   import TextInput from '../TextInput.svelte';
+  import SelectInput from '../SelectInput.svelte';
 
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);
@@ -212,31 +212,20 @@
       {$LL.country()}
     </label>
 
-    <div class="relative">
-      <select
-        bind:value="{profile.country}"
-        class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
-                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
-        id="yourCountry"
-        name="yourCountry"
-      >
-        <option value="">
-          {$LL.chooseCountryPlaceholder()}
+    <SelectInput
+      bind:value="{profile.country}"
+      id="yourCountry"
+      name="yourCountry"
+    >
+      <option value="">
+        {$LL.chooseCountryPlaceholder()}
+      </option>
+      {#each countryList as item}
+        <option value="{item.abbrev}">
+          {item.name} [{item.abbrev}]
         </option>
-        {#each countryList as item}
-          <option value="{item.abbrev}">
-            {item.name} [{item.abbrev}]
-          </option>
-        {/each}
-      </select>
-      <div
-        class="pointer-events-none absolute inset-y-0
-                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
-      >
-        <DownCarrotIcon />
-      </div>
-    </div>
+      {/each}
+    </SelectInput>
   </div>
 
   <div class="mb-4">
@@ -286,29 +275,13 @@
     >
       {$LL.theme()}
     </label>
-
-    <div class="relative">
-      <select
-        bind:value="{profile.theme}"
-        class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
-                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
-        id="theme"
-        name="theme"
-      >
-        {#each themes as theme}
-          <option value="{theme}">
-            {theme}
-          </option>
-        {/each}
-      </select>
-      <div
-        class="pointer-events-none absolute inset-y-0
-                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
-      >
-        <DownCarrotIcon />
-      </div>
-    </div>
+    <SelectInput bind:value="{profile.theme}" id="theme" name="theme">
+      {#each themes as theme}
+        <option value="{theme}">
+          {theme}
+        </option>
+      {/each}
+    </SelectInput>
   </div>
 
   <div class="mb-4">
@@ -337,16 +310,9 @@
       </label>
       <div class="flex">
         <div class="md:w-2/3 lg:w-3/4">
-          <div
-            class="relative"
-            class:hidden="{AvatarService === 'gravatar' &&
-              profile.email !== ''}"
-          >
-            <select
+          {#if AvatarService !== 'gravatar' || (AvatarService === 'gravatar' && profile.email === '')}
+            <SelectInput
               bind:value="{profile.avatar}"
-              class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                                        text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
-                                        focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
               id="yourAvatar"
               name="yourAvatar"
             >
@@ -355,15 +321,8 @@
                   {item}
                 </option>
               {/each}
-            </select>
-            <div
-              class="pointer-events-none absolute
-                                            inset-y-0 end-0 flex items-center
-                                            px-2 text-gray-700 dark:text-gray-300"
-            >
-              <DownCarrotIcon />
-            </div>
-          </div>
+            </SelectInput>
+          {/if}
         </div>
         <div class="md:w-1/3 lg:w-1/4 ms-1">
           <span class="float-right">

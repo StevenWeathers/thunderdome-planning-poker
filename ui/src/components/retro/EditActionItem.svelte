@@ -6,7 +6,7 @@
   import HollowButton from '../HollowButton.svelte';
   import UserAvatar from '../user/UserAvatar.svelte';
   import TrashIcon from '../icons/TrashIcon.svelte';
-  import ChevronDown from '../icons/ChevronDown.svelte';
+  import SelectInput from '../SelectInput.svelte';
 
   export let toggleEdit = () => {};
   export let handleEdit = action => {};
@@ -110,12 +110,9 @@
       {$LL.assignees()}
     </div>
     <div class="flex w-full gap-4">
-      <div class="w-2/3 relative">
-        <select
+      <div class="w-2/3">
+        <SelectInput
           bind:value="{selectedAssignee}"
-          class="block appearance-none w-full border-2 border-gray-300 dark:border-gray-700
-                text-gray-700 dark:text-gray-300 py-3 px-4 pe-8 rounded leading-tight
-                focus:outline-none focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 dark:bg-gray-900"
           id="assignee"
           name="assignee"
         >
@@ -125,13 +122,7 @@
               {user.name}
             </option>
           {/each}
-        </select>
-        <div
-          class="pointer-events-none absolute inset-y-0
-                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
-        >
-          <ChevronDown />
-        </div>
+        </SelectInput>
       </div>
       <div class="w-1/3">
         <HollowButton

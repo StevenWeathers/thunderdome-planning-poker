@@ -1,8 +1,8 @@
 <script lang="ts">
   import SolidButton from '../SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import ChevronDown from '../icons/ChevronDown.svelte';
   import { AppConfig } from '../../config';
+  import SelectInput from '../SelectInput.svelte';
 
   export let sendSocketEvent = () => {};
   export let eventTag;
@@ -79,31 +79,15 @@
         </legend>
         <div class="flex -mx-2">
           <div class="w-1/2 px-2">
-            <div class="relative">
-              <select
-                name="planPoints"
-                bind:value="{planPoints}"
-                required
-                class="block appearance-none w-full border-2 dark:bg-gray-900
-                                border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 pe-8
-                                rounded leading-tight focus:outline-none
-                                focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+            <SelectInput name="planPoints" bind:value="{planPoints}" required>
+              <option value="" disabled>
+                {$LL.points()}
+              </option>
               >
-                <option value="" disabled>
-                  {$LL.points()}
-                </option>
-                >
-                {#each points as point}
-                  <option value="{point}">{point}</option>
-                {/each}
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0
-                                end-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
-              >
-                <ChevronDown />
-              </div>
-            </div>
+              {#each points as point}
+                <option value="{point}">{point}</option>
+              {/each}
+            </SelectInput>
           </div>
           <div class="w-1/2 text-right px-2">
             <SolidButton
