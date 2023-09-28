@@ -4,6 +4,7 @@
   import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
+  import TextInput from '../../components/TextInput.svelte';
 
   export let router;
   export let xfetch;
@@ -218,12 +219,9 @@
             >
               {$LL.email()}
             </label>
-            <input
+            <TextInput
               bind:value="{warriorEmail}"
               placeholder="{$LL.enterYourEmail()}"
-              class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
               id="yourEmail"
               name="yourEmail"
               type="email"
@@ -238,12 +236,9 @@
             >
               {$LL.password()}
             </label>
-            <input
+            <TextInput
               bind:value="{warriorPassword}"
               placeholder="{$LL.passwordPlaceholder()}"
-              class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
               id="yourPassword"
               name="yourPassword"
               type="password"
@@ -289,12 +284,9 @@
             >
               {$LL.email()}
             </label>
-            <input
+            <TextInput
               bind:value="{warriorResetEmail}"
               placeholder="{$LL.enterYourEmail()}"
-              class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
               id="yourResetEmail"
               name="yourResetEmail"
               type="email"
@@ -337,15 +329,11 @@
             >
               {$LL.mfaTokenLabel()}
             </label>
-            <input
+            <TextInput
               bind:value="{mfaToken}"
               placeholder="{$LL.mfaTokenPlaceholder()}"
-              class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
               id="mfaToken"
               name="mfaToken"
-              type="text"
               required
             />
           </div>

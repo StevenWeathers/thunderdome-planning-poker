@@ -2,6 +2,7 @@
   import SolidButton from '../SolidButton.svelte';
   import Modal from '../Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
+  import TextInput from '../TextInput.svelte';
 
   export let toggleEditStoryboard = () => {};
   export let handleStoryboardEdit = () => {};
@@ -35,13 +36,10 @@
         Storyboard Name
       </label>
       <div class="control">
-        <input
+        <TextInput
           name="storyboardName"
           bind:value="{storyboardName}"
           placeholder="Enter a storyboard name"
-          class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
           id="storyboardName"
           required
         />
@@ -56,14 +54,10 @@
         {$LL.passCode()}
       </label>
       <div class="control">
-        <input
+        <TextInput
           name="joinCode"
           bind:value="{joinCode}"
           placeholder="{$LL.optionalPasscodePlaceholder()}"
-          class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
-                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
           id="joinCode"
         />
       </div>
@@ -77,15 +71,10 @@
         {$LL.facilitatorCodeOptional()}
       </label>
       <div class="control">
-        <input
+        <TextInput
           name="facilitatorCode"
           bind:value="{facilitatorCode}"
           placeholder="{$LL.facilitatorCodePlaceholder()}"
-          class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2
-                appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500
-                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
           id="facilitatorCode"
         />
       </div>

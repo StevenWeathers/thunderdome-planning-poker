@@ -14,6 +14,7 @@
   import LocaleSwitcher from '../LocaleSwitcher.svelte';
   import type { Locales } from '../../i18n/i18n-types';
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
+  import TextInput from '../TextInput.svelte';
 
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);
@@ -176,12 +177,9 @@
         </button>
       {/if}
     </label>
-    <input
+    <TextInput
       bind:value="{profile.email}"
-      class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-      class:cursor-not-allowed="{!userIsAdmin}"
+      additionalClasses="{!userIsAdmin ? 'cursor-not-allowed' : ''}"
       id="yourEmail"
       name="yourEmail"
       type="email"
@@ -258,15 +256,11 @@
     >
       {$LL.company()}
     </label>
-    <input
+    <TextInput
       bind:value="{profile.company}"
       placeholder="{$LL.companyPlaceholder()}"
-      class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
       id="yourCompany"
       name="yourCompany"
-      type="text"
     />
   </div>
 
@@ -277,15 +271,11 @@
     >
       {$LL.jobTitle()}
     </label>
-    <input
+    <TextInput
       bind:value="{profile.jobTitle}"
       placeholder="{$LL.jobTitlePlaceholder()}"
-      class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
       id="yourJobTitle"
       name="yourJobTitle"
-      type="text"
     />
   </div>
 

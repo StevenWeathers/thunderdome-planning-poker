@@ -10,6 +10,7 @@
   import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig } from '../../config';
+  import TextInput from '../TextInput.svelte';
 
   export let handlePlanAdd = () => {};
   export let toggleAddPlan = () => {};
@@ -128,11 +129,7 @@
       <label class="block font-bold mb-2 dark:text-gray-400" for="planName">
         {$LL.planName({ friendly: AppConfig.FriendlyUIVerbs })}
       </label>
-      <input
-        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-        type="text"
+      <TextInput
         id="planName"
         name="planName"
         bind:value="{planName}"
@@ -145,11 +142,7 @@
       <label class="block font-bold mb-2 dark:text-gray-400" for="referenceId">
         {$LL.planReferenceId()}
       </label>
-      <input
-        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-        type="text"
+      <TextInput
         id="referenceId"
         name="referenceId"
         bind:value="{referenceId}"
@@ -160,11 +153,7 @@
       <label class="block font-bold mb-2 dark:text-gray-400" for="planLink">
         {$LL.planLink()}
       </label>
-      <input
-        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-        type="text"
+      <TextInput
         id="planLink"
         name="planLink"
         bind:value="{planLink}"

@@ -1,6 +1,7 @@
 <script lang="ts">
   import SolidButton from '../SolidButton.svelte';
   import Modal from '../Modal.svelte';
+  import TextInput from '../TextInput.svelte';
 
   export let toggleEditPersona = () => () => {};
   export let handlePersonaAdd = () => {};
@@ -38,12 +39,8 @@
       >
         Persona Name
       </label>
-      <input
-        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+      <TextInput
         id="personaName"
-        type="text"
         bind:value="{persona.name}"
         placeholder="Enter a persona name e.g. Ricky Bobby"
         name="personaName"
@@ -56,12 +53,8 @@
       >
         Persona Role
       </label>
-      <input
-        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+      <TextInput
         id="personaRole"
-        type="text"
         bind:value="{persona.role}"
         placeholder="Enter a persona role e.g. Author, Developer, Admin"
         name="personaRole"

@@ -6,6 +6,7 @@
   import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
+  import TextInput from '../TextInput.svelte';
 
   export let xfetch;
   export let notifications;
@@ -101,15 +102,10 @@
       {$LL.retroName()}
     </label>
     <div class="control">
-      <input
+      <TextInput
         name="retroName"
         bind:value="{retroName}"
         placeholder="{$LL.retroNamePlaceholder()}"
-        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2
-            appearance-none
-            rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-            focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500
-            dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
         id="retroName"
         required
       />
@@ -160,13 +156,10 @@
       {$LL.joinCodeLabelOptional()}
     </label>
     <div class="control">
-      <input
+      <TextInput
         name="joinCode"
         bind:value="{joinCode}"
         placeholder="{$LL.joinCodePlaceholder()}"
-        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-                focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
         id="joinCode"
       />
     </div>
@@ -180,15 +173,10 @@
       {$LL.facilitatorCodeOptional()}
     </label>
     <div class="control">
-      <input
+      <TextInput
         name="facilitatorCode"
         bind:value="{facilitatorCode}"
         placeholder="{$LL.facilitatorCodePlaceholder()}"
-        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2
-            appearance-none
-            rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-            focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500
-            dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
         id="facilitatorCode"
       />
     </div>
@@ -202,12 +190,9 @@
       {$LL.retroMaxVotesPerUserLabel()}
     </label>
     <div class="control">
-      <input
+      <TextInput
         name="maxVotes"
         bind:value="{maxVotes}"
-        class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
         id="maxVotes"
         type="number"
         min="1"

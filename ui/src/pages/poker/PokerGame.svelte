@@ -19,6 +19,7 @@
   import InviteUser from '../../components/poker/InviteUser.svelte';
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
+  import TextInput from '../../components/TextInput.svelte';
 
   export let battleId: string;
   export let notifications;
@@ -696,14 +697,9 @@
             >
               {$LL.passCodeRequired()}
             </label>
-            <input
+            <TextInput
               bind:value="{joinPasscode}"
               placeholder="{$LL.enterPasscode()}"
-              class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2
-                        appearance-none
-                        rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                        focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500
-                        focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
               id="battleJoinCode"
               name="battleJoinCode"
               type="password"

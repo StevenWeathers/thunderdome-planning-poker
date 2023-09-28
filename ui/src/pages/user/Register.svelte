@@ -6,6 +6,7 @@
   import { AppConfig, appRoutes } from '../../config';
   import SolidButton from '../../components/SolidButton.svelte';
   import UserRegisterForm from '../../components/user/UserRegisterForm.svelte';
+  import TextInput from '../../components/TextInput.svelte';
 
   export let router;
   export let xfetch;
@@ -180,12 +181,9 @@
             >
               {$LL.name()}
             </label>
-            <input
+            <TextInput
               bind:value="{warriorName}"
               placeholder="{$LL.yourNamePlaceholder()}"
-              class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
               id="yourName1"
               name="yourName1"
               required

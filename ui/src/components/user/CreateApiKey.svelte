@@ -4,6 +4,7 @@
   import Modal from '../Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
+  import TextInput from '../TextInput.svelte';
 
   export let handleApiKeyCreate = () => {};
   export let toggleCreateApiKey = () => {};
@@ -85,11 +86,7 @@
         <label class="block dark:text-gray-400 font-bold mb-2" for="keyName">
           {$LL.apiKeyName()}
         </label>
-        <input
-          class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-          type="text"
+        <TextInput
           id="keyName"
           name="keyName"
           bind:value="{keyName}"

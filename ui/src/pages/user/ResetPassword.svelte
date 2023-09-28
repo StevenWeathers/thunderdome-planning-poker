@@ -4,6 +4,7 @@
   import { validatePasswords } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
+  import TextInput from '../../components/TextInput.svelte';
 
   export let xfetch;
   export let router;
@@ -76,12 +77,9 @@
           >
             {$LL.password()}
           </label>
-          <input
+          <TextInput
             bind:value="{warriorPassword1}"
             placeholder="{$LL.passwordPlaceholder()}"
-            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
             id="yourPassword1"
             name="yourPassword1"
             type="password"
@@ -96,12 +94,9 @@
           >
             {$LL.confirmPassword()}
           </label>
-          <input
+          <TextInput
             bind:value="{warriorPassword2}"
             placeholder="{$LL.confirmPasswordPlaceholder()}"
-            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
             id="yourPassword2"
             name="yourPassword2"
             type="password"

@@ -5,6 +5,7 @@
   import UserIcon from '../icons/UserIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
+  import TextInput from '../TextInput.svelte';
 
   export let toggleStoryForm = () => {};
   export let sendSocketEvent = () => {};
@@ -247,12 +248,8 @@
           >
             Story Name
           </label>
-          <input
-            class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-        rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-        focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+          <TextInput
             id="storyName"
-            type="text"
             on:change="{updateName}"
             value="{story.name}"
             placeholder="Enter a story name e.g. Ricky Bobby"
@@ -266,12 +263,8 @@
           >
             Story Link
           </label>
-          <input
-            class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
-        rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
-        focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
+          <TextInput
             id="storyLink"
-            type="text"
             on:change="{updateLink}"
             value="{story.link}"
             placeholder="Enter a story link"

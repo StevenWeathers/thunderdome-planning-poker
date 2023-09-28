@@ -2,6 +2,7 @@
   import Modal from '../Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import SolidButton from '../SolidButton.svelte';
+  import TextInput from '../TextInput.svelte';
 
   export let toggleBecomeLeader = () => {};
   export let handleBecomeLeader = () => {};
@@ -28,12 +29,9 @@
         {$LL.leaderPasscode()}
       </label>
       <div class="control">
-        <input
+        <TextInput
           name="leaderCode"
           bind:value="{leaderCode}"
-          class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
           id="leaderCode"
         />
       </div>

@@ -9,6 +9,7 @@
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import CsvImport from './CsvImport.svelte';
+  import TextInput from '../TextInput.svelte';
 
   export let notifications;
   export let eventTag;
@@ -146,15 +147,12 @@
       {$LL.battleName({ friendly: AppConfig.FriendlyUIVerbs })}
     </label>
     <div class="control">
-      <input
+      <TextInput
         name="battleName"
         bind:value="{battleName}"
         placeholder="{$LL.battleNamePlaceholder({
           friendly: AppConfig.FriendlyUIVerbs,
         })}"
-        class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
         id="battleName"
         required
       />
@@ -246,15 +244,11 @@
     {#each plans as plan, i}
       <div class="flex flex-wrap mb-2">
         <div class="w-3/4">
-          <input
-            type="text"
+          <TextInput
             bind:value="{plan.name}"
             placeholder="{$LL.planNamePlaceholder({
               friendly: AppConfig.FriendlyUIVerbs,
             })}"
-            class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
             required
           />
         </div>
@@ -334,13 +328,10 @@
       {$LL.passCode()}
     </label>
     <div class="control">
-      <input
+      <TextInput
         name="joinCode"
         bind:value="{joinCode}"
         placeholder="{$LL.optionalPasscodePlaceholder()}"
-        class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
         id="joinCode"
       />
     </div>
@@ -354,14 +345,10 @@
       {$LL.leaderPasscode()}
     </label>
     <div class="control">
-      <input
+      <TextInput
         name="leaderCode"
         bind:value="{leaderCode}"
         placeholder="{$LL.optionalLeadercodePlaceholder()}"
-        class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-            rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-            focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
-            dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
         id="leaderCode"
       />
     </div>

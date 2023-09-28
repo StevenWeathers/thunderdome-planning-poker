@@ -3,6 +3,7 @@
   import DownCarrotIcon from '../icons/ChevronDown.svelte';
   import LL from '../../i18n/i18n-svelte';
   import SolidButton from '../SolidButton.svelte';
+  import TextInput from '../TextInput.svelte';
 
   export let toggleCreate = () => {};
   export let handleCreate = () => {};
@@ -57,13 +58,9 @@
       >
         {$LL.name()}
       </label>
-      <input
+      <TextInput
         bind:value="{alertName}"
         placeholder="{$LL.alertNamePlaceholder()}"
-        class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
-                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
         id="alertName"
         name="alertName"
         required
@@ -107,13 +104,9 @@
       >
         {$LL.alertContent()}
       </label>
-      <input
+      <TextInput
         bind:value="{content}"
         placeholder="{$LL.alertContentPlaceholder()}"
-        class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500
-                dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
         id="alertContent"
         name="alertContent"
         required

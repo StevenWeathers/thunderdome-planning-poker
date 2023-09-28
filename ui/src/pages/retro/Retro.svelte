@@ -24,6 +24,7 @@
   import InviteUser from '../../components/retro/InviteUser.svelte';
   import PageLayout from '../../components/PageLayout.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
+  import TextInput from '../../components/TextInput.svelte';
 
   export let retroId;
   export let notifications;
@@ -895,12 +896,9 @@
                   >
                     {$LL.passCodeRequired()}
                   </label>
-                  <input
+                  <TextInput
                     bind:value="{joinPasscode}"
                     placeholder="{$LL.enterPasscode()}"
-                    class="bg-gray-100 dark:bg-gray-900 border-gray-200 dark:border-gray-800 border-2 appearance-none
-                rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight
-                focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
                     id="battleJoinCode"
                     name="battleJoinCode"
                     type="password"
