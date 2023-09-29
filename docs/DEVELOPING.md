@@ -73,7 +73,7 @@ npm run build --prefix ui
 ### Build for current OS
 
 ```
-swag init -g http/http.go -o docs/swagger
+swag init -g internal/http/http.go -o docs/swagger
 go build
 ```
 
@@ -95,7 +95,7 @@ following commands and committing the updated docs with the changes.
 
 ```bash
 swag fmt
-swag init -g http/http.go -o docs/swagger
+swag init -g internal/http/http.go -o docs/swagger
 ```
 
 ## Creating SQL Migrations
@@ -109,7 +109,7 @@ go install github.com/pressly/goose/v3/cmd/goose@latest
 Generate new migration file
 
 ```
-goose -dir db/migrations create SHORT_DESCRIPTIVE_FILNAME sql
+goose -dir internal/db/migrations create SHORT_DESCRIPTIVE_FILNAME sql
 ```
 
 ## Adding new Localizations

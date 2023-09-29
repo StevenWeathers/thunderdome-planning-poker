@@ -5,19 +5,23 @@ import (
 	_ "embed"
 	"os"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/db/admin"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db/alert"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db/apikey"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db/auth"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db/poker"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db/retro"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db/storyboard"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db/team"
-	"github.com/StevenWeathers/thunderdome-planning-poker/db/user"
-	"github.com/StevenWeathers/thunderdome-planning-poker/http"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/cookie"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/admin"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/alert"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/apikey"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/auth"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/poker"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/retro"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/storyboard"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/team"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/user"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http"
 	"github.com/StevenWeathers/thunderdome-planning-poker/ui"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/config"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/config"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
@@ -30,11 +34,8 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/grpc/credentials"
 
-	"github.com/StevenWeathers/thunderdome-planning-poker/db"
-	"github.com/StevenWeathers/thunderdome-planning-poker/email"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/email"
 	"go.uber.org/zap"
-
-	"github.com/gorilla/securecookie"
 )
 
 var embedUseOS bool
@@ -99,6 +100,15 @@ func main() {
 	teamService := &team.Service{DB: d.DB, Logger: logger}
 	organizationService := &team.OrganizationService{DB: d.DB, Logger: logger}
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
+	cookie := cookie.New(cookie.Config{
+		AppDomain:          c.Http.Domain,
+		PathPrefix:         c.Http.PathPrefix,
+		CookieHashKey:      c.Http.CookieHashkey,
+		FrontendCookieName: c.Http.FrontendCookieName,
+		SecureCookieName:   c.Http.BackendCookieName,
+		SecureCookieFlag:   c.Http.SecureCookie,
+		SessionCookieName:  c.Http.SessionCookieName,
+	})
 
 	HFS, FSS := ui.New(embedUseOS)
 	h := http.New(http.Service{
@@ -109,10 +119,6 @@ func main() {
 			HttpIdleTimeout:           c.Http.IdleTimeout,
 			HttpReadHeaderTimeout:     c.Http.ReadHeaderTimeout,
 			AppDomain:                 c.Http.Domain,
-			FrontendCookieName:        c.Http.FrontendCookieName,
-			SecureCookieName:          c.Http.BackendCookieName,
-			SecureCookieFlag:          c.Http.SecureCookie,
-			SessionCookieName:         c.Http.SessionCookieName,
 			PathPrefix:                c.Http.PathPrefix,
 			ExternalAPIEnabled:        c.Config.AllowExternalApi,
 			ExternalAPIVerifyRequired: c.Config.ExternalApiVerifyRequired,
@@ -156,7 +162,7 @@ func main() {
 			SmtpSkipTLSVerify: c.Smtp.SkipTLSVerify,
 			SmtpAuth:          c.Smtp.Auth,
 		}, logger),
-		Cookie:              securecookie.New([]byte(c.Http.CookieHashkey), nil),
+		Cookie:              cookie,
 		Logger:              logger,
 		UserDataSvc:         userService,
 		ApiKeyDataSvc:       apkService,

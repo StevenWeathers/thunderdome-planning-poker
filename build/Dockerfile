@@ -24,10 +24,8 @@ RUN apk update && apk add --no-cache git ca-certificates
 RUN adduser -D -g '' appuser
 # Copy the go source
 COPY ./docs/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/docs/
-COPY ./http/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/http/
-COPY ./config/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/config/
+COPY ./internal/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/internal/
 COPY ./db/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/db/
-COPY ./email/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/email/
 COPY ./thunderdome/ $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/thunderdome/
 COPY ./*.go $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
 COPY ./go.mod $GOPATH/src/github.com/stevenweathers/thunderdome-planning-poker/
