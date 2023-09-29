@@ -101,6 +101,7 @@ type Feature struct {
 type Auth struct {
 	Method string
 	Ldap   AuthLdap
+	Oidc   AuthOIDC
 	Header AuthHeader
 }
 
@@ -118,4 +119,10 @@ type AuthLdap struct {
 	Filter   string
 	MailAttr string `mapstructure:"mail_attr"`
 	CnAttr   string `mapstructure:"cn_attr"`
+}
+
+type AuthOIDC struct {
+	ProviderURL  string `mapstructure:"provider_url"`
+	ClientID     string `mapstructure:"client_id"`
+	ClientSecret string `mapstructure:"client_secret"`
 }
