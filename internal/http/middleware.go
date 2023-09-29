@@ -27,7 +27,7 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		} else {
 			SessionId, cookieErr := s.Cookie.ValidateSessionCookie(w, r)
-			if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
+			if cookieErr != nil && cookieErr.Error() != "COOKIE_NOT_FOUND" {
 				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 				return
 			}

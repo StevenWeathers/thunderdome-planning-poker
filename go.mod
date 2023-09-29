@@ -10,11 +10,12 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/XSAM/otelsql v0.23.0
 	github.com/anthonynsimon/bild v0.13.0
-	github.com/boombuler/barcode v1.0.1 // indirect
+	github.com/coreos/go-oidc/v3 v3.6.0
 	github.com/go-ldap/ldap/v3 v3.4.4
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/spec v0.20.8 // indirect
 	github.com/go-playground/validator/v10 v10.11.2
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/websocket v1.5.0
@@ -49,6 +50,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.16.0
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.11.0
+	golang.org/x/oauth2 v0.6.0
 	google.golang.org/grpc v1.55.0
 
 )

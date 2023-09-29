@@ -72,6 +72,7 @@ func main() {
 
 	ldapEnabled := c.Auth.Method == "ldap"
 	headerAuthEnabled := c.Auth.Method == "header"
+	//oidcEnabled := c.Auth.Method == "oidc"
 
 	d := db.New(c.Admin.Email, &db.Config{
 		Host:            c.Db.Host,
@@ -100,7 +101,7 @@ func main() {
 	teamService := &team.Service{DB: d.DB, Logger: logger}
 	organizationService := &team.OrganizationService{DB: d.DB, Logger: logger}
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
-	cookie := cookie.New(cookie.Config{
+	cook := cookie.New(cookie.Config{
 		AppDomain:          c.Http.Domain,
 		PathPrefix:         c.Http.PathPrefix,
 		CookieHashKey:      c.Http.CookieHashkey,
@@ -162,7 +163,7 @@ func main() {
 			SmtpSkipTLSVerify: c.Smtp.SkipTLSVerify,
 			SmtpAuth:          c.Smtp.Auth,
 		}, logger),
-		Cookie:              cookie,
+		Cookie:              cook,
 		Logger:              logger,
 		UserDataSvc:         userService,
 		ApiKeyDataSvc:       apkService,
