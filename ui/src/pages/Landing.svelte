@@ -14,7 +14,7 @@
     ShowActiveCountries,
     PathPrefix,
     SubscriptionsEnabled,
-    SubscriptionCheckoutURL: SubscriptionCheckoutLink,
+    SubscriptionCheckoutLink,
   } = AppConfig;
 
   $: isRegisteredUser = $user && !!$user.id && validateUserIsRegistered($user);
