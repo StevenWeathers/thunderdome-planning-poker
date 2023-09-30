@@ -30,6 +30,7 @@ type AppConfig struct {
 	FeatureStoryboard         bool
 	RequireTeams              bool
 	SubscriptionsEnabled      bool
+	SubscriptionCheckoutLink  string
 }
 
 type UIConfig struct {

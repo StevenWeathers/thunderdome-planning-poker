@@ -10,7 +10,12 @@
   export let xfetch;
   export let eventTag;
 
-  const { ShowActiveCountries, PathPrefix, SubscriptionsEnabled } = AppConfig;
+  const {
+    ShowActiveCountries,
+    PathPrefix,
+    SubscriptionsEnabled,
+    SubscriptionCheckoutURL: SubscriptionCheckoutLink,
+  } = AppConfig;
 
   $: isRegisteredUser = $user && !!$user.id && validateUserIsRegistered($user);
 </script>
@@ -64,7 +69,7 @@
             Show your support and
             <a
               class="text-blue-800 underline"
-              href="https://buy.stripe.com/7sIcP8gdhc3nc6YeUU?prefilled_email={$user.email}&client_reference_id={$user.id}"
+              href="{SubscriptionCheckoutLink}?prefilled_email={$user.email}&client_reference_id={$user.id}"
             >
               Subscribe today
             </a>

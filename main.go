@@ -218,6 +218,7 @@ func main() {
 				FeatureStoryboard:         c.Feature.Storyboard,
 				RequireTeams:              c.Config.RequireTeams,
 				SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
+				SubscriptionCheckoutLink:  c.Subscription.CheckoutLink,
 			},
 		},
 	}, FSS, HFS)

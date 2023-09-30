@@ -22,7 +22,7 @@ func (s *Service) GetSubscriptionByUserID(ctx context.Context, userId string) (t
 	)
 	switch {
 	case err == sql.ErrNoRows:
-		return sub, fmt.Errorf("no subscription found for user id  %d", userId)
+		return sub, fmt.Errorf("no subscription found for user id  %s", userId)
 	case err != nil:
 		return sub, fmt.Errorf("error encountered finding user id subscription:  %v", err)
 	}
