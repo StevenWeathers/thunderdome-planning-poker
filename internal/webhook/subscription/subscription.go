@@ -110,7 +110,7 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
-			expires := time.Unix(periodEnd.(int64), 0)
+			expires := time.Unix(int64(periodEnd.(float64)), 0)
 			active := subStatus == "active"
 			_, err = s.dataSvc.UpdateSubscription(ctx, subscription.ID, active, expires)
 			if err != nil {
