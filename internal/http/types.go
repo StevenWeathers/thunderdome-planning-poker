@@ -94,6 +94,8 @@ type Service struct {
 	TeamDataSvc         thunderdome.TeamDataSvc
 	OrganizationDataSvc thunderdome.OrganizationDataSvc
 	AdminDataSvc        thunderdome.AdminDataSvc
+	JiraDataSvc         thunderdome.JiraDataSvc
+	SubscriptionDataSvc thunderdome.SubscriptionDataSvc
 	SubscriptionSvc     *subscription.Service
 }
 

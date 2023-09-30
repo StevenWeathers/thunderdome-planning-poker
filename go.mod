@@ -10,6 +10,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/XSAM/otelsql v0.23.0
 	github.com/anthonynsimon/bild v0.13.0
+	github.com/ctreminiom/go-atlassian v1.5.1
 	github.com/go-ldap/ldap/v3 v3.4.4
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/spec v0.20.8 // indirect

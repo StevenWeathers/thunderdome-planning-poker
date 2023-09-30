@@ -147,6 +147,35 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// subscribedUserOnly validates that the request was made by a subscribed user
+func (s *Service) subscribedUserOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ctx := r.Context()
+		UserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
+		EntityUserID := vars["userId"]
+		idErr := validate.Var(EntityUserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		if UserType != adminUserType && (EntityUserID != UserID) {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
+			return
+		}
+
+		_, EntityUserErr := s.SubscriptionDataSvc.GetSubscriptionByUserID(ctx, EntityUserID)
+		if EntityUserErr != nil {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_SUBSCRIBED_USER"))
+			return
+		}
+
+		h(w, r)
+	}
+}
+
 // orgUserOnly validates that the request was made by a valid user of the organization
 func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
