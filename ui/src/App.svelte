@@ -51,6 +51,7 @@
   import { setLocale } from './i18n/i18n-svelte';
   import { detectLocale } from './i18n/i18n-util';
   import { loadLocaleAsync } from './i18n/i18n-util.async';
+  import Confirmation from './pages/subscription/Confirmation.svelte';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -120,6 +121,13 @@
       route: Teams,
       params: {},
       name: 'Teams',
+    };
+  });
+  router.on(appRoutes.subscriptionConfirmation, () => {
+    currentPage = {
+      route: Confirmation,
+      params: {},
+      name: 'Subscription Confirmation',
     };
   });
   router.on(`${appRoutes.organization}/:organizationId`, params => {
