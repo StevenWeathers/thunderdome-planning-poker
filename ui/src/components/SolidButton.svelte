@@ -88,6 +88,14 @@
   .btn-orange:hover {
     @apply bg-orange-600;
   }
+
+  .btn-indigo {
+    @apply bg-indigo-500;
+  }
+
+  .btn-indigo:hover {
+    @apply bg-indigo-600;
+  }
 </style>
 
 {#if href != ''}

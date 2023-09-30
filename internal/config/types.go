@@ -10,6 +10,7 @@ type Config struct {
 	Config AppConfig
 	Feature
 	Auth
+	Subscription
 }
 
 type Http struct {
@@ -90,6 +91,7 @@ type AppConfig struct {
 	CleanupStoryboardsDaysOld int      `mapstructure:"cleanup_storyboards_days_old"`
 	OrganizationsEnabled      bool     `mapstructure:"organizations_enabled"`
 	RequireTeams              bool     `mapstructure:"require_teams"`
+	SubscriptionsEnabled      bool     `mapstructure:"subscriptions_enabled"`
 }
 
 type Feature struct {
@@ -118,4 +120,11 @@ type AuthLdap struct {
 	Filter   string
 	MailAttr string `mapstructure:"mail_attr"`
 	CnAttr   string `mapstructure:"cn_attr"`
+}
+
+type Subscription struct {
+	CheckoutLink  string `mapstructure:"checkout_link"`
+	ManageLink    string `mapstructure:"manage_link"`
+	AccountSecret string `mapstructure:"account_secret"`
+	WebhookSecret string `mapstructure:"webhook_secret"`
 }

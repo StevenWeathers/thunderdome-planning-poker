@@ -10,7 +10,6 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/XSAM/otelsql v0.23.0
 	github.com/anthonynsimon/bild v0.13.0
-	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.4
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/spec v0.20.8 // indirect
@@ -36,6 +35,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/afero v1.9.4 // indirect
 	github.com/spf13/viper v1.15.0
+	github.com/stripe/stripe-go v70.15.0+incompatible
 	github.com/swaggo/files v1.0.0 // indirect
 	github.com/swaggo/http-swagger v1.3.3
 	github.com/swaggo/swag v1.8.10

@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/cookie"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -72,6 +73,7 @@ type Config struct {
 	AllowGuests               bool
 	AllowRegistration         bool
 	ShowActiveCountries       bool
+	SubscriptionsEnabled      bool
 }
 
 type Service struct {
@@ -92,6 +94,7 @@ type Service struct {
 	TeamDataSvc         thunderdome.TeamDataSvc
 	OrganizationDataSvc thunderdome.OrganizationDataSvc
 	AdminDataSvc        thunderdome.AdminDataSvc
+	SubscriptionSvc     *subscription.Service
 }
 
 // standardJsonResponse structure used for all restful APIs response body

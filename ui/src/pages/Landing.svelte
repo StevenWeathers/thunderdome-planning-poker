@@ -5,11 +5,14 @@
 
   import { AppConfig, appRoutes } from '../config';
   import { user } from '../stores';
+  import { validateUserIsRegistered } from '../validationUtils';
 
   export let xfetch;
   export let eventTag;
 
-  const { ShowActiveCountries, PathPrefix } = AppConfig;
+  const { ShowActiveCountries, PathPrefix, SubscriptionsEnabled } = AppConfig;
+
+  $: isRegisteredUser = $user && !!$user.id && validateUserIsRegistered($user);
 </script>
 
 <style>
@@ -49,6 +52,29 @@
 <svelte:head>
   <title>{$LL.appName()} - {$LL.appSubtitle()}</title>
 </svelte:head>
+
+{#if SubscriptionsEnabled && isRegisteredUser}
+  <section class="w-full px-4 bg-cyan-200 border-b border-cyan-400">
+    <div class="container mx-auto">
+      <div class="flex flex-wrap">
+        <div class="w-full py-4 px-4">
+          <h2
+            class="text-2xl text-gray-700 font-rajdhani uppercase font-semibold leading-none text-center"
+          >
+            Show your support and
+            <a
+              class="text-blue-800 underline"
+              href="https://buy.stripe.com/7sIcP8gdhc3nc6YeUU?prefilled_email={$user.email}&client_reference_id={$user.id}"
+            >
+              Subscribe today
+            </a>
+            for only $5 USD a month.
+          </h2>
+        </div>
+      </div>
+    </div>
+  </section>
+{/if}
 
 <section
   class="w-full px-4 bg-yellow-thunder text-gray-800 border-b dark:border-gray-700"

@@ -5,6 +5,8 @@ import (
 	_ "embed"
 	"os"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/cookie"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
@@ -15,6 +17,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/poker"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/storyboard"
+	subscriptionData "github.com/StevenWeathers/thunderdome-planning-poker/internal/db/subscription"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/team"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/user"
 
@@ -100,6 +103,7 @@ func main() {
 	teamService := &team.Service{DB: d.DB, Logger: logger}
 	organizationService := &team.OrganizationService{DB: d.DB, Logger: logger}
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
+	subscriptionDataSvc := &subscriptionData.Service{DB: d.DB, Logger: logger}
 	cookie := cookie.New(cookie.Config{
 		AppDomain:          c.Http.Domain,
 		PathPrefix:         c.Http.PathPrefix,
@@ -109,6 +113,10 @@ func main() {
 		SecureCookieFlag:   c.Http.SecureCookie,
 		SessionCookieName:  c.Http.SessionCookieName,
 	})
+	subscriptionService := subscription.New(subscription.Config{
+		AccountSecret: c.Subscription.AccountSecret,
+		WebhookSecret: c.Subscription.WebhookSecret,
+	}, logger, subscriptionDataSvc)
 
 	HFS, FSS := ui.New(embedUseOS)
 	h := http.New(http.Service{
@@ -148,6 +156,7 @@ func main() {
 			AllowGuests:               c.Config.AllowGuests,
 			AllowRegistration:         c.Config.AllowRegistration,
 			ShowActiveCountries:       c.Config.ShowActiveCountries,
+			SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
 		},
 		Email: email.New(&email.Config{
 			AppURL:            "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
@@ -175,6 +184,7 @@ func main() {
 		TeamDataSvc:         teamService,
 		OrganizationDataSvc: organizationService,
 		AdminDataSvc:        adminService,
+		SubscriptionSvc:     subscriptionService,
 		UIConfig: thunderdome.UIConfig{
 			AnalyticsEnabled: c.Analytics.Enabled,
 			AnalyticsID:      c.Analytics.ID,
@@ -207,6 +217,7 @@ func main() {
 				FeatureRetro:              c.Feature.Retro,
 				FeatureStoryboard:         c.Feature.Storyboard,
 				RequireTeams:              c.Config.RequireTeams,
+				SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
 			},
 		},
 	}, FSS, HFS)

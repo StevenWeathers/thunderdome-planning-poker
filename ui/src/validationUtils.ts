@@ -46,5 +46,5 @@ export const validateUserIsAdmin = user => {
 };
 
 export const validateUserIsRegistered = user => {
-  return user.rank !== 'GUEST' && user.rank !== 'PRIVATE';
+  return user && user.rank !== 'GUEST' && user.rank !== 'PRIVATE';
 };

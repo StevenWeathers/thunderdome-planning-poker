@@ -29,6 +29,7 @@ type AppConfig struct {
 	FeatureRetro              bool
 	FeatureStoryboard         bool
 	RequireTeams              bool
+	SubscriptionsEnabled      bool
 }
 
 type UIConfig struct {

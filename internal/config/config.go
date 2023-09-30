@@ -82,6 +82,12 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("config.cleanup_storyboards_days_old", 180)
 	viper.SetDefault("config.organizations_enabled", true)
 	viper.SetDefault("config.require_teams", false)
+	viper.SetDefault("config.subscriptions_enabled", false)
+
+	viper.SetDefault("subscription.checkout_link", "")
+	viper.SetDefault("subscription.manage_link", "")
+	viper.SetDefault("subscription.account_secret", "")
+	viper.SetDefault("subscription.webhook_secret", "")
 
 	viper.SetDefault("admin.email", "")
 
