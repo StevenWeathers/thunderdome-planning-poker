@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
@@ -38,75 +40,72 @@ func New(config Config, logger *otelzap.Logger, dataSvc thunderdome.Subscription
 
 func (s *Service) HandleWebhook() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
+		const MaxBodyBytes = int64(65536)
 		ctx := req.Context()
 		logger := s.logger.Ctx(ctx)
-		const MaxBodyBytes = int64(65536)
+		logger.Info("Stripe webhook request received")
 		req.Body = http.MaxBytesReader(w, req.Body, MaxBodyBytes)
 		payload, err := io.ReadAll(req.Body)
 		if err != nil {
-			logger.Error(fmt.Sprintf("Error reading request body: %v", err))
+			logger.Error(fmt.Sprintf("Error reading request body: %v", err), zap.String("payload", string(payload)))
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
 
-		// This is your Stripe CLI webhook secret for testing your endpoint locally.
-		endpointSecret := s.config.WebhookSecret
-		// Pass the request body and Stripe-Signature header to ConstructEvent, along
-		// with the webhook signing key.
-		event, err := webhook.ConstructEvent(payload, req.Header.Get("Stripe-Signature"),
-			endpointSecret)
-
+		// Pass the request body and Stripe-Signature header to ConstructEvent, along with the webhook signing key.
+		event, err := webhook.ConstructEvent(payload, req.Header.Get("Stripe-Signature"), s.config.WebhookSecret)
 		if err != nil {
-			logger.Error(fmt.Sprintf("Error verifying webhook signature: %v", err))
+			logger.Error(fmt.Sprintf("Error verifying webhook signature: %v", err), zap.String("eventId", event.ID))
 			w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 			return
 		}
 
 		// Unmarshal the event data into an appropriate struct depending on its Type
+		logger.Info(fmt.Sprintf("Processing Stripe webhook event type: %s", event.Type), zap.String("eventId", event.ID))
 		switch event.Type {
 		case "checkout.session.completed":
 			// store stripe customer id for future events
 			clientReferenceId, ok := event.Data.Object["client_reference_id"]
 			if !ok || clientReferenceId == nil {
-				logger.Error("Error getting client_reference_id from event")
+				logger.Error("Error getting client_reference_id from event", zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
 			customerId, ok := event.Data.Object["customer"]
 			if !ok || customerId == nil {
-				logger.Error("Error getting customer from event")
+				logger.Error("Error getting customer from event", zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
 			expires := time.Now().Add(time.Hour * 24 * 33) // start with 33 day subscription
 			_, err = s.dataSvc.CreateSubscription(ctx, clientReferenceId.(string), customerId.(string), expires)
 			if err != nil {
-				logger.Error(fmt.Sprintf("Error creating subscription: %v", err))
+				logger.Error(fmt.Sprintf("Error creating subscription: %v", err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 		case "customer.subscription.updated":
 			customerId, ok := event.Data.Object["customer"]
 			if !ok || customerId == nil {
-				logger.Error("Error getting customer from event")
+				logger.Error("Error getting customer from event", zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
 			subscription, err := s.dataSvc.GetSubscriptionByCustomerID(ctx, customerId.(string))
 			if err != nil {
-				logger.Error(fmt.Sprintf("Error getting customer id %s subscription: %v", customerId.(string), err))
+				logger.Error(fmt.Sprintf("Error getting customer id %s subscription: %v", customerId.(string), err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			subStatus, ok := event.Data.Object["status"]
 			if !ok || subStatus == nil {
-				logger.Error("Error getting subscription status from event")
+				logger.Error("Error getting subscription status from event", zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
 			periodEnd, ok := event.Data.Object["current_period_end"]
 			if !ok || periodEnd == nil {
-				logger.Error("Error getting subscription current_period_end from event")
+				logger.Error("Error getting subscription current_period_end from event", zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
@@ -114,13 +113,15 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 			active := subStatus == "active"
 			_, err = s.dataSvc.UpdateSubscription(ctx, subscription.ID, active, expires)
 			if err != nil {
-				logger.Error(fmt.Sprintf("Error creating subscription: %v", err))
+				logger.Error(fmt.Sprintf("Error creating subscription: %v", err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 		default:
-			logger.Error(fmt.Sprintf("Unhandled event type: %s\n", event.Type))
+			logger.Error(fmt.Sprintf("Unhandled Stripe webhook event type: %s", event.Type), zap.String("eventId", event.ID))
 		}
+
+		logger.Info(fmt.Sprintf("Successfully processed Stripe webhook event type: %s", event.Type), zap.String("eventId", event.ID))
 
 		w.WriteHeader(http.StatusOK)
 	}
