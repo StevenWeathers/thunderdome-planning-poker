@@ -231,7 +231,7 @@ const pt: Translation = {
     'Confira o {repoOpen}repositório no GitHub{repoClose} para solicitar ou contribuir com melhorias, traduções de localidades e correções de bugs ou para {donateOpen}Doar{donateClose}.',
   landingFeatureOpenSourceTitle: 'Código aberto',
   landingSalesPitch:
-    'Colaboração de equipe remota com apontamento ágil de histórias em tempo real, sem custo e sem anúncios!',
+    'Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.',
   landingTitle:
     '{friendly|{false:Thunderdome é um aplicativo ágil de Planning Poker com um tema divertido, true:Thunderdome é um aplicativo ágil de Planning Poker com um tema divertido}}',
   lastActive: 'Ativo pela última vez',

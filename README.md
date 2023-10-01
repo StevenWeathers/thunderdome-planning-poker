@@ -4,7 +4,7 @@
 
 # Thunderdome
 
-## Remote team collaboration with realtime agile story pointing, no cost and ad free!
+## Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.
 
 ![image](https://user-images.githubusercontent.com/846933/95778842-eb76ef00-0c96-11eb-99d8-af5d098c12ee.png)
 

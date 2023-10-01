@@ -229,7 +229,7 @@ const fr: Translation = {
     'Allez voir {repoOpen}le repository{repoClose} pour demander ou contribuer à des améliorations, traductions et corrections de bugs ou pour {donateOpen}Donner{donateClose}.',
   landingFeatureOpenSourceTitle: 'Open Source',
   landingSalesPitch:
-    'Remote team collaboration with realtime agile story pointing, no cost and ad free!',
+    'Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.',
   landingTitle:
     '{friendly|{false:Thunderdome est une app de Planning Poker Agile avec un thème fun, true:Thunderdome est une app de Planning Poker Agile}}',
   lastActive: 'Last Active',
