@@ -106,7 +106,7 @@ func main() {
 	organizationService := &team.OrganizationService{DB: d.DB, Logger: logger}
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
 	subscriptionDataSvc := &subscriptionData.Service{DB: d.DB, Logger: logger}
-	jiraDataSvc := &jiraData.Service{DB: d.DB, Logger: logger}
+	jiraDataSvc := &jiraData.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
 	cookie := cookie.New(cookie.Config{
 		AppDomain:          c.Http.Domain,
 		PathPrefix:         c.Http.PathPrefix,

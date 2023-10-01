@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
 
@@ -28,6 +30,10 @@ func (s *Service) FindInstancesByUserId(ctx context.Context, userId string) ([]t
 		); err != nil {
 			return instances, err
 		}
+		instance.AccessToken, err = db.Decrypt(instance.AccessToken, s.AESHashKey)
+		if err != nil {
+			return instances, fmt.Errorf("error decrypting jira_instance %s access_token:  %v", instance.ID, err)
+		}
 		instances = append(instances, instance)
 	}
 
@@ -48,19 +54,27 @@ func (s *Service) GetInstanceById(ctx context.Context, instanceId string) (thund
 	if err != nil {
 		return instance, fmt.Errorf("error encountered getting jira_instance %s:  %v", instanceId, err)
 	}
+	instance.AccessToken, err = db.Decrypt(instance.AccessToken, s.AESHashKey)
+	if err != nil {
+		return instance, fmt.Errorf("error decrypting jira_instance %s access_token:  %v", instanceId, err)
+	}
 
 	return instance, nil
 }
 
 func (s *Service) CreateInstance(ctx context.Context, userId string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error) {
 	instance := thunderdome.JiraInstance{}
+	at, err := db.Encrypt(accessToken, s.AESHashKey)
+	if err != nil {
+		return instance, fmt.Errorf("error encountered creating jira_instance:  %v", err)
+	}
 
-	err := s.DB.QueryRowContext(ctx,
+	err = s.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.jira_instance 
 				(user_id, host, client_mail, access_token)
 				VALUES ($1, $2, $3, $4)
 				RETURNING id, user_id, host, client_mail, access_token, created_date, updated_date;`,
-		userId, host, clientMail, accessToken,
+		userId, host, clientMail, at,
 	).Scan(
 		&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken,
 		&instance.CreatedDate, &instance.UpdatedDate,
@@ -74,13 +88,17 @@ func (s *Service) CreateInstance(ctx context.Context, userId string, host string
 
 func (s *Service) UpdateInstance(ctx context.Context, instanceId string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error) {
 	instance := thunderdome.JiraInstance{}
+	at, err := db.Encrypt(accessToken, s.AESHashKey)
+	if err != nil {
+		return instance, fmt.Errorf("error encountered updating jira_instance:  %v", err)
+	}
 
-	err := s.DB.QueryRowContext(ctx,
+	err = s.DB.QueryRowContext(ctx,
 		`UPDATE thunderdome.jira_instance 
 				SET host = $2, client_mail = $3, access_token = $4
 				WHERE id = $1
 				RETURNING id, user_id, host, client_mail, access_token, created_date, updated_date;`,
-		instanceId, host, clientMail, accessToken,
+		instanceId, host, clientMail, at,
 	).Scan(
 		&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken,
 		&instance.CreatedDate, &instance.UpdatedDate,

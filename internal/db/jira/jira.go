@@ -7,6 +7,7 @@ import (
 )
 
 type Service struct {
-	DB     *sql.DB
-	Logger *otelzap.Logger
+	DB         *sql.DB
+	Logger     *otelzap.Logger
+	AESHashKey string
 }
