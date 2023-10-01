@@ -58,7 +58,7 @@
   <title>{$LL.appName()} - {$LL.appSubtitle()}</title>
 </svelte:head>
 
-{#if SubscriptionsEnabled && isRegisteredUser}
+{#if SubscriptionsEnabled && isRegisteredUser && !$user.subscribed}
   <section class="w-full px-4 bg-cyan-200 border-b border-cyan-400">
     <div class="container mx-auto">
       <div class="flex flex-wrap">
