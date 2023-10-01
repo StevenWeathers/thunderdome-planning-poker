@@ -13,6 +13,7 @@
   export let battleId;
   export let retroId;
   export let storyboardId;
+  export let subscription = false;
 
   declare global {
     interface Window {
@@ -35,6 +36,10 @@
 
   function targetPage() {
     let tp = appRoutes.games;
+
+    if (subscription) {
+      tp = `${appRoutes.subscriptionPricing}`;
+    }
 
     if (battleId) {
       tp = `${appRoutes.game}/${battleId}`;
@@ -93,6 +98,7 @@
           rank: u.rank,
           locale: u.locale,
           notificationsEnabled: u.notificationsEnabled,
+          subscribed: u.subscribed,
         };
         if (result.data.mfaRequired) {
           mfaRequired = true;

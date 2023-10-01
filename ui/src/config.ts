@@ -54,6 +54,7 @@ const defaultAppRoutes = {
   adminApiKeys: `${PathPrefix}/admin/apikeys`,
   adminAlerts: `${PathPrefix}/admin/alerts`,
   adminUsers: `${PathPrefix}/admin/users`,
+  subscriptionPricing: `${PathPrefix}/subscriptions/pricing`,
   subscriptionConfirmation: `${PathPrefix}/subscriptions/confirmation`,
 };
 const friendlyAppRoutes = {

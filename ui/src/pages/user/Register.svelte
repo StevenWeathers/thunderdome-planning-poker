@@ -15,6 +15,7 @@
   export let battleId;
   export let retroId;
   export let storyboardId;
+  export let subscription = false;
 
   const guestsAllowed = AppConfig.AllowGuests;
   const registrationAllowed = AppConfig.AllowRegistration;
@@ -23,6 +24,10 @@
 
   function targetPage() {
     let tp = appRoutes.games;
+
+    if (subscription) {
+      tp = `${appRoutes.subscriptionPricing}`;
+    }
 
     if (battleId) {
       tp = `${appRoutes.game}/${battleId}`;
@@ -99,6 +104,7 @@
           email: newWarrior.email,
           rank: newWarrior.rank,
           notificationsEnabled: newWarrior.notificationsEnabled,
+          subscribed: false,
         });
 
         eventTag('register_account', 'engagement', 'success', () => {

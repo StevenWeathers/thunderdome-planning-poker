@@ -52,6 +52,7 @@
   import { detectLocale } from './i18n/i18n-util';
   import { loadLocaleAsync } from './i18n/i18n-util.async';
   import Confirmation from './pages/subscription/Confirmation.svelte';
+  import Pricing from './pages/subscription/Pricing.svelte';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -95,6 +96,13 @@
       name: 'login',
     };
   });
+  router.on(`${appRoutes.login}/subscription`, () => {
+    currentPage = {
+      route: Login,
+      params: { subscription: true },
+      name: 'login',
+    };
+  });
   router.on(`${appRoutes.resetPwd}/:resetId`, params => {
     currentPage = {
       route: ResetPassword,
@@ -123,11 +131,25 @@
       name: 'Teams',
     };
   });
+  router.on(appRoutes.subscriptionPricing, () => {
+    currentPage = {
+      route: Pricing,
+      params: {},
+      name: 'pricing',
+    };
+  });
   router.on(appRoutes.subscriptionConfirmation, () => {
     currentPage = {
       route: Confirmation,
       params: {},
       name: 'Subscription Confirmation',
+    };
+  });
+  router.on(`${appRoutes.register}/subscription`, () => {
+    currentPage = {
+      route: Register,
+      params: { subscription: true },
+      name: 'register',
     };
   });
   router.on(`${appRoutes.organization}/:organizationId`, params => {

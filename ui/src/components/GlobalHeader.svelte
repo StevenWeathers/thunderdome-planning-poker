@@ -29,6 +29,7 @@
     FeatureStoryboard,
     OrganizationsEnabled,
     HeaderAuthEnabled,
+    SubscriptionsEnabled,
   } = AppConfig;
 
   const activePageClass =
@@ -168,6 +169,16 @@
                 {$LL.admin()}
               </a>
             {/if}
+          {/if}
+          {#if SubscriptionsEnabled && !$user.subscribed}
+            <a
+              href="{appRoutes.subscriptionPricing}"
+              class="pt-6 pb-4 px-4 border-b-4 {currentPage === 'pricing'
+                ? activePageClass
+                : pageClass}"
+            >
+              Pricing
+            </a>
           {/if}
         </nav>
       </div>
@@ -330,6 +341,16 @@
               </a>
             </li>
           {/if}
+        {/if}
+        {#if SubscriptionsEnabled && !$user.subscribed}
+          <li>
+            <a
+              href="{appRoutes.subscriptionPricing}"
+              class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
+            >
+              Pricing
+            </a>
+          </li>
         {/if}
       </ul>
       <div class="font-rajdhani font-semibold mx-4 my-2 dark:text-white">

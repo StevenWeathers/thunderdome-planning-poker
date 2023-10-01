@@ -69,7 +69,7 @@
             Show your support and
             <a
               class="text-blue-800 underline"
-              href="{SubscriptionCheckoutLink}?prefilled_email={$user.email}&client_reference_id={$user.id}"
+              href="{appRoutes.subscriptionPricing}"
             >
               Subscribe today
             </a>
