@@ -11,6 +11,7 @@
   import ProfileForm from '../../components/user/ProfileForm.svelte';
   import CreateApiKey from '../../components/user/CreateApiKey.svelte';
   import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
+  import CreateJiraInstance from '../../components/jira/CreateJiraInstance.svelte';
 
   export let xfetch;
   export let router;
@@ -19,12 +20,18 @@
 
   let userProfile = {};
   let apiKeys = [];
+  let jiraInstances = [];
   let showApiKeyCreate = false;
   let showAccountDeletion = false;
 
   let updatePassword = false;
 
-  const { ExternalAPIEnabled, LdapEnabled, HeaderAuthEnabled } = AppConfig;
+  const {
+    ExternalAPIEnabled,
+    LdapEnabled,
+    HeaderAuthEnabled,
+    SubscriptionsEnabled,
+  } = AppConfig;
 
   function toggleUpdatePassword() {
     updatePassword = !updatePassword;
@@ -111,6 +118,18 @@
       });
   }
 
+  function getJiraInstances() {
+    xfetch(`/api/users/${$user.id}/jira-instances`)
+      .then(res => res.json())
+      .then(function (result) {
+        jiraInstances = result.data;
+      })
+      .catch(function () {
+        notifications.danger('error getting jira instances');
+        eventTag('fetch_profile_jira_instances', 'engagement', 'failure');
+      });
+  }
+
   function deleteApiKey(apk) {
     return function () {
       xfetch(`/api/users/${$user.id}/apikeys/${apk}`, {
@@ -171,6 +190,28 @@
     showAccountDeletion = !showAccountDeletion;
   }
 
+  let showJiraInstanceCreate = false;
+
+  function toggleCreateJiraInstance() {
+    showJiraInstanceCreate = !showJiraInstanceCreate;
+  }
+
+  function deleteJiraInstance(id) {
+    return function () {
+      xfetch(`/api/users/${$user.id}/jira-instances/${id}`, {
+        method: 'DELETE',
+      })
+        .then(res => res.json())
+        .then(function (result) {
+          notifications.success('Deleted Jira instance');
+          getJiraInstances();
+        })
+        .catch(function () {
+          notifications.danger('Failed to delete Jira instance');
+        });
+    };
+  }
+
   onMount(() => {
     if (!$user.id) {
       router.route(appRoutes.login);
@@ -180,6 +221,9 @@
     getProfile();
     if (ExternalAPIEnabled) {
       getApiKeys();
+    }
+    if ($user.subscribed) {
+      getJiraInstances();
     }
   });
 </script>
@@ -235,7 +279,7 @@
 
     <div class="w-full md:w-1/2 lg:w-2/3">
       {#if ExternalAPIEnabled}
-        <div class="ms-8">
+        <div class="ms-8 mb-8">
           <div class="flex w-full">
             <div class="flex-1">
               <h2
@@ -371,6 +415,107 @@
           </div>
         </div>
       {/if}
+
+      {#if SubscriptionsEnabled}
+        <div class="ms-8">
+          <div class="flex w-full">
+            <div class="flex-1">
+              <h2
+                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+              >
+                Jira Instances
+              </h2>
+            </div>
+            {#if $user.subscribed}
+              <div class="flex-1">
+                <div class="text-right">
+                  <HollowButton
+                    onClick="{toggleCreateJiraInstance}"
+                    testid="jirainstance-create"
+                  >
+                    Add Jira Instance
+                  </HollowButton>
+                </div>
+              </div>
+            {/if}
+          </div>
+          <div class="flex flex-col">
+            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div
+                class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+              >
+                <div
+                  class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
+                >
+                  {#if !$user.subscribed}
+                    <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
+                      Must be subscribed to setup Jira integrations
+                    </p>
+                  {:else}
+                    <table
+                      class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                    >
+                      <thead class="bg-gray-50 dark:bg-gray-800">
+                        <tr>
+                          <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                          >
+                            Host
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                          >
+                            Client Mail
+                          </th>
+                          <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">{$LL.actions()}</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody
+                        class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+                      >
+                        {#each jiraInstances as ji, i}
+                          <tr
+                            class:bg-slate-100="{i % 2 !== 0}"
+                            class:dark:bg-gray-800="{i % 2 !== 0}"
+                            data-testid="apikey"
+                            data-apikeyid="{ji.id}"
+                          >
+                            <td
+                              class="px-6 py-4 whitespace-nowrap"
+                              data-testid="jira-host">{ji.host}</td
+                            >
+                            <td
+                              class="px-6 py-4 whitespace-nowrap"
+                              data-testid="jira-clientmail"
+                            >
+                              {ji.client_mail}
+                            </td>
+                            <td
+                              class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                            >
+                              <HollowButton
+                                color="red"
+                                onClick="{deleteJiraInstance(ji.id)}"
+                                testid="jira-delete"
+                              >
+                                {$LL.delete()}
+                              </HollowButton>
+                            </td>
+                          </tr>
+                        {/each}
+                      </tbody>
+                    </table>
+                  {/if}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/if}
     </div>
 
     {#if !LdapEnabled && !HeaderAuthEnabled}
@@ -385,6 +530,15 @@
     <CreateApiKey
       toggleCreateApiKey="{toggleCreateApiKey}"
       handleApiKeyCreate="{getApiKeys}"
+      notifications="{notifications}"
+      xfetch="{xfetch}"
+      eventTag="{eventTag}"
+    />
+  {/if}
+  {#if showJiraInstanceCreate}
+    <CreateJiraInstance
+      toggleClose="{toggleCreateJiraInstance}"
+      handleCreate="{getJiraInstances}"
       notifications="{notifications}"
       xfetch="{xfetch}"
       eventTag="{eventTag}"

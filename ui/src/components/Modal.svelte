@@ -24,7 +24,7 @@
           <button
             aria-label="close"
             on:click="{closeModal}"
-            class="text-gray-800 dark:text-gray-400 hover:bg-red-500 hover:text-white p-1 rounded-full"
+            class="text-gray-800 dark:text-gray-400 hover:bg-red-500 hover:text-white dark:hover:text-gray-800 p-1 rounded-full"
           >
             <CloseIcon class="w-7 h-7" />
           </button>

@@ -6747,6 +6747,289 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/{userId}/jira-instances": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of Jira instances associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Get User Jira Instances",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID to find jira instances for",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.JiraInstance"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a Jira Instance associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Create Jira Instance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID to associate jira instance to",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new jira_instance object",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraInstanceRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns new jira instance",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.JiraInstance"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{userId}/jira-instances/{instanceId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a Jira Instance associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Update Jira Instance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID jira instance associated to",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to update",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated jira_instance object",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraInstanceRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns updated jira instance",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.JiraInstance"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a Jira Instance associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Delete Jira Instance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID jira instance associated to",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to delete",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{userId}/jira-instances/{instanceId}/jql-story-search": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Queries Jira Instance API for Stories by JQL",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Query Jira for Stories by JQL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID associated to jira instance",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to query",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "jql search request",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraStoryJQLSearchRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -7024,6 +7307,42 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "http.jiraInstanceRequestBody": {
+            "type": "object",
+            "required": [
+                "access_token",
+                "client_mail",
+                "host"
+            ],
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "client_mail": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.jiraStoryJQLSearchRequestBody": {
+            "type": "object",
+            "required": [
+                "jql"
+            ],
+            "properties": {
+                "jql": {
+                    "type": "string"
+                },
+                "maxResults": {
+                    "type": "integer"
+                },
+                "startAt": {
+                    "type": "integer"
                 }
             }
         },
@@ -7609,6 +7928,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.JiraInstance": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "client_mail": {
+                    "type": "string"
+                },
+                "created_date": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "updated_date": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -8305,6 +8650,9 @@ const docTemplate = `{
                 },
                 "rank": {
                     "type": "string"
+                },
+                "subscribed": {
+                    "type": "boolean"
                 },
                 "theme": {
                     "type": "string"
