@@ -166,8 +166,8 @@ func (s *Service) subscribedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		_, EntityUserErr := s.SubscriptionDataSvc.GetSubscriptionByUserID(ctx, EntityUserID)
-		if EntityUserErr != nil {
+		subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, EntityUserID)
+		if subscriberErr != nil {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_SUBSCRIBED_USER"))
 			return
 		}
