@@ -8578,6 +8578,9 @@ const docTemplate = `{
                 "rank": {
                     "type": "string"
                 },
+                "subscribed": {
+                    "type": "boolean"
+                },
                 "theme": {
                     "type": "string"
                 },

@@ -47,6 +47,9 @@
       .then(res => res.json())
       .then(function (result) {
         userProfile = result.data;
+        if (userProfile.subscribed) {
+          getJiraInstances();
+        }
       })
       .catch(function () {
         notifications.danger($LL.profileErrorRetrieving());
@@ -206,7 +209,6 @@
     if (ExternalAPIEnabled) {
       getApiKeys();
     }
-    getJiraInstances();
   });
 
   function deleteJiraInstance(id) {
