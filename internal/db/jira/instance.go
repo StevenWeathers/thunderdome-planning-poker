@@ -34,6 +34,24 @@ func (s *Service) FindInstancesByUserId(ctx context.Context, userId string) ([]t
 	return instances, nil
 }
 
+func (s *Service) GetInstanceById(ctx context.Context, instanceId string) (thunderdome.JiraInstance, error) {
+	instance := thunderdome.JiraInstance{}
+
+	err := s.DB.QueryRowContext(ctx,
+		`SELECT id, user_id, host, client_mail, access_token, created_date, updated_date
+ 				FROM thunderdome.jira_instance WHERE id = $1;`,
+		instanceId,
+	).Scan(
+		&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken,
+		&instance.CreatedDate, &instance.UpdatedDate,
+	)
+	if err != nil {
+		return instance, fmt.Errorf("error encountered getting jira_instance %s:  %v", instanceId, err)
+	}
+
+	return instance, nil
+}
+
 func (s *Service) CreateInstance(ctx context.Context, userId string, host string, clientMail string, accessToken string) (thunderdome.JiraInstance, error) {
 	instance := thunderdome.JiraInstance{}
 

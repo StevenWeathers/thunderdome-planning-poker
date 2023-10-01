@@ -6974,6 +6974,62 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/{userId}/jira-instances/{instanceId}/jql-story-search": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Queries Jira Instance API for Stories by JQL",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Query Jira for Stories by JQL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID associated to jira instance",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to query",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "jql search request",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraStoryJQLSearchRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -7270,6 +7326,23 @@ const docTemplate = `{
                 },
                 "host": {
                     "type": "string"
+                }
+            }
+        },
+        "http.jiraStoryJQLSearchRequestBody": {
+            "type": "object",
+            "required": [
+                "jql"
+            ],
+            "properties": {
+                "jql": {
+                    "type": "string"
+                },
+                "maxResults": {
+                    "type": "integer"
+                },
+                "startAt": {
+                    "type": "integer"
                 }
             }
         },

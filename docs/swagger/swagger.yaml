@@ -196,6 +196,17 @@ definitions:
     - client_mail
     - host
     type: object
+  http.jiraStoryJQLSearchRequestBody:
+    properties:
+      jql:
+        type: string
+      maxResults:
+        type: integer
+      startAt:
+        type: integer
+    required:
+    - jql
+    type: object
   http.loginResponse:
     properties:
       mfaRequired:
@@ -1559,6 +1570,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update Jira Instance
+      tags:
+      - jira
+  /{userId}/jira-instances/{instanceId}/jql-story-search:
+    post:
+      description: Queries Jira Instance API for Stories by JQL
+      parameters:
+      - description: the user ID associated to jira instance
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the jira_instance ID to query
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      - description: jql search request
+        in: body
+        name: jira
+        required: true
+        schema:
+          $ref: '#/definitions/http.jiraStoryJQLSearchRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Query Jira for Stories by JQL
       tags:
       - jira
   /active-countries:

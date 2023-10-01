@@ -17,6 +17,7 @@ type JiraInstance struct {
 
 type JiraDataSvc interface {
 	FindInstancesByUserId(ctx context.Context, userId string) ([]JiraInstance, error)
+	GetInstanceById(ctx context.Context, instanceId string) (JiraInstance, error)
 	CreateInstance(ctx context.Context, userId string, host string, clientMail string, accessToken string) (JiraInstance, error)
 	UpdateInstance(ctx context.Context, instanceId string, host string, clientMail string, accessToken string) (JiraInstance, error)
 	DeleteInstance(ctx context.Context, instanceId string) error

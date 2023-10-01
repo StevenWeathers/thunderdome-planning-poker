@@ -10,17 +10,6 @@ import (
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
-type Config struct {
-	InstanceHost string `json:"instance_host"`
-	AccessToken  string `json:"access_token"`
-	ClientMail   string `json:"client_mail"`
-}
-
-type Client struct {
-	instance *jira.Client
-	logger   *otelzap.Logger
-}
-
 func New(config Config, logger *otelzap.Logger) *Client {
 	httpClient := http.Client{
 		Timeout: time.Second * 10,

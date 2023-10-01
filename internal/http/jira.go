@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/atlassian/jira"
+
 	"github.com/gorilla/mux"
 )
 
@@ -55,26 +57,26 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 		vars := mux.Vars(r)
 		userId := vars["userId"]
 
-		var alert = jiraInstanceRequestBody{}
+		var req = jiraInstanceRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
-		jsonErr := json.Unmarshal(body, &alert)
+		jsonErr := json.Unmarshal(body, &req)
 		if jsonErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
-		inputErr := validate.Struct(alert)
+		inputErr := validate.Struct(req)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		instance, err := s.JiraDataSvc.CreateInstance(r.Context(), userId, alert.Host, alert.ClientMail, alert.AccessToken)
+		instance, err := s.JiraDataSvc.CreateInstance(r.Context(), userId, req.Host, req.ClientMail, req.AccessToken)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -101,26 +103,26 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 		vars := mux.Vars(r)
 		instanceId := vars["instanceId"]
 
-		var alert = jiraInstanceRequestBody{}
+		var req = jiraInstanceRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
 			return
 		}
 
-		jsonErr := json.Unmarshal(body, &alert)
+		jsonErr := json.Unmarshal(body, &req)
 		if jsonErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
 			return
 		}
 
-		inputErr := validate.Struct(alert)
+		inputErr := validate.Struct(req)
 		if inputErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
 
-		instance, err := s.JiraDataSvc.UpdateInstance(r.Context(), instanceId, alert.Host, alert.ClientMail, alert.AccessToken)
+		instance, err := s.JiraDataSvc.UpdateInstance(r.Context(), instanceId, req.Host, req.ClientMail, req.AccessToken)
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -153,5 +155,70 @@ func (s *Service) handleJiraInstanceDelete() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+type jiraStoryJQLSearchRequestBody struct {
+	JQL        string `json:"jql" validate:"required"`
+	StartAt    int    `json:"startAt"`
+	MaxResults int    `json:"maxResults"`
+}
+
+// handleJiraStoryJQLSearch queries Jira API for Stories by JQL
+// @Summary      Query Jira for Stories by JQL
+// @Description  Queries Jira Instance API for Stories by JQL
+// @Tags         jira
+// @Produce      json
+// @Param        userId  path    string                                          true  "the user ID associated to jira instance"
+// @Param        instanceId  path    string                                          true  "the jira_instance ID to query"
+// @Param        jira  body    jiraStoryJQLSearchRequestBody                                true  "jql search request"
+// @Success      200    object  standardJsonResponse{}
+// @Failure      500    object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /{userId}/jira-instances/{instanceId}/jql-story-search [post]
+func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		instanceId := vars["instanceId"]
+
+		var req = jiraStoryJQLSearchRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &req)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(req)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+			return
+		}
+
+		instance, err := s.JiraDataSvc.GetInstanceById(r.Context(), instanceId)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		jiraClient := jira.New(jira.Config{
+			InstanceHost: instance.Host,
+			ClientMail:   instance.ClientMail,
+			AccessToken:  instance.AccessToken,
+		}, s.Logger)
+
+		fields := []string{"key", "summary", "priority", "issuetype", "description"}
+		stories, err := jiraClient.StoriesJQLSearch(r.Context(), req.JQL, fields, req.StartAt, req.MaxResults)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, stories, nil)
 	}
 }
