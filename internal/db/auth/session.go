@@ -65,7 +65,8 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
         COALESCE(u.job_title, ''),
         u.created_date,
         u.updated_date,
-        u.last_active
+        u.last_active,
+        u.subscribed
     FROM thunderdome.user_session us
     LEFT JOIN thunderdome.users u ON u.id = us.user_id
     WHERE us.session_id = $1 AND NOW() < us.expire_date`,
@@ -84,7 +85,9 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
 		&User.JobTitle,
 		&User.CreatedDate,
 		&User.UpdatedDate,
-		&User.LastActive)
+		&User.LastActive,
+		&User.Subscribed,
+	)
 	if e != nil {
 		if !errors.Is(e, sql.ErrNoRows) {
 			d.Logger.Ctx(ctx).Error("user_session_get query error", zap.Error(e))
