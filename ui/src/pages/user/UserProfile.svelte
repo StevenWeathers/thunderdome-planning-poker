@@ -47,9 +47,6 @@
       .then(res => res.json())
       .then(function (result) {
         userProfile = result.data;
-        if (userProfile.subscribed) {
-          getJiraInstances();
-        }
       })
       .catch(function () {
         notifications.danger($LL.profileErrorRetrieving());
@@ -199,18 +196,6 @@
     showJiraInstanceCreate = !showJiraInstanceCreate;
   }
 
-  onMount(() => {
-    if (!$user.id) {
-      router.route(appRoutes.login);
-      return;
-    }
-
-    getProfile();
-    if (ExternalAPIEnabled) {
-      getApiKeys();
-    }
-  });
-
   function deleteJiraInstance(id) {
     return function () {
       xfetch(`/api/users/${$user.id}/jira-instances/${id}`, {
@@ -226,6 +211,21 @@
         });
     };
   }
+
+  onMount(() => {
+    if (!$user.id) {
+      router.route(appRoutes.login);
+      return;
+    }
+
+    getProfile();
+    if (ExternalAPIEnabled) {
+      getApiKeys();
+    }
+    if ($user.subscribed) {
+      getJiraInstances();
+    }
+  });
 </script>
 
 <svelte:head>
@@ -426,18 +426,19 @@
                 Jira Instances
               </h2>
             </div>
-            <div class="flex-1">
-              <div class="text-right">
-                <HollowButton
-                  onClick="{toggleCreateJiraInstance}"
-                  testid="jirainstance-create"
-                >
-                  Add Jira Instance
-                </HollowButton>
+            {#if $user.subscribed}
+              <div class="flex-1">
+                <div class="text-right">
+                  <HollowButton
+                    onClick="{toggleCreateJiraInstance}"
+                    testid="jirainstance-create"
+                  >
+                    Add Jira Instance
+                  </HollowButton>
+                </div>
               </div>
-            </div>
+            {/if}
           </div>
-
           <div class="flex flex-col">
             <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div
@@ -446,63 +447,69 @@
                 <div
                   class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg"
                 >
-                  <table
-                    class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                  >
-                    <thead class="bg-gray-50 dark:bg-gray-800">
-                      <tr>
-                        <th
-                          scope="col"
-                          class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                        >
-                          Host
-                        </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                        >
-                          Client Mail
-                        </th>
-                        <th scope="col" class="relative px-6 py-3">
-                          <span class="sr-only">{$LL.actions()}</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody
-                      class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+                  {#if !$user.subscribed}
+                    <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
+                      Must be subscribed to setup Jira integrations
+                    </p>
+                  {:else}
+                    <table
+                      class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
                     >
-                      {#each jiraInstances as ji, i}
-                        <tr
-                          class:bg-slate-100="{i % 2 !== 0}"
-                          class:dark:bg-gray-800="{i % 2 !== 0}"
-                          data-testid="apikey"
-                          data-apikeyid="{ji.id}"
-                        >
-                          <td
-                            class="px-6 py-4 whitespace-nowrap"
-                            data-testid="jira-host">{ji.host}</td
+                      <thead class="bg-gray-50 dark:bg-gray-800">
+                        <tr>
+                          <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                           >
-                          <td
-                            class="px-6 py-4 whitespace-nowrap"
-                            data-testid="jira-clientmail"
+                            Host
+                          </th>
+                          <th
+                            scope="col"
+                            class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                           >
-                            {ji.client_mail}
-                          </td>
-                          <td
-                            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                          >
-                            <HollowButton
-                              color="red"
-                              onClick="{deleteJiraInstance(ji.id)}"
-                              testid="jira-delete"
-                            >
-                              {$LL.delete()}
-                            </HollowButton>
-                          </td>
+                            Client Mail
+                          </th>
+                          <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">{$LL.actions()}</span>
+                          </th>
                         </tr>
-                      {/each}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody
+                        class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-800 dark:text-white"
+                      >
+                        {#each jiraInstances as ji, i}
+                          <tr
+                            class:bg-slate-100="{i % 2 !== 0}"
+                            class:dark:bg-gray-800="{i % 2 !== 0}"
+                            data-testid="apikey"
+                            data-apikeyid="{ji.id}"
+                          >
+                            <td
+                              class="px-6 py-4 whitespace-nowrap"
+                              data-testid="jira-host">{ji.host}</td
+                            >
+                            <td
+                              class="px-6 py-4 whitespace-nowrap"
+                              data-testid="jira-clientmail"
+                            >
+                              {ji.client_mail}
+                            </td>
+                            <td
+                              class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                            >
+                              <HollowButton
+                                color="red"
+                                onClick="{deleteJiraInstance(ji.id)}"
+                                testid="jira-delete"
+                              >
+                                {$LL.delete()}
+                              </HollowButton>
+                            </td>
+                          </tr>
+                        {/each}
+                      </tbody>
+                    </table>
+                  {/if}
                 </div>
               </div>
             </div>

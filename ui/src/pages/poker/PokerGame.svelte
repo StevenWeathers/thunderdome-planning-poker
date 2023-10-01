@@ -579,6 +579,7 @@
           sendSocketEvent="{sendSocketEvent}"
           eventTag="{eventTag}"
           notifications="{notifications}"
+          xfetch="{xfetch}"
         />
       </div>
 

@@ -19,6 +19,7 @@
   export let sendSocketEvent = (event: string, value: string) => {};
   export let eventTag;
   export let notifications;
+  export let xfetch;
 
   let defaultPlan = {
     id: '',
@@ -455,8 +456,9 @@
 {#if showImport}
   <ImportModal
     notifications="{notifications}"
-    eventTag="{eventTag}"
     toggleImport="{toggleImport}"
     handlePlanAdd="{handlePlanAdd}"
+    xfetch="{xfetch}"
+    eventTag="{eventTag}"
   />
 {/if}
