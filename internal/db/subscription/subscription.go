@@ -63,7 +63,22 @@ func (s *Service) CreateSubscription(ctx context.Context, userId string, custome
 		&sub.CreatedDate, &sub.UpdatedDate,
 	)
 	if err != nil {
-		return sub, fmt.Errorf("error encountered creating subscription:  %v", err)
+		return sub, fmt.Errorf("error encountered creating subscription: %v", err)
+	}
+
+	result, err := s.DB.ExecContext(ctx,
+		`UPDATE thunderdome.users SET subscribed = true WHERE id = $1;`,
+		userId,
+	)
+	if err != nil {
+		return sub, fmt.Errorf("error encountered updating user subscription status: %v", err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return sub, fmt.Errorf("error encountered updating user subscription status: %v", err)
+	}
+	if rows != 1 {
+		return sub, fmt.Errorf("expected to affect 1 row, affected %d", rows)
 	}
 
 	return sub, nil
@@ -81,6 +96,21 @@ func (s *Service) UpdateSubscription(ctx context.Context, id string, active bool
 	)
 	if err != nil {
 		return sub, fmt.Errorf("error encountered updating subscription:  %v", err)
+	}
+
+	result, err := s.DB.ExecContext(ctx,
+		`UPDATE thunderdome.users SET subscribed = true WHERE id = $1;`,
+		sub.UserID,
+	)
+	if err != nil {
+		return sub, fmt.Errorf("error encountered updating user subscription status: %v", err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return sub, fmt.Errorf("error encountered updating user subscription status: %v", err)
+	}
+	if rows != 1 {
+		return sub, fmt.Errorf("expected to affect 1 row, affected %d", rows)
 	}
 
 	return sub, nil
