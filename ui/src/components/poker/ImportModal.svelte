@@ -6,6 +6,9 @@
   import SolidButton from '../SolidButton.svelte';
   import { AppConfig } from '../../config';
   import { user } from '../../stores';
+  import { onMount } from 'svelte';
+  import SelectInput from '../SelectInput.svelte';
+  import TextInput from '../TextInput.svelte';
 
   export let notifications;
   export let eventTag;
@@ -14,6 +17,9 @@
   export let handlePlanAdd = handleAdd => {};
 
   let jiraInstances = [];
+  let selectedJiraInstance = '';
+  let showJiraCloudSearch = false;
+  let searchJQL = '';
 
   const handleAdd = newPlan => {
     handlePlanAdd(newPlan);
@@ -31,19 +37,51 @@
         eventTag('fetch_profile_jira_instances', 'engagement', 'failure');
       });
   }
+
+  function displayJiraCloudSearch() {
+    showJiraCloudSearch = true;
+  }
+
+  function handleJQLSearch(event) {
+    event.preventDefault();
+
+    // @TODO - implement search
+  }
+
+  onMount(() => {
+    if ($user.subscribed) {
+      getJiraInstances();
+    }
+  });
 </script>
 
 <Modal closeModal="{toggleImport}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
   <div class="mt-8 mb-4">
     <div class="mb-4 dark:text-gray-300">
       <h3 class="font-bold mb-2 text-xl">Import from Jira Cloud</h3>
-      <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">Coming soon!</p>
-      <!--{#if !$user.subscribed}-->
-      <!--    <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">Must be subscribed to import from Jira-->
-      <!--        Cloud</p>-->
-      <!--{:else}-->
-      <!--    <p>Display jira cloud instances here...</p>-->
-      <!--{/if}-->
+      {#if !$user.subscribed}
+        <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
+          Must be subscribed to import from Jira Cloud
+        </p>
+      {:else}
+        <SelectInput
+          id="jirainstance"
+          bind:value="{selectedJiraInstance}"
+          on:change="{displayJiraCloudSearch}"
+        >
+          >
+          <option value="" disabled>Select Jira Instance to import from</option>
+          {#each jiraInstances as ji}
+            <option value="{ji.id}">{ji.host}</option>
+          {/each}
+        </SelectInput>
+
+        {#if showJiraCloudSearch}
+          <form on:submit="{handleJQLSearch}">
+            <TextInput placeholder="Enter Search JQL..." value="{searchJQL}" />
+          </form>
+        {/if}
+      {/if}
     </div>
     <div class="mb-4">
       <h3 class="font-bold mb-2 dark:text-gray-300 text-lg">
