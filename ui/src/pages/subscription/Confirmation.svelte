@@ -1,5 +1,30 @@
 <script lang="ts">
   import PageLayout from '../../components/PageLayout.svelte';
+  import { onMount } from 'svelte';
+  import { user } from '../../stores';
+  import { appRoutes } from '../../config';
+
+  export let router;
+
+  onMount(() => {
+    if (!$user.id) {
+      router.route(appRoutes.login);
+      return;
+    }
+
+    user.update({
+      id: $user.id,
+      name: $user.name,
+      email: $user.email,
+      rank: $user.rank,
+      avatar: $user.avatar,
+      verified: $user.verified,
+      notificationsEnabled: $user.notificationsEnabled,
+      locale: $user.locale,
+      theme: $user.theme,
+      subscribed: true,
+    });
+  });
 </script>
 
 <PageLayout>
