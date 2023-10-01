@@ -99,8 +99,8 @@ func (s *Service) UpdateSubscription(ctx context.Context, id string, active bool
 	}
 
 	result, err := s.DB.ExecContext(ctx,
-		`UPDATE thunderdome.users SET subscribed = true WHERE id = $1;`,
-		sub.UserID,
+		`UPDATE thunderdome.users SET subscribed = $2 WHERE id = $1;`,
+		sub.UserID, active,
 	)
 	if err != nil {
 		return sub, fmt.Errorf("error encountered updating user subscription status: %v", err)
