@@ -4,7 +4,7 @@ export const formatTimestamp = function (timestamp) {
 };
 
 export const getTimezoneName = function () {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York'; // add fallback for users whose timezone is undefined
 };
 
 export const formatDayForInput = function (date) {
