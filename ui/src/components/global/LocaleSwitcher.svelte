@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import { locales } from '../config';
+  import { locales } from '../../config';
   import SelectInput from './SelectInput.svelte';
 
   export let selectedLocale = 'en';

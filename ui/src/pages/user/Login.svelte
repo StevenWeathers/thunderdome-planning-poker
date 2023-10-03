@@ -1,10 +1,10 @@
 <script lang="ts">
-  import PageLayout from '../../components/PageLayout.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../../components/TextInput.svelte';
+  import TextInput from '../../components/global/TextInput.svelte';
 
   export let router;
   export let xfetch;

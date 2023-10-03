@@ -1,7 +1,7 @@
 <script lang="ts">
   import SolidButton from './SolidButton.svelte';
   import Modal from './Modal.svelte';
-  import LL from '../i18n/i18n-svelte';
+  import LL from '../../i18n/i18n-svelte';
 
   export let confirmText = '';
   export let confirmBtnText = 'Confirm Delete';

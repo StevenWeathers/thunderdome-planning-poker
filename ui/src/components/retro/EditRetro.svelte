@@ -1,9 +1,9 @@
 <script lang="ts">
-  import SolidButton from '../SolidButton.svelte';
-  import Modal from '../Modal.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../TextInput.svelte';
-  import SelectInput from '../SelectInput.svelte';
+  import TextInput from '../global/TextInput.svelte';
+  import SelectInput from '../global/SelectInput.svelte';
 
   export let toggleEditRetro = () => {};
   export let handleRetroEdit = () => {};

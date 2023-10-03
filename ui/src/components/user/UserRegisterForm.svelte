@@ -1,8 +1,8 @@
 <script lang="ts">
   import { validateName, validatePasswords } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
-  import SolidButton from '../SolidButton.svelte';
-  import TextInput from '../TextInput.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import TextInput from '../global/TextInput.svelte';
 
   export let notifications;
   export let handleSubmit;

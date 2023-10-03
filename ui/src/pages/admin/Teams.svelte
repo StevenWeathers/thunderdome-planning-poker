@@ -4,12 +4,12 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import HeadCol from '../../components/table/HeadCol.svelte';
-  import Table from '../../components/table/Table.svelte';
-  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
-  import TableRow from '../../components/table/TableRow.svelte';
-  import RowCol from '../../components/table/RowCol.svelte';
-  import Pagination from '../../components/Pagination.svelte';
+  import HeadCol from '../../components/global/table/HeadCol.svelte';
+  import Table from '../../components/global/table/Table.svelte';
+  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import TableRow from '../../components/global/table/TableRow.svelte';
+  import RowCol from '../../components/global/table/RowCol.svelte';
+  import Pagination from '../../components/global/Pagination.svelte';
 
   export let xfetch;
   export let router;

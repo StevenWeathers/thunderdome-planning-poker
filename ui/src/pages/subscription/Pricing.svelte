@@ -1,6 +1,6 @@
 <script lang="ts">
-  import PageLayout from '../../components/PageLayout.svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
 

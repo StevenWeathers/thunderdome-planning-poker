@@ -1,7 +1,7 @@
 <script lang="ts">
-  import GithubIcon from './icons/Github.svelte';
-  import { AppConfig } from '../config';
-  import LL from '../i18n/i18n-svelte';
+  import GithubIcon from '../icons/Github.svelte';
+  import { AppConfig } from '../../config';
+  import LL from '../../i18n/i18n-svelte';
 
   const { AppVersion } = AppConfig;
   const footerLinkClasses =

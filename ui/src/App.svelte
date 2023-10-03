@@ -11,10 +11,10 @@
   import { dir, user } from './stores';
   import eventTag from './eventTag';
 
-  import Notifications from './components/Notifications.svelte';
-  import GlobalHeader from './components/GlobalHeader.svelte';
+  import Notifications from './components/global/Notifications.svelte';
+  import GlobalHeader from './components/global/GlobalHeader.svelte';
   import GlobalAlerts from './components/alert/GlobalAlerts.svelte';
-  import GlobalFooter from './components/GlobalFooter.svelte';
+  import GlobalFooter from './components/global/GlobalFooter.svelte';
   import Landing from './pages/Landing.svelte';
   import Battles from './pages/poker/PokerGames.svelte';
   import Battle from './pages/poker/PokerGame.svelte';

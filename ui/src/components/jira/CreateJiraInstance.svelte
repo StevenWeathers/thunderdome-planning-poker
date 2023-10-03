@@ -1,9 +1,9 @@
 <script lang="ts">
-  import SolidButton from '../SolidButton.svelte';
-  import Modal from '../Modal.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import TextInput from '../TextInput.svelte';
+  import TextInput from '../global/TextInput.svelte';
 
   export let handleCreate = () => {};
   export let toggleClose = () => {};

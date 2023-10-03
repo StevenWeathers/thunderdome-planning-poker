@@ -1,20 +1,20 @@
 <script lang="ts">
-  import SolidButton from '../SolidButton.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
   import VerifiedIcon from '../icons/VerifiedIcon.svelte';
-  import HollowButton from '../HollowButton.svelte';
+  import HollowButton from '../global/HollowButton.svelte';
   import { countryList } from '../../country';
   import { AppConfig } from '../../config';
   import { validateName, validateUserIsAdmin } from '../../validationUtils';
   import LL, { locale, setLocale } from '../../i18n/i18n-svelte';
   import UserAvatar from './UserAvatar.svelte';
   import SetupMFA from './SetupMFA.svelte';
-  import DeleteConfirmation from '../DeleteConfirmation.svelte';
+  import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
   import { user } from '../../stores';
-  import LocaleSwitcher from '../LocaleSwitcher.svelte';
+  import LocaleSwitcher from '../global/LocaleSwitcher.svelte';
   import type { Locales } from '../../i18n/i18n-types';
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
-  import TextInput from '../TextInput.svelte';
-  import SelectInput from '../SelectInput.svelte';
+  import TextInput from '../global/TextInput.svelte';
+  import SelectInput from '../global/SelectInput.svelte';
 
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);

@@ -2,8 +2,8 @@
   import { onDestroy, onMount } from 'svelte';
   import Sockette from 'sockette';
 
-  import PageLayout from '../../components/PageLayout.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import Checkin from '../../components/checkin/Checkin.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
   import TrashIcon from '../../components/icons/TrashIcon.svelte';

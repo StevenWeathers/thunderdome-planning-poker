@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AppConfig } from '../config';
+  import { AppConfig } from '../../config';
 
   let count = 0;
   let defaultTimeout = AppConfig.ToastTimeout;

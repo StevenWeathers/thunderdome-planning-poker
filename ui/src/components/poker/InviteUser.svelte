@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SolidButton from '../SolidButton.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
   import ClipboardIcon from '../icons/ClipboardIcon.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';

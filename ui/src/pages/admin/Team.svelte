@@ -6,17 +6,17 @@
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import HeadCol from '../../components/table/HeadCol.svelte';
-  import RowCol from '../../components/table/RowCol.svelte';
-  import TableRow from '../../components/table/TableRow.svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
+  import HeadCol from '../../components/global/table/HeadCol.svelte';
+  import RowCol from '../../components/global/table/RowCol.svelte';
+  import TableRow from '../../components/global/table/TableRow.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
   import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
-  import Pagination from '../../components/Pagination.svelte';
+  import Pagination from '../../components/global/Pagination.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
-  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
-  import Table from '../../components/table/Table.svelte';
-  import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
+  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import Table from '../../components/global/table/Table.svelte';
+  import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 

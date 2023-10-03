@@ -1,9 +1,9 @@
 <script lang="ts">
   import UserIcon from '../icons/UserIcon.svelte';
-  import HollowButton from '../HollowButton.svelte';
+  import HollowButton from '../global/HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import SolidButton from '../SolidButton.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
 
   export let checkinId = {};
   export let comment = {};

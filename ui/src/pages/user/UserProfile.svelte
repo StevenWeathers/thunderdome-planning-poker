@@ -1,16 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/PageLayout.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
   import UpdatePasswordForm from '../../components/user/UpdatePasswordForm.svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import ProfileForm from '../../components/user/ProfileForm.svelte';
   import CreateApiKey from '../../components/user/CreateApiKey.svelte';
-  import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
+  import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import CreateJiraInstance from '../../components/jira/CreateJiraInstance.svelte';
 
   export let xfetch;

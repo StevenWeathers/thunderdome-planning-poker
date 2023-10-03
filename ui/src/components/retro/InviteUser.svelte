@@ -1,6 +1,6 @@
 <script lang="ts">
   import { appRoutes } from '../../config';
-  import SolidButton from '../SolidButton.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
   import ClipboardIcon from '../icons/ClipboardIcon.svelte';
 
   export let hostname = '';

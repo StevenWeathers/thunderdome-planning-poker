@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/PageLayout.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
   import CreateRetro from '../../components/retro/CreateRetro.svelte';
   import { user } from '../../stores';
   import { appRoutes } from '../../config';

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PageLayout from '../../components/PageLayout.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
   import { onMount } from 'svelte';
   import { user } from '../../stores';
   import { appRoutes } from '../../config';

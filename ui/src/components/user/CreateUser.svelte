@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Modal from '../Modal.svelte';
+  import Modal from '../global/Modal.svelte';
   import WarriorRegisterForm from './UserRegisterForm.svelte';
 
   export let notifications;

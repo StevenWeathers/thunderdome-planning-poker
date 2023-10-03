@@ -1,12 +1,12 @@
 <script lang="ts">
-  import SolidButton from '../SolidButton.svelte';
-  import Modal from '../Modal.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import CheckboxIcon from '../icons/CheckboxIcon.svelte';
-  import HollowButton from '../HollowButton.svelte';
+  import HollowButton from '../global/HollowButton.svelte';
   import UserAvatar from '../user/UserAvatar.svelte';
   import TrashIcon from '../icons/TrashIcon.svelte';
-  import SelectInput from '../SelectInput.svelte';
+  import SelectInput from '../global/SelectInput.svelte';
 
   export let toggleEdit = () => {};
   export let handleEdit = action => {};

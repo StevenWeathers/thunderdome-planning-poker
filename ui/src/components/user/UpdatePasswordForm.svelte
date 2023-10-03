@@ -2,8 +2,8 @@
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig } from '../../config';
   import { validatePasswords } from '../../validationUtils';
-  import SolidButton from '../SolidButton.svelte';
-  import TextInput from '../TextInput.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import TextInput from '../global/TextInput.svelte';
 
   export let handleUpdate = () => {};
   export let toggleForm = () => {};

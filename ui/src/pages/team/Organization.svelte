@@ -1,24 +1,24 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/PageLayout.svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import RowCol from '../../components/table/RowCol.svelte';
-  import TableRow from '../../components/table/TableRow.svelte';
-  import HeadCol from '../../components/table/HeadCol.svelte';
-  import Table from '../../components/table/Table.svelte';
+  import RowCol from '../../components/global/table/RowCol.svelte';
+  import TableRow from '../../components/global/table/TableRow.svelte';
+  import HeadCol from '../../components/global/table/HeadCol.svelte';
+  import Table from '../../components/global/table/Table.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
   import CreateDepartment from '../../components/team/CreateDepartment.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import AddUser from '../../components/user/AddUser.svelte';
-  import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
+  import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
 
   export let xfetch;
   export let router;

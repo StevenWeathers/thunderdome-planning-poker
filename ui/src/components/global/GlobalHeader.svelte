@@ -1,13 +1,13 @@
 <script lang="ts">
   import HollowButton from './HollowButton.svelte';
-  import UserIcon from './icons/UserIcon.svelte';
-  import { validateUserIsAdmin } from '../validationUtils';
-  import { user } from '../stores';
-  import { AppConfig, appRoutes } from '../config';
-  import LL, { locale, setLocale } from '../i18n/i18n-svelte';
+  import UserIcon from '../icons/UserIcon.svelte';
+  import { validateUserIsAdmin } from '../../validationUtils';
+  import { user } from '../../stores';
+  import { AppConfig, appRoutes } from '../../config';
+  import LL, { locale, setLocale } from '../../i18n/i18n-svelte';
   import SolidButton from './SolidButton.svelte';
-  import type { Locales } from '../i18n/i18n-types';
-  import { loadLocaleAsync } from '../i18n/i18n-util.async';
+  import type { Locales } from '../../i18n/i18n-types';
+  import { loadLocaleAsync } from '../../i18n/i18n-util.async';
   import LocaleSwitcher from './LocaleSwitcher.svelte';
 
   export let xfetch;

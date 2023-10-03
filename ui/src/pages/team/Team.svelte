@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/PageLayout.svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
   import AddUser from '../../components/user/AddUser.svelte';
-  import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
+  import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
   import CreateBattle from '../../components/poker/CreatePokerGame.svelte';
   import CreateRetro from '../../components/retro/CreateRetro.svelte';
@@ -16,14 +16,14 @@
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import Table from '../../components/table/Table.svelte';
-  import HeadCol from '../../components/table/HeadCol.svelte';
-  import TableRow from '../../components/table/TableRow.svelte';
-  import RowCol from '../../components/table/RowCol.svelte';
-  import Modal from '../../components/Modal.svelte';
-  import Pagination from '../../components/Pagination.svelte';
+  import Table from '../../components/global/table/Table.svelte';
+  import HeadCol from '../../components/global/table/HeadCol.svelte';
+  import TableRow from '../../components/global/table/TableRow.svelte';
+  import RowCol from '../../components/global/table/RowCol.svelte';
+  import Modal from '../../components/global/Modal.svelte';
+  import Pagination from '../../components/global/Pagination.svelte';
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
   import BoxList from '../../components/BoxList.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CloseIcon from './icons/CloseIcon.svelte';
+  import CloseIcon from '../icons/CloseIcon.svelte';
 
   export let closeModal = () => {};
   export let widthClasses = '';

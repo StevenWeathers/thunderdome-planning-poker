@@ -1,6 +1,6 @@
 <script lang="ts">
-  import SolidButton from '../SolidButton.svelte';
-  import Modal from '../Modal.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import Modal from '../global/Modal.svelte';
 
   export let handleDelete = () => {};
   export let toggleDelete = () => {};

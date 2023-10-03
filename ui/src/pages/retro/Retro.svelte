@@ -1,10 +1,10 @@
 <script lang="ts">
   import Sockette from 'sockette';
   import { onDestroy, onMount } from 'svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
-  import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import EditRetro from '../../components/retro/EditRetro.svelte';
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
@@ -22,9 +22,9 @@
   import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import UserCard from '../../components/retro/UserCard.svelte';
   import InviteUser from '../../components/retro/InviteUser.svelte';
-  import PageLayout from '../../components/PageLayout.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
-  import TextInput from '../../components/TextInput.svelte';
+  import TextInput from '../../components/global/TextInput.svelte';
 
   export let retroId;
   export let notifications;

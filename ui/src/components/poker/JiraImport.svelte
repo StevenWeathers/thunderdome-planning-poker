@@ -1,7 +1,7 @@
 <script lang="ts">
   import he from 'he';
 
-  import HollowButton from '../HollowButton.svelte';
+  import HollowButton from '../global/HollowButton.svelte';
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
 

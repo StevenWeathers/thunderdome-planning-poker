@@ -1,14 +1,14 @@
 <script lang="ts">
-  import Modal from '../Modal.svelte';
+  import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import CsvImport from './CsvImport.svelte';
   import JiraImport from './JiraImport.svelte';
-  import SolidButton from '../SolidButton.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
   import { AppConfig } from '../../config';
   import { user } from '../../stores';
   import { onMount } from 'svelte';
-  import SelectInput from '../SelectInput.svelte';
-  import TextInput from '../TextInput.svelte';
+  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../global/TextInput.svelte';
 
   export let notifications;
   export let eventTag;

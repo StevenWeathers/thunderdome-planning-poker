@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ChevronDown from './icons/ChevronDown.svelte';
+  import ChevronDown from '../icons/ChevronDown.svelte';
 
   export let value: string = '';
 </script>
