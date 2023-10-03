@@ -4,7 +4,7 @@
   import CsvImport from './CsvImport.svelte';
   import JiraImport from './JiraImport.svelte';
   import SolidButton from '../global/SolidButton.svelte';
-  import { AppConfig } from '../../config';
+  import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
   import { onMount } from 'svelte';
   import SelectInput from '../global/SelectInput.svelte';
@@ -141,8 +141,21 @@
     <div class="mb-4 dark:text-gray-300">
       <h3 class="font-bold mb-2 text-xl">Import from Jira Cloud</h3>
       {#if !$user.subscribed}
-        <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
-          Must be subscribed to import from Jira Cloud
+        <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
+          Must be <a
+            href="{appRoutes.subscriptionPricing}"
+            class="underline"
+            target="_blank">subscribed</a
+          >
+          to import from Jira Cloud.
+        </p>
+      {:else if jiraInstances.length === 0}
+        <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
+          Visit your <a
+            href="{appRoutes.profile}"
+            class="underline"
+            target="_blank">profile page</a
+          > to setup instances of Jira Cloud.
         </p>
       {:else}
         <div class="mb-4">
@@ -172,9 +185,11 @@
 
           <div class="flex flex-wrap">
             {#each jiraStories as story, idx}
-              <div class="p-4 w-full flex">
+              <div
+                class="p-4 w-full flex bg-gray-200 dark:bg-gray-600 dark:text-white rounded shadow mb-2"
+              >
                 <div class="w-3/4">
-                  {story.fields.summary}
+                  [{story.key}] {story.fields.summary}
                 </div>
                 <div class="w-1/4 text-right">
                   <SolidButton onClick="{importStory(idx)}">Import</SolidButton>

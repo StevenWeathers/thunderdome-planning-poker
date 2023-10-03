@@ -195,7 +195,7 @@ func (d *Service) CreateUserGuest(ctx context.Context, UserName string) (*thunde
 		return nil, errors.New("unable to create new user")
 	}
 
-	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: db.CreateGravatarHash(UserID)}, nil
+	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: db.CreateGravatarHash(UserID), Type: "GUEST"}, nil
 }
 
 // CreateUserRegistered adds a new registered user

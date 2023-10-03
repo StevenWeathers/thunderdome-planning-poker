@@ -173,7 +173,7 @@
           <span>Supporting the developer and hosting costs</span>
         </li>
       </ul>
-      {#if !$user.name || $user.rank === 'GUEST'}
+      {#if !$user.name || !$user.rank || $user.rank === 'GUEST'}
         <p class="bg-yellow-thunder text-gray-900 px-4 py-6 rounded">
           Must <a
             class="underline font-bold"
