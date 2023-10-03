@@ -185,7 +185,10 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 			return
 		}
 
-		_ = s.Email.SendDeleteConfirmation(User.Name, User.Email)
+		// don't attempt to send email to guest users
+		if User.Email != "" {
+			_ = s.Email.SendDeleteConfirmation(User.Name, User.Email)
+		}
 
 		// don't clear admins user cookies when deleting other users
 		if UserID == UserCookieID {
