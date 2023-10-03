@@ -31,6 +31,7 @@ type AppConfig struct {
 	RequireTeams              bool
 	SubscriptionsEnabled      bool
 	SubscriptionCheckoutLink  string
+	SubscriptionManageLink    string
 }
 
 type UIConfig struct {

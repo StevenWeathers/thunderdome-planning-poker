@@ -224,6 +224,7 @@ func main() {
 				RequireTeams:              c.Config.RequireTeams,
 				SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
 				SubscriptionCheckoutLink:  c.Subscription.CheckoutLink,
+				SubscriptionManageLink:    c.Subscription.ManageLink,
 			},
 		},
 	}, FSS, HFS)

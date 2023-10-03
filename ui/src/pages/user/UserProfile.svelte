@@ -12,6 +12,7 @@
   import CreateApiKey from '../../components/user/CreateApiKey.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import CreateJiraInstance from '../../components/jira/CreateJiraInstance.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
 
   export let xfetch;
   export let router;
@@ -31,6 +32,7 @@
     LdapEnabled,
     HeaderAuthEnabled,
     SubscriptionsEnabled,
+    SubscriptionManageLink,
   } = AppConfig;
 
   function toggleUpdatePassword() {
@@ -278,6 +280,44 @@
     </div>
 
     <div class="w-full md:w-1/2 lg:w-2/3">
+      {#if SubscriptionsEnabled}
+        <div class="ms-8 mb-8">
+          <div class="flex w-full">
+            <div class="flex-1">
+              <h2
+                class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+              >
+                Subscription
+              </h2>
+            </div>
+            <div class="flex-1">
+              <div class="text-right">
+                {#if $user.subscribed}
+                  <SolidButton
+                    color="green"
+                    href="{SubscriptionManageLink}"
+                    options="{{ target: '_blank' }}"
+                    >Manage subscription
+                  </SolidButton>
+                {/if}
+              </div>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4">
+            {#if $user.subscribed}
+              <p class="bg-lime-300 text-green-800 p-4 rounded font-bold">
+                Already subscribed, thank you!
+              </p>
+            {:else}
+              <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
+                See <a href="{appRoutes.subscriptionPricing}" class="underline"
+                  >Pricing page</a
+                > to subscribe today.
+              </p>
+            {/if}
+          </div>
+        </div>
+      {/if}
       {#if ExternalAPIEnabled}
         <div class="ms-8 mb-8">
           <div class="flex w-full">
