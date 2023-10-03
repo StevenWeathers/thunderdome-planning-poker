@@ -21,7 +21,7 @@
       <div class="flex justify-center items-baseline my-8">
         <span class="mr-2 text-5xl font-extrabold">Free</span>
       </div>
-      <ul role="list" class="mb-8 space-y-4 text-left">
+      <ul class="mb-8 space-y-4 text-left">
         <li class="flex items-center space-x-3">
           <svg
             class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400"
@@ -123,7 +123,7 @@
         >
       </div>
 
-      <ul role="list" class="mb-8 space-y-4 text-left">
+      <ul class="mb-8 space-y-4 text-left">
         <li class="flex items-center space-x-3">
           <svg
             class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400"
@@ -141,7 +141,7 @@
           >
         </li>
       </ul>
-      <ul role="list" class="mb-8 space-y-4 text-left">
+      <ul class="mb-8 space-y-4 text-left">
         <li class="flex items-center space-x-3">
           <svg
             class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400"
@@ -157,7 +157,7 @@
           <span>Future premium features</span>
         </li>
       </ul>
-      <ul role="list" class="mb-8 space-y-4 text-left">
+      <ul class="mb-8 space-y-4 text-left">
         <li class="flex items-center space-x-3">
           <svg
             class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400"

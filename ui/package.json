@@ -26,6 +26,7 @@
     "locales:watch": "typesafe-i18n"
   },
   "dependencies": {
+    "compute-scroll-into-view": "^3.1.0",
     "he": "^1.2.0",
     "js-cookie": "^3.0.5",
     "navaid": "^1.2.0",

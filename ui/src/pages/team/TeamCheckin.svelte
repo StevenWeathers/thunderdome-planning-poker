@@ -21,6 +21,7 @@
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import BlockedPing from '../../components/checkin/BlockedPing.svelte';
   import EditIcon from '../../components/icons/EditIcon.svelte';
+  import Picker from '../../components/global/timezone-picker/Picker.svelte';
 
   export let xfetch;
   export let router;
@@ -35,6 +36,7 @@
 
   const { AllowRegistration, AllowGuests } = AppConfig;
 
+  let timezone = getTimezoneName();
   let showCheckin = false;
   let now = new Date();
   let maxNegativeDate;
@@ -71,6 +73,11 @@
   let checkins = [];
   let checkinColumns = [];
   let showOnlyDiscussionItems = false;
+
+  function updateTimezone(ev) {
+    timezone = ev.detail.timezone;
+    getCheckins();
+  }
 
   function divideCheckins(checkins) {
     const half = Math.ceil(checkins.length / 2);
@@ -123,9 +130,7 @@
   }
 
   function getCheckins() {
-    xfetch(
-      `${teamPrefix}/checkins?date=${selectedDate}&tz=${getTimezoneName()}`,
-    )
+    xfetch(`${teamPrefix}/checkins?date=${selectedDate}&tz=${timezone}`)
       .then(res => res.json())
       .then(function (result) {
         checkins = result.data;
@@ -417,21 +422,36 @@
 <PageLayout>
   <div class="flex sm:flex-wrap">
     <div class="md:grow">
-      <h1
-        class="text-3xl font-semibold font-rajdhani leading-none uppercase dark:text-white"
-      >
-        {$LL.checkIn()}
-        <ChevronRight class="w-8 h-8" />
-        <input
-          type="date"
-          id="checkindate"
-          bind:value="{selectedDate}"
-          min="{maxNegativeDate}"
-          max="{formatDayForInput(now)}"
-          on:change="{getCheckins}"
-          class="bg-transparent"
-        />
-      </h1>
+      <div class="mb-8">
+        <div
+          class="inline-block align-top text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white"
+        >
+          <h1>
+            {$LL.checkIn()}
+          </h1>
+        </div>
+        <div
+          class="inline-block align-top text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white"
+        >
+          <ChevronRight class="w-8 h-8" />
+        </div>
+        <div class="inline-block">
+          <input
+            type="date"
+            id="checkindate"
+            bind:value="{selectedDate}"
+            min="{maxNegativeDate}"
+            max="{formatDayForInput(now)}"
+            on:change="{getCheckins}"
+            class="bg-transparent text-3xl font-rajdhani font-semibold leading-none uppercase dark:text-white"
+          />
+          <Picker
+            timezone="{timezone}"
+            on:update="{updateTimezone}"
+            btnClasses="text-lg text-blue-500 dark:text-sky-400"
+          />
+        </div>
+      </div>
 
       {#if organizationId}
         <div class="text-xl font-semibold font-rajdhani dark:text-white">
