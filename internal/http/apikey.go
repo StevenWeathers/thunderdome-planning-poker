@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/gorilla/mux"
 )
 
@@ -21,6 +23,8 @@ import (
 // @Router       /users/{userId}/apikeys [get]
 func (s *Service) handleUserAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
@@ -29,8 +33,10 @@ func (s *Service) handleUserAPIKeys() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(r.Context(), UserID)
+		APIKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(ctx, UserID)
 		if keysErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserAPIKeys error", zap.Error(keysErr),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
@@ -60,6 +66,7 @@ func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -87,6 +94,8 @@ func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 
 		APIKeys, keysErr := s.ApiKeyDataSvc.GetUserApiKeys(ctx, UserID)
 		if keysErr != nil {
+			s.Logger.Ctx(ctx).Error("handleAPIKeyGenerate error", zap.Error(keysErr),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
@@ -98,6 +107,8 @@ func (s *Service) handleAPIKeyGenerate() http.HandlerFunc {
 
 		APIKey, keyErr := s.ApiKeyDataSvc.GenerateApiKey(ctx, UserID, k.Name)
 		if keyErr != nil {
+			s.Logger.Ctx(ctx).Error("handleAPIKeyGenerate error", zap.Error(keyErr),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keyErr)
 			return
 		}
@@ -125,6 +136,8 @@ type apikeyUpdateRequestBody struct {
 // @Router       /users/{userId}/apikeys/{keyID} [put]
 func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
@@ -153,8 +166,11 @@ func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 			return
 		}
 
-		APIKeys, keysErr := s.ApiKeyDataSvc.UpdateUserApiKey(r.Context(), UserID, APK, k.Active)
+		APIKeys, keysErr := s.ApiKeyDataSvc.UpdateUserApiKey(ctx, UserID, APK, k.Active)
 		if keysErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserAPIKeyUpdate error", zap.Error(keysErr),
+				zap.String("entity_user_id", UserID), zap.String("apikey_id", APK),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}
@@ -177,6 +193,8 @@ func (s *Service) handleUserAPIKeyUpdate() http.HandlerFunc {
 // @Router       /users/{userId}/apikeys/{keyID} [delete]
 func (s *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
@@ -186,8 +204,11 @@ func (s *Service) handleUserAPIKeyDelete() http.HandlerFunc {
 		}
 		APK := vars["keyID"]
 
-		APIKeys, keysErr := s.ApiKeyDataSvc.DeleteUserApiKey(r.Context(), UserID, APK)
+		APIKeys, keysErr := s.ApiKeyDataSvc.DeleteUserApiKey(ctx, UserID, APK)
 		if keysErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserAPIKeyDelete error", zap.Error(keysErr),
+				zap.String("entity_user_id", UserID), zap.String("apikey_id", APK),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, keysErr)
 			return
 		}

@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/gorilla/mux"
 )
 
@@ -32,9 +34,13 @@ type alertRequestBody struct {
 // @Router       /alerts [get]
 func (s *Service) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		Limit, Offset := getLimitOffsetFromRequest(r)
-		Alerts, Count, err := s.AlertDataSvc.AlertsList(r.Context(), Limit, Offset)
+		Alerts, Count, err := s.AlertDataSvc.AlertsList(ctx, Limit, Offset)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetAlerts error", zap.Error(err),
+				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -61,6 +67,8 @@ func (s *Service) handleGetAlerts() http.HandlerFunc {
 // @Router       /alerts [post]
 func (s *Service) handleAlertCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		var alert = alertRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -80,13 +88,16 @@ func (s *Service) handleAlertCreate() http.HandlerFunc {
 			return
 		}
 
-		err := s.AlertDataSvc.AlertsCreate(r.Context(), alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := s.AlertDataSvc.AlertsCreate(ctx, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleAlertCreate error", zap.Error(err),
+				zap.String("alert_name", alert.Name), zap.String("alert_type", alert.Type),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(r.Context())
+		ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(ctx)
 
 		s.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -105,6 +116,8 @@ func (s *Service) handleAlertCreate() http.HandlerFunc {
 // @Router       /alerts/{alertId} [put]
 func (s *Service) handleAlertUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		ID := vars["alertId"]
 		idErr := validate.Var(ID, "required,uuid")
@@ -132,13 +145,15 @@ func (s *Service) handleAlertUpdate() http.HandlerFunc {
 			return
 		}
 
-		err := s.AlertDataSvc.AlertsUpdate(r.Context(), ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
+		err := s.AlertDataSvc.AlertsUpdate(ctx, ID, alert.Name, alert.Type, alert.Content, alert.Active, alert.AllowDismiss, alert.RegisteredOnly)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleAlertUpdate error", zap.Error(err), zap.String("alert_id", ID),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(r.Context())
+		ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(ctx)
 
 		s.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
@@ -156,6 +171,8 @@ func (s *Service) handleAlertUpdate() http.HandlerFunc {
 // @Router       /alerts/{alertId} [delete]
 func (s *Service) handleAlertDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		AlertID := vars["alertId"]
 		idErr := validate.Var(AlertID, "required,uuid")
@@ -164,13 +181,15 @@ func (s *Service) handleAlertDelete() http.HandlerFunc {
 			return
 		}
 
-		err := s.AlertDataSvc.AlertDelete(r.Context(), AlertID)
+		err := s.AlertDataSvc.AlertDelete(ctx, AlertID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleAlertDelete error", zap.Error(err), zap.String("alert_id", AlertID),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(r.Context())
+		ActiveAlerts = s.AlertDataSvc.GetActiveAlerts(ctx)
 
 		s.Success(w, r, http.StatusOK, ActiveAlerts, nil)
 	}
