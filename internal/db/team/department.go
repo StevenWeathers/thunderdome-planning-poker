@@ -2,7 +2,7 @@ package team
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
@@ -16,7 +16,7 @@ func (d *OrganizationService) DepartmentUserRole(ctx context.Context, UserID str
 	var orgRole string
 	var departmentRole string
 
-	e := d.DB.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		`SELECT ou.role AS orgRole, COALESCE(du.role, '') AS departmentRole
         FROM thunderdome.organization_user ou
         LEFT JOIN thunderdome.department_user du ON du.user_id = $1 AND du.department_id = $3
@@ -28,9 +28,8 @@ func (d *OrganizationService) DepartmentUserRole(ctx context.Context, UserID str
 		&orgRole,
 		&departmentRole,
 	)
-	if e != nil {
-		d.Logger.Ctx(ctx).Error("department_get_user_role query error", zap.Error(e))
-		return "", "", errors.New("error getting department users role")
+	if err != nil {
+		return "", "", fmt.Errorf("error getting department users role: %v", err)
 	}
 
 	return orgRole, departmentRole, nil
@@ -40,7 +39,7 @@ func (d *OrganizationService) DepartmentUserRole(ctx context.Context, UserID str
 func (d *OrganizationService) DepartmentGet(ctx context.Context, DepartmentID string) (*thunderdome.Department, error) {
 	var org = &thunderdome.Department{}
 
-	e := d.DB.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		`SELECT od.id, od.name, od.created_date, od.updated_date
         FROM thunderdome.organization_department od
         WHERE od.id = $1;`,
@@ -51,9 +50,8 @@ func (d *OrganizationService) DepartmentGet(ctx context.Context, DepartmentID st
 		&org.CreatedDate,
 		&org.UpdatedDate,
 	)
-	if e != nil {
-		d.Logger.Ctx(ctx).Error("department_get_by_id query error", zap.Error(e))
-		return nil, errors.New("department not found")
+	if err != nil {
+		return nil, fmt.Errorf("error getting department: %v", err)
 	}
 
 	return org, nil
@@ -109,8 +107,7 @@ func (d *OrganizationService) DepartmentCreate(ctx context.Context, OrgID string
 	).Scan(&od.Id, &od.Name, &od.CreatedDate, &od.UpdatedDate)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("Unable to create organization department", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("department create query error: %v", err)
 	}
 
 	return od, nil
@@ -166,8 +163,7 @@ func (d *OrganizationService) DepartmentTeamCreate(ctx context.Context, Departme
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("Unable to create department tea", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("department team create query error: %v", err)
 	}
 
 	return t, nil
@@ -224,8 +220,7 @@ func (d *OrganizationService) DepartmentAddUser(ctx context.Context, DepartmentI
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("Unable to add user to department", zap.Error(err))
-		return "", err
+		return "", fmt.Errorf("department add user query error: %v", err)
 	}
 
 	return DepartmentID, nil
@@ -240,8 +235,7 @@ func (d *OrganizationService) DepartmentRemoveUser(ctx context.Context, Departme
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("Unable to remove user from department", zap.Error(err))
-		return err
+		return fmt.Errorf("department remove user query error: %v", err)
 	}
 
 	return nil
@@ -253,7 +247,7 @@ func (d *OrganizationService) DepartmentTeamUserRole(ctx context.Context, UserID
 	var departmentRole string
 	var teamRole string
 
-	e := d.DB.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		`SELECT ou.role AS orgRole, COALESCE(du.role, '') AS departmentRole, COALESCE(tu.role, '') AS teamRole
         FROM thunderdome.organization_user ou
         LEFT JOIN thunderdome.department_user du ON du.user_id = $1 AND du.department_id = $3
@@ -268,9 +262,8 @@ func (d *OrganizationService) DepartmentTeamUserRole(ctx context.Context, UserID
 		&departmentRole,
 		&teamRole,
 	)
-	if e != nil {
-		d.Logger.Ctx(ctx).Error("department_team_user_role query error", zap.Error(e))
-		return "", "", "", errors.New("error getting department team users role")
+	if err != nil {
+		return "", "", "", fmt.Errorf("error getting department team users role: %v", err)
 	}
 
 	return orgRole, departmentRole, teamRole, nil
@@ -284,8 +277,7 @@ func (d *OrganizationService) DepartmentDelete(ctx context.Context, DepartmentID
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("department_delete query error", zap.Error(err))
-		return err
+		return fmt.Errorf("department delete query error: %v", err)
 	}
 
 	return nil

@@ -2,14 +2,11 @@ package auth
 
 import (
 	"context"
-	"database/sql"
-	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
-
-	"go.uber.org/zap"
 )
 
 // CreateSession creates a new user authenticated session
@@ -25,8 +22,7 @@ func (d *Service) CreateSession(ctx context.Context, UserId string) (string, err
 		SessionId,
 		UserId,
 	); sessionErr != nil {
-		d.Logger.Ctx(ctx).Error("Unable to create a user session", zap.Error(sessionErr))
-		return "", sessionErr
+		return "", fmt.Errorf("create user session query error: %v", sessionErr)
 	}
 
 	return SessionId, nil
@@ -39,8 +35,7 @@ func (d *Service) EnableSession(ctx context.Context, SessionId string) error {
 		`,
 		SessionId,
 	); sessionErr != nil {
-		d.Logger.Ctx(ctx).Error("Unable to enable user session", zap.Error(sessionErr))
-		return sessionErr
+		return fmt.Errorf("enable user session query error: %v", sessionErr)
 	}
 
 	return nil
@@ -50,7 +45,7 @@ func (d *Service) EnableSession(ctx context.Context, SessionId string) error {
 func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunderdome.User, error) {
 	User := &thunderdome.User{}
 
-	e := d.DB.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		SELECT
         u.id,
         u.name,
@@ -88,11 +83,8 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
 		&User.LastActive,
 		&User.Subscribed,
 	)
-	if e != nil {
-		if !errors.Is(e, sql.ErrNoRows) {
-			d.Logger.Ctx(ctx).Error("user_session_get query error", zap.Error(e))
-		}
-		return nil, errors.New("active session match not found")
+	if err != nil {
+		return nil, fmt.Errorf("get session user query error: %v", err)
 	}
 
 	User.GravatarHash = db.CreateGravatarHash(User.Email)
@@ -107,8 +99,7 @@ func (d *Service) DeleteSession(ctx context.Context, SessionId string) error {
 		`,
 		SessionId,
 	); sessionErr != nil {
-		d.Logger.Ctx(ctx).Error("Unable to delete user session", zap.Error(sessionErr))
-		return sessionErr
+		return fmt.Errorf("delete user session query error: %v", sessionErr)
 	}
 
 	return nil

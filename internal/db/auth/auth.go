@@ -91,14 +91,13 @@ func (d *Service) UserResetRequest(ctx context.Context, UserEmail string) (reset
 	var UserID sql.NullString
 	var name sql.NullString
 
-	e := d.DB.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		SELECT resetId, userId, userName FROM thunderdome.user_reset_create($1);
 		`,
 		db.SanitizeEmail(UserEmail),
 	).Scan(&ResetID, &UserID, &name)
-	if e != nil {
-		d.Logger.Ctx(ctx).Error("Unable to reset user", zap.Error(e), zap.String("email", UserEmail))
-		return "", "", e
+	if err != nil {
+		return "", "", fmt.Errorf("insert user reset request query error: %v", err)
 	}
 
 	return ResetID.String, name.String, nil
@@ -124,14 +123,13 @@ func (d *Service) UserResetPassword(ctx context.Context, ResetID string, UserPas
 		ResetID,
 	).Scan(&name, &email)
 	if UserErr != nil {
-		d.Logger.Ctx(ctx).Error("Unable to get user for password reset confirmation email", zap.Error(UserErr))
-		return "", "", UserErr
+		return "", "", fmt.Errorf("get user for password reset confirmation email error: %v", UserErr)
 	}
 
 	if _, err := d.DB.ExecContext(ctx,
 		`CALL thunderdome.user_password_reset($1, $2)`,
 		ResetID, hashedPassword); err != nil {
-		return "", "", err
+		return "", "", fmt.Errorf("user password reset query error: %v", err)
 	}
 
 	return name.String, email.String, nil
@@ -151,19 +149,18 @@ func (d *Service) UserUpdatePassword(ctx context.Context, UserID string, UserPas
 		UserID,
 	).Scan(&UserName, &UserEmail)
 	if UserErr != nil {
-		d.Logger.Ctx(ctx).Error("Unable to get user for password update", zap.Error(UserErr))
-		return "", "", UserErr
+		return "", "", fmt.Errorf("get user for password update query error: %v", UserErr)
 	}
 
 	hashedPassword, hashErr := db.HashSaltPassword(UserPassword)
 	if hashErr != nil {
-		return "", "", hashErr
+		return "", "", fmt.Errorf("hash password for password update error: %v", hashErr)
 	}
 
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.users SET password = $2, last_active = NOW(), updated_date = NOW() WHERE id = $1;`,
 		UserID, hashedPassword); err != nil {
-		return "", "", err
+		return "", "", fmt.Errorf("update password query error: %v", err)
 	}
 
 	return UserName.String, UserEmail.String, nil
@@ -184,8 +181,7 @@ func (d *Service) UserVerifyRequest(ctx context.Context, UserId string) (*thunde
 		&user.Email,
 	)
 	if e != nil {
-		d.Logger.Ctx(ctx).Error("error finding user verify id", zap.Error(e))
-		return nil, "", errors.New("user not found")
+		return nil, "", fmt.Errorf("find user for verify request error: %v", e)
 	}
 
 	err := d.DB.QueryRowContext(ctx, `
@@ -194,8 +190,7 @@ func (d *Service) UserVerifyRequest(ctx context.Context, UserId string) (*thunde
 		user.Id,
 	).Scan(&VerifyId)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("Unable to insert user verification", zap.Error(err))
-		return nil, VerifyId, err
+		return nil, VerifyId, fmt.Errorf("create user verify query error: %v", err)
 	}
 
 	return user, VerifyId, nil
@@ -205,7 +200,7 @@ func (d *Service) UserVerifyRequest(ctx context.Context, UserId string) (*thunde
 func (d *Service) VerifyUserAccount(ctx context.Context, VerifyID string) error {
 	if _, err := d.DB.ExecContext(ctx,
 		`CALL thunderdome.user_account_verify($1)`, VerifyID); err != nil {
-		return err
+		return fmt.Errorf("verify user acocunt query error: %v", err)
 	}
 
 	return nil
@@ -283,8 +278,7 @@ func (d *Service) MFATokenValidate(ctx context.Context, SessionId string, passco
 		&encryptedSecret,
 	)
 	if e != nil {
-		d.Logger.Ctx(ctx).Error("error finding user MFA secret", zap.Error(e))
-		return errors.New("user not found")
+		return fmt.Errorf("find user mfa secret query error: %v", e)
 	}
 
 	if encryptedSecret == "" {
@@ -292,7 +286,7 @@ func (d *Service) MFATokenValidate(ctx context.Context, SessionId string, passco
 	}
 	decryptedSecret, secretErr := db.Decrypt(encryptedSecret, d.AESHashkey)
 	if secretErr != nil {
-		return errors.New("unable to decode MFA secret")
+		return fmt.Errorf("unable to decode MFA secret: %v", secretErr)
 	}
 
 	valid := totp.Validate(passcode, decryptedSecret)
@@ -302,7 +296,7 @@ func (d *Service) MFATokenValidate(ctx context.Context, SessionId string, passco
 
 	err := d.EnableSession(ctx, SessionId)
 	if err != nil {
-		return errors.New("unable to enable user session")
+		return fmt.Errorf("unable to enable user session: %v", err)
 	}
 
 	return nil

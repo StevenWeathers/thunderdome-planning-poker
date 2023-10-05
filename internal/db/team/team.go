@@ -3,7 +3,7 @@ package team
 import (
 	"context"
 	"database/sql"
-	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
@@ -33,8 +33,7 @@ func (d *Service) TeamUserRole(ctx context.Context, UserID string, TeamID string
 		&teamRole,
 	)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_get_user_role query error", zap.Error(err))
-		return "", errors.New("error getting team users role")
+		return "", fmt.Errorf("error getting team users role: %v", err)
 	}
 
 	return teamRole, nil
@@ -56,8 +55,7 @@ func (d *Service) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team
 		&team.UpdatedDate,
 	)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_get_by_id query error", zap.Error(err))
-		return nil, errors.New("team not found")
+		return nil, fmt.Errorf("get team query error: %v", err)
 	}
 
 	return team, nil
@@ -112,8 +110,7 @@ func (d *Service) TeamCreate(ctx context.Context, UserID string, TeamName string
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_create query error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("create team query error: %v", err)
 	}
 
 	return t, nil
@@ -129,8 +126,7 @@ func (d *Service) TeamAddUser(ctx context.Context, TeamID string, UserID string,
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_user_add query error", zap.Error(err))
-		return "", err
+		return "", fmt.Errorf("team add user query error: %v", err)
 	}
 
 	return TeamID, nil
@@ -146,7 +142,7 @@ func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Of
 		TeamID,
 	).Scan(&userCount)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("team user list user count query error: %v", err)
 	}
 
 	if userCount == 0 {
@@ -185,8 +181,7 @@ func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Of
 			}
 		}
 	} else {
-		d.Logger.Ctx(ctx).Error("team_user_list query error", zap.Error(err))
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("team user list query error: %v", err)
 	}
 
 	return users, userCount, nil
@@ -201,8 +196,7 @@ func (d *Service) TeamRemoveUser(ctx context.Context, TeamID string, UserID stri
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_user_remove query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team remove user query error: %v", err)
 	}
 
 	return nil
@@ -253,8 +247,7 @@ func (d *Service) TeamAddPoker(ctx context.Context, TeamID string, PokerID strin
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_poker add query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team add poker query error: %v", err)
 	}
 
 	return nil
@@ -269,8 +262,7 @@ func (d *Service) TeamRemovePoker(ctx context.Context, TeamID string, PokerID st
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_poker remove query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team remove poker query error: %v", err)
 	}
 
 	return nil
@@ -284,8 +276,7 @@ func (d *Service) TeamDelete(ctx context.Context, TeamID string) error {
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_delete query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team delete query error: %v", err)
 	}
 
 	return nil
@@ -338,8 +329,7 @@ func (d *Service) TeamAddRetro(ctx context.Context, TeamID string, RetroID strin
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_retro_add query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team add retro query error: %v", err)
 	}
 
 	return nil
@@ -354,8 +344,7 @@ func (d *Service) TeamRemoveRetro(ctx context.Context, TeamID string, RetroID st
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_retro_remove query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team remove retro query error: %v", err)
 	}
 
 	return nil
@@ -406,8 +395,7 @@ func (d *Service) TeamAddStoryboard(ctx context.Context, TeamID string, Storyboa
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_storyboard_add query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team add storyboard query error: %v", err)
 	}
 
 	return nil
@@ -422,8 +410,7 @@ func (d *Service) TeamRemoveStoryboard(ctx context.Context, TeamID string, Story
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_storyboard_remove query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team remove storyboard query error: %v", err)
 	}
 
 	return nil

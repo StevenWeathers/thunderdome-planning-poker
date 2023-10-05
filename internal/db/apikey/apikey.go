@@ -3,7 +3,7 @@ package apikey
 import (
 	"context"
 	"database/sql"
-	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -25,16 +25,12 @@ type Service struct {
 func (d *Service) GenerateApiKey(ctx context.Context, UserID string, KeyName string) (*thunderdome.APIKey, error) {
 	apiPrefix, prefixErr := db.RandomString(8)
 	if prefixErr != nil {
-		err := errors.New("error generating api prefix")
-		d.Logger.Ctx(ctx).Error("error generating api prefix", zap.Error(prefixErr))
-		return nil, err
+		return nil, fmt.Errorf("error generating api prefix: %v", prefixErr)
 	}
 
 	apiSecret, secretErr := db.RandomString(32)
 	if secretErr != nil {
-		err := errors.New("error generating api secret")
-		d.Logger.Ctx(ctx).Error("error generating api secret", zap.Error(prefixErr))
-		return nil, err
+		return nil, fmt.Errorf("error generating api secret: %v", secretErr)
 	}
 
 	key := apiPrefix + "." + apiSecret
@@ -51,15 +47,14 @@ func (d *Service) GenerateApiKey(ctx context.Context, UserID string, KeyName str
 		CreatedDate: time.Now(),
 	}
 
-	e := d.DB.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.api_key (id, name, user_id) VALUES ($1, $2, $3) RETURNING created_date;`,
 		keyID,
 		KeyName,
 		UserID,
 	).Scan(&APIKEY.CreatedDate)
-	if e != nil {
-		d.Logger.Ctx(ctx).Error("user_apikey_add query error", zap.Error(e))
-		return nil, errors.New("unable to create new api key")
+	if err != nil {
+		return nil, fmt.Errorf("error creating api key: %v", err)
 	}
 
 	return APIKEY, nil
@@ -104,14 +99,12 @@ func (d *Service) UpdateUserApiKey(ctx context.Context, UserID string, KeyID str
 	if _, err := d.DB.ExecContext(ctx,
 		`UPDATE thunderdome.api_key SET active = $3, updated_date = NOW() WHERE id = $1 AND user_id = $2;`,
 		KeyID, UserID, Active); err != nil {
-		d.Logger.Ctx(ctx).Error("UpdateUserApiKey query error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("error updating api key: %v", err)
 	}
 
 	keys, keysErr := d.GetUserApiKeys(ctx, UserID)
 	if keysErr != nil {
-		d.Logger.Ctx(ctx).Error("GetUserApiKeys query error", zap.Error(keysErr))
-		return nil, keysErr
+		return nil, fmt.Errorf("error getting users api keys: %v", keysErr)
 	}
 
 	return keys, nil
@@ -122,14 +115,12 @@ func (d *Service) DeleteUserApiKey(ctx context.Context, UserID string, KeyID str
 	if _, err := d.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.api_key WHERE id = $1 AND user_id = $2;`,
 		KeyID, UserID); err != nil {
-		d.Logger.Ctx(ctx).Error("CALL thunderdome.user_apikey_delete error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("error deleting api key: %v", err)
 	}
 
 	keys, keysErr := d.GetUserApiKeys(ctx, UserID)
 	if keysErr != nil {
-		d.Logger.Ctx(ctx).Error("GetUserApiKeys query error", zap.Error(keysErr))
-		return nil, keysErr
+		return nil, fmt.Errorf("error getting users api keys: %v", keysErr)
 	}
 
 	return keys, nil
@@ -143,7 +134,7 @@ func (d *Service) GetApiKeyUser(ctx context.Context, APK string) (*thunderdome.U
 	hashedKey := db.HashString(APK)
 	keyID := splitKey[0] + "." + hashedKey
 
-	e := d.DB.QueryRowContext(ctx, `
+	err := d.DB.QueryRowContext(ctx, `
 		SELECT u.id, u.name, u.email, u.type, u.avatar, u.verified, u.notifications_enabled, COALESCE(u.country, ''), COALESCE(u.locale, ''), COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.created_date, u.updated_date, u.last_active 
 		FROM thunderdome.api_key ak
 		LEFT JOIN thunderdome.users u ON u.id = ak.user_id
@@ -165,9 +156,8 @@ func (d *Service) GetApiKeyUser(ctx context.Context, APK string) (*thunderdome.U
 		&User.CreatedDate,
 		&User.UpdatedDate,
 		&User.LastActive)
-	if e != nil {
-		d.Logger.Ctx(ctx).Error("GetApiKeyUser query error", zap.Error(e))
-		return nil, errors.New("active API Key match not found")
+	if err != nil {
+		return nil, fmt.Errorf("active API Key match not found: %v", err)
 	}
 
 	User.GravatarHash = db.CreateGravatarHash(User.Email)

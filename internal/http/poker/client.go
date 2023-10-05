@@ -79,11 +79,13 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		if forceClosed {
 			cm := websocket.FormatCloseMessage(4002, "abandoned")
 			if err := c.ws.WriteControl(websocket.CloseMessage, cm, time.Now().Add(writeWait)); err != nil {
-				b.logger.Ctx(ctx).Error("abandon error", zap.Error(err))
+				b.logger.Ctx(ctx).Error("abandon error", zap.Error(err),
+					zap.String("poker_id", BattleID), zap.String("session_user_id", UserID))
 			}
 		}
 		if err := c.ws.Close(); err != nil {
-			b.logger.Ctx(ctx).Error("close error", zap.Error(err))
+			b.logger.Ctx(ctx).Error("close error", zap.Error(err),
+				zap.String("poker_id", BattleID), zap.String("session_user_id", UserID))
 		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
@@ -99,7 +101,8 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		_, msg, err := c.ws.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
+				b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
+					zap.String("poker_id", BattleID), zap.String("session_user_id", UserID))
 			}
 			break
 		}
@@ -108,7 +111,8 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		err = json.Unmarshal(msg, &keyVal)
 		if err != nil {
 			badEvent = true
-			b.logger.Error("unexpected battle event json error", zap.Error(err))
+			b.logger.Error("unexpected battle event json error", zap.Error(err),
+				zap.String("poker_id", BattleID), zap.String("session_user_id", UserID))
 		}
 
 		eventType := keyVal["type"]
@@ -130,7 +134,9 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 				// don't log forceClosed events e.g. Abandon
 				if !forceClosed {
-					b.logger.Ctx(ctx).Error("close error", zap.Error(eventErr))
+					b.logger.Ctx(ctx).Error("close error", zap.Error(eventErr),
+						zap.String("poker_id", BattleID), zap.String("session_user_id", UserID),
+						zap.String("poker_event_type", eventType))
 				}
 			}
 		}
@@ -201,7 +207,8 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			b.logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err))
+			b.logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err),
+				zap.String("poker_id", battleID))
 			return
 		}
 		c := &connection{send: make(chan []byte, 256), ws: ws}
@@ -249,7 +256,8 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 			if usrErrMsg == "DUPLICATE_BATTLE_USER" {
 				b.handleSocketClose(ctx, ws, 4003, "duplicate session")
 			} else {
-				b.logger.Ctx(ctx).Error("error finding user", zap.Error(UserErr))
+				b.logger.Ctx(ctx).Error("error finding user", zap.Error(UserErr),
+					zap.String("poker_id", battleID), zap.String("session_user_id", User.Id))
 				b.handleSocketClose(ctx, ws, 4005, "internal error")
 			}
 			return
@@ -263,7 +271,8 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 				_, msg, err := c.ws.ReadMessage()
 				if err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-						b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
+						b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
+							zap.String("poker_id", battleID), zap.String("session_user_id", User.Id))
 					}
 					break
 				}
@@ -271,7 +280,8 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 				keyVal := make(map[string]string)
 				err = json.Unmarshal(msg, &keyVal)
 				if err != nil {
-					b.logger.Error("unexpected battle message error", zap.Error(err))
+					b.logger.Error("unexpected battle message error", zap.Error(err),
+						zap.String("poker_id", battleID), zap.String("session_user_id", User.Id))
 				}
 
 				if keyVal["type"] == "auth_battle" && keyVal["value"] == battle.JoinCode {

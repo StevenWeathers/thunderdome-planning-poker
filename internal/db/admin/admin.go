@@ -3,10 +3,10 @@ package admin
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
-	"go.uber.org/zap"
 )
 
 // Service represents a PostgreSQL implementation of thunderdome.AdminDataSvc.
@@ -72,8 +72,7 @@ func (d *Service) GetAppStats(ctx context.Context) (*thunderdome.ApplicationStat
 		&Appstats.StoryboardPersonaCount,
 	)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("unable to get application stats: %v", err)
 	}
 
 	return &Appstats, nil

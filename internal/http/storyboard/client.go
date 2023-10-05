@@ -71,11 +71,13 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		if forceClosed {
 			cm := websocket.FormatCloseMessage(4002, "abandoned")
 			if err := c.ws.WriteControl(websocket.CloseMessage, cm, time.Now().Add(writeWait)); err != nil {
-				b.Logger.Ctx(ctx).Error("abandon error", zap.Error(err))
+				b.Logger.Ctx(ctx).Error("abandon error", zap.Error(err),
+					zap.String("session_user_id", UserID), zap.String("storyboard_id", StoryboardID))
 			}
 		}
 		if err := c.ws.Close(); err != nil {
-			b.Logger.Ctx(ctx).Error("close error", zap.Error(err))
+			b.Logger.Ctx(ctx).Error("close error", zap.Error(err),
+				zap.String("session_user_id", UserID), zap.String("storyboard_id", StoryboardID))
 		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
@@ -91,7 +93,8 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		_, msg, err := c.ws.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				b.Logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
+				b.Logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
+					zap.String("session_user_id", UserID), zap.String("storyboard_id", StoryboardID))
 			}
 			break
 		}
@@ -100,7 +103,8 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		err = json.Unmarshal(msg, &keyVal)
 		if err != nil {
 			badEvent = true
-			b.Logger.Error("unexpected storyboard event json error", zap.Error(err))
+			b.Logger.Error("unexpected storyboard event json error", zap.Error(err),
+				zap.String("session_user_id", UserID), zap.String("storyboard_id", StoryboardID))
 		}
 
 		eventType := keyVal["type"]
@@ -122,7 +126,9 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 				// don't log forceClosed events e.g. Abandon
 				if !forceClosed {
-					b.Logger.Ctx(ctx).Error("unexpected close error", zap.Error(eventErr))
+					b.Logger.Ctx(ctx).Error("unexpected close error", zap.Error(eventErr),
+						zap.String("session_user_id", UserID), zap.String("storyboard_id", StoryboardID),
+						zap.String("storyboard_event_type", eventType))
 				}
 			}
 		}
@@ -193,7 +199,8 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			b.Logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err))
+			b.Logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err),
+				zap.String("storyboard_id", storyboardID))
 			return
 		}
 		c := &connection{send: make(chan []byte, 256), ws: ws}
@@ -241,7 +248,8 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			if usrErrMsg == "DUPLICATE_STORYBOARD_USER" {
 				b.handleSocketClose(ctx, ws, 4003, "duplicate session")
 			} else {
-				b.Logger.Ctx(ctx).Error("error finding user", zap.Error(UserErr))
+				b.Logger.Ctx(ctx).Error("error finding user", zap.Error(UserErr),
+					zap.String("storyboard_id", storyboardID), zap.String("session_user_id", User.Id))
 				b.handleSocketClose(ctx, ws, 4005, "internal error")
 			}
 			return
@@ -255,7 +263,8 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				_, msg, err := c.ws.ReadMessage()
 				if err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-						b.Logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
+						b.Logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
+							zap.String("storyboard_id", storyboardID), zap.String("session_user_id", User.Id))
 					}
 					break
 				}
@@ -263,7 +272,8 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				keyVal := make(map[string]string)
 				err = json.Unmarshal(msg, &keyVal)
 				if err != nil {
-					b.Logger.Error("unexpected storyboard message error", zap.Error(err))
+					b.Logger.Error("unexpected storyboard message error", zap.Error(err),
+						zap.String("storyboard_id", storyboardID), zap.String("session_user_id", User.Id))
 				}
 
 				if keyVal["type"] == "auth_storyboard" && keyVal["value"] == storyboard.JoinCode {

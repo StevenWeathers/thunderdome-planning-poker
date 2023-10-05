@@ -18,7 +18,7 @@ func (s *Service) FindInstancesByUserId(ctx context.Context, userId string) ([]t
 		userId,
 	)
 	if err != nil {
-		return instances, err
+		return instances, fmt.Errorf("find jira instance by user id query error: %v", err)
 	}
 	defer rows.Close()
 
@@ -28,7 +28,7 @@ func (s *Service) FindInstancesByUserId(ctx context.Context, userId string) ([]t
 			&instance.ID, &instance.UserID, &instance.Host, &instance.ClientMail, &instance.AccessToken,
 			&instance.CreatedDate, &instance.UpdatedDate,
 		); err != nil {
-			return instances, err
+			return instances, fmt.Errorf("find jira instance by user id row scan error: %v", err)
 		}
 		instance.AccessToken, err = db.Decrypt(instance.AccessToken, s.AESHashKey)
 		if err != nil {
@@ -113,14 +113,14 @@ func (s *Service) UpdateInstance(ctx context.Context, instanceId string, host st
 func (s *Service) DeleteInstance(ctx context.Context, instanceId string) error {
 	result, err := s.DB.ExecContext(ctx, `DELETE FROM thunderdome.jira_instance WHERE id = $1;`, instanceId)
 	if err != nil {
-		return err
+		return fmt.Errorf("delete jira instance query error: %v", err)
 	}
 	rows, err := result.RowsAffected()
 	if err != nil {
-		return err
+		return fmt.Errorf("delete jira instance rows error: %v", err)
 	}
 	if rows != 1 {
-		return fmt.Errorf("expected to affect 1 row, affected %d", rows)
+		return fmt.Errorf("delete jira instance expected to affect 1 row, affected %d", rows)
 	}
 
 	return nil
