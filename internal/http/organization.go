@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/gorilla/mux"
@@ -36,6 +38,7 @@ type orgTeamResponse struct {
 // @Router       /users/{userId}/organizations [get]
 func (s *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		if !s.Config.OrganizationsEnabled {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
@@ -45,7 +48,7 @@ func (s *Service) handleGetOrganizationsByUser() http.HandlerFunc {
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := s.OrganizationDataSvc.OrganizationListByUser(r.Context(), UserID, Limit, Offset)
+		Organizations := s.OrganizationDataSvc.OrganizationListByUser(ctx, UserID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Organizations, nil)
 	}
@@ -69,12 +72,16 @@ func (s *Service) handleGetOrganizationByUser() http.HandlerFunc {
 			return
 		}
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		OrgRole := ctx.Value(contextKeyOrgRole).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
 		Organization, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleGetOrganizationByUser error", zap.Error(err), zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_role", OrgRole))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -106,6 +113,8 @@ func (s *Service) handleCreateOrganization() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
@@ -122,8 +131,11 @@ func (s *Service) handleCreateOrganization() http.HandlerFunc {
 			return
 		}
 
-		Organization, err := s.OrganizationDataSvc.OrganizationCreate(r.Context(), UserID, team.Name)
+		Organization, err := s.OrganizationDataSvc.OrganizationCreate(ctx, UserID, team.Name)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCreateOrganization error", zap.Error(err), zap.String("entity_user_id", UserID),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_name", team.Name))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -148,11 +160,12 @@ func (s *Service) handleGetOrganizationTeams() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.OrganizationDataSvc.OrganizationTeamList(r.Context(), OrgID, Limit, Offset)
+		Teams := s.OrganizationDataSvc.OrganizationTeamList(ctx, OrgID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -174,11 +187,12 @@ func (s *Service) handleGetOrganizationUsers() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.OrganizationDataSvc.OrganizationUserList(r.Context(), OrgID, Limit, Offset)
+		Teams := s.OrganizationDataSvc.OrganizationUserList(ctx, OrgID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -202,6 +216,8 @@ func (s *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
@@ -218,7 +234,10 @@ func (s *Service) handleCreateOrganizationTeam() http.HandlerFunc {
 			return
 		}
 
-		NewTeam, err := s.OrganizationDataSvc.OrganizationTeamCreate(r.Context(), OrgID, team.Name)
+		NewTeam, err := s.OrganizationDataSvc.OrganizationTeamCreate(ctx, OrgID, team.Name)
+		s.Logger.Ctx(ctx).Error(
+			"handleCreateOrganizationTeam error", zap.Error(err), zap.String("organization_id", OrgID),
+			zap.String("session_user_id", SessionUserID), zap.String("team_name", team.Name))
 		if err != nil {
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
@@ -246,7 +265,8 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
-
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
@@ -265,14 +285,21 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := s.UserDataSvc.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleOrganizationAddUser error", zap.Error(UserErr), zap.String("user_email", UserEmail),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, err := s.OrganizationDataSvc.OrganizationAddUser(r.Context(), OrgID, User.Id, u.Role)
+		_, err := s.OrganizationDataSvc.OrganizationAddUser(ctx, OrgID, User.Id, u.Role)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleOrganizationAddUser error", zap.Error(err), zap.String("user_id", User.Id),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID),
+				zap.String("user_role", u.Role))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -299,6 +326,8 @@ func (s *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		UserID := vars["userId"]
@@ -308,8 +337,11 @@ func (s *Service) handleOrganizationRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := s.OrganizationDataSvc.OrganizationRemoveUser(r.Context(), OrgID, UserID)
+		err := s.OrganizationDataSvc.OrganizationRemoveUser(ctx, OrgID, UserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleOrganizationRemoveUser error", zap.Error(err), zap.String("user_id", UserID),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -340,18 +372,27 @@ func (s *Service) handleGetOrganizationTeamByUser() http.HandlerFunc {
 		ctx := r.Context()
 		OrgRole := ctx.Value(contextKeyOrgRole).(string)
 		TeamRole := ctx.Value(contextKeyTeamRole).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
 
-		Organization, err := s.OrganizationDataSvc.OrganizationGet(r.Context(), OrgID)
+		Organization, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleGetOrganizationTeamByUser error", zap.Error(err), zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_role", OrgRole),
+				zap.String("team_role", TeamRole), zap.String("team_id", TeamID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Team, err := s.TeamDataSvc.TeamGet(ctx, TeamID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleGetOrganizationTeamByUser error", zap.Error(err), zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_role", OrgRole),
+				zap.String("team_role", TeamRole), zap.String("team_id", TeamID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -388,6 +429,7 @@ func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 		}
 
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		TeamID := vars["teamId"]
@@ -409,18 +451,30 @@ func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 
 		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleOrganizationTeamAddUser error", zap.Error(UserErr), zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID), zap.String("team_role", u.Role),
+				zap.String("team_id", TeamID), zap.String("user_id", User.Id))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		OrgRole, roleErr := s.OrganizationDataSvc.OrganizationUserRole(r.Context(), User.Id, OrgID)
+		OrgRole, roleErr := s.OrganizationDataSvc.OrganizationUserRole(ctx, User.Id, OrgID)
 		if OrgRole == "" || roleErr != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleOrganizationTeamAddUser error", zap.Error(roleErr), zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_role", OrgRole),
+				zap.String("team_role", u.Role), zap.String("team_id", TeamID), zap.String("user_id", User.Id))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 			return
 		}
 
 		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleOrganizationTeamAddUser error", zap.Error(err), zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_role", OrgRole),
+				zap.String("team_role", u.Role), zap.String("team_id", TeamID), zap.String("user_id", User.Id))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -442,6 +496,8 @@ func (s *Service) handleOrganizationTeamAddUser() http.HandlerFunc {
 // @Router       /organizations/{orgId} [delete]
 func (s *Service) handleDeleteOrganization() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		idErr := validate.Var(OrgID, "required,uuid")
@@ -450,8 +506,11 @@ func (s *Service) handleDeleteOrganization() http.HandlerFunc {
 			return
 		}
 
-		err := s.OrganizationDataSvc.OrganizationDelete(r.Context(), OrgID)
+		err := s.OrganizationDataSvc.OrganizationDelete(ctx, OrgID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDeleteOrganization error", zap.Error(err), zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

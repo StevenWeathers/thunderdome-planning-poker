@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"go.uber.org/zap"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/gorilla/mux"
@@ -118,7 +120,7 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		UserType := ctx.Value(contextKeyUserType).(string)
 		EntityUserID := vars["userId"]
 		idErr := validate.Var(EntityUserID, "required,uuid")
@@ -127,13 +129,16 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if UserType != adminUserType && (EntityUserID != UserID) {
+		if UserType != adminUserType && (EntityUserID != SessionUserID) {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
 		EntityUser, EntityUserErr := s.UserDataSvc.GetUser(ctx, EntityUserID)
 		if EntityUserErr != nil {
+			s.Logger.Ctx(ctx).Error(
+				"verifiedUserOnly error", zap.Error(EntityUserErr), zap.String("entity_user_id", EntityUserID),
+				zap.String("session_user_id", SessionUserID), zap.String("session_user_type", UserType))
 			s.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
 			return
 		}
