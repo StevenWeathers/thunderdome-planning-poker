@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/atlassian/jira"
 
 	"github.com/gorilla/mux"
@@ -22,11 +24,16 @@ import (
 // @Router       /{userId}/jira-instances [get]
 func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		userId := vars["userId"]
 
-		instances, err := s.JiraDataSvc.FindInstancesByUserId(r.Context(), userId)
+		instances, err := s.JiraDataSvc.FindInstancesByUserId(ctx, userId)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleGetUserJiraInstances error", zap.Error(err), zap.String("entity_user_id", userId),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -54,6 +61,8 @@ type jiraInstanceRequestBody struct {
 // @Router       /{userId}/jira-instances [post]
 func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		userId := vars["userId"]
 
@@ -76,8 +85,11 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 			return
 		}
 
-		instance, err := s.JiraDataSvc.CreateInstance(r.Context(), userId, req.Host, req.ClientMail, req.AccessToken)
+		instance, err := s.JiraDataSvc.CreateInstance(ctx, userId, req.Host, req.ClientMail, req.AccessToken)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleJiraInstanceCreate error", zap.Error(err), zap.String("entity_user_id", userId),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -100,7 +112,10 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 // @Router       /{userId}/jira-instances/{instanceId} [put]
 func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
+		userId := vars["userId"]
 		instanceId := vars["instanceId"]
 
 		var req = jiraInstanceRequestBody{}
@@ -122,8 +137,11 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 			return
 		}
 
-		instance, err := s.JiraDataSvc.UpdateInstance(r.Context(), instanceId, req.Host, req.ClientMail, req.AccessToken)
+		instance, err := s.JiraDataSvc.UpdateInstance(ctx, instanceId, req.Host, req.ClientMail, req.AccessToken)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleJiraInstanceUpdate error", zap.Error(err), zap.String("entity_user_id", userId),
+				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -145,11 +163,17 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 // @Router       /{userId}/jira-instances/{instanceId} [delete]
 func (s *Service) handleJiraInstanceDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		instanceId := vars["instanceId"]
+		userId := vars["userId"]
 
-		err := s.JiraDataSvc.DeleteInstance(r.Context(), instanceId)
+		err := s.JiraDataSvc.DeleteInstance(ctx, instanceId)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleJiraInstanceDelete error", zap.Error(err), zap.String("entity_user_id", userId),
+				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -179,6 +203,9 @@ type jiraStoryJQLSearchRequestBody struct {
 func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		userId := vars["userId"]
 		instanceId := vars["instanceId"]
 
 		var req = jiraStoryJQLSearchRequestBody{}
@@ -199,9 +226,15 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 			return
 		}
+		fields := []string{"key", "summary", "priority", "issuetype", "description"}
 
-		instance, err := s.JiraDataSvc.GetInstanceById(r.Context(), instanceId)
+		instance, err := s.JiraDataSvc.GetInstanceById(ctx, instanceId)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userId),
+				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId),
+				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
+				zap.Any("jira_fields", fields))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -212,9 +245,13 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 			AccessToken:  instance.AccessToken,
 		}, s.Logger)
 
-		fields := []string{"key", "summary", "priority", "issuetype", "description"}
-		stories, err := jiraClient.StoriesJQLSearch(r.Context(), req.JQL, fields, req.StartAt, req.MaxResults)
+		stories, err := jiraClient.StoriesJQLSearch(ctx, req.JQL, fields, req.StartAt, req.MaxResults)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userId),
+				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId),
+				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
+				zap.Any("jira_fields", fields))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

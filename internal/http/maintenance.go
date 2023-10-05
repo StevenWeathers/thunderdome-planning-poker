@@ -2,6 +2,8 @@ package http
 
 import (
 	"net/http"
+
+	"go.uber.org/zap"
 )
 
 // handleCleanBattles handles cleaning up old battles (ADMIN Manually Triggered)
@@ -15,10 +17,14 @@ import (
 // @Router       /maintenance/clean-battles [delete]
 func (s *Service) handleCleanBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		DaysOld := s.Config.CleanupBattlesDaysOld
 
-		err := s.PokerDataSvc.PurgeOldGames(r.Context(), DaysOld)
+		err := s.PokerDataSvc.PurgeOldGames(ctx, DaysOld)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCleanBattles error", zap.Error(err), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -38,10 +44,14 @@ func (s *Service) handleCleanBattles() http.HandlerFunc {
 // @Router       /maintenance/clean-retros [delete]
 func (s *Service) handleCleanRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		DaysOld := s.Config.CleanupRetrosDaysOld
 
 		err := s.RetroDataSvc.CleanRetros(r.Context(), DaysOld)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCleanRetros error", zap.Error(err), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -61,10 +71,14 @@ func (s *Service) handleCleanRetros() http.HandlerFunc {
 // @Router       /maintenance/clean-storyboards [delete]
 func (s *Service) handleCleanStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		DaysOld := s.Config.CleanupStoryboardsDaysOld
 
 		err := s.StoryboardDataSvc.CleanStoryboards(r.Context(), DaysOld)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCleanStoryboards error", zap.Error(err), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -84,10 +98,14 @@ func (s *Service) handleCleanStoryboards() http.HandlerFunc {
 // @Router       /maintenance/clean-guests [delete]
 func (s *Service) handleCleanGuests() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		DaysOld := s.Config.CleanupGuestsDaysOld
 
 		err := s.UserDataSvc.CleanGuests(r.Context(), DaysOld)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCleanGuests error", zap.Error(err), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/checkin"
 
 	"github.com/gorilla/mux"
@@ -24,6 +26,8 @@ import (
 // @Router       /teams/{teamId}/checkins [get]
 func (s *Service) handleCheckinsGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		idErr := validate.Var(TeamID, "required,uuid")
@@ -43,8 +47,11 @@ func (s *Service) handleCheckinsGet() http.HandlerFunc {
 			tz = "America/New_York"
 		}
 
-		Checkins, err := s.CheckinDataSvc.CheckinList(r.Context(), TeamID, date, tz)
+		Checkins, err := s.CheckinDataSvc.CheckinList(ctx, TeamID, date, tz)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleCheckinsGet error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("checkins_date", date), zap.String("checkins_timezone", tz),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -76,6 +83,8 @@ type checkinCreateRequestBody struct {
 // @Router       /teams/{teamId}/checkins [post]
 func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -103,12 +112,14 @@ func (s *Service) handleCheckinCreate(tc *checkin.Service) http.HandlerFunc {
 			return
 		}
 
-		err := tc.APIEvent(r.Context(), TeamId, c.UserId, "checkin_create", string(body))
+		err := tc.APIEvent(ctx, TeamId, c.UserId, "checkin_create", string(body))
 		if err != nil {
 			if err.Error() == "REQUIRES_TEAM_USER" {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 				return
 			}
+			s.Logger.Ctx(ctx).Error("handleCheckinCreate error", zap.Error(err), zap.String("team_id", TeamId),
+				zap.String("entity_user_id", c.UserId), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -142,7 +153,7 @@ type checkinUpdateRequestBody struct {
 func (s *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		userId := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -177,8 +188,10 @@ func (s *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 			return
 		}
 
-		err := tc.APIEvent(ctx, TeamId, userId, "checkin_update", string(cu))
+		err := tc.APIEvent(ctx, TeamId, SessionUserID, "checkin_update", string(cu))
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleCheckinUpdate error", zap.Error(err), zap.String("team_id", TeamId),
+				zap.String("session_user_id", SessionUserID), zap.String("checkin_id", CheckinId))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -202,7 +215,7 @@ func (s *Service) handleCheckinUpdate(tc *checkin.Service) http.HandlerFunc {
 func (s *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		userId := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -229,8 +242,10 @@ func (s *Service) handleCheckinDelete(tc *checkin.Service) http.HandlerFunc {
 			return
 		}
 
-		err := tc.APIEvent(ctx, TeamId, userId, "checkin_delete", string(cu))
+		err := tc.APIEvent(ctx, TeamId, SessionUserID, "checkin_delete", string(cu))
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleCheckinDelete error", zap.Error(err), zap.String("team_id", TeamId),
+				zap.String("session_user_id", SessionUserID), zap.String("checkin_id", CheckinId))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -262,6 +277,7 @@ type checkinCommentRequestBody struct {
 func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -308,6 +324,9 @@ func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 				return
 			}
+			s.Logger.Ctx(ctx).Error("handleCheckinComment error", zap.Error(err), zap.String("team_id", TeamId),
+				zap.String("entity_user_id", c.UserID), zap.String("checkin_id", CheckinId),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -332,6 +351,7 @@ func (s *Service) handleCheckinComment(tc *checkin.Service) http.HandlerFunc {
 func (s *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamId := vars["teamId"]
 		idErr := validate.Var(TeamId, "required,uuid")
@@ -378,6 +398,9 @@ func (s *Service) handleCheckinCommentEdit(tc *checkin.Service) http.HandlerFunc
 				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
 				return
 			}
+			s.Logger.Ctx(ctx).Error("handleCheckinCommentEdit error", zap.Error(err), zap.String("team_id", TeamId),
+				zap.String("entity_user_id", c.UserID), zap.String("comment_id", CommentId),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -428,6 +451,8 @@ func (s *Service) handleCheckinCommentDelete(tc *checkin.Service) http.HandlerFu
 
 		err := tc.APIEvent(ctx, TeamId, userId, "comment_delete", string(cu))
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleCheckinCommentDelete error", zap.Error(err), zap.String("team_id", TeamId),
+				zap.String("session_user_id", userId), zap.String("comment_id", CommentId))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

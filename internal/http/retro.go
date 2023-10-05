@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"go.uber.org/zap"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -42,6 +44,7 @@ type retroCreateRequestBody struct {
 func (s *Service) handleRetroCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		TeamID, teamIdExists := vars["teamId"]
@@ -72,12 +75,15 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 
 		var newRetro *thunderdome.Retro
 		var err error
-		// if retro created with team association
 
+		// if retro created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
 				newRetro, err = s.RetroDataSvc.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 				if err != nil {
+					s.Logger.Ctx(ctx).Error("handleRetroCreate error", zap.Error(err), zap.String("entity_user_id", UserID),
+						zap.String("team_id", TeamID), zap.String("retro_name", nr.RetroName),
+						zap.String("session_user_id", SessionUserID))
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
@@ -88,6 +94,8 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 		} else {
 			newRetro, err = s.RetroDataSvc.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
 			if err != nil {
+				s.Logger.Ctx(ctx).Error("handleRetroCreate error", zap.Error(err), zap.String("entity_user_id", UserID),
+					zap.String("retro_name", nr.RetroName), zap.String("session_user_id", SessionUserID))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
@@ -112,9 +120,9 @@ func (s *Service) handleRetroGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
-		re, err := s.RetroDataSvc.RetroGet(RetroID, UserID)
+		re, err := s.RetroDataSvc.RetroGet(RetroID, SessionUserID)
 
 		if err != nil {
 			http.NotFound(w, r)
@@ -167,6 +175,8 @@ func (s *Service) handleRetrosGetByUser() http.HandlerFunc {
 // @Router       /retros [get]
 func (s *Service) handleGetRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		query := r.URL.Query()
 		var err error
@@ -181,6 +191,9 @@ func (s *Service) handleGetRetros() http.HandlerFunc {
 		}
 
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetRetros error", zap.Error(err),
+				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.Bool("retro_active", Active),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -216,6 +229,7 @@ type actionUpdateRequestBody struct {
 // @Router       /retros/{retroId}/actions/{actionId} [put]
 func (s *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		var ra = actionUpdateRequestBody{}
 
 		vars := mux.Vars(r)
@@ -226,7 +240,7 @@ func (s *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 			return
 		}
 		ActionID := vars["actionId"]
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -247,8 +261,11 @@ func (s *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 		}
 		updatedActionJson, _ := json.Marshal(ra)
 
-		err := rs.APIEvent(r.Context(), RetroID, UserID, "update_action", string(updatedActionJson))
+		err := rs.APIEvent(ctx, RetroID, SessionUserID, "update_action", string(updatedActionJson))
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRetroActionUpdate error", zap.Error(err),
+				zap.String("retro_id", RetroID), zap.String("session_user_id", SessionUserID),
+				zap.String("action_id", ActionID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -271,6 +288,7 @@ func (s *Service) handleRetroActionUpdate(rs *retro.Service) http.HandlerFunc {
 // @Router       /retros/{retroId}/actions/{actionId} [delete]
 func (s *Service) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
@@ -284,15 +302,18 @@ func (s *Service) handleRetroActionDelete(rs *retro.Service) http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		type actionItem struct {
 			ActionID string `json:"id"`
 		}
 		deleteItem, _ := json.Marshal(actionItem{ActionID: ActionID})
 
-		err := rs.APIEvent(r.Context(), RetroID, UserID, "delete_action", string(deleteItem))
+		err := rs.APIEvent(ctx, RetroID, SessionUserID, "delete_action", string(deleteItem))
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRetroActionDelete error", zap.Error(err),
+				zap.String("retro_id", RetroID), zap.String("session_user_id", SessionUserID),
+				zap.String("action_id", ActionID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -322,7 +343,7 @@ type actionAddAssigneeRequestBody struct {
 func (s *Service) handleRetroActionAssigneeAdd(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionAddAssigneeRequestBody{}
-
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
@@ -331,7 +352,7 @@ func (s *Service) handleRetroActionAssigneeAdd(rs *retro.Service) http.HandlerFu
 			return
 		}
 		ActionID := vars["actionId"]
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -352,8 +373,11 @@ func (s *Service) handleRetroActionAssigneeAdd(rs *retro.Service) http.HandlerFu
 		}
 		updatedActionJson, _ := json.Marshal(ra)
 
-		err := rs.APIEvent(r.Context(), RetroID, UserID, "action_assignee_add", string(updatedActionJson))
+		err := rs.APIEvent(ctx, RetroID, SessionUserID, "action_assignee_add", string(updatedActionJson))
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRetroActionAssigneeAdd error", zap.Error(err),
+				zap.String("retro_id", RetroID), zap.String("session_user_id", SessionUserID),
+				zap.String("action_id", ActionID), zap.String("action_user_id", ra.UserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -383,7 +407,7 @@ type actionRemoveAssigneeRequestBody struct {
 func (s *Service) handleRetroActionAssigneeRemove(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionRemoveAssigneeRequestBody{}
-
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
@@ -392,7 +416,7 @@ func (s *Service) handleRetroActionAssigneeRemove(rs *retro.Service) http.Handle
 			return
 		}
 		ActionID := vars["actionId"]
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -413,8 +437,11 @@ func (s *Service) handleRetroActionAssigneeRemove(rs *retro.Service) http.Handle
 		}
 		updatedActionJson, _ := json.Marshal(ra)
 
-		err := rs.APIEvent(r.Context(), RetroID, UserID, "action_assignee_remove", string(updatedActionJson))
+		err := rs.APIEvent(ctx, RetroID, SessionUserID, "action_assignee_remove", string(updatedActionJson))
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRetroActionAssigneeRemove error", zap.Error(err),
+				zap.String("retro_id", RetroID), zap.String("session_user_id", SessionUserID),
+				zap.String("action_id", ActionID), zap.String("action_user_id", ra.UserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -443,7 +470,7 @@ type actionCommentRequestBody struct {
 func (s *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
-
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
@@ -457,7 +484,7 @@ func (s *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -476,8 +503,11 @@ func (s *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 			return
 		}
 
-		action, err := s.RetroDataSvc.RetroActionCommentAdd(RetroID, ActionID, UserID, ra.Comment)
+		action, err := s.RetroDataSvc.RetroActionCommentAdd(RetroID, ActionID, SessionUserID, ra.Comment)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRetroActionCommentAdd error", zap.Error(err),
+				zap.String("retro_id", RetroID), zap.String("session_user_id", SessionUserID),
+				zap.String("action_id", ActionID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -503,7 +533,8 @@ func (s *Service) handleRetroActionCommentAdd() http.HandlerFunc {
 func (s *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ra = actionCommentRequestBody{}
-
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
@@ -543,6 +574,9 @@ func (s *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 
 		action, err := s.RetroDataSvc.RetroActionCommentEdit(RetroID, ActionID, CommentID, ra.Comment)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRetroActionCommentEdit error", zap.Error(err),
+				zap.String("retro_id", RetroID), zap.String("action_id", ActionID),
+				zap.String("comment_id", CommentID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -566,6 +600,8 @@ func (s *Service) handleRetroActionCommentEdit() http.HandlerFunc {
 // @Router       /retros/{retroId}/actions/{actionId}/comments/{commentId} [post]
 func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
@@ -588,6 +624,9 @@ func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 
 		action, err := s.RetroDataSvc.RetroActionCommentDelete(RetroID, ActionID, CommentID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRetroActionCommentDelete error", zap.Error(err),
+				zap.String("retro_id", RetroID), zap.String("action_id", ActionID),
+				zap.String("comment_id", CommentID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -609,6 +648,7 @@ func (s *Service) handleRetroActionCommentDelete() http.HandlerFunc {
 // @Router       /retros/{retroId} [delete]
 func (s *Service) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		RetroID := vars["retroId"]
 		idErr := validate.Var(RetroID, "required,uuid")
@@ -616,10 +656,12 @@ func (s *Service) handleRetroDelete(rs *retro.Service) http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		err := rs.APIEvent(r.Context(), RetroID, UserID, "concede_retro", "")
+		err := rs.APIEvent(ctx, RetroID, SessionUserID, "concede_retro", "")
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleRetroDelete error", zap.Error(err),
+				zap.String("retro_id", RetroID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

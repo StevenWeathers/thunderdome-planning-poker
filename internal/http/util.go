@@ -101,18 +101,8 @@ func (s *Service) Success(w http.ResponseWriter, r *http.Request, code int, data
 
 // Failure responds with an error and its associated status code header
 func (s *Service) Failure(w http.ResponseWriter, r *http.Request, code int, err error) {
-	ctx := r.Context()
 	// Extract error message.
-	errCode, errMessage := ErrorCode(err), ErrorMessage(err)
-
-	if errCode == EINTERNAL {
-		s.Logger.Ctx(ctx).Error(
-			"[http] error",
-			zap.String("method", r.Method),
-			zap.String("url_path", sanitizeUserInputForLogs(r.URL.Path)),
-			zap.Error(err),
-		)
-	}
+	_, errMessage := ErrorCode(err), ErrorMessage(err)
 
 	result := &standardJsonResponse{
 		Success: false,

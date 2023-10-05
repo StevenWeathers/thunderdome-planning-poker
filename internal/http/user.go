@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"go.uber.org/zap"
+
 	"github.com/anthonynsimon/bild/transform"
 	"github.com/ipsn/go-adorable"
 	"github.com/o1egl/govatar"
@@ -29,10 +31,12 @@ import (
 func (s *Service) handleSessionUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		User, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
+		User, UserErr := s.UserDataSvc.GetUser(ctx, SessionUserID)
 		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error("handleSessionUserProfile error", zap.Error(UserErr),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
@@ -54,11 +58,15 @@ func (s *Service) handleSessionUserProfile() http.HandlerFunc {
 // @Router       /users/{userId} [get]
 func (s *Service) handleUserProfile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, UserErr := s.UserDataSvc.GetUser(r.Context(), UserID)
+		User, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
 		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserProfile error", zap.Error(UserErr),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
@@ -94,6 +102,7 @@ type userprofileUpdateRequestBody struct {
 func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		SessionUserType := ctx.Value(contextKeyUserType).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
@@ -125,6 +134,8 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 			}
 			updateErr := s.UserDataSvc.UpdateUserAccount(ctx, UserID, profile.Name, profile.Email, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
 			if updateErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserProfileUpdate error", zap.Error(updateErr),
+					zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
 			}
@@ -140,6 +151,8 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 				updateErr = s.UserDataSvc.UpdateUserProfileLdap(ctx, UserID, profile.Avatar, profile.NotificationsEnabled, profile.Country, profile.Locale, profile.Company, profile.JobTitle, profile.Theme)
 			}
 			if updateErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserProfileUpdate error", zap.Error(updateErr),
+					zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, updateErr)
 				return
 			}
@@ -147,6 +160,8 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 
 		user, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
 		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserProfileUpdate error", zap.Error(UserErr),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
@@ -171,16 +186,20 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 		ctx := r.Context()
-		UserCookieID := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 
 		User, UserErr := s.UserDataSvc.GetUser(ctx, UserID)
 		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserDelete error", zap.Error(UserErr),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
 		updateErr := s.UserDataSvc.DeleteUser(ctx, UserID)
 		if updateErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserDelete error", zap.Error(updateErr),
+				zap.String("user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
@@ -191,7 +210,7 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 		}
 
 		// don't clear admins user cookies when deleting other users
-		if UserID == UserCookieID {
+		if UserID == SessionUserID {
 			s.Cookie.ClearUserCookies(w)
 		}
 
@@ -210,11 +229,15 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 // @Router       /users/{userId}/request-verify [post]
 func (s *Service) handleVerifyRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		User, VerifyId, err := s.AuthDataSvc.UserVerifyRequest(r.Context(), UserID)
+		User, VerifyId, err := s.AuthDataSvc.UserVerifyRequest(ctx, UserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleVerifyRequest error", zap.Error(err),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -234,9 +257,13 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 // @Router       /active-countries [get]
 func (s *Service) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		countries, err := s.UserDataSvc.GetActiveCountries(r.Context())
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		countries, err := s.UserDataSvc.GetActiveCountries(ctx)
 
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetActiveCountries error", zap.Error(err),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -251,6 +278,7 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 
 		Width, _ := strconv.Atoi(vars["width"])
 		UserID := vars["id"]
@@ -269,7 +297,9 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 			var err error
 			avatar, _, err = image.Decode(bytes.NewReader(adorable.PseudoRandom([]byte(UserID))))
 			if err != nil {
-				s.Logger.Ctx(ctx).Fatal(err.Error())
+				s.Logger.Ctx(ctx).Error(err.Error())
+				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
 		}
 
@@ -277,7 +307,8 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 		buffer := new(bytes.Buffer)
 
 		if err := png.Encode(buffer, img); err != nil {
-			s.Logger.Ctx(ctx).Error("unable to encode image.")
+			s.Logger.Ctx(ctx).Error("handleUserAvatar error", zap.Error(err), zap.String("entity_user_id", UserID),
+				zap.String("session_user_id", SessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -286,7 +317,8 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 		w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
 
 		if _, err := w.Write(buffer.Bytes()); err != nil {
-			s.Logger.Ctx(ctx).Error("unable to write image.")
+			s.Logger.Ctx(ctx).Error("handleUserAvatar error", zap.Error(err), zap.String("entity_user_id", UserID),
+				zap.String("session_user_id", SessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

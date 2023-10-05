@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"go.uber.org/zap"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/gorilla/mux"
@@ -28,12 +30,17 @@ type teamResponse struct {
 // @Router       /teams/{teamId} [get]
 func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		TeamRole := r.Context().Value(contextKeyTeamRole).(string)
 
-		Team, err := s.TeamDataSvc.TeamGet(r.Context(), TeamID)
+		Team, err := s.TeamDataSvc.TeamGet(ctx, TeamID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleGetTeamByUser error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("session_user_id", SessionUserID), zap.String("team_role", TeamRole))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -59,12 +66,13 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 // @Router       /users/{userId}/teams [get]
 func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.TeamDataSvc.TeamListByUser(r.Context(), UserID, Limit, Offset)
+		Teams := s.TeamDataSvc.TeamListByUser(ctx, UserID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -81,12 +89,16 @@ func (s *Service) handleGetTeamsByUser() http.HandlerFunc {
 // @Router       /teams/{teamId}/users [get]
 func (s *Service) handleGetTeamUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users, UserCount, err := s.TeamDataSvc.TeamUserList(r.Context(), TeamID, Limit, Offset)
+		Users, UserCount, err := s.TeamDataSvc.TeamUserList(ctx, TeamID, Limit, Offset)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetTeamUsers error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 		}
 
@@ -118,6 +130,8 @@ type teamCreateRequestBody struct {
 // @Router       /users/{userId}/teams [post]
 func (s *Service) handleCreateTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
@@ -139,8 +153,10 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 		}
 
-		NewTeam, err := s.TeamDataSvc.TeamCreate(r.Context(), UserID, team.Name)
+		NewTeam, err := s.TeamDataSvc.TeamCreate(ctx, UserID, team.Name)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleCreateTeam error", zap.Error(err), zap.String("entity_user_id", UserID),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -168,6 +184,8 @@ type teamAddUserRequestBody struct {
 // @Router       /teams/{teamId}/users [post]
 func (s *Service) handleTeamAddUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 
@@ -191,14 +209,19 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := s.UserDataSvc.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(UserErr),
+				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, err := s.TeamDataSvc.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
+		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("user_id", User.Id), zap.String("team_role", u.Role),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -221,6 +244,8 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 // @Router       /teams/{teamId}/users/{userId} [delete]
 func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		UserID := vars["userId"]
@@ -230,8 +255,10 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamDataSvc.TeamRemoveUser(r.Context(), TeamID, UserID)
+		err := s.TeamDataSvc.TeamRemoveUser(ctx, TeamID, UserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamRemoveUser error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -251,12 +278,13 @@ func (s *Service) handleTeamRemoveUser() http.HandlerFunc {
 // @Router       /teams/{teamId}/battles [get]
 func (s *Service) handleGetTeamBattles() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Battles := s.TeamDataSvc.TeamPokerList(r.Context(), TeamID, Limit, Offset)
+		Battles := s.TeamDataSvc.TeamPokerList(ctx, TeamID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Battles, nil)
 	}
@@ -276,6 +304,8 @@ func (s *Service) handleGetTeamBattles() http.HandlerFunc {
 // @Router       /teams/{teamId}/battles/{battleId} [delete]
 func (s *Service) handleTeamRemoveBattle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		BattleID := vars["battleId"]
@@ -285,8 +315,10 @@ func (s *Service) handleTeamRemoveBattle() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamDataSvc.TeamRemovePoker(r.Context(), TeamID, BattleID)
+		err := s.TeamDataSvc.TeamRemovePoker(ctx, TeamID, BattleID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamRemoveBattle error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("battle_id", BattleID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -308,6 +340,8 @@ func (s *Service) handleTeamRemoveBattle() http.HandlerFunc {
 // @Router       /teams/{teamId} [delete]
 func (s *Service) handleDeleteTeam() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		idErr := validate.Var(TeamID, "required,uuid")
@@ -316,8 +350,10 @@ func (s *Service) handleDeleteTeam() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamDataSvc.TeamDelete(r.Context(), TeamID)
+		err := s.TeamDataSvc.TeamDelete(ctx, TeamID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleDeleteTeam error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -337,11 +373,12 @@ func (s *Service) handleDeleteTeam() http.HandlerFunc {
 // @Router       /teams/{teamId}/retros [get]
 func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Retrospectives := s.TeamDataSvc.TeamRetroList(r.Context(), TeamID, Limit, Offset)
+		Retrospectives := s.TeamDataSvc.TeamRetroList(ctx, TeamID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Retrospectives, nil)
 	}
@@ -361,6 +398,8 @@ func (s *Service) handleGetTeamRetros() http.HandlerFunc {
 // @Router       /teams/{teamId}/retros/{retroId} [delete]
 func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		RetrospectiveID := vars["retroId"]
@@ -370,8 +409,10 @@ func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamDataSvc.TeamRemoveRetro(r.Context(), TeamID, RetrospectiveID)
+		err := s.TeamDataSvc.TeamRemoveRetro(ctx, TeamID, RetrospectiveID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamRemoveRetro error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("retro_id", RetrospectiveID), zap.String("session_user_id", SessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -389,11 +430,12 @@ func (s *Service) handleTeamRemoveRetro() http.HandlerFunc {
 // @Router       /teams/{teamId}/storyboards [get]
 func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Storyboards := s.TeamDataSvc.TeamStoryboardList(r.Context(), TeamID, Limit, Offset)
+		Storyboards := s.TeamDataSvc.TeamStoryboardList(ctx, TeamID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Storyboards, nil)
 	}
@@ -413,6 +455,8 @@ func (s *Service) handleGetTeamStoryboards() http.HandlerFunc {
 // @Router       /teams/{teamId}/storyboards/{storyboardId} [delete]
 func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		StoryboardID := vars["storyboardId"]
@@ -422,8 +466,10 @@ func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 			return
 		}
 
-		err := s.TeamDataSvc.TeamRemoveStoryboard(r.Context(), TeamID, StoryboardID)
+		err := s.TeamDataSvc.TeamRemoveStoryboard(ctx, TeamID, StoryboardID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamRemoveStoryboard error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("storyboard_id", StoryboardID), zap.String("session_user_id", SessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -444,6 +490,8 @@ func (s *Service) handleTeamRemoveStoryboard() http.HandlerFunc {
 // @Router       /teams/{teamId}/retro-actions [get]
 func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		TeamID := vars["teamId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
@@ -456,6 +504,8 @@ func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 		Actions, Count, err = s.RetroDataSvc.GetTeamRetroActions(TeamID, Limit, Offset, Completed)
 
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetTeamRetroActions error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

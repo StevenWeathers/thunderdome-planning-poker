@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/gorilla/mux"
@@ -41,11 +43,12 @@ func (s *Service) handleGetOrganizationDepartments() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Departments := s.OrganizationDataSvc.OrganizationDepartmentList(r.Context(), OrgID, Limit, Offset)
+		Departments := s.OrganizationDataSvc.OrganizationDepartmentList(ctx, OrgID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Departments, nil)
 	}
@@ -71,18 +74,27 @@ func (s *Service) handleGetDepartmentByUser() http.HandlerFunc {
 		ctx := r.Context()
 		OrgRole := ctx.Value(contextKeyOrgRole).(string)
 		DepartmentRole := ctx.Value(contextKeyDepartmentRole).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 
 		Organization, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleGetDepartmentByUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("organization_role", OrgRole), zap.String("department_role", DepartmentRole))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Department, err := s.OrganizationDataSvc.DepartmentGet(ctx, DepartmentID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleGetDepartmentByUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("organization_role", OrgRole), zap.String("department_role", DepartmentRole))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -115,6 +127,8 @@ func (s *Service) handleCreateDepartment() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 
@@ -133,6 +147,9 @@ func (s *Service) handleCreateDepartment() http.HandlerFunc {
 
 		NewDepartment, err := s.OrganizationDataSvc.DepartmentCreate(r.Context(), OrgID, team.Name)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCreateDepartment error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_name", team.Name))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -157,11 +174,12 @@ func (s *Service) handleGetDepartmentTeams() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.OrganizationDataSvc.DepartmentTeamList(r.Context(), DepartmentID, Limit, Offset)
+		Teams := s.OrganizationDataSvc.DepartmentTeamList(ctx, DepartmentID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -183,11 +201,12 @@ func (s *Service) handleGetDepartmentUsers() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		DepartmentID := vars["departmentId"]
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users := s.OrganizationDataSvc.DepartmentUserList(r.Context(), DepartmentID, Limit, Offset)
+		Users := s.OrganizationDataSvc.DepartmentUserList(ctx, DepartmentID, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Users, nil)
 	}
@@ -211,7 +230,10 @@ func (s *Service) handleCreateDepartmentTeam() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 
 		var team = teamCreateRequestBody{}
@@ -227,8 +249,12 @@ func (s *Service) handleCreateDepartmentTeam() http.HandlerFunc {
 			return
 		}
 
-		NewTeam, err := s.OrganizationDataSvc.DepartmentTeamCreate(r.Context(), DepartmentID, team.Name)
+		NewTeam, err := s.OrganizationDataSvc.DepartmentTeamCreate(ctx, DepartmentID, team.Name)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCreateDepartmentTeam error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("team_name", team.Name))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -255,8 +281,10 @@ func (s *Service) handleDepartmentAddUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
-
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
 		DepartmentId := vars["departmentId"]
 
 		var u = teamAddUserRequestBody{}
@@ -274,14 +302,22 @@ func (s *Service) handleDepartmentAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := s.UserDataSvc.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentAddUser error", zap.Error(UserErr), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentId),
+				zap.String("user_email", UserEmail))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, err := s.OrganizationDataSvc.DepartmentAddUser(r.Context(), DepartmentId, User.Id, u.Role)
+		_, err := s.OrganizationDataSvc.DepartmentAddUser(ctx, DepartmentId, User.Id, u.Role)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentAddUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentId),
+				zap.String("user_id", User.Id), zap.String("user_role", u.Role))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -308,7 +344,10 @@ func (s *Service) handleDepartmentRemoveUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 		UserID := vars["userId"]
 		idErr := validate.Var(UserID, "required,uuid")
@@ -317,8 +356,12 @@ func (s *Service) handleDepartmentRemoveUser() http.HandlerFunc {
 			return
 		}
 
-		err := s.OrganizationDataSvc.DepartmentRemoveUser(r.Context(), DepartmentID, UserID)
+		err := s.OrganizationDataSvc.DepartmentRemoveUser(ctx, DepartmentID, UserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentRemoveUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("user_id", UserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -346,7 +389,8 @@ func (s *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
-
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
 		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
@@ -367,20 +411,32 @@ func (s *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 
 		UserEmail := u.Email
 
-		User, UserErr := s.UserDataSvc.GetUserByEmail(r.Context(), UserEmail)
+		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentTeamAddUser error", zap.Error(UserErr), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("team_id", TeamID), zap.String("user_email", UserEmail))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 			return
 		}
 
-		_, DepartmentRole, roleErr := s.OrganizationDataSvc.DepartmentUserRole(r.Context(), User.Id, OrgID, DepartmentID)
+		_, DepartmentRole, roleErr := s.OrganizationDataSvc.DepartmentUserRole(ctx, User.Id, OrgID, DepartmentID)
 		if DepartmentRole == "" || roleErr != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentTeamAddUser error", zap.Error(roleErr), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("team_id", TeamID), zap.String("user_id", User.Id))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "DEPARTMENT_USER_REQUIRED"))
 			return
 		}
 
-		_, err := s.TeamDataSvc.TeamAddUser(r.Context(), TeamID, User.Id, u.Role)
+		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentTeamAddUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("team_id", TeamID), zap.String("user_id", User.Id))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -408,6 +464,7 @@ func (s *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 			return
 		}
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		OrgRole := ctx.Value(contextKeyOrgRole).(string)
 		DepartmentRole := ctx.Value(contextKeyDepartmentRole).(string)
 		TeamRole := ctx.Value(contextKeyTeamRole).(string)
@@ -416,20 +473,32 @@ func (s *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		TeamID := vars["teamId"]
 
-		Organization, err := s.OrganizationDataSvc.OrganizationGet(r.Context(), OrgID)
+		Organization, err := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentTeamByUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("team_id", TeamID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		Department, err := s.OrganizationDataSvc.DepartmentGet(r.Context(), DepartmentID)
+		Department, err := s.OrganizationDataSvc.DepartmentGet(ctx, DepartmentID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentTeamByUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("team_id", TeamID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		Team, err := s.TeamDataSvc.TeamGet(ctx, TeamID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentTeamByUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
+				zap.String("team_id", TeamID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -460,7 +529,10 @@ func (s *Service) handleDepartmentTeamByUser() http.HandlerFunc {
 // @Router       /organizations/{orgId}/departments/{departmentId} [delete]
 func (s *Service) handleDeleteDepartment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
 		DepartmentID := vars["departmentId"]
 		idErr := validate.Var(DepartmentID, "required,uuid")
 		if idErr != nil {
@@ -468,8 +540,11 @@ func (s *Service) handleDeleteDepartment() http.HandlerFunc {
 			return
 		}
 
-		err := s.OrganizationDataSvc.DepartmentDelete(r.Context(), DepartmentID)
+		err := s.OrganizationDataSvc.DepartmentDelete(ctx, DepartmentID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDeleteDepartment error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
