@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
@@ -29,7 +30,7 @@ func (d *Service) CreateStoryboard(ctx context.Context, OwnerID string, Storyboa
 	if JoinCode != "" {
 		EncryptedCode, codeErr := db.Encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, codeErr
+			return nil, fmt.Errorf("create storyboard encrypt join_code error: %v", codeErr)
 		}
 		encryptedJoinCode = EncryptedCode
 	}
@@ -37,7 +38,7 @@ func (d *Service) CreateStoryboard(ctx context.Context, OwnerID string, Storyboa
 	if FacilitatorCode != "" {
 		EncryptedCode, codeErr := db.Encrypt(FacilitatorCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, codeErr
+			return nil, fmt.Errorf("create storyboard encrypt facilitator_code error: %v", codeErr)
 		}
 		encryptedFacilitatorCode = EncryptedCode
 	}
@@ -49,16 +50,15 @@ func (d *Service) CreateStoryboard(ctx context.Context, OwnerID string, Storyboa
 		Users:   make([]*thunderdome.StoryboardUser, 0),
 	}
 
-	e := d.DB.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		`SELECT * FROM thunderdome.sb_create($1, $2, $3, $4, null);`,
 		OwnerID,
 		StoryboardName,
 		encryptedJoinCode,
 		encryptedFacilitatorCode,
 	).Scan(&b.Id)
-	if e != nil {
-		d.Logger.Error("sb_create query error", zap.Error(e))
-		return nil, errors.New("error creating storyboard")
+	if err != nil {
+		return nil, fmt.Errorf("create storyboard query error: %v", err)
 	}
 
 	return b, nil
@@ -72,7 +72,7 @@ func (d *Service) TeamCreateStoryboard(ctx context.Context, TeamID string, Owner
 	if JoinCode != "" {
 		EncryptedCode, codeErr := db.Encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, codeErr
+			return nil, fmt.Errorf("team create storyboard encrypt join_code error: %v", codeErr)
 		}
 		encryptedJoinCode = EncryptedCode
 	}
@@ -80,7 +80,7 @@ func (d *Service) TeamCreateStoryboard(ctx context.Context, TeamID string, Owner
 	if FacilitatorCode != "" {
 		EncryptedCode, codeErr := db.Encrypt(FacilitatorCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, codeErr
+			return nil, fmt.Errorf("team create storyboard encrypt facilitator_code error: %v", codeErr)
 		}
 		encryptedFacilitatorCode = EncryptedCode
 	}
@@ -92,7 +92,7 @@ func (d *Service) TeamCreateStoryboard(ctx context.Context, TeamID string, Owner
 		Users:   make([]*thunderdome.StoryboardUser, 0),
 	}
 
-	e := d.DB.QueryRowContext(ctx,
+	err := d.DB.QueryRowContext(ctx,
 		`SELECT * FROM thunderdome.sb_create($1, $2, $3, $4, $5);`,
 		OwnerID,
 		StoryboardName,
@@ -100,9 +100,8 @@ func (d *Service) TeamCreateStoryboard(ctx context.Context, TeamID string, Owner
 		encryptedFacilitatorCode,
 		TeamID,
 	).Scan(&b.Id)
-	if e != nil {
-		d.Logger.Error("team_create_storyboard query error", zap.Error(e))
-		return nil, errors.New("error creating storyboard")
+	if err != nil {
+		return nil, fmt.Errorf("create storyboard query error: %v", err)
 	}
 
 	return b, nil
@@ -116,15 +115,15 @@ func (d *Service) EditStoryboard(StoryboardID string, StoryboardName string, Joi
 	if JoinCode != "" {
 		EncryptedCode, codeErr := db.Encrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
-			return errors.New("unable to revise storyboard join_code")
+			return fmt.Errorf("edit storyboard encrypt join_code error: %v", codeErr)
 		}
 		encryptedJoinCode = EncryptedCode
 	}
 
-	if JoinCode != "" {
+	if FacilitatorCode != "" {
 		EncryptedCode, codeErr := db.Encrypt(FacilitatorCode, d.AESHashKey)
 		if codeErr != nil {
-			return errors.New("unable to revise storyboard facilitator_code")
+			return fmt.Errorf("edit storyboard encrypt facilitator_code error: %v", codeErr)
 		}
 		encryptedFacilitatorCode = EncryptedCode
 	}
@@ -134,8 +133,7 @@ func (d *Service) EditStoryboard(StoryboardID string, StoryboardName string, Joi
         WHERE id = $1;`,
 		StoryboardID, StoryboardName, encryptedJoinCode, encryptedFacilitatorCode,
 	); err != nil {
-		d.Logger.Error("update storyboard error", zap.Error(err))
-		return errors.New("unable to edit storyboard")
+		return fmt.Errorf("edit storyboard query error: %v", err)
 	}
 
 	return nil
@@ -180,8 +178,7 @@ func (d *Service) GetStoryboard(StoryboardID string, UserID string) (*thunderdom
 		&facilitators,
 	)
 	if e != nil {
-		d.Logger.Error("get storyboard query error", zap.Error(e))
-		return nil, errors.New("Not found")
+		return nil, fmt.Errorf("get storyboard query error: %v", e)
 	}
 
 	clErr := json.Unmarshal([]byte(cl), &b.ColorLegend)
@@ -202,7 +199,7 @@ func (d *Service) GetStoryboard(StoryboardID string, UserID string) (*thunderdom
 	if JoinCode != "" {
 		DecryptedCode, codeErr := db.Decrypt(JoinCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, errors.New("unable to decode join_code")
+			return nil, fmt.Errorf("get storyboard encrypt join_code error: %v", codeErr)
 		}
 		b.JoinCode = DecryptedCode
 	}
@@ -210,7 +207,7 @@ func (d *Service) GetStoryboard(StoryboardID string, UserID string) (*thunderdom
 	if FacilitatorCode != "" && isFacilitator {
 		DecryptedCode, codeErr := db.Decrypt(FacilitatorCode, d.AESHashKey)
 		if codeErr != nil {
-			return nil, errors.New("unable to decode facilitator_code")
+			return nil, fmt.Errorf("get storyboard decrypt facilitator_code error: %v", codeErr)
 		}
 		b.FacilitatorCode = DecryptedCode
 	}
@@ -228,7 +225,7 @@ func (d *Service) GetStoryboardsByUser(UserID string) ([]*thunderdome.Storyboard
 		GROUP BY b.id ORDER BY b.created_date DESC;
 	`, UserID)
 	if storyboardsErr != nil {
-		return nil, 0, errors.New("Not found")
+		return nil, 0, fmt.Errorf("get storyboards by user query error: %v", storyboardsErr)
 	}
 
 	defer storyboardRows.Close()
@@ -261,16 +258,14 @@ func (d *Service) ConfirmStoryboardFacilitator(StoryboardID string, UserID strin
 	var role string
 	err := d.DB.QueryRow("SELECT type FROM thunderdome.users WHERE id = $1", UserID).Scan(&role)
 	if err != nil {
-		d.Logger.Error("error getting user role", zap.Error(err))
-		return errors.New("unable to get user role")
+		return fmt.Errorf("confirm storyboard facilitator user role query error:%v", err)
 	}
 
 	err = d.DB.QueryRow(
 		`SELECT user_id FROM thunderdome.storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
 		StoryboardID, UserID).Scan(&facilitatorId)
 	if err != nil && role != "ADMIN" {
-		d.Logger.Error("get ConfirmStoryboardFacilitator error", zap.Error(err))
-		return errors.New("storyboard facilitator not found")
+		return fmt.Errorf("confirm storyboard facilitator query error:%v", err)
 	}
 
 	return nil
@@ -381,7 +376,7 @@ func (d *Service) GetStoryboardUserActiveStatus(StoryboardID string, UserID stri
 		&active,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("get storyboard user active status query error: %v", err)
 	}
 
 	if active {
@@ -395,14 +390,12 @@ func (d *Service) GetStoryboardUserActiveStatus(StoryboardID string, UserID stri
 func (d *Service) AbandonStoryboard(StoryboardID string, UserID string) ([]*thunderdome.StoryboardUser, error) {
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.storyboard_user SET active = false, abandoned = true WHERE storyboard_id = $1 AND user_id = $2`, StoryboardID, UserID); err != nil {
-		d.Logger.Error("set storyboard user active false error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("set storyboard user active false error: %v", err)
 	}
 
 	if _, err := d.DB.Exec(
 		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1`, UserID); err != nil {
-		d.Logger.Error("set user last active error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("set user last active error: %v", err)
 	}
 
 	users := d.GetStoryboardUsers(StoryboardID)
@@ -417,13 +410,12 @@ func (d *Service) StoryboardReviseColorLegend(StoryboardID string, UserID string
 		StoryboardID,
 		ColorLegend,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.revise_color_legend error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("storyboard revise color legend query error: %v", err)
 	}
 
 	storyboard, err := d.GetStoryboard(StoryboardID, "")
 	if err != nil {
-		return nil, errors.New("Unable to promote owner")
+		return nil, fmt.Errorf("storyboard revise color legend get storyboards query error: %v", err)
 	}
 
 	return storyboard, nil
@@ -433,8 +425,7 @@ func (d *Service) StoryboardReviseColorLegend(StoryboardID string, UserID string
 func (d *Service) DeleteStoryboard(StoryboardID string, userID string) error {
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.storyboard WHERE id = $1;`, StoryboardID); err != nil {
-		d.Logger.Error("CALL thunderdome.delete_storyboard error", zap.Error(err))
-		return err
+		return fmt.Errorf("storyboard delete query error: %v", err)
 	}
 
 	return nil
@@ -499,7 +490,7 @@ func (d *Service) GetStoryboards(Limit int, Offset int) ([]*thunderdome.Storyboa
 		&Count,
 	)
 	if e != nil {
-		return nil, Count, e
+		return nil, Count, fmt.Errorf("get storyboards count query error: %v", e)
 	}
 
 	rows, storyboardErr := d.DB.Query(`
@@ -509,7 +500,7 @@ func (d *Service) GetStoryboards(Limit int, Offset int) ([]*thunderdome.Storyboa
 		LIMIT $1 OFFSET $2;
 	`, Limit, Offset)
 	if storyboardErr != nil {
-		return nil, Count, storyboardErr
+		return nil, Count, fmt.Errorf("get storyboards query error: %v", storyboardErr)
 	}
 
 	defer rows.Close()
@@ -543,7 +534,7 @@ func (d *Service) GetActiveStoryboards(Limit int, Offset int) ([]*thunderdome.St
 		&Count,
 	)
 	if e != nil {
-		return nil, Count, e
+		return nil, Count, fmt.Errorf("get active storyboards count query error: %v", e)
 	}
 
 	rows, err := d.DB.Query(`
@@ -554,7 +545,7 @@ func (d *Service) GetActiveStoryboards(Limit int, Offset int) ([]*thunderdome.St
 		LIMIT $1 OFFSET $2;
 	`, Limit, Offset)
 	if err != nil {
-		return nil, Count, err
+		return nil, Count, fmt.Errorf("get active storyboards query error: %v", err)
 	}
 
 	defer rows.Close()
@@ -582,13 +573,12 @@ func (d *Service) StoryboardFacilitatorAdd(StoryboardId string, UserID string) (
 	if _, err := d.DB.Exec(
 		`INSERT INTO thunderdome.storyboard_facilitator (storyboard_id, user_id) VALUES ($1, $2);`,
 		StoryboardId, UserID); err != nil {
-		d.Logger.Error("CALL thunderdome.sb_facilitator_add error", zap.Error(err))
-		return nil, errors.New("unable to add facilitator")
+		return nil, fmt.Errorf("storyboard add faciliator query error: %v", err)
 	}
 
 	storyboard, err := d.GetStoryboard(StoryboardId, "")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("storyboard add facilitator get storyboard error: %v", err)
 	}
 
 	return storyboard, nil
@@ -599,13 +589,12 @@ func (d *Service) StoryboardFacilitatorRemove(StoryboardId string, UserID string
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
 		StoryboardId, UserID); err != nil {
-		d.Logger.Error("CALL thunderdome.sb_facilitator_remove error", zap.Error(err))
-		return nil, errors.New("unable to remove facilitator")
+		return nil, fmt.Errorf("storyboard remove facilitator query error: %v", err)
 	}
 
 	storyboard, err := d.GetStoryboard(StoryboardId, "")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("storyboard remove facilitator get storyboard error: %v", err)
 	}
 
 	return storyboard, nil
@@ -620,16 +609,15 @@ func (d *Service) GetStoryboardFacilitatorCode(StoryboardID string) (string, err
 		WHERE id = $1`,
 		StoryboardID,
 	).Scan(&EncryptedCode); err != nil {
-		d.Logger.Error("get retro facilitator_code error", zap.Error(err))
-		return "", errors.New("unable to retrieve storyboard facilitator_code")
+		return "", fmt.Errorf("get storyboard facilitator_code query error: %v", err)
 	}
 
 	if EncryptedCode == "" {
-		return "", errors.New("unable to retrieve storyboard facilitator_code")
+		return "", fmt.Errorf("storyboard facilitator_code not set")
 	}
 	DecryptedCode, codeErr := db.Decrypt(EncryptedCode, d.AESHashKey)
 	if codeErr != nil {
-		return "", errors.New("unable to retrieve storyboard facilitator_code")
+		return "", fmt.Errorf("get storyboard facilitator_code decrypt error: %v", codeErr)
 	}
 
 	return DecryptedCode, nil
@@ -641,8 +629,7 @@ func (d *Service) CleanStoryboards(ctx context.Context, DaysOld int) error {
 		`DELETE FROM thunderdome.storyboard WHERE updated_date < (NOW() - $1 * interval '1 day');`,
 		DaysOld,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("CALL thunderdome.clean_storyboards", zap.Error(err))
-		return errors.New("error attempting to clean storyboards")
+		return fmt.Errorf("clean storyboards query error: %v", err)
 	}
 
 	return nil
