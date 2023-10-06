@@ -230,14 +230,14 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 func (s *Service) handleVerifyRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
 		User, VerifyId, err := s.AuthDataSvc.UserVerifyRequest(ctx, UserID)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleVerifyRequest error", zap.Error(err),
-				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
+				zap.String("entity_user_id", UserID), zap.Stringp("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -258,12 +258,12 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 func (s *Service) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(*string)
 		countries, err := s.UserDataSvc.GetActiveCountries(ctx)
 
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetActiveCountries error", zap.Error(err),
-				zap.String("session_user_id", SessionUserID))
+				zap.Stringp("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -278,7 +278,7 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(*string)
 
 		Width, _ := strconv.Atoi(vars["width"])
 		UserID := vars["id"]
@@ -308,7 +308,7 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 
 		if err := png.Encode(buffer, img); err != nil {
 			s.Logger.Ctx(ctx).Error("handleUserAvatar error", zap.Error(err), zap.String("entity_user_id", UserID),
-				zap.String("session_user_id", SessionUserID))
+				zap.Stringp("session_user_id", SessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -318,7 +318,7 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 
 		if _, err := w.Write(buffer.Bytes()); err != nil {
 			s.Logger.Ctx(ctx).Error("handleUserAvatar error", zap.Error(err), zap.String("entity_user_id", UserID),
-				zap.String("session_user_id", SessionUserID))
+				zap.Stringp("session_user_id", SessionUserID))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
