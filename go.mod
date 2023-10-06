@@ -1,6 +1,6 @@
 module github.com/StevenWeathers/thunderdome-planning-poker
 
-go 1.16
+go 1.21
 
 require (
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
