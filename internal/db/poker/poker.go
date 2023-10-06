@@ -416,7 +416,7 @@ func (d *Service) ConfirmFacilitator(PokerID string, UserID string) error {
 func (d *Service) GetUserActiveStatus(PokerID string, UserID string) error {
 	var active bool
 
-	e := d.DB.QueryRow(`
+	err := d.DB.QueryRow(`
 		SELECT coalesce(active, FALSE)
 		FROM thunderdome.poker_user
 		WHERE user_id = $2 AND poker_id = $1;`,
@@ -425,8 +425,10 @@ func (d *Service) GetUserActiveStatus(PokerID string, UserID string) error {
 	).Scan(
 		&active,
 	)
-	if e != nil {
-		return fmt.Errorf("poker get user active status query error: %v", e)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return fmt.Errorf("poker get user active status query error: %v", err)
+	} else if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return err
 	}
 
 	if active {

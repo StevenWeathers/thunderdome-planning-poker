@@ -461,8 +461,10 @@ func (d *Service) GetRetroUserActiveStatus(RetroID string, UserID string) error 
 	).Scan(
 		&active,
 	)
-	if err != nil {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return fmt.Errorf("get retro user active status query error: %v", err)
+	} else if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return err
 	}
 
 	if active {
