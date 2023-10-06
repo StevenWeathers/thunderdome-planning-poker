@@ -1,8 +1,8 @@
 package retro
 
 import (
-	"database/sql"
 	"encoding/json"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
@@ -112,7 +112,7 @@ func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Comp
 		&Count,
 	)
 	if e != nil {
-		return nil, Count, e
+		return nil, Count, fmt.Errorf("get team retro actions count query error: %v", e)
 	}
 
 	actionRows, err := d.DB.Query(
@@ -135,7 +135,7 @@ func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Comp
 		Limit,
 		Offset,
 	)
-	if err == nil && err != sql.ErrNoRows {
+	if err == nil {
 		defer actionRows.Close()
 		for actionRows.Next() {
 			var ri = &thunderdome.RetroAction{
@@ -166,8 +166,7 @@ func (d *Service) GetTeamRetroActions(TeamID string, Limit int, Offset int, Comp
 			}
 		}
 	} else {
-		d.Logger.Error("get retro actions error", zap.Error(err))
-		return actions, Count, err
+		return actions, Count, fmt.Errorf("get retro actions error: %v", err)
 	}
 
 	return actions, Count, nil

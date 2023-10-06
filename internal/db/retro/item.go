@@ -2,6 +2,7 @@ package retro
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
@@ -17,8 +18,7 @@ func (d *Service) CreateRetroItem(RetroID string, UserID string, ItemType string
 		RetroID,
 	).Scan(&groupId)
 	if err != nil {
-		d.Logger.Error("insert retro group error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("insert retro group error: %v", err)
 	}
 
 	if _, err := d.DB.Exec(
