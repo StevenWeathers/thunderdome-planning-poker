@@ -35,7 +35,7 @@ type alertRequestBody struct {
 func (s *Service) handleGetAlerts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(*string)
+		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		Alerts, Count, err := s.AlertDataSvc.AlertsList(ctx, Limit, Offset)
 		if err != nil {

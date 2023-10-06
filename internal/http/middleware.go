@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -11,6 +12,19 @@ import (
 
 	"github.com/gorilla/mux"
 )
+
+func (s *Service) panicRecovery(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				s.Logger.Error(fmt.Sprintf("http handler recovering from panic error: %v", err))
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		}()
+
+		h.ServeHTTP(w, r)
+	})
+}
 
 // userOnly validates that the request was made by a valid user
 func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {

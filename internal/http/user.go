@@ -230,7 +230,7 @@ func (s *Service) handleUserDelete() http.HandlerFunc {
 func (s *Service) handleVerifyRequest() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(*string)
+		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
@@ -258,7 +258,7 @@ func (s *Service) handleVerifyRequest() http.HandlerFunc {
 func (s *Service) handleGetActiveCountries() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(*string)
+		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 		countries, err := s.UserDataSvc.GetActiveCountries(ctx)
 
 		if err != nil {
@@ -278,7 +278,7 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
-		SessionUserID := ctx.Value(contextKeyUserID).(*string)
+		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
 
 		Width, _ := strconv.Atoi(vars["width"])
 		UserID := vars["id"]
