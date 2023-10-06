@@ -39,6 +39,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	staticHandler := http.FileServer(HFS)
 	var a = &apiService
 	a.Router = mux.NewRouter()
+	a.Router.Use(a.panicRecovery)
 
 	if apiService.Config.PathPrefix != "" {
 		a.Router = a.Router.PathPrefix(apiService.Config.PathPrefix).Subrouter()
