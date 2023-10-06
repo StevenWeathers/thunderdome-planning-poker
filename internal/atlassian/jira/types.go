@@ -3,7 +3,6 @@ package jira
 import (
 	jira "github.com/ctreminiom/go-atlassian/jira/v3"
 	"github.com/ctreminiom/go-atlassian/pkg/infra/models"
-	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 )
 
 type Config struct {
@@ -14,7 +13,6 @@ type Config struct {
 
 type Client struct {
 	instance *jira.Client
-	logger   *otelzap.Logger
 }
 
 type IssuesSearchResult struct {

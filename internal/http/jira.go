@@ -239,11 +239,20 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 			return
 		}
 
-		jiraClient := jira.New(jira.Config{
+		jiraClient, err := jira.New(jira.Config{
 			InstanceHost: instance.Host,
 			ClientMail:   instance.ClientMail,
 			AccessToken:  instance.AccessToken,
-		}, s.Logger)
+		})
+		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleJiraStoryJQLSearch error", zap.Error(err), zap.String("entity_user_id", userId),
+				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId),
+				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
+				zap.Any("jira_fields", fields))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
 
 		stories, err := jiraClient.StoriesJQLSearch(ctx, req.JQL, fields, req.StartAt, req.MaxResults)
 		if err != nil {
