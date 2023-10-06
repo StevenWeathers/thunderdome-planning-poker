@@ -10,7 +10,7 @@
   export let retroName = '';
   export let joinCode = '';
   export let facilitatorCode = '';
-  export let maxVotes = 3;
+  export let maxVotes = '3';
   export let brainstormVisibility = 'visible';
 
   const brainstormVisibilityOptions = [
@@ -35,7 +35,7 @@
       retroName,
       joinCode,
       facilitatorCode,
-      maxVotes,
+      maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
     };
 

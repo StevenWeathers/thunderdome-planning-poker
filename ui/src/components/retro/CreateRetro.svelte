@@ -17,7 +17,7 @@
   let retroName = '';
   let joinCode = '';
   let facilitatorCode = '';
-  let maxVotes = 3;
+  let maxVotes = '3';
   let brainstormVisibility = 'visible';
   let teams = [];
   let selectedTeam = '';
@@ -45,7 +45,7 @@
       format: 'worked_improve_question',
       joinCode,
       facilitatorCode,
-      maxVotes,
+      maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
     };
 

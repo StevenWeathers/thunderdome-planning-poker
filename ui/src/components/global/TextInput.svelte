@@ -1,6 +1,6 @@
 <script lang="ts">
   export let type: string = 'text';
-  export let value: string = '';
+  export let value: any;
   let klass: string = '';
   export { klass as class };
 
