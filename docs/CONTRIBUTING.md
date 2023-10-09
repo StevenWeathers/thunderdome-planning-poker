@@ -16,10 +16,10 @@ Please read the [Code of Conduct](CODE_OF_CONDUCT.md) document.
 
 We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
 
-### We Use [Github Flow](https://guides.github.com/introduction/flow/index.html), So All Code Changes Happen Through Pull Requests
+### We Use [Github Flow](https://docs.github.com/en/get-started/quickstart/github-flow), So All Code Changes Happen Through Pull Requests
 
 Pull requests are the best way to propose changes to the codebase (we
-use [GitHub Flow](https://guides.github.com/introduction/flow/index.html)). We actively welcome your pull requests:
+use [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow). We actively welcome your pull requests:
 
 1. Fork the repo and create your branch from `master`.
 2. If you've added code that should be tested, add tests.
