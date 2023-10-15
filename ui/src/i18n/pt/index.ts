@@ -45,7 +45,8 @@ const pt: Translation = {
   apiKeys: 'Chaves de API',
   applicationStatsError: 'Erro ao obter estatísticas do aplicativo',
   appName: 'Thunderdome',
-  appPreviewAlt: 'Prévia do Thunderdome, um Planning Poker Agile com Experiência de UI',
+  appPreviewAlt:
+    'Prévia do Thunderdome, um Planning Poker Agile com Experiência de UI',
   appSubtitle: 'Aplicação de Planning Poker Agile de Código Aberto',
   appVersion: 'Versão {version}',
   associateTeam: 'Equipe Associada',
@@ -592,11 +593,14 @@ const pt: Translation = {
   yourNamePlaceholder: 'Digite seu nome',
   createAccountFormTitle:
     'Criar uma Conta {optionalOpen}(opcional){optionalClose}',
-  sendResetPasswordSuccess: 'Instruções sobre como redefinir sua Senha enviadas para {email}',
-  sendResetPasswordError: 'Erro encontrado ao tentar enviar a redefinição de senha',
+  sendResetPasswordSuccess:
+    'Instruções sobre como redefinir sua Senha enviadas para {email}',
+  sendResetPasswordError:
+    'Erro encontrado ao tentar enviar a redefinição de senha',
   registerForBattle: {
     true: 'ou {registerOpen}Registre-se{registerClose} para participar do Jogo',
-    false: 'ou {registerOpen}Registre-se{registerClose} para participar da Batalha',
+    false:
+      'ou {registerOpen}Registre-se{registerClose} para participar da Batalha',
   },
   chooseCountryPlaceholder: 'Escolha seu país (opcional)',
   locale: 'Localidade',
