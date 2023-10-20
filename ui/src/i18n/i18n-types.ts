@@ -861,7 +861,7 @@ type RootTranslation = {
    */
   landingFeatureOpenSourceTitle: string;
   /**
-   * R​e​m​o​t​e​ ​t​e​a​m​ ​c​o​l​l​a​b​o​r​a​t​i​o​n​ ​w​i​t​h​ ​r​e​a​l​t​i​m​e​ ​a​g​i​l​e​ ​s​t​o​r​y​ ​p​o​i​n​t​i​n​g​,​ ​n​o​ ​c​o​s​t​ ​a​n​d​ ​a​d​ ​f​r​e​e​!
+   * R​e​m​o​t​e​ ​t​e​a​m​ ​c​o​l​l​a​b​o​r​a​t​i​o​n​ ​w​i​t​h​ ​a​g​i​l​e​ ​s​t​o​r​y​ ​p​o​i​n​t​i​n​g​,​ ​s​p​r​i​n​t​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​,​ ​s​t​o​r​y​ ​m​a​p​p​i​n​g​ ​a​n​d​ ​a​s​y​n​c​ ​t​e​a​m​ ​c​h​e​c​k​-​i​n​.
    */
   landingSalesPitch: string;
   /**
@@ -3154,7 +3154,7 @@ export type TranslationFunctions = {
    */
   landingFeatureOpenSourceTitle: () => LocalizedString;
   /**
-   * Remote team collaboration with realtime agile story pointing, no cost and ad free!
+   * Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.
    */
   landingSalesPitch: () => LocalizedString;
   /**
