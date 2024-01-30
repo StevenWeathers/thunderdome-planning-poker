@@ -22,6 +22,15 @@ type OrganizationUser struct {
 	GravatarHash string `json:"gravatarHash"`
 }
 
+type OrganizationUserInvite struct {
+	InviteId       string    `json:"invite_id"`
+	OrganizationId string    `json:"organization_id"`
+	Email          string    `json:"email"`
+	Role           string    `json:"role"`
+	CreatedDate    time.Time `json:"created_date"`
+	ExpireDate     time.Time `json:"expire_date"`
+}
+
 type Department struct {
 	Id          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -47,6 +56,8 @@ type OrganizationDataSvc interface {
 	OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
 	OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
 	OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error
+	OrganizationInviteUser(ctx context.Context, OrgID string, Email string, Role string) (string, error)
+	OrganizationUserGetInviteByID(ctx context.Context, InviteID string) (OrganizationUserInvite, error)
 	OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*Team
 	OrganizationTeamCreate(ctx context.Context, OrgID string, TeamName string) (*Team, error)
 	OrganizationTeamUserRole(ctx context.Context, UserID string, OrgID string, TeamID string) (string, string, error)

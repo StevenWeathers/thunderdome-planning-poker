@@ -1,7 +1,9 @@
 package http
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -210,10 +212,34 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 		UserEmail := u.Email
 
 		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil {
+		if UserErr != nil && errors.Is(UserErr, sql.ErrNoRows) {
+			inviteID, inviteErr := s.TeamDataSvc.TeamInviteUser(ctx, TeamID, UserEmail, u.Role)
+			if inviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(inviteErr),
+					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, UserErr)
+				return
+			}
+			team, teamErr := s.TeamDataSvc.TeamGet(ctx, TeamID)
+			if teamErr != nil {
+				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(teamErr),
+					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, teamErr)
+				return
+			}
+			emailErr := s.Email.SendTeamInvite(team.Name, UserEmail, inviteID)
+			if emailErr != nil {
+				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(emailErr),
+					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, emailErr)
+				return
+			}
+			s.Success(w, r, http.StatusOK, nil, nil)
+			return
+		} else if UserErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(UserErr),
 				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
+			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 

@@ -9,6 +9,8 @@ type EmailService interface {
 	SendDeleteConfirmation(UserName string, UserEmail string) error
 	SendEmailUpdate(UserName string, UserEmail string) error
 	SendMergedUpdate(UserName string, UserEmail string) error
+	SendTeamInvite(TeamName string, UserEmail string, InviteID string) error
+	SendOrganizationInvite(OrganizationName string, UserEmail string, InviteID string) error
 	// SendRetroOverview sends the retro overview (items, action items) email to attendees
 	SendRetroOverview(retro *Retro, UserName string, UserEmail string) error
 }

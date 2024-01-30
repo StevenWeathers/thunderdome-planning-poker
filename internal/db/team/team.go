@@ -148,6 +148,38 @@ func (d *Service) TeamUpdateUser(ctx context.Context, TeamID string, UserID stri
 	return TeamID, nil
 }
 
+// TeamInviteUser invites a user to a team
+func (d *Service) TeamInviteUser(ctx context.Context, TeamID string, Email string, Role string) (string, error) {
+	var inviteId string
+	err := d.DB.QueryRowContext(ctx,
+		`INSERT INTO thunderdome.team_user_invite (team_id, email, role) VALUES ($1, $2, $3) RETURNING invite_id;`,
+		TeamID,
+		Email,
+		Role,
+	).Scan(&inviteId)
+
+	if err != nil {
+		return "", fmt.Errorf("team invite user query error: %v", err)
+	}
+
+	return inviteId, nil
+}
+
+// TeamUserGetInviteByID gets a team user invite
+func (d *Service) TeamUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.TeamUserInvite, error) {
+	tui := thunderdome.TeamUserInvite{}
+	err := d.DB.QueryRowContext(ctx,
+		`SELECT invite_id, team_id, email, role, created_date, expire_date FROM thunderdome.team_user_invite;`,
+		InviteID,
+	).Scan(&tui.InviteId, tui.TeamId, tui.Email, tui.Role, tui.CreatedDate, tui.ExpireDate)
+
+	if err != nil {
+		return tui, fmt.Errorf("team get user invite query error: %v", err)
+	}
+
+	return tui, nil
+}
+
 // TeamUserList gets a list of team users
 func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.TeamUser, int, error) {
 	var users = make([]*thunderdome.TeamUser, 0)
