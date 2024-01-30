@@ -2326,6 +2326,18 @@ type RootTranslation = {
    * @param {unknown} count
    */
   allStoryWithCount: RequiredParams<'count'>;
+  /**
+   * U​p​d​a​t​e​ ​U​s​e​r
+   */
+  userUpdate: string;
+  /**
+   * S​u​c​c​e​s​s​f​u​l​l​y​ ​u​p​d​a​t​e​d​ ​u​s​e​r​.
+   */
+  userUpdateSuccess: string;
+  /**
+   * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​u​s​e​r​.
+   */
+  userUpdateError: string;
 };
 
 export type TranslationFunctions = {
@@ -4590,6 +4602,18 @@ export type TranslationFunctions = {
    * All ({count})
    */
   allStoryWithCount: (arg: { count: unknown }) => LocalizedString;
+  /**
+   * Update User
+   */
+  userUpdate: () => LocalizedString;
+  /**
+   * Successfully updated user.
+   */
+  userUpdateSuccess: () => LocalizedString;
+  /**
+   * Error updating user.
+   */
+  userUpdateError: () => LocalizedString;
 };
 
 export type Formatters = {};

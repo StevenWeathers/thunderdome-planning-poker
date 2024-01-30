@@ -367,6 +367,16 @@ definitions:
       teamRole:
         type: string
     type: object
+  http.teamUpdateUserRequestBody:
+    properties:
+      role:
+        enum:
+        - MEMBER
+        - ADMIN
+        type: string
+    required:
+    - role
+    type: object
   http.updatePasswordRequestBody:
     properties:
       password1:
@@ -3020,6 +3030,46 @@ paths:
       summary: Remove Department User
       tags:
       - organization
+    put:
+      description: Update a department User
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: department user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamUpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Department User
+      tags:
+      - organization
   /organizations/{orgId}/teams:
     get:
       description: Get a list of organization teams
@@ -3269,6 +3319,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Remove Org User
+      tags:
+      - organization
+    put:
+      description: Update organization user
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: user id
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: organization user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamUpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Org User
       tags:
       - organization
   /retros:
@@ -4389,6 +4478,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Remove Team User
+      tags:
+      - team
+    put:
+      description: Updates a team user
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: updated team user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamUpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team User
       tags:
       - team
   /teams/{teamId}/users/{userId}/battles:

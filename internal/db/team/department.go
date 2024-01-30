@@ -226,6 +226,22 @@ func (d *OrganizationService) DepartmentAddUser(ctx context.Context, DepartmentI
 	return DepartmentID, nil
 }
 
+// DepartmentUpdateUser updates an organization department user
+func (d *OrganizationService) DepartmentUpdateUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error) {
+	_, err := d.DB.ExecContext(ctx,
+		`UPDATE thunderdome.department_user SET role = $3 WHERE department_id = $1 AND user_id = $2;`,
+		DepartmentID,
+		UserID,
+		Role,
+	)
+
+	if err != nil {
+		return "", fmt.Errorf("department update user query error: %v", err)
+	}
+
+	return DepartmentID, nil
+}
+
 // DepartmentRemoveUser removes a user from a department (and department teams)
 func (d *OrganizationService) DepartmentRemoveUser(ctx context.Context, DepartmentID string, UserID string) error {
 	_, err := d.DB.ExecContext(ctx,
