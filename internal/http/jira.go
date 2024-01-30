@@ -43,8 +43,8 @@ func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 }
 
 type jiraInstanceRequestBody struct {
-	Host        string `json:"host" validate:"required"`
-	ClientMail  string `json:"client_mail" validate:"required"`
+	Host        string `json:"host" validate:"required,http_url"`
+	ClientMail  string `json:"client_mail" validate:"required,email"`
 	AccessToken string `json:"access_token" validate:"required"`
 }
 
