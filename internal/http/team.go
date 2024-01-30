@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"go.uber.org/zap"
 
@@ -209,7 +210,7 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 		}
 
-		UserEmail := u.Email
+		UserEmail := strings.ToLower(u.Email)
 
 		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil && errors.Is(UserErr, sql.ErrNoRows) {
