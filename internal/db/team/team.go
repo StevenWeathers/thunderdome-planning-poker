@@ -132,6 +132,22 @@ func (d *Service) TeamAddUser(ctx context.Context, TeamID string, UserID string,
 	return TeamID, nil
 }
 
+// TeamUpdateUser updates a team user
+func (d *Service) TeamUpdateUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error) {
+	_, err := d.DB.ExecContext(ctx,
+		`UPDATE thunderdome.team_user SET role = $3 WHERE team_id = $1 AND user_id = $2;`,
+		TeamID,
+		UserID,
+		Role,
+	)
+
+	if err != nil {
+		return "", fmt.Errorf("team update user query error: %v", err)
+	}
+
+	return TeamID, nil
+}
+
 // TeamUserList gets a list of team users
 func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*thunderdome.TeamUser, int, error) {
 	var users = make([]*thunderdome.TeamUser, 0)

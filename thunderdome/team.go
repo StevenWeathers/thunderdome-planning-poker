@@ -28,6 +28,7 @@ type TeamDataSvc interface {
 	TeamCreate(ctx context.Context, UserID string, TeamName string) (*Team, error)
 	TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error)
 	TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*TeamUser, int, error)
+	TeamUpdateUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error)
 	TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error
 	TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*Poker
 	TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error
