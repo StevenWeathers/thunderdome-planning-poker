@@ -79,8 +79,8 @@ type userprofileUpdateRequestBody struct {
 	Name                 string `json:"name" validate:"required,max=64"`
 	Avatar               string `json:"avatar" validate:"max=128"`
 	NotificationsEnabled bool   `json:"notificationsEnabled"`
-	Country              string `json:"country" validate:"len=2"`
-	Locale               string `json:"locale" validate:"len=2"`
+	Country              string `json:"country" validate:"omitempty,len=2"`
+	Locale               string `json:"locale" validate:"omitempty,len=2"`
 	Company              string `json:"company" validate:"max=256"`
 	JobTitle             string `json:"jobTitle" validate:"max=128"`
 	Email                string `json:"email" validate:"omitempty,email"`
