@@ -1,7 +1,9 @@
 package http
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -287,7 +289,31 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 		UserEmail := strings.ToLower(u.Email)
 
 		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil {
+		if UserErr != nil && errors.Is(UserErr, sql.ErrNoRows) {
+			inviteID, inviteErr := s.OrganizationDataSvc.OrganizationInviteUser(ctx, OrgID, UserEmail, u.Role)
+			if inviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(inviteErr),
+					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, UserErr)
+				return
+			}
+			org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
+			if orgErr != nil {
+				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(orgErr),
+					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, orgErr)
+				return
+			}
+			emailErr := s.Email.SendOrganizationInvite(org.Name, UserEmail, inviteID)
+			if emailErr != nil {
+				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(emailErr),
+					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, emailErr)
+				return
+			}
+			s.Success(w, r, http.StatusOK, nil, nil)
+			return
+		} else if UserErr != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleOrganizationAddUser error", zap.Error(UserErr), zap.String("user_email", UserEmail),
 				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID))
