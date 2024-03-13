@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import PageLayout from '../../components/global/PageLayout.svelte';
   import { user } from '../../stores';
   import { validateName } from '../../validationUtils';
@@ -117,6 +118,12 @@
       });
   }
 
+  onMount(() => {
+    if ($user.id) {
+      router.route(targetPage(), true);
+    }
+  });
+
   $: registerDisabled = warriorName === '';
 </script>
 
@@ -166,7 +173,7 @@
     {/if}
   </div>
   <div class="flex flex-wrap justify-center">
-    {#if !$user.id && (guestsAllowed || registrationAllowed)}
+    {#if guestsAllowed}
       <div class="w-full md:w-1/2 px-4">
         <form
           on:submit="{createUserGuest}"
@@ -205,7 +212,7 @@
         </form>
       </div>
     {/if}
-
+    
     {#if registrationAllowed}
       <div class="w-full md:w-1/2 px-4">
         <div
@@ -220,23 +227,23 @@
               optionalClose: `</span>`,
             })}
           </h2>
-
+          
           <UserRegisterForm
-            guestWarriorsName="{warriorName}"
-            handleSubmit="{createUserRegistered}"
-            notifications="{notifications}"
+          guestWarriorsName="{warriorName}"
+          handleSubmit="{createUserRegistered}"
+          notifications="{notifications}"
           />
         </div>
       </div>
     {:else}
       <div class="w-full md:w-1/2 px-4">
         <h2
-          class="font-bold text-2xl md:text-3xl md:leading-tight
-                    text-center dark:text-white"
+        class="font-bold text-2xl md:text-3xl md:leading-tight
+        text-center dark:text-white"
         >
-          {$LL.registrationDisabled()}
-        </h2>
-      </div>
+        {$LL.registrationDisabled()}
+      </h2>
+    </div>
     {/if}
   </div>
 </PageLayout>
