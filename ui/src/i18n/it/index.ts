@@ -556,6 +556,7 @@ const it: Translation = {
   verified: 'Verificato',
   registeredUsers: 'Registered Users',
   myBattles: '{friendly|{false:Le mie Battaglie, true:Mie partite}}',
+  teamBattles: '{friendly|{false:Team Battaglie, true:Meam partite}}',
   createBattle: '{friendly|{false:Crea una Battaglia, true:Crea una partita}}',
   countPlansPointed: {
     true: '{totalPointed} di {totalPlans} storie puntate',

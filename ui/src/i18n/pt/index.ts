@@ -541,6 +541,7 @@ const pt: Translation = {
   verified: 'Verificado',
   registeredUsers: 'Usuários Registrados',
   myBattles: '{friendly|{false:Minhas Batalhas, true:Meus jogos}}',
+  teamBattles: '{friendly|{false:Equipe Batalhas, true:Equipe jogos}}',
   createBattle: '{friendly|{false:Criar uma batalha, true:Criar um jogo}}',
   countPlansPointed: {
     true: '{totalPointed} de {totalPlans} histórias pontuadas',

@@ -538,6 +538,7 @@ const fr: Translation = {
   verified: 'Verifié',
   registeredUsers: 'Registered Users',
   myBattles: '{friendly|{false:Mes Batailles, true:Mes Jeux}}',
+  teamBattles: '{friendly|{false:L\'équipe Batailles, true:L\'équipe Jeux}}',
   createBattle: '{friendly|{false:Créer une Bataille, true:Créer un Jeu}}',
   countPlansPointed: {
     true: '{totalPointed} sur {totalPlans} stories pointées',

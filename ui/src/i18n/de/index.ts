@@ -536,6 +536,7 @@ const de: Translation = {
   verified: 'Best\u00E4tigt',
   registeredUsers: 'Registered Users',
   myBattles: '{friendly|{false:Meine Schlachten, true:Meine Partien}}',
+  teamBattles: '{friendly|{false:Team Schlachten, true:Team Partien}}',
   createBattle: '{friendly|{false:Schlacht erstellen, true:Partie erstellen}}',
   countPlansPointed: {
     true: '{totalPointed} of {totalPlans} stories pointed',

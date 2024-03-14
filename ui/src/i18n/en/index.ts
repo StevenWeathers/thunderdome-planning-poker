@@ -527,6 +527,7 @@ const en: BaseTranslation = {
   verified: 'Verified',
   registeredUsers: 'Registered Users',
   myBattles: '{friendly|{false:My Battles, true:My Games}}',
+  teamBattles: '{friendly|{false:Team Battles, true:Team Games}}',
   createBattle: '{friendly|{false:Create Battle, true:Create Game}}',
   countPlansPointed: {
     true: '{totalPointed} of {totalPlans} stories pointed',

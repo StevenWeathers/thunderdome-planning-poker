@@ -526,7 +526,7 @@ const ru: Translation = {
   company: 'Company',
   verified: 'Подтвержден',
   registeredUsers: 'Registered Users',
-  myBattles: '{friendly|{false:Мои битвы, true:Мои игры}}',
+  myBattles: '{friendly|{false:Team битвы, true:Team игры}}',
   createBattle: '{friendly|{false:Создать битву, true:Создать игру}}',
   countPlansPointed: {
     true: '{totalPointed} of {totalPlans} stories pointed',
