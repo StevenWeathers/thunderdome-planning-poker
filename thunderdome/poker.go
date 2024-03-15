@@ -33,6 +33,7 @@ type Poker struct {
 	JoinCode             string       `json:"joinCode"`
 	FacilitatorCode      string       `json:"leaderCode,omitempty"`
 	TeamID               string       `json:"teamId"`
+	TeamName             string       `json:"teamName"`
 	CreatedDate          time.Time    `json:"createdDate"`
 	UpdatedDate          time.Time    `json:"updatedDate"`
 }
@@ -69,6 +70,7 @@ type PokerDataSvc interface {
 	GetFacilitatorCode(PokerID string) (string, error)
 	GetGame(PokerID string, UserID string) (*Poker, error)
 	GetGamesByUser(UserID string, Limit int, Offset int) ([]*Poker, int, error)
+	GetTeamGamesByUser(UserID string, Limit int, Offset int) ([]*Poker, int, error)
 	ConfirmFacilitator(PokerID string, UserID string) error
 	GetUserActiveStatus(PokerID string, UserID string) error
 	GetUsers(PokerID string) []*PokerUser
