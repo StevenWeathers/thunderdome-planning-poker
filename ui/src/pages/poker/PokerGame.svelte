@@ -28,7 +28,9 @@
   export let xfetch;
 
   const { AllowRegistration, AllowGuests } = AppConfig;
-  const loginOrRegister: string = AllowGuests ? appRoutes.register : appRoutes.login;
+  const loginOrRegister: string = AllowGuests
+    ? appRoutes.register
+    : appRoutes.login;
 
   const hostname: string = window.location.origin;
   const socketExtension: string =

@@ -206,7 +206,7 @@
         </form>
       </div>
     {/if}
-    
+
     {#if registrationAllowed}
       <div class="w-full md:w-1/2 px-4">
         <div
@@ -221,23 +221,23 @@
               optionalClose: `</span>`,
             })}
           </h2>
-          
+
           <UserRegisterForm
-          guestWarriorsName="{warriorName}"
-          handleSubmit="{createUserRegistered}"
-          notifications="{notifications}"
+            guestWarriorsName="{warriorName}"
+            handleSubmit="{createUserRegistered}"
+            notifications="{notifications}"
           />
         </div>
       </div>
     {:else}
       <div class="w-full md:w-1/2 px-4">
         <h2
-        class="font-bold text-2xl md:text-3xl md:leading-tight
+          class="font-bold text-2xl md:text-3xl md:leading-tight
         text-center dark:text-white"
         >
-        {$LL.registrationDisabled()}
-      </h2>
-    </div>
+          {$LL.registrationDisabled()}
+        </h2>
+      </div>
     {/if}
   </div>
 </PageLayout>
