@@ -118,12 +118,6 @@
       });
   }
 
-  onMount(() => {
-    if ($user.id) {
-      router.route(targetPage(), true);
-    }
-  });
-
   $: registerDisabled = warriorName === '';
 </script>
 
@@ -173,7 +167,7 @@
     {/if}
   </div>
   <div class="flex flex-wrap justify-center">
-    {#if guestsAllowed}
+    {#if guestsAllowed && !$user.id}
       <div class="w-full md:w-1/2 px-4">
         <form
           on:submit="{createUserGuest}"
