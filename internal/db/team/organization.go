@@ -174,6 +174,22 @@ func (d *OrganizationService) OrganizationAddUser(ctx context.Context, OrgID str
 	return OrgID, nil
 }
 
+// OrganizationUpdateUser updates an organization user
+func (d *OrganizationService) OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
+	_, err := d.DB.ExecContext(ctx,
+		`UPDATE thunderdome.organization_user SET role = $3 WHERE organization_id = $1 AND user_id = $2;`,
+		OrgID,
+		UserID,
+		Role,
+	)
+
+	if err != nil {
+		return "", fmt.Errorf("organization update user query error: %v", err)
+	}
+
+	return OrgID, nil
+}
+
 // OrganizationRemoveUser removes a user from a organization
 func (d *OrganizationService) OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error {
 	_, err := d.DB.ExecContext(ctx,
