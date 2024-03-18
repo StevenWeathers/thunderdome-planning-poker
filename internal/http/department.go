@@ -326,6 +326,59 @@ func (s *Service) handleDepartmentAddUser() http.HandlerFunc {
 	}
 }
 
+// handleDepartmentUpdateUser handles updating an organization department user
+// @Summary      Update Department User
+// @Description  Update a department User
+// @Tags         organization
+// @Produce      json
+// @Param        orgId         path    string                  true  "the organization ID"
+// @Param        departmentId  path    string                  true  "the department ID"
+// @Param        userId  path    string                  true  "the user ID"
+// @Param        user          body    teamUpdateUserRequestBody  true  "department user object"
+// @Success      200           object  standardJsonResponse{}
+// @Failure      500           object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/departments/{departmentId}/users/{userId} [put]
+func (s *Service) handleDepartmentUpdateUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		DepartmentId := vars["departmentId"]
+		UserId := vars["userId"]
+
+		var u = teamUpdateUserRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		_, err := s.OrganizationDataSvc.DepartmentUpdateUser(ctx, DepartmentId, UserId, u.Role)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentUpdateUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentId),
+				zap.String("user_id", UserId), zap.String("user_role", u.Role))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 // handleDepartmentRemoveUser handles removing user from a department (and department teams)
 // @Summary      Remove Department User
 // @Description  Remove a department User

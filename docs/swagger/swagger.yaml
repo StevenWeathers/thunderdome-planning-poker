@@ -367,6 +367,16 @@ definitions:
       teamRole:
         type: string
     type: object
+  http.teamUpdateUserRequestBody:
+    properties:
+      role:
+        enum:
+        - MEMBER
+        - ADMIN
+        type: string
+    required:
+    - role
+    type: object
   http.updatePasswordRequestBody:
     properties:
       password1:
@@ -1435,179 +1445,6 @@ paths:
       summary: Create Storyboard
       tags:
       - storyboard
-  /{userId}/jira-instances:
-    get:
-      description: get list of Jira instances associated to user
-      parameters:
-      - description: the user ID to find jira instances for
-        in: path
-        name: userId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/thunderdome.JiraInstance'
-                  type: array
-              type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Get User Jira Instances
-      tags:
-      - jira
-    post:
-      description: Creates a Jira Instance associated to user
-      parameters:
-      - description: the user ID to associate jira instance to
-        in: path
-        name: userId
-        required: true
-        type: string
-      - description: new jira_instance object
-        in: body
-        name: jira
-        required: true
-        schema:
-          $ref: '#/definitions/http.jiraInstanceRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: returns new jira instance
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/thunderdome.JiraInstance'
-              type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Create Jira Instance
-      tags:
-      - jira
-  /{userId}/jira-instances/{instanceId}:
-    delete:
-      description: Deletes a Jira Instance associated to user
-      parameters:
-      - description: the user ID jira instance associated to
-        in: path
-        name: userId
-        required: true
-        type: string
-      - description: the jira_instance ID to delete
-        in: path
-        name: instanceId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Delete Jira Instance
-      tags:
-      - jira
-    put:
-      description: Updates a Jira Instance associated to user
-      parameters:
-      - description: the user ID jira instance associated to
-        in: path
-        name: userId
-        required: true
-        type: string
-      - description: the jira_instance ID to update
-        in: path
-        name: instanceId
-        required: true
-        type: string
-      - description: updated jira_instance object
-        in: body
-        name: jira
-        required: true
-        schema:
-          $ref: '#/definitions/http.jiraInstanceRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: returns updated jira instance
-          schema:
-            allOf:
-            - $ref: '#/definitions/http.standardJsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/thunderdome.JiraInstance'
-              type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Update Jira Instance
-      tags:
-      - jira
-  /{userId}/jira-instances/{instanceId}/jql-story-search:
-    post:
-      description: Queries Jira Instance API for Stories by JQL
-      parameters:
-      - description: the user ID associated to jira instance
-        in: path
-        name: userId
-        required: true
-        type: string
-      - description: the jira_instance ID to query
-        in: path
-        name: instanceId
-        required: true
-        type: string
-      - description: jql search request
-        in: body
-        name: jira
-        required: true
-        schema:
-          $ref: '#/definitions/http.jiraStoryJQLSearchRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/http.standardJsonResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Query Jira for Stories by JQL
-      tags:
-      - jira
   /active-countries:
     get:
       description: Gets a list of users countries
@@ -3193,6 +3030,46 @@ paths:
       summary: Remove Department User
       tags:
       - organization
+    put:
+      description: Update a department User
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: department user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamUpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Department User
+      tags:
+      - organization
   /organizations/{orgId}/teams:
     get:
       description: Get a list of organization teams
@@ -3442,6 +3319,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Remove Org User
+      tags:
+      - organization
+    put:
+      description: Update organization user
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: user id
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: organization user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamUpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Org User
       tags:
       - organization
   /retros:
@@ -4564,6 +4480,45 @@ paths:
       summary: Remove Team User
       tags:
       - team
+    put:
+      description: Updates a team user
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: updated team user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamUpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team User
+      tags:
+      - team
   /teams/{teamId}/users/{userId}/battles:
     post:
       description: Create a poker game associated to the user
@@ -5073,6 +5028,179 @@ paths:
       summary: Create Poker Game
       tags:
       - poker
+  /users/{userId}/jira-instances:
+    get:
+      description: get list of Jira instances associated to user
+      parameters:
+      - description: the user ID to find jira instances for
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.JiraInstance'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get User Jira Instances
+      tags:
+      - jira
+    post:
+      description: Creates a Jira Instance associated to user
+      parameters:
+      - description: the user ID to associate jira instance to
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: new jira_instance object
+        in: body
+        name: jira
+        required: true
+        schema:
+          $ref: '#/definitions/http.jiraInstanceRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns new jira instance
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.JiraInstance'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Jira Instance
+      tags:
+      - jira
+  /users/{userId}/jira-instances/{instanceId}:
+    delete:
+      description: Deletes a Jira Instance associated to user
+      parameters:
+      - description: the user ID jira instance associated to
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the jira_instance ID to delete
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Jira Instance
+      tags:
+      - jira
+    put:
+      description: Updates a Jira Instance associated to user
+      parameters:
+      - description: the user ID jira instance associated to
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the jira_instance ID to update
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      - description: updated jira_instance object
+        in: body
+        name: jira
+        required: true
+        schema:
+          $ref: '#/definitions/http.jiraInstanceRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated jira instance
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.JiraInstance'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Jira Instance
+      tags:
+      - jira
+  /users/{userId}/jira-instances/{instanceId}/jql-story-search:
+    post:
+      description: Queries Jira Instance API for Stories by JQL
+      parameters:
+      - description: the user ID associated to jira instance
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the jira_instance ID to query
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      - description: jql search request
+        in: body
+        name: jira
+        required: true
+        schema:
+          $ref: '#/definitions/http.jiraStoryJQLSearchRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Query Jira for Stories by JQL
+      tags:
+      - jira
   /users/{userId}/organizations:
     get:
       description: Get list of organizations for the authenticated user

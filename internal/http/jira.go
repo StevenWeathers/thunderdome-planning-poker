@@ -21,7 +21,7 @@ import (
 // @Success      200     object  standardJsonResponse{data=[]thunderdome.JiraInstance}
 // @Failure      500     object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /{userId}/jira-instances [get]
+// @Router       /users/{userId}/jira-instances [get]
 func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -43,8 +43,8 @@ func (s *Service) handleGetUserJiraInstances() http.HandlerFunc {
 }
 
 type jiraInstanceRequestBody struct {
-	Host        string `json:"host" validate:"required"`
-	ClientMail  string `json:"client_mail" validate:"required"`
+	Host        string `json:"host" validate:"required,http_url"`
+	ClientMail  string `json:"client_mail" validate:"required,email"`
 	AccessToken string `json:"access_token" validate:"required"`
 }
 
@@ -58,7 +58,7 @@ type jiraInstanceRequestBody struct {
 // @Success      200    object  standardJsonResponse{data=thunderdome.JiraInstance}  "returns new jira instance"
 // @Failure      500    object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /{userId}/jira-instances [post]
+// @Router       /users/{userId}/jira-instances [post]
 func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -109,7 +109,7 @@ func (s *Service) handleJiraInstanceCreate() http.HandlerFunc {
 // @Success      200    object  standardJsonResponse{data=thunderdome.JiraInstance}  "returns updated jira instance"
 // @Failure      500    object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /{userId}/jira-instances/{instanceId} [put]
+// @Router       /users/{userId}/jira-instances/{instanceId} [put]
 func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -160,7 +160,7 @@ func (s *Service) handleJiraInstanceUpdate() http.HandlerFunc {
 // @Success      200    object  standardJsonResponse{}
 // @Failure      500    object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /{userId}/jira-instances/{instanceId} [delete]
+// @Router       /users/{userId}/jira-instances/{instanceId} [delete]
 func (s *Service) handleJiraInstanceDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -199,7 +199,7 @@ type jiraStoryJQLSearchRequestBody struct {
 // @Success      200    object  standardJsonResponse{}
 // @Failure      500    object  standardJsonResponse{}
 // @Security     ApiKeyAuth
-// @Router       /{userId}/jira-instances/{instanceId}/jql-story-search [post]
+// @Router       /users/{userId}/jira-instances/{instanceId}/jql-story-search [post]
 func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

@@ -619,6 +619,9 @@ const de: Translation = {
   assigneeSelectPlaceholder: 'Select an assignee to add',
   assigneeAdd: 'Add Assignee',
   allStoryWithCount: 'All ({count})',
+  userUpdate: 'Update User',
+  userUpdateSuccess: 'Successfully updated user.',
+  userUpdateError: 'Error updating user.',
 };
 
 export default de;
