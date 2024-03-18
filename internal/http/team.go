@@ -230,6 +230,62 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 	}
 }
 
+type teamUpdateUserRequestBody struct {
+	Role string `json:"role" enums:"MEMBER,ADMIN" validate:"required,oneof=MEMBER ADMIN"`
+}
+
+// handleTeamUpdateUser handles updating a user on the team
+// @Summary      Update Team User
+// @Description  Updates a team user
+// @Tags         team
+// @Produce      json
+// @Param        teamId  path    string                  true  "the team ID"
+// @Param        userId  path    string                  true  "the user ID"
+// @Param        user    body    teamUpdateUserRequestBody  true  "updated team user object"
+// @Success      200     object  standardJsonResponse{}
+// @Success      403     object  standardJsonResponse{}
+// @Success      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/users/{userId} [put]
+func (s *Service) handleTeamUpdateUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		UserID := vars["userId"]
+
+		var u = teamUpdateUserRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(u)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+		}
+
+		_, err := s.TeamDataSvc.TeamUpdateUser(ctx, TeamID, UserID, u.Role)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("user_id", UserID), zap.String("team_role", u.Role),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 // handleTeamRemoveUser handles removing user from a team
 // @Summary      Remove Team User
 // @Description  Remove a user from the team

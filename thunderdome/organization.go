@@ -45,6 +45,7 @@ type OrganizationDataSvc interface {
 	OrganizationCreate(ctx context.Context, UserID string, OrgName string) (*Organization, error)
 	OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*OrganizationUser
 	OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
+	OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
 	OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error
 	OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*Team
 	OrganizationTeamCreate(ctx context.Context, OrgID string, TeamName string) (*Team, error)
@@ -60,6 +61,7 @@ type OrganizationDataSvc interface {
 	DepartmentTeamCreate(ctx context.Context, DepartmentID string, TeamName string) (*Team, error)
 	DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*DepartmentUser
 	DepartmentAddUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error)
+	DepartmentUpdateUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error)
 	DepartmentRemoveUser(ctx context.Context, DepartmentID string, UserID string) error
 	DepartmentTeamUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string, TeamID string) (string, string, string, error)
 	DepartmentDelete(ctx context.Context, DepartmentID string) error

@@ -308,6 +308,58 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 	}
 }
 
+// handleOrganizationUpdateUser handles updating an organization user
+// @Summary      Update Org User
+// @Description  Update organization user
+// @Tags         organization
+// @Produce      json
+// @Param        orgId  path    string                  true  "organization id"
+// @Param        userId  path    string                  true  "user id"
+// @Param        user   body    teamUpdateUserRequestBody  true  "organization user object"
+// @Success      200    object  standardJsonResponse{}
+// @Failure      403    object  standardJsonResponse{}
+// @Failure      500    object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/users/{userId} [put]
+func (s *Service) handleOrganizationUpdateUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		UserID := vars["userId"]
+
+		var u = teamUpdateUserRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		_, err := s.OrganizationDataSvc.OrganizationUpdateUser(ctx, OrgID, UserID, u.Role)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleOrganizationAddUser error", zap.Error(err), zap.String("user_id", UserID),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID),
+				zap.String("user_role", u.Role))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
 // handleOrganizationRemoveUser handles removing user from an organization (including departments, teams)
 // @Summary      Remove Org User
 // @Description  Remove user from organization including departments and teams

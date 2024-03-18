@@ -24,6 +24,14 @@
       return false;
     }
 
+    if (!/(http(s?)):\/\//i.test(host)) {
+      notifications.danger(
+        'Host must contain protocol e.g. https:// or http://',
+      );
+      eventTag('create_jira_instance_host_invalid', 'engagement', 'failure');
+      return false;
+    }
+
     if (client_mail === '') {
       notifications.danger('Host client_mail required');
       eventTag(
@@ -78,6 +86,9 @@
         placeholder="Enter the Jira Hostname..."
         required
       />
+      <span class="font-bold dark:text-gray-400"
+        >Example: https://yourjira.atlassian.net</span
+      >
     </div>
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="client_mail">
