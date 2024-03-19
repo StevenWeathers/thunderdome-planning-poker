@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import PageLayout from '../../components/global/PageLayout.svelte';
   import { user } from '../../stores';
   import { validateName } from '../../validationUtils';
