@@ -626,6 +626,9 @@ const pt: Translation = {
   assigneeSelectPlaceholder: 'Selecione um responsável para adicionar',
   assigneeAdd: 'Adicionar Responsável',
   allStoryWithCount: 'Todas ({count})',
+  userUpdate: 'Update User',
+  userUpdateSuccess: 'Successfully updated user.',
+  userUpdateError: 'Error updating user.',
 };
 
 export default pt;

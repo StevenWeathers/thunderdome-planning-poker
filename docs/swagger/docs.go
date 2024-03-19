@@ -2550,6 +2550,67 @@ const docTemplate = `{
             }
         },
         "/organizations/{orgId}/departments/{departmentId}/users/{userId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a department User",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Update Department User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the department ID",
+                        "name": "departmentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "department user object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamUpdateUserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -2959,6 +3020,66 @@ const docTemplate = `{
             }
         },
         "/organizations/{orgId}/users/{userId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update organization user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Update Org User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organization id",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "organization user object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamUpdateUserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -4751,6 +4872,66 @@ const docTemplate = `{
             }
         },
         "/teams/{teamId}/users/{userId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a team user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "team"
+                ],
+                "summary": "Update Team User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated team user object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamUpdateUserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -5631,6 +5812,289 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/jira-instances": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of Jira instances associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Get User Jira Instances",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID to find jira instances for",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.JiraInstance"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a Jira Instance associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Create Jira Instance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID to associate jira instance to",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new jira_instance object",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraInstanceRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns new jira instance",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.JiraInstance"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/jira-instances/{instanceId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a Jira Instance associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Update Jira Instance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID jira instance associated to",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to update",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated jira_instance object",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraInstanceRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns updated jira instance",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.JiraInstance"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a Jira Instance associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Delete Jira Instance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID jira instance associated to",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to delete",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/jira-instances/{instanceId}/jql-story-search": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Queries Jira Instance API for Stories by JQL",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Query Jira for Stories by JQL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID associated to jira instance",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to query",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "jql search request",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraStoryJQLSearchRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
@@ -6747,289 +7211,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/{userId}/jira-instances": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get list of Jira instances associated to user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jira"
-                ],
-                "summary": "Get User Jira Instances",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the user ID to find jira instances for",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/http.standardJsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/thunderdome.JiraInstance"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Creates a Jira Instance associated to user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jira"
-                ],
-                "summary": "Create Jira Instance",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the user ID to associate jira instance to",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "new jira_instance object",
-                        "name": "jira",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.jiraInstanceRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "returns new jira instance",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/http.standardJsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/thunderdome.JiraInstance"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/{userId}/jira-instances/{instanceId}": {
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Updates a Jira Instance associated to user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jira"
-                ],
-                "summary": "Update Jira Instance",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the user ID jira instance associated to",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "the jira_instance ID to update",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "updated jira_instance object",
-                        "name": "jira",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.jiraInstanceRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "returns updated jira instance",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/http.standardJsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/thunderdome.JiraInstance"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Deletes a Jira Instance associated to user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jira"
-                ],
-                "summary": "Delete Jira Instance",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the user ID jira instance associated to",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "the jira_instance ID to delete",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/{userId}/jira-instances/{instanceId}/jql-story-search": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Queries Jira Instance API for Stories by JQL",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "jira"
-                ],
-                "summary": "Query Jira for Stories by JQL",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the user ID associated to jira instance",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "the jira_instance ID to query",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "jql search request",
-                        "name": "jira",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.jiraStoryJQLSearchRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/http.standardJsonResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -7579,6 +7760,21 @@ const docTemplate = `{
                 },
                 "teamRole": {
                     "type": "string"
+                }
+            }
+        },
+        "http.teamUpdateUserRequestBody": {
+            "type": "object",
+            "required": [
+                "role"
+            ],
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "MEMBER",
+                        "ADMIN"
+                    ]
                 }
             }
         },
