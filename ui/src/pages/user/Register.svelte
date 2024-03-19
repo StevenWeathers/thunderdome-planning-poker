@@ -166,7 +166,7 @@
     {/if}
   </div>
   <div class="flex flex-wrap justify-center">
-    {#if !$user.id && (guestsAllowed || registrationAllowed)}
+    {#if guestsAllowed && !$user.id}
       <div class="w-full md:w-1/2 px-4">
         <form
           on:submit="{createUserGuest}"
@@ -232,7 +232,7 @@
       <div class="w-full md:w-1/2 px-4">
         <h2
           class="font-bold text-2xl md:text-3xl md:leading-tight
-                    text-center dark:text-white"
+        text-center dark:text-white"
         >
           {$LL.registrationDisabled()}
         </h2>
