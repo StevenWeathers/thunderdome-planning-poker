@@ -374,7 +374,7 @@ func (s *Service) SendTeamInvite(TeamName string, UserEmail string, InviteID str
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},
@@ -426,7 +426,7 @@ func (s *Service) SendOrganizationInvite(OrganizationName string, UserEmail stri
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},
