@@ -3,7 +3,7 @@
   import { AppConfig } from '../../config';
   import LL from '../../i18n/i18n-svelte';
 
-  const { AppVersion } = AppConfig;
+  const { AppVersion, RepoURL } = AppConfig;
   const footerLinkClasses =
     'no-underline text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600';
 </script>
@@ -13,10 +13,7 @@
   style="box-shadow: inset 0 7px 30px -7px rgba(0,0,0,0.1);"
 >
   <GithubIcon />
-  <a
-    href="https://github.com/StevenWeathers/thunderdome-planning-poker"
-    class="{footerLinkClasses}"
-  >
+  <a href="{RepoURL}" class="{footerLinkClasses}">
     {$LL.appName()}
   </a>
   {@html $LL.footerAuthoredBy({

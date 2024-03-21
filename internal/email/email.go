@@ -16,6 +16,7 @@ import (
 // Config contains all the mail server values
 type Config struct {
 	AppURL            string
+	RepoURL           string
 	SenderName        string
 	SmtpHost          string
 	SmtpPort          int

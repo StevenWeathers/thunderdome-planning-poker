@@ -43,6 +43,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const repoURL = "https://github.com/StevenWeathers/thunderdome-planning-poker"
+
 var embedUseOS bool
 var (
 	version = "dev"
@@ -163,6 +165,7 @@ func main() {
 		},
 		Email: email.New(&email.Config{
 			AppURL:            "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
+			RepoURL:           repoURL,
 			SenderName:        "Thunderdome",
 			SmtpEnabled:       c.Smtp.Enabled,
 			SmtpHost:          c.Smtp.Host,
@@ -225,6 +228,7 @@ func main() {
 				SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
 				SubscriptionCheckoutLink:  c.Subscription.CheckoutLink,
 				SubscriptionManageLink:    c.Subscription.ManageLink,
+				RepoURL:                   repoURL,
 			},
 		},
 	}, FSS, HFS)
