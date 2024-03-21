@@ -78,6 +78,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.HandleFunc("/auth/update-password", a.userOnly(a.handleUpdatePassword())).Methods("PATCH")
 		apiRouter.HandleFunc("/auth/verify", a.handleAccountVerification()).Methods("PATCH")
 		apiRouter.HandleFunc("/auth/register", a.handleUserRegistration()).Methods("POST")
+		apiRouter.HandleFunc("/auth/invite/team/{inviteId}", a.handleGetTeamInvite()).Methods("GET")
+		apiRouter.HandleFunc("/auth/invite/organization/{inviteId}", a.handleGetOrganizationInvite()).Methods("GET")
 	}
 	apiRouter.HandleFunc("/auth/mfa", a.handleMFALogin()).Methods("POST")
 	apiRouter.HandleFunc("/auth/mfa", a.userOnly(a.registeredUserOnly(a.handleMFARemove()))).Methods("DELETE")

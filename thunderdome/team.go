@@ -41,6 +41,7 @@ type TeamDataSvc interface {
 	TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error
 	TeamInviteUser(ctx context.Context, TeamID string, Email string, Role string) (string, error)
 	TeamUserGetInviteByID(ctx context.Context, InviteID string) (TeamUserInvite, error)
+	TeamDeleteUserInvite(ctx context.Context, InviteID string) error
 	TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*Poker
 	TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error
 	TeamRemovePoker(ctx context.Context, TeamID string, PokerID string) error

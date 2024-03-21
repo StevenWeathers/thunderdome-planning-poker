@@ -1086,6 +1086,94 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/invite/organization/{inviteId}": {
+            "get": {
+                "description": "Get a organization user invite details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get Organization Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.OrganizationUserInvite"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/invite/team/{inviteId}": {
+            "get": {
+                "description": "Get a team user invite details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get Team Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.TeamUserInvite"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/auth/ldap": {
             "post": {
                 "description": "attempts to log the user in with provided credentials\n*Endpoint only available when LDAP is enabled",
@@ -7856,6 +7944,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "orgInviteId": {
+                    "type": "string"
+                },
                 "password1": {
                     "type": "string",
                     "maxLength": 72,
@@ -7865,6 +7956,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 72,
                     "minLength": 6
+                },
+                "teamInviteId": {
+                    "type": "string"
                 }
             }
         },
@@ -8167,6 +8261,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedDate": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.OrganizationUserInvite": {
+            "type": "object",
+            "properties": {
+                "created_date": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "expire_date": {
+                    "type": "string"
+                },
+                "invite_id": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "role": {
                     "type": "string"
                 }
             }
@@ -8795,6 +8912,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.TeamUserInvite": {
+            "type": "object",
+            "properties": {
+                "created_date": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "expire_date": {
+                    "type": "string"
+                },
+                "invite_id": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "team_id": {
                     "type": "string"
                 }
             }

@@ -429,6 +429,8 @@ definitions:
         type: string
       name:
         type: string
+      orgInviteId:
+        type: string
       password1:
         maxLength: 72
         minLength: 6
@@ -436,6 +438,8 @@ definitions:
       password2:
         maxLength: 72
         minLength: 6
+        type: string
+      teamInviteId:
         type: string
     required:
     - email
@@ -641,6 +645,21 @@ definitions:
       name:
         type: string
       updatedDate:
+        type: string
+    type: object
+  thunderdome.OrganizationUserInvite:
+    properties:
+      created_date:
+        type: string
+      email:
+        type: string
+      expire_date:
+        type: string
+      invite_id:
+        type: string
+      organization_id:
+        type: string
+      role:
         type: string
     type: object
   thunderdome.Poker:
@@ -1053,6 +1072,21 @@ definitions:
       name:
         type: string
       role:
+        type: string
+    type: object
+  thunderdome.TeamUserInvite:
+    properties:
+      created_date:
+        type: string
+      email:
+        type: string
+      expire_date:
+        type: string
+      invite_id:
+        type: string
+      role:
+        type: string
+      team_id:
         type: string
     type: object
   thunderdome.User:
@@ -2090,6 +2124,58 @@ paths:
           schema:
             $ref: '#/definitions/http.standardJsonResponse'
       summary: Create Guest User
+      tags:
+      - auth
+  /auth/invite/organization/{inviteId}:
+    get:
+      description: Get a organization user invite details
+      parameters:
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.OrganizationUserInvite'
+                  type: array
+              type: object
+      summary: Get Organization Invite
+      tags:
+      - auth
+  /auth/invite/team/{inviteId}:
+    get:
+      description: Get a team user invite details
+      parameters:
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.TeamUserInvite'
+                  type: array
+              type: object
+      summary: Get Team Invite
       tags:
       - auth
   /auth/ldap:

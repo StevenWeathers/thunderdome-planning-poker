@@ -227,15 +227,29 @@ func (d *OrganizationService) OrganizationUserGetInviteByID(ctx context.Context,
 	oui := thunderdome.OrganizationUserInvite{}
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT invite_id, organization_id, email, role, created_date, expire_date
- 				FROM thunderdome.organization_user_invite;`,
+ 				FROM thunderdome.organization_user_invite WHERE invite_id = $1;`,
 		InviteID,
-	).Scan(&oui.InviteId, oui.OrganizationId, oui.Email, oui.Role, oui.CreatedDate, oui.ExpireDate)
+	).Scan(&oui.InviteId, &oui.OrganizationId, &oui.Email, &oui.Role, &oui.CreatedDate, &oui.ExpireDate)
 
 	if err != nil {
 		return oui, fmt.Errorf("organization get user invite query error: %v", err)
 	}
 
 	return oui, nil
+}
+
+// OrganizationDeleteUserInvite deletes a user organization invite
+func (d *OrganizationService) OrganizationDeleteUserInvite(ctx context.Context, InviteID string) error {
+	_, err := d.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.organization_user_invite where invite_id = $1;`,
+		InviteID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("organization delete user invite query error: %v", err)
+	}
+
+	return nil
 }
 
 // OrganizationTeamList gets a list of organization teams

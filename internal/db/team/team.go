@@ -169,15 +169,30 @@ func (d *Service) TeamInviteUser(ctx context.Context, TeamID string, Email strin
 func (d *Service) TeamUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.TeamUserInvite, error) {
 	tui := thunderdome.TeamUserInvite{}
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT invite_id, team_id, email, role, created_date, expire_date FROM thunderdome.team_user_invite;`,
+		`SELECT invite_id, team_id, email, role, created_date, expire_date
+ 				FROM thunderdome.team_user_invite WHERE invite_id = $1;`,
 		InviteID,
-	).Scan(&tui.InviteId, tui.TeamId, tui.Email, tui.Role, tui.CreatedDate, tui.ExpireDate)
+	).Scan(&tui.InviteId, &tui.TeamId, &tui.Email, &tui.Role, &tui.CreatedDate, &tui.ExpireDate)
 
 	if err != nil {
 		return tui, fmt.Errorf("team get user invite query error: %v", err)
 	}
 
 	return tui, nil
+}
+
+// TeamDeleteUserInvite deletes a user team invite
+func (d *Service) TeamDeleteUserInvite(ctx context.Context, InviteID string) error {
+	_, err := d.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.team_user_invite where invite_id = $1;`,
+		InviteID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("team delete user invite query error: %v", err)
+	}
+
+	return nil
 }
 
 // TeamUserList gets a list of team users

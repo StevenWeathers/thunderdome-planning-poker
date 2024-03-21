@@ -58,6 +58,7 @@ type OrganizationDataSvc interface {
 	OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error
 	OrganizationInviteUser(ctx context.Context, OrgID string, Email string, Role string) (string, error)
 	OrganizationUserGetInviteByID(ctx context.Context, InviteID string) (OrganizationUserInvite, error)
+	OrganizationDeleteUserInvite(ctx context.Context, InviteID string) error
 	OrganizationTeamList(ctx context.Context, OrgID string, Limit int, Offset int) []*Team
 	OrganizationTeamCreate(ctx context.Context, OrgID string, TeamName string) (*Team, error)
 	OrganizationTeamUserRole(ctx context.Context, UserID string, OrgID string, TeamID string) (string, string, error)
