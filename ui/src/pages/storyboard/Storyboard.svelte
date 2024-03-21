@@ -33,8 +33,7 @@
   export let eventTag;
 
   const { AllowRegistration, AllowGuests } = AppConfig;
-  const loginOrRegister =
-    AllowRegistration || AllowGuests ? appRoutes.register : appRoutes.login;
+  const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
   const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws';
