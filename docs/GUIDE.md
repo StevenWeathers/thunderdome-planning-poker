@@ -225,3 +225,5 @@ This is where you can define what each color means.
 ## Contributions
 
 Thunderdome is released as open source software, the code is hosted on Github and licensed Apache 2.0.
+
+_v3.6.3_
