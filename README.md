@@ -4,7 +4,7 @@
 
 # Thunderdome
 
-🆓 Free to use! [Thunderdome Open Source Planning Poker](https://thunderdome.dev/)
+🆓 Free to use! [Thunderdome Open Source Poker Planner](https://thunderdome.dev/)
 
 💵 [Premium Options Available](https://thunderdome.dev/subscriptions/pricing)
 
