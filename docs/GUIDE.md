@@ -10,11 +10,11 @@ Create a new account, or join as guest.
 
 Having an account lets you save your battles and more.
 
-- Name
+- Name 
 This will be visible to others.
-- Email (for account)
-- Password (for account)
-Use a strong password. Type it again to confirm
+- Email (for account) 
+- Password (for account) 
+Use a strong password. Type it again to confirm. 
 
 You will receive an email to confirm your new account.
 
@@ -25,8 +25,8 @@ Use the email/password you created when registering.
 ![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/7a9ff086-fd30-4496-a1ee-a083370b9a5d)
 
 
-- Email
-- Password
+- Email 
+- Password 
 
 _OIDC Providers coming soon._
 
@@ -44,19 +44,19 @@ Warrior, it is all about you! Control your Thunderdome experience.
 
 ![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/4c4a4512-538e-4150-b0cf-7864046fb1ff)
 
-- Name
+- Name 
 This will be visible to others.
-- Email
+- Email 
 Update your account email, or enter one if you are a guest.
-- Country (optional)
-- Locale, default: English
+- Country (optional) 
+- Locale, default: English 
 8 locales to choose from.
-- Company (optional)
-- Job Title (optional)
-- Theme, default: auto
+- Company (optional) 
+- Job Title (optional) 
+- Theme, default: auto 
 The default lets the operating system and browser define dark or light, if supported. If you prefer a darker or lighter interface, you may choose it here.
-- Option: Enable Battle Notification, default: true
-- Avatar, default: robohash
+- Option: Enable Battle Notification, default: true 
+- Avatar, default: robohash 
 Several others to choose from, pick your flavor; mp, identicon, monsterid, wavatar, retro.
 
 ### API Access
@@ -93,17 +93,17 @@ You can create a battle to determine the size of a story, or join one in progres
 
 ![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/da9b6c0b-e0ba-48d6-b999-4dca19772f5f)
 
-- Name
-- Team (optional)
-- Point Range Allowed, default: [ 1, 2, 3, 5, 8, 13, ? ]
-- Plans
-Upload an XML or CSV for plans, or add manually. See note in Plans.
-- Point Average Rounding, default: Ceil
-Other options; Round, Floor.
-- Option: Auto Finish Voting, default: true
-- Option: Hide Voter Identity, default: false
-- Passcode (optional)
-- Leader Code (optional)
+- Name 
+- Team (optional) 
+- Point Range Allowed, default: [ 1, 2, 3, 5, 8, 13, ? ] 
+- Plans 
+Upload an XML or CSV for plans, or add manually. See note in Plans. 
+- Point Average Rounding, default: Ceil 
+Other options; Round, Floor. 
+- Option: Auto Finish Voting, default: true 
+- Option: Hide Voter Identity, default: false 
+- Passcode (optional) 
+- Leader Code (optional) 
 
 ### Battle
 
@@ -133,17 +133,17 @@ _Type,Title,ReferenceId,Link,Description,AcceptanceCriteria_
 
 #### Create a Plan
 
-- Type, default: Story
-Other Types: Bug, Spike, Epic, Task, Subtask
-- Name
-- Reference ID
-- Link
-- Priority
-Priorities; Blocker, Highest, High, Medium, Low, Lowest
-- Description
-A full text editor is supplied to provide a detailed description.
-- Acceptance Criteria
-A full text editor is supplied, feel free to use Gherkin statements.
+- Type, default: Story 
+Other Types: Bug, Spike, Epic, Task, Subtask 
+- Name 
+- Reference ID 
+- Link 
+- Priority 
+Priorities; Blocker, Highest, High, Medium, Low, Lowest 
+- Description 
+A full text editor is supplied to provide a detailed description. 
+- Acceptance Criteria 
+A full text editor is supplied, feel free to use Gherkin statements. 
 
 ### Warriors
 
@@ -157,31 +157,31 @@ Send a link for others to join the battle.
 
 Facilitates an agile sprint retrospective.
 
-Retrospectives happen in phases. The first phase is the Prime Directive. You  may edit or delete the retro at any time.
+Retrospectives happen in phases. The first phase is the Prime Directive. You may edit or delete the retro at any time.
 
-1. Prime Directive
-2. Brainstorm
-Add comments. What went well? What needs improvement? I want to ask...
-3. Group
-Organize comments into topics. Drag and drop to sort.
-4. Vote
-Vote for groups to discuss first.
-5. Action Items
-Add Action Items, the grouping and voting phases become locked.
-6. Done
-Export the Retro
+1. Prime Directive 
+2. Brainstorm 
+Add comments. What went well? What needs improvement? I want to ask... 
+3. Group 
+Organize comments into topics. Drag and drop to sort. 
+4. Vote 
+Vote for groups to discuss first. 
+5. Action Items 
+Add Action Items, the grouping and voting phases become locked. 
+6. Done 
+Export the Retro 
 
 ![image](https://user-images.githubusercontent.com/846933/173260209-3ef3299f-f1b2-41e8-802f-17d40649c66d.png)
 
 ### Create a Retro
 
-- Name
-- Team (optional)
-- Join Code (optional)
-- Fac. Code (optional)
-- Max Group Votes per User, default: 3
-- Brainstorm Phase Feedback Visibility, default: Feedback Visible
-Other options include concealed and hidden. Determines if team members can see each other's suggestions.
+- Name 
+- Team (optional) 
+- Join Code (optional) 
+- Fac. Code (optional) 
+- Max Group Votes per User, default: 3 
+- Brainstorm Phase Feedback Visibility, default: Feedback Visible 
+Other options include concealed and hidden. Determines if team members can see each other's suggestions. 
 
 ## Storyboards
 
@@ -191,24 +191,24 @@ Stories are units of work that need to be sized.
 
 A goal is a way to group stories.
 
-- Name (optional)
+- Name (optional) 
 
 #### Columns
 
 A column is customizable and serves as a way to track stories throughout the goal.
 
-- Title Text (optional)
+- Title Text (optional) 
 
 #### Add Story
 
 A story is a unit of work. It can be in an open or closed state.
 
-- Name
-- Link
-- Points
-- Color
-- Content
-- Discussion
+- Name 
+- Link 
+- Points 
+- Color 
+- Content 
+- Discussion 
 
 ### Personas
 
@@ -216,9 +216,9 @@ _Coming Soon_
 
 ### Add Persona
 
-- Name
-- Role
-- Description
+- Name 
+- Role 
+- Description 
 
 ### Color Legend
 
@@ -232,10 +232,10 @@ This is where you can define what each color means.
 
 ### Create a Storyboard
 
-- Name
-- Team (optional)
-- Passcode (optional)
-- Facilitator Code (optional)
+- Name 
+- Team (optional) 
+- Passcode (optional) 
+- Facilitator Code (optional) 
 
 ## Teams and Team Standups
 
