@@ -60,7 +60,7 @@ See API Documentation here [Thunderdome API Docs](https://thunderdome.dev/swagge
 
 ### Jira Integration (premium only)
 
-Integrate directly with your team's backlog.
+Integrate directly with your team's backlog to import your stories to point.
 
 _Other integrations coming soon._ 
 
