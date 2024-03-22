@@ -29,7 +29,7 @@ _OIDC Providers coming soon._
 
 ### Password Retrieval
 
-Forgot your password? Thunderdome can send a link to your email.
+Forgot your password? Thunderdome can send a password reset link to your email.
 
 ## Profile
 
