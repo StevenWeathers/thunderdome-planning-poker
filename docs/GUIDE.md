@@ -1,6 +1,6 @@
 # A Warrior's Guide to Thunderdome
 
-Thunderdome is a fun way to perform agile scrum planning. See Wikipedia.
+Thunderdome is a fun way to facilitate agile scrum practices including Story pointing (battles), Sprint Retrospectives, Story mapping, Async Daily Standup (team standup) and more.
 
 As a new warrior in this realm, let this be your guide. First, we need to know who you are.
 
