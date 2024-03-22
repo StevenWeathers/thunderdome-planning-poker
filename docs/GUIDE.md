@@ -197,6 +197,8 @@ A story is a unit of work. It can be in an open or closed state.
 
 ### Personas
 
+_Coming Soon_
+
 ### Add Persona
 
 - Name
