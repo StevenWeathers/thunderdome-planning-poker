@@ -22,6 +22,9 @@ You will receive an email to confirm your new account.
 
 Use the email/password you created when registering.
 
+![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/7a9ff086-fd30-4496-a1ee-a083370b9a5d)
+
+
 - Email
 - Password
 
@@ -31,11 +34,15 @@ _OIDC Providers coming soon._
 
 Forgot your password? Thunderdome can send a password reset link to your email.
 
+![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/a42e8620-dbe8-4ec4-a784-63d19fcc1327)
+
 ## Profile
 
 Warrior, it is all about you! Control your Thunderdome experience.
 
 ### Details
+
+![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/4c4a4512-538e-4150-b0cf-7864046fb1ff)
 
 - Name
 This will be visible to others.
@@ -58,6 +65,10 @@ Create an API key to integrate Thunderdome with your tools.
 
 See API Documentation here [Thunderdome API Docs](https://thunderdome.dev/swagger/index.html)
 
+![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/431ef5a7-04fc-408c-90a7-f3dbb8690bf8)
+
+![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/8e81b994-1cca-4f84-8bbb-4957527573fb)
+
 ### Jira Integration (premium only)
 
 Integrate directly with your team's backlog to import your stories to point.
@@ -70,6 +81,8 @@ This is the Thunderdome, but you are free to leave. We will erase all data about
 
 **This is permanent:** All poker sessions, retros, story maps, and orgs/teams directly owned by your account will also be deleted.
 
+![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/ae903d0a-d58c-4319-bf62-455e4ebf040f)
+
 ## Battle
 
 In Thunderdome, an agile poker planning session is known as a Battle.
@@ -77,6 +90,8 @@ In Thunderdome, an agile poker planning session is known as a Battle.
 You can create a battle to determine the size of a story, or join one in progress.
 
 ### Create a Battle
+
+![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/da9b6c0b-e0ba-48d6-b999-4dca19772f5f)
 
 - Name
 - Team (optional)
