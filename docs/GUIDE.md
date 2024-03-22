@@ -140,7 +140,7 @@ Send a link for others to join the battle.
 
 ## Retrospectives
 
-Review your battles.
+Facilitates an agile sprint retrospective.
 
 Retrospectives happen in phases. The first phase is the Prime Directive. You  may edit or delete the retro at any time.
 
