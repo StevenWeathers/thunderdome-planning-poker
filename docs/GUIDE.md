@@ -10,10 +10,10 @@ Create a new account, or join as guest.
 
 Having an account lets you save your battles and more.
 
-- Name 
+- Name  
 This will be visible to others.
 - Email (for account) 
-- Password (for account) 
+- Password (for account)  
 Use a strong password. Type it again to confirm. 
 
 You will receive an email to confirm your new account.
@@ -44,19 +44,19 @@ Warrior, it is all about you! Control your Thunderdome experience.
 
 ![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/4c4a4512-538e-4150-b0cf-7864046fb1ff)
 
-- Name 
+- Name  
 This will be visible to others.
-- Email 
+- Email  
 Update your account email, or enter one if you are a guest.
 - Country (optional) 
-- Locale, default: English 
+- Locale, default: English  
 8 locales to choose from.
 - Company (optional) 
 - Job Title (optional) 
-- Theme, default: auto 
+- Theme, default: auto  
 The default lets the operating system and browser define dark or light, if supported. If you prefer a darker or lighter interface, you may choose it here.
 - Option: Enable Battle Notification, default: true 
-- Avatar, default: robohash 
+- Avatar, default: robohash  
 Several others to choose from, pick your flavor; mp, identicon, monsterid, wavatar, retro.
 
 ### API Access
@@ -96,9 +96,9 @@ You can create a battle to determine the size of a story, or join one in progres
 - Name 
 - Team (optional) 
 - Point Range Allowed, default: [ 1, 2, 3, 5, 8, 13, ? ] 
-- Plans 
+- Plans  
 Upload an XML or CSV for plans, or add manually. See note in Plans. 
-- Point Average Rounding, default: Ceil 
+- Point Average Rounding, default: Ceil  
 Other options; Round, Floor. 
 - Option: Auto Finish Voting, default: true 
 - Option: Hide Voter Identity, default: false 
@@ -133,16 +133,16 @@ _Type,Title,ReferenceId,Link,Description,AcceptanceCriteria_
 
 #### Create a Plan
 
-- Type, default: Story 
+- Type, default: Story  
 Other Types: Bug, Spike, Epic, Task, Subtask 
 - Name 
 - Reference ID 
 - Link 
-- Priority 
+- Priority  
 Priorities; Blocker, Highest, High, Medium, Low, Lowest 
-- Description 
+- Description  
 A full text editor is supplied to provide a detailed description. 
-- Acceptance Criteria 
+- Acceptance Criteria  
 A full text editor is supplied, feel free to use Gherkin statements. 
 
 ### Warriors
@@ -159,16 +159,16 @@ Facilitates an agile sprint retrospective.
 
 Retrospectives happen in phases. The first phase is the Prime Directive. You may edit or delete the retro at any time.
 
-1. Prime Directive 
-2. Brainstorm 
+1. Prime Directive  
+2. Brainstorm  
 Add comments. What went well? What needs improvement? I want to ask... 
-3. Group 
+3. Group  
 Organize comments into topics. Drag and drop to sort. 
-4. Vote 
+4. Vote  
 Vote for groups to discuss first. 
-5. Action Items 
+5. Action Items  
 Add Action Items, the grouping and voting phases become locked. 
-6. Done 
+6. Done  
 Export the Retro 
 
 ![image](https://user-images.githubusercontent.com/846933/173260209-3ef3299f-f1b2-41e8-802f-17d40649c66d.png)
@@ -180,7 +180,7 @@ Export the Retro
 - Join Code (optional) 
 - Fac. Code (optional) 
 - Max Group Votes per User, default: 3 
-- Brainstorm Phase Feedback Visibility, default: Feedback Visible 
+- Brainstorm Phase Feedback Visibility, default: Feedback Visible  
 Other options include concealed and hidden. Determines if team members can see each other's suggestions. 
 
 ## Storyboards
