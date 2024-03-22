@@ -8,7 +8,11 @@ As a new warrior in this realm, let this be your guide. First, we need to know w
 
 Create a new account, or join as guest.
 
+![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/c6f7a12c-4d81-4622-bae4-9356bdf16e62)
+
 Having an account lets you save your battles and more.
+
+![image](https://github.com/scottux/thunderdome-planning-poker/assets/135884/395d06ca-6485-4293-8482-31a685e3db56)
 
 - Name  
 This will be visible to others.
