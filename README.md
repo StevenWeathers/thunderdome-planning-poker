@@ -45,6 +45,7 @@ docker pull stevenweathers/thunderdome-planning-poker
 
 # Guides
 
+- [User Guide](docs/GUIDE.md)
 - [Configuring Thunderdome](docs/CONFIGURATION.md)
 - [Contributing Guide](docs/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull
   requests to us.
