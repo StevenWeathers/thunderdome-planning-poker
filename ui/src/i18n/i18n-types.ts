@@ -995,7 +995,7 @@ type RootTranslation = {
    */
   myRetros: string;
   /**
-   * M​y​ ​R​e​t​r​o​s
+   * T​eam​ ​R​e​t​r​o​s
    */
   teamRetros: string;
   /**
@@ -1003,7 +1003,7 @@ type RootTranslation = {
    */
   myStoryboards: string;
   /**
-   * M​y​ ​S​t​o​r​y​b​o​a​r​d​s
+   * Team​ ​S​t​o​r​y​b​o​a​r​d​s
    */
   teamStoryboards: string;
   /**
