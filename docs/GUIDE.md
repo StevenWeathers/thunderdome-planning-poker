@@ -68,6 +68,8 @@ _Other integrations coming soon._
 
 This is the Thunderdome, but you are free to leave. We will erase all data about you.
 
+**This is permanent:** All poker sessions, retros, story maps, and orgs/teams directly owned by your account will also be deleted.
+
 ## Battle
 
 In Thunderdome, an agile poker planning session is known as a Battle.
