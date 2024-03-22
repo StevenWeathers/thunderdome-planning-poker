@@ -70,7 +70,6 @@ type PokerDataSvc interface {
 	GetFacilitatorCode(PokerID string) (string, error)
 	GetGame(PokerID string, UserID string) (*Poker, error)
 	GetGamesByUser(UserID string, Limit int, Offset int) ([]*Poker, int, error)
-	GetTeamGamesByUser(UserID string, Limit int, Offset int) ([]*Poker, int, error)
 	ConfirmFacilitator(PokerID string, UserID string) error
 	GetUserActiveStatus(PokerID string, UserID string) error
 	GetUsers(PokerID string) []*PokerUser

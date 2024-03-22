@@ -19,10 +19,6 @@
   let battlesPage = 1;
   let battles = [];
 
-  let teamBattleCount = 0;
-  let teamBattlesPage = 1;
-  let teamBattles = [];
-
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
 
@@ -44,35 +40,9 @@
       });
   }
 
-  function getTeamBattles() {
-    const battlesOffset = (teamBattlesPage - 1) * battlesPageLimit;
-
-    xfetch(
-      `/api/users/${$user.id}/teams/battles?limit=${battlesPageLimit}&offset=${battlesOffset}`,
-    )
-      .then(res => res.json())
-      .then(function (result) {
-        teamBattles = result.data;
-        teamBattleCount = result.meta.count;
-      })
-      .catch(function () {
-        notifications.danger(
-          $LL.myBattlesError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
-        eventTag('fetch_battles', 'engagement', 'failure');
-      });
-  }
-
   const changePage = evt => {
     battlesPage = evt.detail;
     getBattles();
-  };
-
-  const changeTeamPage = evt => {
-    teamBattlesPage = evt.detail;
-    getTeamBattles();
   };
 
   onMount(() => {
@@ -81,7 +51,6 @@
       return;
     }
     getBattles();
-    getTeamBattles();
   });
 </script>
 
@@ -99,33 +68,31 @@
   </h1>
 
   <div class="flex flex-wrap">
-    <div class="w-full md:w-1/2 lg:w-3/5 md:pe-4">
-      <div class="mb-6">
-        <BoxList
-          items="{battles}"
-          itemType="battle"
-          pageRoute="{appRoutes.game}"
-          joinBtnText="{$LL.battleJoin({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}"
-          showOwner="{false}"
-          showOwnerName="{true}"
-          ownerNameField="teamName"
-          showFacilitatorIcon="{true}"
-          facilitatorsKey="leaders"
-          showCompletedStories="{true}"
-        />
-        {#if battleCount > battlesPageLimit}
-          <div class=" mt-6 pt-1 flex justify-center">
-            <Pagination
-              bind:current="{battlesPage}"
-              num_items="{battleCount}"
-              per_page="{battlesPageLimit}"
-              on:navigate="{changePage}"
-            />
-          </div>
-        {/if}
-      </div>
+    <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
+      <BoxList
+        items="{battles}"
+        itemType="battle"
+        pageRoute="{appRoutes.game}"
+        joinBtnText="{$LL.battleJoin({
+          friendly: AppConfig.FriendlyUIVerbs,
+        })}"
+        showOwner="{false}"
+        showOwnerName="{true}"
+        ownerNameField="teamName"
+        showFacilitatorIcon="{true}"
+        facilitatorsKey="leaders"
+        showCompletedStories="{true}"
+      />
+      {#if battleCount > battlesPageLimit}
+        <div class="mt-6 pt-1 flex justify-center">
+          <Pagination
+            bind:current="{battlesPage}"
+            num_items="{battleCount}"
+            per_page="{battlesPageLimit}"
+            on:navigate="{changePage}"
+          />
+        </div>
+      {/if}
     </div>
 
     <div class="w-full md:w-1/2 lg:w-2/5 md:ps-2 xl:ps-4">

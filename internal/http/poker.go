@@ -49,41 +49,6 @@ func (s *Service) handleGetUserGames() http.HandlerFunc {
 	}
 }
 
-// handleGetUserTeamGames looks up poker games associated with UserID teams
-// @Summary      Get PokerGames
-// @Description  get list of poker games for the user's teams
-// @Tags         poker
-// @Produce      json
-// @Param        userId  path    string  true   "the user ID to get poker games for"
-// @Param        limit   query   int     false  "Max number of results to return"
-// @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Poker}
-// @Failure      403     object  standardJsonResponse{}
-// @Failure      404     object  standardJsonResponse{}
-// @Security     ApiKeyAuth
-// @Router       /users/{userId}/teams/battles [get]
-func (s *Service) handleGetUserTeamGames() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		Limit, Offset := getLimitOffsetFromRequest(r)
-		vars := mux.Vars(r)
-		UserID := vars["userId"]
-
-		battles, Count, err := s.PokerDataSvc.GetTeamGamesByUser(UserID, Limit, Offset)
-		if err != nil {
-			s.Failure(w, r, http.StatusNotFound, Errorf(ENOTFOUND, "BATTLE_NOT_FOUND"))
-			return
-		}
-
-		Meta := &pagination{
-			Count:  Count,
-			Offset: Offset,
-			Limit:  Limit,
-		}
-
-		s.Success(w, r, http.StatusOK, battles, Meta)
-	}
-}
-
 type battleRequestBody struct {
 	BattleName           string               `json:"name" validate:"required"`
 	PointValuesAllowed   []string             `json:"pointValuesAllowed" validate:"required"`
