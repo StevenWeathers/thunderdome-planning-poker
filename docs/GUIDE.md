@@ -47,7 +47,7 @@ Update your account email, or enter one if you are a guest.
 - Company (optional)
 - Job Title (optional)
 - Theme, default: auto
-If you prefer a darker or lighter interface, you may choose it here.
+The default lets the operating system and browser define dark or light, if supported. If you prefer a darker or lighter interface, you may choose it here.
 - Option: Enable Battle Notification, default: true
 - Avatar, default: robohash
 Several others to choose from, pick your flavor; mp, identicon, monsterid, wavatar, retro.
