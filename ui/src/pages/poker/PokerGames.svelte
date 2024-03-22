@@ -109,6 +109,8 @@
             friendly: AppConfig.FriendlyUIVerbs,
           })}"
           showOwner="{false}"
+          showOwnerName="{true}"
+          ownerNameField="teamName"
           showFacilitatorIcon="{true}"
           facilitatorsKey="leaders"
           showCompletedStories="{true}"
@@ -120,39 +122,6 @@
               num_items="{battleCount}"
               per_page="{battlesPageLimit}"
               on:navigate="{changePage}"
-            />
-          </div>
-        {/if}
-      </div>
-
-      <div class="mb-6">
-        <h1
-          class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white md:pe-4"
-        >
-          {$LL.teamBattles({ friendly: AppConfig.FriendlyUIVerbs })}
-        </h1>
-
-        <BoxList
-          items="{teamBattles}"
-          itemType="battle"
-          pageRoute="{appRoutes.game}"
-          joinBtnText="{$LL.battleJoin({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}"
-          showOwner="{false}"
-          showOwnerName="{true}"
-          ownerNameField="teamName"
-          showFacilitatorIcon="{true}"
-          facilitatorsKey="leaders"
-          showCompletedStories="{true}"
-        />
-        {#if teamBattleCount > battlesPageLimit}
-          <div class="mb-6 mt-6 pt-1 flex justify-center">
-            <Pagination
-              bind:current="{teamBattlesPage}"
-              num_items="{teamBattleCount}"
-              per_page="{battlesPageLimit}"
-              on:navigate="{changeTeamPage}"
             />
           </div>
         {/if}

@@ -341,94 +341,22 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 
 	gameRows, gamesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, COALESCE(b.active_story_id::text, ''), b.point_values_allowed, b.auto_finish_voting,
-		 b.point_average_rounding, b.created_date, b.updated_date,
-		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS stories,
-		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators
+		  b.point_average_rounding, b.created_date, b.updated_date,
+		  CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS stories,
+		  CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators,
+		  min(COALESCE(t.name, '')) as team_name
 		FROM thunderdome.poker b
 		LEFT JOIN thunderdome.poker_story p ON b.id = p.poker_id
 		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
 		LEFT JOIN thunderdome.poker_user bw ON b.id = bw.poker_id
-		WHERE bw.user_id = $1 AND bw.abandoned = false
+		LEFT JOIN thunderdome.team t ON t.id = b.team_id
+		LEFT JOIN thunderdome.team_user tu ON tu.team_id = t.id
+		WHERE (bw.user_id = $1 AND bw.abandoned = false) OR (tu.user_id = $1)
 		GROUP BY b.id ORDER BY b.created_date DESC
 		LIMIT $2 OFFSET $3
 	`, UserID, Limit, Offset)
 	if gamesErr != nil {
 		return nil, Count, fmt.Errorf("get poker by user query error: %v", gamesErr)
-	}
-
-	defer gameRows.Close()
-	for gameRows.Next() {
-		var stories string
-		var pv string
-		var facilitators string
-		var b = &thunderdome.Poker{
-			Users:              make([]*thunderdome.PokerUser, 0),
-			Stories:            make([]*thunderdome.Story, 0),
-			VotingLocked:       true,
-			PointValuesAllowed: make([]string, 0),
-			AutoFinishVoting:   true,
-			Facilitators:       make([]string, 0),
-		}
-		if err := gameRows.Scan(
-			&b.Id,
-			&b.Name,
-			&b.VotingLocked,
-			&b.ActiveStoryID,
-			&pv,
-			&b.AutoFinishVoting,
-			&b.PointAverageRounding,
-			&b.CreatedDate,
-			&b.UpdatedDate,
-			&stories,
-			&facilitators,
-		); err != nil {
-			d.Logger.Error("error getting poker by user", zap.Error(e))
-		} else {
-			_ = json.Unmarshal([]byte(stories), &b.Stories)
-			_ = json.Unmarshal([]byte(pv), &b.PointValuesAllowed)
-			_ = json.Unmarshal([]byte(facilitators), &b.Facilitators)
-
-			games = append(games, b)
-		}
-	}
-
-	return games, Count, nil
-}
-
-// GetTeamGamesByUser gets a list of games that belonging to teams a user is on by UserID
-func (d *Service) GetTeamGamesByUser(UserID string, Limit int, Offset int) ([]*thunderdome.Poker, int, error) {
-	var Count int
-	var games = make([]*thunderdome.Poker, 0)
-
-	e := d.DB.QueryRow(`
-		SELECT COUNT(*) FROM thunderdome.poker b
-		LEFT JOIN thunderdome.team t ON t.id = b.team_id
-		LEFT JOIN thunderdome.team_user tu ON tu.team_id = t.id
-		WHERE tu.user_id = $1;
-	`, UserID).Scan(
-		&Count,
-	)
-	if e != nil {
-		return nil, Count, fmt.Errorf("get team poker by user count query error: %v", e)
-	}
-
-	gameRows, gamesErr := d.DB.Query(`
-		SELECT b.id, b.name, b.voting_locked, COALESCE(b.active_story_id::text, ''), b.point_values_allowed, b.auto_finish_voting,
-		 b.point_average_rounding, b.created_date, b.updated_date,
-		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS stories,
-		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators,
-		min(t.name) as team_name
-		FROM thunderdome.poker b
-		LEFT JOIN thunderdome.poker_story p ON b.id = p.poker_id
-		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
-		LEFT JOIN thunderdome.team t ON t.id = b.team_id
-		LEFT JOIN thunderdome.team_user tu ON tu.team_id = t.id
-		WHERE tu.user_id = $1
-		GROUP BY b.id ORDER BY b.created_date DESC
-		LIMIT $2 OFFSET $3
-	`, UserID, Limit, Offset)
-	if gamesErr != nil {
-		return nil, Count, fmt.Errorf("get team poker by user query error: %v", gamesErr)
 	}
 
 	defer gameRows.Close()
