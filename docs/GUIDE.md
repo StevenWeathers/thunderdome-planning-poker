@@ -2,7 +2,7 @@
 
 Thunderdome is a fun way to perform agile scrum planning. See Wikipedia.
 
-As a new warrior in this realm, let this be your guide to Battles. First, we need to know who you are.
+As a new warrior in this realm, let this be your guide. First, we need to know who you are.
 
 ## Register (optional)
 
