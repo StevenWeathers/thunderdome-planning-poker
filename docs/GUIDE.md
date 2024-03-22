@@ -222,6 +222,10 @@ This is where you can define what each color means.
 - Passcode (optional)
 - Facilitator Code (optional)
 
+## Teams and Team Standups
+
+Asynchronous daily standup tool to aid in speeding up standup or making standups completely async depending on team practices.
+
 ## Languages
 
 🌍 Thunderdome has made every effort to be an international tool, and help developers of all nationalities unite together.
