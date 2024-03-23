@@ -995,10 +995,6 @@ type RootTranslation = {
    */
   myRetros: string;
   /**
-   * M​y​ ​R​e​t​r​o​s
-   */
-  teamRetros: string;
-  /**
    * M​y​ ​S​t​o​r​y​b​o​a​r​d​s
    */
   myStoryboards: string;
