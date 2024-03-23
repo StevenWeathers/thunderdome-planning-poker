@@ -270,7 +270,6 @@ const pt: Translation = {
   myRetros: 'Minhas Retros',
   teamRetros: 'Equipe Retros',
   myStoryboards: 'Meus Storyboards',
-  teamStoryboards: 'Equipe Storyboards',
   name: 'Nome',
   needsImprovement: 'Precisa de melhorias',
   nextPhase: 'Próxima Fase',
@@ -543,7 +542,6 @@ const pt: Translation = {
   verified: 'Verificado',
   registeredUsers: 'Usuários Registrados',
   myBattles: '{friendly|{false:Minhas Batalhas, true:Meus jogos}}',
-  teamBattles: '{friendly|{false:Equipe Batalhas, true:Equipe jogos}}',
   createBattle: '{friendly|{false:Criar uma batalha, true:Criar um jogo}}',
   countPlansPointed: {
     true: '{totalPointed} de {totalPlans} histórias pontuadas',

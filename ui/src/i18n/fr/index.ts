@@ -264,9 +264,7 @@ const fr: Translation = {
   mfaTokenLabel: 'Authenticator Token',
   mfaTokenPlaceholder: 'Enter token from authenticator app',
   myRetros: 'My Retros',
-  teamRetros: "L'équipe Retros",
   myStoryboards: 'My Storyboards',
-  teamStoryboards: "L'équipe Storyboards",
   name: 'Nom',
   needsImprovement: 'Needs Improvement',
   nextPhase: 'Next Phase',
@@ -540,7 +538,6 @@ const fr: Translation = {
   verified: 'Verifié',
   registeredUsers: 'Registered Users',
   myBattles: '{friendly|{false:Mes Batailles, true:Mes Jeux}}',
-  teamBattles: "{friendly|{false:L'équipe Batailles, true:L'équipe Jeux}}",
   createBattle: '{friendly|{false:Créer une Bataille, true:Créer un Jeu}}',
   countPlansPointed: {
     true: '{totalPointed} sur {totalPlans} stories pointées',

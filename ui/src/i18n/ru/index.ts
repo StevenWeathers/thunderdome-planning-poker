@@ -259,9 +259,7 @@ const ru: Translation = {
   mfaTokenLabel: 'Authenticator Token',
   mfaTokenPlaceholder: 'Enter token from authenticator app',
   myRetros: 'My Retros',
-  teamRetros: 'Team Retros',
   myStoryboards: 'My Storyboards',
-  teamStoryboards: 'Team Storyboards',
   name: 'Name',
   needsImprovement: 'Needs Improvement',
   nextPhase: 'Next Phase',
@@ -529,7 +527,6 @@ const ru: Translation = {
   verified: 'Подтвержден',
   registeredUsers: 'Registered Users',
   myBattles: '{friendly|{false:Мои битвы, true:Мои игры}}',
-  teamBattles: '{friendly|{false:Team битвы, true:Team игры}}',
   createBattle: '{friendly|{false:Создать битву, true:Создать игру}}',
   countPlansPointed: {
     true: '{totalPointed} of {totalPlans} stories pointed',

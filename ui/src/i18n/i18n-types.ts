@@ -1003,10 +1003,6 @@ type RootTranslation = {
    */
   myStoryboards: string;
   /**
-   * M​y​ ​S​t​o​r​y​b​o​a​r​d​s
-   */
-  teamStoryboards: string;
-  /**
    * N​a​m​e
    */
   name: string;
@@ -2029,11 +2025,6 @@ type RootTranslation = {
    * @param {'false' | 'true'} friendly
    */
   myBattles: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
-  /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:Team ​B​a​t​t​l​e​s​,​ ​t​r​u​e​:​Team ​G​a​m​e​s​}​}
-   * @param {'false' | 'true'} friendly
-   */
-  teamBattles: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
   /**
    * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​C​r​e​a​t​e​ ​B​a​t​t​l​e​,​ ​t​r​u​e​:​C​r​e​a​t​e​ ​G​a​m​e​}​}
    * @param {'false' | 'true'} friendly
@@ -3321,10 +3312,6 @@ export type TranslationFunctions = {
    */
   myStoryboards: () => LocalizedString;
   /**
-   * Team Storyboards
-   */
-  teamStoryboards: () => LocalizedString;
-  /**
    * Name
    */
   name: () => LocalizedString;
@@ -4333,10 +4320,6 @@ export type TranslationFunctions = {
    * {friendly|{false:My Battles, true:My Games}}
    */
   myBattles: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
-  /**
-   * {friendly|{false:Team Battles, true:Team Games}}
-   */
-  teamBattles: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
   /**
    * {friendly|{false:Create Battle, true:Create Game}}
    */

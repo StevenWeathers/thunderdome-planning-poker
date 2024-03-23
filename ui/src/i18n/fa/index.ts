@@ -261,7 +261,6 @@ const fa: Translation = {
   myRetros: 'My Retros',
   teamRetros: 'Team Retros',
   myStoryboards: 'My Storyboards',
-  teamStoryboards: 'Team Storyboards',
   name: 'Name',
   needsImprovement: 'Needs Improvement',
   nextPhase: 'Next Phase',
@@ -529,7 +528,6 @@ const fa: Translation = {
   verified: 'Verified',
   registeredUsers: 'Registered Users',
   myBattles: '{friendly|{false:My Battles, true:My Games}}',
-  teamBattles: '{friendly|{false:Team Battles, true:Team Games}}',
   createBattle: '{friendly|{false:Create Battle, true:Create Game}}',
   countPlansPointed: {
     true: '{totalPointed} of {totalPlans} stories pointed',
