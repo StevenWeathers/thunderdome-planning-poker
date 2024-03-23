@@ -11,7 +11,7 @@ func (s *Service) SendWelcome(UserName string, UserEmail string, VerifyID string
 		hermes.Body{
 			Name: UserName,
 			Intros: []string{
-				"Welcome to the Thunderdome! Bring your own mouthguard.",
+				"Welcome to the Thunderdome!",
 			},
 			Actions: []hermes.Action{
 				{
@@ -26,7 +26,7 @@ func (s *Service) SendWelcome(UserName string, UserEmail string, VerifyID string
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},
@@ -75,7 +75,7 @@ func (s *Service) SendEmailVerification(UserName string, UserEmail string, Verif
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},
@@ -122,7 +122,7 @@ func (s *Service) SendForgotPassword(UserName string, UserEmail string, ResetID 
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},
@@ -162,7 +162,7 @@ func (s *Service) SendPasswordReset(UserName string, UserEmail string) error {
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},
@@ -202,7 +202,7 @@ func (s *Service) SendPasswordUpdate(UserName string, UserEmail string) error {
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},
@@ -242,7 +242,7 @@ func (s *Service) SendDeleteConfirmation(UserName string, UserEmail string) erro
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},
@@ -282,7 +282,7 @@ func (s *Service) SendEmailUpdate(UserName string, UserEmail string) error {
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},
@@ -322,7 +322,7 @@ func (s *Service) SendMergedUpdate(UserName string, UserEmail string) error {
 					Instructions: "Need help, or have questions? Visit our Github page",
 					Button: hermes.Button{
 						Text: "Github Repo",
-						Link: "https://github.com/StevenWeathers/thunderdome-planning-poker/",
+						Link: s.Config.RepoURL,
 					},
 				},
 			},

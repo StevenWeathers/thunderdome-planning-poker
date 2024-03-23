@@ -32,6 +32,7 @@ type AppConfig struct {
 	SubscriptionsEnabled      bool
 	SubscriptionCheckoutLink  string
 	SubscriptionManageLink    string
+	RepoURL                   string
 }
 
 type UIConfig struct {
