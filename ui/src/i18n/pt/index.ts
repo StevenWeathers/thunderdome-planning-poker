@@ -268,7 +268,6 @@ const pt: Translation = {
   mfaTokenLabel: 'Token do autenticador',
   mfaTokenPlaceholder: 'Insira o token do aplicativo autenticador',
   myRetros: 'Minhas Retros',
-  teamRetros: 'Equipe Retros',
   myStoryboards: 'Meus Storyboards',
   name: 'Nome',
   needsImprovement: 'Precisa de melhorias',

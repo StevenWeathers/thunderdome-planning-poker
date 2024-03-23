@@ -271,7 +271,6 @@ const it: Translation = {
   mfaTokenLabel: 'Token Autenticatore',
   mfaTokenPlaceholder: "Inserisci il token dell'app autenticatore",
   myRetros: 'I miei retros',
-  teamRetros: 'Team retros',
   myStoryboards: 'I miei storyboard',
   name: 'Nome',
   needsImprovement: 'Migliorabile',

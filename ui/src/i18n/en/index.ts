@@ -259,7 +259,6 @@ const en: BaseTranslation = {
   mfaTokenLabel: 'Authenticator Token',
   mfaTokenPlaceholder: 'Enter token from authenticator app',
   myRetros: 'My Retros',
-  teamRetros: 'Team Retros',
   myStoryboards: 'My Storyboards',
   name: 'Name',
   needsImprovement: 'Needs Improvement',

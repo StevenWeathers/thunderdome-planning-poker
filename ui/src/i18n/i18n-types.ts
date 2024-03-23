@@ -3299,10 +3299,7 @@ export type TranslationFunctions = {
    * My Retros
    */
   myRetros: () => LocalizedString;
-  /**
-   * Team Retros
-   */
-  teamRetros: () => LocalizedString;
+
   /**
    * My Storyboards
    */
