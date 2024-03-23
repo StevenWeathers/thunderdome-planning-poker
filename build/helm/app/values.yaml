@@ -1,0 +1,14 @@
+app:
+  name: app
+  group: app
+  replicaCount: 1
+  container:
+    image: define-me
+    port: 8080
+    config: []
+    env:
+       - key: key
+         value: value
+  service:
+    type: ClusterIP
+    port: 8080

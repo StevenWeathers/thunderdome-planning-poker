@@ -1,0 +1,22 @@
+app:
+  name: thunderdome
+  container:
+    image: stevenweathers/thunderdome-planning-poker
+    config:
+      - name: thunderdome-db-config
+    env: 
+      - key: APP_DOMAIN
+        value: localhost
+      - key: DB_HOST
+        value: thunderdome-db
+      - key: DB_USER
+        value: thunderdome
+      - key: DB_NAME
+        value: thunderdome
+  secrets:
+    - key: DB_PASS
+      value: secret
+    - key: COOKIE_HASHKEY
+      value: secret
+    - key: CONFIG_AES_HASHKEY
+      value: secret

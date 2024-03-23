@@ -1,0 +1,10 @@
+postgres:
+    name: thunderdome-db
+    config:
+        data:
+            - key: POSTGRES_DB
+              value: thunderdome
+            - key: POSTGRES_USER
+              value: thunderdome
+            - key: POSTGRES_PASSWORD
+              value: secret

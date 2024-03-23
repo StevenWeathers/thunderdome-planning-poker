@@ -1,0 +1,20 @@
+apiVersion: v2
+name: app
+description: Generic Application Chart
+type: application
+version: 0.1.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "1.16.0"
+
+keywords:
+  - app
+
+home: https://github.com/StevenWeathers/thunderdome-planning-poker/tree/master/build/helm
+
+maintainers:
+  - name: Steven Weathers
+    url: https://github.com/StevenWeathers
