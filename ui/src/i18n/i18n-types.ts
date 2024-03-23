@@ -3299,7 +3299,6 @@ export type TranslationFunctions = {
    * My Retros
    */
   myRetros: () => LocalizedString;
-
   /**
    * My Storyboards
    */
