@@ -48,6 +48,8 @@
       <BoxList
         items="{storyboards}"
         itemType="storyboard"
+        showOwnerName="{true}"
+        ownerNameField="teamName"
         pageRoute="{appRoutes.storyboard}"
         joinBtnText="{$LL.joinStoryboard()}"
       />

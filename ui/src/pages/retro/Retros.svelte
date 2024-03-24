@@ -50,6 +50,8 @@
         itemType="retro"
         pageRoute="{appRoutes.retro}"
         ownerField="ownerId"
+        showOwnerName="{true}"
+        ownerNameField="teamName"
         joinBtnText="{$LL.joinRetro()}"
       />
     </div>

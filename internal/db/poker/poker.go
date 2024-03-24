@@ -341,14 +341,17 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 
 	gameRows, gamesErr := d.DB.Query(`
 		SELECT b.id, b.name, b.voting_locked, COALESCE(b.active_story_id::text, ''), b.point_values_allowed, b.auto_finish_voting,
-		 b.point_average_rounding, b.created_date, b.updated_date,
-		CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS stories,
-		CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators
+		  b.point_average_rounding, b.created_date, b.updated_date,
+		  CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS stories,
+		  CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators,
+		  min(COALESCE(t.name, '')) as team_name
 		FROM thunderdome.poker b
 		LEFT JOIN thunderdome.poker_story p ON b.id = p.poker_id
 		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
 		LEFT JOIN thunderdome.poker_user bw ON b.id = bw.poker_id
-		WHERE bw.user_id = $1 AND bw.abandoned = false
+		LEFT JOIN thunderdome.team t ON t.id = b.team_id
+		LEFT JOIN thunderdome.team_user tu ON tu.team_id = t.id
+		WHERE (bw.user_id = $1 AND bw.abandoned = false) OR (tu.user_id = $1)
 		GROUP BY b.id ORDER BY b.created_date DESC
 		LIMIT $2 OFFSET $3
 	`, UserID, Limit, Offset)
@@ -381,6 +384,7 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 			&b.UpdatedDate,
 			&stories,
 			&facilitators,
+			&b.TeamName,
 		); err != nil {
 			d.Logger.Error("error getting poker by user", zap.Error(e))
 		} else {
