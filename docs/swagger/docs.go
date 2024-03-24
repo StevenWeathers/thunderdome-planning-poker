@@ -8222,6 +8222,9 @@ const docTemplate = `{
                 "teamId": {
                     "type": "string"
                 },
+                "teamName": {
+                    "type": "string"
+                },
                 "updatedDate": {
                     "type": "string"
                 },
@@ -8320,6 +8323,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phase": {
+                    "type": "string"
+                },
+                "teamName": {
                     "type": "string"
                 },
                 "updatedDate": {
@@ -8576,6 +8582,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/thunderdome.StoryboardPersona"
                     }
+                },
+                "teamName": {
+                    "type": "string"
                 },
                 "updatedDate": {
                     "type": "string"

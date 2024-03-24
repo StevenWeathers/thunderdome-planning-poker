@@ -8213,6 +8213,9 @@
                 "teamId": {
                     "type": "string"
                 },
+                "teamName": {
+                    "type": "string"
+                },
                 "updatedDate": {
                     "type": "string"
                 },
@@ -8311,6 +8314,9 @@
                     "type": "string"
                 },
                 "phase": {
+                    "type": "string"
+                },
+                "teamName": {
                     "type": "string"
                 },
                 "updatedDate": {
@@ -8567,6 +8573,9 @@
                     "items": {
                         "$ref": "#/definitions/thunderdome.StoryboardPersona"
                     }
+                },
+                "teamName": {
+                    "type": "string"
                 },
                 "updatedDate": {
                     "type": "string"
