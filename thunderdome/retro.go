@@ -35,6 +35,7 @@ type Retro struct {
 	FacilitatorCode      string         `json:"facilitatorCode" db:"facilitator_code"`
 	MaxVotes             int            `json:"maxVotes" db:"max_votes"`
 	BrainstormVisibility string         `json:"brainstormVisibility" db:"brainstorm_visibility"`
+	TeamName             string         `json:"teamName"`
 	CreatedDate          string         `json:"createdDate" db:"created_date"`
 	UpdatedDate          string         `json:"updatedDate" db:"updated_date"`
 }

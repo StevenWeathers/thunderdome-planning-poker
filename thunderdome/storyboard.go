@@ -24,6 +24,7 @@ type Storyboard struct {
 	Personas        []*StoryboardPersona `json:"personas"`
 	JoinCode        string               `json:"joinCode" db:"join_code"`
 	FacilitatorCode string               `json:"facilitatorCode" db:"facilitator_code"`
+	TeamName        string               `json:"teamName"`
 	CreatedDate     string               `json:"createdDate" db:"created_date"`
 	UpdatedDate     string               `json:"updatedDate" db:"updated_date"`
 }

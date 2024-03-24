@@ -235,9 +235,13 @@ func (d *Service) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, e
 func (d *Service) RetroGetByUser(UserID string) ([]*thunderdome.Retro, error) {
 	var retros = make([]*thunderdome.Retro, 0)
 	retroRows, retrosErr := d.DB.Query(`
-		SELECT b.id, b.name, b.owner_id, b.format, b.phase, b.created_date, b.updated_date
+		SELECT b.id, b.name, b.owner_id, b.format, b.phase, b.created_date, b.updated_date,
+		  MIN(COALESCE(t.name, '')) as teamName
 		FROM thunderdome.retro b
-		LEFT JOIN thunderdome.retro_user su ON b.id = su.retro_id WHERE su.user_id = $1 AND su.abandoned = false
+		LEFT JOIN thunderdome.retro_user su ON b.id = su.retro_id
+		LEFT JOIN thunderdome.team t ON t.id = b.team_id
+		LEFT JOIN thunderdome.team_user tu ON tu.team_id = t.id
+		WHERE (su.user_id = $1 AND su.abandoned = false) OR tu.user_id = $1
 		GROUP BY b.id ORDER BY b.created_date DESC;
 	`, UserID)
 	if retrosErr != nil {
@@ -257,6 +261,7 @@ func (d *Service) RetroGetByUser(UserID string) ([]*thunderdome.Retro, error) {
 			&b.Phase,
 			&b.CreatedDate,
 			&b.UpdatedDate,
+			&b.TeamName,
 		); err != nil {
 			d.Logger.Error("get retro by user error", zap.Error(err))
 		} else {
