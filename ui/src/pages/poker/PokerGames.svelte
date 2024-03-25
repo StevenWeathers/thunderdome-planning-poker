@@ -77,6 +77,8 @@
           friendly: AppConfig.FriendlyUIVerbs,
         })}"
         showOwner="{false}"
+        showOwnerName="{true}"
+        ownerNameField="teamName"
         showFacilitatorIcon="{true}"
         facilitatorsKey="leaders"
         showCompletedStories="{true}"

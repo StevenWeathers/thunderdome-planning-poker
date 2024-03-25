@@ -2,9 +2,11 @@
   import PageLayout from '../../components/global/PageLayout.svelte';
   import { onMount } from 'svelte';
   import { user } from '../../stores';
-  import { appRoutes } from '../../config';
+  import { AppConfig, appRoutes } from '../../config';
 
   export let router;
+
+  const { RepoURL } = AppConfig;
 
   onMount(() => {
     if (!$user.id) {
@@ -43,8 +45,7 @@
             Got a suggested feature? <a
               class="underline text-lime-300"
               target="_blank"
-              href="https://github.com/StevenWeathers/thunderdome-planning-poker/issues/new"
-              >Create a new github issue</a
+              href="{RepoURL}/issues/new">Create a new github issue</a
             >.
           </p>
         </div>

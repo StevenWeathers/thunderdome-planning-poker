@@ -15,6 +15,7 @@
     PathPrefix,
     SubscriptionsEnabled,
     SubscriptionCheckoutLink,
+    RepoURL,
   } = AppConfig;
 
   $: isRegisteredUser = $user && !!$user.id && validateUserIsRegistered($user);
@@ -353,12 +354,12 @@
         <p class="px-2 text-lg dark:text-gray-300">
           {@html $LL.landingFeatureOpenSourceText({
             repoOpen: `<a
-                        href="https://github.com/StevenWeathers/thunderdome-planning-poker"
+                        href="${RepoURL}"
                         class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600"
                     >`,
             repoClose: '</a>',
             donateOpen: `<a
-                        href="https://github.com/StevenWeathers/thunderdome-planning-poker#donations"
+                        href="${RepoURL}#donations"
                         class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600"
                     >`,
             donateClose: '</a>',
@@ -379,7 +380,7 @@
           })}
           {@html $LL.selfHostedDesc({
             linkOpen: `<a
-                            href="https://github.com/StevenWeathers/thunderdome-planning-poker#running-in-production"
+                            href="${RepoURL}#running-in-production"
                             class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600"
                     >`,
             linkClose: '</a>',

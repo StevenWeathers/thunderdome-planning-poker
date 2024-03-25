@@ -219,9 +219,13 @@ func (d *Service) GetStoryboard(StoryboardID string, UserID string) (*thunderdom
 func (d *Service) GetStoryboardsByUser(UserID string) ([]*thunderdome.Storyboard, int, error) {
 	var storyboards = make([]*thunderdome.Storyboard, 0)
 	storyboardRows, storyboardsErr := d.DB.Query(`
-		SELECT b.id, b.name, b.owner_id, b.created_date, b.updated_date
+		SELECT b.id, b.name, b.owner_id, b.created_date, b.updated_date,
+		  min(COALESCE(t.name, '')) as team_name
 		FROM thunderdome.storyboard b
-		LEFT JOIN thunderdome.storyboard_user su ON b.id = su.storyboard_id WHERE su.user_id = $1 AND su.abandoned = false
+		LEFT JOIN thunderdome.storyboard_user su ON b.id = su.storyboard_id
+		LEFT JOIN thunderdome.team t ON t.id = b.team_id
+		LEFT JOIN thunderdome.team_user tu ON tu.team_id = t.id
+		WHERE (su.user_id = $1 AND su.abandoned = false) OR (tu.user_id = $1)
 		GROUP BY b.id ORDER BY b.created_date DESC;
 	`, UserID)
 	if storyboardsErr != nil {
@@ -242,6 +246,7 @@ func (d *Service) GetStoryboardsByUser(UserID string) ([]*thunderdome.Storyboard
 			&b.OwnerID,
 			&b.CreatedDate,
 			&b.UpdatedDate,
+			&b.TeamName,
 		); err != nil {
 			d.Logger.Error("get_storyboards_by_user query scan error", zap.Error(err))
 		} else {

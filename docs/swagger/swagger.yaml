@@ -677,6 +677,8 @@ definitions:
         type: array
       teamId:
         type: string
+      teamName:
+        type: string
       updatedDate:
         type: string
       users:
@@ -742,6 +744,8 @@ definitions:
       ownerId:
         type: string
       phase:
+        type: string
+      teamName:
         type: string
       updatedDate:
         type: string
@@ -910,6 +914,8 @@ definitions:
         items:
           $ref: '#/definitions/thunderdome.StoryboardPersona'
         type: array
+      teamName:
+        type: string
       updatedDate:
         type: string
       users:
