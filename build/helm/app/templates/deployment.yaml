@@ -23,15 +23,10 @@ spec:
           {{- range .Values.app.ports }}
             - containerPort: {{ .targetPort }}
           {{- end }}
-          envFrom:
-            {{- range .Values.app.container.config }}
-            - configMapRef:
-                name: {{ .name }}
-            {{- end}}
           env:
             {{- range .Values.app.container.env}}
             - name: {{ .key}}
-              value: {{ .value}}
+              value: {{ .value | quote}}
             {{- end}}
             {{- range .Values.app.secrets}}
             - name: {{ .key}}

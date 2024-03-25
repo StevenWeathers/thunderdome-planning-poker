@@ -6,8 +6,6 @@ app:
       targetPort: 8080
   container:
     image: stevenweathers/thunderdome-planning-poker
-    config:
-      - name: thunderdome-db-config
     env: 
       - key: APP_DOMAIN
         value: localhost
@@ -17,6 +15,12 @@ app:
         value: thunderdome
       - key: DB_NAME
         value: thunderdome
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_HOST
+        value: thunderdome-mail
+      - key: SMTP_PORT
+        value: 1025
   secrets:
     - key: DB_PASS
       value: secret
