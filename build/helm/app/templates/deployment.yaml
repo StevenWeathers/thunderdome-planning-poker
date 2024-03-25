@@ -20,7 +20,9 @@ spec:
         - name: {{ .Values.app.name }}
           image: {{ .Values.app.container.image }}  
           ports:
-            - containerPort: {{ .Values.app.container.port }}
+          {{- range .Values.app.ports }}
+            - containerPort: {{ .targetPort }}
+          {{- end }}
           envFrom:
             {{- range .Values.app.container.config }}
             - configMapRef:

@@ -1,5 +1,9 @@
 app:
   name: thunderdome
+  ports:
+    - name: default
+      port: 8080
+      targetPort: 8080
   container:
     image: stevenweathers/thunderdome-planning-poker
     config:

@@ -48,6 +48,7 @@ docker pull stevenweathers/thunderdome-planning-poker
 ```bash
 cd ./build/helm
 helm install -f thunderdome-db.yaml thunderdome-db ./db
+helm install -f thunderdome-mail.yaml thunderdome-mail ./app
 helm install -f thunderdome.yaml thunderdome ./app
 kubectl port-forward svc/thunderdome 8080:8080
 ```
