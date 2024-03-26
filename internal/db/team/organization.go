@@ -3,6 +3,7 @@ package team
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
@@ -250,6 +251,42 @@ func (d *OrganizationService) OrganizationDeleteUserInvite(ctx context.Context, 
 	}
 
 	return nil
+}
+
+// OrganizationGetUserInvites gets organizations user invites
+func (d *OrganizationService) OrganizationGetUserInvites(ctx context.Context, orgId string) ([]thunderdome.OrganizationUserInvite, error) {
+	var invites = make([]thunderdome.OrganizationUserInvite, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT invite_id, organization_id, email, role, created_date, expire_date
+ 				FROM thunderdome.organization_user_invite WHERE organization_id = $1;`,
+		orgId,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var invite thunderdome.OrganizationUserInvite
+
+			if err := rows.Scan(
+				&invite.InviteId,
+				&invite.OrganizationId,
+				&invite.Email,
+				&invite.Role,
+				&invite.CreatedDate,
+				&invite.ExpireDate,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("OrganizationGetUserInvites query scan error", zap.Error(err))
+			} else {
+				invites = append(invites, invite)
+			}
+		}
+	} else {
+		if !errors.Is(err, sql.ErrNoRows) {
+			d.Logger.Ctx(ctx).Error("OrganizationGetUserInvites query error", zap.Error(err))
+		}
+	}
+
+	return invites, nil
 }
 
 // OrganizationTeamList gets a list of organization teams

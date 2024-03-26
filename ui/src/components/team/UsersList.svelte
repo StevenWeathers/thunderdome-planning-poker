@@ -184,7 +184,11 @@
 </div>
 
 {#if showAddUser}
-  <AddUser toggleAdd="{toggleAddUser}" handleAdd="{handleUserAdd}" />
+  <AddUser
+    toggleAdd="{toggleAddUser}"
+    handleAdd="{handleUserAdd}"
+    pageType="{pageType}"
+  />
 {/if}
 
 {#if showUpdateUser}

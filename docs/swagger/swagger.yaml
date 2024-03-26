@@ -3162,6 +3162,68 @@ paths:
       summary: Update Department User
       tags:
       - organization
+  /organizations/{orgId}/invites:
+    get:
+      description: Get a list of user invites associated to the team
+      parameters:
+      - description: the org ID
+        in: path
+        name: organizationId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.OrganizationUserInvite'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team User Invites
+      tags:
+      - organization
+  /organizations/{orgId}/invites/{inviteId}:
+    delete:
+      description: Delete user invite from organization
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: invite id
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Org User Invite
+      tags:
+      - organization
   /organizations/{orgId}/teams:
     get:
       description: Get a list of organization teams
@@ -4310,6 +4372,68 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete Team Checkin Comment
+      tags:
+      - team
+  /teams/{teamId}/invites:
+    get:
+      description: Get a list of user invites associated to the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.TeamUserInvite'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team User Invites
+      tags:
+      - team
+  /teams/{teamId}/invites/{inviteId}:
+    delete:
+      description: Delete a user invite from the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the user invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Deletes Team User Invite
       tags:
       - team
   /teams/{teamId}/retro-actions:
