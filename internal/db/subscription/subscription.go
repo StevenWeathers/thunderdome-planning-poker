@@ -101,37 +101,37 @@ func (s *Service) GetSubscriptionsByUserID(ctx context.Context, userId string) (
 
 	return subs, nil
 }
-func (s *Service) GetSubscriptionByCustomerID(ctx context.Context, customerId string) (thunderdome.Subscription, error) {
+func (s *Service) GetSubscriptionByID(ctx context.Context, subscriptionId string) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
-		`SELECT id, user_id, customer_id, active, expires, created_date, updated_date
- 				FROM thunderdome.subscription WHERE customer_id = $1;`,
-		customerId,
+		`SELECT id, user_id, customer_id, subscription_id, active, expires, created_date, updated_date
+ 				FROM thunderdome.subscription WHERE subscription_id = $1;`,
+		subscriptionId,
 	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.Active, &sub.Expires,
+		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Expires,
 		&sub.CreatedDate, &sub.UpdatedDate,
 	)
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
-		return sub, fmt.Errorf("no subscription found for customer id %s", customerId)
+		return sub, fmt.Errorf("no subscription found for customer id %s", subscriptionId)
 	case err != nil:
 		return sub, fmt.Errorf("error encountered finding customer id subscription: %v", err)
 	}
 
 	return sub, nil
 }
-func (s *Service) CreateSubscription(ctx context.Context, userId string, customerId string, expires time.Time) (thunderdome.Subscription, error) {
+func (s *Service) CreateSubscription(ctx context.Context, userId string, customerId string, subType string, expires time.Time) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.subscription 
-				(user_id, customer_id, expires)
-				VALUES ($1, $2, $3)
-				RETURNING id, user_id, customer_id, active, expires, created_date, updated_date;`,
-		userId, customerId, expires,
+				(user_id, customer_id, type, expires)
+				VALUES ($1, $2, $3, $4)
+				RETURNING id, user_id, customer_id, active, expires, type, created_date, updated_date;`,
+		userId, customerId, subType, expires,
 	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.Active, &sub.Expires,
+		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.Active, &sub.Type, &sub.Expires,
 		&sub.CreatedDate, &sub.UpdatedDate,
 	)
 	if err != nil {

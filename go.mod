@@ -19,7 +19,7 @@ require (
 	github.com/pquerna/otp v1.4.0
 	github.com/pressly/goose/v3 v3.15.0
 	github.com/spf13/viper v1.15.0
-	github.com/stripe/stripe-go v70.15.0+incompatible
+	github.com/stripe/stripe-go/v76 v76.22.0
 	github.com/swaggo/http-swagger v1.3.3
 	github.com/swaggo/swag v1.8.10
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.1.21

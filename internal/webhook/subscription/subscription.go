@@ -2,7 +2,10 @@
 package subscription
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/stripe/stripe-go/v76/checkout/session"
+	"github.com/stripe/stripe-go/v76/product"
 	"io"
 	"net/http"
 	"time"
@@ -12,8 +15,8 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
-	"github.com/stripe/stripe-go"
-	"github.com/stripe/stripe-go/webhook"
+	"github.com/stripe/stripe-go/v76"
+	"github.com/stripe/stripe-go/v76/webhook"
 )
 
 type Config struct {
@@ -64,54 +67,77 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 		logger.Info(fmt.Sprintf("Processing Stripe webhook event type: %s", event.Type), zap.String("eventId", event.ID))
 		switch event.Type {
 		case "checkout.session.completed":
-			// store stripe customer id for future events
-			clientReferenceId, ok := event.Data.Object["client_reference_id"]
-			if !ok || clientReferenceId == nil {
-				logger.Error("Error getting client_reference_id from event", zap.String("eventId", event.ID))
+			var c stripe.CheckoutSession
+			err = json.Unmarshal(event.Data.Raw, &c)
+			if err != nil {
+				logger.Error("Error getting checkout session from event", zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
-			customerId, ok := event.Data.Object["customer"]
-			if !ok || customerId == nil {
-				logger.Error("Error getting customer from event", zap.String("eventId", event.ID))
+
+			sessionParams := stripe.CheckoutSessionParams{}
+			sessionParams.AddExpand("subscription")
+			cs, err := session.Get(c.ID, &sessionParams)
+			if err != nil {
+				logger.Error("Error getting session from event", zap.String("eventId", event.ID),
+					zap.String("sessionId", cs.ID))
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
-			expires := time.Now().Add(time.Hour * 24 * 33) // start with 33 day subscription
-			_, err = s.dataSvc.CreateSubscription(ctx, clientReferenceId.(string), customerId.(string), expires)
+			if cs.Subscription == nil {
+				logger.Error("Error getting subscription from event", zap.String("eventId", event.ID),
+					zap.String("sessionId", cs.ID))
+				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+				return
+			}
+			if len(cs.LineItems.Data) != 1 {
+				logger.Error("Error getting subscription product from event", zap.String("eventId", event.ID),
+					zap.String("sessionId", cs.ID))
+				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+				return
+			}
+			productId := cs.LineItems.Data[0].ID
+			p, err := product.Get(productId, nil)
+			if err != nil {
+				logger.Error("Error getting product from event", zap.String("eventId", event.ID),
+					zap.String("productId", productId))
+				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+				return
+			}
+			subType, ok := p.Metadata["plan_type"]
+			if !ok {
+				logger.Error("Error getting product type from event", zap.String("eventId", event.ID),
+					zap.String("productId", productId))
+				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+				return
+			}
+			expires := time.Unix(cs.Subscription.CurrentPeriodEnd, 0)
+			_, err = s.dataSvc.CreateSubscription(ctx, cs.ClientReferenceID, cs.Customer.ID, cs.Subscription.ID, subType, expires)
 			if err != nil {
 				logger.Error(fmt.Sprintf("Error creating subscription: %v", err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 		case "customer.subscription.updated":
-			customerId, ok := event.Data.Object["customer"]
-			if !ok || customerId == nil {
-				logger.Error("Error getting customer from event", zap.String("eventId", event.ID))
+			var sub stripe.Subscription
+			err := json.Unmarshal(event.Data.Raw, &sub)
+			if err != nil {
+				logger.Error("Error getting subscription from event", zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
-			subscription, err := s.dataSvc.GetSubscriptionByCustomerID(ctx, customerId.(string))
+
+			subscription, err := s.dataSvc.GetSubscriptionByID(ctx, sub.ID)
 			if err != nil {
-				logger.Error(fmt.Sprintf("Error getting customer id %s subscription: %v", customerId.(string), err), zap.String("eventId", event.ID))
+				logger.Error(fmt.Sprintf("Error getting subscription id %s subscription: %v", sub.ID, err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			subStatus, ok := event.Data.Object["status"]
-			if !ok || subStatus == nil {
-				logger.Error("Error getting subscription status from event", zap.String("eventId", event.ID))
-				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
-				return
-			}
-			periodEnd, ok := event.Data.Object["current_period_end"]
-			if !ok || periodEnd == nil {
-				logger.Error("Error getting subscription current_period_end from event", zap.String("eventId", event.ID))
-				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
-				return
-			}
-			expires := time.Unix(int64(periodEnd.(float64)), 0)
-			active := subStatus == "active"
-			_, err = s.dataSvc.UpdateSubscription(ctx, subscription.ID, active, expires)
+			expires := time.Unix(sub.CurrentPeriodEnd, 0)
+			active := sub.Status == "active"
+			subType := "user" // @TODO - get subtype from update metadata
+
+			_, err = s.dataSvc.UpdateSubscription(ctx, subscription.ID, active, subType, expires)
 			if err != nil {
 				logger.Error(fmt.Sprintf("Error creating subscription: %v", err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
