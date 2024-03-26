@@ -17,7 +17,7 @@ type Subscription struct {
 
 type SubscriptionDataSvc interface {
 	CheckActiveSubscriber(ctx context.Context, userId string) error
-	GetSubscriptionByUserID(ctx context.Context, userId string) (Subscription, error)
+	GetSubscriptionsByUserID(ctx context.Context, userId string) ([]Subscription, error)
 	GetSubscriptionByCustomerID(ctx context.Context, customerId string) (Subscription, error)
 	CreateSubscription(ctx context.Context, userId string, customerId string, expires time.Time) (Subscription, error)
 	UpdateSubscription(ctx context.Context, id string, active bool, expires time.Time) (Subscription, error)

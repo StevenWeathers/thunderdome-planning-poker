@@ -3,6 +3,7 @@ package subscription
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -13,56 +14,92 @@ import (
 
 // CheckActiveSubscriber looks for an active subscription for the user
 func (s *Service) CheckActiveSubscriber(ctx context.Context, userId string) error {
-	sub := thunderdome.Subscription{}
+	activeSub := false
+	currentTime := time.Now()
 
-	err := s.DB.QueryRowContext(ctx,
+	rows, err := s.DB.QueryContext(ctx,
 		`SELECT id, user_id, customer_id, active, expires, created_date, updated_date
  				FROM thunderdome.subscription WHERE user_id = $1 AND active = true;`,
 		userId,
-	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.Active, &sub.Expires,
-		&sub.CreatedDate, &sub.UpdatedDate,
 	)
-	switch {
-	case err == sql.ErrNoRows:
-		return fmt.Errorf("no active subscription found for user id  %s", userId)
-	case err != nil:
-		return fmt.Errorf("error encountered finding user %s active subscription:  %v", userId, err)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return fmt.Errorf("no active subscription found for user id  %s", userId)
+		}
+
+		return fmt.Errorf("error encountered finding user %s active subscriptions:  %v", userId, err)
 	}
 
-	if time.Now().After(sub.Expires) {
-		_, updateErr := s.DB.ExecContext(ctx,
-			`UPDATE thunderdome.users SET subscribed = false, updated_date = NOW() WHERE id = $1;`,
-			sub.UserID,
-		)
-		if updateErr != nil {
-			s.Logger.Ctx(ctx).Error(fmt.Sprintf("error updating user %s subscribed to false", userId), zap.Error(updateErr))
+	defer rows.Close()
+	for rows.Next() {
+		var sub thunderdome.Subscription
+		if err := rows.Scan(
+			&sub.ID,
+			&sub.UserID,
+			&sub.CustomerID,
+			&sub.Active,
+			&sub.Expires,
+			&sub.CreatedDate,
+			&sub.UpdatedDate,
+		); err != nil {
+			return fmt.Errorf("error encountered finding user %s active subscriptions:  %v", userId, err)
 		}
-		return fmt.Errorf("subscription for user id %s expired", userId)
+		if currentTime.After(sub.Expires) {
+			_, updateErr := s.DB.ExecContext(ctx,
+				`UPDATE thunderdome.users SET subscribed = false, updated_date = NOW() WHERE id = $1;`,
+				sub.UserID,
+			)
+			if updateErr != nil {
+				s.Logger.Ctx(ctx).Error(fmt.Sprintf("error updating user %s subscribed to false", userId),
+					zap.Error(updateErr), zap.String("customer_id", sub.CustomerID))
+			}
+		} else {
+			activeSub = true
+		}
+	}
+
+	if !activeSub {
+		return fmt.Errorf("no active subscription found for user id  %s", userId)
 	}
 
 	return nil
 }
 
-func (s *Service) GetSubscriptionByUserID(ctx context.Context, userId string) (thunderdome.Subscription, error) {
-	sub := thunderdome.Subscription{}
+func (s *Service) GetSubscriptionsByUserID(ctx context.Context, userId string) ([]thunderdome.Subscription, error) {
+	subs := make([]thunderdome.Subscription, 0)
 
-	err := s.DB.QueryRowContext(ctx,
+	rows, err := s.DB.QueryContext(ctx,
 		`SELECT id, user_id, customer_id, active, expires, created_date, updated_date
  				FROM thunderdome.subscription WHERE user_id = $1;`,
 		userId,
-	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.Active, &sub.Expires,
-		&sub.CreatedDate, &sub.UpdatedDate,
 	)
-	switch {
-	case err == sql.ErrNoRows:
-		return sub, fmt.Errorf("no subscription found for user id %s", userId)
-	case err != nil:
-		return sub, fmt.Errorf("error encountered finding user id subscription:  %v", err)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return subs, nil
+		}
+
+		return subs, fmt.Errorf("error getting user %s subscriptions:  %v", userId, err)
 	}
 
-	return sub, nil
+	defer rows.Close()
+	for rows.Next() {
+		var sub thunderdome.Subscription
+		if err := rows.Scan(
+			&sub.ID,
+			&sub.UserID,
+			&sub.CustomerID,
+			&sub.Active,
+			&sub.Expires,
+			&sub.CreatedDate,
+			&sub.UpdatedDate,
+		); err != nil {
+			return subs, fmt.Errorf("error getting user %s subscriptions:  %v", userId, err)
+		}
+
+		subs = append(subs, sub)
+	}
+
+	return subs, nil
 }
 func (s *Service) GetSubscriptionByCustomerID(ctx context.Context, customerId string) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
@@ -76,7 +113,7 @@ func (s *Service) GetSubscriptionByCustomerID(ctx context.Context, customerId st
 		&sub.CreatedDate, &sub.UpdatedDate,
 	)
 	switch {
-	case err == sql.ErrNoRows:
+	case errors.Is(err, sql.ErrNoRows):
 		return sub, fmt.Errorf("no subscription found for customer id %s", customerId)
 	case err != nil:
 		return sub, fmt.Errorf("error encountered finding customer id subscription: %v", err)
