@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gorilla/mux"
+
 	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -358,10 +360,12 @@ func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 }
 
 type userRegisterRequestBody struct {
-	Name      string `json:"name" validate:"required"`
-	Email     string `json:"email" validate:"required,email"`
-	Password1 string `json:"password1" validate:"required,min=6,max=72"`
-	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
+	Name                 string `json:"name" validate:"required"`
+	Email                string `json:"email" validate:"required,email"`
+	Password1            string `json:"password1" validate:"required,min=6,max=72"`
+	Password2            string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
+	TeamInviteId         string `json:"teamInviteId"`
+	OrganizationInviteId string `json:"orgInviteId"`
 }
 
 // handleUserRegistration registers a new authenticated user
@@ -403,9 +407,39 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 
 		ActiveUserID, _ := s.Cookie.ValidateUserCookie(w, r)
 
+		userEmail := u.Email
+		var teamInvite thunderdome.TeamUserInvite
+		var orgInvite thunderdome.OrganizationUserInvite
+
+		if u.TeamInviteId != "" {
+			var err error
+			teamInvite, err = s.TeamDataSvc.TeamUserGetInviteByID(ctx, u.TeamInviteId)
+			if err != nil {
+				s.Failure(w, r, http.StatusInternalServerError, err)
+				return
+			}
+			if userEmail != teamInvite.Email {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
+		}
+
+		if u.OrganizationInviteId != "" {
+			var err error
+			orgInvite, err = s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, u.OrganizationInviteId)
+			if err != nil {
+				s.Failure(w, r, http.StatusInternalServerError, err)
+				return
+			}
+			if userEmail != orgInvite.Email {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
+		}
+
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
 			u.Name,
-			u.Email,
+			userEmail,
 			u.Password1,
 			u.Password2,
 		)
@@ -425,6 +459,38 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 		}
 
 		_ = s.Email.SendWelcome(UserName, UserEmail, VerifyID)
+
+		if u.TeamInviteId != "" {
+			_, inviteErr := s.TeamDataSvc.TeamAddUser(ctx, teamInvite.TeamId, newUser.Id, teamInvite.Role)
+			if inviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserRegistration error adding invited user to team", zap.Error(inviteErr),
+					zap.String("session_user_id", newUser.Id),
+					zap.String("invite_id", teamInvite.InviteId))
+			}
+
+			delInviteErr := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamInvite.InviteId)
+			if delInviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to team", zap.Error(delInviteErr),
+					zap.String("session_user_id", newUser.Id),
+					zap.String("invite_id", teamInvite.InviteId))
+			}
+		}
+
+		if u.OrganizationInviteId != "" {
+			_, inviteErr := s.OrganizationDataSvc.OrganizationAddUser(ctx, orgInvite.OrganizationId, newUser.Id, orgInvite.Role)
+			if inviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserRegistration error adding invited user to organization", zap.Error(inviteErr),
+					zap.String("session_user_id", newUser.Id),
+					zap.String("invite_id", orgInvite.InviteId))
+			}
+
+			delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, orgInvite.InviteId)
+			if delInviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to organization", zap.Error(delInviteErr),
+					zap.String("session_user_id", newUser.Id),
+					zap.String("invite_id", orgInvite.InviteId))
+			}
+		}
 
 		if ActiveUserID != "" {
 			s.Cookie.ClearUserCookies(w)
@@ -759,5 +825,53 @@ func (s *Service) handleMFARemove() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleGetTeamInvite gets a team user invite details
+// @Summary      Get Team Invite
+// @Description  Get a team user invite details
+// @Tags         auth
+// @Produce      json
+// @Param        inviteId  path    string  true  "the invite ID"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.TeamUserInvite}
+// @Router       /auth/invite/team/{inviteId} [get]
+func (s *Service) handleGetTeamInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		InviteID := vars["inviteId"]
+
+		invite, err := s.TeamDataSvc.TeamUserGetInviteByID(ctx, InviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetTeamInvite error", zap.Error(err), zap.String("invite_id", InviteID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+		}
+
+		s.Success(w, r, http.StatusOK, invite, nil)
+	}
+}
+
+// handleGetOrganizationInvite gets a organization user invite details
+// @Summary      Get Organization Invite
+// @Description  Get a organization user invite details
+// @Tags         auth
+// @Produce      json
+// @Param        inviteId  path    string  true  "the invite ID"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.OrganizationUserInvite}
+// @Router       /auth/invite/organization/{inviteId} [get]
+func (s *Service) handleGetOrganizationInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		InviteID := vars["inviteId"]
+
+		invite, err := s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, InviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetOrganizationInvite error", zap.Error(err), zap.String("invite_id", InviteID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+		}
+
+		s.Success(w, r, http.StatusOK, invite, nil)
 	}
 }

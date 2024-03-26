@@ -2338,6 +2338,31 @@ type RootTranslation = {
    * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​u​s​e​r​.
    */
   userUpdateError: string;
+  /**
+   * U​s​e​r​ ​I​n​v​i​t​e​s
+   */
+  userInvites: string;
+  /**
+   * U​s​e​r​ ​n​o​t​ ​f​o​u​n​d​,​ ​i​n​v​i​t​e​ ​s​e​n​t
+   */
+  userNotFoundInviteSent: string;
+  /**
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​u​s​e​r​ ​i​n​v​i​t​e​?
+   */
+  userInviteConfirmDelete: string;
+  /**
+   * D​e​l​e​t​e​ ​I​n​v​i​t​e
+   */
+  userInviteDelete: string;
+  /**
+   * E​x​p​i​r​e​ ​D​a​t​e
+   */
+  expireDate: string;
+  /**
+   * I​f​ ​u​s​e​r​ ​i​s​ ​n​o​t​ ​r​e​g​i​s​t​e​r​e​d​ ​a​n​ ​i​n​v​i​t​e​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​a​n​d​ ​j​o​i​n​ ​t​h​e​ ​{​p​a​g​e​T​y​p​e​}​ ​w​i​l​l​ ​b​e​ ​s​e​n​t​.
+   * @param {unknown} pageType
+   */
+  addUserWillInviteNotFoundFieldNote: RequiredParams<'pageType'>;
 };
 
 export type TranslationFunctions = {
@@ -4614,6 +4639,32 @@ export type TranslationFunctions = {
    * Error updating user.
    */
   userUpdateError: () => LocalizedString;
+  /**
+   * User Invites
+   */
+  userInvites: () => LocalizedString;
+  /**
+   * User not found, invite sent
+   */
+  userNotFoundInviteSent: () => LocalizedString;
+  /**
+   * Are you sure you want to delete this user invite?
+   */
+  userInviteConfirmDelete: () => LocalizedString;
+  /**
+   * Delete Invite
+   */
+  userInviteDelete: () => LocalizedString;
+  /**
+   * Expire Date
+   */
+  expireDate: () => LocalizedString;
+  /**
+   * If user is not registered an invite to register and join the {pageType} will be sent.
+   */
+  addUserWillInviteNotFoundFieldNote: (arg: {
+    pageType: unknown;
+  }) => LocalizedString;
 };
 
 export type Formatters = {};

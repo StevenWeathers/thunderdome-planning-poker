@@ -1,6 +1,8 @@
 package email
 
 import (
+	"fmt"
+
 	"github.com/matcornic/hermes/v2"
 	"go.uber.org/zap"
 )
@@ -343,6 +345,110 @@ func (s *Service) SendMergedUpdate(UserName string, UserEmail string) error {
 	if sendErr != nil {
 		s.Logger.Error("Error sending Update Merged Email", zap.Error(sendErr),
 			zap.String("user_email", UserEmail))
+		return sendErr
+	}
+
+	return nil
+}
+
+// SendTeamInvite sends the team invite email to unregistered user
+func (s *Service) SendTeamInvite(TeamName string, UserEmail string, InviteID string) error {
+	emailBody, err := s.generateBody(
+		hermes.Body{
+			Name: "",
+			Intros: []string{
+				"Register to join your team on Thunderdome!",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: fmt.Sprintf(
+						"Please register for Thunderdome using the following link (expires in 24 hours) to join the %s Team.",
+						TeamName),
+					Button: hermes.Button{
+						Color: "#22BC66",
+						Text:  "Register Account",
+						Link:  s.Config.AppURL + "register/team/" + InviteID,
+					},
+				},
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: s.Config.RepoURL,
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		s.Logger.Error("Error Generating Team Invite Email HTML", zap.Error(err),
+			zap.String("user_email", UserEmail))
+
+		return err
+	}
+
+	sendErr := s.send(
+		"",
+		UserEmail,
+		fmt.Sprintf("Join team %s on Thunderdome!", TeamName),
+		emailBody,
+	)
+	if sendErr != nil {
+		s.Logger.Error("Error sending Team Invite Email", zap.Error(sendErr),
+			zap.String("user_email", UserEmail),
+			zap.String("invite_id", InviteID))
+		return sendErr
+	}
+
+	return nil
+}
+
+// SendOrganizationInvite sends the organization invite email to unregistered user
+func (s *Service) SendOrganizationInvite(OrganizationName string, UserEmail string, InviteID string) error {
+	emailBody, err := s.generateBody(
+		hermes.Body{
+			Name: "",
+			Intros: []string{
+				"Register to join your organization on Thunderdome!",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: fmt.Sprintf(
+						"Please register for Thunderdome using the following link (expires in 24 hours) to join the %s Organization.",
+						OrganizationName),
+					Button: hermes.Button{
+						Color: "#22BC66",
+						Text:  "Register Account",
+						Link:  s.Config.AppURL + "register/organization/" + InviteID,
+					},
+				},
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: s.Config.RepoURL,
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		s.Logger.Error("Error Generating Organization Invite Email HTML", zap.Error(err),
+			zap.String("user_email", UserEmail))
+
+		return err
+	}
+
+	sendErr := s.send(
+		"",
+		UserEmail,
+		fmt.Sprintf("Join %s organization on Thunderdome!", OrganizationName),
+		emailBody,
+	)
+	if sendErr != nil {
+		s.Logger.Error("Error sending Organization Invite Email", zap.Error(sendErr),
+			zap.String("user_email", UserEmail),
+			zap.String("invite_id", InviteID))
 		return sendErr
 	}
 

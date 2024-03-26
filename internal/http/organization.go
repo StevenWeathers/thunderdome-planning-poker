@@ -1,9 +1,12 @@
 package http
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
+	"strings"
 
 	"go.uber.org/zap"
 
@@ -283,10 +286,34 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := u.Email
+		UserEmail := strings.ToLower(u.Email)
 
 		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil {
+		if UserErr != nil && errors.Is(UserErr, sql.ErrNoRows) {
+			inviteID, inviteErr := s.OrganizationDataSvc.OrganizationInviteUser(ctx, OrgID, UserEmail, u.Role)
+			if inviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(inviteErr),
+					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, UserErr)
+				return
+			}
+			org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
+			if orgErr != nil {
+				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(orgErr),
+					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, orgErr)
+				return
+			}
+			emailErr := s.Email.SendOrganizationInvite(org.Name, UserEmail, inviteID)
+			if emailErr != nil {
+				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(emailErr),
+					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, emailErr)
+				return
+			}
+			s.Success(w, r, http.StatusOK, nil, nil)
+			return
+		} else if UserErr != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleOrganizationAddUser error", zap.Error(UserErr), zap.String("user_email", UserEmail),
 				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID))
@@ -563,6 +590,75 @@ func (s *Service) handleDeleteOrganization() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error(
 				"handleDeleteOrganization error", zap.Error(err), zap.String("organization_id", OrgID),
 				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleGetOrganizationUserInvites gets a list of user invites associated to the organization
+// @Summary      Get Team User Invites
+// @Description  Get a list of user invites associated to the team
+// @Tags         organization
+// @Produce      json
+// @Param        organizationId  path    string  true  "the org ID"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.OrganizationUserInvite}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/invites [get]
+func (s *Service) handleGetOrganizationUserInvites() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		orgId := vars["organizationId"]
+
+		invites, err := s.OrganizationDataSvc.OrganizationGetUserInvites(ctx, orgId)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetOrganizationUserInvites error", zap.Error(err), zap.String("team_id", orgId),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+		}
+
+		s.Success(w, r, http.StatusOK, invites, nil)
+	}
+}
+
+// handleDeleteOrganizationUserInvite handles deleting user invite from an organization
+// @Summary      Delete Org User Invite
+// @Description  Delete user invite from organization
+// @Tags         organization
+// @Produce      json
+// @Param        orgId   path    string  true  "organization id"
+// @Param        inviteId  path    string  true  "invite id"
+// @Success      200     object  standardJsonResponse{}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/invites/{inviteId} [delete]
+func (s *Service) handleDeleteOrganizationUserInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		InviteID := vars["inviteId"]
+		idErr := validate.Var(InviteID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		err := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, InviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDeleteOrganizationUserInvite error", zap.Error(err), zap.String("invite_id", InviteID),
+				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
