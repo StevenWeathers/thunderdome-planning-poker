@@ -340,6 +340,27 @@ definitions:
     required:
     - storyboardName
     type: object
+  http.subscriptionRequestBody:
+    properties:
+      active:
+        type: boolean
+      customer_id:
+        type: string
+      expires:
+        type: string
+      subscription_id:
+        type: string
+      type:
+        enum:
+        - user
+        - ' team'
+        - ' organization'
+        type: string
+      user_id:
+        type: string
+    required:
+    - type
+    type: object
   http.teamAddUserRequestBody:
     properties:
       email:
@@ -1008,6 +1029,29 @@ definitions:
       id:
         type: string
       name:
+        type: string
+    type: object
+  thunderdome.Subscription:
+    properties:
+      active:
+        type: boolean
+      created_date:
+        type: string
+      customer_id:
+        type: string
+      expires:
+        type: string
+      id:
+        type: string
+      subscription_id:
+        type: string
+      type:
+        type: string
+      updated_date:
+        type: string
+      user:
+        $ref: '#/definitions/thunderdome.User'
+      user_id:
         type: string
     type: object
   thunderdome.Team:
@@ -3845,6 +3889,161 @@ paths:
       summary: Get Storyboard
       tags:
       - storyboard
+  /subscriptions:
+    get:
+      description: get list of subscriptions
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Subscription'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Subscriptions
+      tags:
+      - subscription
+    post:
+      description: Creates an subscription
+      parameters:
+      - description: new subscription object
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/http.subscriptionRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Subscription'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Subscription
+      tags:
+      - subscription
+  /subscriptions/{subscriptionId}:
+    delete:
+      description: Deletes a Subscription
+      parameters:
+      - description: the subscription ID to delete
+        in: path
+        name: subscriptionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Subscription
+      tags:
+      - subscription
+    get:
+      description: Get a subscription
+      parameters:
+      - description: the subscription ID
+        in: path
+        name: subscriptionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Subscription'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Subscription
+      tags:
+      - subscription
+    put:
+      description: Updates a Subscription
+      parameters:
+      - description: the subscription ID to update
+        in: path
+        name: subscriptionId
+        required: true
+        type: string
+      - description: subscription object to update
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/http.subscriptionRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Subscription'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Subscription
+      tags:
+      - subscription
   /teams/{teamId}:
     delete:
       description: Delete a Team

@@ -4,11 +4,12 @@ package subscription
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/stripe/stripe-go/v76/checkout/session"
-	"github.com/stripe/stripe-go/v76/product"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/stripe/stripe-go/v76/checkout/session"
+	"github.com/stripe/stripe-go/v76/product"
 
 	"go.uber.org/zap"
 
@@ -127,17 +128,17 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 				return
 			}
 
-			subscription, err := s.dataSvc.GetSubscriptionByID(ctx, sub.ID)
+			subscription, err := s.dataSvc.GetSubscriptionBySubscriptionID(ctx, sub.ID)
 			if err != nil {
 				logger.Error(fmt.Sprintf("Error getting subscription id %s subscription: %v", sub.ID, err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			expires := time.Unix(sub.CurrentPeriodEnd, 0)
-			active := sub.Status == "active"
-			subType := "user" // @TODO - get subtype from update metadata
+			subscription.Expires = time.Unix(sub.CurrentPeriodEnd, 0)
+			subscription.Active = sub.Status == "active"
+			//subscription.Type = "user" // @TODO - get subtype from update metadata and update if different
 
-			_, err = s.dataSvc.UpdateSubscription(ctx, subscription.ID, active, subType, expires)
+			_, err = s.dataSvc.UpdateSubscription(ctx, subscription.ID, subscription)
 			if err != nil {
 				logger.Error(fmt.Sprintf("Error creating subscription: %v", err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)

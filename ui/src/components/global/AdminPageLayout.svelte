@@ -10,6 +10,7 @@
     FeatureRetro,
     FeatureStoryboard,
     OrganizationsEnabled,
+    SubscriptionsEnabled,
   } = AppConfig;
 
   $: pages = $LL && [
@@ -66,6 +67,12 @@
       label: $LL.adminPageApi(),
       path: '/apikeys',
       enabled: ExternalAPIEnabled,
+    },
+    {
+      name: 'Subscriptions',
+      label: $LL.adminPageSubscriptions(),
+      path: '/subscriptions',
+      enabled: SubscriptionsEnabled,
     },
   ];
 

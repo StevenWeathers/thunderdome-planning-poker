@@ -26,6 +26,10 @@ const fr: Translation = {
   adminPageOrganizations: 'Organisations',
   adminPageTeams: 'Equipes',
   adminPageUsers: 'Utilisateurs',
+  adminPageSubscriptions: 'Subscriptions',
+  deleteSubscriptionConfirmation:
+    'Are you sure you want to delete this subscription?',
+  deleteSubscription: 'Delete Subscription',
   alertAllowDismiss: 'Autoriser ignorer',
   alertContent: "Contenu de l'alerte",
   alertContentPlaceholder: "Entrer un contenu pour l'alerte",

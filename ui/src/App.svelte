@@ -48,13 +48,20 @@
   import AdminRetro from './pages/admin/Retro.svelte';
   import AdminStoryboards from './pages/admin/Storyboards.svelte';
   import AdminStoryboard from './pages/admin/Storyboard.svelte';
+  import AdminSubscriptions from './pages/admin/Subscriptions.svelte';
+  import AdminSubscription from './pages/admin/Subscription.svelte';
   import { setLocale } from './i18n/i18n-svelte';
   import { detectLocale } from './i18n/i18n-util';
   import { loadLocaleAsync } from './i18n/i18n-util.async';
   import Confirmation from './pages/subscription/Confirmation.svelte';
   import Pricing from './pages/subscription/Pricing.svelte';
 
-  const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
+  const {
+    FeaturePoker,
+    FeatureRetro,
+    FeatureStoryboard,
+    SubscriptionsEnabled,
+  } = AppConfig;
 
   let notifications;
 
@@ -448,6 +455,23 @@
         route: Login,
         params,
         name: 'login',
+      };
+    });
+  }
+
+  if (SubscriptionsEnabled) {
+    router.on(`${appRoutes.adminSubscriptions}`, () => {
+      currentPage = {
+        route: AdminSubscriptions,
+        params: {},
+        name: 'admin',
+      };
+    });
+    router.on(`${appRoutes.adminSubscriptions}/:subscriptionId`, params => {
+      currentPage = {
+        route: AdminSubscription,
+        params,
+        name: 'admin',
       };
     });
   }
