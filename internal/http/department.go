@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 
 	"go.uber.org/zap"
 
@@ -300,7 +301,7 @@ func (s *Service) handleDepartmentAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := u.Email
+		UserEmail := strings.ToLower(u.Email)
 
 		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
 		if UserErr != nil {

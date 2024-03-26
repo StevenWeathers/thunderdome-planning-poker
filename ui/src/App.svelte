@@ -159,6 +159,20 @@
       name: 'register',
     };
   });
+  router.on(`${appRoutes.register}/team/:teamInviteId`, params => {
+    currentPage = {
+      route: Register,
+      params,
+      name: 'register',
+    };
+  });
+  router.on(`${appRoutes.register}/organization/:orgInviteId`, params => {
+    currentPage = {
+      route: Register,
+      params,
+      name: 'register',
+    };
+  });
   router.on(`${appRoutes.organization}/:organizationId`, params => {
     currentPage = {
       route: Organization,

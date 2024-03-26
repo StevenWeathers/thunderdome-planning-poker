@@ -175,7 +175,7 @@ func (d *Service) GetUserByEmail(ctx context.Context, UserEmail string) (*thunde
 		&w.Subscribed,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("get user by email query error: %v", err)
+		return nil, fmt.Errorf("get user by email query error: %w", err)
 	}
 
 	w.GravatarHash = db.CreateGravatarHash(w.Email)

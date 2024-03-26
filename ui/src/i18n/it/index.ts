@@ -646,6 +646,13 @@ const it: Translation = {
   userUpdate: 'Update User',
   userUpdateSuccess: 'Successfully updated user.',
   userUpdateError: 'Error updating user.',
+  userInvites: 'User Invites',
+  userNotFoundInviteSent: 'User not found, invite sent',
+  userInviteConfirmDelete: 'Are you sure you want to delete this user invite?',
+  userInviteDelete: 'Delete Invite',
+  expireDate: 'Expire Date',
+  addUserWillInviteNotFoundFieldNote:
+    'If user is not registered an invite to register and join the {pageType} will be sent.',
 };
 
 export default it;

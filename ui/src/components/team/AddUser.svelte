@@ -7,6 +7,7 @@
 
   export let toggleAdd = () => {};
   export let handleAdd = () => {};
+  export let pageType = '';
 
   const roles = ['ADMIN', 'MEMBER'];
   let userEmail = '';
@@ -23,7 +24,7 @@
 
 <Modal closeModal="{toggleAdd}">
   <form on:submit="{onSubmit}" name="teamAddUser">
-    <div class="mb-4">
+    <div class="mb-2">
       <label
         class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
         for="userEmail"
@@ -37,6 +38,10 @@
         name="userEmail"
         required
       />
+    </div>
+
+    <div class="mb-4 text-gray-700 dark:text-gray-400 text-sm">
+      {$LL.addUserWillInviteNotFoundFieldNote({ pageType })}
     </div>
 
     <div class="mb-4">

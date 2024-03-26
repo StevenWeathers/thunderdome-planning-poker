@@ -61,6 +61,7 @@
   let retros = [];
   let retroActions = [];
   let storyboards = [];
+  let invites = [];
   let showCreateBattle = false;
   let showCreateRetro = false;
   let showCreateStoryboard = false;
@@ -78,10 +79,15 @@
   let storyboardsPage = 1;
   let totalRetroActions = 0;
   let completedActionItems = false;
+  let showInviteUser = false;
+  let showDeleteInvite = false;
+  let deleteInviteId = '';
 
   let organizationRole = '';
   let departmentRole = '';
   let teamRole = '';
+  let isAdmin = false;
+  let isTeamMember = false;
 
   const apiPrefix = '/api';
   $: orgPrefix = departmentId
@@ -128,6 +134,15 @@
     showDeleteTeam = !showDeleteTeam;
   };
 
+  const toggleInviteUser = () => {
+    showInviteUser = !showInviteUser;
+  };
+
+  const toggleDeleteInvite = inviteId => () => {
+    showDeleteInvite = !showDeleteInvite;
+    deleteInviteId = inviteId;
+  };
+
   let showRetroActionComments = false;
   let selectedRetroAction = null;
   const toggleRetroActionComments = id => () => {
@@ -151,6 +166,15 @@
           organizationRole = result.data.organizationRole;
         }
 
+        isAdmin =
+          organizationRole === 'ADMIN' ||
+          departmentRole === 'ADMIN' ||
+          teamRole === 'ADMIN';
+        isTeamMember =
+          organizationRole === 'ADMIN' ||
+          departmentRole === 'ADMIN' ||
+          teamRole !== '';
+
         getBattles();
         getRetros();
         getRetrosActions();
@@ -162,12 +186,26 @@
       });
   }
 
+  function getInvites() {
+    xfetch(`${teamPrefix}/invites`)
+      .then(res => res.json())
+      .then(function (result) {
+        invites = result.data;
+      })
+      .catch(function () {
+        notifications.danger('error getting team invites');
+      });
+  }
+
   function getUsers() {
     const usersOffset = (usersPage - 1) * usersPageLimit;
     xfetch(`${teamPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`)
       .then(res => res.json())
       .then(function (result) {
         users = result.data;
+        if (isAdmin) {
+          getInvites();
+        }
       })
       .catch(function () {
         notifications.danger($LL.teamGetUsersError());
@@ -299,6 +337,22 @@
       });
   }
 
+  function handleDeleteInvite() {
+    xfetch(`${teamPrefix}/invites/${deleteInviteId}`, {
+      method: 'DELETE',
+    })
+      .then(function () {
+        eventTag('team_delete_invite', 'engagement', 'success');
+        toggleDeleteInvite(null)();
+        notifications.success('Successfully deleted user invite');
+        getInvites();
+      })
+      .catch(function () {
+        notifications.danger('Error deleting user invite');
+        eventTag('team_delete_invite', 'engagement', 'failure');
+      });
+  }
+
   function handleDeleteTeam() {
     xfetch(`${teamPrefix}`, {
       method: 'DELETE',
@@ -414,15 +468,6 @@
 
     getTeam();
   });
-
-  $: isAdmin =
-    organizationRole === 'ADMIN' ||
-    departmentRole === 'ADMIN' ||
-    teamRole === 'ADMIN';
-  $: isTeamMember =
-    organizationRole === 'ADMIN' ||
-    departmentRole === 'ADMIN' ||
-    teamRole !== '';
 </script>
 
 <svelte:head>
@@ -722,6 +767,65 @@
     {/if}
   {/if}
 
+  {#if isAdmin}
+    <div class="w-full mb-6 lg:mb-8">
+      <div class="flex w-full">
+        <div class="flex-1">
+          <h2
+            class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+          >
+            {$LL.userInvites()}
+          </h2>
+        </div>
+        <!--            <div class="flex-1 text-right">-->
+        <!--                {#if isAdmin}-->
+        <!--                    <SolidButton onClick="{toggleInviteUser}"-->
+        <!--                    >Invite User-->
+        <!--                    </SolidButton>-->
+        <!--                {/if}-->
+        <!--            </div>-->
+      </div>
+
+      <Table>
+        <tr slot="header">
+          <HeadCol>{$LL.email()}</HeadCol>
+          <HeadCol>{$LL.role()}</HeadCol>
+          <HeadCol>{$LL.dateCreated()}</HeadCol>
+          <HeadCol>{$LL.expireDate()}</HeadCol>
+          <HeadCol />
+        </tr>
+        <tbody slot="body" let:class="{className}" class="{className}">
+          {#each invites as item, i}
+            <TableRow itemIndex="{i}">
+              <RowCol>
+                {item.email}
+              </RowCol>
+              <RowCol>
+                {item.role}
+              </RowCol>
+              <RowCol>
+                {new Date(item.created_date).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                {new Date(item.expire_date).toLocaleString()}
+              </RowCol>
+              <RowCol>
+                <div class="text-right">
+                  <HollowButton
+                    onClick="{toggleDeleteInvite(item.invite_id)}"
+                    color="red"
+                  >
+                    {$LL.delete()}
+                  </HollowButton>
+                </div>
+              </RowCol>
+            </TableRow>
+          {/each}
+        </tbody>
+      </Table>
+    </div>
+  {/if}
+
   <UsersList
     users="{users}"
     getUsers="{getUsers}"
@@ -808,6 +912,15 @@
       eventTag="{eventTag}"
       notifications="{notifications}"
       isAdmin="{isAdmin}"
+    />
+  {/if}
+
+  {#if showDeleteInvite}
+    <DeleteConfirmation
+      toggleDelete="{toggleDeleteInvite(null)}"
+      handleDelete="{handleDeleteInvite}"
+      confirmText="{$LL.userInviteConfirmDelete()}"
+      confirmBtnText="{$LL.userInviteDelete()}"
     />
   {/if}
 </PageLayout>

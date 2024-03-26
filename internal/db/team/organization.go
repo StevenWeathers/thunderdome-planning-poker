@@ -3,6 +3,7 @@ package team
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
@@ -190,7 +191,7 @@ func (d *OrganizationService) OrganizationUpdateUser(ctx context.Context, OrgID 
 	return OrgID, nil
 }
 
-// OrganizationRemoveUser removes a user from a organization
+// OrganizationRemoveUser removes a user from an organization
 func (d *OrganizationService) OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error {
 	_, err := d.DB.ExecContext(ctx,
 		`CALL thunderdome.organization_user_remove($1, $2);`,
@@ -203,6 +204,89 @@ func (d *OrganizationService) OrganizationRemoveUser(ctx context.Context, Organi
 	}
 
 	return nil
+}
+
+// OrganizationInviteUser invites a user to an organization
+func (d *OrganizationService) OrganizationInviteUser(ctx context.Context, OrgID string, Email string, Role string) (string, error) {
+	var inviteId string
+	err := d.DB.QueryRowContext(ctx,
+		`INSERT INTO thunderdome.organization_user_invite (organization_id, email, role) VALUES ($1, $2, $3) RETURNING invite_id;`,
+		OrgID,
+		Email,
+		Role,
+	).Scan(&inviteId)
+
+	if err != nil {
+		return "", fmt.Errorf("organization invite user query error: %v", err)
+	}
+
+	return inviteId, nil
+}
+
+// OrganizationUserGetInviteByID gets a organization user invite
+func (d *OrganizationService) OrganizationUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.OrganizationUserInvite, error) {
+	oui := thunderdome.OrganizationUserInvite{}
+	err := d.DB.QueryRowContext(ctx,
+		`SELECT invite_id, organization_id, email, role, created_date, expire_date
+ 				FROM thunderdome.organization_user_invite WHERE invite_id = $1;`,
+		InviteID,
+	).Scan(&oui.InviteId, &oui.OrganizationId, &oui.Email, &oui.Role, &oui.CreatedDate, &oui.ExpireDate)
+
+	if err != nil {
+		return oui, fmt.Errorf("organization get user invite query error: %v", err)
+	}
+
+	return oui, nil
+}
+
+// OrganizationDeleteUserInvite deletes a user organization invite
+func (d *OrganizationService) OrganizationDeleteUserInvite(ctx context.Context, InviteID string) error {
+	_, err := d.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.organization_user_invite where invite_id = $1;`,
+		InviteID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("organization delete user invite query error: %v", err)
+	}
+
+	return nil
+}
+
+// OrganizationGetUserInvites gets organizations user invites
+func (d *OrganizationService) OrganizationGetUserInvites(ctx context.Context, orgId string) ([]thunderdome.OrganizationUserInvite, error) {
+	var invites = make([]thunderdome.OrganizationUserInvite, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT invite_id, organization_id, email, role, created_date, expire_date
+ 				FROM thunderdome.organization_user_invite WHERE organization_id = $1;`,
+		orgId,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var invite thunderdome.OrganizationUserInvite
+
+			if err := rows.Scan(
+				&invite.InviteId,
+				&invite.OrganizationId,
+				&invite.Email,
+				&invite.Role,
+				&invite.CreatedDate,
+				&invite.ExpireDate,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("OrganizationGetUserInvites query scan error", zap.Error(err))
+			} else {
+				invites = append(invites, invite)
+			}
+		}
+	} else {
+		if !errors.Is(err, sql.ErrNoRows) {
+			d.Logger.Ctx(ctx).Error("OrganizationGetUserInvites query error", zap.Error(err))
+		}
+	}
+
+	return invites, nil
 }
 
 // OrganizationTeamList gets a list of organization teams

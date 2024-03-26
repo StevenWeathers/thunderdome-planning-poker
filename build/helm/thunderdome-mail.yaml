@@ -1,0 +1,12 @@
+app:
+  name: thunderdome-mail
+  ports:
+    - name: default
+      port: 1080
+      targetPort: 1080
+    - name: smtp
+      port: 1025
+      targetPort: 1025
+  container:
+    image: maildev/maildev:2.1.0
+    port: 1080

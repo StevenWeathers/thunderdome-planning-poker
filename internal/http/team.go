@@ -1,10 +1,13 @@
 package http
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"go.uber.org/zap"
 
@@ -165,6 +168,11 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 	}
 }
 
+type userAddMeta struct {
+	Invited bool `json:"user_invited"`
+	Added   bool `json:"user_added"`
+}
+
 type teamAddUserRequestBody struct {
 	Email string `json:"email" validate:"required,email"`
 	Role  string `json:"role" enums:"MEMBER,ADMIN" validate:"required,oneof=MEMBER ADMIN"`
@@ -207,13 +215,38 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
 		}
 
-		UserEmail := u.Email
+		UserEmail := strings.ToLower(u.Email)
 
 		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil {
+		if UserErr != nil && errors.Is(UserErr, sql.ErrNoRows) {
+			inviteID, inviteErr := s.TeamDataSvc.TeamInviteUser(ctx, TeamID, UserEmail, u.Role)
+			if inviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(inviteErr),
+					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, UserErr)
+				return
+			}
+			team, teamErr := s.TeamDataSvc.TeamGet(ctx, TeamID)
+			if teamErr != nil {
+				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(teamErr),
+					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, teamErr)
+				return
+			}
+			emailErr := s.Email.SendTeamInvite(team.Name, UserEmail, inviteID)
+			if emailErr != nil {
+				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(emailErr),
+					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, emailErr)
+				return
+			}
+
+			s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
+			return
+		} else if UserErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(UserErr),
 				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
+			s.Failure(w, r, http.StatusInternalServerError, UserErr)
 			return
 		}
 
@@ -226,7 +259,7 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: false, Added: true})
 	}
 }
 
@@ -573,5 +606,67 @@ func (s *Service) handleGetTeamRetroActions() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, Actions, Meta)
+	}
+}
+
+// handleGetTeamUserInvites gets a list of user invites associated to the team
+// @Summary      Get Team User Invites
+// @Description  Get a list of user invites associated to the team
+// @Tags         team
+// @Produce      json
+// @Param        teamId  path    string  true  "the team ID"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.TeamUserInvite}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/invites [get]
+func (s *Service) handleGetTeamUserInvites() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+
+		invites, err := s.TeamDataSvc.TeamGetUserInvites(ctx, TeamID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetTeamUserInvites error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+		}
+
+		s.Success(w, r, http.StatusOK, invites, nil)
+	}
+}
+
+// handleDeleteTeamUserInvite handles deleting user invite from a team
+// @Summary      Deletes Team User Invite
+// @Description  Delete a user invite from the team
+// @Tags         team
+// @Produce      json
+// @Param        teamId        path    string  true  "the team ID"
+// @Param        inviteId  path    string  true  "the user invite ID"
+// @Success      200           object  standardJsonResponse{}
+// @Success      403           object  standardJsonResponse{}
+// @Success      500           object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId}/invites/{inviteId} [delete]
+func (s *Service) handleDeleteTeamUserInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+		inviteId := vars["inviteId"]
+		idErr := validate.Var(inviteId, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		err := s.TeamDataSvc.TeamDeleteUserInvite(ctx, inviteId)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleDeleteTeamUserInvite error", zap.Error(err), zap.String("team_id", TeamID),
+				zap.String("invite_id", inviteId), zap.String("session_user_id", SessionUserID))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 }
