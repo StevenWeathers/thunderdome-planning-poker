@@ -18,7 +18,7 @@ func (s *Service) CheckActiveSubscriber(ctx context.Context, userId string) erro
 	currentTime := time.Now()
 
 	rows, err := s.DB.QueryContext(ctx,
-		`SELECT id, user_id, customer_id, active, expires, created_date, updated_date
+		`SELECT id, user_id, customer_id, subscription_id, active, expires, created_date, updated_date
  				FROM thunderdome.subscription WHERE user_id = $1 AND active = true;`,
 		userId,
 	)
@@ -37,6 +37,7 @@ func (s *Service) CheckActiveSubscriber(ctx context.Context, userId string) erro
 			&sub.ID,
 			&sub.UserID,
 			&sub.CustomerID,
+			&sub.SubscriptionID,
 			&sub.Active,
 			&sub.Expires,
 			&sub.CreatedDate,
@@ -69,7 +70,7 @@ func (s *Service) GetSubscriptionsByUserID(ctx context.Context, userId string) (
 	subs := make([]thunderdome.Subscription, 0)
 
 	rows, err := s.DB.QueryContext(ctx,
-		`SELECT id, user_id, customer_id, active, expires, created_date, updated_date
+		`SELECT id, user_id, customer_id, subscription_id, active, expires, created_date, updated_date
  				FROM thunderdome.subscription WHERE user_id = $1;`,
 		userId,
 	)
@@ -88,6 +89,7 @@ func (s *Service) GetSubscriptionsByUserID(ctx context.Context, userId string) (
 			&sub.ID,
 			&sub.UserID,
 			&sub.CustomerID,
+			&sub.SubscriptionID,
 			&sub.Active,
 			&sub.Expires,
 			&sub.CreatedDate,
@@ -121,17 +123,17 @@ func (s *Service) GetSubscriptionByID(ctx context.Context, subscriptionId string
 
 	return sub, nil
 }
-func (s *Service) CreateSubscription(ctx context.Context, userId string, customerId string, subType string, expires time.Time) (thunderdome.Subscription, error) {
+func (s *Service) CreateSubscription(ctx context.Context, userId string, customerId string, subscriptionId string, subType string, expires time.Time) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.subscription 
-				(user_id, customer_id, type, expires)
+				(user_id, customer_id, subscription_id, type, expires)
 				VALUES ($1, $2, $3, $4)
-				RETURNING id, user_id, customer_id, active, expires, type, created_date, updated_date;`,
-		userId, customerId, subType, expires,
+				RETURNING id, user_id, customer_id, subscription_id, active, expires, type, created_date, updated_date;`,
+		userId, customerId, subscriptionId, subType, expires,
 	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.Active, &sub.Type, &sub.Expires,
+		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
 		&sub.CreatedDate, &sub.UpdatedDate,
 	)
 	if err != nil {
@@ -155,15 +157,15 @@ func (s *Service) CreateSubscription(ctx context.Context, userId string, custome
 
 	return sub, nil
 }
-func (s *Service) UpdateSubscription(ctx context.Context, id string, active bool, expires time.Time) (thunderdome.Subscription, error) {
+func (s *Service) UpdateSubscription(ctx context.Context, id string, active bool, subType string, expires time.Time) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
-		`UPDATE thunderdome.subscription SET active = $2, expires = $3, updated_date = NOW() WHERE id = $1
-				RETURNING id, user_id, customer_id, active, expires, created_date, updated_date;`,
-		id, active, expires,
+		`UPDATE thunderdome.subscription SET active = $2, type = $3, expires = $3, updated_date = NOW() WHERE id = $1
+				RETURNING id, user_id, customer_id, subscription_id, active, type, expires, created_date, updated_date;`,
+		id, active, subType, expires,
 	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.Active, &sub.Expires,
+		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
 		&sub.CreatedDate, &sub.UpdatedDate,
 	)
 	if err != nil {
