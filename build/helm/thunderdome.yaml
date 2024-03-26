@@ -15,14 +15,56 @@ app:
         value: thunderdome
       - key: DB_NAME
         value: thunderdome
-      - key: SMTP_SECURE
-        value: false
+      - key: DB_SSLMODE
+        value: "disable"
+      - key: DB_MAX_OPEN_CONNS
+        value: 25
+      - key: DB_MAX_IDLE_CONNS
+        value: 25
+      - key: DB_CONN_MAX_LIFETIME
+        value: 5
+      - key: SMTP_ENABLED
+        value: true
       - key: SMTP_HOST
         value: thunderdome-mail
       - key: SMTP_PORT
         value: 1025
+      - key: SMTP_USER
+        value: 
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_AUTH
+        value: PLAIN
+      - key: SMTP_SKIP_TLS_VERIFY
+        value: false
+      - key: SMTP_SENDER
+        value: no-reply@thunderdome.dev
+      - key: PORT
+        value: 8080
+      - key: PATH_PREFIX
+        value:
+      - key: COOKIE_SECURE
+        value: true
+      - key: BACKEND_COOKIE_NAME
+        value: warriorId
+      - key: FRONTEND_COOKIE_NAME
+        value: warrior
+      - key: HTTP_WRITE_TIMEOUT
+        value: 5
+      - key: HTTP_READ_TIMEOUT
+        value: 5
+      - key: HTTP_IDLE_TIMEOUT
+        value: 30
+      - key: HTTP_READ_HEADER_TIMEOUT
+        value: 2
+      - key: ANALYTICS_ENABLED
+        value: true
+      - key: ANALYTICS_ID
+        value: UA-140245309-1
   secrets:
     - key: DB_PASS
+      value: secret
+    - key: SMTP_PASS
       value: secret
     - key: COOKIE_HASHKEY
       value: secret
