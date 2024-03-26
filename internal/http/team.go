@@ -168,6 +168,11 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 	}
 }
 
+type userAddMeta struct {
+	Invited bool `json:"user_invited"`
+	Added   bool `json:"user_added"`
+}
+
 type teamAddUserRequestBody struct {
 	Email string `json:"email" validate:"required,email"`
 	Role  string `json:"role" enums:"MEMBER,ADMIN" validate:"required,oneof=MEMBER ADMIN"`
@@ -235,7 +240,8 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 				s.Failure(w, r, http.StatusInternalServerError, emailErr)
 				return
 			}
-			s.Success(w, r, http.StatusOK, nil, nil)
+
+			s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
 			return
 		} else if UserErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(UserErr),
@@ -253,7 +259,7 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: false, Added: true})
 	}
 }
 

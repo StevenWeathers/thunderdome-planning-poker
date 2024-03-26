@@ -41,8 +41,7 @@
     </div>
 
     <div class="mb-4 text-gray-700 dark:text-gray-400 text-sm">
-      If user is not registered an invite to register and join the {pageType} will
-      be sent.
+      {$LL.addUserWillInviteNotFoundFieldNote({ pageType })}
     </div>
 
     <div class="mb-4">

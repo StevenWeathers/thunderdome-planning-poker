@@ -86,6 +86,8 @@
   let organizationRole = '';
   let departmentRole = '';
   let teamRole = '';
+  let isAdmin = false;
+  let isTeamMember = false;
 
   const apiPrefix = '/api';
   $: orgPrefix = departmentId
@@ -164,19 +166,20 @@
           organizationRole = result.data.organizationRole;
         }
 
+        isAdmin =
+          organizationRole === 'ADMIN' ||
+          departmentRole === 'ADMIN' ||
+          teamRole === 'ADMIN';
+        isTeamMember =
+          organizationRole === 'ADMIN' ||
+          departmentRole === 'ADMIN' ||
+          teamRole !== '';
+
         getBattles();
         getRetros();
         getRetrosActions();
         getStoryboards();
         getUsers();
-
-        if (
-          organizationRole === 'ADMIN' ||
-          departmentRole === 'ADMIN' ||
-          teamRole === 'ADMIN'
-        ) {
-          getInvites();
-        }
       })
       .catch(function () {
         notifications.danger($LL.teamGetError());
@@ -200,6 +203,9 @@
       .then(res => res.json())
       .then(function (result) {
         users = result.data;
+        if (isAdmin) {
+          getInvites();
+        }
       })
       .catch(function () {
         notifications.danger($LL.teamGetUsersError());
@@ -462,15 +468,6 @@
 
     getTeam();
   });
-
-  $: isAdmin =
-    organizationRole === 'ADMIN' ||
-    departmentRole === 'ADMIN' ||
-    teamRole === 'ADMIN';
-  $: isTeamMember =
-    organizationRole === 'ADMIN' ||
-    departmentRole === 'ADMIN' ||
-    teamRole !== '';
 </script>
 
 <svelte:head>
@@ -777,7 +774,7 @@
           <h2
             class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
           >
-            User Invites
+            {$LL.userInvites()}
           </h2>
         </div>
         <!--            <div class="flex-1 text-right">-->
@@ -794,7 +791,7 @@
           <HeadCol>{$LL.email()}</HeadCol>
           <HeadCol>{$LL.role()}</HeadCol>
           <HeadCol>{$LL.dateCreated()}</HeadCol>
-          <HeadCol>Expire Date</HeadCol>
+          <HeadCol>{$LL.expireDate()}</HeadCol>
           <HeadCol />
         </tr>
         <tbody slot="body" let:class="{className}" class="{className}">
@@ -922,8 +919,8 @@
     <DeleteConfirmation
       toggleDelete="{toggleDeleteInvite(null)}"
       handleDelete="{handleDeleteInvite}"
-      confirmText="Are you sure you want to delete this user invite?"
-      confirmBtnText="Delete Invite"
+      confirmText="{$LL.userInviteConfirmDelete()}"
+      confirmBtnText="{$LL.userInviteDelete()}"
     />
   {/if}
 </PageLayout>

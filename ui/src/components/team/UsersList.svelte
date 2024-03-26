@@ -34,10 +34,16 @@
     };
 
     xfetch(`${teamPrefix}/users`, { body })
-      .then(function () {
+      .then(result => result.json())
+      .then(function (result) {
         eventTag(`${pageType}_add_user`, 'engagement', 'success');
         toggleAddUser();
-        notifications.success($LL.userAddSuccess());
+        if (result.meta.user_invited) {
+          notifications.success($LL.userNotFoundInviteSent());
+        } else {
+          notifications.success($LL.userAddSuccess());
+        }
+
         getUsers();
       })
       .catch(function () {
