@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.postgres.name }}-config
+  labels:
+    group: {{ .Values.postgres.group }}
+data: 
+{{- range .Values.postgres.config.data }}
+  {{ .key }}: {{ .value }}
+{{- end}}

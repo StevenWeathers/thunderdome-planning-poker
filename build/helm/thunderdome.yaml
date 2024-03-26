@@ -1,0 +1,130 @@
+app:
+  name: thunderdome
+  ports:
+    - name: default
+      port: 8080
+      targetPort: 8080
+  container:
+    image: stevenweathers/thunderdome-planning-poker
+    env: 
+      - key: APP_DOMAIN
+        value: localhost
+      - key: DB_HOST
+        value: thunderdome-db
+      - key: DB_USER
+        value: thunderdome
+      - key: DB_NAME
+        value: thunderdome
+      - key: DB_SSLMODE
+        value: "disable"
+      - key: DB_MAX_OPEN_CONNS
+        value: 25
+      - key: DB_MAX_IDLE_CONNS
+        value: 25
+      - key: DB_CONN_MAX_LIFETIME
+        value: 5
+      - key: SMTP_ENABLED
+        value: true
+      - key: SMTP_HOST
+        value: thunderdome-mail
+      - key: SMTP_PORT
+        value: 1025
+      - key: SMTP_USER
+        value: 
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_AUTH
+        value: PLAIN
+      - key: SMTP_SKIP_TLS_VERIFY
+        value: false
+      - key: SMTP_SENDER
+        value: no-reply@thunderdome.dev
+      - key: PORT
+        value: 8080
+      - key: PATH_PREFIX
+        value:
+      - key: COOKIE_SECURE
+        value: true
+      - key: BACKEND_COOKIE_NAME
+        value: warriorId
+      - key: FRONTEND_COOKIE_NAME
+        value: warrior
+      - key: HTTP_WRITE_TIMEOUT
+        value: 5
+      - key: HTTP_READ_TIMEOUT
+        value: 5
+      - key: HTTP_IDLE_TIMEOUT
+        value: 30
+      - key: HTTP_READ_HEADER_TIMEOUT
+        value: 2
+      - key: ANALYTICS_ENABLED
+        value: true
+      - key: ANALYTICS_ID
+        value: UA-140245309-1
+      - key: CONFIG_POINTS_ALLOWED
+        value: "0, 1/2, 1, 2, 3, 5, 8, 13, 20, 21, 34, 40, 55, 100, ?, ☕️"
+      - key: CONFIG_POINTS_DEFAULT
+        value: "1, 2, 3, 5, 8 , 13, ?"
+      - key: CONFIG_SHOW_RANK
+        value: false
+      - key: CONFIG_AVATAR_SERVICE
+        value: gravatar
+      - key: CONFIG_TOAST_TIMEOUT
+        value: 1000
+      - key: CONFIG_ALLOW_GUESTS
+        value: true
+      - key: CONFIG_ALLOW_REGISTRATION
+        value: true
+      - key: CONFIG_ALLOW_JIRA_IMPORT
+        value: true
+      - key: CONFIG_ALLOW_CSV_IMPORT
+        value: true
+      - key: CONFIG_DEFAULT_LOCALE
+        value: en
+      - key: CONFIG_FRIENDLY_UI_VERBS
+        value: false
+      - key: CONFIG_ALLOW_EXTERNAL_API
+        value: true
+      - key: CONFIG_EXTERNAL_API_VERIFY_REQUIRED
+        value: true
+      - key: CONFIG_USER_APIKEY_LIMIT
+        value: 5
+      - key: CONFIG_SHOW_ACTIVE_COUNTRIES
+        value: false
+      - key: CONFIG_CLEANUP_BATTLES_DAYS_OLD
+        value: 180
+      - key: CONFIG_CLEANUP_RETROS_DAYS_OLD
+        value: 180
+      - key: CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD
+        value: 180
+      - key: CONFIG_CLEANUP_GUESTS_DAYS_OLD
+        value: 180
+      - key: CONFIG_ORGANIZATIONS_ENABLED
+        value: true
+      - key: CONFIG_REQUIRE_TEAMS
+        value: false
+      - key: AUTH_METHOD
+        value: normal
+      - key: FEATURE_POKER
+        value: true
+      - key: FEATURE_RETRO
+        value: true
+      - key: FEATURE_STORYBOARD
+        value: true
+      - key: OTEL_ENABLED
+        value: false
+      - key: OTEL_SERVICE_NAME
+        value: thunderdome
+      - key: OTEL_COLLECTOR_URL
+        value: localhost:4317
+      - key: OTEL_INSECURE_MODE
+        value: false
+  secrets:
+    - key: DB_PASS
+      value: secret
+    - key: SMTP_PASS
+      value: secret
+    - key: COOKIE_HASHKEY
+      value: secret
+    - key: CONFIG_AES_HASHKEY
+      value: secret
