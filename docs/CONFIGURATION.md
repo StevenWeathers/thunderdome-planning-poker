@@ -24,11 +24,11 @@ db:
 
 For Thunderdome to work correctly the following configuration items are required:
 
-| Option                | Environment Variable | Description                                                                              | Default Value     |
-|-----------------------|----------------------|------------------------------------------------------------------------------------------|-------------------|
-| `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for creating URLs in emails. | thunderdome.dev   |
-| `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                               | strongest-avenger |
-| `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Battle JoinCode, LeaderCode).               | therevengers      |
+| Option                | Environment Variable | Description                                                                                                                                         | Default Value     |
+|-----------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for functional cookies (guest and registered user sessions) and creating URLs in emails. | thunderdome.dev   |
+| `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                                                                                          | strongest-avenger |
+| `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Battle JoinCode, LeaderCode).                                                                          | therevengers      |
 
 ### Database configuration
 
