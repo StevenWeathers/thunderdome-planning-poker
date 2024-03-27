@@ -6,6 +6,7 @@ type message struct {
 }
 
 type subscription struct {
+	config *Config
 	conn   *connection
 	arena  string
 	UserID string

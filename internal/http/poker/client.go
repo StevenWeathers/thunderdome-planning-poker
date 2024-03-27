@@ -17,15 +17,6 @@ import (
 )
 
 const (
-	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
-
-	// Time allowed to read the next pong message from the peer.
-	pongWait = 60 * time.Second
-
-	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
-
 	// Maximum message size allowed from peer.
 	maxMessageSize = 1024 * 1024
 )
@@ -53,6 +44,7 @@ var upgrader = websocket.Upgrader{
 
 // connection is a middleman between the websocket connection and the hub.
 type connection struct {
+	config *Config
 	// The websocket connection.
 	ws *websocket.Conn
 
@@ -78,7 +70,7 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		h.unregister <- sub
 		if forceClosed {
 			cm := websocket.FormatCloseMessage(4002, "abandoned")
-			if err := c.ws.WriteControl(websocket.CloseMessage, cm, time.Now().Add(writeWait)); err != nil {
+			if err := c.ws.WriteControl(websocket.CloseMessage, cm, time.Now().Add(sub.config.WriteWait())); err != nil {
 				b.logger.Ctx(ctx).Error("abandon error", zap.Error(err),
 					zap.String("poker_id", BattleID), zap.String("session_user_id", UserID))
 			}
@@ -89,9 +81,9 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
-	_ = c.ws.SetReadDeadline(time.Now().Add(pongWait))
+	_ = c.ws.SetReadDeadline(time.Now().Add(sub.config.PongWait()))
 	c.ws.SetPongHandler(func(string) error {
-		_ = c.ws.SetReadDeadline(time.Now().Add(pongWait))
+		_ = c.ws.SetReadDeadline(time.Now().Add(sub.config.PongWait()))
 		return nil
 	})
 
@@ -154,14 +146,14 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 // write a message with the given message type and payload.
 func (c *connection) write(mt int, payload []byte) error {
-	_ = c.ws.SetWriteDeadline(time.Now().Add(writeWait))
+	_ = c.ws.SetWriteDeadline(time.Now().Add(c.config.WriteWait()))
 	return c.ws.WriteMessage(mt, payload)
 }
 
 // writePump pumps messages from the hub to the websocket connection.
 func (sub *subscription) writePump() {
 	c := sub.conn
-	ticker := time.NewTicker(pingPeriod)
+	ticker := time.NewTicker(sub.config.PingPeriod())
 	defer func() {
 		ticker.Stop()
 		_ = c.ws.Close()
@@ -211,7 +203,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 				zap.String("poker_id", battleID))
 			return
 		}
-		c := &connection{send: make(chan []byte, 256), ws: ws}
+		c := &connection{config: &b.config, send: make(chan []byte, 256), ws: ws}
 
 		SessionId, cookieErr := b.validateSessionCookie(w, r)
 		if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
@@ -297,7 +289,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		}
 
 		if UserAuthed {
-			ss := subscription{c, battleID, User.Id}
+			ss := subscription{&b.config, c, battleID, User.Id}
 			h.register <- ss
 
 			Users, _ := b.BattleService.AddUser(ss.arena, User.Id)

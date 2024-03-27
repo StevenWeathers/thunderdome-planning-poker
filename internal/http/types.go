@@ -22,6 +22,17 @@ const (
 
 var validate *validator.Validate
 
+type WebsocketConfig struct {
+	// Time allowed to write a message to the peer.
+	WriteWaitSec int
+
+	// Time allowed to read the next pong message from the peer.
+	PongWaitSec int
+
+	// Send pings to peer with this period. Must be less than pongWait.
+	PingPeriodSec int
+}
+
 // Config contains configuration values used by the APIs
 type Config struct {
 	Port                  string
@@ -74,6 +85,8 @@ type Config struct {
 	AllowRegistration         bool
 	ShowActiveCountries       bool
 	SubscriptionsEnabled      bool
+
+	WebsocketConfig
 }
 
 type Service struct {
