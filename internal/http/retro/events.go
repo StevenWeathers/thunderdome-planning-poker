@@ -42,13 +42,13 @@ func (b *Service) GroupItem(ctx context.Context, RetroID string, UserID string, 
 		return nil, err, false
 	}
 
-	items, err := b.RetroService.GroupRetroItem(RetroID, rs.ItemId, rs.GroupId)
+	item, err := b.RetroService.GroupRetroItem(RetroID, rs.ItemId, rs.GroupId)
 	if err != nil {
 		return nil, err, false
 	}
 
-	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("items_updated", string(updatedItems), "")
+	updatedItem, _ := json.Marshal(item)
+	msg := createSocketEvent("item_moved", string(updatedItem), "")
 
 	return msg, nil, false
 }
@@ -87,13 +87,13 @@ func (b *Service) GroupNameChange(ctx context.Context, RetroID string, UserID st
 		return nil, err, false
 	}
 
-	groups, err := b.RetroService.GroupNameChange(RetroID, rs.GroupId, rs.Name)
+	group, err := b.RetroService.GroupNameChange(RetroID, rs.GroupId, rs.Name)
 	if err != nil {
 		return nil, err, false
 	}
 
-	updatedGroups, _ := json.Marshal(groups)
-	msg := createSocketEvent("groups_updated", string(updatedGroups), "")
+	updatedGroup, _ := json.Marshal(group)
+	msg := createSocketEvent("group_name_updated", string(updatedGroup), "")
 
 	return msg, nil, false
 }
