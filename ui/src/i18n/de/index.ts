@@ -26,6 +26,10 @@ const de: Translation = {
   adminPageOrganizations: 'Unternehmen',
   adminPageTeams: 'Teams',
   adminPageUsers: 'Benutzer',
+  adminPageSubscriptions: 'Subscriptions',
+  deleteSubscriptionConfirmation:
+    'Are you sure you want to delete this subscription?',
+  deleteSubscription: 'Delete Subscription',
   alertAllowDismiss: 'Ablehnen zulassen',
   alertContent: 'Benachrichtigungsinhalt',
   alertContentPlaceholder: 'Benachrichtigungsinhalt eingeben',

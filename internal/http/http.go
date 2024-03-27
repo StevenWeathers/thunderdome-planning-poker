@@ -281,6 +281,11 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	}
 
 	if a.Config.SubscriptionsEnabled {
+		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionGet()))).Methods("GET")
+		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionUpdate()))).Methods("PUT")
+		apiRouter.PathPrefix("/subscriptions/{subscriptionId}").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionDelete()))).Methods("DELETE")
+		apiRouter.PathPrefix("/subscriptions").Handler(a.userOnly(a.adminOnly(a.handleGetSubscriptions()))).Methods("GET")
+		apiRouter.PathPrefix("/subscriptions").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionCreate()))).Methods("POST")
 		a.Router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
 	}
 

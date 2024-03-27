@@ -115,6 +115,18 @@ type RootTranslation = {
    */
   adminPageUsers: string;
   /**
+   * S​u​b​s​c​r​i​p​t​i​o​n​s
+   */
+  adminPageSubscriptions: string;
+  /**
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​s​u​b​s​c​r​i​p​t​i​o​n​?
+   */
+  deleteSubscriptionConfirmation: string;
+  /**
+   * D​e​l​e​t​e​ ​S​u​b​s​c​r​i​p​t​i​o​n
+   */
+  deleteSubscription: string;
+  /**
    * A​l​l​o​w​ ​D​i​s​m​i​s​s
    */
   alertAllowDismiss: string;
@@ -2462,6 +2474,18 @@ export type TranslationFunctions = {
    * Users
    */
   adminPageUsers: () => LocalizedString;
+  /**
+   * Subscriptions
+   */
+  adminPageSubscriptions: () => LocalizedString;
+  /**
+   * Are you sure you want to delete this subscription?
+   */
+  deleteSubscriptionConfirmation: () => LocalizedString;
+  /**
+   * Delete Subscription
+   */
+  deleteSubscription: () => LocalizedString;
   /**
    * Allow Dismiss
    */
