@@ -65,9 +65,30 @@
         toggleClose();
         eventTag('create_jira_instance', 'engagement', 'success');
       })
-      .catch(function () {
-        notifications.danger('failed to create jira instance');
-
+      .catch(function (error) {
+        if (Array.isArray(error)) {
+          error[1].json().then(function (result) {
+            if (result.error === 'REQUIRES_SUBSCRIBED_USER') {
+              user.update({
+                id: $user.id,
+                name: $user.name,
+                email: $user.email,
+                rank: $user.rank,
+                avatar: $user.avatar,
+                verified: $user.verified,
+                notificationsEnabled: $user.notificationsEnabled,
+                locale: $user.locale,
+                theme: $user.theme,
+                subscribed: false,
+              });
+              notifications.danger('subscription(s) expired');
+            } else {
+              notifications.danger('failed to create jira instance');
+            }
+          });
+        } else {
+          notifications.danger('failed to create jira instance');
+        }
         eventTag('create_jira_instance', 'engagement', 'failure');
       });
   }

@@ -59,8 +59,30 @@
       .then(function (result) {
         jiraInstances = result.data;
       })
-      .catch(function () {
-        notifications.danger('error getting jira instances');
+      .catch(function (error) {
+        if (Array.isArray(error)) {
+          error[1].json().then(function (result) {
+            if (result.error === 'REQUIRES_SUBSCRIBED_USER') {
+              user.update({
+                id: $user.id,
+                name: $user.name,
+                email: $user.email,
+                rank: $user.rank,
+                avatar: $user.avatar,
+                verified: $user.verified,
+                notificationsEnabled: $user.notificationsEnabled,
+                locale: $user.locale,
+                theme: $user.theme,
+                subscribed: false,
+              });
+              notifications.danger('subscription(s) expired');
+            } else {
+              notifications.danger('error getting jira instances');
+            }
+          });
+        } else {
+          notifications.danger('error getting jira instances');
+        }
         eventTag('fetch_profile_jira_instances', 'engagement', 'failure');
       });
   }
@@ -94,8 +116,30 @@
       .then(function (result) {
         jiraStories = result.data.issues;
       })
-      .catch(function () {
-        notifications.danger('error getting jira instances');
+      .catch(function (error) {
+        if (Array.isArray(error)) {
+          error[1].json().then(function (result) {
+            if (result.error === 'REQUIRES_SUBSCRIBED_USER') {
+              user.update({
+                id: $user.id,
+                name: $user.name,
+                email: $user.email,
+                rank: $user.rank,
+                avatar: $user.avatar,
+                verified: $user.verified,
+                notificationsEnabled: $user.notificationsEnabled,
+                locale: $user.locale,
+                theme: $user.theme,
+                subscribed: false,
+              });
+              notifications.danger('subscription(s) expired');
+            } else {
+              notifications.danger('error getting jira instances');
+            }
+          });
+        } else {
+          notifications.danger('error getting jira instances');
+        }
         eventTag('fetch_profile_jira_instances', 'engagement', 'failure');
       });
   }
