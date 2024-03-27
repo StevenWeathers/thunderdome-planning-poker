@@ -30,8 +30,8 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("http.idle_timeout", 30)
 	viper.SetDefault("http.read_header_timeout", 2)
 	viper.SetDefault("http.websocket_write_wait_sec", 10)
-	viper.SetDefault("http.websocket_ping_period_sec", 10)
-	viper.SetDefault("http.websocket_pong_wait_sec", 54)
+	viper.SetDefault("http.websocket_pong_wait_sec", 60)
+	viper.SetDefault("http.websocket_ping_period_sec", 54)
 
 	viper.SetDefault("analytics.enabled", true)
 	viper.SetDefault("analytics.id", "UA-140245309-1")
