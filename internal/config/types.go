@@ -14,18 +14,21 @@ type Config struct {
 }
 
 type Http struct {
-	CookieHashkey      string `mapstructure:"cookie_hashkey"`
-	Port               string
-	SecureCookie       bool   `mapstructure:"secure_cookie"`
-	BackendCookieName  string `mapstructure:"backend_cookie_name"`
-	SessionCookieName  string `mapstructure:"session_cookie_name"`
-	FrontendCookieName string `mapstructure:"frontend_cookie_name"`
-	Domain             string
-	PathPrefix         string `mapstructure:"path_prefix"`
-	WriteTimeout       int    `mapstructure:"write_timeout"`
-	ReadTimeout        int    `mapstructure:"read_timeout"`
-	IdleTimeout        int    `mapstructure:"idle_timeout"`
-	ReadHeaderTimeout  int    `mapstructure:"read_header_timeout"`
+	CookieHashkey          string `mapstructure:"cookie_hashkey"`
+	Port                   string
+	SecureCookie           bool   `mapstructure:"secure_cookie"`
+	BackendCookieName      string `mapstructure:"backend_cookie_name"`
+	SessionCookieName      string `mapstructure:"session_cookie_name"`
+	FrontendCookieName     string `mapstructure:"frontend_cookie_name"`
+	Domain                 string
+	PathPrefix             string `mapstructure:"path_prefix"`
+	WriteTimeout           int    `mapstructure:"write_timeout"`
+	ReadTimeout            int    `mapstructure:"read_timeout"`
+	IdleTimeout            int    `mapstructure:"idle_timeout"`
+	ReadHeaderTimeout      int    `mapstructure:"read_header_timeout"`
+	WebsocketWriteWaitSec  int    `mapstructure:"websocket_write_wait_sec"`
+	WebsocketPingPeriodSec int    `mapstructure:"websocket_ping_period_sec"`
+	WebsocketPongWaitSec   int    `mapstructure:"websocket_pong_wait_sec"`
 }
 
 type Analytics struct {
