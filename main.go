@@ -162,6 +162,11 @@ func main() {
 			AllowRegistration:         c.Config.AllowRegistration,
 			ShowActiveCountries:       c.Config.ShowActiveCountries,
 			SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
+			WebsocketConfig: http.WebsocketConfig{
+				WriteWaitSec:  c.Http.WebsocketWriteWaitSec,
+				PingPeriodSec: c.Http.WebsocketPingPeriodSec,
+				PongWaitSec:   c.Http.WebsocketPongWaitSec,
+			},
 		},
 		Email: email.New(&email.Config{
 			AppURL:            "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
