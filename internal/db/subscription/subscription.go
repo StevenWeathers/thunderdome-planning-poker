@@ -282,10 +282,35 @@ func (s *Service) GetSubscriptions(ctx context.Context, Limit int, Offset int) (
 }
 
 func (s *Service) DeleteSubscription(ctx context.Context, id string) error {
+	subscription, err := s.GetSubscriptionByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("error getting subscription to delete: %v", err)
+	}
+
 	if _, err := s.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.subscription WHERE id = $1;`,
 		id); err != nil {
 		return fmt.Errorf("error deleting subscription: %v", err)
+	}
+
+	stillActive := subscription.Active
+	stillActiveErr := s.CheckActiveSubscriber(ctx, subscription.UserID)
+	if stillActiveErr != nil {
+		stillActive = false
+	}
+	result, err := s.DB.ExecContext(ctx,
+		`UPDATE thunderdome.users SET subscribed = $2, updated_date = NOW() WHERE id = $1;`,
+		subscription.UserID, stillActive,
+	)
+	if err != nil {
+		return fmt.Errorf("error encountered updating user subscription status: %v", err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("error encountered updating user subscription status: %v", err)
+	}
+	if rows != 1 {
+		return fmt.Errorf("expected to affect 1 row, affected %d", rows)
 	}
 
 	return nil
