@@ -4,11 +4,11 @@
 
 ### Frontend
 
-- Follow Typescript and Svelte best practices
+- Follow [Typescript](https://www.typescriptlang.org/) and [Svelte](https://svelte.dev/) best practices
 
 ### Go
 
-- [Code Review Comments guide](https://github.com/golang/go/wiki/CodeReviewComments) from the Go project should be
+- [Code Review Comments guide](https://go.dev/wiki/CodeReviewComments) from the Go project should be
   followed
 
 ### Format code before commit
