@@ -33,7 +33,7 @@ body:
       label: Version
       description: What version of our software are you running?
       options:
-        - 3.8.3 (Latest)
+        - Latest
       default: 0
     validations:
       required: true
