@@ -4334,6 +4334,121 @@
                 }
             }
         },
+        "/support-tickets": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of support tickets",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "support"
+                ],
+                "summary": "Get Support Ticket",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Max number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Starting point to return rows from, should be multiplied by limit or 0",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.Support"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a support ticket",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "support"
+                ],
+                "summary": "Create Support Ticket",
+                "parameters": [
+                    {
+                        "description": "new support object",
+                        "name": "support",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.supportRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.Support"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teams/{teamId}": {
             "get": {
                 "security": [
@@ -8297,6 +8412,20 @@
                 }
             }
         },
+        "http.supportRequestBody": {
+            "type": "object",
+            "properties": {
+                "user_email": {
+                    "type": "string"
+                },
+                "user_name": {
+                    "type": "string"
+                },
+                "user_question": {
+                    "type": "string"
+                }
+            }
+        },
         "http.teamAddUserRequestBody": {
             "type": "object",
             "required": [
@@ -9365,6 +9494,38 @@
                     "$ref": "#/definitions/thunderdome.User"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.Support": {
+            "type": "object",
+            "properties": {
+                "created_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "resolved": {
+                    "type": "boolean"
+                },
+                "resolved_by": {
+                    "type": "string"
+                },
+                "updated_date": {
+                    "type": "string"
+                },
+                "user_email": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "user_name": {
+                    "type": "string"
+                },
+                "user_question": {
                     "type": "string"
                 }
             }

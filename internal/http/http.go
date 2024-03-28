@@ -305,6 +305,9 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		a.Router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
 	}
 
+	apiRouter.PathPrefix("/support-tickets").Handler(a.userOnly(a.adminOnly(a.handleGetSupportTickets()))).Methods("GET")
+	apiRouter.PathPrefix("/support-tickets").Handler(a.userOptional(a.handleSupportCreate())).Methods("POST")
+
 	// static assets
 	a.Router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 	a.Router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))

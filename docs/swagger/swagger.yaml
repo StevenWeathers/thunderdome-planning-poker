@@ -361,6 +361,15 @@ definitions:
     required:
     - type
     type: object
+  http.supportRequestBody:
+    properties:
+      user_email:
+        type: string
+      user_name:
+        type: string
+      user_question:
+        type: string
+    type: object
   http.teamAddUserRequestBody:
     properties:
       email:
@@ -1071,6 +1080,27 @@ definitions:
       user:
         $ref: '#/definitions/thunderdome.User'
       user_id:
+        type: string
+    type: object
+  thunderdome.Support:
+    properties:
+      created_date:
+        type: string
+      id:
+        type: string
+      resolved:
+        type: boolean
+      resolved_by:
+        type: string
+      updated_date:
+        type: string
+      user_email:
+        type: string
+      user_id:
+        type: string
+      user_name:
+        type: string
+      user_question:
         type: string
     type: object
   thunderdome.Team:
@@ -4192,6 +4222,74 @@ paths:
       summary: Update Subscription
       tags:
       - subscription
+  /support-tickets:
+    get:
+      description: get list of support tickets
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Support'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Support Ticket
+      tags:
+      - support
+    post:
+      description: Creates a support ticket
+      parameters:
+      - description: new support object
+        in: body
+        name: support
+        required: true
+        schema:
+          $ref: '#/definitions/http.supportRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Support'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Support Ticket
+      tags:
+      - support
   /teams/{teamId}:
     delete:
       description: Delete a Team
