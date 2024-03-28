@@ -27,6 +27,17 @@ body:
       value: "A bug happened!"
     validations:
       required: true
+  - type: dropdown
+    id: selfhosted
+    attributes:
+      label: Self Hosted?
+      description: Was this bug experienced on your self hosted instance of Thunderdome?
+      multiple: false
+      options:
+        - Yes
+        - No
+    validations:
+      required: true
   - type: input
     id: version
     attributes:
