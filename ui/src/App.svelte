@@ -55,6 +55,9 @@
   import { loadLocaleAsync } from './i18n/i18n-util.async';
   import Confirmation from './pages/subscription/Confirmation.svelte';
   import Pricing from './pages/subscription/Pricing.svelte';
+  import PrivacyPolicy from './pages/support/PrivacyPolicy.svelte';
+  import TermsConditions from './pages/support/TermsConditions.svelte';
+  import Support from './pages/support/Support.svelte';
 
   const {
     FeaturePoker,
@@ -87,6 +90,27 @@
       route: Landing,
       params: {},
       name: 'landing',
+    };
+  });
+  router.on(appRoutes.privacyPolicy, () => {
+    currentPage = {
+      route: PrivacyPolicy,
+      params: {},
+      name: 'privacy',
+    };
+  });
+  router.on(appRoutes.termsConditions, () => {
+    currentPage = {
+      route: TermsConditions,
+      params: {},
+      name: 'terms-conditions',
+    };
+  });
+  router.on(appRoutes.support, () => {
+    currentPage = {
+      route: Support,
+      params: {},
+      name: 'support',
     };
   });
   router.on(`${appRoutes.register}`, params => {

@@ -1,6 +1,10 @@
 import type { BaseTranslation } from '../i18n-types';
 
 const en: BaseTranslation = {
+  userGuide: 'User Guide',
+  privacyPolicy: 'Privacy Policy',
+  termsConditions: 'Terms & Conditions',
+  support: 'Support',
   abandoned: 'Abandoned',
   actionComments: 'Action Comments',
   actionItem: 'Action Item',
