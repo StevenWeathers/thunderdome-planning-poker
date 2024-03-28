@@ -110,6 +110,7 @@ type Service struct {
 	JiraDataSvc         thunderdome.JiraDataSvc
 	SubscriptionDataSvc thunderdome.SubscriptionDataSvc
 	SubscriptionSvc     *subscription.Service
+	SupportDataSvc      thunderdome.SupportDataSvc
 }
 
 // standardJsonResponse structure used for all restful APIs response body
