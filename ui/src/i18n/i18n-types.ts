@@ -17,6 +17,22 @@ export type Translations = RootTranslation;
 
 type RootTranslation = {
   /**
+   * U​s​e​r​ ​G​u​i​d​e
+   */
+  userGuide: string;
+  /**
+   * P​r​i​v​a​c​y​ ​P​o​l​i​c​y
+   */
+  privacyPolicy: string;
+  /**
+   * T​e​r​m​s​ ​&​ ​C​o​n​d​i​t​i​o​n​s
+   */
+  termsConditions: string;
+  /**
+   * S​u​p​p​o​r​t
+   */
+  support: string;
+  /**
    * A​b​a​n​d​o​n​e​d
    */
   abandoned: string;
@@ -2378,6 +2394,22 @@ type RootTranslation = {
 };
 
 export type TranslationFunctions = {
+  /**
+   * User Guide
+   */
+  userGuide: () => LocalizedString;
+  /**
+   * Privacy Policy
+   */
+  privacyPolicy: () => LocalizedString;
+  /**
+   * Terms & Conditions
+   */
+  termsConditions: () => LocalizedString;
+  /**
+   * Support
+   */
+  support: () => LocalizedString;
   /**
    * Abandoned
    */

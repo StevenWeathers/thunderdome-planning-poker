@@ -1,6 +1,10 @@
 import type { Translation } from '../i18n-types';
 
 const es: Translation = {
+  userGuide: 'User Guide',
+  privacyPolicy: 'Privacy Policy',
+  termsConditions: 'Terms & Conditions',
+  support: 'Support',
   abandoned: 'Abandoned',
   actionComments: 'Action Comments',
   actionItem: 'Action Item',

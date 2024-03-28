@@ -57,6 +57,9 @@ const defaultAppRoutes = {
   adminSubscriptions: `${PathPrefix}/admin/subscriptions`,
   subscriptionPricing: `${PathPrefix}/subscriptions/pricing`,
   subscriptionConfirmation: `${PathPrefix}/subscriptions/confirmation`,
+  privacyPolicy: `${PathPrefix}/privacy-policy`,
+  termsConditions: `${PathPrefix}/terms-conditions`,
+  support: `${PathPrefix}/support`,
 };
 const friendlyAppRoutes = {
   ...defaultAppRoutes,
