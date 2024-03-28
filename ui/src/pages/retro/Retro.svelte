@@ -97,7 +97,7 @@
         return b.votes.length - a.votes.length;
       });
     }
-    if (retro.phase === 'group' || retro.phase === 'vote') {
+    if (retro.phase === 'vote') {
       result.sort((a, b) => {
         return b.items.length - a.items.length;
       });
@@ -156,6 +156,31 @@
         if (retro.phase !== 'brainstorm') {
           groupedItems = organizeItemsByGroup();
         }
+        break;
+      }
+      case 'item_moved': {
+        const parsedValue = JSON.parse(parsedEvent.value);
+        const updatedItems = [...retro.items];
+        console.log(updatedItems);
+        const idx = updatedItems.findIndex(item => {
+          return item.id === parsedValue.id;
+        });
+        console.log(idx);
+        updatedItems[idx].groupId = parsedValue.groupId;
+        console.log(updatedItems);
+        retro.items = updatedItems;
+        groupedItems = organizeItemsByGroup();
+        break;
+      }
+      case 'group_name_updated': {
+        const parsedValue = JSON.parse(parsedEvent.value);
+        const updatedGroups = [...retro.groups];
+        const idx = updatedGroups.findIndex(group => {
+          return group.id === parsedValue.id;
+        });
+        updatedGroups[idx].name = parsedValue.name;
+        retro.groups = updatedGroups;
+        groupedItems = organizeItemsByGroup();
         break;
       }
       case 'groups_updated': {

@@ -115,11 +115,11 @@ type RetroDataSvc interface {
 	RetroActionAssigneeDelete(RetroID string, ActionID string, UserID string) ([]*RetroAction, error)
 
 	CreateRetroItem(RetroID string, UserID string, ItemType string, Content string) ([]*RetroItem, error)
-	GroupRetroItem(RetroID string, ItemId string, GroupId string) ([]*RetroItem, error)
+	GroupRetroItem(RetroID string, ItemId string, GroupId string) (RetroItem, error)
 	DeleteRetroItem(RetroID string, userID string, Type string, ItemID string) ([]*RetroItem, error)
 	GetRetroItems(RetroID string) []*RetroItem
 	GetRetroGroups(RetroID string) []*RetroGroup
-	GroupNameChange(RetroID string, GroupId string, Name string) ([]*RetroGroup, error)
+	GroupNameChange(RetroID string, GroupId string, Name string) (RetroGroup, error)
 	GetRetroVotes(RetroID string) []*RetroVote
 	GroupUserVote(RetroID string, GroupID string, UserID string) ([]*RetroVote, error)
 	GroupUserSubtractVote(RetroID string, GroupID string, UserID string) ([]*RetroVote, error)
