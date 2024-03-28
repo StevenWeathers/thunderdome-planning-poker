@@ -19,10 +19,17 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
+          cache: false
+
+      - name: Copy swagger docs dummy file and Create dummy ui/dist/index.html
+        run: mkdir ui/dist && touch ui/dist/index.html
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v4
         with:
+          # Require: The version of golangci-lint to use.
+          # When `install-mode` is `binary` (default) the value can be v1.2 or v1.2.3 or `latest` to use the latest version.
+          # When `install-mode` is `goinstall` the value can be v1.2.3, `latest`, or the hash
           version: v1.54
 
   ui:
