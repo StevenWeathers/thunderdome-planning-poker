@@ -1,8 +1,8 @@
 name: Bug Report
 description: File a bug report
 title: "[Bug]: "
-labels: ["bug", "triage"]
-projects: []
+labels: [ "bug", "triage" ]
+projects: [ ]
 assignees:
   - StevenWeathers,scottux
 body:
@@ -27,14 +27,12 @@ body:
       value: "A bug happened!"
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: version
     attributes:
       label: Version
       description: What version of our software are you running?
-      options:
-        - Latest
-      default: 0
+      value: Latest
     validations:
       required: true
   - type: dropdown
