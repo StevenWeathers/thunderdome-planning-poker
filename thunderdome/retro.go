@@ -28,6 +28,7 @@ type Retro struct {
 	Items                []*RetroItem   `json:"items"`
 	ActionItems          []*RetroAction `json:"actionItems"`
 	Votes                []*RetroVote   `json:"votes"`
+	ReadyUsers           []string       `json:"readyUsers"`
 	Facilitators         []string       `json:"facilitators"`
 	Format               string         `json:"format" db:"format"`
 	Phase                string         `json:"phase" db:"phase"`
@@ -102,6 +103,8 @@ type RetroDataSvc interface {
 	GetActiveRetros(Limit int, Offset int) ([]*Retro, int, error)
 	GetRetroFacilitatorCode(RetroID string) (string, error)
 	CleanRetros(ctx context.Context, DaysOld int) error
+	MarkUserReady(RetroID string, userID string) ([]string, error)
+	UnmarkUserReady(RetroID string, userID string) ([]string, error)
 
 	CreateRetroAction(RetroID string, UserID string, Content string) ([]*RetroAction, error)
 	UpdateRetroAction(RetroID string, ActionID string, Content string, Completed bool) (Actions []*RetroAction, DeleteError error)

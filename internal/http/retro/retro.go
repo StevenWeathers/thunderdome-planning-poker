@@ -67,6 +67,8 @@ func New(
 
 	rs.eventHandlers = map[string]func(context.Context, string, string, string) ([]byte, error, bool){
 		"create_item":            rs.CreateItem,
+		"user_ready":             rs.UserMarkReady,
+		"user_unready":           rs.UserUnMarkReady,
 		"group_item":             rs.GroupItem,
 		"group_name_change":      rs.GroupNameChange,
 		"group_vote":             rs.GroupUserVote,
