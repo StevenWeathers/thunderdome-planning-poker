@@ -371,7 +371,7 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 		LEFT JOIN facilitators AS bl ON bl.poker_id = p.id
 		LEFT JOIN user_teams t ON t.id = p.team_id
 		WHERE p.id IN (SELECT id FROM games)
-		GROUP BY p.id ORDER BY p.created_date
+		GROUP BY p.id ORDER BY p.created_date DESC
 		LIMIT $2 OFFSET $3
 	`, UserID, Limit, Offset)
 	if gamesErr != nil {
