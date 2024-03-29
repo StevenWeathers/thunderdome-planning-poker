@@ -165,7 +165,7 @@ func (s *Service) handleGetUserStoryboards() http.HandlerFunc {
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		storyboards, Count, err := s.StoryboardDataSvc.GetStoryboardsByUser(UserID)
+		storyboards, Count, err := s.StoryboardDataSvc.GetStoryboardsByUser(UserID, Limit, Offset)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleGetUserStoryboards error", zap.Error(err), zap.Int("limit", Limit),
 				zap.Int("offset", Offset), zap.String("entity_user_id", UserID),

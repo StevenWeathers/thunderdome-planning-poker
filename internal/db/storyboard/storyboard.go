@@ -216,20 +216,46 @@ func (d *Service) GetStoryboard(StoryboardID string, UserID string) (*thunderdom
 }
 
 // GetStoryboardsByUser gets a list of storyboards by UserID
-func (d *Service) GetStoryboardsByUser(UserID string) ([]*thunderdome.Storyboard, int, error) {
+func (d *Service) GetStoryboardsByUser(UserID string, Limit int, Offset int) ([]*thunderdome.Storyboard, int, error) {
+	var Count int
 	var storyboards = make([]*thunderdome.Storyboard, 0)
+
+	e := d.DB.QueryRow(`
+		SELECT COUNT(*) FROM thunderdome.storyboard s
+		LEFT JOIN thunderdome.storyboard_user u ON s.id = u.storyboard_id
+		WHERE u.user_id = $1 AND u.abandoned = false;
+	`, UserID).Scan(
+		&Count,
+	)
+	if e != nil {
+		return nil, Count, fmt.Errorf("get storyboards by user count query error: %v", e)
+	}
+
 	storyboardRows, storyboardsErr := d.DB.Query(`
-		SELECT b.id, b.name, b.owner_id, b.created_date, b.updated_date,
+		WITH user_teams AS (
+			SELECT t.id, t.name FROM thunderdome.team_user tu
+			LEFT JOIN thunderdome.team t ON t.id = tu.team_id
+			WHERE tu.user_id = $1
+		),
+		team_storyboards AS (
+			SELECT id FROM thunderdome.storyboard WHERE team_id IN (SELECT id FROM user_teams)
+		),
+		user_storyboards AS (
+			SELECT u.storyboard_id AS id FROM thunderdome.storyboard_user u
+			WHERE u.user_id = $1 AND u.abandoned = false
+		),
+		storyboards AS (
+			SELECT id from user_storyboards UNION ALL SELECT id FROM team_storyboards
+		)
+		SELECT s.id, s.name, s.owner_id, s.created_date, s.updated_date,
 		  min(COALESCE(t.name, '')) as team_name
-		FROM thunderdome.storyboard b
-		LEFT JOIN thunderdome.storyboard_user su ON b.id = su.storyboard_id
-		LEFT JOIN thunderdome.team t ON t.id = b.team_id
-		LEFT JOIN thunderdome.team_user tu ON tu.team_id = t.id
-		WHERE (su.user_id = $1 AND su.abandoned = false) OR (tu.user_id = $1)
-		GROUP BY b.id ORDER BY b.created_date DESC;
-	`, UserID)
+		FROM thunderdome.storyboard s
+		LEFT JOIN user_teams t ON t.id = s.team_id
+		WHERE s.id IN (SELECT id FROM storyboards)
+		GROUP BY s.id ORDER BY s.created_date DESC LIMIT $2 OFFSET $3;
+	`, UserID, Limit, Offset)
 	if storyboardsErr != nil {
-		return nil, 0, fmt.Errorf("get storyboards by user query error: %v", storyboardsErr)
+		return nil, Count, fmt.Errorf("get storyboards by user query error: %v", storyboardsErr)
 	}
 
 	defer storyboardRows.Close()
@@ -254,7 +280,7 @@ func (d *Service) GetStoryboardsByUser(UserID string) ([]*thunderdome.Storyboard
 		}
 	}
 
-	return storyboards, 0, nil
+	return storyboards, Count, nil
 }
 
 // ConfirmStoryboardFacilitator confirms the user is a facilitator of the storyboard
