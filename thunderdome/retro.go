@@ -86,7 +86,7 @@ type RetroDataSvc interface {
 	TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*Retro, error)
 	EditRetro(RetroID string, RetroName string, JoinCode string, FacilitatorCode string, maxVotes int, brainstormVisibility string) error
 	RetroGet(RetroID string, UserID string) (*Retro, error)
-	RetroGetByUser(UserID string) ([]*Retro, error)
+	RetroGetByUser(UserID string, Limit int, Offset int) ([]*Retro, int, error)
 	RetroConfirmFacilitator(RetroID string, userID string) error
 	RetroGetUsers(RetroID string) []*RetroUser
 	GetRetroFacilitators(RetroID string) []string
