@@ -340,19 +340,38 @@ func (d *Service) GetGamesByUser(UserID string, Limit int, Offset int) ([]*thund
 	}
 
 	gameRows, gamesErr := d.DB.Query(`
-		SELECT b.id, b.name, b.voting_locked, COALESCE(b.active_story_id::text, ''), b.point_values_allowed, b.auto_finish_voting,
-		  b.point_average_rounding, b.created_date, b.updated_date,
-		  CASE WHEN COUNT(p) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(p))) END AS stories,
+		WITH user_teams AS (
+			SELECT t.id, t.name FROM thunderdome.team_user tu
+			LEFT JOIN thunderdome.team t ON t.id = tu.team_id
+			WHERE tu.user_id = $1
+		),
+		team_games AS (
+			SELECT id FROM thunderdome.poker WHERE team_id IN (SELECT id FROM user_teams)
+		),
+		user_games AS (
+			SELECT u.poker_id AS id FROM thunderdome.poker_user u
+			WHERE u.user_id = $1 AND u.abandoned = false
+		),
+		games AS (
+			SELECT id from user_games UNION ALL SELECT id FROM team_games
+		),
+		stories AS (
+			SELECT poker_id, points FROM thunderdome.poker_story WHERE poker_id IN (SELECT poker_id FROM games)
+		),
+		facilitators AS (
+			SELECT poker_id, user_id FROM thunderdome.poker_facilitator WHERE poker_id IN (SELECT poker_id FROM games)
+		)
+		SELECT p.id, p.name, p.voting_locked, COALESCE(p.active_story_id::text, ''), p.point_values_allowed, p.auto_finish_voting,
+		  p.point_average_rounding, p.created_date, p.updated_date,
+		  CASE WHEN COUNT(s) = 0 THEN '[]'::json ELSE array_to_json(array_agg(row_to_json(s))) END AS stories,
 		  CASE WHEN COUNT(bl) = 0 THEN '[]'::json ELSE array_to_json(array_agg(bl.user_id)) END AS facilitators,
 		  min(COALESCE(t.name, '')) as team_name
-		FROM thunderdome.poker b
-		LEFT JOIN thunderdome.poker_story p ON b.id = p.poker_id
-		LEFT JOIN thunderdome.poker_facilitator bl ON b.id = bl.poker_id
-		LEFT JOIN thunderdome.poker_user bw ON b.id = bw.poker_id
-		LEFT JOIN thunderdome.team t ON t.id = b.team_id
-		LEFT JOIN thunderdome.team_user tu ON tu.team_id = t.id
-		WHERE (bw.user_id = $1 AND bw.abandoned = false) OR (tu.user_id = $1)
-		GROUP BY b.id ORDER BY b.created_date DESC
+		FROM thunderdome.poker p
+		LEFT JOIN stories AS s ON s.poker_id = p.id
+		LEFT JOIN facilitators AS bl ON bl.poker_id = p.id
+		LEFT JOIN user_teams t ON t.id = p.team_id
+		WHERE p.id IN (SELECT id FROM games)
+		GROUP BY p.id ORDER BY p.created_date DESC
 		LIMIT $2 OFFSET $3
 	`, UserID, Limit, Offset)
 	if gamesErr != nil {
