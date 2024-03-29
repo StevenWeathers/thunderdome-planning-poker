@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"net/url"
 	"time"
+	"unicode/utf8"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -35,11 +37,6 @@ var leaderOnlyOperations = map[string]struct{}{
 	"demote_leader":  {},
 	"revise_battle":  {},
 	"concede_battle": {},
-}
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
 }
 
 // connection is a middleman between the websocket connection and the hub.
@@ -176,6 +173,55 @@ func (sub *subscription) writePump() {
 	}
 }
 
+func (b *Service) createWebsocketUpgrader() websocket.Upgrader {
+	return websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(r *http.Request) bool {
+			return checkOrigin(r, b.config.AppDomain)
+		},
+	}
+}
+
+// TODO: move to a place where it could be shared?
+func checkOrigin(r *http.Request, appDomain string) bool {
+	origin := r.Header.Get("Origin")
+	if len(origin) == 0 {
+		return true
+	}
+	originUrl, err := url.Parse(origin)
+	if err != nil {
+		return false
+	}
+	return equalASCIIFold(originUrl.Host, appDomain) || equalASCIIFold(originUrl.Host, r.Host)
+}
+
+// equalASCIIFold returns true if s is equal to t with ASCII case folding as
+// defined in RFC 4790.
+// Taken from Gorilla Websocket, https://github.com/gorilla/websocket/blob/main/util.go
+// TODO: necessary? if so, move to a place where it could be shared?
+func equalASCIIFold(s, t string) bool {
+	for s != "" && t != "" {
+		sr, size := utf8.DecodeRuneInString(s)
+		s = s[size:]
+		tr, size := utf8.DecodeRuneInString(t)
+		t = t[size:]
+		if sr == tr {
+			continue
+		}
+		if 'A' <= sr && sr <= 'Z' {
+			sr = sr + 'a' - 'A'
+		}
+		if 'A' <= tr && tr <= 'Z' {
+			tr = tr + 'a' - 'A'
+		}
+		if sr != tr {
+			return false
+		}
+	}
+	return s == t
+}
+
 // handleSocketUnauthorized sets the format close message and closes the websocket
 func (b *Service) handleSocketClose(ctx context.Context, ws *websocket.Conn, closeCode int, text string) {
 	cm := websocket.FormatCloseMessage(closeCode, text)
@@ -197,6 +243,7 @@ func (b *Service) ServeBattleWs() http.HandlerFunc {
 		var UserAuthed bool
 
 		// upgrade to WebSocket connection
+		var upgrader = b.createWebsocketUpgrader()
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			b.logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err),
