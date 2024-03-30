@@ -8938,6 +8938,12 @@ const docTemplate = `{
                 "phase": {
                     "type": "string"
                 },
+                "readyUsers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "teamName": {
                     "type": "string"
                 },

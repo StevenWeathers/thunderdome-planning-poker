@@ -4,7 +4,7 @@
   import ClipboardIcon from '../icons/ClipboardIcon.svelte';
 
   export let hostname = '';
-  export let retrospectiveId = '';
+  export let retroId = '';
 
   function copyRetrospectiveLink() {
     const retrospectiveLink = document.getElementById('RetrospectiveLink');
@@ -13,16 +13,16 @@
   }
 </script>
 
-<h4 class="text-xl mb-2 leading-tight font-bold">Invite a user</h4>
+<h4 class="text-xl mb-2 leading-tight font-bold text-center">Invite a user</h4>
 
 <div class="flex flex-wrap items-stretch w-full">
   <input
     class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1
-        border-2 h-10 bg-gray-200 border-gray-200 rounded rounded-e-none px-3
-        appearance-none text-gray-700 focus:outline-none focus:bg-white
-        focus:border-orange-500"
+        border-2 h-10 bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-900 rounded rounded-e-none px-3
+        appearance-none text-gray-700 dark:text-gray-400 focus:outline-none focus:bg-white
+        focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
     type="text"
-    value="{hostname}{appRoutes.retro}/{retrospectiveId}"
+    value="{hostname}{appRoutes.retro}/{retroId}"
     id="RetrospectiveLink"
     readonly
   />
