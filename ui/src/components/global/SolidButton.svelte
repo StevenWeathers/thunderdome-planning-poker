@@ -11,6 +11,7 @@
 
 <style>
   .btn {
+    @apply inline-block;
     @apply leading-tight;
     @apply py-2;
     @apply px-3;

@@ -13,6 +13,8 @@
 
   export let subscriptionId = '';
   export let user_id = '';
+  export let team_id = '';
+  export let organization_id = '';
   export let customer_id = '';
   export let subscription_id = '';
   export let type = 'user';
@@ -62,6 +64,8 @@
 
     const body = {
       user_id,
+      team_id,
+      organization_id,
       customer_id,
       subscription_id,
       type,
@@ -94,7 +98,7 @@
   <form on:submit="{handleSubmit}" name="subscriptionform">
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="userId">
-        Thunderdome User Id
+        Thunderdome User Id<span class="text-red-500 dark:text-red-400">*</span>
       </label>
       <TextInput
         id="userId"
@@ -105,8 +109,33 @@
       />
     </div>
     <div class="mb-4">
+      <label class="block dark:text-gray-400 font-bold mb-2" for="teamId">
+        Thunderdome Team Id
+      </label>
+      <TextInput
+        id="teamId"
+        name="teamId"
+        bind:value="{team_id}"
+        placeholder="Enter the associated Team Id..."
+      />
+    </div>
+    <div class="mb-4">
+      <label
+        class="block dark:text-gray-400 font-bold mb-2"
+        for="organizationId"
+      >
+        Thunderdome Organization Id
+      </label>
+      <TextInput
+        id="organizationId"
+        name="organizationId"
+        bind:value="{organization_id}"
+        placeholder="Enter the associated Organization Id..."
+      />
+    </div>
+    <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="customerId">
-        Stripe Customer Id
+        Stripe Customer Id<span class="text-red-500 dark:text-red-400">*</span>
       </label>
       <TextInput
         id="customerId"
@@ -121,7 +150,9 @@
         class="block dark:text-gray-400 font-bold mb-2"
         for="subscriptionId"
       >
-        Stripe Subscription Id
+        Stripe Subscription Id<span class="text-red-500 dark:text-red-400"
+          >*</span
+        >
       </label>
       <TextInput
         id="subscriptionId"
@@ -133,7 +164,7 @@
     </div>
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="subType">
-        Subscription Type
+        Subscription Type<span class="text-red-500 dark:text-red-400">*</span>
       </label>
       <TextInput
         id="subType"
@@ -157,7 +188,7 @@
     </div>
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="expires">
-        Expires
+        Expires<span class="text-red-500 dark:text-red-400">*</span>
       </label>
       <TextInput
         id="expires"

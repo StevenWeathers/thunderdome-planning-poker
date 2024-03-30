@@ -98,7 +98,7 @@
           rank: u.rank,
           locale: u.locale,
           notificationsEnabled: u.notificationsEnabled,
-          subscribed: u.subscribed,
+          subscribed: result.data.subscribed,
         };
         if (result.data.mfaRequired) {
           mfaRequired = true;

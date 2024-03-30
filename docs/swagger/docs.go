@@ -7141,6 +7141,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{userId}/subscriptions": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of active entity user subscriptions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Get Active Entity User Subscriptions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.Subscription"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{userId}/teams": {
             "get": {
                 "security": [
@@ -8089,6 +8135,9 @@ const docTemplate = `{
                 "sessionId": {
                     "type": "string"
                 },
+                "subscribed": {
+                    "type": "boolean"
+                },
                 "user": {
                     "$ref": "#/definitions/thunderdome.User"
                 }
@@ -8290,7 +8339,13 @@ const docTemplate = `{
                 "expires": {
                     "type": "string"
                 },
+                "organization_id": {
+                    "type": "string"
+                },
                 "subscription_id": {
+                    "type": "string"
+                },
+                "team_id": {
                     "type": "string"
                 },
                 "type": {
@@ -9367,7 +9422,13 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "organization_id": {
+                    "type": "string"
+                },
                 "subscription_id": {
+                    "type": "string"
+                },
+                "team_id": {
                     "type": "string"
                 },
                 "type": {
@@ -9532,9 +9593,6 @@ const docTemplate = `{
                 },
                 "rank": {
                     "type": "string"
-                },
-                "subscribed": {
-                    "type": "boolean"
                 },
                 "theme": {
                     "type": "string"

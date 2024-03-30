@@ -113,7 +113,16 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 				return
 			}
 			expires := time.Unix(cs.Subscription.CurrentPeriodEnd, 0)
-			_, err = s.dataSvc.CreateSubscription(ctx, cs.ClientReferenceID, cs.Customer.ID, cs.Subscription.ID, subType, expires)
+
+			sub := thunderdome.Subscription{
+				UserID:         cs.ClientReferenceID,
+				CustomerID:     cs.Customer.ID,
+				SubscriptionID: cs.Subscription.ID,
+				Type:           subType,
+				Expires:        expires,
+			}
+
+			_, err = s.dataSvc.CreateSubscription(ctx, sub)
 			if err != nil {
 				logger.Error(fmt.Sprintf("Error creating subscription: %v", err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
