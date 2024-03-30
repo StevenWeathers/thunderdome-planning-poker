@@ -20,7 +20,7 @@
         > to subscribe
       </p>
     {:else if $user.subscribed}
-      <p class="text-lime-500 dark:text-lime-400 p-2 font-bold">
+      <p class="text-green-600 dark:text-lime-400 p-2 font-bold">
         Already subscribed, thank you!
       </p>
     {:else}

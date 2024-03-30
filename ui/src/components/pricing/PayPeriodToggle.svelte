@@ -14,11 +14,11 @@
     @apply font-medium;
     @apply border;
     @apply border-transparent;
-    @apply text-violet-200;
+    @apply text-indigo-200;
   }
 
   .toggle:hover {
-    @apply bg-violet-800;
+    @apply bg-indigo-800;
   }
 
   .toggle:focus {
@@ -27,22 +27,22 @@
     @apply ring-2;
     @apply ring-white;
     @apply ring-offset-2;
-    @apply ring-offset-violet-700;
+    @apply ring-offset-indigo-700;
   }
 
   .active {
-    @apply border-violet-700;
+    @apply border-indigo-700;
     @apply bg-white;
-    @apply text-violet-700;
+    @apply text-indigo-700;
     @apply shadow-sm;
   }
 
   .active:hover {
-    @apply bg-violet-50;
+    @apply bg-indigo-50;
   }
 </style>
 
-<div class="flex rounded-lg bg-violet-700 p-0.5">
+<div class="flex rounded-lg bg-indigo-700 p-0.5">
   <button
     on:click="{togglePaymentPeriod}"
     type="button"
