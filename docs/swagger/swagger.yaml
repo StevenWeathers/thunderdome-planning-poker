@@ -785,6 +785,10 @@ definitions:
         type: string
       phase:
         type: string
+      readyUsers:
+        items:
+          type: string
+        type: array
       teamName:
         type: string
       updatedDate:

@@ -14,21 +14,37 @@
   export let eventTag;
 
   let storyboards = [];
+  const storyboardsPageLimit = 10;
+  let storyboardCount = 0;
+  let storyboardsPage = 1;
 
-  xfetch(`/api/users/${$user.id}/storyboards`)
-    .then(res => res.json())
-    .then(function (bs) {
-      storyboards = bs.data;
-    })
-    .catch(function (error) {
-      notifications.danger($LL.getStoryboardsErrorMessage());
-      eventTag('fetch_storyboards', 'engagement', 'failure');
-    });
+  function getStoryboards() {
+    const retrosOffset = (storyboardsPage - 1) * storyboardsPageLimit;
+
+    xfetch(
+      `/api/users/${$user.id}/storyboards?limit=${storyboardsPageLimit}&offset=${retrosOffset}`,
+    )
+      .then(res => res.json())
+      .then(function (result) {
+        storyboards = result.data;
+        storyboardCount = result.meta.count;
+      })
+      .catch(function (error) {
+        notifications.danger($LL.getStoryboardsErrorMessage());
+        eventTag('fetch_storyboards', 'engagement', 'failure');
+      });
+  }
+
+  const changePage = evt => {
+    storyboardsPage = evt.detail;
+    getStoryboards();
+  };
 
   onMount(() => {
     if (!$user.id) {
       router.route(appRoutes.login);
     }
+    getStoryboards();
   });
 </script>
 
@@ -53,6 +69,16 @@
         pageRoute="{appRoutes.storyboard}"
         joinBtnText="{$LL.joinStoryboard()}"
       />
+      {#if storyboardCount > storyboardsPageLimit}
+        <div class="mt-6 pt-1 flex justify-center">
+          <Pagination
+            bind:current="{storyboardsPage}"
+            num_items="{storyboardCount}"
+            per_page="{storyboardsPageLimit}"
+            on:navigate="{changePage}"
+          />
+        </div>
+      {/if}
     </div>
 
     <div class="w-full md:w-1/2 lg:w-2/5 md:ps-2 xl:ps-4">

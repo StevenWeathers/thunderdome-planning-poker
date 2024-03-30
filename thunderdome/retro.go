@@ -28,6 +28,7 @@ type Retro struct {
 	Items                []*RetroItem   `json:"items"`
 	ActionItems          []*RetroAction `json:"actionItems"`
 	Votes                []*RetroVote   `json:"votes"`
+	ReadyUsers           []string       `json:"readyUsers"`
 	Facilitators         []string       `json:"facilitators"`
 	Format               string         `json:"format" db:"format"`
 	Phase                string         `json:"phase" db:"phase"`
@@ -86,7 +87,7 @@ type RetroDataSvc interface {
 	TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*Retro, error)
 	EditRetro(RetroID string, RetroName string, JoinCode string, FacilitatorCode string, maxVotes int, brainstormVisibility string) error
 	RetroGet(RetroID string, UserID string) (*Retro, error)
-	RetroGetByUser(UserID string) ([]*Retro, error)
+	RetroGetByUser(UserID string, Limit int, Offset int) ([]*Retro, int, error)
 	RetroConfirmFacilitator(RetroID string, userID string) error
 	RetroGetUsers(RetroID string) []*RetroUser
 	GetRetroFacilitators(RetroID string) []string
@@ -102,6 +103,8 @@ type RetroDataSvc interface {
 	GetActiveRetros(Limit int, Offset int) ([]*Retro, int, error)
 	GetRetroFacilitatorCode(RetroID string) (string, error)
 	CleanRetros(ctx context.Context, DaysOld int) error
+	MarkUserReady(RetroID string, userID string) ([]string, error)
+	UnmarkUserReady(RetroID string, userID string) ([]string, error)
 
 	CreateRetroAction(RetroID string, UserID string, Content string) ([]*RetroAction, error)
 	UpdateRetroAction(RetroID string, ActionID string, Content string, Completed bool) (Actions []*RetroAction, DeleteError error)

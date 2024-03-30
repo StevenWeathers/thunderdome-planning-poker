@@ -3,8 +3,6 @@ description: File a bug report
 title: "[Bug]: "
 labels: [ "bug", "triage" ]
 projects: [ ]
-assignees:
-  - StevenWeathers,scottux
 body:
   - type: markdown
     attributes:

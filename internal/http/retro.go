@@ -148,16 +148,23 @@ func (s *Service) handleRetroGet() http.HandlerFunc {
 // @Router       /users/{userId}/retros [get]
 func (s *Service) handleRetrosGetByUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		Limit, Offset := getLimitOffsetFromRequest(r)
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
 
-		retros, err := s.RetroDataSvc.RetroGetByUser(UserID)
+		retros, Count, err := s.RetroDataSvc.RetroGetByUser(UserID, Limit, Offset)
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 
-		s.Success(w, r, http.StatusOK, retros, nil)
+		Meta := &pagination{
+			Count:  Count,
+			Offset: Offset,
+			Limit:  Limit,
+		}
+
+		s.Success(w, r, http.StatusOK, retros, Meta)
 	}
 }
 
