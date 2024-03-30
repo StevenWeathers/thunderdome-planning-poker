@@ -32,7 +32,7 @@
     LdapEnabled,
     HeaderAuthEnabled,
     SubscriptionsEnabled,
-    SubscriptionManageLink,
+    Subscription,
   } = AppConfig;
 
   function toggleUpdatePassword() {
@@ -339,7 +339,7 @@
                 {#if $user.subscribed}
                   <SolidButton
                     color="green"
-                    href="{SubscriptionManageLink}"
+                    href="{Subscription.ManageLink}"
                     options="{{ target: '_blank' }}"
                     >Manage subscription
                   </SolidButton>

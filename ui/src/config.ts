@@ -22,6 +22,7 @@ const AppConfig =
     : {
         PathPrefix: '',
         DefaultLocale: 'en',
+        Subscription: {},
       };
 const {
   PathPrefix,
