@@ -16,11 +16,11 @@ Please read the [Code of Conduct](CODE_OF_CONDUCT.md) document.
 
 We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
 
-### Report bugs using Github's [issues](https://github.com/StevenWeathers/thunderdome-planning-poker/issues)
+### Report bugs using GitHub's [issues](https://github.com/StevenWeathers/thunderdome-planning-poker/issues)
 
 We use GitHub issues to track public bugs. Report a bug by [opening a new issue](); it's that easy!
 
-### We Use [Github Flow](https://docs.github.com/en/get-started/quickstart/github-flow), So All Code Changes Happen Through Pull Requests
+### We Use [Github Flow](https://docs.github.com/en/get-started/quickstart/github-flow)
 
 Pull requests are the best way to propose changes to the codebase (we
 use [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow). We actively welcome your pull
@@ -43,7 +43,7 @@ the [tags on this repository](https://github.com/StevenWeathers/thunderdome-plan
 - Thunderdome's priorities in architectural design are SaaS first, self-hosted second, always open-source.
     - Avoid vendor lock-in, use open standards such as open telemetry.
     - Keep the infrastructure requirements minimal, e.g. only requires Postgres, no cloud specific features.
-    - Everything should be able to be bundled in the compiled Go binary including UI assets
+    - Everything should be able to be bundled in the compiled Go binary
         - This includes the UI assets and content
 
 ### Go code conventions
@@ -51,7 +51,7 @@ the [tags on this repository](https://github.com/StevenWeathers/thunderdome-plan
 - Follow [Effective Go](https://go.dev/doc/effective_go)
   and [Code Review Comments Guide](https://go.dev/wiki/CodeReviewComments) from the Go project as much as
   possible within reason.
-- Go is not an Object Oriented Programming language, we favor simplicity.
+- Go is not an Object-Oriented Programming language, we favor simplicity.
 - Use standard library packages as much as possible, new dependencies should come with a valid reason for adding
   another dependency.
 - All Go code is linted with `golangci-lint` on every commit.
@@ -79,12 +79,8 @@ See also the list of [contributors](https://github.com/StevenWeathers/thunderdom
 participated in
 this project.
 
-## Any contributions you make will be under the Apache 2.0 Software License
-
-In short, when you submit code changes, your submissions are understood to be under the
-same [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0) that covers the project. Feel free to contact the
-maintainers if that's a concern.
-
 ## License
 
-By contributing, you agree that your contributions will be licensed under Apache 2.0.
+When you submit code changes, your submissions are understood to be under the
+same [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0) that covers the project. Feel free to contact the
+maintainers if that's a concern.
