@@ -63,6 +63,7 @@ func (ap *AuthProvider) handleOAuth2Callback(w http.ResponseWriter, r *http.Requ
 	logger := ap.logger.Ctx(ctx)
 	rq := r.URL.Query()
 	state := rq.Get("state")
+	code := rq.Get("code")
 
 	// Verify state
 	stateCookie, err := ap.cookie.GetCookie(w, r, ap.config.StateCookieName)
@@ -74,7 +75,7 @@ func (ap *AuthProvider) handleOAuth2Callback(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Exchange code for oauth token
-	oauth2Token, err := ap.oauth2Config.Exchange(ctx, rq.Get("code"))
+	oauth2Token, err := ap.oauth2Config.Exchange(ctx, code)
 	if err != nil {
 		logger.Error("error exchanging oidc code for token", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
@@ -99,9 +100,10 @@ func (ap *AuthProvider) handleOAuth2Callback(w http.ResponseWriter, r *http.Requ
 
 	// Extract custom claims
 	var claims struct {
-		Email    string `json:"email"`
-		Verified bool   `json:"email_verified"`
-		Nonce    string `json:"nonce"`
+		Email         string `json:"email"`
+		EmailVerified bool   `json:"email_verified"`
+		Nonce         string `json:"nonce"`
+		Picture       string `json:"picture"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
 		logger.Error("error extracting custom claims from id_token", zap.Error(err))
