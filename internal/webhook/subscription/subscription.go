@@ -102,7 +102,7 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 				return
 			}
-			if cs.LineItems == nil || len(cs.LineItems.Data) != 1 {
+			if cs.LineItems == nil || len(cs.LineItems.Data) < 1 {
 				logger.Error("Error getting subscription product from event", zap.String("eventId", event.ID),
 					zap.String("sessionId", cs.ID))
 				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
