@@ -6,6 +6,9 @@
   import { AppConfig, appRoutes } from '../../config.ts';
   import ArrowRight from '../../components/icons/ArrowRight.svelte';
   import PayPeriodToggle from '../../components/pricing/PayPeriodToggle.svelte';
+  import ShieldCheck from '../../components/icons/ShieldCheck.svelte';
+
+  const { RepoURL } = AppConfig;
 
   let selectedPaymentPeriod = 'month';
 
@@ -472,6 +475,44 @@
           </div>
         </div>
       {/each}
+    </div>
+  </div>
+</section>
+
+<section
+  class="bg-gray-300 dark:bg-gray-800 text-gray-800 dark:text-gray-300 py-12"
+>
+  <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
+    <div class="grid grid-cols-2 gap-8">
+      <div>
+        <div>
+          <h3
+            class="inline-flex items-center text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight"
+          >
+            <ShieldCheck class="w-8 h-8" />
+            <span class="ps-2">Self-hosted Thunderdome</span>
+          </h3>
+        </div>
+        <div class="mt-4 text-xl text-gray-700 dark:text-gray-400">
+          Deploy Thunderdome on your own infrastructure in less than 10 minutes.<br
+          />
+          Start planning for sprints fast and securely to move your projects forward.
+        </div>
+
+        <div class="mt-6">
+          <a
+            class="inline-block font-semibold py-3 px-4 border border-transparent bg-blue-500 dark:bg-sky-400 rounded
+                        hover:bg-transparent dark:hover:bg-transparent text-gray-800 hover:text-blue-500 dark:hover:text-sky-400
+                        hover:border-blue-500 dark:hover:border-sky-400"
+            href="{RepoURL}#running-in-production"
+            target="_blank"
+          >
+            Get started
+            <ArrowRight class="inline" />
+          </a>
+        </div>
+      </div>
+      <div></div>
     </div>
   </div>
 </section>

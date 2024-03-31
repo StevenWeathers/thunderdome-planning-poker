@@ -11,6 +11,8 @@ type EmailService interface {
 	SendMergedUpdate(UserName string, UserEmail string) error
 	SendTeamInvite(TeamName string, UserEmail string, InviteID string) error
 	SendOrganizationInvite(OrganizationName string, UserEmail string, InviteID string) error
+	SendUserSubscriptionActive(UserName string, UserEmail string, SubscriptionType string) error
+	SendUserSubscriptionDeactivated(UserName string, UserEmail string, SubscriptionType string) error
 	// SendRetroOverview sends the retro overview (items, action items) email to attendees
 	SendRetroOverview(retro *Retro, UserName string, UserEmail string) error
 }

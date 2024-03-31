@@ -14,6 +14,8 @@ import (
 
 type subscriptionRequestBody struct {
 	UserID         string    `json:"user_id"`
+	TeamID         string    `json:"team_id"`
+	OrganizationID string    `json:"organization_id"`
 	CustomerID     string    `json:"customer_id"`
 	SubscriptionID string    `json:"subscription_id"`
 	Type           string    `json:"type" enums:"user, team, organization" validate:"required,oneof=user organization team"`
@@ -119,7 +121,15 @@ func (s *Service) handleSubscriptionCreate() http.HandlerFunc {
 			return
 		}
 
-		subscription, err := s.SubscriptionDataSvc.CreateSubscription(ctx, sub.UserID, sub.CustomerID, sub.SubscriptionID, sub.Type, sub.Expires)
+		subscription, err := s.SubscriptionDataSvc.CreateSubscription(ctx, thunderdome.Subscription{
+			UserID:         sub.UserID,
+			TeamID:         sub.TeamID,
+			OrganizationID: sub.OrganizationID,
+			CustomerID:     sub.CustomerID,
+			SubscriptionID: sub.SubscriptionID,
+			Type:           sub.Type,
+			Expires:        sub.Expires,
+		})
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleSubscriptionCreate error", zap.Error(err),
 				zap.String("sub_user_id", sub.UserID),
@@ -180,6 +190,8 @@ func (s *Service) handleSubscriptionUpdate() http.HandlerFunc {
 
 		subscription, err := s.SubscriptionDataSvc.UpdateSubscription(ctx, ID, thunderdome.Subscription{
 			UserID:         sub.UserID,
+			TeamID:         sub.TeamID,
+			OrganizationID: sub.OrganizationID,
 			CustomerID:     sub.CustomerID,
 			SubscriptionID: sub.SubscriptionID,
 			Active:         sub.Active,
@@ -230,5 +242,116 @@ func (s *Service) handleSubscriptionDelete() http.HandlerFunc {
 		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleGetEntityUserActiveSubs gets a list of active subscriptions for the entity user
+// @Summary      Get Entity User Active Subscriptions
+// @Description  get list of active entity user subscriptions
+// @Tags         subscription
+// @Param        userId  path    string  true  "the entity user ID"
+// @Produce      json
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.Subscription}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/subscriptions [get]
+func (s *Service) handleGetEntityUserActiveSubs() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		EntityUserID := vars["userId"]
+
+		Subscriptions, err := s.SubscriptionDataSvc.GetActiveSubscriptionsByUserID(ctx, EntityUserID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetSubscriptions error", zap.Error(err),
+				zap.String("entity_user_id", EntityUserID),
+				zap.Stringp("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, Subscriptions, nil)
+	}
+}
+
+type subscriptionAssociateRequestBody struct {
+	TeamID         string `json:"team_id"`
+	OrganizationID string `json:"organization_id"`
+}
+
+// handleEntityUserUpdateSubscription updates an entity users subscription association
+// @Summary      Update Entity User Subscriptions
+// @Description  get list of active entity user subscriptions
+// @Tags         subscription
+// @Param        userId  path    string  true  "the entity user ID"
+// @Param        subscriptionId  path   string  true  "the subscription ID to update"
+// @Param        subscription  body    subscriptionAssociateRequestBody  true  "update subscription association object"
+// @Produce      json
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.Subscription}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /users/{userId}/subscriptions/{subscriptionId} [patch]
+func (s *Service) handleEntityUserUpdateSubscription() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		EntityUserID := vars["userId"]
+		SubscriptionID := vars["subscriptionId"]
+
+		var sar = subscriptionAssociateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &sar)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		sub, err := s.SubscriptionDataSvc.GetSubscriptionByID(ctx, SubscriptionID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleEntityUserUpdateSubscription GetSubscriptionByID error", zap.Error(err),
+				zap.String("subscription_id", SubscriptionID),
+				zap.String("entity_user_id", EntityUserID),
+				zap.Stringp("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		if sub.Type == "team" {
+			if sar.TeamID == "" {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "MISSING REQUIRED team_id FIELD"))
+				return
+			} else {
+				sub.TeamID = sar.TeamID
+			}
+		}
+
+		if sub.Type == "organization" {
+			if sar.OrganizationID == "" {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "MISSING REQUIRED organization_id FIELD"))
+				return
+			} else {
+				sub.OrganizationID = sar.OrganizationID
+			}
+		}
+
+		Subscription, err := s.SubscriptionDataSvc.UpdateSubscription(ctx, sub.ID, sub)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleEntityUserUpdateSubscription error", zap.Error(err),
+				zap.String("subscription_id", SubscriptionID),
+				zap.String("entity_user_id", EntityUserID),
+				zap.Stringp("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, Subscription, nil)
 	}
 }

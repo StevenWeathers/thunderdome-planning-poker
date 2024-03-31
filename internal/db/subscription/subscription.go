@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"go.uber.org/zap"
 
@@ -13,65 +12,44 @@ import (
 )
 
 // CheckActiveSubscriber looks for an active subscription for the user
+// also checks if the user belongs to a team or organization with an active subscription
 func (s *Service) CheckActiveSubscriber(ctx context.Context, userId string) error {
-	activeSub := false
-	currentTime := time.Now()
+	count := 0
 
-	rows, err := s.DB.QueryContext(ctx,
-		`SELECT id, user_id, customer_id, subscription_id, active, expires, created_date, updated_date
- 				FROM thunderdome.subscription WHERE user_id = $1 AND active = true;`,
+	err := s.DB.QueryRowContext(ctx,
+		`
+				WITH user_teams AS (
+					SELECT team_id FROM thunderdome.team_user WHERE user_id = $1
+				),
+				user_organizations AS (
+					SELECT organization_id FROM thunderdome.organization_user WHERE user_id = $1
+				)
+				SELECT count(id)
+ 				FROM thunderdome.subscription 
+ 				WHERE (user_id = $1 AND active = true AND expires > NOW()) 
+ 				OR (team_id IN (SELECT team_id FROM user_teams) AND active = true AND expires > NOW()) 
+ 				OR (organization_id IN (SELECT organization_id FROM user_organizations) AND active = true AND expires > NOW());
+				`,
 		userId,
-	)
+	).Scan(&count)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("no active subscription found for user id  %s", userId)
-		}
-
-		return fmt.Errorf("error encountered finding user %s active subscriptions:  %v", userId, err)
+		return fmt.Errorf("error encountered finding users %s active subscriptions:  %v", userId, err)
 	}
 
-	defer rows.Close()
-	for rows.Next() {
-		var sub thunderdome.Subscription
-		if err := rows.Scan(
-			&sub.ID,
-			&sub.UserID,
-			&sub.CustomerID,
-			&sub.SubscriptionID,
-			&sub.Active,
-			&sub.Expires,
-			&sub.CreatedDate,
-			&sub.UpdatedDate,
-		); err != nil {
-			return fmt.Errorf("error encountered finding user %s active subscriptions:  %v", userId, err)
-		}
-		if currentTime.After(sub.Expires) {
-			_, updateErr := s.DB.ExecContext(ctx,
-				`UPDATE thunderdome.users SET subscribed = false, updated_date = NOW() WHERE id = $1;`,
-				sub.UserID,
-			)
-			if updateErr != nil {
-				s.Logger.Ctx(ctx).Error(fmt.Sprintf("error updating user %s subscribed to false", userId),
-					zap.Error(updateErr), zap.String("customer_id", sub.CustomerID))
-			}
-		} else {
-			activeSub = true
-		}
-	}
-
-	if !activeSub {
-		return fmt.Errorf("no active subscription found for user id  %s", userId)
+	if count == 0 {
+		return fmt.Errorf("no active subscription(s) found for user id  %s", userId)
 	}
 
 	return nil
 }
 
-func (s *Service) GetSubscriptionsByUserID(ctx context.Context, userId string) ([]thunderdome.Subscription, error) {
+func (s *Service) GetActiveSubscriptionsByUserID(ctx context.Context, userId string) ([]thunderdome.Subscription, error) {
 	subs := make([]thunderdome.Subscription, 0)
 
 	rows, err := s.DB.QueryContext(ctx,
-		`SELECT id, user_id, customer_id, subscription_id, active, type, expires, created_date, updated_date
- 				FROM thunderdome.subscription WHERE user_id = $1;`,
+		`SELECT id, user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''),
+				customer_id, subscription_id, active, type, expires, created_date, updated_date
+ 				FROM thunderdome.subscription WHERE user_id = $1 AND active = true AND expires > NOW();`,
 		userId,
 	)
 	if err != nil {
@@ -88,6 +66,8 @@ func (s *Service) GetSubscriptionsByUserID(ctx context.Context, userId string) (
 		if err := rows.Scan(
 			&sub.ID,
 			&sub.UserID,
+			&sub.TeamID,
+			&sub.OrganizationID,
 			&sub.CustomerID,
 			&sub.SubscriptionID,
 			&sub.Active,
@@ -109,15 +89,16 @@ func (s *Service) GetSubscriptionByID(ctx context.Context, id string) (thunderdo
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
-		`SELECT s.id, s.user_id, s.customer_id, s.subscription_id, s.active, s.type, s.expires,
+		`SELECT s.id, s.user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''), s.customer_id, s.subscription_id, s.active, s.type, s.expires,
  				s.created_date, s.updated_date, u.id, u.name, u.email
  				FROM thunderdome.subscription s
  				LEFT JOIN thunderdome.users u ON s.user_id = u.id
  				WHERE s.id = $1;`,
 		id,
 	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
-		&sub.CreatedDate, &sub.UpdatedDate, &sub.User.Id, &sub.User.Name, &sub.User.Email,
+		&sub.ID, &sub.UserID, &sub.TeamID, &sub.OrganizationID, &sub.CustomerID, &sub.SubscriptionID,
+		&sub.Active, &sub.Type, &sub.Expires, &sub.CreatedDate, &sub.UpdatedDate,
+		&sub.User.Id, &sub.User.Name, &sub.User.Email,
 	)
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
@@ -133,11 +114,12 @@ func (s *Service) GetSubscriptionBySubscriptionID(ctx context.Context, subscript
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
-		`SELECT id, user_id, customer_id, subscription_id, active, type, expires, created_date, updated_date
+		`SELECT id, user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''), customer_id, subscription_id, active, type, expires, created_date, updated_date
  				FROM thunderdome.subscription WHERE subscription_id = $1;`,
 		subscriptionId,
 	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
+		&sub.ID, &sub.UserID, &sub.TeamID, &sub.OrganizationID,
+		&sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
 		&sub.CreatedDate, &sub.UpdatedDate,
 	)
 	switch {
@@ -150,36 +132,23 @@ func (s *Service) GetSubscriptionBySubscriptionID(ctx context.Context, subscript
 	return sub, nil
 }
 
-func (s *Service) CreateSubscription(ctx context.Context, userId string, customerId string, subscriptionId string, subType string, expires time.Time) (thunderdome.Subscription, error) {
+func (s *Service) CreateSubscription(ctx context.Context, subscription thunderdome.Subscription) (thunderdome.Subscription, error) {
 	sub := thunderdome.Subscription{}
 
 	err := s.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.subscription 
-				(user_id, customer_id, subscription_id, type, expires)
-				VALUES ($1, $2, $3, $4, $5)
-				RETURNING id, user_id, customer_id, subscription_id, active, type, expires, created_date, updated_date;`,
-		userId, customerId, subscriptionId, subType, expires,
+				(user_id, team_id, organization_id, customer_id, subscription_id, type, expires)
+				VALUES ($1, NULLIF($2::text,''), NULLIF($3::text,''), $4, $5, $6, $7)
+				RETURNING id, user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''), customer_id, subscription_id, active, type, expires, created_date, updated_date;`,
+		subscription.UserID, subscription.TeamID, subscription.OrganizationID,
+		subscription.CustomerID, subscription.SubscriptionID, subscription.Type, subscription.Expires,
 	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
+		&sub.ID, &sub.UserID, &sub.TeamID, &sub.OrganizationID,
+		&sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
 		&sub.CreatedDate, &sub.UpdatedDate,
 	)
 	if err != nil {
 		return sub, fmt.Errorf("error encountered creating subscription: %v", err)
-	}
-
-	result, err := s.DB.ExecContext(ctx,
-		`UPDATE thunderdome.users SET subscribed = true, updated_date = NOW() WHERE id = $1;`,
-		userId,
-	)
-	if err != nil {
-		return sub, fmt.Errorf("error encountered updating user subscription status: %v", err)
-	}
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return sub, fmt.Errorf("error encountered updating user subscription status: %v", err)
-	}
-	if rows != 1 {
-		return sub, fmt.Errorf("expected to affect 1 row, affected %d", rows)
 	}
 
 	return sub, nil
@@ -190,36 +159,19 @@ func (s *Service) UpdateSubscription(ctx context.Context, id string, subscriptio
 
 	err := s.DB.QueryRowContext(ctx,
 		`UPDATE thunderdome.subscription SET customer_id = $2, subscription_id = $3, active = $4,
- 				type = $5, expires = $6, updated_date = NOW() WHERE id = $1
-				RETURNING id, user_id, customer_id, subscription_id, active, type, expires, created_date, updated_date;`,
+ 				type = $5, expires = $6, team_id = NULLIF($7::text,'')::uuid, organization_id = NULLIF($8::text,'')::uuid,
+ 				updated_date = NOW()
+ 				WHERE id = $1
+				RETURNING id, user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''), customer_id, subscription_id, active, type, expires, created_date, updated_date;`,
 		id, subscription.CustomerID, subscription.SubscriptionID, subscription.Active,
-		subscription.Type, subscription.Expires,
+		subscription.Type, subscription.Expires, subscription.TeamID, subscription.OrganizationID,
 	).Scan(
-		&sub.ID, &sub.UserID, &sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
+		&sub.ID, &sub.UserID, &sub.TeamID, &sub.OrganizationID,
+		&sub.CustomerID, &sub.SubscriptionID, &sub.Active, &sub.Type, &sub.Expires,
 		&sub.CreatedDate, &sub.UpdatedDate,
 	)
 	if err != nil {
 		return sub, fmt.Errorf("error encountered updating subscription: %v", err)
-	}
-
-	stillActive := subscription.Active
-	stillActiveErr := s.CheckActiveSubscriber(ctx, subscription.UserID)
-	if stillActiveErr != nil {
-		stillActive = false
-	}
-	result, err := s.DB.ExecContext(ctx,
-		`UPDATE thunderdome.users SET subscribed = $2, updated_date = NOW() WHERE id = $1;`,
-		sub.UserID, stillActive,
-	)
-	if err != nil {
-		return sub, fmt.Errorf("error encountered updating user subscription status: %v", err)
-	}
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return sub, fmt.Errorf("error encountered updating user subscription status: %v", err)
-	}
-	if rows != 1 {
-		return sub, fmt.Errorf("expected to affect 1 row, affected %d", rows)
 	}
 
 	return sub, nil
@@ -240,7 +192,8 @@ func (s *Service) GetSubscriptions(ctx context.Context, Limit int, Offset int) (
 	subs := make([]thunderdome.Subscription, 0)
 
 	rows, err := s.DB.QueryContext(ctx,
-		`SELECT s.id, s.user_id, s.customer_id, s.subscription_id, s.active, s.type, s.expires,
+		`SELECT s.id, s.user_id, COALESCE(s.team_id::text, ''), COALESCE(s.organization_id::text, ''),
+ 				s.customer_id, s.subscription_id, s.active, s.type, s.expires,
  				s.created_date, s.updated_date, u.id, u.name, u.email
  				FROM thunderdome.subscription s
  				LEFT JOIN thunderdome.users u ON s.user_id = u.id 
@@ -261,6 +214,8 @@ func (s *Service) GetSubscriptions(ctx context.Context, Limit int, Offset int) (
 		if err := rows.Scan(
 			&sub.ID,
 			&sub.UserID,
+			&sub.TeamID,
+			&sub.OrganizationID,
 			&sub.CustomerID,
 			&sub.SubscriptionID,
 			&sub.Active,
@@ -282,35 +237,10 @@ func (s *Service) GetSubscriptions(ctx context.Context, Limit int, Offset int) (
 }
 
 func (s *Service) DeleteSubscription(ctx context.Context, id string) error {
-	subscription, err := s.GetSubscriptionByID(ctx, id)
-	if err != nil {
-		return fmt.Errorf("error getting subscription to delete: %v", err)
-	}
-
 	if _, err := s.DB.ExecContext(ctx,
 		`DELETE FROM thunderdome.subscription WHERE id = $1;`,
 		id); err != nil {
 		return fmt.Errorf("error deleting subscription: %v", err)
-	}
-
-	stillActive := subscription.Active
-	stillActiveErr := s.CheckActiveSubscriber(ctx, subscription.UserID)
-	if stillActiveErr != nil {
-		stillActive = false
-	}
-	result, err := s.DB.ExecContext(ctx,
-		`UPDATE thunderdome.users SET subscribed = $2, updated_date = NOW() WHERE id = $1;`,
-		subscription.UserID, stillActive,
-	)
-	if err != nil {
-		return fmt.Errorf("error encountered updating user subscription status: %v", err)
-	}
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("error encountered updating user subscription status: %v", err)
-	}
-	if rows != 1 {
-		return fmt.Errorf("expected to affect 1 row, affected %d", rows)
 	}
 
 	return nil

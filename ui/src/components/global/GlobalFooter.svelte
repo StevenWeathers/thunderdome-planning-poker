@@ -29,6 +29,12 @@
       >
         <li>
           <a
+            href="{appRoutes.subscriptionPricing}"
+            class="hover:underline me-4 md:me-6">Pricing</a
+          >
+        </li>
+        <li>
+          <a
             href="{RepoURL}/blob/main/docs/GUIDE.md"
             target="_blank"
             class="hover:underline me-4 md:me-6">{$LL.userGuide()}</a
