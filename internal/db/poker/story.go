@@ -3,6 +3,7 @@ package poker
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -164,8 +165,7 @@ func (d *Service) RetractVote(PokerID string, UserID string, StoryID string) ([]
 		)
 		WHERE p1.id = $1;
     `, StoryID, UserID); err != nil {
-		d.Logger.Error("CALL thunderdome.poker_vote_retract error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("poker retract vote query error: %v", err)
 	}
 
 	plans := d.GetStories(PokerID, "")

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Modal from '../Modal.svelte';
-  import HollowButton from '../HollowButton.svelte';
+  import Modal from '../global/Modal.svelte';
+  import HollowButton from '../global/HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import UserIcon from '../icons/UserIcon.svelte';
   import { user } from '../../stores';

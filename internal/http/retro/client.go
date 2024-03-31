@@ -17,15 +17,6 @@ import (
 )
 
 const (
-	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
-
-	// Time allowed to read the next pong message from the peer.
-	pongWait = 60 * time.Second
-
-	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
-
 	// Maximum message size allowed from peer.
 	maxMessageSize = 1024 * 1024
 )
@@ -46,6 +37,7 @@ var upgrader = websocket.Upgrader{
 
 // connection is a middleman between the websocket connection and the hub.
 type connection struct {
+	config *Config
 	// The websocket connection.
 	ws *websocket.Conn
 
@@ -71,18 +63,20 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		h.unregister <- sub
 		if forceClosed {
 			cm := websocket.FormatCloseMessage(4002, "abandoned")
-			if err := c.ws.WriteControl(websocket.CloseMessage, cm, time.Now().Add(writeWait)); err != nil {
-				b.logger.Ctx(ctx).Error("abandon error", zap.Error(err))
+			if err := c.ws.WriteControl(websocket.CloseMessage, cm, time.Now().Add(sub.config.WriteWait())); err != nil {
+				b.logger.Ctx(ctx).Error("abandon error", zap.Error(err),
+					zap.String("session_user_id", UserID), zap.String("retro_id", RetroID))
 			}
 		}
 		if err := c.ws.Close(); err != nil {
-			b.logger.Ctx(ctx).Error("close error", zap.Error(err))
+			b.logger.Ctx(ctx).Error("close error", zap.Error(err),
+				zap.String("session_user_id", UserID), zap.String("retro_id", RetroID))
 		}
 	}()
 	c.ws.SetReadLimit(maxMessageSize)
-	_ = c.ws.SetReadDeadline(time.Now().Add(pongWait))
+	_ = c.ws.SetReadDeadline(time.Now().Add(sub.config.PongWait()))
 	c.ws.SetPongHandler(func(string) error {
-		_ = c.ws.SetReadDeadline(time.Now().Add(pongWait))
+		_ = c.ws.SetReadDeadline(time.Now().Add(sub.config.PongWait()))
 		return nil
 	})
 
@@ -92,7 +86,8 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		_, msg, err := c.ws.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
+				b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
+					zap.String("session_user_id", UserID), zap.String("retro_id", RetroID))
 			}
 			break
 		}
@@ -101,7 +96,8 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 		err = json.Unmarshal(msg, &keyVal)
 		if err != nil {
 			badEvent = true
-			b.logger.Error("unexpected retro event json error", zap.Error(err))
+			b.logger.Error("unexpected retro event json error", zap.Error(err),
+				zap.String("session_user_id", UserID), zap.String("retro_id", RetroID))
 		}
 
 		eventType := keyVal["type"]
@@ -123,7 +119,9 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 				// don't log forceClosed events e.g. Abandon
 				if !forceClosed {
-					b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(eventErr))
+					b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(eventErr),
+						zap.String("session_user_id", UserID), zap.String("retro_id", RetroID),
+						zap.String("retro_event_type", eventType))
 				}
 			}
 		}
@@ -141,14 +139,14 @@ func (sub subscription) readPump(b *Service, ctx context.Context) {
 
 // write a message with the given message type and payload.
 func (c *connection) write(mt int, payload []byte) error {
-	_ = c.ws.SetWriteDeadline(time.Now().Add(writeWait))
+	_ = c.ws.SetWriteDeadline(time.Now().Add(c.config.WriteWait()))
 	return c.ws.WriteMessage(mt, payload)
 }
 
 // writePump pumps messages from the hub to the websocket connection.
 func (sub *subscription) writePump() {
 	c := sub.conn
-	ticker := time.NewTicker(pingPeriod)
+	ticker := time.NewTicker(sub.config.PingPeriod())
 	defer func() {
 		ticker.Stop()
 		_ = c.ws.Close()
@@ -194,10 +192,11 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		// upgrade to WebSocket connection
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			b.logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err))
+			b.logger.Ctx(ctx).Error("websocket upgrade error", zap.Error(err),
+				zap.String("retro_id", retroID))
 			return
 		}
-		c := &connection{send: make(chan []byte, 256), ws: ws}
+		c := &connection{config: &b.config, send: make(chan []byte, 256), ws: ws}
 
 		SessionId, cookieErr := b.validateSessionCookie(w, r)
 		if cookieErr != nil && cookieErr.Error() != "COOKIE_NOT_FOUND" {
@@ -242,7 +241,8 @@ func (b *Service) ServeWs() http.HandlerFunc {
 			if usrErrMsg == "DUPLICATE_RETRO_USER" {
 				b.handleSocketClose(ctx, ws, 4003, "duplicate session")
 			} else {
-				b.logger.Ctx(ctx).Error("error finding user", zap.Error(UserErr))
+				b.logger.Ctx(ctx).Error("error finding user", zap.Error(UserErr),
+					zap.String("retro_id", retroID))
 				b.handleSocketClose(ctx, ws, 4005, "internal error")
 			}
 			return
@@ -256,7 +256,8 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				_, msg, err := c.ws.ReadMessage()
 				if err != nil {
 					if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-						b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err))
+						b.logger.Ctx(ctx).Error("unexpected close error", zap.Error(err),
+							zap.String("retro_id", retroID), zap.String("session_user_id", User.Id))
 					}
 					break
 				}
@@ -264,7 +265,8 @@ func (b *Service) ServeWs() http.HandlerFunc {
 				keyVal := make(map[string]string)
 				err = json.Unmarshal(msg, &keyVal)
 				if err != nil {
-					b.logger.Error("unexpected retro message error", zap.Error(err))
+					b.logger.Error("unexpected retro message error", zap.Error(err),
+						zap.String("retro_id", retroID), zap.String("session_user_id", User.Id))
 				}
 
 				if keyVal["type"] == "auth_retro" && keyVal["value"] == retro.JoinCode {
@@ -280,7 +282,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		}
 
 		if UserAuthed {
-			ss := subscription{c, retroID, User.Id}
+			ss := subscription{&b.config, c, retroID, User.Id}
 			h.register <- ss
 
 			Users, _ := b.RetroService.RetroAddUser(ss.arena, User.Id)

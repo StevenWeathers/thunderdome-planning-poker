@@ -66,6 +66,8 @@ func New(AdminEmail string, config *Config, logger *otelzap.Logger) *Service {
 		d.Logger.Ctx(ctx).Error("RegisterDBStatsMetrics error", zap.Error(err))
 	}
 
+	gl := newGooseLogger(logger)
+	goose.SetLogger(gl)
 	goose.SetBaseFS(fs)
 
 	if err := goose.SetDialect("postgres"); err != nil {

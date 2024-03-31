@@ -1,7 +1,7 @@
 <script lang="ts">
   import { quill } from '../../quill';
-  import SolidButton from '../SolidButton.svelte';
-  import Modal from '../Modal.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import Modal from '../global/Modal.svelte';
   import NoSymbol from '../icons/NoSymbol.svelte';
   import DoubleChevronUp from '../icons/DoubleChevronUp.svelte';
   import ChevronUp from '../icons/ChevronUp.svelte';
@@ -10,8 +10,8 @@
   import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig } from '../../config';
-  import TextInput from '../TextInput.svelte';
-  import SelectInput from '../SelectInput.svelte';
+  import TextInput from '../global/TextInput.svelte';
+  import SelectInput from '../global/SelectInput.svelte';
 
   export let handlePlanAdd = () => {};
   export let toggleAddPlan = () => {};

@@ -1,7 +1,9 @@
 package db
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
@@ -28,4 +30,19 @@ type Service struct {
 	DB                  *sql.DB
 	HTMLSanitizerPolicy *bluemonday.Policy
 	Logger              *otelzap.Logger
+}
+
+type gooseLogger struct {
+	logger *otelzap.Logger
+}
+
+func (l *gooseLogger) Fatalf(format string, v ...interface{}) {
+	l.logger.Ctx(context.Background()).Fatal(fmt.Sprintf(format, v...))
+}
+func (l *gooseLogger) Printf(format string, v ...interface{}) {
+	l.logger.Ctx(context.Background()).Info(fmt.Sprintf(format, v...))
+}
+
+func newGooseLogger(logger *otelzap.Logger) *gooseLogger {
+	return &gooseLogger{logger: logger}
 }

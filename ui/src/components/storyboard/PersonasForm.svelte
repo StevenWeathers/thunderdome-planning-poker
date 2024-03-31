@@ -1,7 +1,7 @@
 <script lang="ts">
-  import SolidButton from '../SolidButton.svelte';
-  import Modal from '../Modal.svelte';
-  import TextInput from '../TextInput.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import Modal from '../global/Modal.svelte';
+  import TextInput from '../global/TextInput.svelte';
 
   export let toggleEditPersona = () => () => {};
   export let handlePersonaAdd = () => {};

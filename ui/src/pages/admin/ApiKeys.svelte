@@ -4,13 +4,13 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import Table from '../../components/table/Table.svelte';
-  import HeadCol from '../../components/table/HeadCol.svelte';
-  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
-  import TableRow from '../../components/table/TableRow.svelte';
-  import RowCol from '../../components/table/RowCol.svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
-  import Pagination from '../../components/Pagination.svelte';
+  import Table from '../../components/global/table/Table.svelte';
+  import HeadCol from '../../components/global/table/HeadCol.svelte';
+  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import TableRow from '../../components/global/table/TableRow.svelte';
+  import RowCol from '../../components/global/table/RowCol.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
+  import Pagination from '../../components/global/Pagination.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
 
   export let xfetch;

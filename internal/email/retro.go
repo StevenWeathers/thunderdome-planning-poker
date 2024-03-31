@@ -52,7 +52,8 @@ func (s *Service) SendRetroOverview(retro *thunderdome.Retro, UserName string, U
 		},
 	)
 	if err != nil {
-		s.Logger.Error("Error Generating Retro Overview Email HTML", zap.Error(err))
+		s.Logger.Error("Error Generating Retro Overview Email HTML", zap.Error(err),
+			zap.String("user_email", UserEmail))
 
 		return err
 	}
@@ -64,7 +65,8 @@ func (s *Service) SendRetroOverview(retro *thunderdome.Retro, UserName string, U
 		emailBody,
 	)
 	if sendErr != nil {
-		s.Logger.Error("Error sending Retro Overview Email", zap.Error(sendErr))
+		s.Logger.Error("Error sending Retro Overview Email", zap.Error(sendErr),
+			zap.String("user_email", UserEmail))
 		return sendErr
 	}
 

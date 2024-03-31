@@ -7,10 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/wneessen/go-mail"
-	"go.uber.org/zap"
-
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
+	"github.com/wneessen/go-mail"
 
 	"github.com/matcornic/hermes/v2"
 )
@@ -18,6 +16,7 @@ import (
 // Config contains all the mail server values
 type Config struct {
 	AppURL            string
+	RepoURL           string
 	SenderName        string
 	SmtpHost          string
 	SmtpPort          int
@@ -75,7 +74,7 @@ func (s *Service) generateBody(Body hermes.Body) (emailBody string, generateErr 
 	// Generate an HTML email with the provided contents (for modern clients)
 	emailBody, err := hms.GenerateHTML(email)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to generate email body html: %v", err)
 	}
 
 	return emailBody, nil
@@ -91,12 +90,10 @@ func (s *Service) send(UserName string, UserEmail string, Subject string, Body s
 
 	m := mail.NewMsg()
 	if err = m.From(s.Config.SmtpSender); err != nil {
-		s.Logger.Error(fmt.Sprintf("failed to set From address: %s", s.Config.SmtpSender), zap.Error(err))
-		return err
+		return fmt.Errorf("failed to set From address %s error: %v", s.Config.SmtpSender, err)
 	}
 	if err = m.To(UserEmail); err != nil {
-		s.Logger.Error(fmt.Sprintf("failed to set To address: %s", UserEmail), zap.Error(err))
-		return err
+		return fmt.Errorf("failed to set To address %s error: %v", UserEmail, err)
 	}
 
 	m.Subject(Subject)
@@ -108,16 +105,15 @@ func (s *Service) send(UserName string, UserEmail string, Subject string, Body s
 		c, err = mail.NewClient(s.Config.SmtpHost, mail.WithPort(s.Config.SmtpPort), mail.WithSMTPAuth(s.authType),
 			mail.WithUsername(s.Config.SmtpUser), mail.WithPassword(s.Config.SmtpPass), mail.WithTLSConfig(s.tlsConfig))
 	} else {
-		c, err = mail.NewClient(s.Config.SmtpHost, mail.WithPort(s.Config.SmtpPort), mail.WithTLSConfig(s.tlsConfig), mail.WithTLSPolicy(mail.TLSOpportunistic))
+		c, err = mail.NewClient(s.Config.SmtpHost, mail.WithPort(s.Config.SmtpPort), mail.WithTLSConfig(s.tlsConfig),
+			mail.WithTLSPolicy(mail.TLSOpportunistic))
 	}
 	if err != nil {
-		s.Logger.Error("failed to create mail client", zap.Error(err))
-		return err
+		return fmt.Errorf("failed to create mail client: %v", err)
 	}
 
 	if err = c.DialAndSend(m); err != nil {
-		s.Logger.Error("failed to send mail", zap.Error(err))
-		return err
+		return fmt.Errorf("failed to send mail: %v", err)
 	}
 
 	return err

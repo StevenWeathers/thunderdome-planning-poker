@@ -1,12 +1,13 @@
 <script lang="ts">
-  import PageLayout from '../../components/PageLayout.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
   import { user } from '../../stores';
   import { validateName } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import UserRegisterForm from '../../components/user/UserRegisterForm.svelte';
-  import TextInput from '../../components/TextInput.svelte';
+  import TextInput from '../../components/global/TextInput.svelte';
+  import { onMount } from 'svelte';
 
   export let router;
   export let xfetch;
@@ -15,14 +16,25 @@
   export let battleId;
   export let retroId;
   export let storyboardId;
+  export let orgInviteId;
+  export let teamInviteId;
+  export let subscription = false;
 
   const guestsAllowed = AppConfig.AllowGuests;
   const registrationAllowed = AppConfig.AllowRegistration;
 
   let warriorName = $user.name || '';
+  let wasInvited = false;
+  let inviteDetails = {
+    email: '',
+  };
 
   function targetPage() {
     let tp = appRoutes.games;
+
+    if (subscription) {
+      tp = `${appRoutes.subscriptionPricing}`;
+    }
 
     if (battleId) {
       tp = `${appRoutes.game}/${battleId}`;
@@ -87,6 +99,8 @@
       email: warriorEmail,
       password1: warriorPassword1,
       password2: warriorPassword2,
+      teamInviteId,
+      orgInviteId,
     };
 
     xfetch('/api/auth/register', { body })
@@ -99,6 +113,7 @@
           email: newWarrior.email,
           rank: newWarrior.rank,
           notificationsEnabled: newWarrior.notificationsEnabled,
+          subscribed: false,
         });
 
         eventTag('register_account', 'engagement', 'success', () => {
@@ -111,7 +126,29 @@
       });
   }
 
-  $: registerDisabled = warriorName === '';
+  function getInviteDetails() {
+    const inviteType =
+      typeof teamInviteId !== 'undefined' ? 'team' : 'organization';
+    const inviteId = inviteType === 'team' ? teamInviteId : orgInviteId;
+    xfetch(`/api/auth/invite/${inviteType}/${inviteId}`)
+      .then(res => res.json())
+      .then(function (result) {
+        inviteDetails = result.data;
+      })
+      .catch(function () {
+        notifications.danger(`Failed to get ${inviteType} invite`);
+      });
+  }
+
+  $: registerDisabled =
+    warriorName === '' || (wasInvited && inviteDetails.email === '');
+
+  onMount(() => {
+    if (orgInviteId || teamInviteId) {
+      wasInvited = true;
+      getInviteDetails();
+    }
+  });
 </script>
 
 <svelte:head>
@@ -125,10 +162,26 @@
     >
       {$LL.register()}
     </h1>
+    {#if teamInviteId != null}
+      <div
+        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6 md:leading-tight
+                dark:text-white"
+      >
+        to join your Team
+      </div>
+    {/if}
+    {#if orgInviteId != null}
+      <div
+        class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6 md:leading-tight
+                dark:text-white"
+      >
+        to join your Organization
+      </div>
+    {/if}
     {#if battleId}
       <div
         class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
-                text-center dark:text-white"
+                dark:text-white"
       >
         {@html $LL.loginForBattle[AppConfig.FriendlyUIVerbs]({
           loginOpen: `<a href="${appRoutes.login}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
@@ -139,7 +192,7 @@
     {#if retroId}
       <div
         class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
-                text-center dark:text-white"
+                dark:text-white"
       >
         {@html $LL.loginForRetro({
           loginOpen: `<a href="${appRoutes.login}/retro/${retroId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
@@ -150,7 +203,7 @@
     {#if storyboardId}
       <div
         class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
-                text-center dark:text-white"
+                dark:text-white"
       >
         {@html $LL.loginForStoryboard({
           loginOpen: `<a href="${appRoutes.login}/storyboard/${storyboardId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
@@ -160,7 +213,7 @@
     {/if}
   </div>
   <div class="flex flex-wrap justify-center">
-    {#if !$user.id && (guestsAllowed || registrationAllowed)}
+    {#if guestsAllowed && !$user.id && !wasInvited}
       <div class="w-full md:w-1/2 px-4">
         <form
           on:submit="{createUserGuest}"
@@ -219,6 +272,8 @@
             guestWarriorsName="{warriorName}"
             handleSubmit="{createUserRegistered}"
             notifications="{notifications}"
+            email="{wasInvited ? inviteDetails.email : ''}"
+            wasInvited="{wasInvited}"
           />
         </div>
       </div>
@@ -226,7 +281,7 @@
       <div class="w-full md:w-1/2 px-4">
         <h2
           class="font-bold text-2xl md:text-3xl md:leading-tight
-                    text-center dark:text-white"
+        text-center dark:text-white"
         >
           {$LL.registrationDisabled()}
         </h2>

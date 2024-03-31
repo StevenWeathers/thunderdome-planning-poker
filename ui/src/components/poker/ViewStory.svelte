@@ -1,6 +1,6 @@
 <script lang="ts">
   import ExternalLinkIcon from '../icons/ExternalLinkIcon.svelte';
-  import Modal from '../Modal.svelte';
+  import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import NoSymbolIcon from '../icons/NoSymbol.svelte';
   import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';

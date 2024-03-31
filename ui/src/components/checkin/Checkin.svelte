@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Modal from '../Modal.svelte';
-  import SolidButton from '../SolidButton.svelte';
+  import Modal from '../global/Modal.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
   import { quill } from '../../quill';
   import LL from '../../i18n/i18n-svelte';
 

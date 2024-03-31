@@ -1,0 +1,16 @@
+app:
+  name: app
+  group: app
+  replicaCount: 1
+  ports:
+    - name: default
+      port: 8080
+      targetPort: 8080
+  container:
+    image: define-me
+    config: []
+    env:
+       - key: key
+         value: value
+  service:
+    type: ClusterIP

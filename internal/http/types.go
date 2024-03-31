@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/cookie"
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
@@ -20,6 +21,17 @@ const (
 )
 
 var validate *validator.Validate
+
+type WebsocketConfig struct {
+	// Time allowed to write a message to the peer.
+	WriteWaitSec int
+
+	// Time allowed to read the next pong message from the peer.
+	PongWaitSec int
+
+	// Send pings to peer with this period. Must be less than pongWait.
+	PingPeriodSec int
+}
 
 // Config contains configuration values used by the APIs
 type Config struct {
@@ -72,6 +84,9 @@ type Config struct {
 	AllowGuests               bool
 	AllowRegistration         bool
 	ShowActiveCountries       bool
+	SubscriptionsEnabled      bool
+
+	WebsocketConfig
 }
 
 type Service struct {
@@ -92,6 +107,9 @@ type Service struct {
 	TeamDataSvc         thunderdome.TeamDataSvc
 	OrganizationDataSvc thunderdome.OrganizationDataSvc
 	AdminDataSvc        thunderdome.AdminDataSvc
+	JiraDataSvc         thunderdome.JiraDataSvc
+	SubscriptionDataSvc thunderdome.SubscriptionDataSvc
+	SubscriptionSvc     *subscription.Service
 }
 
 // standardJsonResponse structure used for all restful APIs response body

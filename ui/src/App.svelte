@@ -11,10 +11,10 @@
   import { dir, user } from './stores';
   import eventTag from './eventTag';
 
-  import Notifications from './components/Notifications.svelte';
-  import GlobalHeader from './components/GlobalHeader.svelte';
+  import Notifications from './components/global/Notifications.svelte';
+  import GlobalHeader from './components/global/GlobalHeader.svelte';
   import GlobalAlerts from './components/alert/GlobalAlerts.svelte';
-  import GlobalFooter from './components/GlobalFooter.svelte';
+  import GlobalFooter from './components/global/GlobalFooter.svelte';
   import Landing from './pages/Landing.svelte';
   import Battles from './pages/poker/PokerGames.svelte';
   import Battle from './pages/poker/PokerGame.svelte';
@@ -48,11 +48,23 @@
   import AdminRetro from './pages/admin/Retro.svelte';
   import AdminStoryboards from './pages/admin/Storyboards.svelte';
   import AdminStoryboard from './pages/admin/Storyboard.svelte';
+  import AdminSubscriptions from './pages/admin/Subscriptions.svelte';
+  import AdminSubscription from './pages/admin/Subscription.svelte';
   import { setLocale } from './i18n/i18n-svelte';
   import { detectLocale } from './i18n/i18n-util';
   import { loadLocaleAsync } from './i18n/i18n-util.async';
+  import Confirmation from './pages/subscription/Confirmation.svelte';
+  import Pricing from './pages/subscription/Pricing.svelte';
+  import PrivacyPolicy from './pages/support/PrivacyPolicy.svelte';
+  import TermsConditions from './pages/support/TermsConditions.svelte';
+  import Support from './pages/support/Support.svelte';
 
-  const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
+  const {
+    FeaturePoker,
+    FeatureRetro,
+    FeatureStoryboard,
+    SubscriptionsEnabled,
+  } = AppConfig;
 
   let notifications;
 
@@ -80,6 +92,27 @@
       name: 'landing',
     };
   });
+  router.on(appRoutes.privacyPolicy, () => {
+    currentPage = {
+      route: PrivacyPolicy,
+      params: {},
+      name: 'privacy',
+    };
+  });
+  router.on(appRoutes.termsConditions, () => {
+    currentPage = {
+      route: TermsConditions,
+      params: {},
+      name: 'terms-conditions',
+    };
+  });
+  router.on(appRoutes.support, () => {
+    currentPage = {
+      route: Support,
+      params: {},
+      name: 'support',
+    };
+  });
   router.on(`${appRoutes.register}`, params => {
     currentPage = {
       route: Register,
@@ -91,6 +124,13 @@
     currentPage = {
       route: Login,
       params,
+      name: 'login',
+    };
+  });
+  router.on(`${appRoutes.login}/subscription`, () => {
+    currentPage = {
+      route: Login,
+      params: { subscription: true },
       name: 'login',
     };
   });
@@ -120,6 +160,41 @@
       route: Teams,
       params: {},
       name: 'Teams',
+    };
+  });
+  router.on(appRoutes.subscriptionPricing, () => {
+    currentPage = {
+      route: Pricing,
+      params: {},
+      name: 'pricing',
+    };
+  });
+  router.on(appRoutes.subscriptionConfirmation, () => {
+    currentPage = {
+      route: Confirmation,
+      params: {},
+      name: 'Subscription Confirmation',
+    };
+  });
+  router.on(`${appRoutes.register}/subscription`, () => {
+    currentPage = {
+      route: Register,
+      params: { subscription: true },
+      name: 'register',
+    };
+  });
+  router.on(`${appRoutes.register}/team/:teamInviteId`, params => {
+    currentPage = {
+      route: Register,
+      params,
+      name: 'register',
+    };
+  });
+  router.on(`${appRoutes.register}/organization/:orgInviteId`, params => {
+    currentPage = {
+      route: Register,
+      params,
+      name: 'register',
     };
   });
   router.on(`${appRoutes.organization}/:organizationId`, params => {
@@ -418,6 +493,23 @@
         route: Login,
         params,
         name: 'login',
+      };
+    });
+  }
+
+  if (SubscriptionsEnabled) {
+    router.on(`${appRoutes.adminSubscriptions}`, () => {
+      currentPage = {
+        route: AdminSubscriptions,
+        params: {},
+        name: 'admin',
+      };
+    });
+    router.on(`${appRoutes.adminSubscriptions}/:subscriptionId`, params => {
+      currentPage = {
+        route: AdminSubscription,
+        params,
+        name: 'admin',
       };
     });
   }

@@ -1,5 +1,7 @@
 package config
 
+import "github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+
 type Config struct {
 	Http
 	Analytics
@@ -10,21 +12,25 @@ type Config struct {
 	Config AppConfig
 	Feature
 	Auth
+	Subscription thunderdome.SubscriptionConfig
 }
 
 type Http struct {
-	CookieHashkey      string `mapstructure:"cookie_hashkey"`
-	Port               string
-	SecureCookie       bool   `mapstructure:"secure_cookie"`
-	BackendCookieName  string `mapstructure:"backend_cookie_name"`
-	SessionCookieName  string `mapstructure:"session_cookie_name"`
-	FrontendCookieName string `mapstructure:"frontend_cookie_name"`
-	Domain             string
-	PathPrefix         string `mapstructure:"path_prefix"`
-	WriteTimeout       int    `mapstructure:"write_timeout"`
-	ReadTimeout        int    `mapstructure:"read_timeout"`
-	IdleTimeout        int    `mapstructure:"idle_timeout"`
-	ReadHeaderTimeout  int    `mapstructure:"read_header_timeout"`
+	CookieHashkey          string `mapstructure:"cookie_hashkey"`
+	Port                   string
+	SecureCookie           bool   `mapstructure:"secure_cookie"`
+	BackendCookieName      string `mapstructure:"backend_cookie_name"`
+	SessionCookieName      string `mapstructure:"session_cookie_name"`
+	FrontendCookieName     string `mapstructure:"frontend_cookie_name"`
+	Domain                 string
+	PathPrefix             string `mapstructure:"path_prefix"`
+	WriteTimeout           int    `mapstructure:"write_timeout"`
+	ReadTimeout            int    `mapstructure:"read_timeout"`
+	IdleTimeout            int    `mapstructure:"idle_timeout"`
+	ReadHeaderTimeout      int    `mapstructure:"read_header_timeout"`
+	WebsocketWriteWaitSec  int    `mapstructure:"websocket_write_wait_sec"`
+	WebsocketPingPeriodSec int    `mapstructure:"websocket_ping_period_sec"`
+	WebsocketPongWaitSec   int    `mapstructure:"websocket_pong_wait_sec"`
 }
 
 type Analytics struct {
@@ -90,6 +96,7 @@ type AppConfig struct {
 	CleanupStoryboardsDaysOld int      `mapstructure:"cleanup_storyboards_days_old"`
 	OrganizationsEnabled      bool     `mapstructure:"organizations_enabled"`
 	RequireTeams              bool     `mapstructure:"require_teams"`
+	SubscriptionsEnabled      bool     `mapstructure:"subscriptions_enabled"`
 }
 
 type Feature struct {

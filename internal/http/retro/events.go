@@ -31,6 +31,32 @@ func (b *Service) CreateItem(ctx context.Context, RetroID string, UserID string,
 	return msg, nil, false
 }
 
+// UserMarkReady marks a user as ready to advance to next phase
+func (b *Service) UserMarkReady(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	readyUsers, err := b.RetroService.MarkUserReady(RetroID, UserID)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedReadyUsers, _ := json.Marshal(readyUsers)
+	msg := createSocketEvent("user_marked_ready", string(updatedReadyUsers), UserID)
+
+	return msg, nil, false
+}
+
+// UserUnMarkReady unsets a user from ready to advance to next phase
+func (b *Service) UserUnMarkReady(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	readyUsers, err := b.RetroService.UnmarkUserReady(RetroID, UserID)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedReadyUsers, _ := json.Marshal(readyUsers)
+	msg := createSocketEvent("user_marked_unready", string(updatedReadyUsers), UserID)
+
+	return msg, nil, false
+}
+
 // GroupItem changes a retro item's group_id
 func (b *Service) GroupItem(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {
@@ -42,13 +68,13 @@ func (b *Service) GroupItem(ctx context.Context, RetroID string, UserID string, 
 		return nil, err, false
 	}
 
-	items, err := b.RetroService.GroupRetroItem(RetroID, rs.ItemId, rs.GroupId)
+	item, err := b.RetroService.GroupRetroItem(RetroID, rs.ItemId, rs.GroupId)
 	if err != nil {
 		return nil, err, false
 	}
 
-	updatedItems, _ := json.Marshal(items)
-	msg := createSocketEvent("items_updated", string(updatedItems), "")
+	updatedItem, _ := json.Marshal(item)
+	msg := createSocketEvent("item_moved", string(updatedItem), "")
 
 	return msg, nil, false
 }
@@ -87,13 +113,13 @@ func (b *Service) GroupNameChange(ctx context.Context, RetroID string, UserID st
 		return nil, err, false
 	}
 
-	groups, err := b.RetroService.GroupNameChange(RetroID, rs.GroupId, rs.Name)
+	group, err := b.RetroService.GroupNameChange(RetroID, rs.GroupId, rs.Name)
 	if err != nil {
 		return nil, err, false
 	}
 
-	updatedGroups, _ := json.Marshal(groups)
-	msg := createSocketEvent("groups_updated", string(updatedGroups), "")
+	updatedGroup, _ := json.Marshal(group)
+	msg := createSocketEvent("group_name_updated", string(updatedGroup), "")
 
 	return msg, nil, false
 }

@@ -2,6 +2,7 @@ package retro
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"go.uber.org/zap"
@@ -17,8 +18,7 @@ func (d *Service) CreateRetroItem(RetroID string, UserID string, ItemType string
 		RetroID,
 	).Scan(&groupId)
 	if err != nil {
-		d.Logger.Error("insert retro group error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("insert retro group error: %v", err)
 	}
 
 	if _, err := d.DB.Exec(
@@ -36,17 +36,22 @@ func (d *Service) CreateRetroItem(RetroID string, UserID string, ItemType string
 }
 
 // GroupRetroItem changes the group_id of retro item
-func (d *Service) GroupRetroItem(RetroID string, ItemId string, GroupId string) ([]*thunderdome.RetroItem, error) {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.retro_item SET group_id = $3 WHERE retro_id = $1 AND id = $2;`,
+func (d *Service) GroupRetroItem(RetroID string, ItemId string, GroupId string) (thunderdome.RetroItem, error) {
+	ri := thunderdome.RetroItem{}
+
+	err := d.DB.QueryRow(
+		`UPDATE thunderdome.retro_item SET group_id = $3
+ 				WHERE retro_id = $1 AND id = $2
+ 				RETURNING id, user_id, group_id, content, type;`,
 		RetroID, ItemId, GroupId,
-	); err != nil {
-		d.Logger.Error("update retro item error", zap.Error(err))
+	).Scan(&ri.ID, &ri.UserID, &ri.GroupID, &ri.Content, &ri.Type)
+
+	if err != nil {
+		d.Logger.Error("move (group) retro item error", zap.Error(err))
+		return ri, err
 	}
 
-	items := d.GetRetroItems(RetroID)
-
-	return items, nil
+	return ri, nil
 }
 
 // DeleteRetroItem removes item from the current board by ID
@@ -112,17 +117,22 @@ func (d *Service) GetRetroGroups(RetroID string) []*thunderdome.RetroGroup {
 }
 
 // GroupNameChange changes retro item group name
-func (d *Service) GroupNameChange(RetroID string, GroupId string, Name string) ([]*thunderdome.RetroGroup, error) {
-	if _, err := d.DB.Exec(
-		`UPDATE thunderdome.retro_group SET name = $3 WHERE retro_id = $1 AND id = $2;`,
+func (d *Service) GroupNameChange(RetroID string, GroupId string, Name string) (thunderdome.RetroGroup, error) {
+	rg := thunderdome.RetroGroup{}
+
+	err := d.DB.QueryRow(
+		`UPDATE thunderdome.retro_group SET name = $3
+				WHERE retro_id = $1 AND id = $2
+				RETURNING id, name;`,
 		RetroID, GroupId, Name,
-	); err != nil {
-		d.Logger.Error("update retro group error", zap.Error(err))
+	).Scan(&rg.ID, &rg.Name)
+
+	if err != nil {
+		d.Logger.Error("update retro group name error", zap.Error(err))
+		return rg, err
 	}
 
-	groups := d.GetRetroGroups(RetroID)
-
-	return groups, nil
+	return rg, nil
 }
 
 // GetRetroVotes gets retro votes

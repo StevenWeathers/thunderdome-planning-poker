@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/gorilla/mux"
 )
 
@@ -19,8 +21,11 @@ import (
 // @Router       /admin/stats [get]
 func (s *Service) handleAppStats() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		AppStats, err := s.AdminDataSvc.GetAppStats(r.Context())
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleAppStats error", zap.Error(err), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -42,10 +47,14 @@ func (s *Service) handleAppStats() http.HandlerFunc {
 // @Router       /admin/users [get]
 func (s *Service) handleGetRegisteredUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Users, Count, err := s.UserDataSvc.GetRegisteredUsers(r.Context(), Limit, Offset)
+		Users, Count, err := s.UserDataSvc.GetRegisteredUsers(ctx, Limit, Offset)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetRegisteredUsers error", zap.Error(err),
+				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -80,6 +89,8 @@ type userCreateRequestBody struct {
 // @Router       /admin/users [post]
 func (s *Service) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		var user = userCreateRequestBody{}
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -100,8 +111,10 @@ func (s *Service) handleUserCreate() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, err := s.UserDataSvc.CreateUser(r.Context(), user.Name, user.Email, user.Password1)
+		newUser, VerifyID, err := s.UserDataSvc.CreateUser(ctx, user.Name, user.Email, user.Password1)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleUserCreate error", zap.Error(err),
+				zap.String("user_email", user.Email), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -125,16 +138,20 @@ func (s *Service) handleUserCreate() http.HandlerFunc {
 // @Router       /admin/users/{userId}/promote/ [patch]
 func (s *Service) handleUserPromote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.UserDataSvc.PromoteUser(r.Context(), UserID)
+		err := s.UserDataSvc.PromoteUser(ctx, UserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleUserPromote error", zap.Error(err),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -155,16 +172,20 @@ func (s *Service) handleUserPromote() http.HandlerFunc {
 // @Router       /admin/users/{userId}/demote [patch]
 func (s *Service) handleUserDemote() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.UserDataSvc.DemoteUser(r.Context(), UserID)
+		err := s.UserDataSvc.DemoteUser(ctx, UserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleUserDemote error", zap.Error(err),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -185,16 +206,20 @@ func (s *Service) handleUserDemote() http.HandlerFunc {
 // @Router       /admin/users/{userId}/disable [patch]
 func (s *Service) handleUserDisable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
 			return
 		}
 
-		err := s.UserDataSvc.DisableUser(r.Context(), UserID)
+		err := s.UserDataSvc.DisableUser(ctx, UserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleUserDisable error", zap.Error(err),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -215,8 +240,10 @@ func (s *Service) handleUserDisable() http.HandlerFunc {
 // @Router       /admin/users/{userId}/enable [patch]
 func (s *Service) handleUserEnable() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -225,6 +252,8 @@ func (s *Service) handleUserEnable() http.HandlerFunc {
 
 		err := s.UserDataSvc.EnableUser(r.Context(), UserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleUserEnable error", zap.Error(err),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -246,8 +275,10 @@ func (s *Service) handleUserEnable() http.HandlerFunc {
 // @Router       /admin/users/{userId}/password [patch]
 func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		vars := mux.Vars(r)
 		UserID := vars["userId"]
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		idErr := validate.Var(UserID, "required,uuid")
 		if idErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
@@ -273,8 +304,10 @@ func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := s.AuthDataSvc.UserUpdatePassword(r.Context(), UserID, u.Password1)
+		UserName, UserEmail, updateErr := s.AuthDataSvc.UserUpdatePassword(ctx, UserID, u.Password1)
 		if updateErr != nil {
+			s.Logger.Ctx(ctx).Error("handleAdminUpdateUserPassword error", zap.Error(updateErr),
+				zap.String("entity_user_id", UserID), zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
@@ -298,13 +331,14 @@ func (s *Service) handleAdminUpdateUserPassword() http.HandlerFunc {
 // @Router       /admin/organizations [get]
 func (s *Service) handleGetOrganizations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		if !s.Config.OrganizationsEnabled {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
 			return
 		}
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Organizations := s.OrganizationDataSvc.OrganizationList(r.Context(), Limit, Offset)
+		Organizations := s.OrganizationDataSvc.OrganizationList(ctx, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Organizations, nil)
 	}
@@ -323,9 +357,10 @@ func (s *Service) handleGetOrganizations() http.HandlerFunc {
 // @Router       /admin/teams [get]
 func (s *Service) handleGetTeams() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams, Count := s.TeamDataSvc.TeamList(r.Context(), Limit, Offset)
+		Teams, Count := s.TeamDataSvc.TeamList(ctx, Limit, Offset)
 
 		Meta := &pagination{
 			Count:  Count,
@@ -350,9 +385,10 @@ func (s *Service) handleGetTeams() http.HandlerFunc {
 // @Router       /admin/apikeys [get]
 func (s *Service) handleGetAPIKeys() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		Limit, Offset := getLimitOffsetFromRequest(r)
 
-		Teams := s.ApiKeyDataSvc.GetAPIKeys(r.Context(), Limit, Offset)
+		Teams := s.ApiKeyDataSvc.GetAPIKeys(ctx, Limit, Offset)
 
 		s.Success(w, r, http.StatusOK, Teams, nil)
 	}
@@ -373,6 +409,8 @@ func (s *Service) handleGetAPIKeys() http.HandlerFunc {
 // @Router       /admin/search/users/email [get]
 func (s *Service) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		Limit, Offset := getLimitOffsetFromRequest(r)
 		Search, err := getSearchFromRequest(r)
 		if err != nil {
@@ -380,8 +418,11 @@ func (s *Service) handleSearchRegisteredUsersByEmail() http.HandlerFunc {
 			return
 		}
 
-		Users, Count, err := s.UserDataSvc.SearchRegisteredUsersByEmail(r.Context(), Search, Limit, Offset)
+		Users, Count, err := s.UserDataSvc.SearchRegisteredUsersByEmail(ctx, Search, Limit, Offset)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleSearchRegisteredUsersByEmail error", zap.Error(err),
+				zap.Int("limit", Limit), zap.Int("offset", Offset), zap.String("user_email", Search),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

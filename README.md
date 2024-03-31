@@ -4,7 +4,11 @@
 
 # Thunderdome
 
-## Remote team collaboration with realtime agile story pointing, no cost and ad free!
+🆓 Free to use! [Thunderdome Open Source Poker Planner](https://thunderdome.dev/)
+
+💵 [Premium Options Available](https://thunderdome.dev/subscriptions/pricing)
+
+## Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.
 
 ![image](https://user-images.githubusercontent.com/846933/95778842-eb76ef00-0c96-11eb-99d8-af5d098c12ee.png)
 
@@ -39,8 +43,19 @@ docker pull stevenweathers/thunderdome-planning-poker
 
 [![](https://img.shields.io/github/v/release/stevenweathers/thunderdome-planning-poker?include_prereleases)](https://github.com/StevenWeathers/thunderdome-planning-poker/releases/latest)
 
+## K8s
+
+```bash
+cd ./build/helm
+helm install -f thunderdome-db.yaml thunderdome-db ./db
+helm install -f thunderdome-mail.yaml thunderdome-mail ./app
+helm install -f thunderdome.yaml thunderdome ./app
+kubectl port-forward svc/thunderdome 8080:8080
+```
+
 # Guides
 
+- [User Guide](docs/GUIDE.md)
 - [Configuring Thunderdome](docs/CONFIGURATION.md)
 - [Contributing Guide](docs/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull
   requests to us.

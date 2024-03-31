@@ -22,6 +22,7 @@ const AppConfig =
     : {
         PathPrefix: '',
         DefaultLocale: 'en',
+        Subscription: {},
       };
 const {
   PathPrefix,
@@ -54,6 +55,12 @@ const defaultAppRoutes = {
   adminApiKeys: `${PathPrefix}/admin/apikeys`,
   adminAlerts: `${PathPrefix}/admin/alerts`,
   adminUsers: `${PathPrefix}/admin/users`,
+  adminSubscriptions: `${PathPrefix}/admin/subscriptions`,
+  subscriptionPricing: `${PathPrefix}/subscriptions/pricing`,
+  subscriptionConfirmation: `${PathPrefix}/subscriptions/confirmation`,
+  privacyPolicy: `${PathPrefix}/privacy-policy`,
+  termsConditions: `${PathPrefix}/terms-conditions`,
+  support: `${PathPrefix}/support`,
 };
 const friendlyAppRoutes = {
   ...defaultAppRoutes,

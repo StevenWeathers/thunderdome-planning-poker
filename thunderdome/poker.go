@@ -33,6 +33,7 @@ type Poker struct {
 	JoinCode             string       `json:"joinCode"`
 	FacilitatorCode      string       `json:"leaderCode,omitempty"`
 	TeamID               string       `json:"teamId"`
+	TeamName             string       `json:"teamName"`
 	CreatedDate          time.Time    `json:"createdDate"`
 	UpdatedDate          time.Time    `json:"updatedDate"`
 }

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
@@ -102,7 +103,7 @@ func (d *CheckinService) CheckinCreate(
 		UserId,
 	).Scan(&userCount)
 	if usrErr != nil {
-		return usrErr
+		return fmt.Errorf("checkin create get team user error: %v", usrErr)
 	}
 	if userCount != 1 {
 		return errors.New("REQUIRES_TEAM_USER")
@@ -125,7 +126,7 @@ func (d *CheckinService) CheckinCreate(
 		SanitizedDiscuss,
 		GoalsMet,
 	); err != nil {
-		return err
+		return fmt.Errorf("checkin create error: %v", err)
 	}
 
 	return nil
@@ -155,7 +156,7 @@ func (d *CheckinService) CheckinUpdate(
 		SanitizedDiscuss,
 		GoalsMet,
 	); err != nil {
-		return err
+		return fmt.Errorf("checkin update query error: %v", err)
 	}
 
 	return nil
@@ -169,7 +170,7 @@ func (d *CheckinService) CheckinDelete(ctx context.Context, CheckinId string) er
 	)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("checkin delete query error: %v", err)
 	}
 
 	return nil
@@ -190,7 +191,7 @@ func (d *CheckinService) CheckinComment(
 		UserId,
 	).Scan(&userCount)
 	if usrErr != nil {
-		return usrErr
+		return fmt.Errorf("checkin comment get team user error: %v", usrErr)
 	}
 	if userCount != 1 {
 		return errors.New("REQUIRES_TEAM_USER")
@@ -203,7 +204,7 @@ func (d *CheckinService) CheckinComment(
 		UserId,
 		Comment,
 	); err != nil {
-		return err
+		return fmt.Errorf("checkin comment query error: %v", err)
 	}
 
 	return nil
@@ -218,7 +219,7 @@ func (d *CheckinService) CheckinCommentEdit(ctx context.Context, TeamId string, 
 		UserId,
 	).Scan(&userCount)
 	if usrErr != nil {
-		return usrErr
+		return fmt.Errorf("checkin edit comment get team user error: %v", usrErr)
 	}
 	if userCount != 1 {
 		return errors.New("REQUIRES_TEAM_USER")
@@ -231,7 +232,7 @@ func (d *CheckinService) CheckinCommentEdit(ctx context.Context, TeamId string, 
 	)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("checkin edit comment query error: %v", err)
 	}
 
 	return nil
@@ -245,7 +246,7 @@ func (d *CheckinService) CheckinCommentDelete(ctx context.Context, CommentId str
 	)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("checkin delete comment query error: %v", err)
 	}
 
 	return nil

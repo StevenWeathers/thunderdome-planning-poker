@@ -28,6 +28,7 @@ type Retro struct {
 	Items                []*RetroItem   `json:"items"`
 	ActionItems          []*RetroAction `json:"actionItems"`
 	Votes                []*RetroVote   `json:"votes"`
+	ReadyUsers           []string       `json:"readyUsers"`
 	Facilitators         []string       `json:"facilitators"`
 	Format               string         `json:"format" db:"format"`
 	Phase                string         `json:"phase" db:"phase"`
@@ -35,6 +36,7 @@ type Retro struct {
 	FacilitatorCode      string         `json:"facilitatorCode" db:"facilitator_code"`
 	MaxVotes             int            `json:"maxVotes" db:"max_votes"`
 	BrainstormVisibility string         `json:"brainstormVisibility" db:"brainstorm_visibility"`
+	TeamName             string         `json:"teamName"`
 	CreatedDate          string         `json:"createdDate" db:"created_date"`
 	UpdatedDate          string         `json:"updatedDate" db:"updated_date"`
 }
@@ -85,7 +87,7 @@ type RetroDataSvc interface {
 	TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*Retro, error)
 	EditRetro(RetroID string, RetroName string, JoinCode string, FacilitatorCode string, maxVotes int, brainstormVisibility string) error
 	RetroGet(RetroID string, UserID string) (*Retro, error)
-	RetroGetByUser(UserID string) ([]*Retro, error)
+	RetroGetByUser(UserID string, Limit int, Offset int) ([]*Retro, int, error)
 	RetroConfirmFacilitator(RetroID string, userID string) error
 	RetroGetUsers(RetroID string) []*RetroUser
 	GetRetroFacilitators(RetroID string) []string
@@ -101,6 +103,8 @@ type RetroDataSvc interface {
 	GetActiveRetros(Limit int, Offset int) ([]*Retro, int, error)
 	GetRetroFacilitatorCode(RetroID string) (string, error)
 	CleanRetros(ctx context.Context, DaysOld int) error
+	MarkUserReady(RetroID string, userID string) ([]string, error)
+	UnmarkUserReady(RetroID string, userID string) ([]string, error)
 
 	CreateRetroAction(RetroID string, UserID string, Content string) ([]*RetroAction, error)
 	UpdateRetroAction(RetroID string, ActionID string, Content string, Completed bool) (Actions []*RetroAction, DeleteError error)
@@ -114,11 +118,11 @@ type RetroDataSvc interface {
 	RetroActionAssigneeDelete(RetroID string, ActionID string, UserID string) ([]*RetroAction, error)
 
 	CreateRetroItem(RetroID string, UserID string, ItemType string, Content string) ([]*RetroItem, error)
-	GroupRetroItem(RetroID string, ItemId string, GroupId string) ([]*RetroItem, error)
+	GroupRetroItem(RetroID string, ItemId string, GroupId string) (RetroItem, error)
 	DeleteRetroItem(RetroID string, userID string, Type string, ItemID string) ([]*RetroItem, error)
 	GetRetroItems(RetroID string) []*RetroItem
 	GetRetroGroups(RetroID string) []*RetroGroup
-	GroupNameChange(RetroID string, GroupId string, Name string) ([]*RetroGroup, error)
+	GroupNameChange(RetroID string, GroupId string, Name string) (RetroGroup, error)
 	GetRetroVotes(RetroID string) []*RetroVote
 	GroupUserVote(RetroID string, GroupID string, UserID string) ([]*RetroVote, error)
 	GroupUserSubtractVote(RetroID string, GroupID string, UserID string) ([]*RetroVote, error)

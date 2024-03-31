@@ -1,5 +1,5 @@
 <script lang="ts">
-  import HollowButton from './HollowButton.svelte';
+  import HollowButton from './global/HollowButton.svelte';
   import LL from '../i18n/i18n-svelte';
   import { user } from '../stores';
   import LeaderIcon from './icons/LeaderIcon.svelte';
@@ -10,8 +10,10 @@
   export let joinBtnText: string = '';
   export let itemType: string = '';
   export let ownerField: string = 'owner_id';
+  export let ownerNameField: string = '';
   export let isAdmin: boolean = false;
   export let showOwner: boolean = true;
+  export let showOwnerName: boolean = false;
   export let showFacilitatorIcon: boolean = false;
   export let facilitatorsKey: string = 'facilitators';
   export let showCompletedStories: boolean = false;
@@ -34,6 +36,15 @@
           {/if}
         {/if}
         <span data-testid="{itemType}-name">{item.name}</span>
+        {#if showOwnerName}
+          <span
+            class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"
+          >
+            {#if ownerNameField && item[ownerNameField]}
+              {item[ownerNameField]}
+            {/if}
+          </span>
+        {/if}
         {#if showOwner}
           <div
             class="font-semibold md:text-sm text-gray-600 dark:text-gray-400"

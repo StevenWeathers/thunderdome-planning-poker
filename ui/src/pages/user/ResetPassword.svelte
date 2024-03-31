@@ -1,10 +1,10 @@
 <script lang="ts">
-  import PageLayout from '../../components/PageLayout.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import { validatePasswords } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
-  import TextInput from '../../components/TextInput.svelte';
+  import TextInput from '../../components/global/TextInput.svelte';
 
   export let xfetch;
   export let router;

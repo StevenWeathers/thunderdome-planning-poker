@@ -1,10 +1,10 @@
 <script lang="ts">
   import Sockette from 'sockette';
   import { onDestroy, onMount } from 'svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
-  import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import EditRetro from '../../components/retro/EditRetro.svelte';
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
@@ -22,9 +22,9 @@
   import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import UserCard from '../../components/retro/UserCard.svelte';
   import InviteUser from '../../components/retro/InviteUser.svelte';
-  import PageLayout from '../../components/PageLayout.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
-  import TextInput from '../../components/TextInput.svelte';
+  import TextInput from '../../components/global/TextInput.svelte';
 
   export let retroId;
   export let notifications;
@@ -32,8 +32,7 @@
   export let eventTag;
 
   const { AllowRegistration, AllowGuests } = AppConfig;
-  const loginOrRegister =
-    AllowRegistration || AllowGuests ? appRoutes.register : appRoutes.login;
+  const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
   const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -54,6 +53,7 @@
     brainstormVisibility: 'visible',
     facilitatorCode: '',
     joinCode: '',
+    readyUsers: [],
   };
   let showDeleteRetro = false;
   let actionItem = '';
@@ -98,7 +98,7 @@
         return b.votes.length - a.votes.length;
       });
     }
-    if (retro.phase === 'group' || retro.phase === 'vote') {
+    if (retro.phase === 'vote') {
       result.sort((a, b) => {
         return b.items.length - a.items.length;
       });
@@ -157,6 +157,47 @@
         if (retro.phase !== 'brainstorm') {
           groupedItems = organizeItemsByGroup();
         }
+        break;
+      }
+      case 'user_marked_ready': {
+        const readyUser = retro.users.find(w => w.id === parsedEvent.userId);
+        retro.readyUsers = JSON.parse(parsedEvent.value);
+
+        notifications.success(`${readyUser.name} is done brainstorming.`);
+        break;
+      }
+      case 'user_marked_unready': {
+        const unreadyUser = retro.users.find(w => w.id === parsedEvent.userId);
+        retro.readyUsers = JSON.parse(parsedEvent.value);
+
+        notifications.warning(
+          `${unreadyUser.name} is no longer done brainstorming.`,
+        );
+        break;
+      }
+      case 'item_moved': {
+        const parsedValue = JSON.parse(parsedEvent.value);
+        const updatedItems = [...retro.items];
+        console.log(updatedItems);
+        const idx = updatedItems.findIndex(item => {
+          return item.id === parsedValue.id;
+        });
+        console.log(idx);
+        updatedItems[idx].groupId = parsedValue.groupId;
+        console.log(updatedItems);
+        retro.items = updatedItems;
+        groupedItems = organizeItemsByGroup();
+        break;
+      }
+      case 'group_name_updated': {
+        const parsedValue = JSON.parse(parsedEvent.value);
+        const updatedGroups = [...retro.groups];
+        const idx = updatedGroups.findIndex(group => {
+          return group.id === parsedValue.id;
+        });
+        updatedGroups[idx].name = parsedValue.name;
+        retro.groups = updatedGroups;
+        groupedItems = organizeItemsByGroup();
         break;
       }
       case 'groups_updated': {
@@ -300,6 +341,13 @@
         phase: retro.phase,
       }),
     );
+  };
+
+  const handleUserReady = userId => () => {
+    sendSocketEvent(`user_ready`, userId);
+  };
+  const handleUserUnReady = userId => () => {
+    sendSocketEvent(`user_unready`, userId);
   };
 
   const handleItemGroupChange = (itemId, groupId) => {
@@ -678,7 +726,7 @@
         <div class="grow flex">
           {#if retro.phase === 'intro'}
             <div
-              class="m-auto w-full md:w-3/4 lg:w-2/3 md:py-14 lg:py-20 dark:text-white"
+              class="m-auto w-full md:w-3/4 lg:w-2/3 md:mt-14 lg:mt-20 dark:text-white"
             >
               <h2
                 class="text-3xl md:text-4xl lg:text-5xl font-rajdhani mb-2 tracking-wide"
@@ -862,17 +910,25 @@
                   votes="{retro.votes}"
                   maxVotes="{retro.maxVotes}"
                   facilitators="{retro.facilitators}"
+                  readyUsers="{retro.readyUsers}"
                   handleAddFacilitator="{handleAddFacilitator}"
                   handleRemoveFacilitator="{handleRemoveFacilitator}"
+                  handleUserReady="{handleUserReady}"
+                  handleUserUnReady="{handleUserUnReady}"
                   phase="{retro.phase}"
                 />
               {/if}
             {/each}
           </div>
-
-          <div class="w-full md:w-1/3 p-2 dark:text-white hidden">
-            <InviteUser hostname="{hostname}" retroId="{retro.id}" />
-          </div>
+          {#if retro.phase === 'intro'}
+            <div class="mt-4 flex w-full p-2 dark:text-white justify-center">
+              <div
+                class="w-full md:w-1/2 lg:w-1/3 p-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg"
+              >
+                <InviteUser hostname="{hostname}" retroId="{retro.id}" />
+              </div>
+            </div>
+          {/if}
         </div>
       </div>
     {/if}

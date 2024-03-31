@@ -1,10 +1,10 @@
 <script lang="ts">
-  import PageLayout from '../../components/PageLayout.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../../components/TextInput.svelte';
+  import TextInput from '../../components/global/TextInput.svelte';
 
   export let router;
   export let xfetch;
@@ -13,6 +13,7 @@
   export let battleId;
   export let retroId;
   export let storyboardId;
+  export let subscription = false;
 
   declare global {
     interface Window {
@@ -35,6 +36,10 @@
 
   function targetPage() {
     let tp = appRoutes.games;
+
+    if (subscription) {
+      tp = `${appRoutes.subscriptionPricing}`;
+    }
 
     if (battleId) {
       tp = `${appRoutes.game}/${battleId}`;
@@ -93,6 +98,7 @@
           rank: u.rank,
           locale: u.locale,
           notificationsEnabled: u.notificationsEnabled,
+          subscribed: result.data.subscribed,
         };
         if (result.data.mfaRequired) {
           mfaRequired = true;

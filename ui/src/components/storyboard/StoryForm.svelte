@@ -1,11 +1,11 @@
 <script lang="ts">
   import { quill } from '../../quill';
-  import Modal from '../Modal.svelte';
-  import HollowButton from '../HollowButton.svelte';
+  import Modal from '../global/Modal.svelte';
+  import HollowButton from '../global/HollowButton.svelte';
   import UserIcon from '../icons/UserIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../TextInput.svelte';
+  import TextInput from '../global/TextInput.svelte';
 
   export let toggleStoryForm = () => {};
   export let sendSocketEvent = () => {};

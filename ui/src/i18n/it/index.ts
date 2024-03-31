@@ -1,6 +1,10 @@
 import type { Translation } from '../i18n-types';
 
 const it: Translation = {
+  userGuide: 'User Guide',
+  privacyPolicy: 'Privacy Policy',
+  termsConditions: 'Terms & Conditions',
+  support: 'Support',
   abandoned: 'Abbandonato',
   actionComments: 'Commenti Azioni',
   actionItem: 'Compito',
@@ -27,6 +31,10 @@ const it: Translation = {
   adminPageOrganizations: 'Organizzazioni',
   adminPageTeams: 'Teams',
   adminPageUsers: 'Utenti',
+  adminPageSubscriptions: 'Subscriptions',
+  deleteSubscriptionConfirmation:
+    'Are you sure you want to delete this subscription?',
+  deleteSubscription: 'Delete Subscription',
   alertAllowDismiss: 'Permetti Chiusura',
   alertContent: 'Contenuto Avviso',
   alertContentPlaceholder: "Inserisci il contenuto dell'avviso",
@@ -235,7 +243,7 @@ const it: Translation = {
     "Dai un'occhiata al{repoOpen}Github repository{repoClose}per richiedere o contribuire a miglioramenti, traduzioni locali e correzioni di bug o a{donateOpen}Donate{donateClose}.",
   landingFeatureOpenSourceTitle: 'Open source',
   landingSalesPitch:
-    'Collaborazione remota tra team con puntamento delle storie agile in tempo reale, senza costi e senza pubblicità!',
+    'Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.',
   landingTitle:
     "{friendly|{false:Thunderdome è un'app Agile Planning Poker con un tema divertente, true:Thunderdome è un'app di Agile Planning Poker}}",
   lastActive: 'Ultima Attività',
@@ -639,6 +647,16 @@ const it: Translation = {
   assigneeSelectPlaceholder: 'Select an assignee to add',
   assigneeAdd: 'Add Assignee',
   allStoryWithCount: 'All ({count})',
+  userUpdate: 'Update User',
+  userUpdateSuccess: 'Successfully updated user.',
+  userUpdateError: 'Error updating user.',
+  userInvites: 'User Invites',
+  userNotFoundInviteSent: 'User not found, invite sent',
+  userInviteConfirmDelete: 'Are you sure you want to delete this user invite?',
+  userInviteDelete: 'Delete Invite',
+  expireDate: 'Expire Date',
+  addUserWillInviteNotFoundFieldNote:
+    'If user is not registered an invite to register and join the {pageType} will be sent.',
 };
 
 export default it;

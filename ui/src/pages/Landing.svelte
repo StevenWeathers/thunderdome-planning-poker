@@ -5,11 +5,20 @@
 
   import { AppConfig, appRoutes } from '../config';
   import { user } from '../stores';
+  import { validateUserIsRegistered } from '../validationUtils';
 
   export let xfetch;
   export let eventTag;
 
-  const { ShowActiveCountries, PathPrefix } = AppConfig;
+  const {
+    ShowActiveCountries,
+    PathPrefix,
+    SubscriptionsEnabled,
+    SubscriptionCheckoutLink,
+    RepoURL,
+  } = AppConfig;
+
+  $: isRegisteredUser = $user && !!$user.id && validateUserIsRegistered($user);
 </script>
 
 <style>
@@ -49,6 +58,29 @@
 <svelte:head>
   <title>{$LL.appName()} - {$LL.appSubtitle()}</title>
 </svelte:head>
+
+{#if SubscriptionsEnabled && isRegisteredUser && !$user.subscribed}
+  <section class="w-full px-4 bg-cyan-200 border-b border-cyan-400">
+    <div class="container mx-auto">
+      <div class="flex flex-wrap">
+        <div class="w-full py-4 px-4">
+          <h2
+            class="text-2xl text-gray-700 font-rajdhani uppercase font-semibold leading-none text-center"
+          >
+            Enjoying Thunderdome?
+            <a
+              class="text-blue-800 underline"
+              href="{appRoutes.subscriptionPricing}"
+            >
+              Subscribe today
+            </a>
+            starting at only $5 /mo.
+          </h2>
+        </div>
+      </div>
+    </div>
+  </section>
+{/if}
 
 <section
   class="w-full px-4 bg-yellow-thunder text-gray-800 border-b dark:border-gray-700"
@@ -322,12 +354,12 @@
         <p class="px-2 text-lg dark:text-gray-300">
           {@html $LL.landingFeatureOpenSourceText({
             repoOpen: `<a
-                        href="https://github.com/StevenWeathers/thunderdome-planning-poker"
+                        href="${RepoURL}"
                         class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600"
                     >`,
             repoClose: '</a>',
             donateOpen: `<a
-                        href="https://github.com/StevenWeathers/thunderdome-planning-poker#donations"
+                        href="${RepoURL}#donations"
                         class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600"
                     >`,
             donateClose: '</a>',
@@ -348,7 +380,7 @@
           })}
           {@html $LL.selfHostedDesc({
             linkOpen: `<a
-                            href="https://github.com/StevenWeathers/thunderdome-planning-poker#running-in-production"
+                            href="${RepoURL}#running-in-production"
                             class="no-underline text-blue-600 dark:text-sky-400 hover:text-blue-900 dark:hover:text-sky-600"
                     >`,
             linkClose: '</a>',

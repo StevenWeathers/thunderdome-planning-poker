@@ -183,12 +183,38 @@ definitions:
     required:
     - name
     type: object
+  http.jiraInstanceRequestBody:
+    properties:
+      access_token:
+        type: string
+      client_mail:
+        type: string
+      host:
+        type: string
+    required:
+    - access_token
+    - client_mail
+    - host
+    type: object
+  http.jiraStoryJQLSearchRequestBody:
+    properties:
+      jql:
+        type: string
+      maxResults:
+        type: integer
+      startAt:
+        type: integer
+    required:
+    - jql
+    type: object
   http.loginResponse:
     properties:
       mfaRequired:
         type: boolean
       sessionId:
         type: string
+      subscribed:
+        type: boolean
       user:
         $ref: '#/definitions/thunderdome.User'
     type: object
@@ -316,6 +342,38 @@ definitions:
     required:
     - storyboardName
     type: object
+  http.subscriptionAssociateRequestBody:
+    properties:
+      organization_id:
+        type: string
+      team_id:
+        type: string
+    type: object
+  http.subscriptionRequestBody:
+    properties:
+      active:
+        type: boolean
+      customer_id:
+        type: string
+      expires:
+        type: string
+      organization_id:
+        type: string
+      subscription_id:
+        type: string
+      team_id:
+        type: string
+      type:
+        enum:
+        - user
+        - ' team'
+        - ' organization'
+        type: string
+      user_id:
+        type: string
+    required:
+    - type
+    type: object
   http.teamAddUserRequestBody:
     properties:
       email:
@@ -342,6 +400,16 @@ definitions:
         $ref: '#/definitions/thunderdome.Team'
       teamRole:
         type: string
+    type: object
+  http.teamUpdateUserRequestBody:
+    properties:
+      role:
+        enum:
+        - MEMBER
+        - ADMIN
+        type: string
+    required:
+    - role
     type: object
   http.updatePasswordRequestBody:
     properties:
@@ -395,6 +463,8 @@ definitions:
         type: string
       name:
         type: string
+      orgInviteId:
+        type: string
       password1:
         maxLength: 72
         minLength: 6
@@ -402,6 +472,8 @@ definitions:
       password2:
         maxLength: 72
         minLength: 6
+        type: string
+      teamInviteId:
         type: string
     required:
     - email
@@ -581,6 +653,23 @@ definitions:
       role:
         type: string
     type: object
+  thunderdome.JiraInstance:
+    properties:
+      access_token:
+        type: string
+      client_mail:
+        type: string
+      created_date:
+        type: string
+      host:
+        type: string
+      id:
+        type: string
+      updated_date:
+        type: string
+      user_id:
+        type: string
+    type: object
   thunderdome.Organization:
     properties:
       createdDate:
@@ -590,6 +679,21 @@ definitions:
       name:
         type: string
       updatedDate:
+        type: string
+    type: object
+  thunderdome.OrganizationUserInvite:
+    properties:
+      created_date:
+        type: string
+      email:
+        type: string
+      expire_date:
+        type: string
+      invite_id:
+        type: string
+      organization_id:
+        type: string
+      role:
         type: string
     type: object
   thunderdome.Poker:
@@ -625,6 +729,8 @@ definitions:
           type: string
         type: array
       teamId:
+        type: string
+      teamName:
         type: string
       updatedDate:
         type: string
@@ -691,6 +797,12 @@ definitions:
       ownerId:
         type: string
       phase:
+        type: string
+      readyUsers:
+        items:
+          type: string
+        type: array
+      teamName:
         type: string
       updatedDate:
         type: string
@@ -859,6 +971,8 @@ definitions:
         items:
           $ref: '#/definitions/thunderdome.StoryboardPersona'
         type: array
+      teamName:
+        type: string
       updatedDate:
         type: string
       users:
@@ -953,6 +1067,33 @@ definitions:
       name:
         type: string
     type: object
+  thunderdome.Subscription:
+    properties:
+      active:
+        type: boolean
+      created_date:
+        type: string
+      customer_id:
+        type: string
+      expires:
+        type: string
+      id:
+        type: string
+      organization_id:
+        type: string
+      subscription_id:
+        type: string
+      team_id:
+        type: string
+      type:
+        type: string
+      updated_date:
+        type: string
+      user:
+        $ref: '#/definitions/thunderdome.User'
+      user_id:
+        type: string
+    type: object
   thunderdome.Team:
     properties:
       createdDate:
@@ -1002,6 +1143,21 @@ definitions:
       name:
         type: string
       role:
+        type: string
+    type: object
+  thunderdome.TeamUserInvite:
+    properties:
+      created_date:
+        type: string
+      email:
+        type: string
+      expire_date:
+        type: string
+      invite_id:
+        type: string
+      role:
+        type: string
+      team_id:
         type: string
     type: object
   thunderdome.User:
@@ -2039,6 +2195,58 @@ paths:
       summary: Create Guest User
       tags:
       - auth
+  /auth/invite/organization/{inviteId}:
+    get:
+      description: Get a organization user invite details
+      parameters:
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.OrganizationUserInvite'
+                  type: array
+              type: object
+      summary: Get Organization Invite
+      tags:
+      - auth
+  /auth/invite/team/{inviteId}:
+    get:
+      description: Get a team user invite details
+      parameters:
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.TeamUserInvite'
+                  type: array
+              type: object
+      summary: Get Team Invite
+      tags:
+      - auth
   /auth/ldap:
     post:
       description: |-
@@ -2977,6 +3185,108 @@ paths:
       summary: Remove Department User
       tags:
       - organization
+    put:
+      description: Update a department User
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: departmentId
+        required: true
+        type: string
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: department user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamUpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Department User
+      tags:
+      - organization
+  /organizations/{orgId}/invites:
+    get:
+      description: Get a list of user invites associated to the team
+      parameters:
+      - description: the org ID
+        in: path
+        name: organizationId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.OrganizationUserInvite'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team User Invites
+      tags:
+      - organization
+  /organizations/{orgId}/invites/{inviteId}:
+    delete:
+      description: Delete user invite from organization
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: invite id
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Org User Invite
+      tags:
+      - organization
   /organizations/{orgId}/teams:
     get:
       description: Get a list of organization teams
@@ -3226,6 +3536,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Remove Org User
+      tags:
+      - organization
+    put:
+      description: Update organization user
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: user id
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: organization user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamUpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Org User
       tags:
       - organization
   /retros:
@@ -3707,6 +4056,161 @@ paths:
       summary: Get Storyboard
       tags:
       - storyboard
+  /subscriptions:
+    get:
+      description: get list of subscriptions
+      parameters:
+      - description: Max number of results to return
+        in: query
+        name: limit
+        type: integer
+      - description: Starting point to return rows from, should be multiplied by limit
+          or 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Subscription'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Subscriptions
+      tags:
+      - subscription
+    post:
+      description: Creates an subscription
+      parameters:
+      - description: new subscription object
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/http.subscriptionRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Subscription'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Subscription
+      tags:
+      - subscription
+  /subscriptions/{subscriptionId}:
+    delete:
+      description: Deletes a Subscription
+      parameters:
+      - description: the subscription ID to delete
+        in: path
+        name: subscriptionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Subscription
+      tags:
+      - subscription
+    get:
+      description: Get a subscription
+      parameters:
+      - description: the subscription ID
+        in: path
+        name: subscriptionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Subscription'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Subscription
+      tags:
+      - subscription
+    put:
+      description: Updates a Subscription
+      parameters:
+      - description: the subscription ID to update
+        in: path
+        name: subscriptionId
+        required: true
+        type: string
+      - description: subscription object to update
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/http.subscriptionRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Subscription'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Subscription
+      tags:
+      - subscription
   /teams/{teamId}:
     delete:
       description: Delete a Team
@@ -4088,6 +4592,68 @@ paths:
       summary: Delete Team Checkin Comment
       tags:
       - team
+  /teams/{teamId}/invites:
+    get:
+      description: Get a list of user invites associated to the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.TeamUserInvite'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Team User Invites
+      tags:
+      - team
+  /teams/{teamId}/invites/{inviteId}:
+    delete:
+      description: Delete a user invite from the team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the user invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Deletes Team User Invite
+      tags:
+      - team
   /teams/{teamId}/retro-actions:
     get:
       description: get list of retro actions
@@ -4346,6 +4912,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Remove Team User
+      tags:
+      - team
+    put:
+      description: Updates a team user
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: updated team user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamUpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team User
       tags:
       - team
   /teams/{teamId}/users/{userId}/battles:
@@ -4857,6 +5462,179 @@ paths:
       summary: Create Poker Game
       tags:
       - poker
+  /users/{userId}/jira-instances:
+    get:
+      description: get list of Jira instances associated to user
+      parameters:
+      - description: the user ID to find jira instances for
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.JiraInstance'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get User Jira Instances
+      tags:
+      - jira
+    post:
+      description: Creates a Jira Instance associated to user
+      parameters:
+      - description: the user ID to associate jira instance to
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: new jira_instance object
+        in: body
+        name: jira
+        required: true
+        schema:
+          $ref: '#/definitions/http.jiraInstanceRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns new jira instance
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.JiraInstance'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Jira Instance
+      tags:
+      - jira
+  /users/{userId}/jira-instances/{instanceId}:
+    delete:
+      description: Deletes a Jira Instance associated to user
+      parameters:
+      - description: the user ID jira instance associated to
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the jira_instance ID to delete
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Jira Instance
+      tags:
+      - jira
+    put:
+      description: Updates a Jira Instance associated to user
+      parameters:
+      - description: the user ID jira instance associated to
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the jira_instance ID to update
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      - description: updated jira_instance object
+        in: body
+        name: jira
+        required: true
+        schema:
+          $ref: '#/definitions/http.jiraInstanceRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: returns updated jira instance
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.JiraInstance'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Jira Instance
+      tags:
+      - jira
+  /users/{userId}/jira-instances/{instanceId}/jql-story-search:
+    post:
+      description: Queries Jira Instance API for Stories by JQL
+      parameters:
+      - description: the user ID associated to jira instance
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the jira_instance ID to query
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      - description: jql search request
+        in: body
+        name: jira
+        required: true
+        schema:
+          $ref: '#/definitions/http.jiraStoryJQLSearchRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Query Jira for Stories by JQL
+      tags:
+      - jira
   /users/{userId}/organizations:
     get:
       description: Get list of organizations for the authenticated user
@@ -5152,6 +5930,81 @@ paths:
       summary: Create Storyboard
       tags:
       - storyboard
+  /users/{userId}/subscriptions:
+    get:
+      description: get list of active entity user subscriptions
+      parameters:
+      - description: the entity user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Subscription'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Entity User Active Subscriptions
+      tags:
+      - subscription
+  /users/{userId}/subscriptions/{subscriptionId}:
+    patch:
+      description: get list of active entity user subscriptions
+      parameters:
+      - description: the entity user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the subscription ID to update
+        in: path
+        name: subscriptionId
+        required: true
+        type: string
+      - description: update subscription association object
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/http.subscriptionAssociateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Subscription'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Entity User Subscriptions
+      tags:
+      - subscription
   /users/{userId}/teams:
     get:
       description: Get a list of teams the user is a part of

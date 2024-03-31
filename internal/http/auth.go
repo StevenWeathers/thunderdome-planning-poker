@@ -6,6 +6,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gorilla/mux"
+
+	"go.uber.org/zap"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
 
@@ -18,6 +22,7 @@ type loginResponse struct {
 	User        *thunderdome.User `json:"user"`
 	SessionId   string            `json:"sessionId"`
 	MFARequired bool              `json:"mfaRequired"`
+	Subscribed  bool              `json:"subscribed"`
 }
 
 // handleLogin attempts to log in the user
@@ -33,6 +38,7 @@ type loginResponse struct {
 // @Router       /auth [post]
 func (s *Service) handleLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -52,21 +58,26 @@ func (s *Service) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		authedUser, sessionId, err := s.AuthDataSvc.AuthUser(r.Context(), u.Email, u.Password)
+		authedUser, sessionId, err := s.AuthDataSvc.AuthUser(ctx, u.Email, u.Password)
 		if err != nil {
 			userErr := err.Error()
 			if userErr == "USER_NOT_FOUND" || userErr == "INVALID_PASSWORD" || userErr == "USER_DISABLED" {
 				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			} else {
+				s.Logger.Ctx(ctx).Error("handleLogin error", zap.Error(err),
+					zap.String("user_email", sanitizeUserInputForLogs(u.Email)))
 				s.Failure(w, r, http.StatusInternalServerError, err)
 			}
 			return
 		}
 
+		subscribed := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, authedUser.Id)
+
 		res := loginResponse{
 			User:        authedUser,
 			SessionId:   sessionId,
 			MFARequired: authedUser.MFAEnabled,
+			Subscribed:  subscribed == nil,
 		}
 
 		if authedUser.MFAEnabled {
@@ -76,6 +87,8 @@ func (s *Service) handleLogin() http.HandlerFunc {
 
 		cookieErr := s.Cookie.CreateSessionCookie(w, sessionId)
 		if cookieErr != nil {
+			s.Logger.Ctx(ctx).Error("handleLogin error", zap.Error(cookieErr),
+				zap.String("session_id", sessionId), zap.String("session_user_id", authedUser.Id))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
@@ -98,6 +111,7 @@ func (s *Service) handleLogin() http.HandlerFunc {
 // @Router       /auth/ldap [post]
 func (s *Service) handleLdapLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -117,8 +131,10 @@ func (s *Service) handleLdapLogin() http.HandlerFunc {
 			return
 		}
 
-		authedUser, sessionId, err := s.authAndCreateUserLdap(r.Context(), u.Email, u.Password)
+		authedUser, sessionId, err := s.authAndCreateUserLdap(ctx, u.Email, u.Password)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleLdapLogin error", zap.Error(err),
+				zap.String("user_email", sanitizeUserInputForLogs(u.Email)))
 			s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
@@ -136,6 +152,8 @@ func (s *Service) handleLdapLogin() http.HandlerFunc {
 
 		cookieErr := s.Cookie.CreateSessionCookie(w, sessionId)
 		if cookieErr != nil {
+			s.Logger.Ctx(ctx).Error("handleLdapLogin error", zap.Error(cookieErr),
+				zap.String("session_user_id", authedUser.Id), zap.String("session_id", sessionId))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
@@ -157,6 +175,7 @@ func (s *Service) handleLdapLogin() http.HandlerFunc {
 // @Router       /auth [get]
 func (s *Service) handleHeaderLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		username := r.Header.Get(s.Config.AuthHeaderUsernameHeader)
 		useremail := r.Header.Get(s.Config.AuthHeaderEmailHeader)
 
@@ -165,8 +184,11 @@ func (s *Service) handleHeaderLogin() http.HandlerFunc {
 			return
 		}
 
-		authedUser, sessionId, err := s.authAndCreateUserHeader(r.Context(), username, useremail)
+		authedUser, sessionId, err := s.authAndCreateUserHeader(ctx, username, useremail)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleHeaderLogin error", zap.Error(err),
+				zap.String("user_name", sanitizeUserInputForLogs(username)),
+				zap.String("user_email", sanitizeUserInputForLogs(username)))
 			s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_LOGIN"))
 			return
 		}
@@ -184,6 +206,8 @@ func (s *Service) handleHeaderLogin() http.HandlerFunc {
 
 		cookieErr := s.Cookie.CreateSessionCookie(w, sessionId)
 		if cookieErr != nil {
+			s.Logger.Ctx(ctx).Error("handleHeaderLogin error", zap.Error(cookieErr),
+				zap.String("session_user_id", authedUser.Id), zap.String("session_id", sessionId))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
@@ -209,6 +233,7 @@ type mfaLoginRequestBody struct {
 // @Router       /auth/mfa [post]
 func (s *Service) handleMFALogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -228,14 +253,18 @@ func (s *Service) handleMFALogin() http.HandlerFunc {
 			return
 		}
 
-		err := s.AuthDataSvc.MFATokenValidate(r.Context(), u.SessionId, u.Passcode)
+		err := s.AuthDataSvc.MFATokenValidate(ctx, u.SessionId, u.Passcode)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleMFALogin error", zap.Error(err),
+				zap.String("session_id", u.SessionId))
 			s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_AUTHENTICATOR_TOKEN"))
 			return
 		}
 
 		cookieErr := s.Cookie.CreateSessionCookie(w, u.SessionId)
 		if cookieErr != nil {
+			s.Logger.Ctx(ctx).Error("handleMFALogin error", zap.Error(cookieErr),
+				zap.String("session_id", u.SessionId))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
@@ -252,14 +281,17 @@ func (s *Service) handleMFALogin() http.HandlerFunc {
 // @Router       /auth/logout [delete]
 func (s *Service) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		SessionId, cookieErr := s.Cookie.ValidateSessionCookie(w, r)
 		if cookieErr != nil {
 			s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
 
-		err := s.AuthDataSvc.DeleteSession(r.Context(), SessionId)
+		err := s.AuthDataSvc.DeleteSession(ctx, SessionId)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleLogout error", zap.Error(err),
+				zap.String("session_id", SessionId))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -285,6 +317,7 @@ type guestUserCreateRequestBody struct {
 // @Router       /auth/guest [post]
 func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		AllowGuests := s.Config.AllowGuests
 		if !AllowGuests {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "GUESTS_USERS_DISABLED"))
@@ -310,14 +343,18 @@ func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 			return
 		}
 
-		newUser, err := s.UserDataSvc.CreateUserGuest(r.Context(), u.Name)
+		newUser, err := s.UserDataSvc.CreateUserGuest(ctx, u.Name)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleCreateGuestUser error", zap.Error(err),
+				zap.String("user_name", u.Name))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		cookieErr := s.Cookie.CreateUserCookie(w, newUser.Id)
 		if cookieErr != nil {
+			s.Logger.Ctx(ctx).Error("handleCreateGuestUser error", zap.Error(cookieErr),
+				zap.String("session_user_id", newUser.Id))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
@@ -327,10 +364,12 @@ func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 }
 
 type userRegisterRequestBody struct {
-	Name      string `json:"name" validate:"required"`
-	Email     string `json:"email" validate:"required,email"`
-	Password1 string `json:"password1" validate:"required,min=6,max=72"`
-	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
+	Name                 string `json:"name" validate:"required"`
+	Email                string `json:"email" validate:"required,email"`
+	Password1            string `json:"password1" validate:"required,min=6,max=72"`
+	Password2            string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
+	TeamInviteId         string `json:"teamInviteId"`
+	OrganizationInviteId string `json:"orgInviteId"`
 }
 
 // handleUserRegistration registers a new authenticated user
@@ -345,6 +384,7 @@ type userRegisterRequestBody struct {
 // @Router       /auth/register [post]
 func (s *Service) handleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		AllowRegistration := s.Config.AllowRegistration
 		if !AllowRegistration {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "USER_REGISTRATION_DISABLED"))
@@ -371,9 +411,39 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 
 		ActiveUserID, _ := s.Cookie.ValidateUserCookie(w, r)
 
+		userEmail := u.Email
+		var teamInvite thunderdome.TeamUserInvite
+		var orgInvite thunderdome.OrganizationUserInvite
+
+		if u.TeamInviteId != "" {
+			var err error
+			teamInvite, err = s.TeamDataSvc.TeamUserGetInviteByID(ctx, u.TeamInviteId)
+			if err != nil {
+				s.Failure(w, r, http.StatusInternalServerError, err)
+				return
+			}
+			if userEmail != teamInvite.Email {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
+		}
+
+		if u.OrganizationInviteId != "" {
+			var err error
+			orgInvite, err = s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, u.OrganizationInviteId)
+			if err != nil {
+				s.Failure(w, r, http.StatusInternalServerError, err)
+				return
+			}
+			if userEmail != orgInvite.Email {
+				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+				return
+			}
+		}
+
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
 			u.Name,
-			u.Email,
+			userEmail,
 			u.Password1,
 			u.Password2,
 		)
@@ -383,26 +453,66 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 			return
 		}
 
-		newUser, VerifyID, err := s.UserDataSvc.CreateUserRegistered(r.Context(), UserName, UserEmail, UserPassword, ActiveUserID)
+		newUser, VerifyID, err := s.UserDataSvc.CreateUserRegistered(ctx, UserName, UserEmail, UserPassword, ActiveUserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleUserRegistration error", zap.Error(err),
+				zap.String("user_email", sanitizeUserInputForLogs(UserEmail)),
+				zap.String("active_user_id", ActiveUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		_ = s.Email.SendWelcome(UserName, UserEmail, VerifyID)
 
+		if u.TeamInviteId != "" {
+			_, inviteErr := s.TeamDataSvc.TeamAddUser(ctx, teamInvite.TeamId, newUser.Id, teamInvite.Role)
+			if inviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserRegistration error adding invited user to team", zap.Error(inviteErr),
+					zap.String("session_user_id", newUser.Id),
+					zap.String("invite_id", teamInvite.InviteId))
+			}
+
+			delInviteErr := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamInvite.InviteId)
+			if delInviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to team", zap.Error(delInviteErr),
+					zap.String("session_user_id", newUser.Id),
+					zap.String("invite_id", teamInvite.InviteId))
+			}
+		}
+
+		if u.OrganizationInviteId != "" {
+			_, inviteErr := s.OrganizationDataSvc.OrganizationAddUser(ctx, orgInvite.OrganizationId, newUser.Id, orgInvite.Role)
+			if inviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserRegistration error adding invited user to organization", zap.Error(inviteErr),
+					zap.String("session_user_id", newUser.Id),
+					zap.String("invite_id", orgInvite.InviteId))
+			}
+
+			delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, orgInvite.InviteId)
+			if delInviteErr != nil {
+				s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to organization", zap.Error(delInviteErr),
+					zap.String("session_user_id", newUser.Id),
+					zap.String("invite_id", orgInvite.InviteId))
+			}
+		}
+
 		if ActiveUserID != "" {
 			s.Cookie.ClearUserCookies(w)
 		}
 
-		SessionID, err := s.AuthDataSvc.CreateSession(r.Context(), newUser.Id)
+		SessionID, err := s.AuthDataSvc.CreateSession(ctx, newUser.Id)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleUserRegistration error", zap.Error(err),
+				zap.String("session_user_id", newUser.Id))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		cookieErr := s.Cookie.CreateSessionCookie(w, SessionID)
 		if cookieErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserRegistration error", zap.Error(cookieErr),
+				zap.String("session_user_id", newUser.Id),
+				zap.String("session_id", SessionID))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, "INVALID_COOKIE"))
 			return
 		}
@@ -425,6 +535,7 @@ type forgotPasswordRequestBody struct {
 // @Router       /auth/forgot-password [post]
 func (s *Service) handleForgotPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -446,9 +557,12 @@ func (s *Service) handleForgotPassword() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		ResetID, UserName, resetErr := s.AuthDataSvc.UserResetRequest(r.Context(), UserEmail)
+		ResetID, UserName, resetErr := s.AuthDataSvc.UserResetRequest(ctx, UserEmail)
 		if resetErr == nil {
 			_ = s.Email.SendForgotPassword(UserName, UserEmail, ResetID)
+		} else {
+			s.Logger.Ctx(ctx).Error("handleForgotPassword error", zap.Error(resetErr),
+				zap.String("user_email", sanitizeUserInputForLogs(UserEmail)))
 		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
@@ -473,6 +587,7 @@ type resetPasswordRequestBody struct {
 // @Router       /auth/reset-password [patch]
 func (s *Service) handleResetPassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -492,8 +607,10 @@ func (s *Service) handleResetPassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, resetErr := s.AuthDataSvc.UserResetPassword(r.Context(), u.ResetID, u.Password1)
+		UserName, UserEmail, resetErr := s.AuthDataSvc.UserResetPassword(ctx, u.ResetID, u.Password1)
 		if resetErr != nil {
+			s.Logger.Ctx(ctx).Error("handleResetPassword error", zap.Error(resetErr),
+				zap.String("reset_id", u.ResetID))
 			s.Failure(w, r, http.StatusInternalServerError, resetErr)
 			return
 		}
@@ -522,7 +639,8 @@ type updatePasswordRequestBody struct {
 // @Router       /auth/update-password [patch]
 func (s *Service) handleUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		UserID := r.Context().Value(contextKeyUserID).(string)
+		ctx := r.Context()
+		SessionUserID := r.Context().Value(contextKeyUserID).(string)
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -542,8 +660,10 @@ func (s *Service) handleUpdatePassword() http.HandlerFunc {
 			return
 		}
 
-		UserName, UserEmail, updateErr := s.AuthDataSvc.UserUpdatePassword(r.Context(), UserID, u.Password1)
+		UserName, UserEmail, updateErr := s.AuthDataSvc.UserUpdatePassword(ctx, SessionUserID, u.Password1)
 		if updateErr != nil {
+			s.Logger.Ctx(ctx).Error("handleResetPassword error", zap.Error(updateErr),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, updateErr)
 			return
 		}
@@ -569,6 +689,7 @@ type verificationRequestBody struct {
 // @Router       /auth/verify [patch]
 func (s *Service) handleAccountVerification() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -588,8 +709,10 @@ func (s *Service) handleAccountVerification() http.HandlerFunc {
 			return
 		}
 
-		verifyErr := s.AuthDataSvc.VerifyUserAccount(r.Context(), u.VerifyID)
+		verifyErr := s.AuthDataSvc.VerifyUserAccount(ctx, u.VerifyID)
 		if verifyErr != nil {
+			s.Logger.Ctx(ctx).Error("handleAccountVerification error", zap.Error(verifyErr),
+				zap.String("verify_id", u.VerifyID))
 			s.Failure(w, r, http.StatusInternalServerError, verifyErr)
 			return
 		}
@@ -607,16 +730,20 @@ func (s *Service) handleAccountVerification() http.HandlerFunc {
 func (s *Service) handleMFASetupGenerate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		u, err := s.UserDataSvc.GetUser(ctx, UserID)
+		u, err := s.UserDataSvc.GetUser(ctx, SessionUserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleMFASetupGenerate error", zap.Error(err),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		secret, png64, err := s.AuthDataSvc.MFASetupGenerate(u.Email)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleMFASetupGenerate error", zap.Error(err),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -645,7 +772,7 @@ type mfaSetupValidateRequestBody struct {
 func (s *Service) handleMFASetupValidate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
@@ -671,8 +798,10 @@ func (s *Service) handleMFASetupValidate() http.HandlerFunc {
 		}
 		res := result{Result: "SUCCESS"}
 
-		err := s.AuthDataSvc.MFASetupValidate(ctx, UserID, v.Secret, v.Passcode)
+		err := s.AuthDataSvc.MFASetupValidate(ctx, SessionUserID, v.Secret, v.Passcode)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleMFASetupValidate error", zap.Error(err),
+				zap.String("session_user_id", SessionUserID))
 			res.Result = err.Error()
 		}
 
@@ -689,14 +818,64 @@ func (s *Service) handleMFASetupValidate() http.HandlerFunc {
 func (s *Service) handleMFARemove() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		UserID := ctx.Value(contextKeyUserID).(string)
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
 
-		err := s.AuthDataSvc.MFARemove(ctx, UserID)
+		err := s.AuthDataSvc.MFARemove(ctx, SessionUserID)
 		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleMFARemove error", zap.Error(err),
+				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleGetTeamInvite gets a team user invite details
+// @Summary      Get Team Invite
+// @Description  Get a team user invite details
+// @Tags         auth
+// @Produce      json
+// @Param        inviteId  path    string  true  "the invite ID"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.TeamUserInvite}
+// @Router       /auth/invite/team/{inviteId} [get]
+func (s *Service) handleGetTeamInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		InviteID := vars["inviteId"]
+
+		invite, err := s.TeamDataSvc.TeamUserGetInviteByID(ctx, InviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetTeamInvite error", zap.Error(err), zap.String("invite_id", InviteID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+		}
+
+		s.Success(w, r, http.StatusOK, invite, nil)
+	}
+}
+
+// handleGetOrganizationInvite gets a organization user invite details
+// @Summary      Get Organization Invite
+// @Description  Get a organization user invite details
+// @Tags         auth
+// @Produce      json
+// @Param        inviteId  path    string  true  "the invite ID"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.OrganizationUserInvite}
+// @Router       /auth/invite/organization/{inviteId} [get]
+func (s *Service) handleGetOrganizationInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		vars := mux.Vars(r)
+		InviteID := vars["inviteId"]
+
+		invite, err := s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, InviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetOrganizationInvite error", zap.Error(err), zap.String("invite_id", InviteID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+		}
+
+		s.Success(w, r, http.StatusOK, invite, nil)
 	}
 }

@@ -1,15 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import SolidButton from '../SolidButton.svelte';
-  import HollowButton from '../HollowButton.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import HollowButton from '../global/HollowButton.svelte';
   import JiraImport from './JiraImport.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import CsvImport from './CsvImport.svelte';
-  import TextInput from '../TextInput.svelte';
-  import SelectInput from '../SelectInput.svelte';
+  import TextInput from '../global/TextInput.svelte';
+  import SelectInput from '../global/SelectInput.svelte';
 
   export let notifications;
   export let eventTag;
@@ -159,7 +159,7 @@
     </div>
   </div>
 
-  {#if apiPrefix === '/api'}
+  {#if apiPrefix === '/api' && $user.rank !== 'GUEST'}
     <div class="mb-4">
       <label
         class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"

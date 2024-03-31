@@ -1,6 +1,6 @@
 <script lang="ts">
   import CommentIcon from '../icons/CommentIcon.svelte';
-  import SolidButton from '../SolidButton.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import Comment from './Comment.svelte';

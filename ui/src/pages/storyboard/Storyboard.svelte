@@ -10,8 +10,8 @@
   import StoryForm from '../../components/storyboard/StoryForm.svelte';
   import ColorLegendForm from '../../components/storyboard/ColorLegendForm.svelte';
   import PersonasForm from '../../components/storyboard/PersonasForm.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
   import DownCarrotIcon from '../../components/icons/ChevronDown.svelte';
   import DeleteStoryboard from '../../components/storyboard/DeleteStoryboard.svelte';
   import EditStoryboard from '../../components/storyboard/EditStoryboard.svelte';
@@ -23,9 +23,9 @@
   import UsersIcon from '../../components/icons/UsersIcon.svelte';
   import EditIcon from '../../components/icons/EditIcon.svelte';
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
-  import PageLayout from '../../components/PageLayout.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
-  import TextInput from '../../components/TextInput.svelte';
+  import TextInput from '../../components/global/TextInput.svelte';
 
   export let storyboardId;
   export let notifications;
@@ -33,8 +33,7 @@
   export let eventTag;
 
   const { AllowRegistration, AllowGuests } = AppConfig;
-  const loginOrRegister =
-    AllowRegistration || AllowGuests ? appRoutes.register : appRoutes.login;
+  const loginOrRegister = AllowGuests ? appRoutes.register : appRoutes.login;
 
   const hostname = window.location.origin;
   const socketExtension = window.location.protocol === 'https:' ? 'wss' : 'ws';

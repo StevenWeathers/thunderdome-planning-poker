@@ -1,8 +1,8 @@
 <script lang="ts">
-  import SolidButton from '../SolidButton.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig } from '../../config';
-  import SelectInput from '../SelectInput.svelte';
+  import SelectInput from '../global/SelectInput.svelte';
 
   export let sendSocketEvent = () => {};
   export let eventTag;

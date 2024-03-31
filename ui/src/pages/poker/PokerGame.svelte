@@ -2,15 +2,15 @@
   import { onDestroy, onMount } from 'svelte';
   import Sockette from 'sockette';
 
-  import PageLayout from '../../components/PageLayout.svelte';
+  import PageLayout from '../../components/global/PageLayout.svelte';
   import PointCard from '../../components/poker/PointCard.svelte';
   import PokerStories from '../../components/poker/PokerStories.svelte';
   import VoteResults from '../../components/poker/VoteResults.svelte';
-  import HollowButton from '../../components/HollowButton.svelte';
-  import SolidButton from '../../components/SolidButton.svelte';
+  import HollowButton from '../../components/global/HollowButton.svelte';
+  import SolidButton from '../../components/global/SolidButton.svelte';
   import ExternalLinkIcon from '../../components/icons/ExternalLinkIcon.svelte';
   import EditPokerGame from '../../components/poker/EditPokerGame.svelte';
-  import DeleteConfirmation from '../../components/DeleteConfirmation.svelte';
+  import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
@@ -19,7 +19,7 @@
   import InviteUser from '../../components/poker/InviteUser.svelte';
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
-  import TextInput from '../../components/TextInput.svelte';
+  import TextInput from '../../components/global/TextInput.svelte';
 
   export let battleId: string;
   export let notifications;
@@ -28,8 +28,9 @@
   export let xfetch;
 
   const { AllowRegistration, AllowGuests } = AppConfig;
-  const loginOrRegister: string =
-    AllowRegistration || AllowGuests ? appRoutes.register : appRoutes.login;
+  const loginOrRegister: string = AllowGuests
+    ? appRoutes.register
+    : appRoutes.login;
 
   const hostname: string = window.location.origin;
   const socketExtension: string =
@@ -579,6 +580,7 @@
           sendSocketEvent="{sendSocketEvent}"
           eventTag="{eventTag}"
           notifications="{notifications}"
+          xfetch="{xfetch}"
         />
       </div>
 

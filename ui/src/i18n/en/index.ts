@@ -1,6 +1,10 @@
 import type { BaseTranslation } from '../i18n-types';
 
 const en: BaseTranslation = {
+  userGuide: 'User Guide',
+  privacyPolicy: 'Privacy Policy',
+  termsConditions: 'Terms & Conditions',
+  support: 'Support',
   abandoned: 'Abandoned',
   actionComments: 'Action Comments',
   actionItem: 'Action Item',
@@ -26,6 +30,10 @@ const en: BaseTranslation = {
   adminPageOrganizations: 'Organizations',
   adminPageTeams: 'Teams',
   adminPageUsers: 'Users',
+  adminPageSubscriptions: 'Subscriptions',
+  deleteSubscriptionConfirmation:
+    'Are you sure you want to delete this subscription?',
+  deleteSubscription: 'Delete Subscription',
   alertAllowDismiss: 'Allow Dismiss',
   alertContent: 'Alert Content',
   alertContentPlaceholder: 'Enter alert content',
@@ -224,7 +232,7 @@ const en: BaseTranslation = {
     'Check out the {repoOpen}Github repository{repoClose} to request or contribute enhancements, locale translations and bug fixes or to {donateOpen}Donate{donateClose}.',
   landingFeatureOpenSourceTitle: 'Open Source',
   landingSalesPitch:
-    'Remote team collaboration with realtime agile story pointing, no cost and ad free!',
+    'Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.',
   landingTitle:
     '{friendly|{false:Thunderdome is an Agile Planning Poker app with a fun theme, true:Thunderdome is an Agile Planning Poker app}}',
   lastActive: 'Last Active',
@@ -609,6 +617,16 @@ const en: BaseTranslation = {
   assigneeSelectPlaceholder: 'Select an assignee to add',
   assigneeAdd: 'Add Assignee',
   allStoryWithCount: 'All ({count})',
+  userUpdate: 'Update User',
+  userUpdateSuccess: 'Successfully updated user.',
+  userUpdateError: 'Error updating user.',
+  userInvites: 'User Invites',
+  userNotFoundInviteSent: 'User not found, invite sent',
+  userInviteConfirmDelete: 'Are you sure you want to delete this user invite?',
+  userInviteDelete: 'Delete Invite',
+  expireDate: 'Expire Date',
+  addUserWillInviteNotFoundFieldNote:
+    'If user is not registered an invite to register and join the {pageType} will be sent.',
 };
 
 export default en;

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
@@ -33,8 +34,7 @@ func (d *Service) TeamUserRole(ctx context.Context, UserID string, TeamID string
 		&teamRole,
 	)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_get_user_role query error", zap.Error(err))
-		return "", errors.New("error getting team users role")
+		return "", fmt.Errorf("error getting team users role: %v", err)
 	}
 
 	return teamRole, nil
@@ -56,8 +56,7 @@ func (d *Service) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team
 		&team.UpdatedDate,
 	)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_get_by_id query error", zap.Error(err))
-		return nil, errors.New("team not found")
+		return nil, fmt.Errorf("get team query error: %v", err)
 	}
 
 	return team, nil
@@ -112,8 +111,7 @@ func (d *Service) TeamCreate(ctx context.Context, UserID string, TeamName string
 	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_create query error", zap.Error(err))
-		return nil, err
+		return nil, fmt.Errorf("create team query error: %v", err)
 	}
 
 	return t, nil
@@ -129,11 +127,109 @@ func (d *Service) TeamAddUser(ctx context.Context, TeamID string, UserID string,
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_user_add query error", zap.Error(err))
-		return "", err
+		return "", fmt.Errorf("team add user query error: %v", err)
 	}
 
 	return TeamID, nil
+}
+
+// TeamUpdateUser updates a team user
+func (d *Service) TeamUpdateUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error) {
+	_, err := d.DB.ExecContext(ctx,
+		`UPDATE thunderdome.team_user SET role = $3 WHERE team_id = $1 AND user_id = $2;`,
+		TeamID,
+		UserID,
+		Role,
+	)
+
+	if err != nil {
+		return "", fmt.Errorf("team update user query error: %v", err)
+	}
+
+	return TeamID, nil
+}
+
+// TeamInviteUser invites a user to a team
+func (d *Service) TeamInviteUser(ctx context.Context, TeamID string, Email string, Role string) (string, error) {
+	var inviteId string
+	err := d.DB.QueryRowContext(ctx,
+		`INSERT INTO thunderdome.team_user_invite (team_id, email, role) VALUES ($1, $2, $3) RETURNING invite_id;`,
+		TeamID,
+		Email,
+		Role,
+	).Scan(&inviteId)
+
+	if err != nil {
+		return "", fmt.Errorf("team invite user query error: %v", err)
+	}
+
+	return inviteId, nil
+}
+
+// TeamUserGetInviteByID gets a team user invite
+func (d *Service) TeamUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.TeamUserInvite, error) {
+	tui := thunderdome.TeamUserInvite{}
+	err := d.DB.QueryRowContext(ctx,
+		`SELECT invite_id, team_id, email, role, created_date, expire_date
+ 				FROM thunderdome.team_user_invite WHERE invite_id = $1;`,
+		InviteID,
+	).Scan(&tui.InviteId, &tui.TeamId, &tui.Email, &tui.Role, &tui.CreatedDate, &tui.ExpireDate)
+
+	if err != nil {
+		return tui, fmt.Errorf("team get user invite query error: %v", err)
+	}
+
+	return tui, nil
+}
+
+// TeamDeleteUserInvite deletes a user team invite
+func (d *Service) TeamDeleteUserInvite(ctx context.Context, InviteID string) error {
+	_, err := d.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.team_user_invite where invite_id = $1;`,
+		InviteID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("team delete user invite query error: %v", err)
+	}
+
+	return nil
+}
+
+// TeamGetUserInvites gets teams user invites
+func (d *Service) TeamGetUserInvites(ctx context.Context, teamId string) ([]thunderdome.TeamUserInvite, error) {
+	var invites = make([]thunderdome.TeamUserInvite, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT invite_id, team_id, email, role, created_date, expire_date
+ 				FROM thunderdome.team_user_invite WHERE team_id = $1;`,
+		teamId,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var invite thunderdome.TeamUserInvite
+
+			if err := rows.Scan(
+				&invite.InviteId,
+				&invite.TeamId,
+				&invite.Email,
+				&invite.Role,
+				&invite.CreatedDate,
+				&invite.ExpireDate,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("TeamGetUserInvites query scan error", zap.Error(err))
+			} else {
+				invites = append(invites, invite)
+			}
+		}
+	} else {
+		if !errors.Is(err, sql.ErrNoRows) {
+			d.Logger.Ctx(ctx).Error("TeamGetUserInvites query error", zap.Error(err))
+		}
+	}
+
+	return invites, nil
 }
 
 // TeamUserList gets a list of team users
@@ -146,7 +242,7 @@ func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Of
 		TeamID,
 	).Scan(&userCount)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("team user list user count query error: %v", err)
 	}
 
 	if userCount == 0 {
@@ -185,8 +281,7 @@ func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Of
 			}
 		}
 	} else {
-		d.Logger.Ctx(ctx).Error("team_user_list query error", zap.Error(err))
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("team user list query error: %v", err)
 	}
 
 	return users, userCount, nil
@@ -201,8 +296,7 @@ func (d *Service) TeamRemoveUser(ctx context.Context, TeamID string, UserID stri
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_user_remove query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team remove user query error: %v", err)
 	}
 
 	return nil
@@ -253,8 +347,7 @@ func (d *Service) TeamAddPoker(ctx context.Context, TeamID string, PokerID strin
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_poker add query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team add poker query error: %v", err)
 	}
 
 	return nil
@@ -269,8 +362,7 @@ func (d *Service) TeamRemovePoker(ctx context.Context, TeamID string, PokerID st
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_poker remove query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team remove poker query error: %v", err)
 	}
 
 	return nil
@@ -284,8 +376,7 @@ func (d *Service) TeamDelete(ctx context.Context, TeamID string) error {
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_delete query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team delete query error: %v", err)
 	}
 
 	return nil
@@ -338,8 +429,7 @@ func (d *Service) TeamAddRetro(ctx context.Context, TeamID string, RetroID strin
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_retro_add query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team add retro query error: %v", err)
 	}
 
 	return nil
@@ -354,8 +444,7 @@ func (d *Service) TeamRemoveRetro(ctx context.Context, TeamID string, RetroID st
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_retro_remove query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team remove retro query error: %v", err)
 	}
 
 	return nil
@@ -406,8 +495,7 @@ func (d *Service) TeamAddStoryboard(ctx context.Context, TeamID string, Storyboa
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_storyboard_add query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team add storyboard query error: %v", err)
 	}
 
 	return nil
@@ -422,8 +510,7 @@ func (d *Service) TeamRemoveStoryboard(ctx context.Context, TeamID string, Story
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("team_storyboard_remove query error", zap.Error(err))
-		return err
+		return fmt.Errorf("team remove storyboard query error: %v", err)
 	}
 
 	return nil

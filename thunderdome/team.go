@@ -21,6 +21,15 @@ type TeamUser struct {
 	GravatarHash string `json:"gravatarHash"`
 }
 
+type TeamUserInvite struct {
+	InviteId    string    `json:"invite_id"`
+	TeamId      string    `json:"team_id"`
+	Email       string    `json:"email"`
+	Role        string    `json:"role"`
+	CreatedDate time.Time `json:"created_date"`
+	ExpireDate  time.Time `json:"expire_date"`
+}
+
 type TeamDataSvc interface {
 	TeamUserRole(ctx context.Context, UserID string, TeamID string) (string, error)
 	TeamGet(ctx context.Context, TeamID string) (*Team, error)
@@ -28,7 +37,12 @@ type TeamDataSvc interface {
 	TeamCreate(ctx context.Context, UserID string, TeamName string) (*Team, error)
 	TeamAddUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error)
 	TeamUserList(ctx context.Context, TeamID string, Limit int, Offset int) ([]*TeamUser, int, error)
+	TeamUpdateUser(ctx context.Context, TeamID string, UserID string, Role string) (string, error)
 	TeamRemoveUser(ctx context.Context, TeamID string, UserID string) error
+	TeamInviteUser(ctx context.Context, TeamID string, Email string, Role string) (string, error)
+	TeamUserGetInviteByID(ctx context.Context, InviteID string) (TeamUserInvite, error)
+	TeamDeleteUserInvite(ctx context.Context, InviteID string) error
+	TeamGetUserInvites(ctx context.Context, teamId string) ([]TeamUserInvite, error)
 	TeamPokerList(ctx context.Context, TeamID string, Limit int, Offset int) []*Poker
 	TeamAddPoker(ctx context.Context, TeamID string, PokerID string) error
 	TeamRemovePoker(ctx context.Context, TeamID string, PokerID string) error

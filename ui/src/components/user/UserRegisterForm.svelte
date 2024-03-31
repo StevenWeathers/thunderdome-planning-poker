@@ -1,15 +1,16 @@
 <script lang="ts">
   import { validateName, validatePasswords } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
-  import SolidButton from '../SolidButton.svelte';
-  import TextInput from '../TextInput.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import TextInput from '../global/TextInput.svelte';
 
   export let notifications;
   export let handleSubmit;
   export let guestWarriorsName = '';
+  export let wasInvited = false;
+  export let email = '';
 
   let warriorName = guestWarriorsName;
-  let warriorEmail = '';
   let warriorPassword1 = '';
   let warriorPassword2 = '';
 
@@ -35,18 +36,13 @@
     }
 
     if (noFormErrors) {
-      handleSubmit(
-        warriorName,
-        warriorEmail,
-        warriorPassword1,
-        warriorPassword2,
-      );
+      handleSubmit(warriorName, email, warriorPassword1, warriorPassword2);
     }
   }
 
   $: createDisabled =
     warriorName === '' ||
-    warriorEmail === '' ||
+    email === '' ||
     warriorPassword1 === '' ||
     warriorPassword2 === '';
 </script>
@@ -76,11 +72,12 @@
       {$LL.email()}
     </label>
     <TextInput
-      bind:value="{warriorEmail}"
+      bind:value="{email}"
       placeholder="{$LL.enterYourEmail()}"
       id="yourEmail"
       name="yourEmail"
       type="email"
+      disabled="{wasInvited ? 'disabled' : null}"
       required
     />
   </div>

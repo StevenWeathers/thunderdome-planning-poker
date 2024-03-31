@@ -5,6 +5,10 @@ import (
 	_ "embed"
 	"os"
 
+	jiraData "github.com/StevenWeathers/thunderdome-planning-poker/internal/db/jira"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
+
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/cookie"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
@@ -15,6 +19,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/poker"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/storyboard"
+	subscriptionData "github.com/StevenWeathers/thunderdome-planning-poker/internal/db/subscription"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/team"
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/user"
 
@@ -37,6 +42,8 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/email"
 	"go.uber.org/zap"
 )
+
+const repoURL = "https://github.com/StevenWeathers/thunderdome-planning-poker"
 
 var embedUseOS bool
 var (
@@ -101,6 +108,8 @@ func main() {
 	teamService := &team.Service{DB: d.DB, Logger: logger}
 	organizationService := &team.OrganizationService{DB: d.DB, Logger: logger}
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
+	subscriptionDataSvc := &subscriptionData.Service{DB: d.DB, Logger: logger}
+	jiraDataSvc := &jiraData.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
 	cook := cookie.New(cookie.Config{
 		AppDomain:          c.Http.Domain,
 		PathPrefix:         c.Http.PathPrefix,
@@ -110,6 +119,25 @@ func main() {
 		SecureCookieFlag:   c.Http.SecureCookie,
 		SessionCookieName:  c.Http.SessionCookieName,
 	})
+	emailSvc := email.New(&email.Config{
+		AppURL:            "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
+		RepoURL:           repoURL,
+		SenderName:        "Thunderdome",
+		SmtpEnabled:       c.Smtp.Enabled,
+		SmtpHost:          c.Smtp.Host,
+		SmtpPort:          c.Smtp.Port,
+		SmtpSecure:        c.Smtp.Secure,
+		SmtpUser:          c.Smtp.User,
+		SmtpPass:          c.Smtp.Pass,
+		SmtpSender:        c.Smtp.Sender,
+		SmtpSkipTLSVerify: c.Smtp.SkipTLSVerify,
+		SmtpAuth:          c.Smtp.Auth,
+	}, logger)
+	subscriptionService := subscription.New(subscription.Config{
+		AccountSecret: c.Subscription.AccountSecret,
+		WebhookSecret: c.Subscription.WebhookSecret,
+	}, logger, subscriptionDataSvc, emailSvc, userService,
+	)
 
 	HFS, FSS := ui.New(embedUseOS)
 	h := http.New(http.Service{
@@ -149,20 +177,14 @@ func main() {
 			AllowGuests:               c.Config.AllowGuests,
 			AllowRegistration:         c.Config.AllowRegistration,
 			ShowActiveCountries:       c.Config.ShowActiveCountries,
+			SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
+			WebsocketConfig: http.WebsocketConfig{
+				WriteWaitSec:  c.Http.WebsocketWriteWaitSec,
+				PingPeriodSec: c.Http.WebsocketPingPeriodSec,
+				PongWaitSec:   c.Http.WebsocketPongWaitSec,
+			},
 		},
-		Email: email.New(&email.Config{
-			AppURL:            "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
-			SenderName:        "Thunderdome",
-			SmtpEnabled:       c.Smtp.Enabled,
-			SmtpHost:          c.Smtp.Host,
-			SmtpPort:          c.Smtp.Port,
-			SmtpSecure:        c.Smtp.Secure,
-			SmtpUser:          c.Smtp.User,
-			SmtpPass:          c.Smtp.Pass,
-			SmtpSender:        c.Smtp.Sender,
-			SmtpSkipTLSVerify: c.Smtp.SkipTLSVerify,
-			SmtpAuth:          c.Smtp.Auth,
-		}, logger),
+		Email:               emailSvc,
 		Cookie:              cook,
 		Logger:              logger,
 		UserDataSvc:         userService,
@@ -176,6 +198,9 @@ func main() {
 		TeamDataSvc:         teamService,
 		OrganizationDataSvc: organizationService,
 		AdminDataSvc:        adminService,
+		SubscriptionDataSvc: subscriptionDataSvc,
+		JiraDataSvc:         jiraDataSvc,
+		SubscriptionSvc:     subscriptionService,
 		UIConfig: thunderdome.UIConfig{
 			AnalyticsEnabled: c.Analytics.Enabled,
 			AnalyticsID:      c.Analytics.ID,
@@ -208,6 +233,9 @@ func main() {
 				FeatureRetro:              c.Feature.Retro,
 				FeatureStoryboard:         c.Feature.Storyboard,
 				RequireTeams:              c.Config.RequireTeams,
+				SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
+				Subscription:              c.Subscription,
+				RepoURL:                   repoURL,
 			},
 		},
 	}, FSS, HFS)

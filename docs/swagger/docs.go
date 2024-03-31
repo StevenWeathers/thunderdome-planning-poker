@@ -1086,6 +1086,94 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/invite/organization/{inviteId}": {
+            "get": {
+                "description": "Get a organization user invite details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get Organization Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.OrganizationUserInvite"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/invite/team/{inviteId}": {
+            "get": {
+                "description": "Get a team user invite details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get Team Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.TeamUserInvite"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/auth/ldap": {
             "post": {
                 "description": "attempts to log the user in with provided credentials\n*Endpoint only available when LDAP is enabled",
@@ -2550,6 +2638,67 @@ const docTemplate = `{
             }
         },
         "/organizations/{orgId}/departments/{departmentId}/users/{userId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a department User",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Update Department User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the organization ID",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the department ID",
+                        "name": "departmentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "department user object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamUpdateUserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -2590,6 +2739,108 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organizations/{orgId}/invites": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get a list of user invites associated to the team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Get Team User Invites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the org ID",
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.OrganizationUserInvite"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/organizations/{orgId}/invites/{inviteId}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete user invite from organization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Delete Org User Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organization id",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "invite id",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
                         }
@@ -2959,6 +3210,66 @@ const docTemplate = `{
             }
         },
         "/organizations/{orgId}/users/{userId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update organization user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Update Org User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organization id",
+                        "name": "orgId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "organization user object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamUpdateUserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -3771,6 +4082,267 @@ const docTemplate = `{
                 }
             }
         },
+        "/subscriptions": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of subscriptions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Get Subscriptions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Max number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Starting point to return rows from, should be multiplied by limit or 0",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.Subscription"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates an subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Create Subscription",
+                "parameters": [
+                    {
+                        "description": "new subscription object",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.subscriptionRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.Subscription"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/subscriptions/{subscriptionId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get a subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Get Subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the subscription ID",
+                        "name": "subscriptionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.Subscription"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a Subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Update Subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the subscription ID to update",
+                        "name": "subscriptionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "subscription object to update",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.subscriptionRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.Subscription"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a Subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Delete Subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the subscription ID to delete",
+                        "name": "subscriptionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teams/{teamId}": {
             "get": {
                 "security": [
@@ -4378,6 +4950,108 @@ const docTemplate = `{
                 }
             }
         },
+        "/teams/{teamId}/invites": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get a list of user invites associated to the team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "team"
+                ],
+                "summary": "Get Team User Invites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.TeamUserInvite"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/teams/{teamId}/invites/{inviteId}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete a user invite from the team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "team"
+                ],
+                "summary": "Deletes Team User Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the user invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teams/{teamId}/retro-actions": {
             "get": {
                 "security": [
@@ -4751,6 +5425,66 @@ const docTemplate = `{
             }
         },
         "/teams/{teamId}/users/{userId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a team user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "team"
+                ],
+                "summary": "Update Team User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the team ID",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated team user object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.teamUpdateUserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -5644,6 +6378,289 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{userId}/jira-instances": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of Jira instances associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Get User Jira Instances",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID to find jira instances for",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.JiraInstance"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a Jira Instance associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Create Jira Instance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID to associate jira instance to",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "new jira_instance object",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraInstanceRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns new jira instance",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.JiraInstance"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/jira-instances/{instanceId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates a Jira Instance associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Update Jira Instance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID jira instance associated to",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to update",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "updated jira_instance object",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraInstanceRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "returns updated jira instance",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/thunderdome.JiraInstance"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a Jira Instance associated to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Delete Jira Instance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID jira instance associated to",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to delete",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/jira-instances/{instanceId}/jql-story-search": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Queries Jira Instance API for Stories by JQL",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jira"
+                ],
+                "summary": "Query Jira for Stories by JQL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID associated to jira instance",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the jira_instance ID to query",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "jql search request",
+                        "name": "jira",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.jiraStoryJQLSearchRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{userId}/organizations": {
             "get": {
                 "security": [
@@ -6113,6 +7130,132 @@ const docTemplate = `{
                         "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/subscriptions": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of active entity user subscriptions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Get Entity User Active Subscriptions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the entity user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.Subscription"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/subscriptions/{subscriptionId}": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of active entity user subscriptions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Update Entity User Subscriptions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the entity user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the subscription ID to update",
+                        "name": "subscriptionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "update subscription association object",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.subscriptionAssociateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.Subscription"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -7027,6 +8170,42 @@ const docTemplate = `{
                 }
             }
         },
+        "http.jiraInstanceRequestBody": {
+            "type": "object",
+            "required": [
+                "access_token",
+                "client_mail",
+                "host"
+            ],
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "client_mail": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.jiraStoryJQLSearchRequestBody": {
+            "type": "object",
+            "required": [
+                "jql"
+            ],
+            "properties": {
+                "jql": {
+                    "type": "string"
+                },
+                "maxResults": {
+                    "type": "integer"
+                },
+                "startAt": {
+                    "type": "integer"
+                }
+            }
+        },
         "http.loginResponse": {
             "type": "object",
             "properties": {
@@ -7035,6 +8214,9 @@ const docTemplate = `{
                 },
                 "sessionId": {
                     "type": "string"
+                },
+                "subscribed": {
+                    "type": "boolean"
                 },
                 "user": {
                     "$ref": "#/definitions/thunderdome.User"
@@ -7222,6 +8404,54 @@ const docTemplate = `{
                 }
             }
         },
+        "http.subscriptionAssociateRequestBody": {
+            "type": "object",
+            "properties": {
+                "organization_id": {
+                    "type": "string"
+                },
+                "team_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.subscriptionRequestBody": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "expires": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "subscription_id": {
+                    "type": "string"
+                },
+                "team_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "user",
+                        " team",
+                        " organization"
+                    ]
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "http.teamAddUserRequestBody": {
             "type": "object",
             "required": [
@@ -7260,6 +8490,21 @@ const docTemplate = `{
                 },
                 "teamRole": {
                     "type": "string"
+                }
+            }
+        },
+        "http.teamUpdateUserRequestBody": {
+            "type": "object",
+            "required": [
+                "role"
+            ],
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "MEMBER",
+                        "ADMIN"
+                    ]
                 }
             }
         },
@@ -7341,6 +8586,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "orgInviteId": {
+                    "type": "string"
+                },
                 "password1": {
                     "type": "string",
                     "maxLength": 72,
@@ -7350,6 +8598,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 72,
                     "minLength": 6
+                },
+                "teamInviteId": {
+                    "type": "string"
                 }
             }
         },
@@ -7613,6 +8864,32 @@ const docTemplate = `{
                 }
             }
         },
+        "thunderdome.JiraInstance": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "client_mail": {
+                    "type": "string"
+                },
+                "created_date": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "updated_date": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "thunderdome.Organization": {
             "type": "object",
             "properties": {
@@ -7626,6 +8903,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedDate": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.OrganizationUserInvite": {
+            "type": "object",
+            "properties": {
+                "created_date": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "expire_date": {
+                    "type": "string"
+                },
+                "invite_id": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "role": {
                     "type": "string"
                 }
             }
@@ -7679,6 +8979,9 @@ const docTemplate = `{
                     }
                 },
                 "teamId": {
+                    "type": "string"
+                },
+                "teamName": {
                     "type": "string"
                 },
                 "updatedDate": {
@@ -7779,6 +9082,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phase": {
+                    "type": "string"
+                },
+                "readyUsers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "teamName": {
                     "type": "string"
                 },
                 "updatedDate": {
@@ -8036,6 +9348,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/thunderdome.StoryboardPersona"
                     }
                 },
+                "teamName": {
+                    "type": "string"
+                },
                 "updatedDate": {
                     "type": "string"
                 },
@@ -8180,6 +9495,47 @@ const docTemplate = `{
                 }
             }
         },
+        "thunderdome.Subscription": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "created_date": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "expires": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "string"
+                },
+                "subscription_id": {
+                    "type": "string"
+                },
+                "team_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_date": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/thunderdome.User"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "thunderdome.Team": {
             "type": "object",
             "properties": {
@@ -8254,6 +9610,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "thunderdome.TeamUserInvite": {
+            "type": "object",
+            "properties": {
+                "created_date": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "expire_date": {
+                    "type": "string"
+                },
+                "invite_id": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "team_id": {
                     "type": "string"
                 }
             }

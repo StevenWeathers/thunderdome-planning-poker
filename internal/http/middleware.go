@@ -2,13 +2,29 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
+
+	"go.uber.org/zap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
 	"github.com/gorilla/mux"
 )
+
+func (s *Service) panicRecovery(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				s.Logger.Error(fmt.Sprintf("http handler recovering from panic error: %v", err))
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		}()
+
+		h.ServeHTTP(w, r)
+	})
+}
 
 // userOnly validates that the request was made by a valid user
 func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
@@ -118,6 +134,43 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		UserType := ctx.Value(contextKeyUserType).(string)
+		EntityUserID := vars["userId"]
+		idErr := validate.Var(EntityUserID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		if UserType != adminUserType && (EntityUserID != SessionUserID) {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
+			return
+		}
+
+		EntityUser, EntityUserErr := s.UserDataSvc.GetUser(ctx, EntityUserID)
+		if EntityUserErr != nil {
+			s.Logger.Ctx(ctx).Error(
+				"verifiedUserOnly error", zap.Error(EntityUserErr), zap.String("entity_user_id", EntityUserID),
+				zap.String("session_user_id", SessionUserID), zap.String("session_user_type", UserType))
+			s.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
+			return
+		}
+
+		if s.Config.ExternalAPIVerifyRequired && !EntityUser.Verified {
+			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
+			return
+		}
+
+		h(w, r)
+	}
+}
+
+// subscribedEntityUserOnly validates that the request was made by the subscribed entity user
+func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		ctx := r.Context()
 		UserID := ctx.Value(contextKeyUserID).(string)
 		UserType := ctx.Value(contextKeyUserType).(string)
 		EntityUserID := vars["userId"]
@@ -132,15 +185,13 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		EntityUser, EntityUserErr := s.UserDataSvc.GetUser(ctx, EntityUserID)
-		if EntityUserErr != nil {
-			s.Failure(w, r, http.StatusInternalServerError, EntityUserErr)
-			return
-		}
-
-		if s.Config.ExternalAPIVerifyRequired && !EntityUser.Verified {
-			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_VERIFIED_USER"))
-			return
+		// admins can bypass active subscriber functions
+		if UserType != adminUserType {
+			subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, EntityUserID)
+			if subscriberErr != nil {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_SUBSCRIBED_USER"))
+				return
+			}
 		}
 
 		h(w, r)

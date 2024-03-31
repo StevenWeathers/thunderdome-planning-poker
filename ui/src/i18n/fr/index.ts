@@ -1,6 +1,10 @@
 import type { Translation } from '../i18n-types';
 
 const fr: Translation = {
+  userGuide: 'User Guide',
+  privacyPolicy: 'Privacy Policy',
+  termsConditions: 'Terms & Conditions',
+  support: 'Support',
   abandoned: 'Abandoned',
   actionComments: 'Action Comments',
   actionItem: 'Action Item',
@@ -26,6 +30,10 @@ const fr: Translation = {
   adminPageOrganizations: 'Organisations',
   adminPageTeams: 'Equipes',
   adminPageUsers: 'Utilisateurs',
+  adminPageSubscriptions: 'Subscriptions',
+  deleteSubscriptionConfirmation:
+    'Are you sure you want to delete this subscription?',
+  deleteSubscription: 'Delete Subscription',
   alertAllowDismiss: 'Autoriser ignorer',
   alertContent: "Contenu de l'alerte",
   alertContentPlaceholder: "Entrer un contenu pour l'alerte",
@@ -229,7 +237,7 @@ const fr: Translation = {
     'Allez voir {repoOpen}le repository{repoClose} pour demander ou contribuer à des améliorations, traductions et corrections de bugs ou pour {donateOpen}Donner{donateClose}.',
   landingFeatureOpenSourceTitle: 'Open Source',
   landingSalesPitch:
-    'Remote team collaboration with realtime agile story pointing, no cost and ad free!',
+    'Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.',
   landingTitle:
     '{friendly|{false:Thunderdome est une app de Planning Poker Agile avec un thème fun, true:Thunderdome est une app de Planning Poker Agile}}',
   lastActive: 'Last Active',
@@ -620,6 +628,16 @@ const fr: Translation = {
   assigneeSelectPlaceholder: 'Select an assignee to add',
   assigneeAdd: 'Add Assignee',
   allStoryWithCount: 'All ({count})',
+  userUpdate: 'Update User',
+  userUpdateSuccess: 'Successfully updated user.',
+  userUpdateError: 'Error updating user.',
+  userInvites: 'User Invites',
+  userNotFoundInviteSent: 'User not found, invite sent',
+  userInviteConfirmDelete: 'Are you sure you want to delete this user invite?',
+  userInviteDelete: 'Delete Invite',
+  expireDate: 'Expire Date',
+  addUserWillInviteNotFoundFieldNote:
+    'If user is not registered an invite to register and join the {pageType} will be sent.',
 };
 
 export default fr;

@@ -1,12 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import SolidButton from '../SolidButton.svelte';
+  import SolidButton from '../global/SolidButton.svelte';
   import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../TextInput.svelte';
-  import SelectInput from '../SelectInput.svelte';
+  import TextInput from '../global/TextInput.svelte';
+  import SelectInput from '../global/SelectInput.svelte';
 
   export let xfetch;
   export let notifications;
@@ -17,7 +17,7 @@
   let retroName = '';
   let joinCode = '';
   let facilitatorCode = '';
-  let maxVotes = 3;
+  let maxVotes = '3';
   let brainstormVisibility = 'visible';
   let teams = [];
   let selectedTeam = '';
@@ -45,7 +45,7 @@
       format: 'worked_improve_question',
       joinCode,
       facilitatorCode,
-      maxVotes,
+      maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
     };
 
@@ -112,7 +112,7 @@
     </div>
   </div>
 
-  {#if apiPrefix === '/api'}
+  {#if apiPrefix === '/api' && $user.rank !== 'GUEST'}
     <div class="mb-4">
       <label
         class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"

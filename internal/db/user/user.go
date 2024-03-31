@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"database/sql"
-	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
@@ -35,7 +35,8 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 
 	rows, err := d.DB.QueryContext(ctx,
 		`
-		SELECT u.id, u.name, COALESCE(u.email, ''), u.type, u.avatar, u.verified, COALESCE(u.country, ''), COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled
+		SELECT u.id, u.name, COALESCE(u.email, ''), u.type, u.avatar, u.verified, COALESCE(u.country, ''),
+		 COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled
 		FROM thunderdome.users u
 		WHERE u.email IS NOT NULL
 		ORDER BY u.created_date
@@ -45,7 +46,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 		Offset,
 	)
 	if err != nil {
-		return nil, Count, err
+		return nil, Count, fmt.Errorf("get registered users query error: %v", err)
 	}
 
 	defer rows.Close()
@@ -104,8 +105,7 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 		&w.Theme,
 	)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("get user query error", zap.Error(err))
-		return nil, errors.New("user not found")
+		return nil, fmt.Errorf("get user query error: %v", err)
 	}
 
 	if w.Email != "" {
@@ -123,7 +123,8 @@ func (d *Service) GetGuestUser(ctx context.Context, UserID string) (*thunderdome
 
 	err := d.DB.QueryRowContext(ctx, `
 SELECT id, name, COALESCE(email, ''), type, avatar, verified, notifications_enabled,
- COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''), COALESCE(job_title, ''), created_date, updated_date, last_active, theme
+ COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''), COALESCE(job_title, ''),
+  created_date, updated_date, last_active, theme
 FROM thunderdome.users
 WHERE id = $1 AND type = 'GUEST';
 `,
@@ -146,8 +147,7 @@ WHERE id = $1 AND type = 'GUEST';
 		&w.Theme,
 	)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("get guest user query error", zap.Error(err))
-		return nil, errors.New("user not found")
+		return nil, fmt.Errorf("get guest user query error: %v", err)
 	}
 
 	w.GravatarHash = db.CreateGravatarHash(w.Id)
@@ -171,8 +171,7 @@ func (d *Service) GetUserByEmail(ctx context.Context, UserEmail string) (*thunde
 		&w.Disabled,
 	)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("get user by email query error", zap.Error(err))
-		return nil, errors.New("user email not found")
+		return nil, fmt.Errorf("get user by email query error: %w", err)
 	}
 
 	w.GravatarHash = db.CreateGravatarHash(w.Email)
@@ -185,18 +184,17 @@ func (d *Service) CreateUserGuest(ctx context.Context, UserName string) (*thunde
 	var UserID string
 	err := d.DB.QueryRowContext(ctx, `INSERT INTO thunderdome.users (name) VALUES ($1) RETURNING id`, UserName).Scan(&UserID)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("create guest user query error", zap.Error(err))
-		return nil, errors.New("unable to create new user")
+		return nil, fmt.Errorf("create guest user query error: %v", err)
 	}
 
-	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: db.CreateGravatarHash(UserID)}, nil
+	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: db.CreateGravatarHash(UserID), Type: "GUEST"}, nil
 }
 
 // CreateUserRegistered adds a new registered user
 func (d *Service) CreateUserRegistered(ctx context.Context, UserName string, UserEmail string, UserPassword string, ActiveUserID string) (NewUser *thunderdome.User, VerifyID string, RegisterErr error) {
 	hashedPassword, hashErr := db.HashSaltPassword(UserPassword)
 	if hashErr != nil {
-		return nil, "", hashErr
+		return nil, "", fmt.Errorf("create registered user hash password error: %v", hashErr)
 	}
 
 	var verifyID string
@@ -221,8 +219,7 @@ func (d *Service) CreateUserRegistered(ctx context.Context, UserName string, Use
 			UserType,
 		).Scan(&User.Id, &verifyID)
 		if err != nil {
-			d.Logger.Ctx(ctx).Error("user_register_existing query error", zap.Error(err))
-			return nil, "", errors.New("a user with that email already exists")
+			return nil, "", fmt.Errorf("create registered user from guest query error: %v", err)
 		}
 	} else {
 		err := d.DB.QueryRow(
@@ -233,8 +230,7 @@ func (d *Service) CreateUserRegistered(ctx context.Context, UserName string, Use
 			UserType,
 		).Scan(&User.Id, &verifyID)
 		if err != nil {
-			d.Logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
-			return nil, "", errors.New("a user with that email already exists")
+			return nil, "", fmt.Errorf("create registered user query error: %v", err)
 		}
 	}
 
@@ -268,8 +264,7 @@ func (d *Service) CreateUser(ctx context.Context, UserName string, UserEmail str
 		UserType,
 	).Scan(&User.Id, &verifyID)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("register_user query error", zap.Error(err))
-		return nil, "", errors.New("a user with that email already exists")
+		return nil, "", fmt.Errorf("create registered user query error: %v", err)
 	}
 
 	return User, verifyID, nil
@@ -307,8 +302,7 @@ func (d *Service) UpdateUserProfile(ctx context.Context, UserID string, UserName
 		JobTitle,
 		Theme,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("user_profile_update query error", zap.Error(err))
-		return errors.New("error attempting to update users profile")
+		return fmt.Errorf("update user profile query error: %v", err)
 	}
 
 	return nil
@@ -344,8 +338,7 @@ func (d *Service) UpdateUserProfileLdap(ctx context.Context, UserID string, User
 		JobTitle,
 		Theme,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("user_profile_ldap_update query error", zap.Error(err))
-		return errors.New("error attempting to update users profile")
+		return fmt.Errorf("update ldap user profile query error: %v", err)
 	}
 
 	return nil
@@ -385,7 +378,7 @@ func (d *Service) UpdateUserAccount(ctx context.Context, UserID string, UserName
 		JobTitle,
 		Theme,
 	); err != nil {
-		return err
+		return fmt.Errorf("update user account query error: %v", err)
 	}
 
 	return nil
@@ -398,7 +391,7 @@ func (d *Service) DeleteUser(ctx context.Context, UserID string) error {
 		UserID,
 	); err != nil {
 		d.Logger.Ctx(ctx).Error("delete_user query error", zap.Error(err))
-		return errors.New("error attempting to delete user")
+		return fmt.Errorf("delete user query error: %v", err)
 	}
 
 	return nil
@@ -418,7 +411,7 @@ func (d *Service) SearchRegisteredUsersByEmail(ctx context.Context, Email string
 		Offset,
 	)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("search registered users by email query error: %v", err)
 	}
 
 	defer rows.Close()
@@ -453,8 +446,7 @@ func (d *Service) PromoteUser(ctx context.Context, UserID string) error {
 		`UPDATE thunderdome.users SET type = 'ADMIN', updated_date = NOW() WHERE id = $1;`,
 		UserID,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("CALL thunderdome.promote_user error", zap.Error(err))
-		return errors.New("error attempting to promote user to admin")
+		return fmt.Errorf("promote user to admin query error: %v", err)
 	}
 
 	return nil
@@ -466,8 +458,7 @@ func (d *Service) DemoteUser(ctx context.Context, UserID string) error {
 		`UPDATE thunderdome.users SET type = 'REGISTERED', updated_date = NOW() WHERE id = $1;`,
 		UserID,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("CALL thunderdome.demote_user error", zap.Error(err))
-		return errors.New("error attempting to demote user to registered")
+		return fmt.Errorf("demote admin user query error: %v", err)
 	}
 
 	return nil
@@ -480,7 +471,7 @@ func (d *Service) DisableUser(ctx context.Context, UserID string) error {
 		UserID,
 	); err != nil {
 		d.Logger.Ctx(ctx).Error("CALL thunderdome.user_disable error", zap.Error(err))
-		return errors.New("error attempting to disable user")
+		return fmt.Errorf("disable user query error: %v", err)
 	}
 
 	return nil
@@ -494,7 +485,7 @@ func (d *Service) EnableUser(ctx context.Context, UserID string) error {
 		UserID,
 	); err != nil {
 		d.Logger.Ctx(ctx).Error("CALL thunderdome.user_enable error", zap.Error(err))
-		return errors.New("error attempting to enable user")
+		return fmt.Errorf("enable user query error: %v", err)
 	}
 
 	return nil
@@ -506,8 +497,7 @@ func (d *Service) CleanGuests(ctx context.Context, DaysOld int) error {
 		`DELETE FROM thunderdome.users WHERE last_active < (NOW() - $1 * interval '1 day') AND type = 'GUEST';`,
 		DaysOld,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("CALL thunderdome.clean_guest_users", zap.Error(err))
-		return errors.New("error attempting to clean Guest Users")
+		return fmt.Errorf("error attempting to delete guest users older than %d days: %v", DaysOld, err)
 	}
 
 	return nil
@@ -533,8 +523,7 @@ func (d *Service) GetActiveCountries(ctx context.Context) ([]string, error) {
 			}
 		}
 	} else {
-		d.Logger.Ctx(ctx).Error("countries_active query error", zap.Error(err))
-		return nil, errors.New("error attempting to get active countries")
+		return nil, fmt.Errorf("get active countries query error: %v", err)
 	}
 
 	return countries, nil

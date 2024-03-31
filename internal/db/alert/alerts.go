@@ -3,7 +3,7 @@ package alert
 import (
 	"context"
 	"database/sql"
-	"errors"
+	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
@@ -39,7 +39,7 @@ func (d *Service) GetActiveAlerts(ctx context.Context) []interface{} {
 				&a.AllowDismiss,
 				&a.RegisteredOnly,
 			); err != nil {
-				d.Logger.Ctx(ctx).Error("query scan error", zap.Error(err))
+				d.Logger.Ctx(ctx).Error("GetActiveAlerts row scan error", zap.Error(err))
 			} else {
 				Alerts = append(Alerts, &a)
 			}
@@ -60,7 +60,7 @@ func (d *Service) AlertsList(ctx context.Context, Limit int, Offset int) ([]*thu
 		&AlertCount,
 	)
 	if e != nil {
-		d.Logger.Ctx(ctx).Error("query scan error", zap.Error(e))
+		d.Logger.Ctx(ctx).Error("AlertsList query scan error", zap.Error(e))
 	}
 
 	rows, err := d.DB.QueryContext(ctx,
@@ -89,8 +89,7 @@ func (d *Service) AlertsList(ctx context.Context, Limit int, Offset int) ([]*thu
 				&a.CreatedDate,
 				&a.UpdatedDate,
 			); err != nil {
-				d.Logger.Ctx(ctx).Error("query scan error", zap.Error(err))
-				return nil, AlertCount, err
+				return nil, AlertCount, fmt.Errorf("AlertsList row scan error: %v", err)
 			} else {
 				Alerts = append(Alerts, &a)
 			}
@@ -113,8 +112,7 @@ func (d *Service) AlertsCreate(ctx context.Context, Name string, Type string, Co
 		AllowDismiss,
 		RegisteredOnly,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("insert error", zap.Error(err))
-		return errors.New("error attempting to add new alert")
+		return fmt.Errorf("error creating new alert: %v", err)
 	}
 
 	return nil
@@ -136,8 +134,7 @@ func (d *Service) AlertsUpdate(ctx context.Context, ID string, Name string, Type
 		AllowDismiss,
 		RegisteredOnly,
 	); err != nil {
-		d.Logger.Ctx(ctx).Error("update error", zap.Error(err))
-		return errors.New("error attempting to update alert")
+		return fmt.Errorf("error updating alert: %v", err)
 	}
 
 	return nil
@@ -151,8 +148,7 @@ func (d *Service) AlertDelete(ctx context.Context, AlertID string) error {
 	)
 
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("Unable to delete alert", zap.Error(err))
-		return err
+		return fmt.Errorf("error deleting alert: %v", err)
 	}
 
 	return nil

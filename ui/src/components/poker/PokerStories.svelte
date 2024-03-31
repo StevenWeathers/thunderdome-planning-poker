@@ -1,7 +1,7 @@
 <script lang="ts">
   import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import ExternalLinkIcon from '../icons/ExternalLinkIcon.svelte';
-  import HollowButton from '../HollowButton.svelte';
+  import HollowButton from '../global/HollowButton.svelte';
   import LL from '../../i18n/i18n-svelte';
   import NoSymbolIcon from '../icons/NoSymbol.svelte';
   import DoubleChevronUp from '../icons/DoubleChevronUp.svelte';
@@ -19,6 +19,7 @@
   export let sendSocketEvent = (event: string, value: string) => {};
   export let eventTag;
   export let notifications;
+  export let xfetch;
 
   let defaultPlan = {
     id: '',
@@ -455,8 +456,9 @@
 {#if showImport}
   <ImportModal
     notifications="{notifications}"
-    eventTag="{eventTag}"
     toggleImport="{toggleImport}"
     handlePlanAdd="{handlePlanAdd}"
+    xfetch="{xfetch}"
+    eventTag="{eventTag}"
   />
 {/if}

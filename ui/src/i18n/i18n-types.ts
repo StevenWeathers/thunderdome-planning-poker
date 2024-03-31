@@ -17,6 +17,22 @@ export type Translations = RootTranslation;
 
 type RootTranslation = {
   /**
+   * U​s​e​r​ ​G​u​i​d​e
+   */
+  userGuide: string;
+  /**
+   * P​r​i​v​a​c​y​ ​P​o​l​i​c​y
+   */
+  privacyPolicy: string;
+  /**
+   * T​e​r​m​s​ ​&​ ​C​o​n​d​i​t​i​o​n​s
+   */
+  termsConditions: string;
+  /**
+   * S​u​p​p​o​r​t
+   */
+  support: string;
+  /**
    * A​b​a​n​d​o​n​e​d
    */
   abandoned: string;
@@ -114,6 +130,18 @@ type RootTranslation = {
    * U​s​e​r​s
    */
   adminPageUsers: string;
+  /**
+   * S​u​b​s​c​r​i​p​t​i​o​n​s
+   */
+  adminPageSubscriptions: string;
+  /**
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​s​u​b​s​c​r​i​p​t​i​o​n​?
+   */
+  deleteSubscriptionConfirmation: string;
+  /**
+   * D​e​l​e​t​e​ ​S​u​b​s​c​r​i​p​t​i​o​n
+   */
+  deleteSubscription: string;
   /**
    * A​l​l​o​w​ ​D​i​s​m​i​s​s
    */
@@ -861,7 +889,7 @@ type RootTranslation = {
    */
   landingFeatureOpenSourceTitle: string;
   /**
-   * R​e​m​o​t​e​ ​t​e​a​m​ ​c​o​l​l​a​b​o​r​a​t​i​o​n​ ​w​i​t​h​ ​r​e​a​l​t​i​m​e​ ​a​g​i​l​e​ ​s​t​o​r​y​ ​p​o​i​n​t​i​n​g​,​ ​n​o​ ​c​o​s​t​ ​a​n​d​ ​a​d​ ​f​r​e​e​!
+   * R​e​m​o​t​e​ ​t​e​a​m​ ​c​o​l​l​a​b​o​r​a​t​i​o​n​ ​w​i​t​h​ ​a​g​i​l​e​ ​s​t​o​r​y​ ​p​o​i​n​t​i​n​g​,​ ​s​p​r​i​n​t​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​,​ ​s​t​o​r​y​ ​m​a​p​p​i​n​g​ ​a​n​d​ ​a​s​y​n​c​ ​t​e​a​m​ ​c​h​e​c​k​-​i​n​.
    */
   landingSalesPitch: string;
   /**
@@ -2326,9 +2354,62 @@ type RootTranslation = {
    * @param {unknown} count
    */
   allStoryWithCount: RequiredParams<'count'>;
+  /**
+   * U​p​d​a​t​e​ ​U​s​e​r
+   */
+  userUpdate: string;
+  /**
+   * S​u​c​c​e​s​s​f​u​l​l​y​ ​u​p​d​a​t​e​d​ ​u​s​e​r​.
+   */
+  userUpdateSuccess: string;
+  /**
+   * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​u​s​e​r​.
+   */
+  userUpdateError: string;
+  /**
+   * U​s​e​r​ ​I​n​v​i​t​e​s
+   */
+  userInvites: string;
+  /**
+   * U​s​e​r​ ​n​o​t​ ​f​o​u​n​d​,​ ​i​n​v​i​t​e​ ​s​e​n​t
+   */
+  userNotFoundInviteSent: string;
+  /**
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​u​s​e​r​ ​i​n​v​i​t​e​?
+   */
+  userInviteConfirmDelete: string;
+  /**
+   * D​e​l​e​t​e​ ​I​n​v​i​t​e
+   */
+  userInviteDelete: string;
+  /**
+   * E​x​p​i​r​e​ ​D​a​t​e
+   */
+  expireDate: string;
+  /**
+   * I​f​ ​u​s​e​r​ ​i​s​ ​n​o​t​ ​r​e​g​i​s​t​e​r​e​d​ ​a​n​ ​i​n​v​i​t​e​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​a​n​d​ ​j​o​i​n​ ​t​h​e​ ​{​p​a​g​e​T​y​p​e​}​ ​w​i​l​l​ ​b​e​ ​s​e​n​t​.
+   * @param {unknown} pageType
+   */
+  addUserWillInviteNotFoundFieldNote: RequiredParams<'pageType'>;
 };
 
 export type TranslationFunctions = {
+  /**
+   * User Guide
+   */
+  userGuide: () => LocalizedString;
+  /**
+   * Privacy Policy
+   */
+  privacyPolicy: () => LocalizedString;
+  /**
+   * Terms & Conditions
+   */
+  termsConditions: () => LocalizedString;
+  /**
+   * Support
+   */
+  support: () => LocalizedString;
   /**
    * Abandoned
    */
@@ -2425,6 +2506,18 @@ export type TranslationFunctions = {
    * Users
    */
   adminPageUsers: () => LocalizedString;
+  /**
+   * Subscriptions
+   */
+  adminPageSubscriptions: () => LocalizedString;
+  /**
+   * Are you sure you want to delete this subscription?
+   */
+  deleteSubscriptionConfirmation: () => LocalizedString;
+  /**
+   * Delete Subscription
+   */
+  deleteSubscription: () => LocalizedString;
   /**
    * Allow Dismiss
    */
@@ -3154,7 +3247,7 @@ export type TranslationFunctions = {
    */
   landingFeatureOpenSourceTitle: () => LocalizedString;
   /**
-   * Remote team collaboration with realtime agile story pointing, no cost and ad free!
+   * Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.
    */
   landingSalesPitch: () => LocalizedString;
   /**
@@ -4590,6 +4683,44 @@ export type TranslationFunctions = {
    * All ({count})
    */
   allStoryWithCount: (arg: { count: unknown }) => LocalizedString;
+  /**
+   * Update User
+   */
+  userUpdate: () => LocalizedString;
+  /**
+   * Successfully updated user.
+   */
+  userUpdateSuccess: () => LocalizedString;
+  /**
+   * Error updating user.
+   */
+  userUpdateError: () => LocalizedString;
+  /**
+   * User Invites
+   */
+  userInvites: () => LocalizedString;
+  /**
+   * User not found, invite sent
+   */
+  userNotFoundInviteSent: () => LocalizedString;
+  /**
+   * Are you sure you want to delete this user invite?
+   */
+  userInviteConfirmDelete: () => LocalizedString;
+  /**
+   * Delete Invite
+   */
+  userInviteDelete: () => LocalizedString;
+  /**
+   * Expire Date
+   */
+  expireDate: () => LocalizedString;
+  /**
+   * If user is not registered an invite to register and join the {pageType} will be sent.
+   */
+  addUserWillInviteNotFoundFieldNote: (arg: {
+    pageType: unknown;
+  }) => LocalizedString;
 };
 
 export type Formatters = {};

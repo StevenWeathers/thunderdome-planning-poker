@@ -1,6 +1,10 @@
 import type { Translation } from '../i18n-types';
 
 const de: Translation = {
+  userGuide: 'User Guide',
+  privacyPolicy: 'Privacy Policy',
+  termsConditions: 'Terms & Conditions',
+  support: 'Support',
   abandoned: 'Abandoned',
   actionComments: 'Action Comments',
   actionItem: 'Action Item',
@@ -26,6 +30,10 @@ const de: Translation = {
   adminPageOrganizations: 'Unternehmen',
   adminPageTeams: 'Teams',
   adminPageUsers: 'Benutzer',
+  adminPageSubscriptions: 'Subscriptions',
+  deleteSubscriptionConfirmation:
+    'Are you sure you want to delete this subscription?',
+  deleteSubscription: 'Delete Subscription',
   alertAllowDismiss: 'Ablehnen zulassen',
   alertContent: 'Benachrichtigungsinhalt',
   alertContentPlaceholder: 'Benachrichtigungsinhalt eingeben',
@@ -225,7 +233,7 @@ const de: Translation = {
     'Check out the {repoOpen}Github repository{repoClose} to request or contribute enhancements, locale translations and bug fixes or to {donateOpen}Donate{donateClose}.',
   landingFeatureOpenSourceTitle: 'Open Source',
   landingSalesPitch:
-    'Remote team collaboration with realtime agile story pointing, no cost and ad free!',
+    'Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.',
   landingTitle:
     '{friendly|{false:Thunderdome ist eine Agile Planning Poker App mit einem lustigen Thema, true:Thunderdome is an Agile Planning Poker app}}',
   lastActive: 'Last Active',
@@ -619,6 +627,16 @@ const de: Translation = {
   assigneeSelectPlaceholder: 'Select an assignee to add',
   assigneeAdd: 'Add Assignee',
   allStoryWithCount: 'All ({count})',
+  userUpdate: 'Update User',
+  userUpdateSuccess: 'Successfully updated user.',
+  userUpdateError: 'Error updating user.',
+  userInvites: 'User Invites',
+  userNotFoundInviteSent: 'User not found, invite sent',
+  userInviteConfirmDelete: 'Are you sure you want to delete this user invite?',
+  userInviteDelete: 'Delete Invite',
+  expireDate: 'Expire Date',
+  addUserWillInviteNotFoundFieldNote:
+    'If user is not registered an invite to register and join the {pageType} will be sent.',
 };
 
 export default de;

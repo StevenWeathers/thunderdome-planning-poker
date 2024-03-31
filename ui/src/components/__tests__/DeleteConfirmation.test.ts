@@ -2,7 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 import '@testing-library/jest-dom';
 import { fireEvent, render } from '@testing-library/svelte';
 
-import DeleteConfirmation from '../DeleteConfirmation.svelte';
+import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
 
 describe('DeleteConfirmation component', () => {
   it('should render successfully', () => {

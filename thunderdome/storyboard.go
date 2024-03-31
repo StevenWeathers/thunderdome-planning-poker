@@ -24,6 +24,7 @@ type Storyboard struct {
 	Personas        []*StoryboardPersona `json:"personas"`
 	JoinCode        string               `json:"joinCode" db:"join_code"`
 	FacilitatorCode string               `json:"facilitatorCode" db:"facilitator_code"`
+	TeamName        string               `json:"teamName"`
 	CreatedDate     string               `json:"createdDate" db:"created_date"`
 	UpdatedDate     string               `json:"updatedDate" db:"updated_date"`
 }
@@ -83,7 +84,7 @@ type StoryboardDataSvc interface {
 	TeamCreateStoryboard(ctx context.Context, TeamID string, OwnerID string, StoryboardName string, JoinCode string, FacilitatorCode string) (*Storyboard, error)
 	EditStoryboard(StoryboardID string, StoryboardName string, JoinCode string, FacilitatorCode string) error
 	GetStoryboard(StoryboardID string, UserID string) (*Storyboard, error)
-	GetStoryboardsByUser(UserID string) ([]*Storyboard, int, error)
+	GetStoryboardsByUser(UserID string, Limit int, Offset int) ([]*Storyboard, int, error)
 	ConfirmStoryboardFacilitator(StoryboardID string, UserID string) error
 	GetStoryboardUsers(StoryboardID string) []*StoryboardUser
 	GetStoryboardPersonas(StoryboardID string) []*StoryboardPersona
