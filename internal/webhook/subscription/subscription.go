@@ -167,7 +167,7 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 						zap.String("eventId", event.ID))
 					return
 				}
-				emailErr := s.emailSvc.SendUserSubscriptionActive(user.Id, user.Email, sub.Type)
+				emailErr := s.emailSvc.SendUserSubscriptionActive(user.Name, user.Email, sub.Type)
 				if emailErr != nil {
 					logger.Error(fmt.Sprintf("error sending subscription active email: %v", emailErr),
 						zap.String("eventId", event.ID))
@@ -213,7 +213,7 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 								zap.String("eventId", event.ID))
 							return
 						}
-						emailErr := s.emailSvc.SendUserSubscriptionDeactivated(user.Id, user.Email, subscription.Type)
+						emailErr := s.emailSvc.SendUserSubscriptionDeactivated(user.Name, user.Email, subscription.Type)
 						if emailErr != nil {
 							logger.Error(fmt.Sprintf("error sending subscription deactivated email: %v", emailErr),
 								zap.String("eventId", event.ID))
@@ -227,7 +227,7 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 								zap.String("eventId", event.ID))
 							return
 						}
-						emailErr := s.emailSvc.SendUserSubscriptionActive(user.Id, user.Email, subscription.Type)
+						emailErr := s.emailSvc.SendUserSubscriptionActive(user.Name, user.Email, subscription.Type)
 						if emailErr != nil {
 							logger.Error(fmt.Sprintf("error sending subscription activate email: %v", emailErr),
 								zap.String("eventId", event.ID))
