@@ -93,34 +93,48 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 			if err != nil {
 				logger.Error("Error getting session from event", zap.String("eventId", event.ID),
 					zap.String("sessionId", cs.ID))
-				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			if cs.Subscription == nil {
 				logger.Error("Error getting subscription from event", zap.String("eventId", event.ID),
 					zap.String("sessionId", cs.ID))
-				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			if cs.LineItems == nil || len(cs.LineItems.Data) < 1 {
-				logger.Error("Error getting subscription product from event", zap.String("eventId", event.ID),
+			if cs.Subscription.Items == nil || cs.Subscription.Items.Data == nil || len(cs.Subscription.Items.Data) < 1 {
+				logger.Error("Error getting subscription item from event", zap.String("eventId", event.ID),
 					zap.String("sessionId", cs.ID))
-				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			productId := cs.LineItems.Data[0].ID
-			p, err := product.Get(productId, nil)
-			if err != nil {
+			if cs.Subscription.Items.Data[0].Plan == nil {
+				logger.Error("Error getting subscription item plan from event", zap.String("eventId", event.ID),
+					zap.String("sessionId", cs.ID))
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			if cs.Subscription.Items.Data[0].Plan.Product == nil {
+				logger.Error("Error getting subscription item plan product from event", zap.String("eventId", event.ID),
+					zap.String("sessionId", cs.ID))
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			productId := cs.Subscription.Items.Data[0].Plan.Product.ID
+			p, productErr := product.Get(productId, nil)
+			if productErr != nil || p == nil {
 				logger.Error("Error getting product from event", zap.String("eventId", event.ID),
 					zap.String("productId", productId))
-				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
+
 			subType, ok := p.Metadata["plan_type"]
 			if !ok {
 				logger.Error("Error getting product type from event", zap.String("eventId", event.ID),
 					zap.String("productId", productId))
-				w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			expires := time.Unix(cs.Subscription.CurrentPeriodEnd, 0)
