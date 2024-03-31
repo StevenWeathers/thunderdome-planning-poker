@@ -5,6 +5,8 @@ import (
 	_ "embed"
 	"os"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db/support"
+
 	jiraData "github.com/StevenWeathers/thunderdome-planning-poker/internal/db/jira"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/webhook/subscription"
@@ -108,6 +110,7 @@ func main() {
 	organizationService := &team.OrganizationService{DB: d.DB, Logger: logger}
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
 	subscriptionDataSvc := &subscriptionData.Service{DB: d.DB, Logger: logger}
+	supportDataSvc := &support.Service{DB: d.DB, Logger: logger}
 	jiraDataSvc := &jiraData.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
 	cookie := cookie.New(cookie.Config{
 		AppDomain:          c.Http.Domain,
@@ -200,6 +203,7 @@ func main() {
 		SubscriptionDataSvc: subscriptionDataSvc,
 		JiraDataSvc:         jiraDataSvc,
 		SubscriptionSvc:     subscriptionService,
+		SupportDataSvc:      supportDataSvc,
 		UIConfig: thunderdome.UIConfig{
 			AnalyticsEnabled: c.Analytics.Enabled,
 			AnalyticsID:      c.Analytics.ID,

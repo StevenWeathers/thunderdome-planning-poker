@@ -26,8 +26,8 @@ func (d *Service) CreateSupportTicket(ctx context.Context, userId string, userNa
 		INSERT INTO thunderdome.support
 		(user_id, user_name, user_email, user_question)
 		VALUES 
-		(NULLIF($1, ''), $2, $3, $4)
-		RETURNING support_id, user_id, user_name, user_email, user_question, resolved, resolved_by,
+		(NULLIF($1::text, '')::uuid, $2, $3, $4)
+		RETURNING support_id, COALESCE(user_id::text,''), user_name, user_email, user_question, resolved, COALESCE(resolved_by::text,''),
 		 created_date, updated_date;
 		`,
 		userId, userName, userEmail, userQuestion,
@@ -56,7 +56,7 @@ func (d *Service) GetSupportTickets(ctx context.Context, Limit int, Offset int) 
 	}
 
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT support_id, user_id, user_name, user_email, user_question, resolved, resolved_by,
+		`SELECT support_id, COALESCE(user_id::text,''), user_name, user_email, user_question, resolved, COALESCE(resolved_by::text,''),
 		 created_date, updated_date 
 		FROM thunderdome.support LIMIT $1 OFFSET $2;`,
 		Limit, Offset,
@@ -99,7 +99,7 @@ func (d *Service) GetSupportTicketByID(ctx context.Context, id string) (thunderd
 	sup := thunderdome.Support{}
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT support_id, user_id, user_name, user_email, user_question, resolved, resolved_by,
+		`SELECT support_id, COALESCE(user_id::text,''), user_name, user_email, user_question, resolved, COALESCE(resolved_by::text,''),
 		 created_date, updated_date 
 		FROM thunderdome.support WHERE support_id = $1;`,
 		id,
