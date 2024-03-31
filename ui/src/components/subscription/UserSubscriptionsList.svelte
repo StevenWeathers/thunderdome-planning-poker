@@ -5,14 +5,29 @@
   import AssociatedTeam from './AssociatedTeam.svelte';
   import AssociatedOrganization from './AssociatedOrganization.svelte';
   import HollowButton from '../global/HollowButton.svelte';
+  import AssociateTeamForm from './AssociateTeamForm.svelte';
+  import AssociateOrgForm from './AssociateOrgForm.svelte';
 
   export let eventTag;
   export let notifications;
   export let xfetch = async (url: string, ...options: any) => {};
 
   let userSubscriptions = [];
+  let showAssociateTeam = false;
+  let showAssociateOrganization = false;
+  let selectedSubscriptionId = null;
 
-  function getApiKeys() {
+  const toggleAssociateTeam = subId => () => {
+    showAssociateTeam = !showAssociateTeam;
+    selectedSubscriptionId = subId;
+  };
+
+  const toggleAssociateOrganization = subId => () => {
+    showAssociateOrganization = !showAssociateOrganization;
+    selectedSubscriptionId = subId;
+  };
+
+  function getSubscriptions() {
     xfetch(`/api/users/${$user.id}/subscriptions`)
       .then((res: any) => res.json())
       .then(function (result) {
@@ -24,8 +39,12 @@
       });
   }
 
+  function handleAssociate() {
+    getSubscriptions();
+  }
+
   onMount(() => {
-    getApiKeys();
+    getSubscriptions();
   });
 </script>
 
@@ -87,7 +106,11 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     {#if sub.type === 'organization'}
                       {#if sub.organization_id === ''}
-                        <HollowButton>Associate to Organization</HollowButton>
+                        <HollowButton
+                          onClick="{toggleAssociateOrganization(sub.id)}"
+                        >
+                          Associate to Organization
+                        </HollowButton>
                       {:else}
                         <AssociatedOrganization
                           userId="{$user.id}"
@@ -104,7 +127,9 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     {#if sub.type === 'team'}
                       {#if sub.team_id === ''}
-                        <HollowButton>Associate to Team</HollowButton>
+                        <HollowButton onClick="{toggleAssociateTeam(sub.id)}">
+                          Associate to Team
+                        </HollowButton>
                       {:else}
                         <AssociatedTeam
                           userId="{$user.id}"
@@ -129,4 +154,26 @@
       </div>
     </div>
   </div>
+
+  {#if showAssociateTeam}
+    <AssociateTeamForm
+      handleUpdate="{handleAssociate}"
+      toggleClose="{toggleAssociateTeam(null)}"
+      subscriptionId="{selectedSubscriptionId}"
+      xfetch="{xfetch}"
+      notifications="{notifications}"
+      eventTag="{eventTag}"
+    />
+  {/if}
+
+  {#if showAssociateOrganization}
+    <AssociateOrgForm
+      handleUpdate="{handleAssociate}"
+      toggleClose="{toggleAssociateOrganization(null)}"
+      subscriptionId="{selectedSubscriptionId}"
+      xfetch="{xfetch}"
+      notifications="{notifications}"
+      eventTag="{eventTag}"
+    />
+  {/if}
 </div>
