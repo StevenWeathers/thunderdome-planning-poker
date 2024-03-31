@@ -22,6 +22,7 @@ type loginResponse struct {
 	User        *thunderdome.User `json:"user"`
 	SessionId   string            `json:"sessionId"`
 	MFARequired bool              `json:"mfaRequired"`
+	Subscribed  bool              `json:"subscribed"`
 }
 
 // handleLogin attempts to log in the user
@@ -70,10 +71,13 @@ func (s *Service) handleLogin() http.HandlerFunc {
 			return
 		}
 
+		subscribed := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, authedUser.Id)
+
 		res := loginResponse{
 			User:        authedUser,
 			SessionId:   sessionId,
 			MFARequired: authedUser.MFAEnabled,
+			Subscribed:  subscribed == nil,
 		}
 
 		if authedUser.MFAEnabled {

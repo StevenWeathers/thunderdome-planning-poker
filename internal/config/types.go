@@ -1,5 +1,7 @@
 package config
 
+import "github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+
 type Config struct {
 	Http
 	Analytics
@@ -10,7 +12,7 @@ type Config struct {
 	Config AppConfig
 	Feature
 	Auth
-	Subscription
+	Subscription thunderdome.SubscriptionConfig
 }
 
 type Http struct {
@@ -123,11 +125,4 @@ type AuthLdap struct {
 	Filter   string
 	MailAttr string `mapstructure:"mail_attr"`
 	CnAttr   string `mapstructure:"cn_attr"`
-}
-
-type Subscription struct {
-	CheckoutLink  string `mapstructure:"checkout_link"`
-	ManageLink    string `mapstructure:"manage_link"`
-	AccountSecret string `mapstructure:"account_secret"`
-	WebhookSecret string `mapstructure:"webhook_secret"`
 }

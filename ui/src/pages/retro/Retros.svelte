@@ -7,6 +7,7 @@
   import { appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import BoxList from '../../components/BoxList.svelte';
+  import Pagination from '../../components/global/Pagination.svelte';
 
   export let xfetch;
   export let notifications;
@@ -14,21 +15,37 @@
   export let eventTag;
 
   let retros = [];
+  const retrosPageLimit = 10;
+  let retroCount = 0;
+  let retrosPage = 1;
 
-  xfetch(`/api/users/${$user.id}/retros`)
-    .then(res => res.json())
-    .then(function (bs) {
-      retros = bs.data;
-    })
-    .catch(function () {
-      notifications.danger($LL.getRetrosErrorMessage());
-      eventTag('fetch_retros', 'engagement', 'failure');
-    });
+  function getRetros() {
+    const retrosOffset = (retrosPage - 1) * retrosPageLimit;
+
+    xfetch(
+      `/api/users/${$user.id}/retros?limit=${retrosPageLimit}&offset=${retrosOffset}`,
+    )
+      .then(res => res.json())
+      .then(function (result) {
+        retros = result.data;
+        retroCount = result.meta.count;
+      })
+      .catch(function () {
+        notifications.danger($LL.getRetrosErrorMessage());
+        eventTag('fetch_retros', 'engagement', 'failure');
+      });
+  }
+
+  const changePage = evt => {
+    retrosPage = evt.detail;
+    getRetros();
+  };
 
   onMount(() => {
     if (!$user.id) {
       router.route(appRoutes.login);
     }
+    getRetros();
   });
 </script>
 
@@ -54,6 +71,16 @@
         ownerNameField="teamName"
         joinBtnText="{$LL.joinRetro()}"
       />
+      {#if retroCount > retrosPageLimit}
+        <div class="mt-6 pt-1 flex justify-center">
+          <Pagination
+            bind:current="{retrosPage}"
+            num_items="{retroCount}"
+            per_page="{retrosPageLimit}"
+            on:navigate="{changePage}"
+          />
+        </div>
+      {/if}
     </div>
 
     <div class="w-full md:w-1/2 lg:w-2/5 md:ps-2 xl:ps-4">

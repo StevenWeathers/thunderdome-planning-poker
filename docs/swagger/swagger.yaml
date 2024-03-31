@@ -213,6 +213,8 @@ definitions:
         type: boolean
       sessionId:
         type: string
+      subscribed:
+        type: boolean
       user:
         $ref: '#/definitions/thunderdome.User'
     type: object
@@ -340,6 +342,13 @@ definitions:
     required:
     - storyboardName
     type: object
+  http.subscriptionAssociateRequestBody:
+    properties:
+      organization_id:
+        type: string
+      team_id:
+        type: string
+    type: object
   http.subscriptionRequestBody:
     properties:
       active:
@@ -348,7 +357,11 @@ definitions:
         type: string
       expires:
         type: string
+      organization_id:
+        type: string
       subscription_id:
+        type: string
+      team_id:
         type: string
       type:
         enum:
@@ -794,6 +807,10 @@ definitions:
         type: string
       phase:
         type: string
+      readyUsers:
+        items:
+          type: string
+        type: array
       teamName:
         type: string
       updatedDate:
@@ -1071,7 +1088,11 @@ definitions:
         type: string
       id:
         type: string
+      organization_id:
+        type: string
       subscription_id:
+        type: string
+      team_id:
         type: string
       type:
         type: string
@@ -1201,8 +1222,6 @@ definitions:
         type: boolean
       rank:
         type: string
-      subscribed:
-        type: boolean
       theme:
         type: string
       updatedDate:
@@ -6009,6 +6028,81 @@ paths:
       summary: Create Storyboard
       tags:
       - storyboard
+  /users/{userId}/subscriptions:
+    get:
+      description: get list of active entity user subscriptions
+      parameters:
+      - description: the entity user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Subscription'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Entity User Active Subscriptions
+      tags:
+      - subscription
+  /users/{userId}/subscriptions/{subscriptionId}:
+    patch:
+      description: get list of active entity user subscriptions
+      parameters:
+      - description: the entity user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the subscription ID to update
+        in: path
+        name: subscriptionId
+        required: true
+        type: string
+      - description: update subscription association object
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/http.subscriptionAssociateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/thunderdome.Subscription'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Entity User Subscriptions
+      tags:
+      - subscription
   /users/{userId}/teams:
     get:
       description: Get a list of teams the user is a part of

@@ -118,10 +118,25 @@ func main() {
 		SecureCookieFlag:   c.Http.SecureCookie,
 		SessionCookieName:  c.Http.SessionCookieName,
 	})
+	emailSvc := email.New(&email.Config{
+		AppURL:            "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
+		RepoURL:           repoURL,
+		SenderName:        "Thunderdome",
+		SmtpEnabled:       c.Smtp.Enabled,
+		SmtpHost:          c.Smtp.Host,
+		SmtpPort:          c.Smtp.Port,
+		SmtpSecure:        c.Smtp.Secure,
+		SmtpUser:          c.Smtp.User,
+		SmtpPass:          c.Smtp.Pass,
+		SmtpSender:        c.Smtp.Sender,
+		SmtpSkipTLSVerify: c.Smtp.SkipTLSVerify,
+		SmtpAuth:          c.Smtp.Auth,
+	}, logger)
 	subscriptionService := subscription.New(subscription.Config{
 		AccountSecret: c.Subscription.AccountSecret,
 		WebhookSecret: c.Subscription.WebhookSecret,
-	}, logger, subscriptionDataSvc)
+	}, logger, subscriptionDataSvc, emailSvc, userService,
+	)
 
 	HFS, FSS := ui.New(embedUseOS)
 	h := http.New(http.Service{
@@ -168,20 +183,7 @@ func main() {
 				PongWaitSec:   c.Http.WebsocketPongWaitSec,
 			},
 		},
-		Email: email.New(&email.Config{
-			AppURL:            "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
-			RepoURL:           repoURL,
-			SenderName:        "Thunderdome",
-			SmtpEnabled:       c.Smtp.Enabled,
-			SmtpHost:          c.Smtp.Host,
-			SmtpPort:          c.Smtp.Port,
-			SmtpSecure:        c.Smtp.Secure,
-			SmtpUser:          c.Smtp.User,
-			SmtpPass:          c.Smtp.Pass,
-			SmtpSender:        c.Smtp.Sender,
-			SmtpSkipTLSVerify: c.Smtp.SkipTLSVerify,
-			SmtpAuth:          c.Smtp.Auth,
-		}, logger),
+		Email:               emailSvc,
 		Cookie:              cookie,
 		Logger:              logger,
 		UserDataSvc:         userService,
@@ -231,8 +233,7 @@ func main() {
 				FeatureStoryboard:         c.Feature.Storyboard,
 				RequireTeams:              c.Config.RequireTeams,
 				SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
-				SubscriptionCheckoutLink:  c.Subscription.CheckoutLink,
-				SubscriptionManageLink:    c.Subscription.ManageLink,
+				Subscription:              c.Subscription,
 				RepoURL:                   repoURL,
 			},
 		},

@@ -241,9 +241,61 @@ This is where you can define what each color means.
 - Passcode (optional) 
 - Facilitator Code (optional) 
 
-## Teams and Team Standups
+## Teams, Organizations, and Departments
+
+![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/9a3cc4ea-3a6b-4b00-9664-1941209d7568)
+
+Teams can be simple, or they can be within Organizations and Departments.
+
+### Organizations
+
+![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/451a6ba4-c712-4e41-8928-bce48c942e20)
+
+#### Create Organization
+
+- Name
+
+### Departments
+
+![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/8fdb047b-8abf-4bfe-b8c1-5904ece4934b)
+
+#### Create Department
+
+- Name
+
+### Teams
+
+#### Create Team
+
+- Name
+
+#### Add User
+
+- User Email
+- Role  
+Admin or Member
+
+#### Checkins
 
 Asynchronous daily standup tool to aid in speeding up standup or making standups completely async depending on team practices.
+
+![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/eab485f4-7254-46bf-b2e8-11e468ba47f0)
+
+##### Check In
+
+Provide your daily standup report. What did you do yesterday? What are you doing today? Any blockers? Anything to discuss?
+
+![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/e4411409-421e-4c54-bd4e-d73ab006153a)
+
+Choose your timezone.
+
+![image](https://github.com/StevenWeathers/thunderdome-planning-poker/assets/135884/00af5a6c-f19d-4de9-916a-a2cec975f60d)
+
+##### Create Battles, Retros, and Storyboards
+
+Creating these sessions within a Team, Organization, or Department will pre-populate those fields.
+
+See each individual section for further details about creating battles, retros, and storyboards. 
 
 ## Languages
 

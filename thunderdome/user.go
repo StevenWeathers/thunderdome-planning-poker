@@ -25,7 +25,6 @@ type User struct {
 	Disabled             bool      `json:"disabled"`
 	MFAEnabled           bool      `json:"mfaEnabled"`
 	Theme                string    `json:"theme"`
-	Subscribed           bool      `json:"subscribed"`
 }
 
 type UserDataSvc interface {

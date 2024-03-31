@@ -112,7 +112,7 @@
     </div>
   </div>
 
-  {#if apiPrefix === '/api'}
+  {#if apiPrefix === '/api' && $user.rank !== 'GUEST'}
     <div class="mb-4">
       <label
         class="text-gray-700 dark:text-gray-400 text-sm font-bold inline-block mb-2"

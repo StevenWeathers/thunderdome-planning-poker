@@ -220,8 +220,8 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// subscribedUserOnly validates that the request was made by a subscribed user
-func (s *Service) subscribedUserOnly(h http.HandlerFunc) http.HandlerFunc {
+// subscribedEntityUserOnly validates that the request was made by the subscribed entity user
+func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		ctx := r.Context()
@@ -239,10 +239,13 @@ func (s *Service) subscribedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, EntityUserID)
-		if subscriberErr != nil {
-			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_SUBSCRIBED_USER"))
-			return
+		// admins can bypass active subscriber functions
+		if UserType != adminUserType {
+			subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, EntityUserID)
+			if subscriberErr != nil {
+				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_SUBSCRIBED_USER"))
+				return
+			}
 		}
 
 		h(w, r)
