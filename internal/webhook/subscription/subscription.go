@@ -2,6 +2,7 @@
 package subscription
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,19 +27,29 @@ type Config struct {
 }
 
 type Service struct {
-	config  Config
-	logger  *otelzap.Logger
-	dataSvc thunderdome.SubscriptionDataSvc
+	config      Config
+	logger      *otelzap.Logger
+	dataSvc     thunderdome.SubscriptionDataSvc
+	emailSvc    thunderdome.EmailService
+	userDataSvc thunderdome.UserDataSvc
 }
 
-func New(config Config, logger *otelzap.Logger, dataSvc thunderdome.SubscriptionDataSvc) *Service {
+func New(
+	config Config,
+	logger *otelzap.Logger,
+	dataSvc thunderdome.SubscriptionDataSvc,
+	emailSvc thunderdome.EmailService,
+	userDataSvc thunderdome.UserDataSvc,
+) *Service {
 	// The library needs to be configured with your account's secret key.
 	// Ensure the key is kept out of any version control system you might be using.
 	stripe.Key = config.AccountSecret
 	return &Service{
-		logger:  logger,
-		config:  config,
-		dataSvc: dataSvc,
+		logger:      logger,
+		config:      config,
+		dataSvc:     dataSvc,
+		emailSvc:    emailSvc,
+		userDataSvc: userDataSvc,
 	}
 }
 
@@ -128,6 +139,20 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
+
+			go func(ctx context.Context) {
+				user, userErr := s.userDataSvc.GetUser(ctx, sub.UserID)
+				if userErr != nil {
+					logger.Error(fmt.Sprintf("error getting user to send subscription active email: %v", userErr),
+						zap.String("eventId", event.ID))
+					return
+				}
+				emailErr := s.emailSvc.SendUserSubscriptionActive(user.Id, user.Email, sub.Type)
+				if emailErr != nil {
+					logger.Error(fmt.Sprintf("error sending subscription active email: %v", emailErr),
+						zap.String("eventId", event.ID))
+				}
+			}(context.WithoutCancel(ctx))
 		case "customer.subscription.updated":
 			var sub stripe.Subscription
 			err := json.Unmarshal(event.Data.Raw, &sub)
@@ -144,7 +169,12 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 				return
 			}
 			subscription.Expires = time.Unix(sub.CurrentPeriodEnd, 0)
-			subscription.Active = sub.Status == "active"
+			subscriptionStatusChanged := false
+			stripeStatusIsActive := sub.Status == "active"
+			if subscription.Active != stripeStatusIsActive {
+				subscriptionStatusChanged = true
+				subscription.Active = stripeStatusIsActive
+			}
 			//subscription.Type = "user" // @TODO - get subtype from update metadata and update if different
 
 			_, err = s.dataSvc.UpdateSubscription(ctx, subscription.ID, subscription)
@@ -152,6 +182,38 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 				logger.Error(fmt.Sprintf("Error creating subscription: %v", err), zap.String("eventId", event.ID))
 				w.WriteHeader(http.StatusInternalServerError)
 				return
+			}
+
+			if subscriptionStatusChanged {
+				if !subscription.Active {
+					go func(ctx context.Context) {
+						user, userErr := s.userDataSvc.GetUser(ctx, subscription.UserID)
+						if userErr != nil {
+							logger.Error(fmt.Sprintf("error getting user to send subscription deactivated email: %v", userErr),
+								zap.String("eventId", event.ID))
+							return
+						}
+						emailErr := s.emailSvc.SendUserSubscriptionDeactivated(user.Id, user.Email, subscription.Type)
+						if emailErr != nil {
+							logger.Error(fmt.Sprintf("error sending subscription deactivated email: %v", emailErr),
+								zap.String("eventId", event.ID))
+						}
+					}(context.WithoutCancel(ctx))
+				} else {
+					go func(ctx context.Context) {
+						user, userErr := s.userDataSvc.GetUser(ctx, subscription.UserID)
+						if userErr != nil {
+							logger.Error(fmt.Sprintf("error getting user to send subscription active email: %v", userErr),
+								zap.String("eventId", event.ID))
+							return
+						}
+						emailErr := s.emailSvc.SendUserSubscriptionActive(user.Id, user.Email, subscription.Type)
+						if emailErr != nil {
+							logger.Error(fmt.Sprintf("error sending subscription activate email: %v", emailErr),
+								zap.String("eventId", event.ID))
+						}
+					}(context.WithoutCancel(ctx))
+				}
 			}
 		default:
 			logger.Error(fmt.Sprintf("Unhandled Stripe webhook event type: %s", event.Type), zap.String("eventId", event.ID))
