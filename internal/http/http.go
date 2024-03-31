@@ -113,7 +113,10 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	userRouter.HandleFunc("/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleCreateOrganization()))).Methods("POST")
 	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUser()))).Methods("GET")
 	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleCreateTeam()))).Methods("POST")
-	userRouter.HandleFunc("/{userId}/subscriptions", a.userOnly(a.entityUserOnly(a.handleGetEntityUserActiveSubs()))).Methods("GET")
+	if a.Config.SubscriptionsEnabled {
+		userRouter.HandleFunc("/{userId}/subscriptions", a.userOnly(a.entityUserOnly(a.handleGetEntityUserActiveSubs()))).Methods("GET")
+		userRouter.HandleFunc("/{userId}/subscriptions/{subscriptionId}", a.userOnly(a.entityUserOnly(a.handleEntityUserUpdateSubscription()))).Methods("PATCH")
+	}
 	userRouter.HandleFunc("/{userId}/jira-instances", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleGetUserJiraInstances())))).Methods("GET")
 	userRouter.HandleFunc("/{userId}/jira-instances", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraInstanceCreate())))).Methods("POST")
 	userRouter.HandleFunc("/{userId}/jira-instances/{instanceId}", a.userOnly(a.entityUserOnly(a.subscribedEntityUserOnly(a.handleJiraInstanceUpdate())))).Methods("PUT")
