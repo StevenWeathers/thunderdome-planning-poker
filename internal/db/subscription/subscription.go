@@ -138,7 +138,7 @@ func (s *Service) CreateSubscription(ctx context.Context, subscription thunderdo
 	err := s.DB.QueryRowContext(ctx,
 		`INSERT INTO thunderdome.subscription 
 				(user_id, team_id, organization_id, customer_id, subscription_id, type, expires)
-				VALUES ($1, NULLIF($2::text,''), NULLIF($3::text,''), $4, $5, $6, $7)
+				VALUES ($1, NULLIF($2::text,'')::uuid, NULLIF($3::text,'')::uuid, $4, $5, $6, $7)
 				RETURNING id, user_id, COALESCE(team_id::text, ''), COALESCE(organization_id::text, ''), customer_id, subscription_id, active, type, expires, created_date, updated_date;`,
 		subscription.UserID, subscription.TeamID, subscription.OrganizationID,
 		subscription.CustomerID, subscription.SubscriptionID, subscription.Type, subscription.Expires,

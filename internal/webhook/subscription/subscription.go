@@ -149,7 +149,13 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 
 			_, err = s.dataSvc.CreateSubscription(ctx, sub)
 			if err != nil {
-				logger.Error(fmt.Sprintf("Error creating subscription: %v", err), zap.String("eventId", event.ID))
+				logger.Error(fmt.Sprintf("Error creating subscription: %v", err),
+					zap.String("eventId", event.ID),
+					zap.String("subUserId", sub.UserID),
+					zap.String("subId", sub.SubscriptionID),
+					zap.String("subType", sub.Type),
+					zap.Time("subExpires", sub.Expires),
+				)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
