@@ -2,8 +2,13 @@ package oauth
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+
+	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/cookie"
 
@@ -13,17 +18,25 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func New(config Config, cookie *cookie.Cookie, ctx context.Context) (*AuthProvider, error) {
-	ap := AuthProvider{
-		config: config,
-		cookie: cookie,
+func New(
+	config Config,
+	cookie *cookie.Cookie,
+	logger *otelzap.Logger,
+	authDataSvc thunderdome.AuthDataSvc,
+	ctx context.Context,
+) (*Service, error) {
+	s := Service{
+		config:      config,
+		cookie:      cookie,
+		logger:      logger,
+		authDataSvc: authDataSvc,
 	}
 	provider, err := oidc.NewProvider(ctx, config.ProviderURL)
 	if err != nil {
 		return nil, err
 	}
 
-	ap.oauth2Config = oauth2.Config{
+	s.oauth2Config = &oauth2.Config{
 		ClientID:     config.ClientID,
 		ClientSecret: config.ClientSecret,
 		RedirectURL:  config.RedirectURL,
@@ -35,38 +48,44 @@ func New(config Config, cookie *cookie.Cookie, ctx context.Context) (*AuthProvid
 		Scopes: []string{oidc.ScopeOpenID, "profile", "email"},
 	}
 
-	ap.verifier = provider.Verifier(&oidc.Config{ClientID: config.ClientID})
+	s.verifier = provider.Verifier(&oidc.Config{ClientID: config.ClientID})
 
-	return &ap, nil
+	return &s, nil
 }
 
-func (ap *AuthProvider) handleRedirect(w http.ResponseWriter, r *http.Request) {
+func (s *Service) HandleOAuth2Redirect(w http.ResponseWriter, r *http.Request) {
 	// @TODO - create a nonce in DB to send to oauth provider
+	nonce, err := uuid.NewUUID()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
+	// create state cookie for callback state verification
 	state, err := uuid.NewUUID()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	err = ap.cookie.CreateCookie(w, ap.config.StateCookieName, state.String(), int(time.Minute.Seconds()*10))
+	stateString := state.String()
+	err = s.cookie.CreateCookie(w, s.config.StateCookieName, stateString, int(time.Minute.Seconds()*10))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	http.Redirect(w, r, ap.oauth2Config.AuthCodeURL(state.String()), http.StatusFound)
+	http.Redirect(w, r, s.oauth2Config.AuthCodeURL(stateString, oidc.Nonce(nonce.String())), http.StatusFound)
 }
 
-func (ap *AuthProvider) handleOAuth2Callback(w http.ResponseWriter, r *http.Request) {
+func (s *Service) HandleOAuth2Callback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := ap.logger.Ctx(ctx)
+	logger := s.logger.Ctx(ctx)
 	rq := r.URL.Query()
 	state := rq.Get("state")
 	code := rq.Get("code")
 
 	// Verify state
-	stateCookie, err := ap.cookie.GetCookie(w, r, ap.config.StateCookieName)
+	stateCookie, err := s.cookie.GetCookie(w, r, s.config.StateCookieName)
 	if err != nil || state != stateCookie {
 		logger.Error("invalid oauth state", zap.String("stateParam", state),
 			zap.String("stateCookie", stateCookie), zap.Error(err))
@@ -75,7 +94,7 @@ func (ap *AuthProvider) handleOAuth2Callback(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Exchange code for oauth token
-	oauth2Token, err := ap.oauth2Config.Exchange(ctx, code)
+	oauth2Token, err := s.oauth2Config.Exchange(ctx, code)
 	if err != nil {
 		logger.Error("error exchanging oidc code for token", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
@@ -91,7 +110,7 @@ func (ap *AuthProvider) handleOAuth2Callback(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Parse and verify ID Token payload.
-	idToken, err := ap.verifier.Verify(ctx, rawIDToken)
+	idToken, err := s.verifier.Verify(ctx, rawIDToken)
 	if err != nil {
 		logger.Error("error parsing and verifying id_token", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
@@ -100,6 +119,7 @@ func (ap *AuthProvider) handleOAuth2Callback(w http.ResponseWriter, r *http.Requ
 
 	// Extract custom claims
 	var claims struct {
+		Name          string `json:"name"`
 		Email         string `json:"email"`
 		EmailVerified bool   `json:"email_verified"`
 		Nonce         string `json:"nonce"`
@@ -113,5 +133,25 @@ func (ap *AuthProvider) handleOAuth2Callback(w http.ResponseWriter, r *http.Requ
 
 	// @TODO - verify nonce
 
-	// @TODO - find user and set session cookies then redirect
+	user, sessionId, userErr := s.authDataSvc.OauthAuthUser(ctx, s.config.ProviderName, claims.Email, claims.EmailVerified, claims.Name, claims.Picture)
+	if userErr != nil {
+		logger.Error("error authenticating oauth user", zap.Error(userErr))
+		ue := err.Error()
+		if ue == "USER_DISABLED" {
+			w.WriteHeader(http.StatusUnauthorized)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return
+	}
+
+	if scErr := s.cookie.CreateSessionCookie(w, sessionId); scErr != nil {
+		logger.Error("error creating oauth user session cookie", zap.Error(scErr), zap.String("userId", user.Id))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// @TODO - set frontend user cookie for UI
+
+	http.Redirect(w, r, fmt.Sprintf("%s/", s.config.PathPrefix), http.StatusTemporaryRedirect)
 }

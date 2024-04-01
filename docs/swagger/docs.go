@@ -9682,6 +9682,9 @@ const docTemplate = `{
                 "notificationsEnabled": {
                     "type": "boolean"
                 },
+                "picture_url": {
+                    "type": "string"
+                },
                 "rank": {
                     "type": "string"
                 },

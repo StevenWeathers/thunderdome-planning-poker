@@ -6,7 +6,11 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/oauth"
 
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
@@ -308,6 +312,27 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		apiRouter.PathPrefix("/subscriptions").Handler(a.userOnly(a.adminOnly(a.handleSubscriptionCreate()))).Methods("POST")
 		a.Router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
 	}
+
+	// @TODO - abstract things because work in progress!
+	authProviderConfigs := make([]thunderdome.AuthProviderConfig, 0)
+	authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
+		ProviderName: "google",
+		ProviderURL:  "https://accounts.google.com",
+	})
+	oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", strings.ToLower(authProviderConfigs[0].ProviderName), "/login")
+	oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", strings.ToLower(authProviderConfigs[0].ProviderName), "/callback")
+	redirectURL, _ := url.JoinPath(fmt.Sprintf("http://%s:%s", a.Config.AppDomain, a.Config.Port), oauthCallbackPathPrefix)
+	googleAuthProvider, err := oauth.New(oauth.Config{
+		AuthProviderConfig: authProviderConfigs[0],
+		RedirectURL:        redirectURL,
+		StateCookieName:    "td_oauthstate",
+		PathPrefix:         a.Config.PathPrefix,
+	}, a.Cookie, a.Logger, a.AuthDataSvc, context.Background())
+	if err != nil {
+		panic(err)
+	}
+	a.Router.PathPrefix(oauthLoginPathPrefix).HandlerFunc(googleAuthProvider.HandleOAuth2Redirect).Methods("GET")
+	a.Router.PathPrefix(oauthCallbackPathPrefix).HandlerFunc(googleAuthProvider.HandleOAuth2Callback).Methods("GET")
 
 	// static assets
 	a.Router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))

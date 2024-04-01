@@ -25,6 +25,7 @@ type User struct {
 	Disabled             bool      `json:"disabled"`
 	MFAEnabled           bool      `json:"mfaEnabled"`
 	Theme                string    `json:"theme"`
+	PictureURL           string    `json:"picture_url"`
 }
 
 type UserDataSvc interface {

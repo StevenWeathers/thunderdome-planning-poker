@@ -32,7 +32,9 @@ func (d *Service) AuthUser(ctx context.Context, UserEmail string, UserPassword s
 	sanitizedEmail := db.SanitizeEmail(UserEmail)
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled, theme FROM thunderdome.users WHERE LOWER(email) = $1`,
+		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled, theme
+			FROM thunderdome.users
+			WHERE provider = 'internal' AND LOWER(email) = $1`,
 		sanitizedEmail,
 	).Scan(
 		&user.Id,
