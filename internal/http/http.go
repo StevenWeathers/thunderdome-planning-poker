@@ -7,7 +7,6 @@ import (
 	"io/fs"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/oauth"
@@ -313,26 +312,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		a.Router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
 	}
 
-	// @TODO - abstract things because work in progress!
-	authProviderConfigs := make([]thunderdome.AuthProviderConfig, 0)
-	authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
-		ProviderName: "google",
-		ProviderURL:  "https://accounts.google.com",
-	})
-	oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", strings.ToLower(authProviderConfigs[0].ProviderName), "/login")
-	oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", strings.ToLower(authProviderConfigs[0].ProviderName), "/callback")
-	redirectURL, _ := url.JoinPath(fmt.Sprintf("http://%s:%s", a.Config.AppDomain, a.Config.Port), oauthCallbackPathPrefix)
-	googleAuthProvider, err := oauth.New(oauth.Config{
-		AuthProviderConfig: authProviderConfigs[0],
-		RedirectURL:        redirectURL,
-		StateCookieName:    "td_oauthstate",
-		PathPrefix:         a.Config.PathPrefix,
-	}, a.Cookie, a.Logger, a.AuthDataSvc, a.SubscriptionDataSvc, context.Background())
-	if err != nil {
-		panic(err)
-	}
-	a.Router.PathPrefix(oauthLoginPathPrefix).HandlerFunc(googleAuthProvider.HandleOAuth2Redirect).Methods("GET")
-	a.Router.PathPrefix(oauthCallbackPathPrefix).HandlerFunc(googleAuthProvider.HandleOAuth2Callback).Methods("GET")
+	a.registerOauthProviderEndpoints()
 
 	// static assets
 	a.Router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
@@ -342,6 +322,48 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	a.Router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))
 
 	return a
+}
+
+func (s *Service) registerOauthProviderEndpoints() {
+	ctx := context.Background()
+	var redirectBaseURL string
+	var port string
+
+	// redirect with port for localhost
+	if s.Config.AppDomain == "localhost" {
+		port = fmt.Sprintf(":%s", s.Config.Port)
+	}
+
+	if s.Config.SecureProtocol {
+		redirectBaseURL = fmt.Sprintf("https://%s%s", s.Config.AppDomain, port)
+	} else {
+		redirectBaseURL = fmt.Sprintf("http://%s%s%s", s.Config.AppDomain, port, s.Config.PathPrefix)
+	}
+
+	// @TODO - get providers from app config
+	authProviderConfigs := make([]thunderdome.AuthProviderConfig, 0)
+	authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
+		ProviderName: "google",
+		ProviderURL:  "https://accounts.google.com",
+		ClientID:     "",
+		ClientSecret: "",
+	})
+
+	for _, c := range authProviderConfigs {
+		oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/login")
+		oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/callback")
+		callbackRedirectURL, _ := url.JoinPath(redirectBaseURL, oauthCallbackPathPrefix)
+		googleAuthProvider, err := oauth.New(oauth.Config{
+			AuthProviderConfig:  authProviderConfigs[0],
+			CallbackRedirectURL: callbackRedirectURL,
+			UIRedirectURL:       fmt.Sprintf("%s/", s.Config.PathPrefix),
+		}, s.Cookie, s.Logger, s.AuthDataSvc, s.SubscriptionDataSvc, ctx)
+		if err != nil {
+			panic(err)
+		}
+		s.Router.PathPrefix(oauthLoginPathPrefix).HandlerFunc(googleAuthProvider.HandleOAuth2Redirect).Methods("GET")
+		s.Router.PathPrefix(oauthCallbackPathPrefix).HandlerFunc(googleAuthProvider.HandleOAuth2Callback).Methods("GET")
+	}
 }
 
 func (s *Service) ListenAndServe() error {

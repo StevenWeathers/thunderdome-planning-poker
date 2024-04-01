@@ -44,6 +44,8 @@ type Config struct {
 	AppDomain string
 	// PathPrefix allows the application to be run on a shared domain
 	PathPrefix string
+	// SecureProtocol whether the application is accessed through HTTPS
+	SecureProtocol bool
 	// Whether the external API is enabled
 	ExternalAPIEnabled bool
 	// Whether the external API requires user verified email

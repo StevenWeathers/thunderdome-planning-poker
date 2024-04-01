@@ -16,18 +16,20 @@ type Config struct {
 }
 
 type Http struct {
-	CookieHashkey          string `mapstructure:"cookie_hashkey"`
 	Port                   string
 	SecureCookie           bool   `mapstructure:"secure_cookie"`
 	BackendCookieName      string `mapstructure:"backend_cookie_name"`
 	SessionCookieName      string `mapstructure:"session_cookie_name"`
 	FrontendCookieName     string `mapstructure:"frontend_cookie_name"`
+	AuthStateCookieName    string `mapstructure:"auth_state_cookie_name"`
 	Domain                 string
 	PathPrefix             string `mapstructure:"path_prefix"`
+	SecureProtocol         bool   `mapstructure:"secure_protocol"`
 	WriteTimeout           int    `mapstructure:"write_timeout"`
 	ReadTimeout            int    `mapstructure:"read_timeout"`
 	IdleTimeout            int    `mapstructure:"idle_timeout"`
 	ReadHeaderTimeout      int    `mapstructure:"read_header_timeout"`
+	CookieHashkey          string `mapstructure:"cookie_hashkey"`
 	WebsocketWriteWaitSec  int    `mapstructure:"websocket_write_wait_sec"`
 	WebsocketPingPeriodSec int    `mapstructure:"websocket_ping_period_sec"`
 	WebsocketPongWaitSec   int    `mapstructure:"websocket_pong_wait_sec"`
@@ -108,7 +110,6 @@ type Feature struct {
 type Auth struct {
 	Method string
 	Ldap   AuthLdap
-	Oidc   AuthOIDC
 	Header AuthHeader
 }
 
@@ -126,10 +127,4 @@ type AuthLdap struct {
 	Filter   string
 	MailAttr string `mapstructure:"mail_attr"`
 	CnAttr   string `mapstructure:"cn_attr"`
-}
-
-type AuthOIDC struct {
-	ProviderURL  string `mapstructure:"provider_url"`
-	ClientID     string `mapstructure:"client_id"`
-	ClientSecret string `mapstructure:"client_secret"`
 }

@@ -2,9 +2,7 @@ package oauth
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 
@@ -41,7 +39,7 @@ func New(
 	s.oauth2Config = &oauth2.Config{
 		ClientID:     config.ClientID,
 		ClientSecret: config.ClientSecret,
-		RedirectURL:  config.RedirectURL,
+		RedirectURL:  config.CallbackRedirectURL,
 
 		// Discovery returns the OAuth2 endpoints.
 		Endpoint: provider.Endpoint(),
@@ -50,7 +48,7 @@ func New(
 		Scopes: []string{oidc.ScopeOpenID, "profile", "email"},
 	}
 
-	s.verifier = provider.Verifier(&oidc.Config{ClientID: config.ClientID})
+	s.verifier = provider.VerifierContext(ctx, &oidc.Config{ClientID: config.ClientID})
 
 	return &s, nil
 }
@@ -62,6 +60,7 @@ func (s *Service) HandleOAuth2Redirect(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	nonceString := nonce.String()
 
 	// create state cookie for callback state verification
 	state, err := uuid.NewUUID()
@@ -69,14 +68,15 @@ func (s *Service) HandleOAuth2Redirect(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
 	stateString := state.String()
-	err = s.cookie.CreateCookie(w, s.config.StateCookieName, stateString, int(time.Minute.Seconds()*10))
+	err = s.cookie.CreateAuthStateCookie(w, stateString)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	http.Redirect(w, r, s.oauth2Config.AuthCodeURL(stateString, oidc.Nonce(nonce.String())), http.StatusFound)
+	http.Redirect(w, r, s.oauth2Config.AuthCodeURL(stateString, oidc.Nonce(nonceString)), http.StatusFound)
 }
 
 func (s *Service) HandleOAuth2Callback(w http.ResponseWriter, r *http.Request) {
@@ -87,10 +87,9 @@ func (s *Service) HandleOAuth2Callback(w http.ResponseWriter, r *http.Request) {
 	code := rq.Get("code")
 
 	// Verify state
-	stateCookie, err := s.cookie.GetCookie(w, r, s.config.StateCookieName)
-	if err != nil || state != stateCookie {
-		logger.Error("invalid oauth state", zap.String("stateParam", state),
-			zap.String("stateCookie", stateCookie), zap.Error(err))
+	err := s.cookie.ValidateAuthStateCookie(w, r, state)
+	if err != nil {
+		logger.Error("invalid oauth state", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -169,5 +168,5 @@ func (s *Service) HandleOAuth2Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("%s/", s.config.PathPrefix), http.StatusTemporaryRedirect)
+	http.Redirect(w, r, s.config.UIRedirectURL, http.StatusTemporaryRedirect)
 }

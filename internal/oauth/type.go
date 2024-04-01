@@ -10,9 +10,8 @@ import (
 
 type Config struct {
 	thunderdome.AuthProviderConfig
-	RedirectURL     string
-	StateCookieName string
-	PathPrefix      string
+	CallbackRedirectURL string
+	UIRedirectURL       string
 }
 
 type Service struct {

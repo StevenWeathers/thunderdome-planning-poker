@@ -111,13 +111,14 @@ func main() {
 	subscriptionDataSvc := &subscriptionData.Service{DB: d.DB, Logger: logger}
 	jiraDataSvc := &jiraData.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
 	cook := cookie.New(cookie.Config{
-		AppDomain:          c.Http.Domain,
-		PathPrefix:         c.Http.PathPrefix,
-		CookieHashKey:      c.Http.CookieHashkey,
-		FrontendCookieName: c.Http.FrontendCookieName,
-		SecureCookieName:   c.Http.BackendCookieName,
-		SecureCookieFlag:   c.Http.SecureCookie,
-		SessionCookieName:  c.Http.SessionCookieName,
+		AppDomain:           c.Http.Domain,
+		PathPrefix:          c.Http.PathPrefix,
+		CookieHashKey:       c.Http.CookieHashkey,
+		FrontendCookieName:  c.Http.FrontendCookieName,
+		SecureCookieName:    c.Http.BackendCookieName,
+		SecureCookieFlag:    c.Http.SecureCookie,
+		SessionCookieName:   c.Http.SessionCookieName,
+		AuthStateCookieName: c.Http.AuthStateCookieName,
 	})
 	emailSvc := email.New(&email.Config{
 		AppURL:            "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
@@ -148,6 +149,7 @@ func main() {
 			HttpIdleTimeout:           c.Http.IdleTimeout,
 			HttpReadHeaderTimeout:     c.Http.ReadHeaderTimeout,
 			AppDomain:                 c.Http.Domain,
+			SecureProtocol:            c.Http.SecureProtocol,
 			PathPrefix:                c.Http.PathPrefix,
 			ExternalAPIEnabled:        c.Config.AllowExternalApi,
 			ExternalAPIVerifyRequired: c.Config.ExternalApiVerifyRequired,
