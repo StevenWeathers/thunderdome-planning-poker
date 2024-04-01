@@ -106,7 +106,7 @@ func (s *Service) HandleWebhook() http.HandlerFunc {
 			// check and see if we've already handled the subscription checkout complete event before
 			_, subExistsErr := s.dataSvc.GetSubscriptionBySubscriptionID(ctx, cs.Subscription.ID)
 			if subExistsErr == nil {
-				logger.Error(fmt.Sprintf("Subscription %s checkout already processed, skipping.", cs.Subscription.ID),
+				logger.Info(fmt.Sprintf("Subscription %s checkout already processed, skipping.", cs.Subscription.ID),
 					zap.String("eventId", event.ID))
 				return
 			}
