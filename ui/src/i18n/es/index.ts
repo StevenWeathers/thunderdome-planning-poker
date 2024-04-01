@@ -105,6 +105,7 @@ const es: Translation = {
   conciseVotingResults: 'Concise Voting Results',
   confirmDeleteRetro: 'Are you sure you want to delete this retrospective?',
   createAccount: 'Create Account',
+  createAccountTagline: `Don't have an account?`,
   createAlertError: 'Error encountered creating alert',
   createAlertSuccess: 'Alert created successfully',
   createARetro: 'Create a Retro',
@@ -342,10 +343,6 @@ const es: Translation = {
   promoteUserError: 'Error encountered promoting user',
   questions: 'Questions',
   register: 'Register',
-  registerForRetro:
-    'or {registerOpen}Register{registerClose} to join the Retro',
-  registerForStoryboard:
-    'or {registerOpen}Register{registerClose} to join the Storyboard',
   reloadingRetro: 'Oops, reloading Retro...',
   reloadingStoryboard: 'Oops, reloading Storyboard...',
   remove: 'Remove',
@@ -589,10 +586,6 @@ const es: Translation = {
     'Create an Account {optionalOpen}(optional){optionalClose}',
   sendResetPasswordSuccess: 'Password reset instructions sent to {email}',
   sendResetPasswordError: 'Error encountered attempting to send password reset',
-  registerForBattle: {
-    true: 'or {registerOpen}Register{registerClose} to join the Game',
-    false: 'or {registerOpen}Register{registerClose} to join the Battle',
-  },
   chooseCountryPlaceholder: 'Choose your country (optional)',
   locale: 'Locale',
   companyPlaceholder: 'Enter your company (optional)',
