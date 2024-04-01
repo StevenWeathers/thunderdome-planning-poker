@@ -8850,6 +8850,9 @@
                 "name": {
                     "type": "string"
                 },
+                "pictureUrl": {
+                    "type": "string"
+                },
                 "role": {
                     "type": "string"
                 }
@@ -9008,6 +9011,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
                     "type": "string"
                 },
                 "rank": {
@@ -9203,6 +9209,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
                     "type": "string"
                 }
             }
@@ -9483,6 +9492,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "pictureUrl": {
+                    "type": "string"
                 }
             }
         },
@@ -9598,6 +9610,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
                     "type": "string"
                 },
                 "role": {

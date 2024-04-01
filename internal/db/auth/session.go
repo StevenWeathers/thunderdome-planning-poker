@@ -58,6 +58,7 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
         COALESCE(u.locale, ''),
         COALESCE(u.company, ''),
         COALESCE(u.job_title, ''),
+        COALESCE(u.picture_url, ''),
         u.created_date,
         u.updated_date,
         u.last_active
@@ -77,6 +78,7 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
 		&User.Locale,
 		&User.Company,
 		&User.JobTitle,
+		&User.PictureURL,
 		&User.CreatedDate,
 		&User.UpdatedDate,
 		&User.LastActive,

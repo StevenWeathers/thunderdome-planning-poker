@@ -330,7 +330,7 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 	var users = make([]*thunderdome.RetroUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
-			u.id, u.name, su.active, u.avatar, COALESCE(u.email, '')
+			u.id, u.name, su.active, u.avatar, COALESCE(u.email, ''), COALESCE(u.picture_url, '')
 		FROM thunderdome.retro_user su
 		LEFT JOIN thunderdome.users u ON su.user_id = u.id
 		WHERE su.retro_id = $1
@@ -341,7 +341,7 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w thunderdome.RetroUser
-			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.Email); err != nil {
+			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.Email, &w.PictureURL); err != nil {
 				d.Logger.Error("get retro users error", zap.Error(err))
 			} else {
 				if w.Email != "" {

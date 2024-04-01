@@ -650,6 +650,8 @@ definitions:
         type: string
       name:
         type: string
+      pictureUrl:
+        type: string
       role:
         type: string
     type: object
@@ -754,6 +756,8 @@ definitions:
       id:
         type: string
       name:
+        type: string
+      pictureUrl:
         type: string
       rank:
         type: string
@@ -882,6 +886,8 @@ definitions:
       id:
         type: string
       name:
+        type: string
+      pictureUrl:
         type: string
     type: object
   thunderdome.RetroVote:
@@ -1066,6 +1072,8 @@ definitions:
         type: string
       name:
         type: string
+      pictureUrl:
+        type: string
     type: object
   thunderdome.Subscription:
     properties:
@@ -1141,6 +1149,8 @@ definitions:
       id:
         type: string
       name:
+        type: string
+      pictureUrl:
         type: string
       role:
         type: string

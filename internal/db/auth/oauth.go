@@ -17,7 +17,7 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, email stri
 				ON CONFLICT (provider, lower((email)::text)) DO UPDATE
 				SET verified = EXCLUDED.verified
  				RETURNING id, name, email, type, verified, notifications_enabled,
- 				 COALESCE(locale, ''), disabled, theme, picture_url`,
+ 				 COALESCE(locale, ''), disabled, theme, , COALESCE(picture_url, '')`,
 		provider, email, emailVerified, name, pictureUrl,
 	).Scan(
 		&user.Id,

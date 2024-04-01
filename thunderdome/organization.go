@@ -20,6 +20,7 @@ type OrganizationUser struct {
 	Role         string `json:"role"`
 	Avatar       string `json:"avatar"`
 	GravatarHash string `json:"gravatarHash"`
+	PictureURL   string `json:"pictureUrl"`
 }
 
 type OrganizationUserInvite struct {
@@ -45,6 +46,7 @@ type DepartmentUser struct {
 	Role         string `json:"role"`
 	Avatar       string `json:"avatar"`
 	GravatarHash string `json:"gravatarHash"`
+	PictureURL   string `json:"pictureUrl"`
 }
 
 type OrganizationDataSvc interface {

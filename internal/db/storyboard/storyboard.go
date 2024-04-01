@@ -307,7 +307,7 @@ func (d *Service) GetStoryboardUsers(StoryboardID string) []*thunderdome.Storybo
 	var users = make([]*thunderdome.StoryboardUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
-			w.id, w.name, su.active, w.avatar, COALESCE(w.email, '')
+			w.id, w.name, su.active, w.avatar, COALESCE(w.email, ''), COALESCE(w.picture_url, '')
 		FROM thunderdome.storyboard_user su
 		LEFT JOIN thunderdome.users w ON su.user_id = w.id
 		WHERE su.storyboard_id = $1
@@ -318,7 +318,7 @@ func (d *Service) GetStoryboardUsers(StoryboardID string) []*thunderdome.Storybo
 		defer rows.Close()
 		for rows.Next() {
 			var w thunderdome.StoryboardUser
-			if err := rows.Scan(&w.Id, &w.Name, &w.Active, &w.Avatar, &w.GravatarHash); err != nil {
+			if err := rows.Scan(&w.Id, &w.Name, &w.Active, &w.Avatar, &w.GravatarHash, &w.PictureURL); err != nil {
 				d.Logger.Error("get_storyboard_users query scan error", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {

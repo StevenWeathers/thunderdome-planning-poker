@@ -36,7 +36,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 	rows, err := d.DB.QueryContext(ctx,
 		`
 		SELECT u.id, u.name, COALESCE(u.email, ''), u.type, u.avatar, u.verified, COALESCE(u.country, ''),
-		 COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled
+		 COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled, COALESCE(u.picture_url, '')
 		FROM thunderdome.users u
 		WHERE u.email IS NOT NULL
 		ORDER BY u.created_date
@@ -64,6 +64,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 			&w.Company,
 			&w.JobTitle,
 			&w.Disabled,
+			&w.PictureURL,
 		); err != nil {
 			d.Logger.Ctx(ctx).Error("registered_users_list query scan error", zap.Error(err))
 		} else {
@@ -82,7 +83,7 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, COALESCE(email, ''), type, avatar, verified,
 			notifications_enabled, COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''), 
-			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, mfa_enabled, theme
+			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, mfa_enabled, theme, COALESCE(picture_url, '')
 			FROM thunderdome.users WHERE id = $1`,
 		UserID,
 	).Scan(
@@ -103,6 +104,7 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 		&w.Disabled,
 		&w.MFAEnabled,
 		&w.Theme,
+		&w.PictureURL,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("get user query error: %v", err)

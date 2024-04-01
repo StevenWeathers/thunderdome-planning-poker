@@ -8859,6 +8859,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "pictureUrl": {
+                    "type": "string"
+                },
                 "role": {
                     "type": "string"
                 }
@@ -9017,6 +9020,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
                     "type": "string"
                 },
                 "rank": {
@@ -9212,6 +9218,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
                     "type": "string"
                 }
             }
@@ -9492,6 +9501,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "pictureUrl": {
+                    "type": "string"
                 }
             }
         },
@@ -9607,6 +9619,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
                     "type": "string"
                 },
                 "role": {

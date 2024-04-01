@@ -19,6 +19,7 @@ type TeamUser struct {
 	Role         string `json:"role"`
 	Avatar       string `json:"avatar"`
 	GravatarHash string `json:"gravatarHash"`
+	PictureURL   string `json:"pictureUrl"`
 }
 
 type TeamUserInvite struct {
