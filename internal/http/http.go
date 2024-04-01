@@ -22,7 +22,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
-	httpSwagger "github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 // New initializes the http handlers
