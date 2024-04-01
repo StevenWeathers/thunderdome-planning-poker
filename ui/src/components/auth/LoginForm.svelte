@@ -2,11 +2,21 @@
   import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
+  import SolidButton from '../global/SolidButton.svelte';
+  import TextInput from '../global/TextInput.svelte';
 
+  export let registerLink = '';
+  export let targetPage = appRoutes.landing;
   export let router;
-  export let xfetch = async () => {};
+  export let xfetch = async (url, ...options) => {};
   export let eventTag = () => {};
   export let notifications = () => {};
+
+  declare global {
+    interface Window {
+      setTheme: Function;
+    }
+  }
 
   const { AllowRegistration, LdapEnabled } = AppConfig;
   const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth';
@@ -14,9 +24,23 @@
   let email = '';
   let password = '';
   let forgotPassword = false;
-  let mfaRequired = false;
+  let resetEmail = '';
 
-  function handleSubmit(e) {
+  let mfaRequired = false;
+  let mfaUser = null;
+  let mfaSessionId = null;
+  let mfaToken = '';
+
+  function toggleForgotPassword() {
+    forgotPassword = !forgotPassword;
+    eventTag(
+      'forgot_password_toggle',
+      'engagement',
+      `forgot: ${forgotPassword}`,
+    );
+  }
+
+  function handleLoginSubmit(e) {
     e.preventDefault();
 
     const body = {
@@ -51,7 +75,7 @@
             // setupI18n({
             //     withLocale: newUser.locale,
             // })
-            router.route(targetPage(), true);
+            router.route(targetPage, true);
           });
         }
       })
@@ -64,10 +88,62 @@
         eventTag('login', 'engagement', 'failure');
       });
   }
+
+  function authMfa(e) {
+    e.preventDefault();
+    const body = {
+      passcode: mfaToken,
+      sessionId: mfaSessionId,
+    };
+
+    xfetch('/api/auth/mfa', { body, skip401Redirect: true })
+      .then(res => res.json())
+      .then(function () {
+        user.create(mfaUser);
+        eventTag('login_mfa', 'engagement', 'success', () => {
+          // setupI18n({
+          //     withLocale: mfaUser.locale,
+          // })
+          router.route(targetPage, true);
+        });
+      })
+      .catch(function () {
+        notifications.danger($LL.mfaAuthError());
+        eventTag('login_mfa', 'engagement', 'failure');
+      });
+  }
+
+  function sendPasswordReset(e) {
+    e.preventDefault();
+    const body = {
+      email: resetEmail,
+    };
+
+    xfetch('/api/auth/forgot-password', { body })
+      .then(function () {
+        notifications.success(
+          $LL.sendResetPasswordSuccess({
+            email: resetEmail,
+          }),
+          2000,
+        );
+        forgotPassword = !forgotPassword;
+        eventTag('forgot_password', 'engagement', 'success');
+      })
+      .catch(function () {
+        notifications.danger($LL.sendResetPasswordError());
+        eventTag('forgot_password', 'engagement', 'failure');
+      });
+  }
 </script>
 
 {#if !forgotPassword && !mfaRequired}
-  <form on:submit="{handleSubmit}" class="space-y-6" id="login">
+  <form
+    on:submit="{handleLoginSubmit}"
+    class="space-y-6"
+    name="login"
+    id="login"
+  >
     <div>
       <label
         for="email"
@@ -115,7 +191,10 @@
       </div>
       <div class="text-sm">
         {#if !LdapEnabled}
-          <a class="font-medium text-indigo-400 hover:text-indigo-500" href="">
+          <a
+            class="font-medium text-indigo-400 hover:text-indigo-500 cursor-pointer"
+            on:click="{toggleForgotPassword}"
+          >
             {$LL.forgotPasswordCheckboxLabel()}
           </a>
         {/if}
@@ -141,7 +220,7 @@
               clip-rule="evenodd"></path>
           </svg>
         </span>
-        Sign In
+        {$LL.login()}
       </button>
     </div>
   </form>
@@ -203,13 +282,85 @@
   <!--          </button>-->
   <!--        </div>-->
   <!--      </div>-->
-  <div class="m-auto mt-6 w-fit md:mt-8">
-    <span class="m-auto dark:text-gray-400"
-      >Don't have an account?
-      <a
-        class="font-semibold text-indigo-600 dark:text-indigo-100"
-        href="{appRoutes.register}">Create Account</a
+  {#if registerLink !== ''}
+    <div class="m-auto mt-6 w-fit md:mt-8">
+      <span class="m-auto dark:text-gray-400"
+        >{$LL.createAccountTagline()}
+        <a
+          class="font-semibold text-indigo-600 dark:text-indigo-100"
+          href="{registerLink}">{$LL.createAccount()}</a
+        >
+      </span>
+    </div>
+  {/if}
+{/if}
+
+{#if forgotPassword}
+  <form on:submit="{sendPasswordReset}" class="space-y-6" name="resetPassword">
+    <div>
+      <label
+        for="yourResetEmail"
+        class="block text-sm font-medium text-gray-700 dark:text-white"
+        >{$LL.email()}</label
       >
-    </span>
-  </div>
+      <div class="mt-1">
+        <input
+          data-testid="resetemail"
+          bind:value="{resetEmail}"
+          placeholder="{$LL.enterYourEmail()}"
+          id="yourResetEmail"
+          name="yourResetEmail"
+          type="email"
+          required
+          class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-300 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 sm:text-sm"
+        />
+      </div>
+    </div>
+
+    <div class="text-right">
+      <button
+        type="button"
+        class="inline-block align-baseline font-bold text-sm
+                            text-blue-500 hover:text-blue-800 me-4"
+        on:click="{toggleForgotPassword}"
+      >
+        {$LL.cancel()}
+      </button>
+      <SolidButton type="submit">
+        {$LL.sendResetEmail()}
+      </SolidButton>
+    </div>
+  </form>
+{/if}
+
+{#if mfaRequired}
+  <form on:submit="{authMfa}" class="space-y-6" name="authMfa">
+    <div
+      class="font-semibold font-rajdhani uppercase text-2xl md:text-3xl mb-2 md:mb-6
+                        md:leading-tight text-center dark:text-white"
+    >
+      {$LL.login()}
+    </div>
+    <div class="mb-4">
+      <label
+        class="block text-gray-700 dark:text-gray-400 font-bold mb-2"
+        for="mfaToken"
+      >
+        {$LL.mfaTokenLabel()}
+      </label>
+      <TextInput
+        bind:value="{mfaToken}"
+        placeholder="{$LL.mfaTokenPlaceholder()}"
+        id="mfaToken"
+        name="mfaToken"
+        required
+      />
+    </div>
+
+    <div class="text-right">
+      <SolidButton type="submit">
+        {$LL.login()}
+      </SolidButton>
+    </div>
+  </form>
 {/if}
