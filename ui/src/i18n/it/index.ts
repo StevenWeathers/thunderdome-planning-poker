@@ -110,6 +110,7 @@ const it: Translation = {
   conciseVotingResults: 'Risultati Votazione Sintetici',
   confirmDeleteRetro: 'Sei sicuro di voler eliminare questa retrospettiva?',
   createAccount: 'Creare un account',
+  createAccountTagline: `Don't have an account?`,
   createAlertError: "Errore durante la creazione dell'avviso",
   createAlertSuccess: 'Avviso creato con successo',
   createARetro: 'Crea un retro',
@@ -358,10 +359,6 @@ const it: Translation = {
   promoteUserError: "Errore durante la promozione dell'utente",
   questions: 'Domande',
   register: 'Registrati',
-  registerForRetro:
-    'o {registerOpen}Registrati{registerClose} per partecipare al retro',
-  registerForStoryboard:
-    'o {registerOpen}Registrati{registerClose} per partecipare allo storyboard',
   reloadingRetro: 'Oops, ricaricamento della retrospettiva...',
   reloadingStoryboard: 'Oops, ricaricamento del storyboard...',
   remove: 'Rimuovi',
@@ -619,10 +616,6 @@ const it: Translation = {
     'Create an Account {optionalOpen}(optional){optionalClose}',
   sendResetPasswordSuccess: 'Password reset instructions sent to {email}',
   sendResetPasswordError: 'Error encountered attempting to send password reset',
-  registerForBattle: {
-    true: 'or {registerOpen}Register{registerClose} to join the Game',
-    false: 'or {registerOpen}Register{registerClose} to join the Battle',
-  },
   chooseCountryPlaceholder: 'Choose your country (optional)',
   locale: 'Locale',
   companyPlaceholder: 'Enter your company (optional)',
