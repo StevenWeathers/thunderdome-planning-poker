@@ -327,7 +327,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		RedirectURL:        redirectURL,
 		StateCookieName:    "td_oauthstate",
 		PathPrefix:         a.Config.PathPrefix,
-	}, a.Cookie, a.Logger, a.AuthDataSvc, context.Background())
+	}, a.Cookie, a.Logger, a.AuthDataSvc, a.SubscriptionDataSvc, context.Background())
 	if err != nil {
 		panic(err)
 	}

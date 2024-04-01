@@ -5,6 +5,16 @@ import (
 	"time"
 )
 
+type UserUICookie struct {
+	Id                   string `json:"id"`
+	Name                 string `json:"name"`
+	Email                string `json:"email"`
+	Rank                 string `json:"rank"`
+	Locale               string `json:"locale"`
+	NotificationsEnabled bool   `json:"notificationsEnabled"`
+	Subscribed           bool   `json:"subscribed"`
+}
+
 // User aka user
 type User struct {
 	Id                   string    `json:"id"`

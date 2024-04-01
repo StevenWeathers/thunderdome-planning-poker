@@ -23,13 +23,15 @@ func New(
 	cookie *cookie.Cookie,
 	logger *otelzap.Logger,
 	authDataSvc thunderdome.AuthDataSvc,
+	subscriptionDataSvc thunderdome.SubscriptionDataSvc,
 	ctx context.Context,
 ) (*Service, error) {
 	s := Service{
-		config:      config,
-		cookie:      cookie,
-		logger:      logger,
-		authDataSvc: authDataSvc,
+		config:              config,
+		cookie:              cookie,
+		logger:              logger,
+		authDataSvc:         authDataSvc,
+		subscriptionDataSvc: subscriptionDataSvc,
 	}
 	provider, err := oidc.NewProvider(ctx, config.ProviderURL)
 	if err != nil {
@@ -151,7 +153,21 @@ func (s *Service) HandleOAuth2Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// @TODO - set frontend user cookie for UI
+	subscribedErr := s.subscriptionDataSvc.CheckActiveSubscriber(ctx, user.Id)
+
+	if err := s.cookie.CreateUserUICookie(w, thunderdome.UserUICookie{
+		Id:                   user.Id,
+		Name:                 user.Name,
+		Email:                user.Email,
+		Rank:                 user.Type,
+		Locale:               user.Locale,
+		NotificationsEnabled: user.NotificationsEnabled,
+		Subscribed:           subscribedErr == nil,
+	}); err != nil {
+		logger.Error("error creating oauth user ui cookie", zap.Error(err), zap.String("userId", user.Id))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	http.Redirect(w, r, fmt.Sprintf("%s/", s.config.PathPrefix), http.StatusTemporaryRedirect)
 }

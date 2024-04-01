@@ -16,10 +16,11 @@ type Config struct {
 }
 
 type Service struct {
-	config       Config
-	cookie       *cookie.Cookie
-	oauth2Config *oauth2.Config
-	logger       *otelzap.Logger
-	verifier     *oidc.IDTokenVerifier
-	authDataSvc  thunderdome.AuthDataSvc
+	config              Config
+	cookie              *cookie.Cookie
+	oauth2Config        *oauth2.Config
+	logger              *otelzap.Logger
+	verifier            *oidc.IDTokenVerifier
+	authDataSvc         thunderdome.AuthDataSvc
+	subscriptionDataSvc thunderdome.SubscriptionDataSvc
 }
