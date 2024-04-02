@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -53,120 +54,137 @@ func New(
 	return &s, nil
 }
 
-func (s *Service) HandleOAuth2Redirect(w http.ResponseWriter, r *http.Request) {
-	// @TODO - create a nonce in DB to send to oauth provider
-	nonce, err := uuid.NewUUID()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	nonceString := nonce.String()
+func (s *Service) HandleOAuth2Redirect() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		nonce, err := s.authDataSvc.OauthCreateNonce(ctx)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	// create state cookie for callback state verification
-	state, err := uuid.NewUUID()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		// create state cookie for callback state verification
+		state, err := uuid.NewUUID()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	stateString := state.String()
-	err = s.cookie.CreateAuthStateCookie(w, stateString)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		stateString := state.String()
+		err = s.cookie.CreateAuthStateCookie(w, stateString)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	http.Redirect(w, r, s.oauth2Config.AuthCodeURL(stateString, oidc.Nonce(nonceString)), http.StatusFound)
+		s.logger.Ctx(ctx).Info(fmt.Sprintf("HandleOAuth2Redirect: %s", nonce))
+
+		authCodeURL := s.oauth2Config.AuthCodeURL(stateString, oidc.Nonce(nonce))
+
+		s.logger.Ctx(ctx).Info(authCodeURL)
+
+		w.Header().Set("Content-Type", "text/html")
+		http.Redirect(w, r, authCodeURL, http.StatusSeeOther)
+	}
 }
 
-func (s *Service) HandleOAuth2Callback(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	logger := s.logger.Ctx(ctx)
-	rq := r.URL.Query()
-	state := rq.Get("state")
-	code := rq.Get("code")
+func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		logger := s.logger.Ctx(ctx)
+		rq := r.URL.Query()
+		state := rq.Get("state")
+		code := rq.Get("code")
 
-	// Verify state
-	err := s.cookie.ValidateAuthStateCookie(w, r, state)
-	if err != nil {
-		logger.Error("invalid oauth state", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+		s.logger.Ctx(ctx).Info("HandleOAuth2Callback called")
 
-	// Exchange code for oauth token
-	oauth2Token, err := s.oauth2Config.Exchange(ctx, code)
-	if err != nil {
-		logger.Error("error exchanging oidc code for token", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// Extract the ID Token from OAuth2 token.
-	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
-	if !ok {
-		logger.Error("missing oauth2 id_token")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// Parse and verify ID Token payload.
-	idToken, err := s.verifier.Verify(ctx, rawIDToken)
-	if err != nil {
-		logger.Error("error parsing and verifying id_token", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// Extract custom claims
-	var claims struct {
-		Name          string `json:"name"`
-		Email         string `json:"email"`
-		EmailVerified bool   `json:"email_verified"`
-		Nonce         string `json:"nonce"`
-		Picture       string `json:"picture"`
-	}
-	if err := idToken.Claims(&claims); err != nil {
-		logger.Error("error extracting custom claims from id_token", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// @TODO - verify nonce
-
-	user, sessionId, userErr := s.authDataSvc.OauthAuthUser(ctx, s.config.ProviderName, claims.Email, claims.EmailVerified, claims.Name, claims.Picture)
-	if userErr != nil {
-		logger.Error("error authenticating oauth user", zap.Error(userErr))
-		ue := err.Error()
-		if ue == "USER_DISABLED" {
-			w.WriteHeader(http.StatusUnauthorized)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
+		// Verify state
+		err := s.cookie.ValidateAuthStateCookie(w, r, state)
+		if err != nil {
+			logger.Error("invalid oauth state", zap.Error(err))
+			w.WriteHeader(http.StatusBadRequest)
+			return
 		}
-		return
+
+		// Exchange code for oauth token
+		oauth2Token, err := s.oauth2Config.Exchange(ctx, code)
+		if err != nil {
+			logger.Error("error exchanging oidc code for token", zap.Error(err))
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		// Extract the ID Token from OAuth2 token.
+		rawIDToken, ok := oauth2Token.Extra("id_token").(string)
+		if !ok {
+			logger.Error("missing oauth2 id_token")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		// Parse and verify ID Token payload.
+		idToken, err := s.verifier.Verify(ctx, rawIDToken)
+		if err != nil {
+			logger.Error("error parsing and verifying id_token", zap.Error(err))
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		// Extract custom claims
+		var claims struct {
+			Name          string `json:"name"`
+			Email         string `json:"email"`
+			EmailVerified bool   `json:"email_verified"`
+			Nonce         string `json:"nonce"`
+			Picture       string `json:"picture"`
+		}
+		if err := idToken.Claims(&claims); err != nil {
+			logger.Error("error extracting custom claims from id_token", zap.Error(err))
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		nonceErr := s.authDataSvc.OauthValidateNonce(ctx, claims.Nonce)
+		if nonceErr != nil {
+			logger.Error("nonce validation failed", zap.Error(err))
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		user, sessionId, userErr := s.authDataSvc.OauthAuthUser(ctx, s.config.ProviderName, claims.Email, claims.EmailVerified, claims.Name, claims.Picture)
+		if userErr != nil {
+			logger.Error("error authenticating oauth user", zap.Error(userErr))
+			ue := err.Error()
+			if ue == "USER_DISABLED" {
+				w.WriteHeader(http.StatusUnauthorized)
+			} else {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+			return
+		}
+
+		if scErr := s.cookie.CreateSessionCookie(w, sessionId); scErr != nil {
+			logger.Error("error creating oauth user session cookie", zap.Error(scErr), zap.String("userId", user.Id))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		subscribedErr := s.subscriptionDataSvc.CheckActiveSubscriber(ctx, user.Id)
+
+		if err := s.cookie.CreateUserUICookie(w, thunderdome.UserUICookie{
+			Id:                   user.Id,
+			Name:                 user.Name,
+			Email:                user.Email,
+			Rank:                 user.Type,
+			Locale:               user.Locale,
+			NotificationsEnabled: user.NotificationsEnabled,
+			Subscribed:           subscribedErr == nil,
+		}); err != nil {
+			logger.Error("error creating oauth user ui cookie", zap.Error(err), zap.String("userId", user.Id))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, s.config.UIRedirectURL, http.StatusFound)
 	}
-
-	if scErr := s.cookie.CreateSessionCookie(w, sessionId); scErr != nil {
-		logger.Error("error creating oauth user session cookie", zap.Error(scErr), zap.String("userId", user.Id))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	subscribedErr := s.subscriptionDataSvc.CheckActiveSubscriber(ctx, user.Id)
-
-	if err := s.cookie.CreateUserUICookie(w, thunderdome.UserUICookie{
-		Id:                   user.Id,
-		Name:                 user.Name,
-		Email:                user.Email,
-		Rank:                 user.Type,
-		Locale:               user.Locale,
-		NotificationsEnabled: user.NotificationsEnabled,
-		Subscribed:           subscribedErr == nil,
-	}); err != nil {
-		logger.Error("error creating oauth user ui cookie", zap.Error(err), zap.String("userId", user.Id))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	http.Redirect(w, r, s.config.UIRedirectURL, http.StatusTemporaryRedirect)
 }
