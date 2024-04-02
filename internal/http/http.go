@@ -361,7 +361,6 @@ func (s *Service) registerOauthProviderEndpoints() {
 		if err != nil {
 			panic(err)
 		}
-		s.Logger.Info(callbackRedirectURL)
 		s.Router.HandleFunc(oauthLoginPathPrefix, googleAuthProvider.HandleOAuth2Redirect()).Methods("GET")
 		s.Router.HandleFunc(oauthCallbackPathPrefix, googleAuthProvider.HandleOAuth2Callback()).Methods("GET")
 	}

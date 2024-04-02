@@ -81,8 +81,6 @@ func (s *Service) HandleOAuth2Redirect() http.HandlerFunc {
 
 		authCodeURL := s.oauth2Config.AuthCodeURL(stateString, oidc.Nonce(nonce))
 
-		s.logger.Ctx(ctx).Info(authCodeURL)
-
 		w.Header().Set("Content-Type", "text/html")
 		http.Redirect(w, r, authCodeURL, http.StatusSeeOther)
 	}
