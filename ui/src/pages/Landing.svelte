@@ -67,14 +67,14 @@
           <h2
             class="text-2xl text-gray-700 font-rajdhani uppercase font-semibold leading-none text-center"
           >
-            Show your support and
+            Enjoying Thunderdome?
             <a
               class="text-blue-800 underline"
               href="{appRoutes.subscriptionPricing}"
             >
               Subscribe today
             </a>
-            for only $5 USD a month.
+            starting at only $5 /mo.
           </h2>
         </div>
       </div>

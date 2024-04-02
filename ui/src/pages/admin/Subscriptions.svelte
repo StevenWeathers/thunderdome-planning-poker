@@ -32,6 +32,8 @@
   let defaultSubscription = {
     id: '',
     user_id: '',
+    team_id: '',
+    organization_id: '',
     customer_id: '',
     subscription_id: '',
     active: false,
@@ -230,6 +232,8 @@
         customer_id="{selectedSub.customer_id}"
         subscription_id="{selectedSub.subscription_id}"
         user_id="{selectedSub.user_id}"
+        team_id="{selectedSub.team_id}"
+        organization_id="{selectedSub.organization_id}"
         active="{selectedSub.active}"
         expires="{selectedSub.expires}"
       />

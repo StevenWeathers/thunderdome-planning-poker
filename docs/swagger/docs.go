@@ -7141,6 +7141,132 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{userId}/subscriptions": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of active entity user subscriptions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Get Entity User Active Subscriptions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the entity user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.Subscription"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/subscriptions/{subscriptionId}": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get list of active entity user subscriptions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Update Entity User Subscriptions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the entity user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the subscription ID to update",
+                        "name": "subscriptionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "update subscription association object",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.subscriptionAssociateRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.standardJsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/thunderdome.Subscription"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{userId}/teams": {
             "get": {
                 "security": [
@@ -8089,6 +8215,9 @@ const docTemplate = `{
                 "sessionId": {
                     "type": "string"
                 },
+                "subscribed": {
+                    "type": "boolean"
+                },
                 "user": {
                     "$ref": "#/definitions/thunderdome.User"
                 }
@@ -8275,6 +8404,17 @@ const docTemplate = `{
                 }
             }
         },
+        "http.subscriptionAssociateRequestBody": {
+            "type": "object",
+            "properties": {
+                "organization_id": {
+                    "type": "string"
+                },
+                "team_id": {
+                    "type": "string"
+                }
+            }
+        },
         "http.subscriptionRequestBody": {
             "type": "object",
             "required": [
@@ -8290,7 +8430,13 @@ const docTemplate = `{
                 "expires": {
                     "type": "string"
                 },
+                "organization_id": {
+                    "type": "string"
+                },
                 "subscription_id": {
+                    "type": "string"
+                },
+                "team_id": {
                     "type": "string"
                 },
                 "type": {
@@ -8938,6 +9084,12 @@ const docTemplate = `{
                 "phase": {
                     "type": "string"
                 },
+                "readyUsers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "teamName": {
                     "type": "string"
                 },
@@ -9361,7 +9513,13 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "organization_id": {
+                    "type": "string"
+                },
                 "subscription_id": {
+                    "type": "string"
+                },
+                "team_id": {
                     "type": "string"
                 },
                 "type": {
@@ -9526,9 +9684,6 @@ const docTemplate = `{
                 },
                 "rank": {
                     "type": "string"
-                },
-                "subscribed": {
-                    "type": "boolean"
                 },
                 "theme": {
                     "type": "string"

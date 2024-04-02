@@ -1,5 +1,22 @@
 package thunderdome
 
+type SubscriptionPlanConfig struct {
+	Enabled           bool   `mapstructure:"enabled"`
+	MonthPrice        string `mapstructure:"month_price"`
+	YearPrice         string `mapstructure:"year_price"`
+	MonthCheckoutLink string `mapstructure:"month_checkout_link"`
+	YearCheckoutLink  string `mapstructure:"year_checkout_link"`
+}
+
+type SubscriptionConfig struct {
+	ManageLink    string                 `mapstructure:"manage_link"`
+	AccountSecret string                 `mapstructure:"account_secret" json:"-"`
+	WebhookSecret string                 `mapstructure:"webhook_secret" json:"-"`
+	Individual    SubscriptionPlanConfig `mapstructure:"individual"`
+	Team          SubscriptionPlanConfig `mapstructure:"team"`
+	Organization  SubscriptionPlanConfig `mapstructure:"organization"`
+}
+
 type AppConfig struct {
 	AllowedPointValues        []string
 	DefaultPointValues        []string
@@ -29,10 +46,9 @@ type AppConfig struct {
 	FeatureRetro              bool
 	FeatureStoryboard         bool
 	RequireTeams              bool
-	SubscriptionsEnabled      bool
-	SubscriptionCheckoutLink  string
-	SubscriptionManageLink    string
 	RepoURL                   string
+	SubscriptionsEnabled      bool
+	Subscription              SubscriptionConfig
 }
 
 type UIConfig struct {

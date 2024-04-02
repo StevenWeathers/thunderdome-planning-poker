@@ -308,33 +308,32 @@
       >
         {$LL.avatar()}
       </label>
-      <div class="flex">
-        <div class="md:w-2/3 lg:w-3/4">
-          {#if AvatarService !== 'gravatar' || (AvatarService === 'gravatar' && profile.email === '')}
-            <SelectInput
-              bind:value="{profile.avatar}"
-              id="yourAvatar"
-              name="yourAvatar"
-            >
-              {#each avatars as item}
-                <option value="{item}">
-                  {item}
-                </option>
-              {/each}
-            </SelectInput>
+      <div class="flex items-center content-center">
+        <div class="grow">
+          {#if AvatarService === 'gravatar'}
+            <span class="dark:text-gray-300">Optional Gravatar Fallback</span>
           {/if}
+          <SelectInput
+            bind:value="{profile.avatar}"
+            id="yourAvatar"
+            name="yourAvatar"
+          >
+            {#each avatars as item}
+              <option value="{item}">
+                {item}
+              </option>
+            {/each}
+          </SelectInput>
         </div>
-        <div class="md:w-1/3 lg:w-1/4 ms-1">
-          <span class="float-right">
-            <UserAvatar
-              warriorId="{profile.id}"
-              avatar="{profile.avatar}"
-              gravatarHash="{profile.gravatarHash}"
-              userName="{profile.name}"
-              width="48"
-              class="rounded-full"
-            />
-          </span>
+        <div class="shrink ms-4">
+          <UserAvatar
+            warriorId="{profile.id}"
+            avatar="{profile.avatar}"
+            gravatarHash="{profile.gravatarHash}"
+            userName="{profile.name}"
+            width="48"
+            class="rounded-full"
+          />
         </div>
       </div>
     </div>

@@ -53,6 +53,7 @@
     brainstormVisibility: 'visible',
     facilitatorCode: '',
     joinCode: '',
+    readyUsers: [],
   };
   let showDeleteRetro = false;
   let actionItem = '';
@@ -156,6 +157,22 @@
         if (retro.phase !== 'brainstorm') {
           groupedItems = organizeItemsByGroup();
         }
+        break;
+      }
+      case 'user_marked_ready': {
+        const readyUser = retro.users.find(w => w.id === parsedEvent.userId);
+        retro.readyUsers = JSON.parse(parsedEvent.value);
+
+        notifications.success(`${readyUser.name} is done brainstorming.`);
+        break;
+      }
+      case 'user_marked_unready': {
+        const unreadyUser = retro.users.find(w => w.id === parsedEvent.userId);
+        retro.readyUsers = JSON.parse(parsedEvent.value);
+
+        notifications.warning(
+          `${unreadyUser.name} is no longer done brainstorming.`,
+        );
         break;
       }
       case 'item_moved': {
@@ -324,6 +341,13 @@
         phase: retro.phase,
       }),
     );
+  };
+
+  const handleUserReady = userId => () => {
+    sendSocketEvent(`user_ready`, userId);
+  };
+  const handleUserUnReady = userId => () => {
+    sendSocketEvent(`user_unready`, userId);
   };
 
   const handleItemGroupChange = (itemId, groupId) => {
@@ -702,7 +726,7 @@
         <div class="grow flex">
           {#if retro.phase === 'intro'}
             <div
-              class="m-auto w-full md:w-3/4 lg:w-2/3 md:py-14 lg:py-20 dark:text-white"
+              class="m-auto w-full md:w-3/4 lg:w-2/3 md:mt-14 lg:mt-20 dark:text-white"
             >
               <h2
                 class="text-3xl md:text-4xl lg:text-5xl font-rajdhani mb-2 tracking-wide"
@@ -886,17 +910,25 @@
                   votes="{retro.votes}"
                   maxVotes="{retro.maxVotes}"
                   facilitators="{retro.facilitators}"
+                  readyUsers="{retro.readyUsers}"
                   handleAddFacilitator="{handleAddFacilitator}"
                   handleRemoveFacilitator="{handleRemoveFacilitator}"
+                  handleUserReady="{handleUserReady}"
+                  handleUserUnReady="{handleUserUnReady}"
                   phase="{retro.phase}"
                 />
               {/if}
             {/each}
           </div>
-
-          <div class="w-full md:w-1/3 p-2 dark:text-white hidden">
-            <InviteUser hostname="{hostname}" retroId="{retro.id}" />
-          </div>
+          {#if retro.phase === 'intro'}
+            <div class="mt-4 flex w-full p-2 dark:text-white justify-center">
+              <div
+                class="w-full md:w-1/2 lg:w-1/3 p-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg"
+              >
+                <InviteUser hostname="{hostname}" retroId="{retro.id}" />
+              </div>
+            </div>
+          {/if}
         </div>
       </div>
     {/if}

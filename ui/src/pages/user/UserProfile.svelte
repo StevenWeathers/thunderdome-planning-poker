@@ -13,6 +13,7 @@
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import CreateJiraInstance from '../../components/jira/CreateJiraInstance.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
+  import UserSubscriptionsList from '../../components/subscription/UserSubscriptionsList.svelte';
 
   export let xfetch;
   export let router;
@@ -32,7 +33,7 @@
     LdapEnabled,
     HeaderAuthEnabled,
     SubscriptionsEnabled,
-    SubscriptionManageLink,
+    Subscription,
   } = AppConfig;
 
   function toggleUpdatePassword() {
@@ -331,7 +332,7 @@
               <h2
                 class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
               >
-                Subscription
+                Active Subscriptions
               </h2>
             </div>
             <div class="flex-1">
@@ -339,27 +340,29 @@
                 {#if $user.subscribed}
                   <SolidButton
                     color="green"
-                    href="{SubscriptionManageLink}"
+                    href="{Subscription.ManageLink}"
                     options="{{ target: '_blank' }}"
-                    >Manage subscription
+                    >Manage subscriptions
                   </SolidButton>
                 {/if}
               </div>
             </div>
           </div>
-          <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4">
-            {#if $user.subscribed}
-              <p class="bg-lime-300 text-green-800 p-4 rounded font-bold">
-                Already subscribed, thank you!
-              </p>
-            {:else}
+          {#if $user.subscribed}
+            <UserSubscriptionsList
+              xfetch="{xfetch}"
+              eventTag="{eventTag}"
+              notifications="{notifications}"
+            />
+          {:else}
+            <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4">
               <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
                 See <a href="{appRoutes.subscriptionPricing}" class="underline"
                   >Pricing page</a
                 > to subscribe today.
               </p>
-            {/if}
-          </div>
+            </div>
+          {/if}
         </div>
       {/if}
       {#if ExternalAPIEnabled}

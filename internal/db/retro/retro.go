@@ -166,16 +166,18 @@ func (d *Service) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, e
 		ActionItems:  make([]*thunderdome.RetroAction, 0),
 		Votes:        make([]*thunderdome.RetroVote, 0),
 		Facilitators: make([]string, 0),
+		ReadyUsers:   make([]string, 0),
 	}
 
 	// get retro
 	var JoinCode string
 	var FacilitatorCode string
 	var Facilitators string
+	var ReadyUsers string
 	err := d.DB.QueryRow(
 		`SELECT
 			r.id, r.name, r.owner_id, r.format, r.phase, COALESCE(r.join_code, ''), COALESCE(r.facilitator_code, ''),
-			r.max_votes, r.brainstorm_visibility, r.created_date, r.updated_date,
+			r.max_votes, r.brainstorm_visibility, r.ready_users, r.created_date, r.updated_date,
 			CASE WHEN COUNT(rf) = 0 THEN '[]'::json ELSE array_to_json(array_agg(rf.user_id)) END AS facilitators
 		FROM thunderdome.retro r 
 		LEFT JOIN thunderdome.retro_facilitator rf ON r.id = rf.retro_id
@@ -192,6 +194,7 @@ func (d *Service) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, e
 		&FacilitatorCode,
 		&b.MaxVotes,
 		&b.BrainstormVisibility,
+		&ReadyUsers,
 		&b.CreatedDate,
 		&b.UpdatedDate,
 		&Facilitators,
@@ -220,6 +223,11 @@ func (d *Service) RetroGet(RetroID string, UserID string) (*thunderdome.Retro, e
 			return nil, fmt.Errorf("get retro decrypt join facilitator error: %v", codeErr)
 		}
 		b.FacilitatorCode = DecryptedCode
+	}
+
+	readyUsersError := json.Unmarshal([]byte(ReadyUsers), &b.ReadyUsers)
+	if readyUsersError != nil {
+		d.Logger.Error("ready users json error", zap.Error(readyUsersError))
 	}
 
 	b.Items = d.GetRetroItems(RetroID)
@@ -452,7 +460,7 @@ func (d *Service) RetroAbandon(RetroID string, UserID string) ([]*thunderdome.Re
 func (d *Service) RetroAdvancePhase(RetroID string, Phase string) (*thunderdome.Retro, error) {
 	var b thunderdome.Retro
 	err := d.DB.QueryRow(
-		`UPDATE thunderdome.retro SET updated_date = NOW(), phase = $2 WHERE id = $1 RETURNING name;`,
+		`UPDATE thunderdome.retro SET updated_date = NOW(), phase = $2, ready_users = '[]'::jsonb WHERE id = $1 RETURNING name;`,
 		RetroID, Phase,
 	).Scan(&b.Name)
 	if err != nil {
@@ -631,4 +639,52 @@ func (d *Service) CleanRetros(ctx context.Context, DaysOld int) error {
 	}
 
 	return nil
+}
+
+// MarkUserReady marks a user as ready for next phase
+func (d *Service) MarkUserReady(RetroID string, userID string) ([]string, error) {
+	var rawReadyUsers string
+	readyUsers := make([]string, 0)
+
+	err := d.DB.QueryRow(
+		`UPDATE thunderdome.retro 
+		SET updated_date = NOW(), ready_users = ready_users::jsonb || to_jsonb(array[$2])
+		WHERE id = $1 
+		RETURNING ready_users;`,
+		RetroID, userID,
+	).Scan(&rawReadyUsers)
+	if err != nil {
+		return readyUsers, fmt.Errorf("retro MarkUserReady query error: %v", err)
+	}
+
+	err = json.Unmarshal([]byte(rawReadyUsers), &readyUsers)
+	if err != nil {
+		d.Logger.Error("ready_users json error", zap.Error(err))
+	}
+
+	return readyUsers, nil
+}
+
+// UnmarkUserReady un-marks a user as ready for next phase
+func (d *Service) UnmarkUserReady(RetroID string, userID string) ([]string, error) {
+	var rawReadyUsers string
+	readyUsers := make([]string, 0)
+
+	err := d.DB.QueryRow(
+		`UPDATE thunderdome.retro 
+		SET updated_date = NOW(), ready_users = ready_users::jsonb - $2
+		WHERE id = $1 
+		RETURNING ready_users;`,
+		RetroID, userID,
+	).Scan(&rawReadyUsers)
+	if err != nil {
+		return readyUsers, fmt.Errorf("retro UnmarkUserReady query error: %v", err)
+	}
+
+	err = json.Unmarshal([]byte(rawReadyUsers), &readyUsers)
+	if err != nil {
+		d.Logger.Error("ready_users json error", zap.Error(err))
+	}
+
+	return readyUsers, nil
 }

@@ -60,8 +60,7 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
         COALESCE(u.job_title, ''),
         u.created_date,
         u.updated_date,
-        u.last_active,
-        u.subscribed
+        u.last_active
     FROM thunderdome.user_session us
     LEFT JOIN thunderdome.users u ON u.id = us.user_id
     WHERE us.session_id = $1 AND NOW() < us.expire_date`,
@@ -81,7 +80,6 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
 		&User.CreatedDate,
 		&User.UpdatedDate,
 		&User.LastActive,
-		&User.Subscribed,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("get session user query error: %v", err)

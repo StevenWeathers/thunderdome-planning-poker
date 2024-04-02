@@ -69,77 +69,14 @@ To grant Admin access to Thunderdome for the first Admin user create an account 
 environment variable or `admin.email` config file value. Upon the app starting up Thunderdome will read this value and
 set that user as ADMIN role.
 
-## Optional configuration items
+## Configure authentication
+
+Thunderdome has a built-in `normal` authentication with user/password as well as supports `header` and `ldap`
+authentications.
 
 | Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
 |---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `http.port`                           | PORT                                | Which port to listen for HTTP connections.                                                                           | 8080                                                       |
-| `http.path_prefix`                    | PATH_PREFIX                         | Prefix added to all application urls for shared domain use, in format of `/{prefix}` e.g. `/thunderdome`             |                                                            |
-| `http.secure_cookie`                  | COOKIE_SECURE                       | Use secure cookies or not.                                                                                           | true                                                       |
-| `http.backend_cookie_name`            | BACKEND_COOKIE_NAME                 | The name of the backend cookie utilized for actual auth/validation                                                   | warriorId                                                  |
-| `http.frontend_cookie_name`           | FRONTEND_COOKIE_NAME                | The name of the cookie utilized by the UI (purely for convenience not auth)                                          | warrior                                                    |
-| `http.write_timeout`                  | HTTP_WRITE_TIMEOUT                  | HTTP response write timeout in seconds                                                                               | 5                                                          |
-| `http.read_timeout`                   | HTTP_READ_TIMEOUT                   | HTTP request read timeout in seconds                                                                                 | 5                                                          |
-| `http.idle_timeout`                   | HTTP_IDLE_TIMEOUT                   | HTTP request idle timeout in seconds                                                                                 | 30                                                         |
-| `http.read_header_timeout`            | HTTP_READ_HEADER_TIMEOUT            | HTTP read header timeout in seconds                                                                                  | 2                                                          |
-| `http.websocket_write_wait_sec`       | HTTP_WEBSOCKET_WRITE_WAIT_SEC       | Time allowed to write a message to the peer for Websocket connections                                                | 10                                                         |
-| `http.websocket_pong_wait_sec`        | HTTP_WEBSOCKET_PONG_WAIT_SEC        | Time allowed to read the next pong message from the peer for Websocket connections                                   | 60                                                         |
-| `http.websocket_ping_period_sec`      | HTTP_WEBSOCKET_PING_PERIOD_SEC      | Send pings to peer with this period for Websocket connections. Must be less than pongWait.                           | 54                                                         |
-| `analytics.enabled`                   | ANALYTICS_ENABLED                   | Enable/disable google analytics.                                                                                     | true                                                       |
-| `analytics.id`                        | ANALYTICS_ID                        | Google analytics identifier.                                                                                         | UA-140245309-1                                             |
-| `config.allowedPointValues`           | CONFIG_POINTS_ALLOWED               | List of available point values for creating battles.                                                                 | 0, 1/2, 1, 2, 3, 5, 8, 13, 20, 21, 34, 40, 55, 100, ?, ☕️  |
-| `config.defaultPointValues`           | CONFIG_POINTS_DEFAULT               | List of default selected points for new battles.                                                                     | 1, 2, 3, 5, 8 , 13, ?                                      |
-| `config.show_warrior_rank`            | CONFIG_SHOW_RANK                    | Set to enable an icon showing the rank of a warrior during battle.                                                   | false                                                      |
-| `config.avatar_service`               | CONFIG_AVATAR_SERVICE               | Avatar service used, possible values see next paragraph                                                              | gravatar                                                   |
-| `config.toast_timeout`                | CONFIG_TOAST_TIMEOUT                | Number of milliseconds before notifications are hidden.                                                              | 1000                                                       |
-| `config.allow_guests`                 | CONFIG_ALLOW_GUESTS                 | Whether or not to allow guest (anonymous) users.                                                                     | true                                                       |
-| `config.allow_registration`           | CONFIG_ALLOW_REGISTRATION           | Whether or not to allow user registration (outside Admin).                                                           | true                                                       |
-| `config.allow_jira_import`            | CONFIG_ALLOW_JIRA_IMPORT            | Whether or not to allow import plans from JIRA XML.                                                                  | true                                                       |
-| `config.allow_csv_import`             | CONFIG_ALLOW_CSV_IMPORT             | Whether or not to allow import plans from a csv file                                                                 | true                                                       |
-| `config.default_locale`               | CONFIG_DEFAULT_LOCALE               | The default locale (language) for the UI                                                                             | en                                                         |
-| `config.friendly_ui_verbs`            | CONFIG_FRIENDLY_UI_VERBS            | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly                  | false                                                      |
-| `config.allow_external_api`           | CONFIG_ALLOW_EXTERNAL_API           | Whether or not to allow External API access                                                                          | true                                                       |
-| `config.external_api_verify_required` | CONFIG_EXTERNAL_API_VERIFY_REQUIRED | Whether External API access requires user to be email verified                                                       | true                                                       |
-| `config.user_apikey_limit`            | CONFIG_USER_APIKEY_LIMIT            | Limit users number of API keys                                                                                       | 5                                                          |
-| `config.show_active_countries`        | CONFIG_SHOW_ACTIVE_COUNTRIES        | Whether or not to show active countries on landing page                                                              | false                                                      |
-| `config.cleanup_battles_days_old`     | CONFIG_CLEANUP_BATTLES_DAYS_OLD     | How many days back to clean up old battles, e.g. battles older than 180 days. Triggered manually by Admins .         | 180                                                        |
-| `config.cleanup_retros_days_old`      | CONFIG_CLEANUP_RETROS_DAYS_OLD      | How many days back to clean up old retros, e.g. retros older than 180 days. Triggered manually by Admins .           | 180                                                        |
-| `config.cleanup_storyboards_days_old` | CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD | How many days back to clean up old storyboards, e.g. storyboards older than 180 days. Triggered manually by Admins . | 180                                                        |
-| `config.cleanup_guests_days_old`      | CONFIG_CLEANUP_GUESTS_DAYS_OLD      | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins.            | 180                                                        |
-| `config.organizations_enabled`        | CONFIG_ORGANIZATIONS_ENABLED        | Whether or not creating organizations (with departments) are enabled                                                 | true                                                       |
-| `config.require_teams`                | CONFIG_REQUIRE_TEAMS                | Whether or not creating battles, retros, and storyboards require being associated to a Team                          | false                                                      |
 | `auth.method`                         | AUTH_METHOD                         | Choose `normal`, `header` or `ldap` as authentication method. See separate sections on LDAP/header configurations.   | normal                                                     |
-| `feature.poker`                       | FEATURE_POKER                       | Enable or Disable Agile Story Pointing (Poker) feature                                                               | true                                                       |
-| `feature.retro`                       | FEATURE_RETRO                       | Enable or Disable Agile Retrospectives feature                                                                       | true                                                       |
-| `feature.storyboard`                  | FEATURE_STORYBOARD                  | Enable or Disable Agile Storyboard feature                                                                           | true                                                       |
-
-### Open Telemetry Tracing
-
-Thunderdome features [Open Telemetry](https://opentelemetry.io/) tracing to aid in monitoring application performance.
-
-| Option               | Environment Variable | Description                                                           | Default Value  |
-|----------------------|----------------------|-----------------------------------------------------------------------|----------------|
-| `otel.enabled`       | OTEL_ENABLED         | Whether or not Open Telemetry tracing is enabled                      | false          |
-| `otel.service_name`  | OTEL_SERVICE_NAME    | Service name of Thunderdome                                           | thunderdome    |
-| `otel.collector_url` | OTEL_COLLECTOR_URL   | Open Telemetry supported tracing tool e.g. Uptrace, DataDog           | localhost:4317 |
-| `otel.insecure_mode` | OTEL_INSECURE_MODE   | Disables client transport security for the exporter's gRPC connection | false          |
-
-### Avatar Service configuration
-
-Use the name from table below to configure a service - if not set, `gravatar` is used. Each service provides further
-options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the
-different sprites become available. The table shows all supported services and their sprites.
-
-| Name                                                     |           |           |           |           |           |           |           |           |           |
-|----------------------------------------------------------| --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
-| `goadorable` (internal)                                  |           |           |           |           |           |           |           |           |           |
-|                                                          | ![image](https://user-images.githubusercontent.com/846933/96212071-e4283d80-0f43-11eb-9f82-ff6c105f8b0a.png) |
-| `govatar` (internal)                                     | male | female |  |  |
-|                                                          | ![image](https://user-images.githubusercontent.com/846933/96212029-ce1a7d00-0f43-11eb-9e53-8ca13ba9d4b1.png) | ![image](https://user-images.githubusercontent.com/846933/96212031-ceb31380-0f43-11eb-832b-b02c275317a5.png) |  |  |
-| `gravatar`                                               | mp | identicon | monsterid | wavatar | retro | robohash | | | |
-|                                                          | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=mp&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=identicon&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=monsterid&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=wavatar&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=retro&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=robohash&r=g) | | | |
-| `robohash`                                               | set1 | set2 | set3 | set4 |
-|                                                          | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set1&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set2&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set3&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set4&size=48x48) |
 
 ### LDAP Configuration
 
@@ -185,3 +122,91 @@ The following configuration options are specific to the LDAP authentication meth
 | --------------------------- | --------------------------- | -------------- | ----------------------------------------- |
 | `auth.header.usernameHeader`| AUTH_HEADER_USERNAME_HEADER | `Remote-User`  | The header to use for the user's username |
 | `auth.header.emailHeader`   | AUTH_HEADER_EMAIL_HEADER    | `Remote-Email` | The header to use for the user's email    |
+
+## HTTP Configuration
+
+Configuring http settings allows for fine-tuning your self-hosted instance of Thunderdome to fit your infrastructure.
+
+| Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
+|---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| `http.port`                           | PORT                                | Which port to listen for HTTP connections.                                                                           | 8080                                                       |
+| `http.path_prefix`                    | PATH_PREFIX                         | Prefix added to all application urls for shared domain use, in format of `/{prefix}` e.g. `/thunderdome`             |                                                            |
+| `http.secure_cookie`                  | COOKIE_SECURE                       | Use secure cookies or not.                                                                                           | true                                                       |
+| `http.backend_cookie_name`            | BACKEND_COOKIE_NAME                 | The name of the backend cookie utilized for actual auth/validation                                                   | warriorId                                                  |
+| `http.frontend_cookie_name`           | FRONTEND_COOKIE_NAME                | The name of the cookie utilized by the UI (purely for convenience not auth)                                          | warrior                                                    |
+| `http.write_timeout`                  | HTTP_WRITE_TIMEOUT                  | HTTP response write timeout in seconds                                                                               | 5                                                          |
+| `http.read_timeout`                   | HTTP_READ_TIMEOUT                   | HTTP request read timeout in seconds                                                                                 | 5                                                          |
+| `http.idle_timeout`                   | HTTP_IDLE_TIMEOUT                   | HTTP request idle timeout in seconds                                                                                 | 30                                                         |
+| `http.read_header_timeout`            | HTTP_READ_HEADER_TIMEOUT            | HTTP read header timeout in seconds                                                                                  | 2                                                          |
+| `http.websocket_write_wait_sec`       | HTTP_WEBSOCKET_WRITE_WAIT_SEC       | Time allowed to write a message to the peer for Websocket connections                                                | 10                                                         |
+| `http.websocket_pong_wait_sec`        | HTTP_WEBSOCKET_PONG_WAIT_SEC        | Time allowed to read the next pong message from the peer for Websocket connections                                   | 60                                                         |
+| `http.websocket_ping_period_sec`      | HTTP_WEBSOCKET_PING_PERIOD_SEC      | Send pings to peer with this period for Websocket connections. Must be less than pongWait.                           | 54                                                         |
+
+## Analytics configuration
+
+Thunderdome supports Google Analytics (in use on Thunderdome.dev) to aid in tracking app engagement.
+
+| Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
+|---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| `analytics.enabled`                   | ANALYTICS_ENABLED                   | Enable/disable google analytics.                                                                                     | true                                                       |
+| `analytics.id`                        | ANALYTICS_ID                        | Google analytics identifier.                                                                                         | UA-140245309-1                                             |
+
+## Open Telemetry Tracing
+
+Thunderdome features [Open Telemetry](https://opentelemetry.io/) tracing to aid in monitoring application performance.
+
+| Option               | Environment Variable | Description                                                           | Default Value  |
+|----------------------|----------------------|-----------------------------------------------------------------------|----------------|
+| `otel.enabled`       | OTEL_ENABLED         | Whether or not Open Telemetry tracing is enabled                      | false          |
+| `otel.service_name`  | OTEL_SERVICE_NAME    | Service name of Thunderdome                                           | thunderdome    |
+| `otel.collector_url` | OTEL_COLLECTOR_URL   | Open Telemetry supported tracing tool e.g. Uptrace, DataDog           | localhost:4317 |
+| `otel.insecure_mode` | OTEL_INSECURE_MODE   | Disables client transport security for the exporter's gRPC connection | false          |
+
+## Optional configuration items
+
+The following configuration items have sane defaults however aid in fine tuning your self-hosted instance to fit your
+needs.
+
+| Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
+|---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| `config.allowedPointValues`           | CONFIG_POINTS_ALLOWED               | List of available point values for creating battles.                                                                 | 0, 1/2, 1, 2, 3, 5, 8, 13, 20, 21, 34, 40, 55, 100, ?, ☕️  |
+| `config.defaultPointValues`           | CONFIG_POINTS_DEFAULT               | List of default selected points for new battles.                                                                     | 1, 2, 3, 5, 8 , 13, ?                                      |
+| `config.show_warrior_rank`            | CONFIG_SHOW_RANK                    | Set to enable an icon showing the rank of a warrior during battle.                                                   | false                                                      |
+| `config.avatar_service`               | CONFIG_AVATAR_SERVICE               | Avatar service used, possible values see next paragraph                                                              | gravatar                                                   |
+| `config.toast_timeout`                | CONFIG_TOAST_TIMEOUT                | Number of milliseconds before notifications are hidden.                                                              | 1000                                                       |
+| `config.allow_guests`                 | CONFIG_ALLOW_GUESTS                 | Whether or not to allow guest (anonymous) users.                                                                     | true                                                       |
+| `config.allow_registration`           | CONFIG_ALLOW_REGISTRATION           | Whether or not to allow user registration (outside Admin).                                                           | true                                                       |
+| `config.allow_jira_import`            | CONFIG_ALLOW_JIRA_IMPORT            | Whether or not to allow import plans from JIRA XML.                                                                  | true                                                       |
+| `config.allow_csv_import`             | CONFIG_ALLOW_CSV_IMPORT             | Whether or not to allow import plans from a csv file                                                                 | true                                                       |
+| `config.default_locale`               | CONFIG_DEFAULT_LOCALE               | The default locale (language) for the UI                                                                             | en                                                         |
+| `config.friendly_ui_verbs`            | CONFIG_FRIENDLY_UI_VERBS            | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly                  | false                                                      |
+| `config.allow_external_api`           | CONFIG_ALLOW_EXTERNAL_API           | Whether or not to allow External API access                                                                          | true                                                       |
+| `config.external_api_verify_required` | CONFIG_EXTERNAL_API_VERIFY_REQUIRED | Whether External API access requires user to be email verified                                                       | true                                                       |
+| `config.user_apikey_limit`            | CONFIG_USER_APIKEY_LIMIT            | Limit users number of API keys                                                                                       | 5                                                          |
+| `config.show_active_countries`        | CONFIG_SHOW_ACTIVE_COUNTRIES        | Whether or not to show active countries on landing page                                                              | false                                                      |
+| `config.cleanup_battles_days_old`     | CONFIG_CLEANUP_BATTLES_DAYS_OLD     | How many days back to clean up old battles, e.g. battles older than 180 days. Triggered manually by Admins .         | 180                                                        |
+| `config.cleanup_retros_days_old`      | CONFIG_CLEANUP_RETROS_DAYS_OLD      | How many days back to clean up old retros, e.g. retros older than 180 days. Triggered manually by Admins .           | 180                                                        |
+| `config.cleanup_storyboards_days_old` | CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD | How many days back to clean up old storyboards, e.g. storyboards older than 180 days. Triggered manually by Admins . | 180                                                        |
+| `config.cleanup_guests_days_old`      | CONFIG_CLEANUP_GUESTS_DAYS_OLD      | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins.            | 180                                                        |
+| `config.organizations_enabled`        | CONFIG_ORGANIZATIONS_ENABLED        | Whether or not creating organizations (with departments) are enabled                                                 | true                                                       |
+| `config.require_teams`                | CONFIG_REQUIRE_TEAMS                | Whether or not creating battles, retros, and storyboards require being associated to a Team                          | false                                                      |
+| `feature.poker`                       | FEATURE_POKER                       | Enable or Disable Agile Story Pointing (Poker) feature                                                               | true                                                       |
+| `feature.retro`                       | FEATURE_RETRO                       | Enable or Disable Agile Retrospectives feature                                                                       | true                                                       |
+| `feature.storyboard`                  | FEATURE_STORYBOARD                  | Enable or Disable Agile Storyboard feature                                                                           | true                                                       |
+
+### Avatar Service configuration
+
+Use the name from table below to configure a service - if not set, `gravatar` is used. Each service provides further
+options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the
+different sprites become available. The table shows all supported services and their sprites.
+
+| Name                                                     |           |           |           |           |           |           |           |           |           |
+|----------------------------------------------------------| --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
+| `goadorable` (internal)                                  |           |           |           |           |           |           |           |           |           |
+|                                                          | ![image](https://user-images.githubusercontent.com/846933/96212071-e4283d80-0f43-11eb-9f82-ff6c105f8b0a.png) |
+| `govatar` (internal)                                     | male | female |  |  |
+|                                                          | ![image](https://user-images.githubusercontent.com/846933/96212029-ce1a7d00-0f43-11eb-9e53-8ca13ba9d4b1.png) | ![image](https://user-images.githubusercontent.com/846933/96212031-ceb31380-0f43-11eb-832b-b02c275317a5.png) |  |  |
+| `gravatar`                                               | mp | identicon | monsterid | wavatar | retro | robohash | | | |
+|                                                          | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=mp&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=identicon&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=monsterid&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=wavatar&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=retro&r=g) | ![image](https://gravatar.com/avatar/ead26688-5148-4f3c-a35d-1b0117b4f2a9?s=48&d=robohash&r=g) | | | |
+| `robohash`                                               | set1 | set2 | set3 | set4 |
+|                                                          | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set1&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set2&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set3&size=48x48) | ![image](https://robohash.org/ead26688-5148-4f3c-a35d-1b0117b4f2a9.png?set=set4&size=48x48) |
