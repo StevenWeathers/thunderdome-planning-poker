@@ -3,9 +3,47 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
+	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 )
+
+// OauthCreateNonce creates a new oauth nonce
+func (d *Service) OauthCreateNonce(ctx context.Context) (string, error) {
+	nonceId, err := db.RandomBase64String(32)
+	if err != nil {
+		return "", err
+	}
+
+	if _, nonceErr := d.DB.ExecContext(ctx, `
+		INSERT INTO thunderdome.auth_nonce (nonce_id) VALUES ($1);
+		`,
+		nonceId,
+	); nonceErr != nil {
+		return "", fmt.Errorf("create oauth nonce query error: %v", nonceErr)
+	}
+
+	return nonceId, nil
+}
+
+func (d *Service) OauthValidateNonce(ctx context.Context, nonceId string) error {
+	var expireDate *time.Time
+	if err := d.DB.QueryRowContext(ctx,
+		`DELETE FROM thunderdome.auth_nonce WHERE nonce_id = $1 RETURNING expire_date;`,
+		nonceId,
+	).Scan(&expireDate); err != nil {
+		return err
+	}
+
+	if expireDate == nil || time.Now().After(*expireDate) {
+		return fmt.Errorf("nonce invalid")
+	}
+
+	return nil
+}
 
 // OauthAuthUser authenticate the oauth user or creates a new user
 func (d *Service) OauthAuthUser(ctx context.Context, provider string, email string, emailVerified bool, name string, pictureUrl string) (*thunderdome.User, string, error) {

@@ -19,6 +19,8 @@ type AuthProviderSvc interface {
 
 type AuthDataSvc interface {
 	AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*User, string, error)
+	OauthCreateNonce(ctx context.Context) (string, error)
+	OauthValidateNonce(ctx context.Context, nonceId string) error
 	OauthAuthUser(ctx context.Context, provider string, email string, emailVerified bool, name string, pictureUrl string) (*User, string, error)
 	UserResetRequest(ctx context.Context, UserEmail string) (resetID string, UserName string, resetErr error)
 	UserResetPassword(ctx context.Context, ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error)
