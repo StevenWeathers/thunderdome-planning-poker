@@ -20,7 +20,7 @@ type Config struct {
 	PingPeriodSec int
 
 	// App Domain (for Websocket origin check)
-  AppDomain string
+	AppDomain string
 }
 
 func (c *Config) WriteWait() time.Duration {
