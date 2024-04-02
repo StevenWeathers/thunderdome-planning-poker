@@ -2,7 +2,6 @@ package oauth
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
@@ -77,8 +76,6 @@ func (s *Service) HandleOAuth2Redirect() http.HandlerFunc {
 			return
 		}
 
-		s.logger.Ctx(ctx).Info(fmt.Sprintf("HandleOAuth2Redirect: %s", nonce))
-
 		http.Redirect(w, r, s.oauth2Config.AuthCodeURL(stateString, oidc.Nonce(nonce)), http.StatusSeeOther)
 	}
 }
@@ -90,8 +87,6 @@ func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 		rq := r.URL.Query()
 		state := rq.Get("state")
 		code := rq.Get("code")
-
-		s.logger.Ctx(ctx).Info("HandleOAuth2Callback called")
 
 		// Verify state
 		err := s.cookie.ValidateAuthStateCookie(w, r, state)
