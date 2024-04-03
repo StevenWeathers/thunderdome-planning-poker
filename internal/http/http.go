@@ -51,21 +51,25 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
 		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:     a.Config.AppDomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.PokerDataSvc)
 	retroSvc := retro.New(retro.Config{
 		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
 		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:     a.Config.AppDomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.RetroDataSvc, a.Email)
 	storyboardSvc := storyboard.New(storyboard.Config{
 		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
 		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:     a.Config.AppDomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.StoryboardDataSvc)
 	checkinSvc := checkin.New(checkin.Config{
 		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
 		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:     a.Config.AppDomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.CheckinDataSvc, a.TeamDataSvc)
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
