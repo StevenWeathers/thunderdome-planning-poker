@@ -165,7 +165,6 @@ func (sub *subscription) writePump() {
 	}
 }
 
-
 func (b *Service) createWebsocketUpgrader() websocket.Upgrader {
 	return websocket.Upgrader{
 		ReadBufferSize:  1024,
