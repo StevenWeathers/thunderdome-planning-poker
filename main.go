@@ -173,6 +173,7 @@ func main() {
 			AuthLdapMailAttr:          c.Auth.Ldap.MailAttr,
 			AuthLdapCnAttr:            c.Auth.Ldap.CnAttr,
 			AuthHeaderUsernameHeader:  c.Auth.Header.UsernameHeader,
+			AuthHeaderEmailHeader:	   c.Auth.Header.EmailHeader,
 			AllowGuests:               c.Config.AllowGuests,
 			AllowRegistration:         c.Config.AllowRegistration,
 			ShowActiveCountries:       c.Config.ShowActiveCountries,
