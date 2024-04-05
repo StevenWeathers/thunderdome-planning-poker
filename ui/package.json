@@ -31,6 +31,7 @@
     "js-cookie": "^3.0.5",
     "navaid": "^1.2.0",
     "quill": "^1.3.7",
+    "shepherd.js": "^11.2.0",
     "snapsvg-cjs": "^0.0.6",
     "sockette": "^2.0.6",
     "svelte-dnd-action": "^0.9.18"
