@@ -7,8 +7,7 @@
   import LL from '../../i18n/i18n-svelte';
   import CreateStoryboard from '../../components/storyboard/CreateStoryboard.svelte';
   import BoxList from '../../components/BoxList.svelte';
-  import 'shepherd.js/dist/css/shepherd.css';
-  import Shepherd from 'shepherd.js';
+  import TourBanner from '../../components/tour/TourBanner.svelte';
 
   export let xfetch;
   export let notifications;
@@ -42,48 +41,38 @@
     getStoryboards();
   };
 
-  const tour = new Shepherd.Tour({
-    defaultStepOptions: {
-      cancelIcon: {
-        enabled: true,
+  const tourSteps = [
+    {
+      title: 'Creating a Shepherd Tour',
+      text: 'Creating a Shepherd tour is easy. too! Just create a "Tour" instance, and add as many steps as you want.',
+      attachTo: {
+        element: '[data-tourid="storyboard_create"]',
+        on: 'bottom',
       },
-      classes: 'class-1 class-2',
-      scrollTo: { behavior: 'smooth', block: 'center' },
-    },
-  });
-
-  tour.addStep({
-    title: 'Creating a Shepherd Tour',
-    text: 'Creating a Shepherd tour is easy. too! Just create a "Tour" instance, and add as many steps as you want.',
-    attachTo: {
-      element: '[data-tourid="storyboard_create"]',
-      on: 'bottom',
-    },
-    buttons: [
-      {
-        action() {
-          return this.back();
+      buttons: [
+        {
+          action() {
+            return this.back();
+          },
+          classes: 'shepherd-button-secondary',
+          text: 'Back',
         },
-        classes: 'shepherd-button-secondary',
-        text: 'Back',
-      },
-      {
-        action() {
-          return this.next();
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
         },
-        text: 'Next',
-      },
-    ],
-    id: 'creating',
-  });
+      ],
+      id: 'creating',
+    },
+  ];
 
   onMount(() => {
     if (!$user.id) {
       router.route(appRoutes.login);
     }
     getStoryboards();
-
-    tour.start();
   });
 </script>
 
@@ -92,6 +81,7 @@
 </svelte:head>
 
 <PageLayout>
+  <TourBanner steps="{tourSteps}" />
   <h1
     class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
   >
