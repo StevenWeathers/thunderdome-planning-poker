@@ -36,7 +36,7 @@
 
 {#if !hidden}
   <div
-    class="flex items-center justify-between p-4 mb-8 text-sm font-semibold text-indigo-100 bg-indigo-500 rounded-lg shadow-md"
+    class="flex items-center justify-between p-4 mb-8 text-sm font-semibold text-indigo-100 bg-indigo-600 rounded-lg shadow-md"
   >
     <div class="flex items-center">
       <span class="text-lg lg:text-xl">{introText}</span>
