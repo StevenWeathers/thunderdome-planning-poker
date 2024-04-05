@@ -43,10 +43,27 @@
 
   const tourSteps = [
     {
-      title: 'Creating a Shepherd Tour',
-      text: 'Creating a Shepherd tour is easy. too! Just create a "Tour" instance, and add as many steps as you want.',
+      title: 'Creating a Storyboard',
+      text: 'A storyboard can be used for Agile Story Mapping exercises with features like goals, columns, and stories.',
       attachTo: {
         element: '[data-tourid="storyboard_create"]',
+        on: 'left',
+      },
+      buttons: [
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
+        },
+      ],
+      id: 'creating_storyboard',
+    },
+    {
+      title: 'Give the storyboard a name',
+      text: 'A storyboard name can be anything that helps you organize and identify your storyboards, such as a project name.',
+      attachTo: {
+        element: '#storyboardName',
         on: 'bottom',
       },
       buttons: [
@@ -64,7 +81,79 @@
           text: 'Next',
         },
       ],
-      id: 'creating',
+      id: 'storyboard_name',
+    },
+    {
+      title: 'Associate storyboard to a Team',
+      text: 'A storyboard can be associated to a Team, this makes it easy to find storyboards the team collaborates.',
+      attachTo: {
+        element: '#selectedTeam',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          action() {
+            return this.back();
+          },
+          classes: 'shepherd-button-secondary',
+          text: 'Back',
+        },
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
+        },
+      ],
+      id: 'associated_team',
+    },
+    {
+      title: 'Set an optional join code',
+      text: 'While storyboards are accessed through randomly generated unique IDs you can add an extra layer of security by setting the optional join code to any word or phrase you want.',
+      attachTo: {
+        element: '#joinCode',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          action() {
+            return this.back();
+          },
+          classes: 'shepherd-button-secondary',
+          text: 'Back',
+        },
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
+        },
+      ],
+      id: 'join_code',
+    },
+    {
+      title: 'Set an optional facilitator code',
+      text: 'Enter an optional facilitator code to make it easy for your storyboard collaborators to take control in your absence.',
+      attachTo: {
+        element: '#facilitatorCode',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          action() {
+            return this.back();
+          },
+          classes: 'shepherd-button-secondary',
+          text: 'Back',
+        },
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
+        },
+      ],
+      id: 'facilitator_code',
     },
   ];
 
