@@ -39,13 +39,17 @@
     class="flex items-center justify-between p-4 mb-8 text-sm font-semibold text-indigo-100 bg-indigo-600 rounded-lg shadow-md"
   >
     <div class="flex items-center">
-      <span class="text-lg lg:text-xl">{introText}</span>
+      <span class="text-lg">{introText}</span>
     </div>
     <div class="grid grid-cols-2 gap-2">
-      <button on:click="{hideCTA}" class="text-white">No thanks.</button>
+      <button
+        on:click="{hideCTA}"
+        class="py-2 px-3 rounded text-white hover:bg-white hover:text-indigo-600"
+        >No thanks.
+      </button>
       <button
         on:click="{tourCTA}"
-        class="bg-white text-indigo-500 py-2 px-3 rounded"
+        class="bg-white text-indigo-600 py-2 px-3 rounded hover:bg-indigo-600 hover:text-white"
         >Yes please!
       </button>
     </div>
