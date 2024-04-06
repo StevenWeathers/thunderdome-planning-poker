@@ -309,7 +309,7 @@ func isTeamUserOrAnAdmin(r *http.Request) bool {
 func (s *Service) getIndexTemplate(FSS fs.FS) *template.Template {
 	ctx := context.Background()
 	// get the html template from dist, have it ready for requests
-	tmplContent, ioErr := fs.ReadFile(FSS, "static/index.html")
+	tmplContent, ioErr := fs.ReadFile(FSS, "index.html")
 	if ioErr != nil {
 		s.Logger.Ctx(ctx).Error("Error opening index template")
 		if !s.Config.EmbedUseOS {
@@ -317,7 +317,7 @@ func (s *Service) getIndexTemplate(FSS fs.FS) *template.Template {
 		}
 	}
 
-	tmplString := string(tmplContent)
+	tmplString := strings.Replace(string(tmplContent), "/STATIC_DIR_BASE", "{{.AppConfig.PathPrefix}}", -1)
 	tmpl, tmplErr := template.New("index").Parse(tmplString)
 	if tmplErr != nil {
 		s.Logger.Ctx(ctx).Error("Error parsing index template")
