@@ -1,7 +1,6 @@
 <script lang="ts">
   import Modal from '../global/Modal.svelte';
   import SolidButton from '../global/SolidButton.svelte';
-  import { quill } from '../../quill';
   import LL from '../../i18n/i18n-svelte';
 
   export let toggleCheckin = () => {};
@@ -50,15 +49,14 @@
             {$LL.yesterday()}
           </div>
           <div class="bg-white">
-            <div
-              class="w-full"
-              use:quill="{{
-                placeholder: `${$LL.yesterdayPlaceholder()}`,
-                content: yesterday,
-              }}"
-              on:text-change="{e => (yesterday = e.detail.html)}"
-              id="yesterday"
-            ></div>
+            {#await import('../Editor.svelte') then Editor}
+              <Editor.default
+                content="{yesterday}"
+                placeholder="{$LL.yesterdayPlaceholder()}"
+                id="yesterday"
+                handleTextChange="{c => (yesterday = c)}"
+              />
+            {/await}
           </div>
         </div>
         <div class="mb-4">
@@ -93,15 +91,14 @@
             {$LL.today()}
           </div>
           <div class="bg-white">
-            <div
-              class="w-full"
-              use:quill="{{
-                placeholder: `${$LL.todayPlaceholder()}`,
-                content: today,
-              }}"
-              on:text-change="{e => (today = e.detail.html)}"
-              id="today"
-            ></div>
+            {#await import('../Editor.svelte') then Editor}
+              <Editor.default
+                content="{today}"
+                placeholder="{$LL.todayPlaceholder()}"
+                id="today"
+                handleTextChange="{c => (today = c)}"
+              />
+            {/await}
           </div>
         </div>
       </div>
@@ -114,15 +111,14 @@
         {$LL.blockers()}
       </div>
       <div class="bg-white">
-        <div
-          class="w-full"
-          use:quill="{{
-            placeholder: `${$LL.blockersPlaceholder()}`,
-            content: blockers,
-          }}"
-          on:text-change="{e => (blockers = e.detail.html)}"
-          id="blockers"
-        ></div>
+        {#await import('../Editor.svelte') then Editor}
+          <Editor.default
+            content="{blockers}"
+            placeholder="{$LL.blockersPlaceholder()}"
+            id="blockers"
+            handleTextChange="{c => (blockers = c)}"
+          />
+        {/await}
       </div>
     </div>
 
@@ -133,15 +129,14 @@
         {$LL.discuss()}
       </div>
       <div class="bg-white">
-        <div
-          class="w-full"
-          use:quill="{{
-            placeholder: `${$LL.discussPlaceholder()}`,
-            content: discuss,
-          }}"
-          on:text-change="{e => (discuss = e.detail.html)}"
-          id="discuss"
-        ></div>
+        {#await import('../Editor.svelte') then Editor}
+          <Editor.default
+            content="{discuss}"
+            placeholder="{$LL.discussPlaceholder()}"
+            id="discuss"
+            handleTextChange="{c => (discuss = c)}"
+          />
+        {/await}
       </div>
     </div>
 

@@ -8,7 +8,6 @@
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
   import TrashIcon from '../../components/icons/TrashIcon.svelte';
   import Comments from '../../components/checkin/Comments.svelte';
-  import Gauge from '../../components/Gauge.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import { AppConfig, appRoutes, PathPrefix } from '../../config';
@@ -517,34 +516,36 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 my-4">
-    <div class="px-2 md:px-4">
-      <Gauge
-        text="{$LL.participation()}"
-        percentage="{stats.pPerc}"
-        stat="{stats.pPerc}"
-        count="{stats.participants} / {userCount}"
-      />
+  {#await import('../../components/Gauge.svelte') then Gauge}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 my-4">
+      <div class="px-2 md:px-4">
+        <Gauge.default
+          text="{$LL.participation()}"
+          percentage="{stats.pPerc}"
+          stat="{stats.pPerc}"
+          count="{stats.participants} / {userCount}"
+        />
+      </div>
+      <div class="px-2 md:px-4">
+        <Gauge.default
+          text="{$LL.goalsMet()}"
+          percentage="{stats.gPerc}"
+          color="green"
+          stat="{stats.gPerc}"
+          count="{stats.goals} / {stats.participants}"
+        />
+      </div>
+      <div class="px-2 md:px-4">
+        <Gauge.default
+          text="{$LL.blocked()}"
+          percentage="{stats.bPerc}"
+          color="red"
+          stat="{stats.bPerc}"
+          count="{stats.blocked} / {stats.participants}"
+        />
+      </div>
     </div>
-    <div class="px-2 md:px-4">
-      <Gauge
-        text="{$LL.goalsMet()}"
-        percentage="{stats.gPerc}"
-        color="green"
-        stat="{stats.gPerc}"
-        count="{stats.goals} / {stats.participants}"
-      />
-    </div>
-    <div class="px-2 md:px-4">
-      <Gauge
-        text="{$LL.blocked()}"
-        percentage="{stats.bPerc}"
-        color="red"
-        stat="{stats.bPerc}"
-        count="{stats.blocked} / {stats.participants}"
-      />
-    </div>
-  </div>
+  {/await}
 
   <div
     class="mt-8 mb-4 w-full text-right bg-white dark:bg-gray-800 p-3 shadow-lg rounded-lg"

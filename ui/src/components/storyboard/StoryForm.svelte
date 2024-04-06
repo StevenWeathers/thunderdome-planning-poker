@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { quill } from '../../quill';
   import Modal from '../global/Modal.svelte';
   import HollowButton from '../global/HollowButton.svelte';
   import UserIcon from '../icons/UserIcon.svelte';
@@ -279,18 +278,17 @@
             Story Content
           </label>
           <div class="bg-white">
-            <div
-              class="w-full bg-white"
-              use:quill="{{
-                placeholder: 'Enter story content',
-                content: story.content,
-              }}"
-              on:text-change="{e => {
-                story.content = e.detail.html;
-                updateContent();
-              }}"
-              id="storyDescription"
-            ></div>
+            {#await import('../Editor.svelte') then Editor}
+              <Editor.default
+                content="{story.content}"
+                placeholder="Enter story content"
+                id="storyDescription"
+                handleTextChange="{c => {
+                  story.content = c;
+                  updateContent();
+                }}"
+              />
+            {/await}
           </div>
         </div>
         <div class="mb-4">

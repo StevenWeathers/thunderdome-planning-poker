@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { afterUpdate, onMount } from 'svelte';
+  import { afterUpdate } from 'svelte';
+  import Snap from 'snapsvg-cjs';
 
   export let percentage = 100;
   export let text = '';
@@ -7,7 +8,6 @@
   export let stat = percentage;
   export let count = '';
 
-  let Snap;
   let svgElem;
 
   let polar_to_cartesian, svg_circle_arc_path, animate_arc;
@@ -62,71 +62,7 @@
     const perc = percentage <= 100 ? percentage : 100; // account for overage
     animate_arc(perc / 100, Snap(svgElem));
   });
-
-  onMount(async () => {
-    Snap = await import('snapsvg-cjs');
-  });
 </script>
-
-<style global>
-  .gauge {
-    --tw-aspect-h: 1;
-    --tw-aspect-w: 2;
-    padding-bottom: calc(var(--tw-aspect-h) / var(--tw-aspect-w) * 100%);
-    position: relative;
-  }
-
-  .gauge > * {
-    bottom: 0;
-    height: 100%;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 100%;
-  }
-
-  .gauge path {
-    stroke-width: 75;
-    fill: none;
-  }
-
-  .gauge.blue path {
-    @apply stroke-sky-500;
-  }
-
-  .gauge.blue .percentage,
-  .gauge.blue .count-text {
-    @apply text-sky-500;
-  }
-
-  .gauge.green path {
-    @apply stroke-green-500;
-  }
-
-  .gauge.green .percentage,
-  .gauge.green .count-text {
-    @apply text-green-500;
-  }
-
-  .gauge.red path {
-    @apply stroke-red-500;
-  }
-
-  .gauge.red .percentage,
-  .gauge.red .count-text {
-    @apply text-red-500;
-  }
-
-  .gauge.purple path {
-    @apply stroke-indigo-500;
-  }
-
-  .gauge.purple .percentage,
-  .gauge.purple .count-text {
-    @apply text-indigo-500;
-  }
-</style>
 
 <div class="relative gauge {color}">
   {#if count !== ''}

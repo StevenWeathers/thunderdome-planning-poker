@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { quill } from '../../quill';
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
   import NoSymbol from '../icons/NoSymbol.svelte';
@@ -186,15 +185,14 @@
       {#if descriptionExpanded}
         <div class="mb-2">
           <div class="bg-white">
-            <div
-              class="w-full bg-white"
-              use:quill="{{
-                placeholder: $LL.planDescriptionPlaceholder(),
-                content: description,
-              }}"
-              on:text-change="{e => (description = e.detail.html)}"
-              id="description"
-            ></div>
+            {#await import('../Editor.svelte') then Editor}
+              <Editor.default
+                content="{description}"
+                placeholder="{$LL.planDescriptionPlaceholder()}"
+                id="storyDescription"
+                handleTextChange="{c => (description = c)}"
+              />
+            {/await}
           </div>
         </div>
       {/if}
@@ -218,15 +216,14 @@
       {#if acceptanceExpanded}
         <div class="mb-2">
           <div class="bg-white">
-            <div
-              class="w-full"
-              use:quill="{{
-                placeholder: $LL.planAcceptanceCriteriaPlaceholder(),
-                content: acceptanceCriteria,
-              }}"
-              on:text-change="{e => (acceptanceCriteria = e.detail.html)}"
-              id="acceptanceCriteria"
-            ></div>
+            {#await import('../Editor.svelte') then Editor}
+              <Editor.default
+                content="{acceptanceCriteria}"
+                placeholder="{$LL.planAcceptanceCriteriaPlaceholder()}"
+                id="acceptanceCriteria"
+                handleTextChange="{c => (acceptanceCriteria = c)}"
+              />
+            {/await}
           </div>
         </div>
       {/if}
