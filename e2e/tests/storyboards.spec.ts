@@ -10,8 +10,8 @@ test.describe("Storyboards page", () => {
       const storyboardsPage = new StoryboardsPage(page);
       await storyboardsPage.goto();
 
-      const title = storyboardsPage.page.locator('[data-formtitle="login"]');
-      await expect(title).toHaveText("Login");
+      const loginForm = storyboardsPage.page.locator('form[name="login"]');
+      await expect(loginForm).toBeVisible();
     });
   });
 

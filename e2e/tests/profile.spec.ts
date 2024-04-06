@@ -6,8 +6,8 @@ test.describe("User Profile page", () => {
     const profilePage = new ProfilePage(page);
     await profilePage.goto();
 
-    const title = profilePage.page.locator('[data-formtitle="login"]');
-    await expect(title).toHaveText("Login");
+    const loginForm = profilePage.page.locator('form[name="login"]');
+    await expect(loginForm).toBeVisible();
   });
 
   test("Guest user successfully loads", async ({ guestPage }) => {

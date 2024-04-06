@@ -184,7 +184,9 @@ const de: Translation = {
     'is designed and developed by {authorOpen}Steven Weathers{authorClose}.',
   footerLicense:
     'Der Source Code ist lizensiert {licenseOpen}Apache 2.0{licenseClose}.',
-  forgotPassword: 'Forgot Password',
+  forgotPassword: 'Forgot Your Password?',
+  forgotPasswordSubtext: `Don't fret! Just enter your email and we will send you instructions to reset your password.`,
+  returnToLogin: 'Return to Login',
   getAlertsError: 'Error getting alerts',
   getApikeysError: 'Error getting apikeys',
   getBattleError:
@@ -391,7 +393,6 @@ const de: Translation = {
   selectTeam: 'Select a Team',
   selfHostedDesc:
     'Alternatively you can {linkOpen}run it on your own server{linkClose}.',
-  sendResetEmail: 'Send Reset Email',
   sessionDuplicate:
     '{friendly|{false:Es existiert bereits eine Schlacht-Sitzung für Ihre ID, true:Es existiert bereits eine Partie-Sitzung für Ihre ID}}',
   showActiveBattles:
@@ -580,7 +581,6 @@ const de: Translation = {
   reset: 'Reset',
   passwordResetError: 'Error encountered attempting to reset password',
   resetPassword: 'Reset Password',
-  forgotPasswordCheckboxLabel: 'Forgot Password?',
   registerAsGuest: 'Register as Guest',
   registrationDisabled: 'Registration is disabled.',
   userNamePlaceholder: 'Enter your name',
