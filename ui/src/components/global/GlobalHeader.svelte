@@ -57,17 +57,12 @@
           locale: u.locale,
           notificationsEnabled: u.notificationsEnabled,
         };
-        if (result.data.mfaRequired) {
-          mfaRequired = true;
-          mfaUser = newUser;
-          mfaSessionId = result.data.sessionId;
-        } else {
-          user.create(newUser);
-          eventTag('login', 'engagement', 'success', () => {
-            setupI18n(newUser.locale);
-            router.route(appRoutes.games, true);
-          });
-        }
+
+        user.create(newUser);
+        eventTag('login', 'engagement', 'success', () => {
+          setupI18n(newUser.locale);
+          router.route(appRoutes.games, true);
+        });
       })
       .catch(function (err) {
         notifications.danger(
@@ -119,12 +114,21 @@
             />
           </li>
           <li>
-            <a
-              href="{appRoutes.login}"
-              class="block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
-              >{$LL.login()}
-              <ArrowRight class="ms-2 inline-block" />
-            </a>
+            {#if HeaderAuthEnabled}
+              <button
+                on:click="{headerLogin}"
+                class="block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
+                >{$LL.login()}
+                <ArrowRight class="ms-2 inline-block" />
+              </button>
+            {:else}
+              <a
+                href="{appRoutes.login}"
+                class="block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
+                >{$LL.login()}
+                <ArrowRight class="ms-2 inline-block" />
+              </a>
+            {/if}
           </li>
         {/if}
         {#if $user.id}

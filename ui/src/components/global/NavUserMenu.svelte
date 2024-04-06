@@ -70,7 +70,9 @@
 </script>
 
 <div>
-  <span class="text-gray-600 dark:text-gray-300 font-semibold me-2"
+  <span
+    data-testid="usernav-name"
+    class="text-gray-600 dark:text-gray-300 font-semibold me-2"
     >{$user.name}</span
   >
   <button

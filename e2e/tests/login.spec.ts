@@ -13,7 +13,7 @@ test.describe("The Login Page", () => {
 
     // UI should reflect this user being logged in
     await expect(
-      loginPage.page.locator('[data-testid="userprofile-link"]'),
+      loginPage.page.locator('[data-testid="usernav-name"]'),
     ).toHaveText(registeredUser.name);
   });
 });
