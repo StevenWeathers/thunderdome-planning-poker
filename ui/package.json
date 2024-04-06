@@ -25,7 +25,8 @@
     "test:snapshot": "npm test -- -u",
     "locales": "npx typesafe-i18n --no-watch",
     "locales:watch": "typesafe-i18n",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "analyze": "npx vite-bundle-visualizer"
   },
   "dependencies": {
     "compute-scroll-into-view": "^3.1.0",

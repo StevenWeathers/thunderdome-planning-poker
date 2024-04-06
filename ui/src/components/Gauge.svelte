@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { afterUpdate } from 'svelte';
-  import Snap from 'snapsvg-cjs';
+  import { afterUpdate, onMount } from 'svelte';
 
   export let percentage = 100;
   export let text = '';
@@ -8,6 +7,7 @@
   export let stat = percentage;
   export let count = '';
 
+  let Snap;
   let svgElem;
 
   let polar_to_cartesian, svg_circle_arc_path, animate_arc;
@@ -61,6 +61,10 @@
   afterUpdate(() => {
     const perc = percentage <= 100 ? percentage : 100; // account for overage
     animate_arc(perc / 100, Snap(svgElem));
+  });
+
+  onMount(async () => {
+    Snap = await import('snapsvg-cjs');
   });
 </script>
 
