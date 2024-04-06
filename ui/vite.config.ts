@@ -6,6 +6,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 export default defineConfig({
   build: {
     assetsDir: 'static',
+    // minify: false,
   },
   plugins: [svelte()],
   css: {

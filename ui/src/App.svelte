@@ -32,24 +32,6 @@
   import ResetPassword from './pages/user/ResetPassword.svelte';
   import VerifyAccount from './pages/user/VerifyAccount.svelte';
   import WarriorProfile from './pages/user/UserProfile.svelte';
-  import Admin from './pages/admin/Admin.svelte';
-  import AdminUsers from './pages/admin/Users.svelte';
-  import AdminUser from './pages/admin/User.svelte';
-  import AdminOrganizations from './pages/admin/Organizations.svelte';
-  import AdminOrganization from './pages/admin/Organization.svelte';
-  import AdminDepartment from './pages/admin/Department.svelte';
-  import AdminTeams from './pages/admin/Teams.svelte';
-  import AdminTeam from './pages/admin/Team.svelte';
-  import AdminApikeys from './pages/admin/ApiKeys.svelte';
-  import AdminAlerts from './pages/admin/Alerts.svelte';
-  import AdminBattles from './pages/admin/PokerGames.svelte';
-  import AdminBattle from './pages/admin/PokerGame.svelte';
-  import AdminRetros from './pages/admin/Retros.svelte';
-  import AdminRetro from './pages/admin/Retro.svelte';
-  import AdminStoryboards from './pages/admin/Storyboards.svelte';
-  import AdminStoryboard from './pages/admin/Storyboard.svelte';
-  import AdminSubscriptions from './pages/admin/Subscriptions.svelte';
-  import AdminSubscription from './pages/admin/Subscription.svelte';
   import { setLocale } from './i18n/i18n-svelte';
   import { detectLocale } from './i18n/i18n-util';
   import { loadLocaleAsync } from './i18n/i18n-util.async';
@@ -268,46 +250,52 @@
       name: 'team',
     };
   });
-  router.on(appRoutes.admin, () => {
+  router.on(appRoutes.admin, async () => {
+    const comp = await import('./pages/admin/Admin.svelte');
     currentPage = {
-      route: Admin,
+      route: comp.default,
       params: {},
       name: 'admin',
     };
   });
-  router.on(`${appRoutes.adminUsers}/:userId`, params => {
+  router.on(`${appRoutes.adminUsers}/:userId`, async params => {
+    const comp = await import('./pages/admin/User.svelte');
     currentPage = {
-      route: AdminUser,
+      route: comp.default,
       params: params,
       name: 'admin',
     };
   });
-  router.on(`${appRoutes.adminUsers}`, () => {
+  router.on(`${appRoutes.adminUsers}`, async params => {
+    const comp = await import('./pages/admin/Users.svelte');
     currentPage = {
-      route: AdminUsers,
+      route: comp.default,
       params: {},
       name: 'admin',
     };
   });
-  router.on(`${appRoutes.adminOrganizations}`, () => {
+  router.on(`${appRoutes.adminOrganizations}`, async params => {
+    const comp = await import('./pages/admin/Organizations.svelte');
     currentPage = {
-      route: AdminOrganizations,
+      route: comp.default,
       params: {},
       name: 'admin',
     };
   });
-  router.on(`${appRoutes.adminOrganizations}/:organizationId`, params => {
+  router.on(`${appRoutes.adminOrganizations}/:organizationId`, async params => {
+    const comp = await import('./pages/admin/Organization.svelte');
     currentPage = {
-      route: AdminOrganization,
+      route: comp.default,
       params: params,
       name: 'admin',
     };
   });
   router.on(
     `${appRoutes.adminOrganizations}/:organizationId/team/:teamId`,
-    params => {
+    async params => {
+      const comp = await import('./pages/admin/Team.svelte');
       currentPage = {
-        route: AdminTeam,
+        route: comp.default,
         params: params,
         name: 'admin',
       };
@@ -315,9 +303,10 @@
   );
   router.on(
     `${appRoutes.adminOrganizations}/:organizationId/department/:departmentId`,
-    params => {
+    async params => {
+      const comp = await import('./pages/admin/Department.svelte');
       currentPage = {
-        route: AdminDepartment,
+        route: comp.default,
         params: params,
         name: 'admin',
       };
@@ -325,38 +314,43 @@
   );
   router.on(
     `${appRoutes.adminOrganizations}/:organizationId/department/:departmentId/team/:teamId`,
-    params => {
+    async params => {
+      const comp = await import('./pages/admin/Team.svelte');
       currentPage = {
-        route: AdminTeam,
+        route: comp.default,
         params: params,
         name: 'admin',
       };
     },
   );
-  router.on(`${appRoutes.adminTeams}`, () => {
+  router.on(`${appRoutes.adminTeams}`, async params => {
+    const comp = await import('./pages/admin/Teams.svelte');
     currentPage = {
-      route: AdminTeams,
+      route: comp.default,
       params: {},
       name: 'admin',
     };
   });
-  router.on(`${appRoutes.adminTeams}/:teamId`, params => {
+  router.on(`${appRoutes.adminTeams}/:teamId`, async params => {
+    const comp = await import('./pages/admin/Team.svelte');
     currentPage = {
-      route: AdminTeam,
+      route: comp.default,
       params: params,
       name: 'admin',
     };
   });
-  router.on(`${appRoutes.adminApiKeys}`, () => {
+  router.on(`${appRoutes.adminApiKeys}`, async params => {
+    const comp = await import('./pages/admin/ApiKeys.svelte');
     currentPage = {
-      route: AdminApikeys,
+      route: comp.default,
       params: {},
       name: 'admin',
     };
   });
-  router.on(`${appRoutes.adminAlerts}`, () => {
+  router.on(`${appRoutes.adminAlerts}`, async params => {
+    const comp = await import('./pages/admin/Alerts.svelte');
     currentPage = {
-      route: AdminAlerts,
+      route: comp.default,
       params: {},
       name: 'admin',
     };
@@ -377,16 +371,18 @@
         name: 'battle',
       };
     });
-    router.on(`${appRoutes.adminPokerGames}`, () => {
+    router.on(`${appRoutes.adminPokerGames}`, async params => {
+      const comp = await import('./pages/admin/PokerGames.svelte');
       currentPage = {
-        route: AdminBattles,
+        route: comp.default,
         params: {},
         name: 'admin',
       };
     });
-    router.on(`${appRoutes.adminPokerGames}/:battleId`, params => {
+    router.on(`${appRoutes.adminPokerGames}/:battleId`, async params => {
+      const comp = await import('./pages/admin/PokerGame.svelte');
       currentPage = {
-        route: AdminBattle,
+        route: comp.default,
         params: params,
         name: 'admin',
       };
@@ -422,16 +418,18 @@
         name: 'retro',
       };
     });
-    router.on(`${appRoutes.adminRetros}`, () => {
+    router.on(`${appRoutes.adminRetros}`, async params => {
+      const comp = await import('./pages/admin/Retros.svelte');
       currentPage = {
-        route: AdminRetros,
+        route: comp.default,
         params: {},
         name: 'admin',
       };
     });
-    router.on(`${appRoutes.adminRetros}/:retroId`, params => {
+    router.on(`${appRoutes.adminRetros}/:retroId`, async params => {
+      const comp = await import('./pages/admin/Retro.svelte');
       currentPage = {
-        route: AdminRetro,
+        route: comp.default,
         params: params,
         name: 'admin',
       };
@@ -467,16 +465,18 @@
         name: 'storyboard',
       };
     });
-    router.on(`${appRoutes.adminStoryboards}`, () => {
+    router.on(`${appRoutes.adminStoryboards}`, async params => {
+      const comp = await import('./pages/admin/Storyboards.svelte');
       currentPage = {
-        route: AdminStoryboards,
+        route: comp.default,
         params: {},
         name: 'admin',
       };
     });
-    router.on(`${appRoutes.adminStoryboards}/:storyboardId`, params => {
+    router.on(`${appRoutes.adminStoryboards}/:storyboardId`, async params => {
+      const comp = await import('./pages/admin/Storyboard.svelte');
       currentPage = {
-        route: AdminStoryboard,
+        route: comp.default,
         params: params,
         name: 'admin',
       };
@@ -498,20 +498,25 @@
   }
 
   if (SubscriptionsEnabled) {
-    router.on(`${appRoutes.adminSubscriptions}`, () => {
+    router.on(`${appRoutes.adminSubscriptions}`, async params => {
+      const comp = await import('./pages/admin/Subscriptions.svelte');
       currentPage = {
-        route: AdminSubscriptions,
+        route: comp.default,
         params: {},
         name: 'admin',
       };
     });
-    router.on(`${appRoutes.adminSubscriptions}/:subscriptionId`, params => {
-      currentPage = {
-        route: AdminSubscription,
-        params,
-        name: 'admin',
-      };
-    });
+    router.on(
+      `${appRoutes.adminSubscriptions}/:subscriptionId`,
+      async params => {
+        const comp = await import('./pages/admin/Subscription.svelte');
+        currentPage = {
+          route: comp.default,
+          params,
+          name: 'admin',
+        };
+      },
+    );
   }
 
   router.listen();

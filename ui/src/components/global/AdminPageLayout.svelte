@@ -82,16 +82,6 @@
     'border-gray-200 hover:border-gray-300 bg-gray-200 text-blue-500 dark:text-gray-400 dark:hover:text-gray-900 hover:bg-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:hover:bg-gray-400 dark:hover:border-gray-400';
 </script>
 
-<style>
-  .admin-nav-pill {
-    @apply inline-block;
-    @apply border;
-    @apply rounded;
-    @apply py-1;
-    @apply px-3;
-  }
-</style>
-
 <div class="grow-0 w-full">
   <div
     class="w-full flex justify-end px-6 py-2 border-b-2 bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
@@ -101,7 +91,7 @@
         {#if page.enabled}
           <li class="ms-3">
             <a
-              class="admin-nav-pill {activePage ===
+              class="inline-block border rounded py-1 px-3 {activePage ===
               page.name.toLowerCase().replace(' ', '')
                 ? activePillClasses
                 : nonActivePillClasses}"
