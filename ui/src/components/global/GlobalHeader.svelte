@@ -33,9 +33,9 @@
   } = AppConfig;
 
   const activePageClass =
-    'block lg:pt-6 lg:pb-4 px-4 border-b border-transparent lg:border-b-4 all:bg-yellow-thunder lg:bg-gray-800 lg:text-purple-700 lg:border-purple-700 lg:dark:text-yellow-400 lg:dark:border-yellow-400';
+    'block lg:pt-6 lg:pb-4 px-4 border-b lg:border-b-4 lg:dark:bg-gray-800 text-indigo-600 border-indigo-600 dark:text-yellow-400 dark:border-yellow-400 transition duration-300';
   const pageClass =
-    'block lg:pt-6 lg:pb-4 px-4 border-b border-gray-100 dark:border-gray-700 lg:border-b-4 text-gray-700 lg:border-white lg:dark:border-gray-800 dark:hover:border-yellow-400 hover:text-purple-700 dark:text-gray-300 dark:hover:text-yellow-400 transition duration-300';
+    'block lg:pt-6 lg:pb-4 px-4 border-b border-gray-200 lg:border-white dark:border-gray-600 lg:dark:border-gray-800 lg:border-b-4 text-gray-700 hover:border-indigo-600 dark:hover:border-yellow-400 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-yellow-400 transition duration-300';
 
   let showMobileMenu = false;
 
@@ -121,9 +121,9 @@
           <li>
             <a
               href="{appRoutes.login}"
-              class="block py-2 px-4 rounded transition duration-300 dark:bg-gray-700 text-white hover:bg-indigo-800 dark:hover:bg-indigo-600 hover:text-white"
+              class="block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
               >{$LL.login()}
-              <ArrowRight class="inline-block" />
+              <ArrowRight class="ms-2 inline-block" />
             </a>
           </li>
         {/if}
@@ -166,7 +166,7 @@
           : 'hidden'} justify-between items-center w-full lg:flex lg:w-auto lg:order-1 font-semibold font-rajdhani uppercase text-lg lg:text-xl"
       >
         <ul
-          class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-1 lg:mt-0 rtl:space-x-reverse"
+          class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-1 lg:mt-0 pb-2 lg:pb-0 rtl:space-x-reverse"
         >
           {#if $user.name}
             {#if FeaturePoker}

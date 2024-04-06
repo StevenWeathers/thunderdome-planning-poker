@@ -35,7 +35,7 @@
 <div class="relative z-10">
   <span class="sr-only">Theme</span>
   <button
-    class="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+    class="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700"
     aria-label="Theme"
     type="button"
     on:click="{toggleMenu}"
@@ -95,7 +95,7 @@
             ></path>
           </svg>
         </div>
-        <div class="ml-3">Light</div>
+        <div class="ms-3">Light</div>
       </li>
       <li
         class="flex cursor-pointer select-none items-center rounded-[0.625rem] p-1 text-slate-700 dark:text-slate-300 {selectedTheme ===
@@ -121,10 +121,10 @@
             ></path>
           </svg>
         </div>
-        <div class="ml-3">Dark</div>
+        <div class="ms-3">Dark</div>
       </li>
       <li
-        class="flex cursor-pointer select-none items-center rounded-[0.625rem] p-1 text-brand-primary {selectedTheme ===
+        class="flex cursor-pointer select-none items-center rounded-[0.625rem] p-1 text-slate-700 dark:text-slate-300 text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/40 {selectedTheme ===
         'auto'
           ? 'bg-indigo-600 text-white'
           : ''}"
@@ -132,7 +132,7 @@
         on:click="{setTheme('auto')}"
       >
         <div
-          class="rounded-md bg-white p-1 shadow ring-1 ring-slate-900/5 dark:bg-slate-700 dark:ring-inset dark:ring-white/5"
+          class="rounded-md bg-white p-1 shadow ring-1 ring-slate-900/5 dark:bg-slate-700 dark:ring-inset dark:ring-white/5 text-slate-700 dark:text-slate-400 text-slate-900"
         >
           <svg
             aria-hidden="true"
@@ -147,7 +147,7 @@
             ></path>
           </svg>
         </div>
-        <div class="ml-3">System</div>
+        <div class="ms-3">System</div>
       </li>
     </ul>
   {/if}

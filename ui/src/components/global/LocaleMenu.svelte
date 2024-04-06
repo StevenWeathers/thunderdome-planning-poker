@@ -43,7 +43,7 @@
   <label class="sr-only">Locale</label>
 
   <button
-    class="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700"
+    class="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
     aria-label="Locale"
     type="button"
     on:click="{toggleMenu}"
@@ -79,7 +79,7 @@
             : ''}"
           tabindex="-1"
         >
-          <div class="ml-3">
+          <div class="ms-3">
             <button on:click="{switchLocale(locale.value)}"
               >{locale.name}</button
             >

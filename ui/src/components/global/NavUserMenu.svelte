@@ -70,7 +70,7 @@
 </script>
 
 <div>
-  <span class="text-gray-700 dark:text-gray-400 font-semibold me-2"
+  <span class="text-gray-600 dark:text-gray-300 font-semibold me-2"
     >{$user.name}</span
   >
   <button

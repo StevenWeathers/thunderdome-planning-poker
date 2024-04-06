@@ -69,8 +69,10 @@
           user.create(newUser);
           if (u.theme !== 'auto') {
             localStorage.setItem('theme', u.theme);
-            window.setTheme();
+          } else {
+            localStorage.removeItem('theme');
           }
+          window.setTheme();
           eventTag('login', 'engagement', 'success', () => {
             // setupI18n({
             //     withLocale: newUser.locale,
@@ -186,7 +188,7 @@
       <div class="flex items-center">
         <!--                        <input id="remember_me" name="remember_me" type="checkbox"-->
         <!--                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:text-white dark:border-gray-600 dark:focus:ring-indigo-400 disabled:cursor-wait disabled:opacity-50">-->
-        <!--                        <label for="remember_me" class="ml-2 block text-sm text-gray-900 dark:text-white">Remember-->
+        <!--                        <label for="remember_me" class="ms-2 block text-sm text-gray-900 dark:text-white">Remember-->
         <!--                            me</label>-->
       </div>
       <div class="text-sm">

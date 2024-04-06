@@ -37,7 +37,7 @@
         >
         and mention the <span class="font-semibold">current version</span>
         <span
-          class="ml-2 font-bold dark:text-gray-800 bg-lime-800 dark:bg-lime-200 py-1 px-2 rounded inline-block"
+          class="ms-2 font-bold dark:text-gray-800 bg-lime-800 dark:bg-lime-200 py-1 px-2 rounded inline-block"
           >{AppVersion}</span
         >
       </p>
