@@ -85,10 +85,10 @@ test.describe("Team Checkin page", () => {
       // check in
       await teamPage.page.locator('[data-testid="check-in"]').click();
       await teamPage.page
-        .locator("#yesterday >> p")
+        .locator("#yesterday > .ql-editor")
         .fill("Yesterday I fixed bugs");
       await teamPage.page
-        .locator("#today >> p")
+        .locator("#today > .ql-editor")
         .fill("Today I will write e2e tests");
       await teamPage.page.locator("data-testid=save").click();
 
@@ -114,9 +114,9 @@ test.describe("Team Checkin page", () => {
       // edit checkin - @TODO separate this into its own test
       await teamPage.page.locator('[data-testid="checkin-edit"]').click();
       await teamPage.page
-        .locator("#blockers >> p")
+        .locator("#blockers > .ql-editor")
         .fill("Blocked by procrastination");
-      await teamPage.page.locator("#discuss >> p").fill("Whats next?");
+      await teamPage.page.locator("#discuss > .ql-editor").fill("Whats next?");
       await teamPage.page.locator("data-testid=save").click();
 
       await expect(
