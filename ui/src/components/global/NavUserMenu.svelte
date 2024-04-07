@@ -6,6 +6,7 @@
   import UserAvatar from '../user/UserAvatar.svelte';
   import { onMount } from 'svelte';
   import VoteIcon from '../icons/VoteIcon.svelte';
+  import LockIcon from '../icons/LockIcon.svelte';
 
   export let currentPage;
   export let eventTag;
@@ -34,6 +35,11 @@
   function goToRegister() {
     toggleMenu();
     router.route(appRoutes.register, true);
+  }
+
+  function goToLogin() {
+    toggleMenu();
+    router.route(appRoutes.login, true);
   }
 
   function getProfile() {
@@ -119,6 +125,16 @@
         >
           <VoteIcon class="w-4 h-4 me-3 " />
           <span>{$LL.createAccount()}</span>
+        </button>
+      </li>
+      <li class="flex">
+        <button
+          class="inline-flex items-center w-full px-2 py-1 font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+          data-testid="login-link"
+          on:click="{goToLogin}"
+        >
+          <LockIcon class="w-4 h-4 me-3 " />
+          <span>{$LL.login()}</span>
         </button>
       </li>
     {:else}
