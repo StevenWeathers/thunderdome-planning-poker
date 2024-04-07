@@ -413,7 +413,7 @@
                 {#if selectedPaymentPeriod === 'month'}${plan.Price
                     .Month}{:else}
                   ${plan.Price.Year}{/if}
-                <span class="text-gray-600 dark:text-gray-300 text-base ml-1"
+                <span class="text-gray-600 dark:text-gray-300 text-base ms-1"
                   >{#if selectedPaymentPeriod === 'month'}/mo{:else}/yr{/if}</span
                 >
               {/if}
@@ -443,7 +443,7 @@
                   {:else}
                     <Crossmark />
                   {/if}
-                  <span class="lg:hidden ml-2">{feature.Name}</span>
+                  <span class="lg:hidden ms-2">{feature.Name}</span>
                 {/if}
               </p>
             {/each}

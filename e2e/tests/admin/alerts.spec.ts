@@ -8,8 +8,8 @@ test.describe("The Admin Alerts Page", () => {
 
       await adminPage.goto();
 
-      const title = adminPage.page.locator('[data-formtitle="login"]');
-      await expect(title).toHaveText("Login");
+      const loginForm = adminPage.page.locator('form[name="login"]');
+      await expect(loginForm).toBeVisible();
     });
   });
 

@@ -8,8 +8,8 @@ test.describe("Teams page", () => {
       const teamsPage = new TeamsPage(page);
       await teamsPage.goto();
 
-      const title = teamsPage.page.locator('[data-formtitle="login"]');
-      await expect(title).toHaveText("Login");
+      const loginForm = teamsPage.page.locator('form[name="login"]');
+      await expect(loginForm).toBeVisible();
     });
   });
 

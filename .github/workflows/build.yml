@@ -32,13 +32,13 @@ jobs:
           --health-retries 5
 
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
       - name: Set up Go ${{ matrix.go-version }}
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
-
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v4
 
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4

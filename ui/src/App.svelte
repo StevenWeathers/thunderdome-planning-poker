@@ -141,7 +141,7 @@
     currentPage = {
       route: Teams,
       params: {},
-      name: 'Teams',
+      name: 'teams',
     };
   });
   router.on(appRoutes.subscriptionPricing, () => {
@@ -155,7 +155,7 @@
     currentPage = {
       route: Confirmation,
       params: {},
-      name: 'Subscription Confirmation',
+      name: 'subscription-confirmation',
     };
   });
   router.on(`${appRoutes.register}/subscription`, () => {
@@ -183,7 +183,7 @@
     currentPage = {
       route: Organization,
       params,
-      name: 'organizations',
+      name: 'organization',
     };
   });
   router.on(
@@ -202,7 +202,7 @@
       currentPage = {
         route: TeamCheckin,
         params,
-        name: 'team',
+        name: 'team-checkin',
       };
     },
   );
@@ -232,7 +232,7 @@
       currentPage = {
         route: TeamCheckin,
         params,
-        name: 'team',
+        name: 'team-checkin',
       };
     },
   );
@@ -247,7 +247,7 @@
     currentPage = {
       route: TeamCheckin,
       params,
-      name: 'team',
+      name: 'team-checkin',
     };
   });
   router.on(appRoutes.admin, async () => {
@@ -263,7 +263,7 @@
     currentPage = {
       route: comp.default,
       params: params,
-      name: 'admin',
+      name: 'admin-user',
     };
   });
   router.on(`${appRoutes.adminUsers}`, async params => {
@@ -271,7 +271,7 @@
     currentPage = {
       route: comp.default,
       params: {},
-      name: 'admin',
+      name: 'admin-users',
     };
   });
   router.on(`${appRoutes.adminOrganizations}`, async params => {
@@ -279,7 +279,7 @@
     currentPage = {
       route: comp.default,
       params: {},
-      name: 'admin',
+      name: 'admin-organizations',
     };
   });
   router.on(`${appRoutes.adminOrganizations}/:organizationId`, async params => {
@@ -287,7 +287,7 @@
     currentPage = {
       route: comp.default,
       params: params,
-      name: 'admin',
+      name: 'admin-organization',
     };
   });
   router.on(
@@ -297,7 +297,7 @@
       currentPage = {
         route: comp.default,
         params: params,
-        name: 'admin',
+        name: 'admin-team',
       };
     },
   );
@@ -308,7 +308,7 @@
       currentPage = {
         route: comp.default,
         params: params,
-        name: 'admin',
+        name: 'admin-department',
       };
     },
   );
@@ -319,7 +319,7 @@
       currentPage = {
         route: comp.default,
         params: params,
-        name: 'admin',
+        name: 'admin-team',
       };
     },
   );
@@ -328,7 +328,7 @@
     currentPage = {
       route: comp.default,
       params: {},
-      name: 'admin',
+      name: 'admin-teams',
     };
   });
   router.on(`${appRoutes.adminTeams}/:teamId`, async params => {
@@ -336,7 +336,7 @@
     currentPage = {
       route: comp.default,
       params: params,
-      name: 'admin',
+      name: 'admin-team',
     };
   });
   router.on(`${appRoutes.adminApiKeys}`, async params => {
@@ -344,7 +344,7 @@
     currentPage = {
       route: comp.default,
       params: {},
-      name: 'admin',
+      name: 'admin-apikeys',
     };
   });
   router.on(`${appRoutes.adminAlerts}`, async params => {
@@ -352,7 +352,7 @@
     currentPage = {
       route: comp.default,
       params: {},
-      name: 'admin',
+      name: 'admin-alerts',
     };
   });
 
@@ -376,7 +376,7 @@
       currentPage = {
         route: comp.default,
         params: {},
-        name: 'admin',
+        name: 'admin-games',
       };
     });
     router.on(`${appRoutes.adminPokerGames}/:battleId`, async params => {
@@ -384,7 +384,7 @@
       currentPage = {
         route: comp.default,
         params: params,
-        name: 'admin',
+        name: 'admin-poker',
       };
     });
     router.on(`${appRoutes.register}/battle/:battleId`, params => {
@@ -423,7 +423,7 @@
       currentPage = {
         route: comp.default,
         params: {},
-        name: 'admin',
+        name: 'admin-retros',
       };
     });
     router.on(`${appRoutes.adminRetros}/:retroId`, async params => {
@@ -431,7 +431,7 @@
       currentPage = {
         route: comp.default,
         params: params,
-        name: 'admin',
+        name: 'admin-retro',
       };
     });
     router.on(`${appRoutes.register}/retro/:retroId`, params => {
@@ -470,7 +470,7 @@
       currentPage = {
         route: comp.default,
         params: {},
-        name: 'admin',
+        name: 'admin-storyboards',
       };
     });
     router.on(`${appRoutes.adminStoryboards}/:storyboardId`, async params => {
@@ -478,7 +478,7 @@
       currentPage = {
         route: comp.default,
         params: params,
-        name: 'admin',
+        name: 'admin-storyboard',
       };
     });
     router.on(`${appRoutes.register}/storyboard/:storyboardId`, params => {
@@ -503,7 +503,7 @@
       currentPage = {
         route: comp.default,
         params: {},
-        name: 'admin',
+        name: 'admin-subscriptions',
       };
     });
     router.on(
@@ -513,7 +513,7 @@
         currentPage = {
           route: comp.default,
           params,
-          name: 'admin',
+          name: 'admin-subscription',
         };
       },
     );
