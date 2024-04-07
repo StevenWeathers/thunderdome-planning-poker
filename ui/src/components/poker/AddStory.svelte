@@ -201,14 +201,14 @@
       {#if descriptionExpanded}
         <div class="mb-2">
           <div class="bg-white">
-            <!--{#await import('../Editor.svelte') then Editor}-->
-            <!--  <Editor.default-->
-            <!--    content="{description}"-->
-            <!--    placeholder="{$LL.planDescriptionPlaceholder()}"-->
-            <!--    id="storyDescription"-->
-            <!--    handleTextChange="{c => (description = c)}"-->
-            <!--  />-->
-            <!--{/await}-->
+            {#await import('../Editor.svelte') then Editor}
+              <Editor.default
+                content="{description}"
+                placeholder="{$LL.planDescriptionPlaceholder()}"
+                id="storyDescription"
+                handleTextChange="{c => (description = c)}"
+              />
+            {/await}
           </div>
         </div>
       {/if}
@@ -232,14 +232,14 @@
       {#if acceptanceExpanded}
         <div class="mb-2">
           <div class="bg-white">
-            <!--{#await import('../Editor.svelte') then Editor}-->
-            <!--  <Editor.default-->
-            <!--    content="{acceptanceCriteria}"-->
-            <!--    placeholder="{$LL.planAcceptanceCriteriaPlaceholder()}"-->
-            <!--    id="acceptanceCriteria"-->
-            <!--    handleTextChange="{c => (acceptanceCriteria = c)}"-->
-            <!--  />-->
-            <!--{/await}-->
+            {#await import('../Editor.svelte') then Editor}
+              <Editor.default
+                content="{acceptanceCriteria}"
+                placeholder="{$LL.planAcceptanceCriteriaPlaceholder()}"
+                id="acceptanceCriteria"
+                handleTextChange="{c => (acceptanceCriteria = c)}"
+              />
+            {/await}
           </div>
         </div>
       {/if}

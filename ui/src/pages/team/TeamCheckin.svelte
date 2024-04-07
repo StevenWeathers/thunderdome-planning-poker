@@ -40,7 +40,14 @@
   let now = new Date();
   let maxNegativeDate;
   let selectedDate;
-  let selectedCheckin;
+  let selectedCheckin = {
+    id: '',
+    yesterday: '',
+    today: '',
+    blockers: '',
+    discuss: '',
+    goalsMet: '',
+  };
   let stats = {
     participants: 0,
     pPerc: 0,
