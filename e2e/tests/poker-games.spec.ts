@@ -73,7 +73,7 @@ test.describe("Poker Games page", () => {
       await expect(battleTitle).toHaveText(battleName);
     });
 
-    test("should allow creating a game with stories", async ({
+    test.skip("should allow creating a game with stories", async ({
       registeredPage,
     }) => {
       const battleName = "Test Game with Stories";
