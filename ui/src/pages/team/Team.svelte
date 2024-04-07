@@ -182,7 +182,7 @@
         getUsers();
       })
       .catch(function () {
-        notifications.danger($LL.teamGetError());
+        notifications.danger(`${$LL.teamGetError()}`);
       });
   }
 
@@ -208,7 +208,7 @@
         }
       })
       .catch(function () {
-        notifications.danger($LL.teamGetUsersError());
+        notifications.danger(`${$LL.teamGetUsersError()}`);
       });
   }
 
@@ -224,9 +224,9 @@
         })
         .catch(function () {
           notifications.danger(
-            $LL.teamGetBattlesError({
+            `${$LL.teamGetBattlesError({
               friendly: AppConfig.FriendlyUIVerbs,
-            }),
+            })}`,
           );
         });
     }
@@ -243,7 +243,7 @@
           retros = result.data;
         })
         .catch(function () {
-          notifications.danger($LL.teamGetRetrosError());
+          notifications.danger(`${$LL.teamGetRetrosError()}`);
         });
     }
   }
@@ -264,7 +264,7 @@
               : null;
         })
         .catch(function () {
-          notifications.danger($LL.teamGetRetroActionsError());
+          notifications.danger(`${$LL.teamGetRetroActionsError()}`);
         });
     }
   }
@@ -280,7 +280,7 @@
           storyboards = result.data;
         })
         .catch(function () {
-          notifications.danger($LL.teamGetStoryboardsError());
+          notifications.danger(`${$LL.teamGetStoryboardsError()}`);
         });
     }
   }
@@ -291,17 +291,17 @@
         eventTag('team_remove_battle', 'engagement', 'success');
         toggleRemoveBattle(null)();
         notifications.success(
-          $LL.battleRemoveSuccess({
+          `${$LL.battleRemoveSuccess({
             friendly: AppConfig.FriendlyUIVerbs,
-          }),
+          })}`,
         );
         getBattles();
       })
       .catch(function () {
         notifications.danger(
-          $LL.battleRemoveError({
+          `${$LL.battleRemoveError({
             friendly: AppConfig.FriendlyUIVerbs,
-          }),
+          })}`,
         );
         eventTag('team_remove_battle', 'engagement', 'failure');
       });
@@ -312,11 +312,11 @@
       .then(function () {
         eventTag('team_remove_retro', 'engagement', 'success');
         toggleRemoveRetro(null)();
-        notifications.success($LL.retroRemoveSuccess());
+        notifications.success(`${$LL.retroRemoveSuccess()}`);
         getRetros();
       })
       .catch(function () {
-        notifications.danger($LL.retroRemoveError());
+        notifications.danger(`${$LL.retroRemoveError()}`);
         eventTag('team_remove_retro', 'engagement', 'failure');
       });
   }
@@ -328,11 +328,11 @@
       .then(function () {
         eventTag('team_remove_storyboard', 'engagement', 'success');
         toggleRemoveStoryboard(null)();
-        notifications.success($LL.storyboardRemoveSuccess());
+        notifications.success(`${$LL.storyboardRemoveSuccess()}`);
         getStoryboards();
       })
       .catch(function () {
-        notifications.danger($LL.storyboardRemoveError());
+        notifications.danger(`${$LL.storyboardRemoveError()}`);
         eventTag('team_remove_storyboard', 'engagement', 'failure');
       });
   }
@@ -360,11 +360,11 @@
       .then(function () {
         eventTag('team_delete', 'engagement', 'success');
         toggleDeleteTeam();
-        notifications.success($LL.teamDeleteSuccess());
+        notifications.success(`${$LL.teamDeleteSuccess()}`);
         router.route(appRoutes.teams);
       })
       .catch(function () {
-        notifications.danger($LL.teamDeleteError());
+        notifications.danger(`${$LL.teamDeleteError()}`);
         eventTag('team_delete', 'engagement', 'failure');
       });
   }
@@ -399,11 +399,11 @@
       .then(function () {
         getRetrosActions();
         toggleRetroActionEdit(null)();
-        notifications.success($LL.updateActionItemSuccess());
+        notifications.success(`${$LL.updateActionItemSuccess()}`);
         eventTag('team_action_update', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.updateActionItemError());
+        notifications.danger(`${$LL.updateActionItemError()}`);
         eventTag('team_action_update', 'engagement', 'failure');
       });
   }
@@ -416,11 +416,11 @@
         .then(function () {
           getRetrosActions();
           toggleRetroActionEdit(null)();
-          notifications.success($LL.deleteActionItemSuccess());
+          notifications.success(`${$LL.deleteActionItemSuccess()}`);
           eventTag('team_action_delete', 'engagement', 'success');
         })
         .catch(function () {
-          notifications.danger($LL.deleteActionItemError());
+          notifications.danger(`${$LL.deleteActionItemError()}`);
           eventTag('team_action_delete', 'engagement', 'failure');
         });
     };

@@ -35,9 +35,9 @@
       })
       .catch(function () {
         notifications.danger(
-          $LL.getBattlesError({
+          `${$LL.getBattlesError({
             friendly: AppConfig.FriendlyUIVerbs,
-          }),
+          })}`,
         );
       });
   }

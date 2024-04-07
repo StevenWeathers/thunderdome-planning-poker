@@ -17,26 +17,26 @@
 
   // going by common Jira issue types for now
   const planTypes = [
-    $LL.planTypeStory(),
-    $LL.planTypeBug(),
-    $LL.planTypeSpike(),
-    $LL.planTypeEpic(),
-    $LL.planTypeTask(),
-    $LL.planTypeSubtask(),
+    `${$LL.planTypeStory()}`,
+    `${$LL.planTypeBug()}`,
+    `${$LL.planTypeSpike()}`,
+    `${$LL.planTypeEpic()}`,
+    `${$LL.planTypeTask()}`,
+    `${$LL.planTypeSubtask()}`,
   ];
 
   // going by common Jira issue priorities for now
   const priorities = [
-    { name: $LL.planPriorityBlocker(), value: 1 },
+    { name: `${$LL.planPriorityBlocker()}`, value: 1 },
     {
-      name: $LL.planPriorityHighest(),
+      name: `${$LL.planPriorityHighest()}`,
       value: 2,
     },
-    { name: $LL.planPriorityHigh(), value: 3 },
-    { name: $LL.planPriorityMedium(), value: 4 },
-    { name: $LL.planPriorityLow(), value: 5 },
+    { name: `${$LL.planPriorityHigh()}`, value: 3 },
+    { name: `${$LL.planPriorityMedium()}`, value: 4 },
+    { name: `${$LL.planPriorityLow()}`, value: 5 },
     {
-      name: $LL.planPriorityLowest(),
+      name: `${$LL.planPriorityLowest()}`,
       value: 6,
     },
   ];
@@ -159,7 +159,7 @@
   function importStory(idx) {
     return function () {
       const story = jiraStories[idx];
-      const link = handlePlanAdd({
+      handlePlanAdd({
         planName: story.fields.summary,
         type: findPlanType(story.fields.issuetype.name),
         referenceId: story.key,

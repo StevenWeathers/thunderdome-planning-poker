@@ -30,7 +30,7 @@
         teamCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger($LL.getTeamsError());
+        notifications.danger(`${$LL.getTeamsError()}`);
       });
   }
 

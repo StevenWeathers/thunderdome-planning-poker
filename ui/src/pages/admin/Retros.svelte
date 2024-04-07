@@ -34,7 +34,7 @@
         retroCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger($LL.getRetrosErrorMessage());
+        notifications.danger(`${$LL.getRetrosErrorMessage()}`);
       });
   }
 

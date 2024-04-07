@@ -19,10 +19,10 @@
       navigator.clipboard
         .writeText(bl.value)
         .then(function () {
-          notifications.success($LL.inviteLinkCopySuccess());
+          notifications.success(`${$LL.inviteLinkCopySuccess()}`);
         })
         .catch(function () {
-          notifications.danger($LL.inviteLinkCopyFailure());
+          notifications.danger(`${$LL.inviteLinkCopyFailure()}`);
         });
     }
   }
@@ -37,10 +37,10 @@
       navigator.clipboard
         .writeText(jc.value)
         .then(function () {
-          notifications.success($LL.joinCodeCopySuccess());
+          notifications.success(`${$LL.joinCodeCopySuccess()}`);
         })
         .catch(function () {
-          notifications.danger($LL.joinCodeCopyFailure());
+          notifications.danger(`${$LL.joinCodeCopyFailure()}`);
         });
     }
   }

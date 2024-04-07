@@ -102,10 +102,10 @@
       .then(() => {
         profile.mfaEnabled = false;
         toggleMfaRemove();
-        notifications.success($LL.mfa2faRemoveSuccess());
+        notifications.success(`${$LL.mfa2faRemoveSuccess()}`);
       })
       .catch(() => {
-        notifications.danger($LL.mfa2faRemoveFailure());
+        notifications.danger(`${$LL.mfa2faRemoveFailure()}`);
       });
   }
 
@@ -115,10 +115,10 @@
       .then(function () {
         eventTag('user_verify_request', 'engagement', 'success');
 
-        notifications.success($LL.requestVerifyEmailSuccess());
+        notifications.success(`${$LL.requestVerifyEmailSuccess()}`);
       })
       .catch(function () {
-        notifications.danger($LL.requestVerifyEmailFailure());
+        notifications.danger(`${$LL.requestVerifyEmailFailure()}`);
         eventTag('user_verify_request', 'engagement', 'failure');
       });
   }

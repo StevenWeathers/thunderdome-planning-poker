@@ -62,9 +62,9 @@
         count: 0,
         voters: [],
       };
-      let warriorName = $LL.unknownWarrior({
+      let warriorName = `${$LL.unknownWarrior({
         friendly: AppConfig.FriendlyUIVerbs,
-      });
+      })}`;
 
       if (warriors.length) {
         const warrior = warriors.find(w => w.id === v.warriorId) || {

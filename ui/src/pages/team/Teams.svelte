@@ -48,7 +48,7 @@
         organizations = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.getOrganizationsError());
+        notifications.danger(`${$LL.getOrganizationsError()}`);
       });
   }
 
@@ -62,7 +62,7 @@
         teams = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.getTeamsError());
+        notifications.danger(`${$LL.getTeamsError()}`);
       });
   }
 
@@ -79,7 +79,7 @@
         });
       })
       .catch(function () {
-        notifications.danger($LL.createOrgError());
+        notifications.danger(`${$LL.createOrgError()}`);
         eventTag('create_organization', 'engagement', 'failure');
       });
   }
@@ -97,7 +97,7 @@
         });
       })
       .catch(function () {
-        notifications.danger($LL.teamCreateError());
+        notifications.danger(`${$LL.teamCreateError()}`);
         eventTag('create_team', 'engagement', 'failure');
       });
   }

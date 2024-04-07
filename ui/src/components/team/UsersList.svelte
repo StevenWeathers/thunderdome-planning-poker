@@ -39,15 +39,15 @@
         eventTag(`${pageType}_add_user`, 'engagement', 'success');
         toggleAddUser();
         if (result.meta.user_invited) {
-          notifications.success($LL.userNotFoundInviteSent());
+          notifications.success(`${$LL.userNotFoundInviteSent()}`);
         } else {
-          notifications.success($LL.userAddSuccess());
+          notifications.success(`${$LL.userAddSuccess()}`);
         }
 
         getUsers();
       })
       .catch(function () {
-        notifications.danger($LL.userAddError());
+        notifications.danger(`${$LL.userAddError()}`);
         eventTag(`${pageType}_add_user`, 'engagement', 'failure');
       });
   }
@@ -61,11 +61,11 @@
       .then(function () {
         eventTag(`${pageType}_update_user`, 'engagement', 'success');
         toggleUpdateUser({})();
-        notifications.success($LL.userUpdateSuccess());
+        notifications.success(`${$LL.userUpdateSuccess()}`);
         getUsers();
       })
       .catch(function () {
-        notifications.danger($LL.userUpdateError());
+        notifications.danger(`${$LL.userUpdateError()}`);
         eventTag(`${pageType}_update_user`, 'engagement', 'failure');
       });
   }
@@ -75,11 +75,11 @@
       .then(function () {
         eventTag(`${pageType}_remove_user`, 'engagement', 'success');
         toggleRemoveUser(null)();
-        notifications.success($LL.userRemoveSuccess());
+        notifications.success(`${$LL.userRemoveSuccess()}`);
         getUsers();
       })
       .catch(function () {
-        notifications.danger($LL.userRemoveError());
+        notifications.danger(`${$LL.userRemoveError()}`);
         eventTag(`${pageType}_remove_user`, 'engagement', 'failure');
       });
   }

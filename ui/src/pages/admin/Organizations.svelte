@@ -37,7 +37,7 @@
         appStats = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.applicationStatsError());
+        notifications.danger(`${$LL.applicationStatsError()}`);
       });
   }
 
@@ -52,7 +52,7 @@
         organizations = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.getOrganizationsError());
+        notifications.danger(`${$LL.getOrganizationsError()}`);
       });
   }
 

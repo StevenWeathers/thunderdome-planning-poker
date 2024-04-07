@@ -88,7 +88,7 @@
         JoinPassRequired = true;
         break;
       case 'join_code_incorrect':
-        notifications.danger($LL.incorrectPassCode());
+        notifications.danger(`${$LL.incorrectPassCode()}`);
         break;
       case 'init': {
         JoinPassRequired = false;
@@ -179,9 +179,9 @@
         vote = '';
         if ($user.notificationsEnabled) {
           notifications.warning(
-            $LL.planSkipped({
+            `${$LL.planSkipped({
               friendly: AppConfig.FriendlyUIVerbs,
-            }),
+            })}`,
           );
         }
         break;
@@ -264,7 +264,7 @@
       case 'battle_conceded':
         // poker over, goodbye.
         notifications.warning(
-          $LL.battleDeleted({ friendly: AppConfig.FriendlyUIVerbs }),
+          `${$LL.battleDeleted({ friendly: AppConfig.FriendlyUIVerbs })}`,
         );
         router.route(appRoutes.games);
         break;
@@ -305,9 +305,9 @@
         } else if (e.code === 4003) {
           eventTag('socket_duplicate', 'battle', '', () => {
             notifications.danger(
-              $LL.sessionDuplicate({
+              `${$LL.sessionDuplicate({
                 friendly: AppConfig.FriendlyUIVerbs,
-              }),
+              })}`,
             );
             router.route(`${appRoutes.games}`);
           });

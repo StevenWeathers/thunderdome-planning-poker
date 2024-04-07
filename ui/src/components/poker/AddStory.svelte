@@ -20,27 +20,43 @@
 
   // going by common Jira issue types for now
   const planTypes = [
-    $LL.planTypeStory(),
-    $LL.planTypeBug(),
-    $LL.planTypeSpike(),
-    $LL.planTypeEpic(),
-    $LL.planTypeTask(),
-    $LL.planTypeSubtask(),
+    `${$LL.planTypeStory()}`,
+    `${$LL.planTypeBug()}`,
+    `${$LL.planTypeSpike()}`,
+    `${$LL.planTypeEpic()}`,
+    `${$LL.planTypeTask()}`,
+    `${$LL.planTypeSubtask()}`,
   ];
 
   // going by common Jira issue priorities for now
   const priorities = [
-    { name: $LL.planPriorityBlocker(), value: 1, icon: NoSymbol },
     {
-      name: $LL.planPriorityHighest(),
+      name: `${$LL.planPriorityBlocker()}`,
+      value: 1,
+      icon: NoSymbol,
+    },
+    {
+      name: `${$LL.planPriorityHighest()}`,
       value: 2,
       icon: DoubleChevronUp,
     },
-    { name: $LL.planPriorityHigh(), value: 3, icon: ChevronUp },
-    { name: $LL.planPriorityMedium(), value: 4, icon: Bars2 },
-    { name: $LL.planPriorityLow(), value: 5, icon: ChevronDown },
     {
-      name: $LL.planPriorityLowest(),
+      name: `${$LL.planPriorityHigh()}`,
+      value: 3,
+      icon: ChevronUp,
+    },
+    {
+      name: `${$LL.planPriorityMedium()}`,
+      value: 4,
+      icon: Bars2,
+    },
+    {
+      name: `${$LL.planPriorityLow()}`,
+      value: 5,
+      icon: ChevronDown,
+    },
+    {
+      name: `${$LL.planPriorityLowest()}`,
       value: 6,
       icon: DoubleChevronDown,
     },
@@ -48,7 +64,7 @@
 
   export let planId = '';
   export let planName = '';
-  export let planType = $LL.planTypeStory();
+  export let planType = '';
   export let referenceId = '';
   export let planLink = '';
   export let description = '';
@@ -65,7 +81,7 @@
 
     if (planLink !== '' && !isAbsolute.test(planLink)) {
       invalidPlan = true;
-      notifications.danger($LL.planLinkInvalid());
+      notifications.danger(`${$LL.planLinkInvalid()}`);
       eventTag('plan_add_invalid_link', 'battle', ``);
     }
 

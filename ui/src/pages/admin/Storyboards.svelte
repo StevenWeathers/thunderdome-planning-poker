@@ -34,7 +34,7 @@
         storyboardCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger($LL.getStoryboardsErrorMessage());
+        notifications.danger(`${$LL.getStoryboardsErrorMessage()}`);
       });
   }
 

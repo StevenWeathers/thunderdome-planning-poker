@@ -19,7 +19,7 @@
     event.preventDefault();
 
     if (keyName === '') {
-      notifications.danger($LL.apiKeyNameInvalid());
+      notifications.danger(`${$LL.apiKeyNameInvalid()}`);
       eventTag('create_api_key_name_invalid', 'engagement', 'failure');
       return false;
     }
@@ -41,19 +41,19 @@
             let errMessage;
             switch (result.error) {
               case 'USER_APIKEY_LIMIT_REACHED':
-                errMessage = $LL.apiKeyLimitReached();
+                errMessage = `${$LL.apiKeyLimitReached()}`;
                 break;
               case 'REQUIRES_VERIFIED_USER':
-                errMessage = $LL.apiKeyUnverifiedUser();
+                errMessage = `${$LL.apiKeyUnverifiedUser()}`;
                 break;
               default:
-                errMessage = $LL.apiKeyCreateFailed();
+                errMessage = `${$LL.apiKeyCreateFailed()}`;
             }
 
             notifications.danger(errMessage);
           });
         } else {
-          notifications.danger($LL.apiKeyCreateFailed());
+          notifications.danger(`${$LL.apiKeyCreateFailed()}`);
         }
 
         eventTag('create_api_key', 'engagement', 'failure');
@@ -70,10 +70,10 @@
       navigator.clipboard
         .writeText(apk.value)
         .then(function () {
-          notifications.success($LL.apikeyCopySuccess());
+          notifications.success(`${$LL.apikeyCopySuccess()}`);
         })
         .catch(function () {
-          notifications.danger($LL.apikeyCopyFailure());
+          notifications.danger(`${$LL.apikeyCopyFailure()}`);
         });
     }
   }

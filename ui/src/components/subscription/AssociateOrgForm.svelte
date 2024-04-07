@@ -22,7 +22,7 @@
       organizations = result.data;
     })
     .catch(function () {
-      notifications.danger($LL.getOrganizationsError());
+      notifications.danger(`${$LL.getOrganizationsError()}`);
     });
 
   function handleSubmit(event) {

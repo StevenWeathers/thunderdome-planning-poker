@@ -83,7 +83,7 @@
         getUsers();
       })
       .catch(function () {
-        notifications.danger($LL.organizationGetError());
+        notifications.danger(`${$LL.organizationGetError()}`);
       });
   }
 
@@ -97,7 +97,7 @@
         users = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.teamGetUsersError());
+        notifications.danger(`${$LL.teamGetUsersError()}`);
       });
   }
 
@@ -111,7 +111,7 @@
         departments = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.organizationGetDepartmentsError());
+        notifications.danger(`${$LL.organizationGetDepartmentsError()}`);
       });
   }
 
@@ -125,7 +125,7 @@
         teams = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.organizationGetTeamsError());
+        notifications.danger(`${$LL.organizationGetTeamsError()}`);
       });
   }
 
@@ -144,7 +144,7 @@
         });
       })
       .catch(function () {
-        notifications.danger($LL.departmentCreateError());
+        notifications.danger(`${$LL.departmentCreateError()}`);
         eventTag('create_department', 'engagement', 'failure');
       });
   }
@@ -159,11 +159,11 @@
       .then(function () {
         eventTag('create_organization_team', 'engagement', 'success');
         toggleCreateTeam();
-        notifications.success($LL.teamCreateSuccess());
+        notifications.success(`${$LL.teamCreateSuccess()}`);
         getTeams();
       })
       .catch(function () {
-        notifications.danger($LL.teamCreateError());
+        notifications.danger(`${$LL.teamCreateError()}`);
         eventTag('create_organization_team', 'engagement', 'failure');
       });
   }
@@ -175,11 +175,11 @@
       .then(function () {
         eventTag('organization_delete_team', 'engagement', 'success');
         toggleDeleteTeam(null)();
-        notifications.success($LL.teamDeleteSuccess());
+        notifications.success(`${$LL.teamDeleteSuccess()}`);
         getTeams();
       })
       .catch(function () {
-        notifications.danger($LL.teamDeleteError());
+        notifications.danger(`${$LL.teamDeleteError()}`);
         eventTag('organization_delete_team', 'engagement', 'failure');
       });
   }
@@ -191,11 +191,11 @@
       .then(function () {
         eventTag('organization_delete_department', 'engagement', 'success');
         toggleDeleteDepartment(null)();
-        notifications.success($LL.departmentDeleteSuccess());
+        notifications.success(`${$LL.departmentDeleteSuccess()}`);
         getDepartments();
       })
       .catch(function () {
-        notifications.danger($LL.departmentDeleteError());
+        notifications.danger(`${$LL.departmentDeleteError()}`);
         eventTag('organization_delete_department', 'engagement', 'failure');
       });
   }
@@ -207,11 +207,11 @@
       .then(function () {
         eventTag('organization_delete', 'engagement', 'success');
         toggleDeleteTeam();
-        notifications.success($LL.organizationDeleteSuccess());
+        notifications.success(`${$LL.organizationDeleteSuccess()}`);
         router.route(appRoutes.teams);
       })
       .catch(function () {
-        notifications.danger($LL.organizationDeleteError());
+        notifications.danger(`${$LL.organizationDeleteError()}`);
         eventTag('organization_delete', 'engagement', 'failure');
       });
   }

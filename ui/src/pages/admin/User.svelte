@@ -56,7 +56,7 @@
         userDetails = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.getUserError());
+        notifications.danger(`${$LL.getUserError()}`);
       });
   }
 
@@ -77,9 +77,9 @@
       })
       .catch(function () {
         notifications.danger(
-          $LL.getBattlesError({
+          `${$LL.getBattlesError({
             friendly: AppConfig.FriendlyUIVerbs,
-          }),
+          })}`,
         );
       });
   }
@@ -105,7 +105,7 @@
         retroCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger($LL.getRetrosError());
+        notifications.danger(`${$LL.getRetrosError()}`);
       });
   }
 
@@ -130,7 +130,7 @@
         storyboardCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger($LL.getStoryboardsError());
+        notifications.danger(`${$LL.getStoryboardsError()}`);
       });
   }
 
@@ -147,12 +147,12 @@
 
     xfetch(`/api/admin/users/${userId}/password`, { body, method: 'PATCH' })
       .then(function () {
-        notifications.success($LL.passwordUpdated(), 1500);
+        notifications.success(`${$LL.passwordUpdated()}`, 1500);
         toggleUpdatePassword();
         eventTag('update_password', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.passwordUpdateError());
+        notifications.danger(`${$LL.passwordUpdateError()}`);
         eventTag('update_password', 'engagement', 'failure');
       });
   }

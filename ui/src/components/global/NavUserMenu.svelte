@@ -37,7 +37,7 @@
         profile = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.profileErrorRetrieving());
+        notifications.danger(`${$LL.profileErrorRetrieving()}`);
         eventTag('fetch_profile', 'engagement', 'failure');
       });
   }
@@ -53,7 +53,7 @@
         });
       })
       .catch(function () {
-        notifications.danger($LL.logoutError(AppConfig.FriendlyUIVerbs));
+        notifications.danger(`${$LL.logoutError(AppConfig.FriendlyUIVerbs)}`);
         eventTag('logout', 'engagement', 'failure');
       });
   }

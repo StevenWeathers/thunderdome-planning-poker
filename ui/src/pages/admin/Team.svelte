@@ -95,7 +95,7 @@
         getUsers();
       })
       .catch(function () {
-        notifications.danger($LL.teamGetError());
+        notifications.danger(`${$LL.teamGetError()}`);
       });
   }
 
@@ -107,7 +107,7 @@
         users = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.teamGetUsersError());
+        notifications.danger(`${$LL.teamGetUsersError()}`);
       });
   }
 
@@ -123,9 +123,9 @@
         })
         .catch(function () {
           notifications.danger(
-            $LL.teamGetBattlesError({
+            `${$LL.teamGetBattlesError({
               friendly: AppConfig.FriendlyUIVerbs,
-            }),
+            })}`,
           );
         });
     }
@@ -142,7 +142,7 @@
           retros = result.data;
         })
         .catch(function () {
-          notifications.danger($LL.teamGetRetrosError());
+          notifications.danger(`${$LL.teamGetRetrosError()}`);
         });
     }
   }
@@ -159,7 +159,7 @@
           totalRetroActions = result.meta.count;
         })
         .catch(function () {
-          notifications.danger($LL.teamGetRetroActionsError());
+          notifications.danger(`${$LL.teamGetRetroActionsError()}`);
         });
     }
   }
@@ -175,7 +175,7 @@
           storyboards = result.data;
         })
         .catch(function () {
-          notifications.danger($LL.teamGetStoryboardsError());
+          notifications.danger(`${$LL.teamGetStoryboardsError()}`);
         });
     }
   }
@@ -195,7 +195,7 @@
         }
       })
       .catch(function () {
-        notifications.danger($LL.teamDeleteError());
+        notifications.danger(`${$LL.teamDeleteError()}`);
       });
   }
 

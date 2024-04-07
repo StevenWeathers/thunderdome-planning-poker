@@ -64,7 +64,7 @@
         activeAlerts.update(result.data);
         getAlerts();
         toggleCreateAlert();
-        notifications.success($LL.createAlertSuccess());
+        notifications.success(`${$LL.createAlertSuccess()}`);
       })
       .catch(function () {
         notifications.danger('createAlertError');
@@ -81,10 +81,10 @@
         activeAlerts.update(result.data);
         getAlerts();
         toggleUpdateAlert({ ...defaultAlert })();
-        notifications.success($LL.updateAlertSuccess());
+        notifications.success(`${$LL.updateAlertSuccess()}`);
       })
       .catch(function () {
-        notifications.danger($LL.updateAlertError());
+        notifications.danger(`${$LL.updateAlertError()}`);
         eventTag('admin_update_alert', 'engagement', 'failure');
       });
   }
@@ -98,7 +98,7 @@
         alertCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger($LL.getAlertsError());
+        notifications.danger(`${$LL.getAlertsError()}`);
       });
   }
 
@@ -110,10 +110,10 @@
         activeAlerts.update(result.data);
         getAlerts();
         toggleDeleteAlert(null)();
-        notifications.success($LL.deleteAlertSuccess());
+        notifications.success(`${$LL.deleteAlertSuccess()}`);
       })
       .catch(function () {
-        notifications.danger($LL.deleteAlertError());
+        notifications.danger(`${$LL.deleteAlertError()}`);
         eventTag('admin_delete_alert', 'engagement', 'failure');
       });
   }

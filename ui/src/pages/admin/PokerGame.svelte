@@ -44,7 +44,7 @@
       })
       .catch(function () {
         notifications.danger(
-          $LL.getBattleError({ friendly: AppConfig.FriendlyUIVerbs }),
+          `${$LL.getBattleError({ friendly: AppConfig.FriendlyUIVerbs })}`,
         );
       });
   }
@@ -57,9 +57,9 @@
       })
       .catch(function () {
         notifications.danger(
-          $LL.deleteBattleError({
+          `${$LL.deleteBattleError({
             friendly: AppConfig.FriendlyUIVerbs,
-          }),
+          })}`,
         );
       });
   }

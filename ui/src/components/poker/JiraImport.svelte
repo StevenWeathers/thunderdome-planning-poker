@@ -17,8 +17,8 @@
       return;
     }
     if (file.type !== 'text/xml') {
-      notifications.danger($LL.importJiraXMLBadFileTypeError());
-      eventTag('jira_import_failed', 'battle', `file.type not text/xml`);
+      notifications.danger(`${$LL.importJiraXMLBadFileTypeError()}`);
+      eventTag('jira_import_failed', 'battle', 'file.type not text/xml');
       return;
     }
 
@@ -76,14 +76,14 @@
           );
         }
       } catch (e) {
-        notifications.danger($LL.importJiraXMLReadFileError());
-        eventTag('jira_import_failed', 'battle', `ferror reading file`);
+        notifications.danger(`${$LL.importJiraXMLReadFileError()}`);
+        eventTag('jira_import_failed', 'battle', 'error reading file');
       }
     };
 
     reader.onerror = () => {
-      notifications.danger($LL.importJiraXMLReadFileError());
-      eventTag('jira_import_failed', 'battle', `ferror reading file`);
+      notifications.danger(`${$LL.importJiraXMLReadFileError()}`);
+      eventTag('jira_import_failed', 'battle', 'error reading file');
     };
   }
 </script>

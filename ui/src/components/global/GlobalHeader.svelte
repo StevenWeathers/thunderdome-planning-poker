@@ -66,7 +66,7 @@
       })
       .catch(function (err) {
         notifications.danger(
-          $LL.authError({ friendly: AppConfig.FriendlyUIVerbs }),
+          `${$LL.authError({ friendly: AppConfig.FriendlyUIVerbs })}`,
         );
         eventTag('login', 'engagement', 'failure');
       });

@@ -15,15 +15,15 @@
 
   const brainstormVisibilityOptions = [
     {
-      label: $LL.brainstormVisibilityLabelVisible(),
+      label: `${$LL.brainstormVisibilityLabelVisible()}`,
       value: 'visible',
     },
     {
-      label: $LL.brainstormVisibilityLabelConcealed(),
+      label: `${$LL.brainstormVisibilityLabelConcealed()}`,
       value: 'concealed',
     },
     {
-      label: $LL.brainstormVisibilityLabelHidden(),
+      label: `${$LL.brainstormVisibilityLabelHidden()}`,
       value: 'hidden',
     },
   ];

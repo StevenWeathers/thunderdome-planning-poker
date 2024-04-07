@@ -17,7 +17,7 @@
       return;
     }
     if (file.type !== 'text/csv') {
-      notifications.danger($LL.importCsvFileBadFileTypeError());
+      notifications.danger(`${$LL.importCsvFileBadFileTypeError()}`);
       eventTag(
         'Csv_import_failed',
         'battle',
@@ -49,13 +49,13 @@
           );
         }
       } catch (e) {
-        notifications.danger($LL.importCsvFileReadFileError());
+        notifications.danger(`${$LL.importCsvFileReadFileError()}`);
         eventTag('Csv_import_failed', 'battle', `error reading file`);
       }
     };
 
     reader.onerror = () => {
-      notifications.danger($LL.importCsvFileReadFileError());
+      notifications.danger(`${$LL.importCsvFileReadFileError()}`);
       eventTag('Csv_import_failed', 'battle', `error reading file`);
     };
   }

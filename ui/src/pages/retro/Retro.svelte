@@ -115,7 +115,7 @@
         JoinPassRequired = true;
         break;
       case 'join_code_incorrect':
-        notifications.danger($LL.incorrectPassCode());
+        notifications.danger(`${$LL.incorrectPassCode()}`);
         break;
       case 'init':
         JoinPassRequired = false;
@@ -233,7 +233,7 @@
         break;
       case 'conceded':
         // retro over, goodbye.
-        notifications.warning($LL.retroDeleted());
+        notifications.warning(`${$LL.retroDeleted()}`);
         router.route(appRoutes.retros);
         break;
       default:
@@ -263,7 +263,7 @@
           });
         } else if (e.code === 4003) {
           eventTag('socket_duplicate', 'retro', '', () => {
-            notifications.danger($LL.duplicateRetroSession());
+            notifications.danger(`${$LL.duplicateRetroSession()}`);
             router.route(`${appRoutes.retros}`);
           });
         } else if (e.code === 4002) {

@@ -32,9 +32,9 @@
       })
       .catch(function () {
         notifications.danger(
-          $LL.myBattlesError({
+          `${$LL.myBattlesError({
             friendly: AppConfig.FriendlyUIVerbs,
-          }),
+          })}`,
         );
         eventTag('fetch_battles', 'engagement', 'failure');
       });

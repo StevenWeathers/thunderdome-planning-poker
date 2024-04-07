@@ -52,7 +52,7 @@
         userProfile = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.profileErrorRetrieving());
+        notifications.danger(`${$LL.profileErrorRetrieving()}`);
         eventTag('fetch_profile', 'engagement', 'failure');
       });
   }
@@ -82,11 +82,11 @@
         }
         window.setTheme();
 
-        notifications.success($LL.profileUpdateSuccess());
+        notifications.success(`${$LL.profileUpdateSuccess()}`);
         eventTag('update_profile', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.profileErrorUpdating());
+        notifications.danger(`${$LL.profileErrorUpdating()}`);
         eventTag('update_profile', 'engagement', 'failure');
       });
   }
@@ -99,12 +99,12 @@
 
     xfetch('/api/auth/update-password', { body, method: 'PATCH' })
       .then(function () {
-        notifications.success($LL.passwordUpdated(), 1500);
+        notifications.success(`${$LL.passwordUpdated()}`, 1500);
         toggleUpdatePassword();
         eventTag('update_password', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.passwordUpdateError());
+        notifications.danger(`${$LL.passwordUpdateError()}`);
         eventTag('update_password', 'engagement', 'failure');
       });
   }
@@ -116,7 +116,7 @@
         apiKeys = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.apiKeysErrorRetrieving());
+        notifications.danger(`${$LL.apiKeysErrorRetrieving()}`);
         eventTag('fetch_profile_apikeys', 'engagement', 'failure');
       });
   }
@@ -162,11 +162,11 @@
       })
         .then(res => res.json())
         .then(function (result) {
-          notifications.success($LL.apiKeyDeleteSuccess());
+          notifications.success(`${$LL.apiKeyDeleteSuccess()}`);
           apiKeys = result.data;
         })
         .catch(function () {
-          notifications.danger($LL.apiKeyDeleteFailed());
+          notifications.danger(`${$LL.apiKeyDeleteFailed()}`);
         });
     };
   }
@@ -183,11 +183,11 @@
       })
         .then(res => res.json())
         .then(function (result) {
-          notifications.success($LL.apiKeyUpdateSuccess());
+          notifications.success(`${$LL.apiKeyUpdateSuccess()}`);
           apiKeys = result.data;
         })
         .catch(function () {
-          notifications.danger($LL.apiKeyUpdateFailed());
+          notifications.danger(`${$LL.apiKeyUpdateFailed()}`);
         });
     };
   }
@@ -206,7 +206,7 @@
         router.route(appRoutes.landing);
       })
       .catch(function () {
-        notifications.danger($LL.profileDeleteError());
+        notifications.danger(`${$LL.profileDeleteError()}`);
         eventTag('delete_warrior', 'engagement', 'failure');
       });
   }

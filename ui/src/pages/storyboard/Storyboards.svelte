@@ -31,7 +31,7 @@
         storyboardCount = result.meta.count;
       })
       .catch(function (error) {
-        notifications.danger($LL.getStoryboardsErrorMessage());
+        notifications.danger(`${$LL.getStoryboardsErrorMessage()}`);
         eventTag('fetch_storyboards', 'engagement', 'failure');
       });
   }

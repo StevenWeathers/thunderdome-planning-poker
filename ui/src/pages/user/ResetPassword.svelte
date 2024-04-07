@@ -42,7 +42,7 @@
           });
         })
         .catch(function () {
-          notifications.danger($LL.passwordResetError());
+          notifications.danger(`${$LL.passwordResetError()}`);
           eventTag('reset_password', 'engagement', 'failure');
         });
     }

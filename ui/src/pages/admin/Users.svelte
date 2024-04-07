@@ -72,7 +72,7 @@
         toggleCreateUser();
       })
       .catch(function () {
-        notifications.danger($LL.createUserError());
+        notifications.danger(`${$LL.createUserError()}`);
         eventTag('admin_create_warrior', 'engagement', 'failure');
       });
   }
@@ -85,7 +85,7 @@
       : '/api/admin/users?';
 
     if (isSearch && searchEmail.length < 3) {
-      notifications.danger($LL.searchLengthError());
+      notifications.danger(`${$LL.searchLengthError()}`);
       return;
     }
 
@@ -96,7 +96,7 @@
         totalUsers = result.meta.count;
       })
       .catch(function () {
-        notifications.danger($LL.getUsersError());
+        notifications.danger(`${$LL.getUsersError()}`);
       });
   }
 
@@ -107,13 +107,13 @@
     })
       .then(res => res.json())
       .then(function () {
-        notifications.success($LL.profileUpdateSuccess());
+        notifications.success(`${$LL.profileUpdateSuccess()}`);
         eventTag('update_profile', 'engagement', 'success');
         getUsers();
         toggleUserEdit({})();
       })
       .catch(function () {
-        notifications.danger($LL.profileErrorUpdating());
+        notifications.danger(`${$LL.profileErrorUpdating()}`);
         eventTag('update_profile', 'engagement', 'failure');
       });
   }
@@ -127,7 +127,7 @@
           getUsers();
         })
         .catch(function () {
-          notifications.danger($LL.promoteUserError());
+          notifications.danger(`${$LL.promoteUserError()}`);
           eventTag('admin_promote_warrior', 'engagement', 'failure');
         });
     };
@@ -142,7 +142,7 @@
           getUsers();
         })
         .catch(function () {
-          notifications.danger($LL.demoteUserError());
+          notifications.danger(`${$LL.demoteUserError()}`);
           eventTag('admin_demote_warrior', 'engagement', 'failure');
         });
     };

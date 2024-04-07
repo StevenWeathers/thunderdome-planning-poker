@@ -37,7 +37,7 @@
         storyboard = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.getStoryboardErrorMessage());
+        notifications.danger(`${$LL.getStoryboardErrorMessage()}`);
       });
   }
 
@@ -48,7 +48,7 @@
         router.route(appRoutes.adminStoryboards);
       })
       .catch(function () {
-        notifications.danger($LL.deleteStoryboardErrorMessage());
+        notifications.danger(`${$LL.deleteStoryboardErrorMessage()}`);
       });
   }
 

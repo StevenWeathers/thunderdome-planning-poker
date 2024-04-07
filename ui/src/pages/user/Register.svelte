@@ -82,7 +82,7 @@
           });
         })
         .catch(function () {
-          notifications.danger($LL.guestRegisterError());
+          notifications.danger(`${$LL.guestRegisterError()}`);
           eventTag('register_guest', 'engagement', 'failure');
         });
     }
@@ -121,7 +121,7 @@
         });
       })
       .catch(function () {
-        notifications.danger($LL.registerError());
+        notifications.danger(`${$LL.registerError()}`);
         eventTag('register_account', 'engagement', 'failure');
       });
   }

@@ -84,9 +84,9 @@
       })
       .catch(function () {
         notifications.danger(
-          $LL.authError({
+          `${$LL.authError({
             friendly: AppConfig.FriendlyUIVerbs,
-          }),
+          })}`,
         );
         eventTag('login', 'engagement', 'failure');
       });
@@ -111,7 +111,7 @@
         });
       })
       .catch(function () {
-        notifications.danger($LL.mfaAuthError());
+        notifications.danger(`${$LL.mfaAuthError()}`);
         eventTag('login_mfa', 'engagement', 'failure');
       });
   }
@@ -125,16 +125,16 @@
     xfetch('/api/auth/forgot-password', { body })
       .then(function () {
         notifications.success(
-          $LL.sendResetPasswordSuccess({
+          `${$LL.sendResetPasswordSuccess({
             email: resetEmail,
-          }),
+          })}`,
           2000,
         );
         forgotPassword = !forgotPassword;
         eventTag('forgot_password', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.sendResetPasswordError());
+        notifications.danger(`${$LL.sendResetPasswordError()}`);
         eventTag('forgot_password', 'engagement', 'failure');
       });
   }

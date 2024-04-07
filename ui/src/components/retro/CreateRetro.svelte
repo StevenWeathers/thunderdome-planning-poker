@@ -24,15 +24,15 @@
 
   const brainstormVisibilityOptions = [
     {
-      label: $LL.brainstormVisibilityLabelVisible(),
+      label: `${$LL.brainstormVisibilityLabelVisible()}`,
       value: 'visible',
     },
     {
-      label: $LL.brainstormVisibilityLabelConcealed(),
+      label: `${$LL.brainstormVisibilityLabelConcealed()}`,
       value: 'concealed',
     },
     {
-      label: $LL.brainstormVisibilityLabelHidden(),
+      label: `${$LL.brainstormVisibilityLabelHidden()}`,
       value: 'hidden',
     },
   ];
@@ -68,7 +68,7 @@
             );
           });
         } else {
-          notifications.danger($LL.createRetroErrorMessage());
+          notifications.danger(`${$LL.createRetroErrorMessage()}`);
         }
         eventTag('create_retro', 'engagement', 'failure');
       });
@@ -81,7 +81,7 @@
         teams = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.getTeamsError());
+        notifications.danger(`${$LL.getTeamsError()}`);
       });
   }
 

@@ -49,7 +49,7 @@
         eventTag('retro_comment_add', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.retroActionCommentAddError());
+        notifications.danger(`${$LL.retroActionCommentAddError()}`);
         eventTag('retro_comment_add', 'engagement', 'failure');
       });
   }
@@ -65,7 +65,7 @@
         eventTag('retro_comment_delete', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.retroActionCommentDeleteError());
+        notifications.danger(`${$LL.retroActionCommentDeleteError()}`);
         eventTag('retro_comment_delete', 'engagement', 'failure');
       });
   };
@@ -87,7 +87,7 @@
         eventTag('retro_comment_edit', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.retroActionCommentAddError());
+        notifications.danger(`${$LL.retroActionCommentAddError()}`);
         eventTag('retro_comment_edit', 'engagement', 'failure');
       });
   };

@@ -36,7 +36,7 @@
   function addPlan() {
     plans.unshift({
       name: '',
-      type: $LL.planTypeStory(),
+      type: `${$LL.planTypeStory()}`,
       referenceId: '',
       link: '',
       description: '',
@@ -107,9 +107,9 @@
           });
         } else {
           notifications.danger(
-            $LL.createBattleError({
+            `${$LL.createBattleError({
               friendly: AppConfig.FriendlyUIVerbs,
-            }),
+            })}`,
           );
         }
         eventTag('create_battle', 'engagement', 'failure');
@@ -123,7 +123,7 @@
         teams = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.getTeamsError());
+        notifications.danger(`${$LL.getTeamsError()}`);
       });
   }
 

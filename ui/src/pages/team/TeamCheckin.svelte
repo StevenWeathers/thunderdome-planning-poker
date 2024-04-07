@@ -123,7 +123,7 @@
         }
       })
       .catch(function () {
-        notifications.danger($LL.teamGetError());
+        notifications.danger(`${$LL.teamGetError()}`);
         eventTag('team_checkin_team', 'engagement', 'failure');
       });
   }
@@ -136,7 +136,7 @@
         filterCheckins();
       })
       .catch(function () {
-        notifications.danger($LL.getCheckinsError());
+        notifications.danger(`${$LL.getCheckinsError()}`);
         eventTag('team_checkin_checkins', 'engagement', 'failure');
       });
   }
@@ -155,7 +155,7 @@
         }, {});
       })
       .catch(function () {
-        notifications.danger($LL.teamGetUsersError());
+        notifications.danger(`${$LL.teamGetUsersError()}`);
         eventTag('team_checkin_users', 'engagement', 'failure');
       });
   }
@@ -184,13 +184,13 @@
         if (Array.isArray(error)) {
           error[1].json().then(function (result) {
             if (result.error === 'REQUIRES_TEAM_USER') {
-              notifications.danger($LL.teamUserRequiredToCheckin());
+              notifications.danger(`${$LL.teamUserRequiredToCheckin()}`);
             } else {
-              notifications.danger($LL.checkinError());
+              notifications.danger(`${$LL.checkinError()}`);
             }
           });
         } else {
-          notifications.danger($LL.checkinError());
+          notifications.danger(`${$LL.checkinError()}`);
         }
         eventTag('team_checkin_create', 'engagement', 'failure');
       });
@@ -207,7 +207,7 @@
         eventTag('team_checkin_edit', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.updateCheckinError());
+        notifications.danger(`${$LL.updateCheckinError()}`);
         eventTag('team_checkin_edit', 'engagement', 'failure');
       });
   }
@@ -219,7 +219,7 @@
         eventTag('team_checkin_delete', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.deleteCheckinError());
+        notifications.danger(`${$LL.deleteCheckinError()}`);
         eventTag('team_checkin_delete', 'engagement', 'failure');
       });
   }
@@ -238,13 +238,13 @@
         if (Array.isArray(error)) {
           error[1].json().then(function (result) {
             if (result.error === 'REQUIRES_TEAM_USER') {
-              notifications.danger($LL.teamUserRequiredToComment());
+              notifications.danger(`${$LL.teamUserRequiredToComment()}`);
             } else {
-              notifications.danger($LL.checkinCommentError());
+              notifications.danger(`${$LL.checkinCommentError()}`);
             }
           });
         } else {
-          notifications.danger($LL.checkinCommentError());
+          notifications.danger(`${$LL.checkinCommentError()}`);
         }
         eventTag('team_checkin_comment', 'engagement', 'failure');
       });
@@ -267,13 +267,13 @@
         if (Array.isArray(error)) {
           error[1].json().then(function (result) {
             if (result.error === 'REQUIRES_TEAM_USER') {
-              notifications.danger($LL.teamUserRequiredToComment());
+              notifications.danger(`${$LL.teamUserRequiredToComment()}`);
             } else {
-              notifications.danger($LL.checkinCommentError());
+              notifications.danger(`${$LL.checkinCommentError()}`);
             }
           });
         } else {
-          notifications.danger($LL.checkinCommentError());
+          notifications.danger(`${$LL.checkinCommentError()}`);
         }
         eventTag('team_checkin_comment_edit', 'engagement', 'failure');
       });
@@ -288,7 +288,7 @@
         eventTag('team_checkin_comment_delete', 'engagement', 'success');
       })
       .catch(function () {
-        notifications.danger($LL.checkinCommentDeleteError());
+        notifications.danger(`${$LL.checkinCommentDeleteError()}`);
         eventTag('team_checkin_comment_delete', 'engagement', 'failure');
       });
   };

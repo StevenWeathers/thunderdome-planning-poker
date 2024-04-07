@@ -70,7 +70,7 @@
         JoinPassRequired = true;
         break;
       case 'join_code_incorrect':
-        notifications.danger($LL.incorrectPassCode());
+        notifications.danger(`${$LL.incorrectPassCode()}`);
         break;
       case 'init':
         JoinPassRequired = false;
@@ -152,7 +152,7 @@
         break;
       case 'storyboard_conceded':
         // storyboard over, goodbye.
-        notifications.warning($LL.storyboardDeleted());
+        notifications.warning(`${$LL.storyboardDeleted()}`);
         router.route(appRoutes.storyboards);
         break;
       default:
@@ -182,7 +182,7 @@
           });
         } else if (e.code === 4003) {
           eventTag('socket_duplicate', 'storyboard', '', () => {
-            notifications.danger($LL.duplicateStoryboardSession());
+            notifications.danger(`${$LL.duplicateStoryboardSession()}`);
             router.route(`${appRoutes.storyboards}`);
           });
         } else if (e.code === 4002) {

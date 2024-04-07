@@ -22,7 +22,7 @@
       teams = result.data;
     })
     .catch(function () {
-      notifications.danger($LL.getTeamsError());
+      notifications.danger(`${$LL.getTeamsError()}`);
     });
 
   function handleSubmit(event) {

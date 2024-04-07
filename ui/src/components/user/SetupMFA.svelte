@@ -21,7 +21,7 @@
       secret = r.data.secret;
     })
     .catch(() => {
-      notifications.danger($LL.mfaGenerateFailed());
+      notifications.danger(`${$LL.mfaGenerateFailed()}`);
     });
 
   function onSubmit(e) {
@@ -30,14 +30,14 @@
       .then(res => res.json())
       .then(r => {
         if (r.data.result === 'SUCCESS') {
-          notifications.success($LL.mfaSetupSuccess());
+          notifications.success(`${$LL.mfaSetupSuccess()}`);
           handleComplete();
         } else {
           notifications.danger(`${r.data.result}`);
         }
       })
       .catch(() => {
-        notifications.danger($LL.mfaSetupFailed());
+        notifications.danger(`${$LL.mfaSetupFailed()}`);
       });
   }
 

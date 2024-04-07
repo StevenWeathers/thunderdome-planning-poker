@@ -24,7 +24,7 @@
   let defaultPlan = {
     id: '',
     name: '',
-    type: $LL.planTypeStory(),
+    type: `${$LL.planTypeStory()}`,
     referenceId: '',
     link: '',
     description: '',
@@ -38,27 +38,27 @@
       icon: false,
     },
     1: {
-      name: $LL.planPriorityBlocker(),
+      name: `${$LL.planPriorityBlocker()}`,
       icon: NoSymbolIcon,
     },
     2: {
-      name: $LL.planPriorityHighest(),
+      name: `${$LL.planPriorityHighest()}`,
       icon: DoubleChevronUp,
     },
     3: {
-      name: $LL.planPriorityHigh(),
+      name: `${$LL.planPriorityHigh()}`,
       icon: ChevronUp,
     },
     4: {
-      name: $LL.planPriorityMedium(),
+      name: `${$LL.planPriorityMedium()}`,
       icon: Bars2,
     },
     5: {
-      name: $LL.planPriorityLow(),
+      name: `${$LL.planPriorityLow()}`,
       icon: ChevronDown,
     },
     6: {
-      name: $LL.planPriorityLowest(),
+      name: `${$LL.planPriorityLowest()}`,
       icon: DoubleChevronDown,
     },
   };

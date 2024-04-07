@@ -40,7 +40,7 @@
         appStats = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.applicationStatsError());
+        notifications.danger(`${$LL.applicationStatsError()}`);
       });
   }
 
@@ -54,7 +54,7 @@
         apikeys = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.getApikeysError());
+        notifications.danger(`${$LL.getApikeysError()}`);
       });
   }
 
@@ -65,12 +65,12 @@
       })
         .then(res => res.json())
         .then(function () {
-          notifications.success($LL.apiKeyDeleteSuccess());
+          notifications.success(`${$LL.apiKeyDeleteSuccess()}`);
           getAppStats();
           getApiKeys();
         })
         .catch(function () {
-          notifications.danger($LL.apiKeyDeleteFailed());
+          notifications.danger(`${$LL.apiKeyDeleteFailed()}`);
         });
     };
   }
@@ -87,11 +87,11 @@
       })
         .then(res => res.json())
         .then(function () {
-          notifications.success($LL.apiKeyUpdateSuccess());
+          notifications.success(`${$LL.apiKeyUpdateSuccess()}`);
           getApiKeys();
         })
         .catch(function () {
-          notifications.danger($LL.apiKeyUpdateFailed());
+          notifications.danger(`${$LL.apiKeyUpdateFailed()}`);
         });
     };
   }

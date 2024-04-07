@@ -73,7 +73,7 @@
         appStats = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.applicationStatsError());
+        notifications.danger(`${$LL.applicationStatsError()}`);
       });
   }
 
@@ -86,9 +86,9 @@
       })
       .catch(function () {
         notifications.danger(
-          $LL.oldBattleCleanError({
+          `${$LL.oldBattleCleanError({
             friendly: AppConfig.FriendlyUIVerbs,
-          }),
+          })}`,
         );
         eventTag('admin_clean_battles', 'engagement', 'failure');
       });
@@ -102,7 +102,7 @@
         getAppStats();
       })
       .catch(function () {
-        notifications.danger($LL.oldRetrosCleanError());
+        notifications.danger(`${$LL.oldRetrosCleanError()}`);
         eventTag('admin_clean_retros', 'engagement', 'failure');
       });
   }
@@ -115,7 +115,7 @@
         getAppStats();
       })
       .catch(function () {
-        notifications.danger($LL.oldStoryboardsCleanError());
+        notifications.danger(`${$LL.oldStoryboardsCleanError()}`);
         eventTag('admin_clean_storyboards', 'engagement', 'failure');
       });
   }
@@ -128,7 +128,7 @@
         getAppStats();
       })
       .catch(function () {
-        notifications.danger($LL.oldGuestsCleanError());
+        notifications.danger(`${$LL.oldGuestsCleanError()}`);
         eventTag('admin_clean_guests', 'engagement', 'failure');
       });
   }

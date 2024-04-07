@@ -37,7 +37,7 @@
         retro = result.data;
       })
       .catch(function () {
-        notifications.danger($LL.getRetroErrorMessage());
+        notifications.danger(`${$LL.getRetroErrorMessage()}`);
       });
   }
 
@@ -48,7 +48,7 @@
         router.route(appRoutes.adminRetros);
       })
       .catch(function () {
-        notifications.danger($LL.deleteRetroErrorMessage());
+        notifications.danger(`${$LL.deleteRetroErrorMessage()}`);
       });
   }
 
