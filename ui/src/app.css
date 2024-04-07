@@ -3,7 +3,7 @@
 @import 'tailwindcss/utilities';
 
 .font-rajdhani {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Rajdhani', 'Arial Narrow', sans-serif;
 }
 
 ::-webkit-calendar-picker-indicator {
