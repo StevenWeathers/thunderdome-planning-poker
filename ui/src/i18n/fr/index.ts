@@ -522,6 +522,7 @@ const fr: Translation = {
   passwordUpdateError: 'Erreur lors de la mise à jour du mot de passe',
   profileDeleteError: 'Erreur lors de la suppression de votre compte.',
   profileTitle: 'Votre Profil',
+  profile: 'Profile',
   updatePassword: 'Mettre à jour le mot de passe',
   deleteAccount: 'Supprimer le compte',
   deleteAccountWarningStatement:

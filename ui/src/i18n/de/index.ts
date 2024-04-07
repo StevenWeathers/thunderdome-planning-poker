@@ -520,6 +520,7 @@ const de: Translation = {
   profileDeleteError:
     'Es ist ein Fehler beim L\u00F6schen des Kontos aufgetreten.',
   profileTitle: 'Profil',
+  profile: 'Profil',
   updatePassword: 'Passwort \u00E4ndern',
   deleteAccount: 'Konto l\u00F6schen',
   deleteAccountWarningStatement:

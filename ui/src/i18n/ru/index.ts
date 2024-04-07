@@ -511,6 +511,7 @@ const ru: Translation = {
   passwordUpdateError: 'Error encountered attempting to update password',
   profileDeleteError: 'Error encountered attempting to delete your account.',
   profileTitle: 'Your Profile',
+  profile: 'Profile',
   updatePassword: 'Update Password',
   deleteAccount: 'Delete Account',
   deleteAccountWarningStatement:

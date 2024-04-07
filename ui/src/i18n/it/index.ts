@@ -539,6 +539,7 @@ const it: Translation = {
   profileDeleteError:
     'Errore riscontrato tentativo di eliminare il tuo account.',
   profileTitle: 'Il tuo profilo',
+  profile: 'Profile',
   updatePassword: 'Aggiorna la password',
   deleteAccount: "Eliminare l'account",
   deleteAccountWarningStatement:

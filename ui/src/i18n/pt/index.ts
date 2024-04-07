@@ -525,6 +525,7 @@ const pt: Translation = {
   passwordUpdateError: 'Erro ao tentar atualizar a senha',
   profileDeleteError: 'Erro encontrado ao tentar excluir sua conta.',
   profileTitle: 'Seu perfil',
+  profile: 'Profile',
   updatePassword: 'Atualizar senha',
   deleteAccount: 'Excluir conta',
   deleteAccountWarningStatement: 'Tem certeza de que deseja excluir sua conta?',
