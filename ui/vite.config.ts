@@ -12,5 +12,5 @@ export default defineConfig({
   css: {
     postcss,
   },
-  base: 'STATIC_DIR_BASE', // to be replaced by backend before rendering template
+  // base: 'STATIC_DIR_BASE', // to be replaced by backend before rendering template
 });
