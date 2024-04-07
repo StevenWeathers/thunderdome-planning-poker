@@ -3,6 +3,7 @@
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
   import FullLogoVertical from './FullLogoVertical.svelte';
+  import FullLogoVerticalDarkText from './FullLogoVerticalDarkText.svelte';
 
   const { AppVersion, RepoURL, PathPrefix } = AppConfig;
   const footerLinkClasses =
@@ -19,7 +20,8 @@
         href="{appRoutes.landing}"
         class="hidden md:inline-block flex items-center mb-4 md:mb-0 space-x-3 rtl:space-x-reverse"
       >
-        <FullLogoVertical class="h-8 lg:h-12" />
+        <FullLogoVertical class="hidden h-8 lg:h-12 dark:block" />
+        <FullLogoVerticalDarkText class="h-8 lg:h-12 dark:hidden" />
       </a>
       <ul
         class="text-sm md:text-base flex flex-wrap items-center mb-6 font-medium text-gray-500 md:mb-0 dark:text-gray-400"
