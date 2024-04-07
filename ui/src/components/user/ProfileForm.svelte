@@ -10,7 +10,7 @@
   import SetupMFA from './SetupMFA.svelte';
   import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
   import { user } from '../../stores';
-  import LocaleSwitcher from '../global/LocaleSwitcher.svelte';
+  import LocaleSwitcher from '../global/LocaleInput.svelte';
   import type { Locales } from '../../i18n/i18n-types';
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
   import TextInput from '../global/TextInput.svelte';

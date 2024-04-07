@@ -322,7 +322,7 @@ test.describe("User Profile page", () => {
 
     await expect(profilePage.page.locator("h1")).toHaveText("Your Profile");
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).toHaveText(registeredPage.user.name);
   });
 
@@ -333,7 +333,7 @@ test.describe("User Profile page", () => {
     await expect(profilePage.page.locator("h1")).toHaveText("Your Profile");
 
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).toBeVisible();
 
     await profilePage.page
@@ -346,7 +346,7 @@ test.describe("User Profile page", () => {
       "Thunderdome is an Agile Planning Poker app with a fun theme",
     );
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).not.toBeVisible();
   });
 
@@ -359,7 +359,7 @@ test.describe("User Profile page", () => {
     await expect(profilePage.page.locator("h1")).toHaveText("Your Profile");
 
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).toBeVisible();
 
     await profilePage.page
@@ -372,7 +372,7 @@ test.describe("User Profile page", () => {
       "Thunderdome is an Agile Planning Poker app with a fun theme",
     );
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).not.toBeVisible();
   });
 });
