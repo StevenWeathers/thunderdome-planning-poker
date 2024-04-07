@@ -82,6 +82,7 @@
     <div class="flex flex-wrap justify-between mx-auto max-w-screen-2xl">
       <div class="content-center py-2 lg:py-3">
         <a href="{appRoutes.landing}" class="block">
+          <span class="sr-only">Thunderdome</span>
           <DomeLogo class="max-h-10 lg:max-h-[3.5rem]" />
         </a>
       </div>
