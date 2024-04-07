@@ -2,7 +2,6 @@
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import CsvImport from './CsvImport.svelte';
-  import JiraImport from './JiraImport.svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
@@ -248,12 +247,14 @@
       <h3 class="font-bold mb-2 dark:text-gray-300 text-lg">
         {$LL.importJiraXML({ friendly: AppConfig.FriendlyUIVerbs })}
       </h3>
-      <JiraImport
-        handlePlanAdd="{handleAdd}"
-        notifications="{notifications}"
-        eventTag="{eventTag}"
-        testid="plans-importjira"
-      />
+      {#await import('./JiraImport.svelte') then JiraImport}
+        <JiraImport.default
+          handlePlanAdd="{handleAdd}"
+          notifications="{notifications}"
+          eventTag="{eventTag}"
+          testid="plans-importjira"
+        />
+      {/await}
     </div>
     <div class="mb-4">
       <h3 class="font-bold mb-2 dark:text-gray-300 text-lg">

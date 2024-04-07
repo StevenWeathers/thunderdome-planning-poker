@@ -2,12 +2,9 @@
   import { onMount } from 'svelte';
 
   import SolidButton from '../global/SolidButton.svelte';
-  import HollowButton from '../global/HollowButton.svelte';
-  import JiraImport from './JiraImport.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
-  import CsvImport from './CsvImport.svelte';
   import TextInput from '../global/TextInput.svelte';
   import SelectInput from '../global/SelectInput.svelte';
 
@@ -208,49 +205,51 @@
     </div>
   </div>
 
-  <div class="mb-4">
-    <h3 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">
-      {$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}
-    </h3>
-    <div class="control mb-4">
-      <JiraImport
-        handlePlanAdd="{handlePlanImport}"
-        notifications="{notifications}"
-        eventTag="{eventTag}"
-      />
-      <HollowButton onClick="{addPlan}">
-        {$LL.addPlan({ friendly: AppConfig.FriendlyUIVerbs })}
-      </HollowButton>
-    </div>
-    <div class="control mb-4">
-      <CsvImport
-        handlePlanAdd="{handlePlanImport}"
-        notifications="{notifications}"
-        eventTag="{eventTag}"
-      />
-    </div>
+  <!--    <div class="mb-4">-->
+  <!--        <h3 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">-->
+  <!--            {$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}-->
+  <!--        </h3>-->
+  <!--        <div class="control mb-4">-->
+  <!--            {#await import('./JiraImport.svelte') then JiraImport}-->
+  <!--                <JiraImport.default-->
+  <!--                        handlePlanAdd="{handlePlanImport}"-->
+  <!--                        notifications="{notifications}"-->
+  <!--                        eventTag="{eventTag}"-->
+  <!--                />-->
+  <!--            {/await}-->
+  <!--            <HollowButton onClick="{addPlan}">-->
+  <!--                {$LL.addPlan({ friendly: AppConfig.FriendlyUIVerbs })}-->
+  <!--            </HollowButton>-->
+  <!--        </div>-->
+  <!--        <div class="control mb-4">-->
+  <!--            <CsvImport-->
+  <!--                    handlePlanAdd="{handlePlanImport}"-->
+  <!--                    notifications="{notifications}"-->
+  <!--                    eventTag="{eventTag}"-->
+  <!--            />-->
+  <!--        </div>-->
 
-    {#each plans as plan, i}
-      <div class="flex flex-wrap mb-2">
-        <div class="w-3/4">
-          <TextInput
-            bind:value="{plan.name}"
-            placeholder="{$LL.planNamePlaceholder({
-              friendly: AppConfig.FriendlyUIVerbs,
-            })}"
-            required
-          />
-        </div>
-        <div class="w-1/4">
-          <div class="ps-2">
-            <HollowButton onClick="{removePlan(i)}" color="red">
-              {$LL.remove()}
-            </HollowButton>
-          </div>
-        </div>
-      </div>
-    {/each}
-  </div>
+  <!--        {#each plans as plan, i}-->
+  <!--            <div class="flex flex-wrap mb-2">-->
+  <!--                <div class="w-3/4">-->
+  <!--                    <TextInput-->
+  <!--                            bind:value="{plan.name}"-->
+  <!--                            placeholder="{$LL.planNamePlaceholder({-->
+  <!--              friendly: AppConfig.FriendlyUIVerbs,-->
+  <!--            })}"-->
+  <!--                            required-->
+  <!--                    />-->
+  <!--                </div>-->
+  <!--                <div class="w-1/4">-->
+  <!--                    <div class="ps-2">-->
+  <!--                        <HollowButton onClick="{removePlan(i)}" color="red">-->
+  <!--                            {$LL.remove()}-->
+  <!--                        </HollowButton>-->
+  <!--                    </div>-->
+  <!--                </div>-->
+  <!--            </div>-->
+  <!--        {/each}-->
+  <!--    </div>-->
 
   <div class="mb-4">
     <label
