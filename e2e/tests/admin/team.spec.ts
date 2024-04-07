@@ -8,8 +8,8 @@ test.describe("The Admin Team Page", () => {
 
       await adminPage.goto("bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa");
 
-      const title = adminPage.page.locator('[data-formtitle="login"]');
-      await expect(title).toHaveText("Login");
+      const loginForm = adminPage.page.locator('form[name="login"]');
+      await expect(loginForm).toBeVisible();
     });
   });
 

@@ -188,7 +188,9 @@ const pt: Translation = {
     'é projetado e desenvolvido por {authorOpen}Steven Weathers{authorClose}.',
   footerLicense:
     'O código fonte é licenciado por {licenseOpen}Apache 2.0{licenseClose}.',
-  forgotPassword: 'Esqueceu a senha',
+  forgotPassword: 'Forgot Your Password?',
+  forgotPasswordSubtext: `Don't fret! Just enter your email and we will send you instructions to reset your password.`,
+  returnToLogin: 'Return to Login',
   getAlertsError: 'Erro ao obter alertas',
   getApikeysError: 'Erro ao obter chaves de API',
   getBattleError:
@@ -398,7 +400,6 @@ const pt: Translation = {
   selectTeam: 'Selecione uma Equipe',
   selfHostedDesc:
     'Alternativamente, você pode {linkOpen}executá-lo em seu próprio servidor{linkClose}.',
-  sendResetEmail: 'Enviar e-mail de redefinição',
   sessionDuplicate:
     '{friendly|{false:Existe uma sessão de batalha duplicada para o seu ID, true:Existe uma sessão de jogo duplicada para o seu ID}}',
   showActiveBattles:
@@ -584,7 +585,6 @@ const pt: Translation = {
   reset: 'Redefinir',
   passwordResetError: 'Erro encontrado ao tentar redefinir a senha',
   resetPassword: 'Redefinir Senha',
-  forgotPasswordCheckboxLabel: 'Esqueceu sua Senha?',
   registerAsGuest: 'Registrar como Convidado',
   registrationDisabled: 'O cadastro está desativado.',
   userNamePlaceholder: 'Digite seu nome',

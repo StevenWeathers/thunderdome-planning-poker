@@ -51,10 +51,7 @@
 
 <div class="flex min-h-[80vh] flex-col justify-center py-12 sm:px-6 lg:px-8">
   <div class="text-center sm:mx-auto sm:w-full sm:max-w-md">
-    <h1
-      data-formtitle="login"
-      class="text-3xl text-gray-900 dark:text-white font-semibold font-rajdhani md:leading-tight uppercase"
-    >
+    <h1 class="sr-only">
       {$LL.login()}
     </h1>
   </div>
