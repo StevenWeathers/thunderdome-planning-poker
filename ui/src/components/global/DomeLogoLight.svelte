@@ -5,7 +5,7 @@
 
 <svg
   class="{klass}"
-  width="100%"
+  width="auto"
   height="100%"
   viewBox="0 0 408 203"
   version="1.1"

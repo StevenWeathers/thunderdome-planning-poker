@@ -81,10 +81,14 @@
     aria-label="main navigation"
   >
     <div class="flex flex-wrap justify-between mx-auto max-w-screen-2xl">
-      <div class="content-center py-2 lg:py-3">
-        <a href="{appRoutes.landing}" class="block">
-          <DomeLogo class="hidden dark:block max-h-10 lg:max-h-[3.5rem]" />
-          <DomeLogoLight class="dark:hidden max-h-10 lg:max-h-[3.5rem]" />
+      <div class="py-2 lg:py-3">
+        <a href="{appRoutes.landing}">
+          <span
+            ><DomeLogo class="hidden dark:inline-block h-8 md:h-12 lg:h-14" />
+            <DomeLogoLight
+              class="inline-block dark:hidden h-8 md:h-12 lg:h-14"
+            />
+          </span>
         </a>
       </div>
 
@@ -116,14 +120,14 @@
             {#if HeaderAuthEnabled}
               <button
                 on:click="{headerLogin}"
-                class="block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
+                class="text-sm md:text-base block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
                 >{$LL.login()}
                 <ArrowRight class="ms-2 inline-block" />
               </button>
             {:else}
               <a
                 href="{appRoutes.login}"
-                class="block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
+                class="text-sm md:text-base block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
                 >{$LL.login()}
                 <ArrowRight class="ms-2 inline-block" />
               </a>
