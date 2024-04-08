@@ -10,6 +10,7 @@
   import ArrowRight from '../icons/ArrowRight.svelte';
   import LocaleMenu from './LocaleMenu.svelte';
   import DomeLogo from './DomeLogo.svelte';
+  import DomeLogoLight from './DomeLogoLight.svelte';
 
   export let xfetch;
   export let router;
@@ -83,7 +84,8 @@
       <div class="content-center py-2 lg:py-3">
         <a href="{appRoutes.landing}" class="block">
           <span class="sr-only">Thunderdome</span>
-          <DomeLogo class="max-h-10 lg:max-h-[3.5rem]" />
+          <DomeLogo class="hidden dark:block max-h-10 lg:max-h-[3.5rem]" />
+          <DomeLogoLight class="dark:hidden max-h-10 lg:max-h-[3.5rem]" />
         </a>
       </div>
 
