@@ -3,7 +3,6 @@
 
   import PageLayout from '../../components/global/PageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import SolidButton from '../../components/global/SolidButton.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
@@ -16,6 +15,8 @@
   import HeadCol from '../../components/global/table/HeadCol.svelte';
   import Table from '../../components/global/table/Table.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
 
   export let xfetch;
   export let router;
@@ -174,26 +175,13 @@
   </div>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.teams()}
-        </h2>
-      </div>
-      <div class="w-1/5">
-        <div class="text-right">
-          {#if isAdmin}
-            <SolidButton onClick="{toggleCreateTeam}">
-              {$LL.teamCreate()}
-            </SolidButton>
-          {/if}
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav
+        title="{$LL.teams()}"
+        createBtnEnabled="{isAdmin}"
+        createBtnText="{$LL.teamCreate()}"
+        createButtonHandler="{toggleCreateTeam}"
+      />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -240,7 +228,7 @@
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
   <UsersList

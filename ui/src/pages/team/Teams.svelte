@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
 
   import PageLayout from '../../components/global/PageLayout.svelte';
-  import SolidButton from '../../components/global/SolidButton.svelte';
   import CreateOrganization from '../../components/team/CreateOrganization.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import { user } from '../../stores';
@@ -13,6 +12,8 @@
   import TableRow from '../../components/global/table/TableRow.svelte';
   import HeadCol from '../../components/global/table/HeadCol.svelte';
   import Table from '../../components/global/table/Table.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
 
   export let xfetch;
   export let router;
@@ -122,113 +123,89 @@
 <PageLayout>
   {#if OrganizationsEnabled}
     <div class="w-full mb-6 lg:mb-8">
-      <div class="flex w-full">
-        <div class="w-4/5">
-          <h2
-            class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-          >
-            {$LL.organizations()}
-          </h2>
-        </div>
-        <div class="w-1/5">
-          <div class="text-right">
-            <SolidButton onClick="{toggleCreateOrganization}">
-              {$LL.organizationCreate()}
-            </SolidButton>
-          </div>
-        </div>
-      </div>
-
-      <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each organizations as organization, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <a
-                  href="{appRoutes.organization}/{organization.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >
-                  {organization.name}
-                </a>
-              </RowCol>
-              <RowCol>
-                {new Date(organization.createdDate).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(organization.updatedDate).toLocaleString()}
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
-      </Table>
+      <TableContainer>
+        <TableNav
+          title="{$LL.organizations()}"
+          createBtnText="{$LL.organizationCreate()}"
+          createButtonHandler="{toggleCreateOrganization}"
+        />
+        <Table>
+          <tr slot="header">
+            <HeadCol>
+              {$LL.name()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateCreated()}
+            </HeadCol>
+            <HeadCol>
+              {$LL.dateUpdated()}
+            </HeadCol>
+          </tr>
+          <tbody slot="body" let:class="{className}" class="{className}">
+            {#each organizations as organization, i}
+              <TableRow itemIndex="{i}">
+                <RowCol>
+                  <a
+                    href="{appRoutes.organization}/{organization.id}"
+                    class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                  >
+                    {organization.name}
+                  </a>
+                </RowCol>
+                <RowCol>
+                  {new Date(organization.createdDate).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(organization.updatedDate).toLocaleString()}
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+        </Table>
+      </TableContainer>
     </div>
   {/if}
 
-  <div class="w-full">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.teams()}
-        </h2>
-      </div>
-      <div class="w-1/5">
-        <div class="text-right">
-          <SolidButton onClick="{toggleCreateTeam}">
-            {$LL.teamCreate()}
-          </SolidButton>
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full">
-      <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateCreated()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.dateUpdated()}
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each teams as team, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <a
-                  href="{appRoutes.team}/{team.id}"
-                  class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >
-                  {team.name}
-                </a>
-              </RowCol>
-              <RowCol>
-                {new Date(team.createdDate).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(team.updatedDate).toLocaleString()}
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
-      </Table>
-    </div>
-  </div>
+  <TableContainer>
+    <TableNav
+      title="{$LL.teams()}"
+      createBtnText="{$LL.teamCreate()}"
+      createButtonHandler="{toggleCreateTeam}"
+    />
+    <Table>
+      <tr slot="header">
+        <HeadCol>
+          {$LL.name()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.dateCreated()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.dateUpdated()}
+        </HeadCol>
+      </tr>
+      <tbody slot="body" let:class="{className}" class="{className}">
+        {#each teams as team, i}
+          <TableRow itemIndex="{i}">
+            <RowCol>
+              <a
+                href="{appRoutes.team}/{team.id}"
+                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+              >
+                {team.name}
+              </a>
+            </RowCol>
+            <RowCol>
+              {new Date(team.createdDate).toLocaleString()}
+            </RowCol>
+            <RowCol>
+              {new Date(team.updatedDate).toLocaleString()}
+            </RowCol>
+          </TableRow>
+        {/each}
+      </tbody>
+    </Table>
+  </TableContainer>
 
   {#if showCreateOrganization}
     <CreateOrganization

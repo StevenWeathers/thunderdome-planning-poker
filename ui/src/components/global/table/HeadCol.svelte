@@ -3,14 +3,11 @@
 </script>
 
 {#if type === 'default'}
-  <th
-    scope="col"
-    class="px-6 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-  >
+  <th scope="col" class="p-4">
     <slot />
   </th>
 {:else if type === 'action'}
-  <th scope="col" class="relative px-6 py-3">
+  <th scope="col" class="relative px-2 py-2">
     <slot />
   </th>
 {/if}

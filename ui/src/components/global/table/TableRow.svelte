@@ -3,8 +3,7 @@
 </script>
 
 <tr
-  class:bg-slate-100="{itemIndex % 2 !== 0}"
-  class:dark:bg-gray-800="{itemIndex % 2 !== 0}"
+  class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
 >
   <slot />
 </tr>
