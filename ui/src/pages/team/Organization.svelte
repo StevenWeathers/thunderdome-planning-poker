@@ -3,7 +3,6 @@
 
   import PageLayout from '../../components/global/PageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import SolidButton from '../../components/global/SolidButton.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
@@ -17,6 +16,8 @@
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
 
   export let xfetch;
   export let router;
@@ -240,26 +241,14 @@
   </h1>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.departments()}
-        </h2>
-      </div>
-      <div class="w-1/5">
-        <div class="text-right">
-          {#if isAdmin}
-            <SolidButton onClick="{toggleCreateDepartment}">
-              {$LL.departmentCreate()}
-            </SolidButton>
-          {/if}
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav
+        title="{$LL.departments()}"
+        createBtnEnabled="{isAdmin}"
+        createBtnText="{$LL.departmentCreate()}"
+        createButtonHandler="{toggleCreateDepartment}"
+        createBtnTestId="department-create"
+      />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -306,30 +295,18 @@
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.teams()}
-        </h2>
-      </div>
-      <div class="w-1/5">
-        <div class="text-right">
-          {#if isAdmin}
-            <SolidButton onClick="{toggleCreateTeam}">
-              {$LL.teamCreate()}
-            </SolidButton>
-          {/if}
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav
+        title="{$LL.teams()}"
+        createBtnEnabled="{isAdmin}"
+        createBtnText="{$LL.teamCreate()}"
+        createButtonHandler="{toggleCreateTeam}"
+        createBtnTestId="team-create"
+      />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -376,7 +353,7 @@
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
   <UsersList

@@ -26,6 +26,8 @@
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
   import BoxList from '../../components/BoxList.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
 
   export let xfetch;
   export let router;
@@ -599,14 +601,11 @@
 
       {#if retros.length}
         <div class="w-full pt-4 px-4">
-          <div class="w-full">
-            <h3
-              class="text-xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+          <TableContainer>
+            <TableNav
+              title="{$LL.retroActionItems()}"
+              createBtnEnabled="{false}"
             >
-              {$LL.retroActionItems()}
-            </h3>
-
-            <div class="text-right mb-4">
               <div
                 class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
               >
@@ -627,84 +626,85 @@
               <label for="completedActionItems" class="dark:text-gray-300"
                 >{$LL.showCompletedActionItems()}</label
               >
-            </div>
-          </div>
-
-          <Table>
-            <tr slot="header">
-              <HeadCol>{$LL.actionItem()}</HeadCol>
-              <HeadCol>{$LL.completed()}</HeadCol>
-              <HeadCol>{$LL.comments()}</HeadCol>
-              <HeadCol />
-            </tr>
-            <tbody slot="body" let:class="{className}" class="{className}">
-              {#each retroActions as item, i}
-                <TableRow itemIndex="{i}">
-                  <RowCol>
-                    <div class="whitespace-pre-wrap">
-                      {#each item.assignees as assignee}
-                        <UserAvatar
-                          warriorId="{assignee.id}"
-                          gravatarHash="{assignee.gravatarHash}"
-                          avatar="{assignee.avatar}"
-                          userName="{assignee.name}"
-                          width="24"
-                          class="inline-block me-2"
-                        />
-                      {/each}{item.content}
-                    </div>
-                  </RowCol>
-                  <RowCol>
-                    <input
-                      type="checkbox"
-                      id="{i}Completed"
-                      checked="{item.completed}"
-                      class="opacity-0 absolute h-6 w-6"
-                      disabled
-                    />
-                    <div
-                      class="bg-white dark:bg-gray-800 border-2 rounded-md
+            </TableNav>
+            <Table>
+              <tr slot="header">
+                <HeadCol>{$LL.actionItem()}</HeadCol>
+                <HeadCol>{$LL.completed()}</HeadCol>
+                <HeadCol>{$LL.comments()}</HeadCol>
+                <HeadCol />
+              </tr>
+              <tbody slot="body" let:class="{className}" class="{className}">
+                {#each retroActions as item, i}
+                  <TableRow itemIndex="{i}">
+                    <RowCol>
+                      <div class="whitespace-pre-wrap">
+                        {#each item.assignees as assignee}
+                          <UserAvatar
+                            warriorId="{assignee.id}"
+                            gravatarHash="{assignee.gravatarHash}"
+                            avatar="{assignee.avatar}"
+                            userName="{assignee.name}"
+                            width="24"
+                            class="inline-block me-2"
+                          />
+                        {/each}{item.content}
+                      </div>
+                    </RowCol>
+                    <RowCol>
+                      <input
+                        type="checkbox"
+                        id="{i}Completed"
+                        checked="{item.completed}"
+                        class="opacity-0 absolute h-6 w-6"
+                        disabled
+                      />
+                      <div
+                        class="bg-white dark:bg-gray-800 border-2 rounded-md
                                             border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
                                             justify-center items-center me-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
-                    >
-                      <CheckboxIcon />
-                    </div>
-                    <label for="{i}Completed" class="select-none"></label>
-                  </RowCol>
-                  <RowCol>
-                    <CommentIcon width="22" height="22" />
-                    <button
-                      class="text-lg text-blue-400 dark:text-sky-400"
-                      on:click="{toggleRetroActionComments(item.id)}"
-                    >
-                      &nbsp;{item.comments.length}
-                    </button>
-                  </RowCol>
-                  <RowCol>
-                    <div class="text-right">
-                      <HollowButton
-                        color="teal"
-                        onClick="{toggleRetroActionEdit(item.retroId, item.id)}"
-                        >{$LL.edit()}
-                      </HollowButton>
-                    </div>
-                  </RowCol>
-                </TableRow>
-              {/each}
-            </tbody>
-          </Table>
-
-          {#if totalRetroActions > retroActionsPageLimit}
-            <div class="pt-6 flex justify-center">
-              <Pagination
-                bind:current="{retroActionsPage}"
-                num_items="{totalRetroActions}"
-                per_page="{retroActionsPageLimit}"
-                on:navigate="{changeRetroActionPage}"
-              />
-            </div>
-          {/if}
+                      >
+                        <CheckboxIcon />
+                      </div>
+                      <label for="{i}Completed" class="select-none"></label>
+                    </RowCol>
+                    <RowCol>
+                      <CommentIcon width="22" height="22" />
+                      <button
+                        class="text-lg text-blue-400 dark:text-sky-400"
+                        on:click="{toggleRetroActionComments(item.id)}"
+                      >
+                        &nbsp;{item.comments.length}
+                      </button>
+                    </RowCol>
+                    <RowCol>
+                      <div class="text-right">
+                        <HollowButton
+                          color="teal"
+                          onClick="{toggleRetroActionEdit(
+                            item.retroId,
+                            item.id,
+                          )}"
+                          >{$LL.edit()}
+                        </HollowButton>
+                      </div>
+                    </RowCol>
+                  </TableRow>
+                {/each}
+              </tbody>
+            </Table>
+            {#if totalRetroActions > retroActionsPageLimit}
+              <div class="pt-6 flex justify-center">
+                <Pagination
+                  bind:current="{retroActionsPage}"
+                  num_items="{totalRetroActions}"
+                  per_page="{retroActionsPageLimit}"
+                  on:navigate="{changeRetroActionPage}"
+                />
+              </div>
+            {/if}
+          </TableContainer>
         </div>
       {/if}
     </div>
@@ -769,60 +769,46 @@
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <div class="flex w-full">
-        <div class="flex-1">
-          <h2
-            class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-          >
-            {$LL.userInvites()}
-          </h2>
-        </div>
-        <!--            <div class="flex-1 text-right">-->
-        <!--                {#if isAdmin}-->
-        <!--                    <SolidButton onClick="{toggleInviteUser}"-->
-        <!--                    >Invite User-->
-        <!--                    </SolidButton>-->
-        <!--                {/if}-->
-        <!--            </div>-->
-      </div>
-
-      <Table>
-        <tr slot="header">
-          <HeadCol>{$LL.email()}</HeadCol>
-          <HeadCol>{$LL.role()}</HeadCol>
-          <HeadCol>{$LL.dateCreated()}</HeadCol>
-          <HeadCol>{$LL.expireDate()}</HeadCol>
-          <HeadCol />
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each invites as item, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                {item.email}
-              </RowCol>
-              <RowCol>
-                {item.role}
-              </RowCol>
-              <RowCol>
-                {new Date(item.created_date).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(item.expire_date).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                <div class="text-right">
-                  <HollowButton
-                    onClick="{toggleDeleteInvite(item.invite_id)}"
-                    color="red"
-                  >
-                    {$LL.delete()}
-                  </HollowButton>
-                </div>
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
-      </Table>
+      <TableContainer>
+        <TableNav title="{$LL.userInvites()}" createBtnEnabled="{false}" />
+        <Table>
+          <tr slot="header">
+            <HeadCol>{$LL.email()}</HeadCol>
+            <HeadCol>{$LL.role()}</HeadCol>
+            <HeadCol>{$LL.dateCreated()}</HeadCol>
+            <HeadCol>{$LL.expireDate()}</HeadCol>
+            <HeadCol />
+          </tr>
+          <tbody slot="body" let:class="{className}" class="{className}">
+            {#each invites as item, i}
+              <TableRow itemIndex="{i}">
+                <RowCol>
+                  {item.email}
+                </RowCol>
+                <RowCol>
+                  {item.role}
+                </RowCol>
+                <RowCol>
+                  {new Date(item.created_date).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(item.expire_date).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  <div class="text-right">
+                    <HollowButton
+                      onClick="{toggleDeleteInvite(item.invite_id)}"
+                      color="red"
+                    >
+                      {$LL.delete()}
+                    </HollowButton>
+                  </div>
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+        </Table>
+      </TableContainer>
     </div>
   {/if}
 
