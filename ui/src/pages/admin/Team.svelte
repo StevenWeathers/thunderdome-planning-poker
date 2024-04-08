@@ -12,13 +12,13 @@
   import HollowButton from '../../components/global/HollowButton.svelte';
   import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
   import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
   import Table from '../../components/global/table/Table.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import TableNav from '../../components/global/table/TableNav.svelte';
   import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableFooter from '../../components/global/table/TableFooter.svelte';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 
@@ -448,17 +448,12 @@
                 {/each}
               </tbody>
             </Table>
-
-            {#if totalRetroActions > retroActionsPageLimit}
-              <div class="pt-6 flex justify-center">
-                <Pagination
-                  bind:current="{retroActionsPage}"
-                  num_items="{totalRetroActions}"
-                  per_page="{retroActionsPageLimit}"
-                  on:navigate="{changeRetroActionPage}"
-                />
-              </div>
-            {/if}
+            <TableFooter
+              bind:current="{retroActionsPage}"
+              num_items="{totalRetroActions}"
+              per_page="{retroActionsPageLimit}"
+              on:navigate="{changeRetroActionPage}"
+            />
           </div>
         {/if}
       </div>

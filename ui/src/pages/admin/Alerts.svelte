@@ -8,7 +8,6 @@
   import HeadCol from '../../components/global/table/HeadCol.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import CreateAlert from '../../components/alert/CreateAlert.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import RowCol from '../../components/global/table/RowCol.svelte';
   import TableRow from '../../components/global/table/TableRow.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
@@ -16,6 +15,7 @@
   import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
   import TableContainer from '../../components/global/table/TableContainer.svelte';
   import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableFooter from '../../components/global/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -220,17 +220,12 @@
         {/each}
       </tbody>
     </Table>
-
-    {#if alertCount > alertsPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{alertsPage}"
-          num_items="{alertCount}"
-          per_page="{alertsPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
+    <TableFooter
+      bind:current="{alertsPage}"
+      num_items="{alertCount}"
+      per_page="{alertsPageLimit}"
+      on:navigate="{changePage}"
+    />
   </TableContainer>
 
   {#if showAlertCreate}

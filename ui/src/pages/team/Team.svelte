@@ -19,7 +19,6 @@
   import TableRow from '../../components/global/table/TableRow.svelte';
   import RowCol from '../../components/global/table/RowCol.svelte';
   import Modal from '../../components/global/Modal.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
@@ -28,6 +27,7 @@
   import UsersList from '../../components/team/UsersList.svelte';
   import TableContainer from '../../components/global/table/TableContainer.svelte';
   import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableFooter from '../../components/global/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -694,16 +694,12 @@
                 {/each}
               </tbody>
             </Table>
-            {#if totalRetroActions > retroActionsPageLimit}
-              <div class="pt-6 flex justify-center">
-                <Pagination
-                  bind:current="{retroActionsPage}"
-                  num_items="{totalRetroActions}"
-                  per_page="{retroActionsPageLimit}"
-                  on:navigate="{changeRetroActionPage}"
-                />
-              </div>
-            {/if}
+            <TableFooter
+              bind:current="{retroActionsPage}"
+              num_items="{totalRetroActions}"
+              per_page="{retroActionsPageLimit}"
+              on:navigate="{changeRetroActionPage}"
+            />
           </TableContainer>
         </div>
       {/if}

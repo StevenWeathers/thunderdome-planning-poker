@@ -9,9 +9,9 @@
   import HeadCol from '../../components/global/table/HeadCol.svelte';
   import TableRow from '../../components/global/table/TableRow.svelte';
   import RowCol from '../../components/global/table/RowCol.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import TableNav from '../../components/global/table/TableNav.svelte';
   import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableFooter from '../../components/global/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -120,16 +120,11 @@
         {/each}
       </tbody>
     </Table>
-
-    {#if appStats.organizationCount > organizationsPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{organizationsPage}"
-          num_items="{appStats.organizationCount}"
-          per_page="{organizationsPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
+    <TableFooter
+      bind:current="{organizationsPage}"
+      num_items="{appStats.organizationCount}"
+      per_page="{organizationsPageLimit}"
+      on:navigate="{changePage}"
+    />
   </TableContainer>
 </AdminPageLayout>

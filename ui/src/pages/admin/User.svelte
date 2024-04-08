@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import VerifiedIcon from '../../components/icons/VerifiedIcon.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import UpdatePasswordForm from '../../components/user/UpdatePasswordForm.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
@@ -19,6 +18,7 @@
   import HollowButton from '../../components/global/HollowButton.svelte';
   import TableContainer from '../../components/global/table/TableContainer.svelte';
   import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableFooter from '../../components/global/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -312,17 +312,12 @@
             {/each}
           </tbody>
         </Table>
-
-        {#if battleCount > battlesPageLimit}
-          <div class="pt-6 flex justify-center">
-            <Pagination
-              bind:current="{battlesPage}"
-              num_items="{battleCount}"
-              per_page="{battlesPageLimit}"
-              on:navigate="{changeBattlesPage}"
-            />
-          </div>
-        {/if}
+        <TableFooter
+          bind:current="{battlesPage}"
+          num_items="{battleCount}"
+          per_page="{battlesPageLimit}"
+          on:navigate="{changeBattlesPage}"
+        />
       </TableContainer>
     </div>
   {/if}
@@ -371,17 +366,12 @@
             {/each}
           </tbody>
         </Table>
-
-        {#if retroCount > retrosPageLimit}
-          <div class="pt-6 flex justify-center">
-            <Pagination
-              bind:current="{retrosPage}"
-              num_items="{retroCount}"
-              per_page="{retrosPageLimit}"
-              on:navigate="{changeRetrosPage}"
-            />
-          </div>
-        {/if}
+        <TableFooter
+          bind:current="{retrosPage}"
+          num_items="{retroCount}"
+          per_page="{retrosPageLimit}"
+          on:navigate="{changeRetrosPage}"
+        />
       </TableContainer>
     </div>
   {/if}
@@ -430,17 +420,12 @@
             {/each}
           </tbody>
         </Table>
-
-        {#if storyboardCount > storyboardsPageLimit}
-          <div class="pt-6 flex justify-center">
-            <Pagination
-              bind:current="{storyboardsPage}"
-              num_items="{storyboardCount}"
-              per_page="{storyboardsPageLimit}"
-              on:navigate="{changeStoryboardsPage}"
-            />
-          </div>
-        {/if}
+        <TableFooter
+          bind:current="{storyboardsPage}"
+          num_items="{storyboardCount}"
+          per_page="{storyboardsPageLimit}"
+          on:navigate="{changeStoryboardsPage}"
+        />
       </TableContainer>
     </div>
   {/if}

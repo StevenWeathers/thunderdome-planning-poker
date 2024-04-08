@@ -5,7 +5,6 @@
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
   import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import RowCol from '../../components/global/table/RowCol.svelte';
   import TableRow from '../../components/global/table/TableRow.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
@@ -16,6 +15,7 @@
   import HollowButton from '../../components/global/HollowButton.svelte';
   import TableNav from '../../components/global/table/TableNav.svelte';
   import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableFooter from '../../components/global/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -194,17 +194,12 @@
         {/each}
       </tbody>
     </Table>
-
-    {#if subscriptionCount > subscriptionsPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{subscriptionsPage}"
-          num_items="{subscriptionCount}"
-          per_page="{subscriptionsPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
+    <TableFooter
+      bind:current="{subscriptionsPage}"
+      num_items="{subscriptionCount}"
+      per_page="{subscriptionsPageLimit}"
+      on:navigate="{changePage}"
+    />
 
     {#if showSubCreate}
       <SubscriptionForm

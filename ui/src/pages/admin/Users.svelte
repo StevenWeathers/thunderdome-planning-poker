@@ -13,13 +13,13 @@
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
   import VerifiedIcon from '../../components/icons/VerifiedIcon.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import ProfileForm from '../../components/user/ProfileForm.svelte';
   import Modal from '../../components/global/Modal.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import CreateUser from '../../components/user/CreateUser.svelte';
   import TableContainer from '../../components/global/table/TableContainer.svelte';
   import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableFooter from '../../components/global/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -337,17 +337,12 @@
         {/each}
       </tbody>
     </Table>
-
-    {#if totalUsers > usersPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{usersPage}"
-          num_items="{totalUsers}"
-          per_page="{usersPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
+    <TableFooter
+      bind:current="{usersPage}"
+      num_items="{totalUsers}"
+      per_page="{usersPageLimit}"
+      on:navigate="{changePage}"
+    />
   </TableContainer>
 
   {#if showCreateUser}

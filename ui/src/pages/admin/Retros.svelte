@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
@@ -13,6 +12,7 @@
   import HollowButton from '../../components/global/HollowButton.svelte';
   import TableContainer from '../../components/global/table/TableContainer.svelte';
   import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableFooter from '../../components/global/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -132,16 +132,11 @@
         {/each}
       </tbody>
     </Table>
-
-    {#if retroCount > retrosPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{retrosPage}"
-          num_items="{retroCount}"
-          per_page="{retrosPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
+    <TableFooter
+      bind:current="{retrosPage}"
+      num_items="{retroCount}"
+      per_page="{retrosPageLimit}"
+      on:navigate="{changePage}"
+    />
   </TableContainer>
 </AdminPageLayout>

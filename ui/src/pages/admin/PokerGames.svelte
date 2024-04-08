@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
@@ -13,6 +12,7 @@
   import Table from '../../components/global/table/Table.svelte';
   import TableContainer from '../../components/global/table/TableContainer.svelte';
   import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableFooter from '../../components/global/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -152,16 +152,11 @@
         {/each}
       </tbody>
     </Table>
-
-    {#if battleCount > battlesPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{battlesPage}"
-          num_items="{battleCount}"
-          per_page="{battlesPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
+    <TableFooter
+      bind:current="{battlesPage}"
+      num_items="{battleCount}"
+      per_page="{battlesPageLimit}"
+      on:navigate="{changePage}"
+    />
   </TableContainer>
 </AdminPageLayout>
