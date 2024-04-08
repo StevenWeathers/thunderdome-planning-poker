@@ -9,6 +9,8 @@
   import NavUserMenu from './NavUserMenu.svelte';
   import ArrowRight from '../icons/ArrowRight.svelte';
   import LocaleMenu from './LocaleMenu.svelte';
+  import DomeLogo from './DomeLogo.svelte';
+  import DomeLogoLight from './DomeLogoLight.svelte';
 
   export let xfetch;
   export let router;
@@ -81,11 +83,9 @@
     <div class="flex flex-wrap justify-between mx-auto max-w-screen-2xl">
       <div class="content-center py-2 lg:py-3">
         <a href="{appRoutes.landing}" class="block">
-          <img
-            src="{PathPrefix}/img/logo.svg"
-            alt="Thunderdome"
-            class="max-h-10 lg:max-h-[3.5rem]"
-          />
+          <span class="sr-only">Thunderdome</span>
+          <DomeLogo class="hidden dark:block max-h-10 lg:max-h-[3.5rem]" />
+          <DomeLogoLight class="dark:hidden max-h-10 lg:max-h-[3.5rem]" />
         </a>
       </div>
 
