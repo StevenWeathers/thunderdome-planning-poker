@@ -181,6 +181,7 @@
         createBtnEnabled="{isAdmin}"
         createBtnText="{$LL.teamCreate()}"
         createButtonHandler="{toggleCreateTeam}"
+        createBtnTestId="team-create"
       />
       <Table>
         <tr slot="header">

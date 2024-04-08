@@ -128,6 +128,7 @@
           title="{$LL.organizations()}"
           createBtnText="{$LL.organizationCreate()}"
           createButtonHandler="{toggleCreateOrganization}"
+          createBtnTestId="organization-create"
         />
         <Table>
           <tr slot="header">
@@ -171,6 +172,7 @@
       title="{$LL.teams()}"
       createBtnText="{$LL.teamCreate()}"
       createButtonHandler="{toggleCreateTeam}"
+      createBtnTestId="team-create"
     />
     <Table>
       <tr slot="header">

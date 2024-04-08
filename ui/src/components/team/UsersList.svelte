@@ -107,6 +107,7 @@
       createBtnEnabled="{isAdmin}"
       createBtnText="{$LL.userAdd()}"
       createButtonHandler="{toggleAddUser}"
+      createBtnTestId="user-add"
     />
     <Table>
       <tr slot="header">
