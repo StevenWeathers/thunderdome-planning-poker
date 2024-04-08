@@ -19,10 +19,14 @@ test.describe("Teams page", () => {
       await teamsPage.goto();
 
       await expect(
-        teamsPage.page.locator("h2", { hasText: "Organizations" }),
+        teamsPage.page.locator('[data-testid="tablenav-title"]', {
+          hasText: "Organizations",
+        }),
       ).toBeVisible();
       await expect(
-        teamsPage.page.locator("h2", { hasText: "Teams" }),
+        teamsPage.page.locator('[data-testid="tablenav-title"]', {
+          hasText: "Teams",
+        }),
       ).toBeVisible();
     });
 
@@ -38,13 +42,19 @@ test.describe("Teams page", () => {
         });
 
         await expect(
-          teamsPage.page.locator("h2", { hasText: "Departments" }),
+          teamsPage.page.locator('[data-testid="tablenav-title"]', {
+            hasText: "Departments",
+          }),
         ).toBeVisible();
         await expect(
-          teamsPage.page.locator("h2", { hasText: "Teams" }),
+          teamsPage.page.locator('[data-testid="tablenav-title"]', {
+            hasText: "Teams",
+          }),
         ).toBeVisible();
         await expect(
-          teamsPage.page.locator("h2", { hasText: "Users" }),
+          teamsPage.page.locator('[data-testid="tablenav-title"]', {
+            hasText: "Users",
+          }),
         ).toBeVisible();
       });
     });
@@ -68,7 +78,9 @@ test.describe("Teams page", () => {
           teamsPage.page.locator("h2", { hasText: "Storyboards" }),
         ).toBeVisible();
         await expect(
-          teamsPage.page.locator("h2", { hasText: "Users" }),
+          teamsPage.page.locator('[data-testid="tablenav-title"]', {
+            hasText: "Users",
+          }),
         ).toBeVisible();
       });
     });

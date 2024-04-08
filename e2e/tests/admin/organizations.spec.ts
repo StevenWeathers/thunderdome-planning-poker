@@ -45,7 +45,7 @@ test.describe("The Admin Organizations Page", () => {
 
       await ap.goto();
 
-      const title = ap.page.locator("h1");
+      const title = ap.page.locator('[data-testid="tablenav-title"]');
       await expect(title).toHaveText("Organizations");
     });
   });

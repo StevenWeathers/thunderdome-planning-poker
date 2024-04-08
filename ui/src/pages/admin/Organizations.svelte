@@ -4,12 +4,14 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
-  import Table from '../../components/global/table/Table.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableFooter from '../../components/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -84,15 +86,8 @@
 </svelte:head>
 
 <AdminPageLayout activePage="organizations">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.organizations()}
-    </h1>
-  </div>
-
-  <div class="w-full">
+  <TableContainer>
+    <TableNav title="{$LL.organizations()}" createBtnEnabled="{false}" />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -125,16 +120,11 @@
         {/each}
       </tbody>
     </Table>
-
-    {#if appStats.organizationCount > organizationsPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{organizationsPage}"
-          num_items="{appStats.organizationCount}"
-          per_page="{organizationsPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
-  </div>
+    <TableFooter
+      bind:current="{organizationsPage}"
+      num_items="{appStats.organizationCount}"
+      per_page="{organizationsPageLimit}"
+      on:navigate="{changePage}"
+    />
+  </TableContainer>
 </AdminPageLayout>

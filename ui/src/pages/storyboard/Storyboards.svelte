@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import { user } from '../../stores';
   import { appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';

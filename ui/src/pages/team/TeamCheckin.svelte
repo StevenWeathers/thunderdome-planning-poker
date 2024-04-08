@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import Sockette from 'sockette';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import Checkin from '../../components/checkin/Checkin.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
@@ -21,7 +21,7 @@
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import BlockedPing from '../../components/checkin/BlockedPing.svelte';
   import EditIcon from '../../components/icons/EditIcon.svelte';
-  import Picker from '../../components/global/timezone-picker/Picker.svelte';
+  import Picker from '../../components/timezone-picker/Picker.svelte';
 
   export let xfetch;
   export let router;
