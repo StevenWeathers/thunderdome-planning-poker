@@ -20,8 +20,12 @@
         href="{appRoutes.landing}"
         class="hidden md:inline-block flex items-center mb-4 md:mb-0 space-x-3 rtl:space-x-reverse"
       >
-        <FullLogoVertical class="hidden h-8 lg:h-12 dark:block" />
-        <FullLogoVerticalDarkText class="h-8 lg:h-12 dark:hidden" />
+        <FullLogoVertical
+          class="hidden h-8 lg:h-12 dark:block grayscale hover:grayscale-0"
+        />
+        <FullLogoVerticalDarkText
+          class="h-8 lg:h-12 dark:hidden grayscale hover:grayscale-0"
+        />
       </a>
       <ul
         class="text-sm md:text-base flex flex-wrap items-center mb-6 font-medium text-gray-500 md:mb-0 dark:text-gray-400"
