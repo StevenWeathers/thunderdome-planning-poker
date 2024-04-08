@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
 
   import PageLayout from '../../components/PageLayout.svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
@@ -17,6 +16,7 @@
   import UsersList from '../../components/team/UsersList.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -217,12 +217,10 @@
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin}
-                  <HollowButton
-                    onClick="{toggleDeleteTeam(team.id)}"
-                    color="red"
-                  >
-                    {$LL.delete()}
-                  </HollowButton>
+                  <CrudActions
+                    editBtnEnabled="{false}"
+                    deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                  />
                 {/if}
               </RowCol>
             </TableRow>

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
   import { activeAlerts, user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
@@ -16,6 +15,7 @@
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -209,12 +209,10 @@
               {new Date(alert.updatedDate).toLocaleString()}
             </RowCol>
             <RowCol type="action">
-              <HollowButton onClick="{toggleUpdateAlert(alert)}" color="blue">
-                {$LL.edit()}
-              </HollowButton>
-              <HollowButton onClick="{toggleDeleteAlert(alert.id)}" color="red">
-                {$LL.delete()}
-              </HollowButton>
+              <CrudActions
+                editBtnClickHandler="{toggleUpdateAlert(alert)}"
+                deleteBtnClickHandler="{toggleDeleteAlert(alert.id)}"
+              />
             </RowCol>
           </TableRow>
         {/each}

@@ -18,6 +18,7 @@
   import UsersList from '../../components/team/UsersList.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -283,12 +284,12 @@
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin}
-                  <HollowButton
-                    onClick="{toggleDeleteDepartment(department.id)}"
-                    color="red"
-                  >
-                    {$LL.delete()}
-                  </HollowButton>
+                  <CrudActions
+                    editBtnEnabled="{false}"
+                    deleteBtnClickHandler="{toggleDeleteDepartment(
+                      department.id,
+                    )}"
+                  />
                 {/if}
               </RowCol>
             </TableRow>
@@ -341,12 +342,10 @@
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin}
-                  <HollowButton
-                    onClick="{toggleDeleteTeam(team.id)}"
-                    color="red"
-                  >
-                    {$LL.delete()}
-                  </HollowButton>
+                  <CrudActions
+                    editBtnEnabled="{false}"
+                    deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                  />
                 {/if}
               </RowCol>
             </TableRow>

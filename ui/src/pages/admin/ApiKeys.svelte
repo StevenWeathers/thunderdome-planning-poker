@@ -14,6 +14,7 @@
   import TableNav from '../../components/table/TableNav.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -177,28 +178,27 @@
             <RowCol>
               {new Date(apikey.updatedDate).toLocaleString()}
             </RowCol>
-            <RowCol>
-              <HollowButton
-                onClick="{toggleApiKeyActiveStatus(
-                  apikey.userId,
-                  apikey.id,
-                  apikey.active,
-                )}"
-                testid="apikey-activetoggle"
+            <RowCol type="action">
+              <CrudActions
+                editBtnEnabled="{false}"
+                deleteBtnClickHandler="{deleteApiKey(apikey.userId, apikey.id)}"
+                deleteBtnTestId="apikey-delete"
               >
-                {#if !apikey.active}
-                  {$LL.activate()}
-                {:else}
-                  {$LL.deactivate()}
-                {/if}
-              </HollowButton>
-              <HollowButton
-                color="red"
-                onClick="{deleteApiKey(apikey.userId, apikey.id)}"
-                testid="apikey-delete"
-              >
-                {$LL.delete()}
-              </HollowButton>
+                <HollowButton
+                  onClick="{toggleApiKeyActiveStatus(
+                    apikey.userId,
+                    apikey.id,
+                    apikey.active,
+                  )}"
+                  testid="apikey-activetoggle"
+                >
+                  {#if !apikey.active}
+                    {$LL.activate()}
+                  {:else}
+                    {$LL.deactivate()}
+                  {/if}
+                </HollowButton>
+              </CrudActions>
             </RowCol>
           </TableRow>
         {/each}

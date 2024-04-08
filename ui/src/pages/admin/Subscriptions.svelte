@@ -12,10 +12,10 @@
   import AdminPageLayout from '../../components/AdminPageLayout.svelte';
   import SubscriptionForm from '../../components/subscription/SubscriptionForm.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -172,23 +172,11 @@
               {new Date(subscription.expires).toLocaleString()}
             </RowCol>
             <RowCol type="action">
-              <a
-                href="{appRoutes.adminSubscriptions}/{subscription.id}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >Details</a
-              >
-              <HollowButton
-                onClick="{toggleSubUpdate(subscription)}"
-                color="blue"
-              >
-                {$LL.edit()}
-              </HollowButton>
-              <HollowButton
-                onClick="{toggleSubDelete(subscription.id)}"
-                color="red"
-              >
-                {$LL.delete()}
-              </HollowButton>
+              <CrudActions
+                detailsLink="{appRoutes.adminSubscriptions}/{subscription.id}"
+                editBtnClickHandler="{toggleSubUpdate(subscription)}"
+                deleteBtnClickHandler="{toggleSubDelete(subscription.id)}"
+              />
             </RowCol>
           </TableRow>
         {/each}

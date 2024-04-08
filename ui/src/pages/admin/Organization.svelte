@@ -17,6 +17,7 @@
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -233,12 +234,12 @@
                 {new Date(department.updatedDate).toLocaleString()}
               </RowCol>
               <RowCol type="action">
-                <HollowButton
-                  onClick="{toggleDeleteDepartment(department.id)}"
-                  color="red"
-                >
-                  {$LL.delete()}
-                </HollowButton>
+                <CrudActions
+                  editBtnEnabled="{false}"
+                  deleteBtnClickHandler="{toggleDeleteDepartment(
+                    department.id,
+                  )}"
+                />
               </RowCol>
             </TableRow>
           {/each}
@@ -283,9 +284,10 @@
                 {new Date(team.updatedDate).toLocaleString()}
               </RowCol>
               <RowCol type="action">
-                <HollowButton onClick="{toggleDeleteTeam(team.id)}" color="red">
-                  {$LL.delete()}
-                </HollowButton>
+                <CrudActions
+                  editBtnEnabled="{false}"
+                  deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                />
               </RowCol>
             </TableRow>
           {/each}

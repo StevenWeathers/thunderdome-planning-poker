@@ -7,12 +7,12 @@
   import LL from '../../i18n/i18n-svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
   import AddUser from '../../components/team/AddUser.svelte';
   import UpdateUser from '../../components/team/UpdateUser.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import TableContainer from '../table/TableContainer.svelte';
   import TableNav from '../table/TableNav.svelte';
+  import CrudActions from '../table/CrudActions.svelte';
 
   export let xfetch;
   export let notifications;
@@ -165,12 +165,10 @@
             </RowCol>
             <RowCol type="action">
               {#if isAdmin}
-                <HollowButton onClick="{toggleUpdateUser(user)}" color="blue">
-                  {$LL.edit()}
-                </HollowButton>
-                <HollowButton onClick="{toggleRemoveUser(user.id)}" color="red">
-                  {$LL.remove()}
-                </HollowButton>
+                <CrudActions
+                  editBtnClickHandler="{toggleUpdateUser(user)}"
+                  deleteBtnClickHandler="{toggleRemoveUser(user.id)}"
+                />
               {/if}
             </RowCol>
           </TableRow>

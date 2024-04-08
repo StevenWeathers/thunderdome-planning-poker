@@ -14,9 +14,9 @@
   import HeadCol from '../../components/table/HeadCol.svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
   import Table from '../../components/table/Table.svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -183,9 +183,10 @@
                 {new Date(team.updatedDate).toLocaleString()}
               </RowCol>
               <RowCol type="action">
-                <HollowButton onClick="{toggleDeleteTeam(team.id)}" color="red">
-                  {$LL.delete()}
-                </HollowButton>
+                <CrudActions
+                  editBtnEnabled="{false}"
+                  deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                />
               </RowCol>
             </TableRow>
           {/each}

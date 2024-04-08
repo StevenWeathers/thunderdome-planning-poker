@@ -20,6 +20,7 @@
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableFooter from '../../components/table/TableFooter.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -308,30 +309,29 @@
               <span class="text-gray-500 dark:text-gray-300">{user.rank}</span>
             </RowCol>
             <RowCol type="action">
-              {#if user.rank !== 'ADMIN'}
-                <HollowButton onClick="{promoteUser(user.id)}" color="blue">
-                  {$LL.promote()}
-                </HollowButton>
-              {:else}
-                <HollowButton onClick="{demoteUser(user.id)}" color="blue">
-                  {$LL.demote()}
-                </HollowButton>
-              {/if}
-              {#if !user.disabled}
-                <HollowButton onClick="{disableUser(user.id)}" color="orange">
-                  Disable
-                </HollowButton>
-              {:else}
-                <HollowButton onClick="{enableUser(user.id)}" color="teal">
-                  Enable
-                </HollowButton>
-              {/if}
-              <HollowButton color="green" onClick="{toggleUserEdit(user)}">
-                {$LL.edit()}
-              </HollowButton>
-              <HollowButton color="red" onClick="{toggleDeleteUser(user.id)}">
-                {$LL.delete()}
-              </HollowButton>
+              <CrudActions
+                editBtnClickHandler="{toggleUserEdit(user)}"
+                deleteBtnClickHandler="{toggleDeleteUser(user.id)}"
+              >
+                {#if user.rank !== 'ADMIN'}
+                  <HollowButton onClick="{promoteUser(user.id)}" color="blue">
+                    {$LL.promote()}
+                  </HollowButton>
+                {:else}
+                  <HollowButton onClick="{demoteUser(user.id)}" color="blue">
+                    {$LL.demote()}
+                  </HollowButton>
+                {/if}
+                {#if !user.disabled}
+                  <HollowButton onClick="{disableUser(user.id)}" color="orange">
+                    Disable
+                  </HollowButton>
+                {:else}
+                  <HollowButton onClick="{enableUser(user.id)}" color="teal">
+                    Enable
+                  </HollowButton>
+                {/if}
+              </CrudActions>
             </RowCol>
           </TableRow>
         {/each}
