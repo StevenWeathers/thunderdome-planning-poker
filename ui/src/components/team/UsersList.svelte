@@ -1,17 +1,18 @@
 <script lang="ts">
-  import Table from '../../components/global/table/Table.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
+  import Table from '../table/Table.svelte';
+  import HeadCol from '../table/HeadCol.svelte';
+  import TableRow from '../table/TableRow.svelte';
+  import RowCol from '../table/RowCol.svelte';
 
   import LL from '../../i18n/i18n-svelte';
-  import SolidButton from '../../components/global/SolidButton.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
   import AddUser from '../../components/team/AddUser.svelte';
   import UpdateUser from '../../components/team/UpdateUser.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
+  import TableContainer from '../table/TableContainer.svelte';
+  import TableNav from '../table/TableNav.svelte';
+  import CrudActions from '../table/CrudActions.svelte';
 
   export let xfetch;
   export let notifications;
@@ -100,119 +101,107 @@
 </script>
 
 <div class="w-full">
-  <div class="flex w-full">
-    <div class="w-4/5">
-      <h2
-        class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-      >
-        {$LL.users()}
-      </h2>
-    </div>
-    <div class="w-1/5">
-      <div class="text-right">
-        {#if isAdmin}
-          <SolidButton onClick="{toggleAddUser}" testid="user-add">
-            {$LL.userAdd()}
-          </SolidButton>
-        {/if}
-      </div>
-    </div>
-  </div>
-
-  <Table>
-    <tr slot="header">
-      <HeadCol>
-        {$LL.name()}
-      </HeadCol>
-      <HeadCol>
-        {$LL.email()}
-      </HeadCol>
-      <HeadCol>
-        {$LL.role()}
-      </HeadCol>
-      <HeadCol type="action">
-        <span class="sr-only">{$LL.actions()}</span>
-      </HeadCol>
-    </tr>
-    <tbody slot="body" let:class="{className}" class="{className}">
-      {#each users as user, i}
-        <TableRow itemIndex="{i}">
-          <RowCol>
-            <div class="flex items-center">
-              <div class="flex-shrink-0 h-10 w-10">
-                <UserAvatar
-                  warriorId="{user.id}"
-                  avatar="{user.avatar}"
-                  gravatarHash="{user.gravatarHash}"
-                  userName="{user.name}"
-                  width="48"
-                  class="h-10 w-10 rounded-full"
-                />
-              </div>
-              <div class="ms-4">
-                <div class="font-medium text-gray-900 dark:text-gray-200">
-                  <span data-testid="user-name">{user.name}</span>
-                  {#if user.country}
-                    &nbsp;
-                    <CountryFlag
-                      country="{user.country}"
-                      additionalClass="inline-block"
-                      width="32"
-                      height="24"
-                    />
-                  {/if}
+  <TableContainer>
+    <TableNav
+      title="{$LL.users()}"
+      createBtnEnabled="{isAdmin}"
+      createBtnText="{$LL.userAdd()}"
+      createButtonHandler="{toggleAddUser}"
+      createBtnTestId="user-add"
+    />
+    <Table>
+      <tr slot="header">
+        <HeadCol>
+          {$LL.name()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.email()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.role()}
+        </HeadCol>
+        <HeadCol type="action">
+          <span class="sr-only">{$LL.actions()}</span>
+        </HeadCol>
+      </tr>
+      <tbody slot="body" let:class="{className}" class="{className}">
+        {#each users as user, i}
+          <TableRow itemIndex="{i}">
+            <RowCol>
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <UserAvatar
+                    warriorId="{user.id}"
+                    avatar="{user.avatar}"
+                    gravatarHash="{user.gravatarHash}"
+                    userName="{user.name}"
+                    width="48"
+                    class="h-10 w-10 rounded-full"
+                  />
+                </div>
+                <div class="ms-4">
+                  <div class="font-medium text-gray-900 dark:text-gray-200">
+                    <span data-testid="user-name">{user.name}</span>
+                    {#if user.country}
+                      &nbsp;
+                      <CountryFlag
+                        country="{user.country}"
+                        additionalClass="inline-block"
+                        width="32"
+                        height="24"
+                      />
+                    {/if}
+                  </div>
                 </div>
               </div>
-            </div>
-          </RowCol>
-          <RowCol>
-            <span data-testid="user-email">{user.email}</span>
-          </RowCol>
-          <RowCol>
-            <div class="text-sm text-gray-500 dark:text-gray-300">
-              {user.role}
-            </div>
-          </RowCol>
-          <RowCol type="action">
-            {#if isAdmin}
-              <HollowButton onClick="{toggleUpdateUser(user)}" color="blue">
-                {$LL.edit()}
-              </HollowButton>
-              <HollowButton onClick="{toggleRemoveUser(user.id)}" color="red">
-                {$LL.remove()}
-              </HollowButton>
-            {/if}
-          </RowCol>
-        </TableRow>
-      {/each}
-    </tbody>
-  </Table>
+            </RowCol>
+            <RowCol>
+              <span data-testid="user-email">{user.email}</span>
+            </RowCol>
+            <RowCol>
+              <div class="text-sm text-gray-500 dark:text-gray-300">
+                {user.role}
+              </div>
+            </RowCol>
+            <RowCol type="action">
+              {#if isAdmin}
+                <CrudActions
+                  editBtnClickHandler="{toggleUpdateUser(user)}"
+                  deleteBtnClickHandler="{toggleRemoveUser(user.id)}"
+                />
+              {/if}
+            </RowCol>
+          </TableRow>
+        {/each}
+      </tbody>
+    </Table>
+  </TableContainer>
+
+  {#if showAddUser}
+    <AddUser
+      toggleAdd="{toggleAddUser}"
+      handleAdd="{handleUserAdd}"
+      pageType="{pageType}"
+    />
+  {/if}
+
+  {#if showUpdateUser}
+    <UpdateUser
+      toggleUpdate="{toggleUpdateUser({})}"
+      handleUpdate="{handleUserUpdate}"
+      userId="{updateUser.id}"
+      userEmail="{updateUser.email}"
+      role="{updateUser.role}"
+    />
+  {/if}
+
+  {#if showRemoveUser}
+    <DeleteConfirmation
+      toggleDelete="{toggleRemoveUser(null)}"
+      handleDelete="{handleUserRemove}"
+      permanent="{false}"
+      confirmText="{$LL.removeUserConfirmText()}"
+      confirmBtnText="{$LL.removeUser()}"
+    />
+  {/if}
 </div>
-
-{#if showAddUser}
-  <AddUser
-    toggleAdd="{toggleAddUser}"
-    handleAdd="{handleUserAdd}"
-    pageType="{pageType}"
-  />
-{/if}
-
-{#if showUpdateUser}
-  <UpdateUser
-    toggleUpdate="{toggleUpdateUser({})}"
-    handleUpdate="{handleUserUpdate}"
-    userId="{updateUser.id}"
-    userEmail="{updateUser.email}"
-    role="{updateUser.role}"
-  />
-{/if}
-
-{#if showRemoveUser}
-  <DeleteConfirmation
-    toggleDelete="{toggleRemoveUser(null)}"
-    handleDelete="{handleUserRemove}"
-    permanent="{false}"
-    confirmText="{$LL.removeUserConfirmText()}"
-    confirmBtnText="{$LL.removeUser()}"
-  />
-{/if}

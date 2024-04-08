@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { AppConfig, appRoutes } from '../../config';
-  import LL from '../../i18n/i18n-svelte';
+  import { AppConfig, appRoutes } from '../config';
+  import LL from '../i18n/i18n-svelte';
 
   export let activePage = 'admin';
 

@@ -3,7 +3,7 @@
 @import 'tailwindcss/utilities';
 
 .font-rajdhani {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Rajdhani', 'Arial Narrow', sans-serif;
 }
 
 ::-webkit-calendar-picker-indicator {
@@ -36,4 +36,18 @@ input[type='search']::-webkit-search-cancel-button {
 
 .toggle-checkbox:checked + .toggle-label {
   background-color: #68d391;
+}
+
+.text-yellow-thunder {
+  color: #ffdd57;
+}
+
+.bg-yellow-thunder {
+  background-color: #ffdd57;
+}
+
+.title-line {
+  width: 10rem;
+  height: 0.25rem;
+  margin-bottom: 0.75rem;
 }

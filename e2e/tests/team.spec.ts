@@ -6,8 +6,8 @@ test.describe("Team page", () => {
     const teamPage = new TeamPage(page);
     await teamPage.goto("bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa");
 
-    const title = teamPage.page.locator('[data-formtitle="login"]');
-    await expect(title).toHaveText("Login");
+    const loginForm = teamPage.page.locator('form[name="login"]');
+    await expect(loginForm).toBeVisible();
   });
 
   test("Registered user loads team page", async ({ registeredPage }) => {

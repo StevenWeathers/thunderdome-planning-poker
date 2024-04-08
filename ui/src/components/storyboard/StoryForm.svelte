@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { quill } from '../../quill';
   import Modal from '../global/Modal.svelte';
   import HollowButton from '../global/HollowButton.svelte';
   import UserIcon from '../icons/UserIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../global/TextInput.svelte';
+  import Editor from '../Editor.svelte';
 
   export let toggleStoryForm = () => {};
   export let sendSocketEvent = () => {};
@@ -279,18 +279,15 @@
             Story Content
           </label>
           <div class="bg-white">
-            <div
-              class="w-full bg-white"
-              use:quill="{{
-                placeholder: 'Enter story content',
-                content: story.content,
-              }}"
-              on:text-change="{e => {
-                story.content = e.detail.html;
+            <Editor
+              content="{story.content}"
+              placeholder="Enter story content"
+              id="storyDescription"
+              handleTextChange="{c => {
+                story.content = c;
                 updateContent();
               }}"
-              id="storyDescription"
-            ></div>
+            />
           </div>
         </div>
         <div class="mb-4">

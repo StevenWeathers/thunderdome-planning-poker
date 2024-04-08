@@ -2,6 +2,8 @@
   import GithubIcon from '../icons/Github.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
+  import FullLogoVertical from './FullLogo.svelte';
+  import FullLogoVerticalDarkText from './FullLogoLight.svelte';
 
   const { AppVersion, RepoURL, PathPrefix } = AppConfig;
   const footerLinkClasses =
@@ -18,10 +20,11 @@
         href="{appRoutes.landing}"
         class="hidden md:inline-block flex items-center mb-4 md:mb-0 space-x-3 rtl:space-x-reverse"
       >
-        <img
-          src="{PathPrefix}/img/logo.svg"
-          class="h-8 lg:h-12 grayscale"
-          alt="Thunderdome Logo"
+        <FullLogoVertical
+          class="hidden h-8 lg:h-12 dark:block grayscale hover:grayscale-0"
+        />
+        <FullLogoVerticalDarkText
+          class="h-8 lg:h-12 dark:hidden grayscale hover:grayscale-0"
         />
       </a>
       <ul

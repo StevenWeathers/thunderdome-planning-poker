@@ -1,16 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import Table from '../../components/global/table/Table.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableFooter from '../../components/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -77,37 +79,33 @@
   <div class="text-center px-2 mb-4">
     <h1
       class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
-    </h1>
+    ></h1>
   </div>
 
-  <div class="w-full">
-    <div class="text-right mb-4">
-      <div
-        class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
-      >
+  <TableContainer>
+    <TableNav
+      title="{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}"
+      createBtnEnabled="{false}"
+    >
+      <label class="inline-flex items-center cursor-pointer">
         <input
           type="checkbox"
+          class="sr-only peer"
           name="activeBattles"
           id="activeBattles"
           bind:checked="{activeBattles}"
           on:change="{changeActiveBattlesToggle}"
-          class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
         />
-        <label
-          for="activeBattles"
-          class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-        >
-        </label>
-      </div>
-      <label for="activeBattles" class="dark:text-gray-300"
-        >{$LL.showActiveBattles({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}</label
-      >
-    </div>
-
+        <div
+          class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+        ></div>
+        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+          {$LL.showActiveBattles({
+            friendly: AppConfig.FriendlyUIVerbs,
+          })}
+        </span>
+      </label>
+    </TableNav>
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -150,16 +148,11 @@
         {/each}
       </tbody>
     </Table>
-
-    {#if battleCount > battlesPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{battlesPage}"
-          num_items="{battleCount}"
-          per_page="{battlesPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
-  </div>
+    <TableFooter
+      bind:current="{battlesPage}"
+      num_items="{battleCount}"
+      per_page="{battlesPageLimit}"
+      on:navigate="{changePage}"
+    />
+  </TableContainer>
 </AdminPageLayout>

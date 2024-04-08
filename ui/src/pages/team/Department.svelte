@@ -1,9 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
-  import SolidButton from '../../components/global/SolidButton.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
@@ -11,11 +9,14 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import Table from '../../components/global/table/Table.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import Table from '../../components/table/Table.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -174,26 +175,14 @@
   </div>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.teams()}
-        </h2>
-      </div>
-      <div class="w-1/5">
-        <div class="text-right">
-          {#if isAdmin}
-            <SolidButton onClick="{toggleCreateTeam}">
-              {$LL.teamCreate()}
-            </SolidButton>
-          {/if}
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav
+        title="{$LL.teams()}"
+        createBtnEnabled="{isAdmin}"
+        createBtnText="{$LL.teamCreate()}"
+        createButtonHandler="{toggleCreateTeam}"
+        createBtnTestId="team-create"
+      />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -228,19 +217,17 @@
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin}
-                  <HollowButton
-                    onClick="{toggleDeleteTeam(team.id)}"
-                    color="red"
-                  >
-                    {$LL.delete()}
-                  </HollowButton>
+                  <CrudActions
+                    editBtnEnabled="{false}"
+                    deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                  />
                 {/if}
               </RowCol>
             </TableRow>
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
   <UsersList

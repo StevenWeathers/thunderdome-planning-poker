@@ -6,8 +6,8 @@ test.describe("Organization Page", () => {
     const orgPage = new OrganizationPage(page);
     await orgPage.goto("bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa");
 
-    const title = orgPage.page.locator('[data-formtitle="login"]');
-    await expect(title).toHaveText("Login");
+    const loginForm = orgPage.page.locator('form[name="login"]');
+    await expect(loginForm).toBeVisible();
   });
 
   test("Registered user loads page successfully", async ({

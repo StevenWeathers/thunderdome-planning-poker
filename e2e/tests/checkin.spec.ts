@@ -7,8 +7,8 @@ test.describe("Team Checkin page", () => {
       const teamPage = new TeamCheckinPage(page);
       await teamPage.goto("bbaf82ef-a2d3-4e9a-b824-5e56a03ac3aa");
 
-      const title = teamPage.page.locator('[data-formtitle="login"]');
-      await expect(title).toHaveText("Login");
+      const loginForm = teamPage.page.locator('form[name="login"]');
+      await expect(loginForm).toBeVisible();
     });
   });
 

@@ -4,16 +4,18 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
-  import Table from '../../components/global/table/Table.svelte';
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
   import SubscriptionForm from '../../components/subscription/SubscriptionForm.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableFooter from '../../components/table/TableFooter.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -114,21 +116,13 @@
 </svelte:head>
 
 <AdminPageLayout activePage="subscriptions">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      Subscriptions
-    </h1>
-  </div>
-
-  <div class="w-full">
-    <div class="text-right mb-4">
-      <HollowButton onClick="{toggleSubCreate}">
-        Create Subscription
-      </HollowButton>
-    </div>
-
+  <TableContainer>
+    <TableNav
+      title="Subscriptions"
+      createBtnText="Create Subscription"
+      createButtonHandler="{toggleSubCreate}"
+      createBtnTestId="subscription-create"
+    />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -178,39 +172,22 @@
               {new Date(subscription.expires).toLocaleString()}
             </RowCol>
             <RowCol type="action">
-              <a
-                href="{appRoutes.adminSubscriptions}/{subscription.id}"
-                class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                >Details</a
-              >
-              <HollowButton
-                onClick="{toggleSubUpdate(subscription)}"
-                color="blue"
-              >
-                {$LL.edit()}
-              </HollowButton>
-              <HollowButton
-                onClick="{toggleSubDelete(subscription.id)}"
-                color="red"
-              >
-                {$LL.delete()}
-              </HollowButton>
+              <CrudActions
+                detailsLink="{appRoutes.adminSubscriptions}/{subscription.id}"
+                editBtnClickHandler="{toggleSubUpdate(subscription)}"
+                deleteBtnClickHandler="{toggleSubDelete(subscription.id)}"
+              />
             </RowCol>
           </TableRow>
         {/each}
       </tbody>
     </Table>
-
-    {#if subscriptionCount > subscriptionsPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{subscriptionsPage}"
-          num_items="{subscriptionCount}"
-          per_page="{subscriptionsPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
+    <TableFooter
+      bind:current="{subscriptionsPage}"
+      num_items="{subscriptionCount}"
+      per_page="{subscriptionsPageLimit}"
+      on:navigate="{changePage}"
+    />
 
     {#if showSubCreate}
       <SubscriptionForm
@@ -247,5 +224,5 @@
         confirmBtnText="{$LL.deleteSubscription()}"
       />
     {/if}
-  </div>
+  </TableContainer>
 </AdminPageLayout>
