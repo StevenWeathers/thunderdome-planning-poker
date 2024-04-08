@@ -7,6 +7,7 @@
   import LL from '../../i18n/i18n-svelte';
   import CreateStoryboard from '../../components/storyboard/CreateStoryboard.svelte';
   import BoxList from '../../components/BoxList.svelte';
+  import TourBanner from '../../components/tour/TourBanner.svelte';
   import Pagination from '../../components/global/Pagination.svelte';
 
   export let xfetch;
@@ -41,6 +42,122 @@
     getStoryboards();
   };
 
+  const tourSteps = [
+    {
+      title: 'Creating a Storyboard',
+      text: 'A storyboard can be used for Agile Story Mapping exercises with features like goals, columns, and stories.',
+      attachTo: {
+        element: '[data-tourid="storyboard_create"]',
+        on: 'left',
+      },
+      buttons: [
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
+        },
+      ],
+      id: 'creating_storyboard',
+    },
+    {
+      title: 'Give the storyboard a name',
+      text: 'A storyboard name can be anything that helps you organize and identify your storyboards, such as a project name.',
+      attachTo: {
+        element: '#storyboardName',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          action() {
+            return this.back();
+          },
+          classes: 'shepherd-button-secondary',
+          text: 'Back',
+        },
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
+        },
+      ],
+      id: 'storyboard_name',
+    },
+    {
+      title: 'Associate storyboard to a Team',
+      text: 'A storyboard can be associated to a Team, this makes it easy to find storyboards the team collaborates.',
+      attachTo: {
+        element: '#selectedTeam',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          action() {
+            return this.back();
+          },
+          classes: 'shepherd-button-secondary',
+          text: 'Back',
+        },
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
+        },
+      ],
+      id: 'associated_team',
+    },
+    {
+      title: 'Set an optional join code',
+      text: 'While storyboards are accessed through randomly generated unique IDs you can add an extra layer of security by setting the optional join code to any word or phrase you want.',
+      attachTo: {
+        element: '#joinCode',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          action() {
+            return this.back();
+          },
+          classes: 'shepherd-button-secondary',
+          text: 'Back',
+        },
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
+        },
+      ],
+      id: 'join_code',
+    },
+    {
+      title: 'Set an optional facilitator code',
+      text: 'Enter an optional facilitator code to make it easy for your storyboard collaborators to take control in your absence.',
+      attachTo: {
+        element: '#facilitatorCode',
+        on: 'bottom',
+      },
+      buttons: [
+        {
+          action() {
+            return this.back();
+          },
+          classes: 'shepherd-button-secondary',
+          text: 'Back',
+        },
+        {
+          action() {
+            return this.next();
+          },
+          text: 'Next',
+        },
+      ],
+      id: 'facilitator_code',
+    },
+  ];
+
   onMount(() => {
     if (!$user.id) {
       router.route(appRoutes.login);
@@ -54,6 +171,7 @@
 </svelte:head>
 
 <PageLayout>
+  <TourBanner steps="{tourSteps}" />
   <h1
     class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
   >
@@ -85,6 +203,7 @@
     <div class="w-full md:w-1/2 lg:w-2/5 md:ps-2 xl:ps-4">
       <div
         class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg dark:text-white"
+        data-tourid="storyboard_create"
       >
         <h2
           class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"

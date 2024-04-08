@@ -123,6 +123,7 @@
       for="joinCode"
     >
       {$LL.passCode()}
+      {$LL.optional()}
     </label>
     <div class="control">
       <TextInput
