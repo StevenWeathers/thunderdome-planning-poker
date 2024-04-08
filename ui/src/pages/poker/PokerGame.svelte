@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import Sockette from 'sockette';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import PointCard from '../../components/poker/PointCard.svelte';
   import PokerStories from '../../components/poker/PokerStories.svelte';
   import VoteResults from '../../components/poker/VoteResults.svelte';

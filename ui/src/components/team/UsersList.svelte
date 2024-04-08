@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Table from '../../components/global/table/Table.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
+  import Table from '../table/Table.svelte';
+  import HeadCol from '../table/HeadCol.svelte';
+  import TableRow from '../table/TableRow.svelte';
+  import RowCol from '../table/RowCol.svelte';
 
   import LL from '../../i18n/i18n-svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
@@ -11,8 +11,8 @@
   import AddUser from '../../components/team/AddUser.svelte';
   import UpdateUser from '../../components/team/UpdateUser.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
-  import TableContainer from '../global/table/TableContainer.svelte';
-  import TableNav from '../global/table/TableNav.svelte';
+  import TableContainer from '../table/TableContainer.svelte';
+  import TableNav from '../table/TableNav.svelte';
 
   export let xfetch;
   export let notifications;

@@ -1,19 +1,19 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import CreateOrganization from '../../components/team/CreateOrganization.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import Table from '../../components/global/table/Table.svelte';
-  import TableNav from '../../components/global/table/TableNav.svelte';
-  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
 
   export let xfetch;
   export let router;

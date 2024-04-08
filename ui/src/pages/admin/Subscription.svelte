@@ -4,14 +4,14 @@
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
-  import Table from '../../components/global/table/Table.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import Table from '../../components/table/Table.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
-  import TableNav from '../../components/global/table/TableNav.svelte';
-  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
 
   const { FeaturePoker, FeatureRetro, FeatureStoryboard } = AppConfig;
 

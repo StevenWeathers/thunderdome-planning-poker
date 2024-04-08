@@ -5,17 +5,17 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import CreateAlert from '../../components/alert/CreateAlert.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
-  import Table from '../../components/global/table/Table.svelte';
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
-  import TableContainer from '../../components/global/table/TableContainer.svelte';
-  import TableNav from '../../components/global/table/TableNav.svelte';
-  import TableFooter from '../../components/global/table/TableFooter.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableFooter from '../../components/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;

@@ -7,15 +7,15 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import Table from '../../components/global/table/Table.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
   import DeleteStoryboard from '../../components/storyboard/DeleteStoryboard.svelte';
-  import TableNav from '../../components/global/table/TableNav.svelte';
-  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
 
   export let xfetch;
   export let router;

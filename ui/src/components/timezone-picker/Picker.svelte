@@ -13,7 +13,7 @@
     uid,
     ungroup,
   } from './utils';
-  import TextInput from '../TextInput.svelte';
+  import TextInput from '../global/TextInput.svelte';
 
   // ***** Public API *****
 

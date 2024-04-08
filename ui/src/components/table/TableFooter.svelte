@@ -1,6 +1,6 @@
 <script lang="ts">
-  import ChevronLeft from '../../icons/ChevronLeft.svelte';
-  import ChevronRight from '../../icons/ChevronRight.svelte';
+  import ChevronLeft from '../icons/ChevronLeft.svelte';
+  import ChevronRight from '../icons/ChevronRight.svelte';
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();

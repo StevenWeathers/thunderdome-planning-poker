@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import UpdatePasswordForm from '../../components/user/UpdatePasswordForm.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import { validatePasswords } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';

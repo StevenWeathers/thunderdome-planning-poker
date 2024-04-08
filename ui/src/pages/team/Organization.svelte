@@ -1,23 +1,23 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import Table from '../../components/global/table/Table.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import Table from '../../components/table/Table.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
   import CreateDepartment from '../../components/team/CreateDepartment.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
-  import TableContainer from '../../components/global/table/TableContainer.svelte';
-  import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
 
   export let xfetch;
   export let router;
