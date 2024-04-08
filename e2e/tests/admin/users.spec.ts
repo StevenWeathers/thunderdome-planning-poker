@@ -45,8 +45,8 @@ test.describe("The Admin Users Page", () => {
 
       await ap.goto();
 
-      const title = ap.page.locator("h1");
-      await expect(title).toHaveText("Users");
+      const title = ap.page.locator('[data-testid="tablenav-title"]');
+      await expect(title).toHaveText("Registered Users");
     });
   });
 });

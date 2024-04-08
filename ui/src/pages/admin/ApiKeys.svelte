@@ -4,14 +4,17 @@
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import Table from '../../components/global/table/Table.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableFooter from '../../components/table/TableFooter.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -121,15 +124,8 @@
 </svelte:head>
 
 <AdminPageLayout activePage="apikeys">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.apiKeys()}
-    </h1>
-  </div>
-
-  <div class="w-full">
+  <TableContainer>
+    <TableNav title="{$LL.apiKeys()}" createBtnEnabled="{false}" />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -182,43 +178,37 @@
             <RowCol>
               {new Date(apikey.updatedDate).toLocaleString()}
             </RowCol>
-            <RowCol>
-              <HollowButton
-                onClick="{toggleApiKeyActiveStatus(
-                  apikey.userId,
-                  apikey.id,
-                  apikey.active,
-                )}"
-                testid="apikey-activetoggle"
+            <RowCol type="action">
+              <CrudActions
+                editBtnEnabled="{false}"
+                deleteBtnClickHandler="{deleteApiKey(apikey.userId, apikey.id)}"
+                deleteBtnTestId="apikey-delete"
               >
-                {#if !apikey.active}
-                  {$LL.activate()}
-                {:else}
-                  {$LL.deactivate()}
-                {/if}
-              </HollowButton>
-              <HollowButton
-                color="red"
-                onClick="{deleteApiKey(apikey.userId, apikey.id)}"
-                testid="apikey-delete"
-              >
-                {$LL.delete()}
-              </HollowButton>
+                <HollowButton
+                  onClick="{toggleApiKeyActiveStatus(
+                    apikey.userId,
+                    apikey.id,
+                    apikey.active,
+                  )}"
+                  testid="apikey-activetoggle"
+                >
+                  {#if !apikey.active}
+                    {$LL.activate()}
+                  {:else}
+                    {$LL.deactivate()}
+                  {/if}
+                </HollowButton>
+              </CrudActions>
             </RowCol>
           </TableRow>
         {/each}
       </tbody>
     </Table>
-
-    {#if appStats.apikeyCount > apikeysPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{apikeysPage}"
-          num_items="{appStats.apikeyCount}"
-          per_page="{apikeysPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
-  </div>
+    <TableFooter
+      bind:current="{apikeysPage}"
+      num_items="{appStats.apikeyCount}"
+      per_page="{apikeysPageLimit}"
+      on:navigate="{changePage}"
+    />
+  </TableContainer>
 </AdminPageLayout>

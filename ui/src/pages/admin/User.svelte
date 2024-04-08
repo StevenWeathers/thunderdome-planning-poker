@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import VerifiedIcon from '../../components/icons/VerifiedIcon.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import UpdatePasswordForm from '../../components/user/UpdatePasswordForm.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
@@ -10,13 +9,16 @@
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import Table from '../../components/global/table/Table.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableFooter from '../../components/table/TableFooter.svelte';
 
   export let xfetch;
   export let router;
@@ -179,25 +181,13 @@
 </svelte:head>
 
 <AdminPageLayout activePage="users">
-  <div class="w-full">
-    <div class="flex px-4 md:px-6">
-      <div class="flex-1">
-        <h1
-          class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
-        >
-          {userDetails.name}
-        </h1>
-      </div>
-      <div class="flex-1 text-right">
+  <div class="mb-6 lg:mb-8">
+    <TableContainer>
+      <TableNav title="{userDetails.name}" createBtnEnabled="{false}">
         <SolidButton onClick="{toggleUpdatePassword}"
           >{$LL.updatePassword()}</SolidButton
         >
-      </div>
-    </div>
-  </div>
-
-  <div class="w-full">
-    <div class="p-4 md:p-6">
+      </TableNav>
       <Table>
         <tr slot="header">
           <HeadCol />
@@ -270,16 +260,16 @@
           </TableRow>
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
+  </div>
 
-    {#if FeaturePoker}
-      <div class="p-4 md:p-6">
-        <h4
-          class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-        >
-          {$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
-        </h4>
-
+  {#if FeaturePoker}
+    <div class="mb-6 lg:mb-8">
+      <TableContainer>
+        <TableNav
+          title="{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}"
+          createBtnEnabled="{false}"
+        />
         <Table>
           <tr slot="header">
             <HeadCol>
@@ -322,28 +312,20 @@
             {/each}
           </tbody>
         </Table>
+        <TableFooter
+          bind:current="{battlesPage}"
+          num_items="{battleCount}"
+          per_page="{battlesPageLimit}"
+          on:navigate="{changeBattlesPage}"
+        />
+      </TableContainer>
+    </div>
+  {/if}
 
-        {#if battleCount > battlesPageLimit}
-          <div class="pt-6 flex justify-center">
-            <Pagination
-              bind:current="{battlesPage}"
-              num_items="{battleCount}"
-              per_page="{battlesPageLimit}"
-              on:navigate="{changeBattlesPage}"
-            />
-          </div>
-        {/if}
-      </div>
-    {/if}
-
-    {#if FeatureRetro}
-      <div class="p-4 md:p-6">
-        <h4
-          class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-        >
-          {$LL.retros()}
-        </h4>
-
+  {#if FeatureRetro}
+    <div class="mb-6 lg:mb-8">
+      <TableContainer>
+        <TableNav title="{$LL.retros()}" createBtnEnabled="{false}" />
         <Table>
           <tr slot="header">
             <HeadCol>
@@ -384,28 +366,20 @@
             {/each}
           </tbody>
         </Table>
+        <TableFooter
+          bind:current="{retrosPage}"
+          num_items="{retroCount}"
+          per_page="{retrosPageLimit}"
+          on:navigate="{changeRetrosPage}"
+        />
+      </TableContainer>
+    </div>
+  {/if}
 
-        {#if retroCount > retrosPageLimit}
-          <div class="pt-6 flex justify-center">
-            <Pagination
-              bind:current="{retrosPage}"
-              num_items="{retroCount}"
-              per_page="{retrosPageLimit}"
-              on:navigate="{changeRetrosPage}"
-            />
-          </div>
-        {/if}
-      </div>
-    {/if}
-
-    {#if FeatureStoryboard}
-      <div class="p-4 md:p-6">
-        <h4
-          class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-        >
-          {$LL.storyboards()}
-        </h4>
-
+  {#if FeatureStoryboard}
+    <div class="mb-6 lg:mb-8">
+      <TableContainer>
+        <TableNav title="{$LL.storyboards()}" createBtnEnabled="{false}" />
         <Table>
           <tr slot="header">
             <HeadCol>
@@ -446,20 +420,15 @@
             {/each}
           </tbody>
         </Table>
-
-        {#if storyboardCount > storyboardsPageLimit}
-          <div class="pt-6 flex justify-center">
-            <Pagination
-              bind:current="{storyboardsPage}"
-              num_items="{storyboardCount}"
-              per_page="{storyboardsPageLimit}"
-              on:navigate="{changeStoryboardsPage}"
-            />
-          </div>
-        {/if}
-      </div>
-    {/if}
-  </div>
+        <TableFooter
+          bind:current="{storyboardsPage}"
+          num_items="{storyboardCount}"
+          per_page="{storyboardsPageLimit}"
+          on:navigate="{changeStoryboardsPage}"
+        />
+      </TableContainer>
+    </div>
+  {/if}
 
   {#if showUpdatePassword}
     <Modal closeModal="{toggleUpdatePassword}">

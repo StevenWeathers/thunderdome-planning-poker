@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import LL from '../../i18n/i18n-svelte';
 
   export let xfetch;

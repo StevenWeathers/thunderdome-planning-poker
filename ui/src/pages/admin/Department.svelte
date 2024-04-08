@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
@@ -9,12 +9,14 @@
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import Table from '../../components/global/table/Table.svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -146,17 +148,8 @@
   </div>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.teams()}
-        </h2>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav title="{$LL.teams()}" createBtnEnabled="{false}" />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -190,28 +183,20 @@
                 {new Date(team.updatedDate).toLocaleString()}
               </RowCol>
               <RowCol type="action">
-                <HollowButton onClick="{toggleDeleteTeam(team.id)}" color="red">
-                  {$LL.delete()}
-                </HollowButton>
+                <CrudActions
+                  editBtnEnabled="{false}"
+                  deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                />
               </RowCol>
             </TableRow>
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
-  <div class="w-full">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.users()}
-        </h2>
-      </div>
-    </div>
-
+  <TableContainer>
+    <TableNav title="{$LL.users()}" createBtnEnabled="{false}" />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -272,7 +257,7 @@
         {/each}
       </tbody>
     </Table>
-  </div>
+  </TableContainer>
 
   {#if showDeleteTeam}
     <DeleteConfirmation
