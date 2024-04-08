@@ -7,6 +7,7 @@
   import LL from '../../i18n/i18n-svelte';
   import CreateStoryboard from '../../components/storyboard/CreateStoryboard.svelte';
   import BoxList from '../../components/BoxList.svelte';
+  import Pagination from '../../components/global/Pagination.svelte';
 
   export let xfetch;
   export let notifications;

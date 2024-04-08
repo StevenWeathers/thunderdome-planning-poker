@@ -4,7 +4,7 @@
   import '../node_modules/quill/dist/quill.core.css';
   import '../node_modules/quill/dist/quill.snow.css';
   import Navaid from 'navaid';
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
 
   import { AppConfig, appRoutes } from './config';
   import apiclient from './apiclient';
@@ -52,12 +52,12 @@
   import AdminSubscription from './pages/admin/Subscription.svelte';
   import { setLocale } from './i18n/i18n-svelte';
   import { detectLocale } from './i18n/i18n-util';
-  import { loadLocaleAsync } from './i18n/i18n-util.async';
   import Confirmation from './pages/subscription/Confirmation.svelte';
   import Pricing from './pages/subscription/Pricing.svelte';
   import PrivacyPolicy from './pages/support/PrivacyPolicy.svelte';
   import TermsConditions from './pages/support/TermsConditions.svelte';
   import Support from './pages/support/Support.svelte';
+  import { loadLocale } from './i18n/i18n-util.sync';
 
   const {
     FeaturePoker,
@@ -72,6 +72,10 @@
   user.subscribe(w => {
     activeWarrior = w;
   });
+
+  const detectedLocale = activeWarrior.locale || detectLocale();
+  loadLocale(detectedLocale);
+  setLocale(detectedLocale);
 
   $: if (document.dir !== $dir) {
     document.dir = $dir;
@@ -528,12 +532,6 @@
       }
     });
   }
-
-  onMount(async () => {
-    const detectedLocale = activeWarrior.locale || detectLocale();
-    await loadLocaleAsync(detectedLocale);
-    setLocale(detectedLocale);
-  });
 
   onDestroy(router.unlisten);
 </script>

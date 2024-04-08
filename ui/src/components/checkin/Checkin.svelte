@@ -1,8 +1,8 @@
 <script lang="ts">
   import Modal from '../global/Modal.svelte';
   import SolidButton from '../global/SolidButton.svelte';
-  import { quill } from '../../quill';
   import LL from '../../i18n/i18n-svelte';
+  import Editor from '../Editor.svelte';
 
   export let toggleCheckin = () => {};
   export let handleCheckin = () => {};
@@ -50,15 +50,12 @@
             {$LL.yesterday()}
           </div>
           <div class="bg-white">
-            <div
-              class="w-full"
-              use:quill="{{
-                placeholder: `${$LL.yesterdayPlaceholder()}`,
-                content: yesterday,
-              }}"
-              on:text-change="{e => (yesterday = e.detail.html)}"
+            <Editor
+              content="{yesterday}"
+              placeholder="{$LL.yesterdayPlaceholder()}"
               id="yesterday"
-            ></div>
+              handleTextChange="{c => (yesterday = c)}"
+            />
           </div>
         </div>
         <div class="mb-4">
@@ -93,15 +90,12 @@
             {$LL.today()}
           </div>
           <div class="bg-white">
-            <div
-              class="w-full"
-              use:quill="{{
-                placeholder: `${$LL.todayPlaceholder()}`,
-                content: today,
-              }}"
-              on:text-change="{e => (today = e.detail.html)}"
+            <Editor
+              content="{today}"
+              placeholder="{$LL.todayPlaceholder()}"
               id="today"
-            ></div>
+              handleTextChange="{c => (today = c)}"
+            />
           </div>
         </div>
       </div>
@@ -114,15 +108,12 @@
         {$LL.blockers()}
       </div>
       <div class="bg-white">
-        <div
-          class="w-full"
-          use:quill="{{
-            placeholder: `${$LL.blockersPlaceholder()}`,
-            content: blockers,
-          }}"
-          on:text-change="{e => (blockers = e.detail.html)}"
+        <Editor
+          content="{blockers}"
+          placeholder="{$LL.blockersPlaceholder()}"
           id="blockers"
-        ></div>
+          handleTextChange="{c => (blockers = c)}"
+        />
       </div>
     </div>
 
@@ -133,15 +124,12 @@
         {$LL.discuss()}
       </div>
       <div class="bg-white">
-        <div
-          class="w-full"
-          use:quill="{{
-            placeholder: `${$LL.discussPlaceholder()}`,
-            content: discuss,
-          }}"
-          on:text-change="{e => (discuss = e.detail.html)}"
+        <Editor
+          content="{discuss}"
+          placeholder="{$LL.discussPlaceholder()}"
           id="discuss"
-        ></div>
+          handleTextChange="{c => (discuss = c)}"
+        />
       </div>
     </div>
 
