@@ -17,6 +17,8 @@
   import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
 
   export let xfetch;
   export let router;
@@ -179,25 +181,13 @@
 </svelte:head>
 
 <AdminPageLayout activePage="users">
-  <div class="w-full">
-    <div class="flex px-4 md:px-6">
-      <div class="flex-1">
-        <h1
-          class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
-        >
-          {userDetails.name}
-        </h1>
-      </div>
-      <div class="flex-1 text-right">
+  <div class="mb-6 lg:mb-8">
+    <TableContainer>
+      <TableNav title="{userDetails.name}" createBtnEnabled="{false}">
         <SolidButton onClick="{toggleUpdatePassword}"
           >{$LL.updatePassword()}</SolidButton
         >
-      </div>
-    </div>
-  </div>
-
-  <div class="w-full">
-    <div class="p-4 md:p-6">
+      </TableNav>
       <Table>
         <tr slot="header">
           <HeadCol />
@@ -270,16 +260,16 @@
           </TableRow>
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
+  </div>
 
-    {#if FeaturePoker}
-      <div class="p-4 md:p-6">
-        <h4
-          class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-        >
-          {$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
-        </h4>
-
+  {#if FeaturePoker}
+    <div class="mb-6 lg:mb-8">
+      <TableContainer>
+        <TableNav
+          title="{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}"
+          createBtnEnabled="{false}"
+        />
         <Table>
           <tr slot="header">
             <HeadCol>
@@ -333,17 +323,14 @@
             />
           </div>
         {/if}
-      </div>
-    {/if}
+      </TableContainer>
+    </div>
+  {/if}
 
-    {#if FeatureRetro}
-      <div class="p-4 md:p-6">
-        <h4
-          class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-        >
-          {$LL.retros()}
-        </h4>
-
+  {#if FeatureRetro}
+    <div class="mb-6 lg:mb-8">
+      <TableContainer>
+        <TableNav title="{$LL.retros()}" createBtnEnabled="{false}" />
         <Table>
           <tr slot="header">
             <HeadCol>
@@ -395,17 +382,14 @@
             />
           </div>
         {/if}
-      </div>
-    {/if}
+      </TableContainer>
+    </div>
+  {/if}
 
-    {#if FeatureStoryboard}
-      <div class="p-4 md:p-6">
-        <h4
-          class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-        >
-          {$LL.storyboards()}
-        </h4>
-
+  {#if FeatureStoryboard}
+    <div class="mb-6 lg:mb-8">
+      <TableContainer>
+        <TableNav title="{$LL.storyboards()}" createBtnEnabled="{false}" />
         <Table>
           <tr slot="header">
             <HeadCol>
@@ -457,9 +441,9 @@
             />
           </div>
         {/if}
-      </div>
-    {/if}
-  </div>
+      </TableContainer>
+    </div>
+  {/if}
 
   {#if showUpdatePassword}
     <Modal closeModal="{toggleUpdatePassword}">

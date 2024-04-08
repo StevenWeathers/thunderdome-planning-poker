@@ -15,6 +15,8 @@
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import CountryFlag from '../../components/user/CountryFlag.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
 
   export let xfetch;
   export let router;
@@ -196,17 +198,8 @@
   </h1>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.departments()}
-        </h2>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav title="{$LL.departments()}" createBtnEnabled="{false}" />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -251,21 +244,12 @@
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.teams()}
-        </h2>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav title="{$LL.teams()}" createBtnEnabled="{false}" />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -307,20 +291,11 @@
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
-  <div class="w-full">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.users()}
-        </h2>
-      </div>
-    </div>
-
+  <TableContainer>
+    <TableNav title="{$LL.users()}" createBtnEnabled="{false}" />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -381,7 +356,7 @@
         {/each}
       </tbody>
     </Table>
-  </div>
+  </TableContainer>
 
   <div class="w-full text-center mt-8">
     <HollowButton onClick="{toggleDeleteOrganization}" color="red">

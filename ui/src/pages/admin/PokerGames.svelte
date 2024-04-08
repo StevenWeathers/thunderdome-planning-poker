@@ -11,6 +11,8 @@
   import RowCol from '../../components/global/table/RowCol.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import Table from '../../components/global/table/Table.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
 
   export let xfetch;
   export let router;
@@ -77,13 +79,14 @@
   <div class="text-center px-2 mb-4">
     <h1
       class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
-    </h1>
+    ></h1>
   </div>
 
-  <div class="w-full">
-    <div class="text-right mb-4">
+  <TableContainer>
+    <TableNav
+      title="{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}"
+      createBtnEnabled="{false}"
+    >
       <div
         class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
       >
@@ -106,8 +109,7 @@
           friendly: AppConfig.FriendlyUIVerbs,
         })}</label
       >
-    </div>
-
+    </TableNav>
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -161,5 +163,5 @@
         />
       </div>
     {/if}
-  </div>
+  </TableContainer>
 </AdminPageLayout>

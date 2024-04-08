@@ -11,6 +11,8 @@
   import TableRow from '../../components/global/table/TableRow.svelte';
   import RowCol from '../../components/global/table/RowCol.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
 
   export let xfetch;
   export let router;
@@ -67,16 +69,8 @@
 </svelte:head>
 
 <AdminPageLayout activePage="storyboards">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.storyboards()}
-    </h1>
-  </div>
-
-  <div class="w-full">
-    <div class="text-right mb-4">
+  <TableContainer>
+    <TableNav title="{$LL.storyboards()}" createBtnEnabled="{false}">
       <div
         class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
       >
@@ -97,8 +91,7 @@
       <label for="activeStoryboards" class="dark:text-gray-300"
         >{$LL.showActiveStoryboards()}</label
       >
-    </div>
-
+    </TableNav>
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -150,5 +143,5 @@
         />
       </div>
     {/if}
-  </div>
+  </TableContainer>
 </AdminPageLayout>

@@ -15,6 +15,8 @@
   import { validateUserIsAdmin } from '../../validationUtils';
   import Table from '../../components/global/table/Table.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
 
   export let xfetch;
   export let router;
@@ -146,17 +148,8 @@
   </div>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.teams()}
-        </h2>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav title="{$LL.teams()}" createBtnEnabled="{false}" />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -198,20 +191,11 @@
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
-  <div class="w-full">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.users()}
-        </h2>
-      </div>
-    </div>
-
+  <TableContainer>
+    <TableNav title="{$LL.users()}" createBtnEnabled="{false}" />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -272,7 +256,7 @@
         {/each}
       </tbody>
     </Table>
-  </div>
+  </TableContainer>
 
   {#if showDeleteTeam}
     <DeleteConfirmation

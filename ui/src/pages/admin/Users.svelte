@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import SolidButton from '../../components/global/SolidButton.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
@@ -19,6 +18,8 @@
   import Modal from '../../components/global/Modal.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import CreateUser from '../../components/user/CreateUser.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
 
   export let xfetch;
   export let router;
@@ -192,9 +193,8 @@
       });
   }
 
-  function onSearchSubmit(evt) {
-    evt.preventDefault();
-
+  function onSearchSubmit(term) {
+    searchEmail = term;
     usersPage = 1;
     getUsers();
   }
@@ -223,56 +223,18 @@
 </svelte:head>
 
 <AdminPageLayout activePage="users">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.users()}
-    </h1>
-  </div>
-
-  <div class="w-full">
-    <div class="flex w-full">
-      <div class="w-2/5">
-        <h2 class="text-2xl md:text-3xl font-bold mb-4 dark:text-white">
-          {$LL.registeredUsers()}
-        </h2>
-      </div>
-      <div class="w-3/5">
-        <div class="text-right flex w-full">
-          <div class="w-3/4">
-            <form on:submit="{onSearchSubmit}" name="searchUsers">
-              <div class="mb-4">
-                <label class="mb-2" for="searchEmail">
-                  <input
-                    bind:value="{searchEmail}"
-                    placeholder="{$LL.email()}"
-                    class="border-2 border-slate-100 dark:border-gray-800 bg-gray-300 dark:bg-gray-800
-                        appearance-none
-                        rounded py-2 px-3 text-gray-600 dark:text-gray-400 leading-tight
-                        focus:outline-none focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500
-                        focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-                    id="searchEmail"
-                    name="searchEmail"
-                  />
-                </label>
-                <SolidButton type="submit">
-                  {$LL.search()}
-                </SolidButton>
-              </div>
-            </form>
-          </div>
-          <div class="w-1/4">
-            <HollowButton onClick="{toggleCreateUser}">
-              {$LL.warriorCreate({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
-            </HollowButton>
-          </div>
-        </div>
-      </div>
-    </div>
-
+  <TableContainer>
+    <TableNav
+      title="{$LL.registeredUsers()}"
+      createBtnText="{$LL.warriorCreate({
+        friendly: AppConfig.FriendlyUIVerbs,
+      })}"
+      createButtonHandler="{toggleCreateUser}"
+      createBtnTestId="user-create"
+      searchEnabled="{true}"
+      searchPlaceholder="{$LL.email()}"
+      searchHandler="{onSearchSubmit}"
+    />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -386,7 +348,7 @@
         />
       </div>
     {/if}
-  </div>
+  </TableContainer>
 
   {#if showCreateUser}
     <CreateUser

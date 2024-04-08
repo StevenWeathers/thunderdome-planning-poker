@@ -14,6 +14,8 @@
   import SubscriptionForm from '../../components/subscription/SubscriptionForm.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
 
   export let xfetch;
   export let router;
@@ -114,21 +116,13 @@
 </svelte:head>
 
 <AdminPageLayout activePage="subscriptions">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      Subscriptions
-    </h1>
-  </div>
-
-  <div class="w-full">
-    <div class="text-right mb-4">
-      <HollowButton onClick="{toggleSubCreate}">
-        Create Subscription
-      </HollowButton>
-    </div>
-
+  <TableContainer>
+    <TableNav
+      title="Subscriptions"
+      createBtnText="Create Subscription"
+      createButtonHandler="{toggleSubCreate}"
+      createBtnTestId="subscription-create"
+    />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -247,5 +241,5 @@
         confirmBtnText="{$LL.deleteSubscription()}"
       />
     {/if}
-  </div>
+  </TableContainer>
 </AdminPageLayout>

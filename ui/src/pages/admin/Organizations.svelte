@@ -10,6 +10,8 @@
   import TableRow from '../../components/global/table/TableRow.svelte';
   import RowCol from '../../components/global/table/RowCol.svelte';
   import Pagination from '../../components/global/Pagination.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
 
   export let xfetch;
   export let router;
@@ -84,15 +86,8 @@
 </svelte:head>
 
 <AdminPageLayout activePage="organizations">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.organizations()}
-    </h1>
-  </div>
-
-  <div class="w-full">
+  <TableContainer>
+    <TableNav title="{$LL.organizations()}" createBtnEnabled="{false}" />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -136,5 +131,5 @@
         />
       </div>
     {/if}
-  </div>
+  </TableContainer>
 </AdminPageLayout>

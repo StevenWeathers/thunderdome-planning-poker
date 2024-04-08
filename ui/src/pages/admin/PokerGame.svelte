@@ -14,6 +14,8 @@
   import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
 
   export let xfetch;
   export let router;
@@ -90,16 +92,9 @@
 </svelte:head>
 
 <AdminPageLayout activePage="battles">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
-    >
-      {battle.name}
-    </h1>
-  </div>
-
-  <div class="w-full">
-    <div class="p-4 md:p-6">
+  <div class="mb-6 lg:mb-8">
+    <TableContainer>
+      <TableNav title="{battle.name}" createBtnEnabled="{false}" />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -148,14 +143,12 @@
           </TableRow>
         </tbody>
       </Table>
-    </div>
-    <div class="p-4 md:p-6">
-      <h3
-        class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-      >
-        {$LL.users()}
-      </h3>
+    </TableContainer>
+  </div>
 
+  <div class="mb-6 lg:mb-8">
+    <TableContainer>
+      <TableNav title="{$LL.users()}" createBtnEnabled="{false}" />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -239,94 +232,92 @@
           {/each}
         </tbody>
       </Table>
-    </div>
-
-    <div class="p-4 md:p-6">
-      <h3
-        class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-      >
-        {$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}
-      </h3>
-
-      <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.type()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.planReferenceId()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.voteCount()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.points()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.active()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.skipped()}
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each battle.plans as plan, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                {plan.name}
-              </RowCol>
-              <RowCol>
-                {plan.type}
-              </RowCol>
-              <RowCol>
-                {plan.referenceId}
-              </RowCol>
-              <RowCol>
-                {plan.votes.length}
-              </RowCol>
-              <RowCol>
-                {plan.points}
-              </RowCol>
-              <RowCol>
-                {#if plan.active}
-                  <span class="text-green-600"><CheckIcon /></span>
-                {/if}
-              </RowCol>
-              <RowCol>
-                {#if plan.skipped}
-                  <span class="text-green-600"><CheckIcon /></span>
-                {/if}
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
-      </Table>
-
-      <div class="text-center mt-4">
-        <HollowButton
-          color="red"
-          onClick="{toggleDeleteBattle}"
-          testid="battle-delete"
-        >
-          {$LL.battleDelete({ friendly: AppConfig.FriendlyUIVerbs })}
-        </HollowButton>
-      </div>
-
-      {#if showDeleteBattle}
-        <DeleteConfirmation
-          toggleDelete="{toggleDeleteBattle}"
-          handleDelete="{deleteBattle}"
-          confirmText="{$LL.deleteBattleConfirmText({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}"
-          confirmBtnText="{$LL.deleteBattle({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}"
-        />
-      {/if}
-    </div>
+    </TableContainer>
   </div>
+
+  <TableContainer>
+    <TableNav
+      title="{$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}"
+      createBtnEnabled="{false}"
+    />
+    <Table>
+      <tr slot="header">
+        <HeadCol>
+          {$LL.name()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.type()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.planReferenceId()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.voteCount()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.points()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.active()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.skipped()}
+        </HeadCol>
+      </tr>
+      <tbody slot="body" let:class="{className}" class="{className}">
+        {#each battle.plans as plan, i}
+          <TableRow itemIndex="{i}">
+            <RowCol>
+              {plan.name}
+            </RowCol>
+            <RowCol>
+              {plan.type}
+            </RowCol>
+            <RowCol>
+              {plan.referenceId}
+            </RowCol>
+            <RowCol>
+              {plan.votes.length}
+            </RowCol>
+            <RowCol>
+              {plan.points}
+            </RowCol>
+            <RowCol>
+              {#if plan.active}
+                <span class="text-green-600"><CheckIcon /></span>
+              {/if}
+            </RowCol>
+            <RowCol>
+              {#if plan.skipped}
+                <span class="text-green-600"><CheckIcon /></span>
+              {/if}
+            </RowCol>
+          </TableRow>
+        {/each}
+      </tbody>
+    </Table>
+  </TableContainer>
+
+  <div class="text-center mt-4">
+    <HollowButton
+      color="red"
+      onClick="{toggleDeleteBattle}"
+      testid="battle-delete"
+    >
+      {$LL.battleDelete({ friendly: AppConfig.FriendlyUIVerbs })}
+    </HollowButton>
+  </div>
+
+  {#if showDeleteBattle}
+    <DeleteConfirmation
+      toggleDelete="{toggleDeleteBattle}"
+      handleDelete="{deleteBattle}"
+      confirmText="{$LL.deleteBattleConfirmText({
+        friendly: AppConfig.FriendlyUIVerbs,
+      })}"
+      confirmBtnText="{$LL.deleteBattle({
+        friendly: AppConfig.FriendlyUIVerbs,
+      })}"
+    />
+  {/if}
 </AdminPageLayout>

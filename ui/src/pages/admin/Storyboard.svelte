@@ -14,6 +14,8 @@
   import HollowButton from '../../components/global/HollowButton.svelte';
   import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
   import DeleteStoryboard from '../../components/storyboard/DeleteStoryboard.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
 
   export let xfetch;
   export let router;
@@ -75,16 +77,9 @@
 </svelte:head>
 
 <AdminPageLayout activePage="storyboards">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani dark:text-white"
-    >
-      {storyboard.name}
-    </h1>
-  </div>
-
-  <div class="w-full">
-    <div class="p-4 md:p-6">
+  <div class="mb-6 lg:mb-8">
+    <TableContainer>
+      <TableNav title="{storyboard.name}" createBtnEnabled="{false}" />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -105,102 +100,98 @@
           </TableRow>
         </tbody>
       </Table>
-    </div>
-    <div class="p-4 md:p-6">
-      <h3
-        class="text-2xl md:text-3xl font-semibold font-rajdhani uppercase mb-4 text-center dark:text-white"
-      >
-        {$LL.users()}
-      </h3>
+    </TableContainer>
+  </div>
 
-      <Table>
-        <tr slot="header">
-          <HeadCol>
-            {$LL.name()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.active()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.abandoned()}
-          </HeadCol>
-          <HeadCol>
-            {$LL.leader()}
-          </HeadCol>
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each storyboard.users as user, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
-                    <UserAvatar
-                      warriorId="{user.id}"
-                      avatar="{user.avatar}"
-                      gravatarHash="{user.gravatarHash}"
-                      userName="{user.name}"
-                      width="48"
-                      class="h-10 w-10 rounded-full"
-                    />
-                  </div>
-                  <div class="ms-4">
-                    <div class="text-sm font-medium text-gray-900">
-                      <a
-                        href="{appRoutes.adminUsers}/{user.id}"
-                        class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
-                        >{user.name}</a
-                      >
-                      {#if user.country}
-                        &nbsp;
-                        <CountryFlag
-                          country="{user.country}"
-                          additionalClass="inline-block"
-                          width="32"
-                          height="24"
-                        />
-                      {/if}
-                    </div>
+  <TableContainer>
+    <TableNav title="{$LL.users()}" createBtnEnabled="{false}" />
+    <Table>
+      <tr slot="header">
+        <HeadCol>
+          {$LL.name()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.active()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.abandoned()}
+        </HeadCol>
+        <HeadCol>
+          {$LL.leader()}
+        </HeadCol>
+      </tr>
+      <tbody slot="body" let:class="{className}" class="{className}">
+        {#each storyboard.users as user, i}
+          <TableRow itemIndex="{i}">
+            <RowCol>
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <UserAvatar
+                    warriorId="{user.id}"
+                    avatar="{user.avatar}"
+                    gravatarHash="{user.gravatarHash}"
+                    userName="{user.name}"
+                    width="48"
+                    class="h-10 w-10 rounded-full"
+                  />
+                </div>
+                <div class="ms-4">
+                  <div class="text-sm font-medium text-gray-900">
+                    <a
+                      href="{appRoutes.adminUsers}/{user.id}"
+                      class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
+                      >{user.name}</a
+                    >
+                    {#if user.country}
+                      &nbsp;
+                      <CountryFlag
+                        country="{user.country}"
+                        additionalClass="inline-block"
+                        width="32"
+                        height="24"
+                      />
+                    {/if}
                   </div>
                 </div>
-              </RowCol>
+              </div>
+            </RowCol>
+            <RowCol>
+              {#if user.active}
+                <span class="text-green-600"><CheckIcon /></span>
+              {/if}
+            </RowCol>
+            <RowCol>
+              {#if user.abandoned}
+                <span class="text-green-600"><CheckIcon /></span>
+              {/if}
+            </RowCol>
+            <RowCol>
               <RowCol>
-                {#if user.active}
+                {#if storyboard.owner_id === user.id}
                   <span class="text-green-600"><CheckIcon /></span>
                 {/if}
               </RowCol>
-              <RowCol>
-                {#if user.abandoned}
-                  <span class="text-green-600"><CheckIcon /></span>
-                {/if}
-              </RowCol>
-              <RowCol>
-                <RowCol>
-                  {#if storyboard.owner_id === user.id}
-                    <span class="text-green-600"><CheckIcon /></span>
-                  {/if}
-                </RowCol>
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
-      </Table>
+            </RowCol>
+          </TableRow>
+        {/each}
+      </tbody>
+    </Table>
+  </TableContainer>
 
-      <div class="text-center mt-4">
-        <HollowButton
-          color="red"
-          onClick="{toggleDeleteStoryboard}"
-          testid="storyboard-delete"
-        >
-          {$LL.deleteStoryboard()}
-        </HollowButton>
-      </div>
-
-      {#if showDeleteStoryboard}
-        <DeleteStoryboard
-          toggleDelete="{toggleDeleteStoryboard}"
-          handleDelete="{deleteStoryboard}"
-        />
-      {/if}
-    </div>
+  <div class="text-center mt-4">
+    <HollowButton
+      color="red"
+      onClick="{toggleDeleteStoryboard}"
+      testid="storyboard-delete"
+    >
+      {$LL.deleteStoryboard()}
+    </HollowButton>
   </div>
+
+  {#if showDeleteStoryboard}
+    <DeleteStoryboard
+      toggleDelete="{toggleDeleteStoryboard}"
+      handleDelete="{deleteStoryboard}"
+    />
+  {/if}
 </AdminPageLayout>

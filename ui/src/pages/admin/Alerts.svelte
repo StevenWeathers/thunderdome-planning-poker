@@ -14,6 +14,8 @@
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
   import Table from '../../components/global/table/Table.svelte';
   import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import TableContainer from '../../components/global/table/TableContainer.svelte';
+  import TableNav from '../../components/global/table/TableNav.svelte';
 
   export let xfetch;
   export let router;
@@ -142,21 +144,13 @@
 </svelte:head>
 
 <AdminPageLayout activePage="alerts">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.alerts()}
-    </h1>
-  </div>
-
-  <div class="w-full">
-    <div class="text-right mb-4">
-      <HollowButton onClick="{toggleCreateAlert}">
-        {$LL.alertCreate()}
-      </HollowButton>
-    </div>
-
+  <TableContainer>
+    <TableNav
+      title="{$LL.alerts()}"
+      createBtnText="{$LL.alertCreate()}"
+      createButtonHandler="{toggleCreateAlert}"
+      createBtnTestId="alert-create"
+    />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -237,7 +231,7 @@
         />
       </div>
     {/if}
-  </div>
+  </TableContainer>
 
   {#if showAlertCreate}
     <CreateAlert
