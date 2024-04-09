@@ -36,7 +36,9 @@ test.describe("User Profile page", () => {
     const profilePage = new ProfilePage(guestPage.page);
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
     await profilePage.page.locator('[data-testid="apikey-create"]').click();
     await profilePage.page
       .locator("[name=keyName]")
@@ -79,7 +81,9 @@ test.describe("User Profile page", () => {
     const profilePage = new ProfilePage(registeredPage.page);
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
     await profilePage.page.locator('[data-testid="apikey-create"]').click();
     await profilePage.page
       .locator("[name=keyName]")
@@ -185,7 +189,9 @@ test.describe("User Profile page", () => {
 
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
 
     await expect(
       profilePage.page.locator(
@@ -209,7 +215,9 @@ test.describe("User Profile page", () => {
     const profilePage = new ProfilePage(verifiedPage.page);
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
     await profilePage.page.locator('[data-testid="apikey-create"]').click();
     await profilePage.page.locator("[name=keyName]").fill(apiKeyName);
     await profilePage.page.locator("[name=createApiKey] [type=submit]").click();
@@ -233,7 +241,9 @@ test.describe("User Profile page", () => {
 
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
 
     await expect(
       profilePage.page.locator(
@@ -261,7 +271,9 @@ test.describe("User Profile page", () => {
 
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
 
     await expect(
       profilePage.page.locator(
@@ -291,7 +303,9 @@ test.describe("User Profile page", () => {
 
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
 
     await profilePage.page.locator('[data-testid="apikey-create"]').click();
     await profilePage.page.locator("[name=keyName]").fill(apiKeyName);
