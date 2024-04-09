@@ -10,6 +10,7 @@
   import CsvImport from './CsvImport.svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   export let notifications;
   export let eventTag;
@@ -273,29 +274,23 @@
   </div>
 
   <div class="mb-4">
-    <label class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">
-      <input
-        type="checkbox"
-        bind:checked="{autoFinishVoting}"
-        id="autoFinishVoting"
-        name="autoFinishVoting"
-        class="w-4 h-4 dark:accent-lime-400 me-1"
-      />
-      {$LL.autoFinishVotingLabel({ friendly: AppConfig.FriendlyUIVerbs })}
-    </label>
+    <Checkbox
+      bind:checked="{autoFinishVoting}"
+      id="autoFinishVoting"
+      name="autoFinishVoting"
+      label="{$LL.autoFinishVotingLabel({
+        friendly: AppConfig.FriendlyUIVerbs,
+      })}"
+    />
   </div>
 
   <div class="mb-4">
-    <label class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">
-      <input
-        type="checkbox"
-        bind:checked="{hideVoterIdentity}"
-        id="hideVoterIdentity"
-        name="hideVoterIdentity"
-        class="w-4 h-4 dark:accent-lime-400 me-1"
-      />
-      Hide Voter Identity
-    </label>
+    <Checkbox
+      bind:checked="{hideVoterIdentity}"
+      id="hideVoterIdentity"
+      name="hideVoterIdentity"
+      label="Hide Voter Identity"
+    />
   </div>
 
   <div class="mb-4">

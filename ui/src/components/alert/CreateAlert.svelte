@@ -4,6 +4,7 @@
   import SolidButton from '../global/SolidButton.svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   export let toggleCreate = () => {};
   export let handleCreate = () => {};
@@ -103,40 +104,28 @@
     </div>
 
     <div class="mb-4">
-      <label class="text-gray-700 font-bold mb-2 dark:text-gray-400">
-        <input
-          type="checkbox"
-          bind:checked="{active}"
-          id="active"
-          name="active"
-          class="w-4 h-4 dark:accent-lime-400 me-1"
-        />
-        {$LL.active()}
-      </label>
+      <Checkbox
+        bind:checked="{active}"
+        id="active"
+        name="active"
+        label="{$LL.active()}"
+      />
     </div>
     <div class="mb-4">
-      <label class="text-gray-700 font-bold mb-2 dark:text-gray-400">
-        <input
-          type="checkbox"
-          bind:checked="{registeredOnly}"
-          id="registeredOnly"
-          name="registeredOnly"
-          class="w-4 h-4 dark:accent-lime-400 me-1"
-        />
-        {$LL.alertRegisteredOnly()}
-      </label>
+      <Checkbox
+        bind:checked="{registeredOnly}"
+        id="registeredOnly"
+        name="registeredOnly"
+        label="{$LL.alertRegisteredOnly()}"
+      />
     </div>
     <div class="mb-4">
-      <label class="text-gray-700 font-bold mb-2 dark:text-gray-400">
-        <input
-          type="checkbox"
-          bind:checked="{allowDismiss}"
-          id="allowDismiss"
-          name="allowDismiss"
-          class="w-4 h-4 dark:accent-lime-400 me-1"
-        />
-        {$LL.alertAllowDismiss()}
-      </label>
+      <Checkbox
+        bind:checked="{allowDismiss}"
+        id="allowDismiss"
+        name="allowDismiss"
+        label="{$LL.alertAllowDismiss()}"
+      />
     </div>
 
     <div>

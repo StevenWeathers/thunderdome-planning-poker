@@ -1,5 +1,6 @@
 <script lang="ts">
   import './app.css';
+  import './tailwind.css';
   import './unreset.css';
   import '../node_modules/quill/dist/quill.core.css';
   import '../node_modules/quill/dist/quill.snow.css';
