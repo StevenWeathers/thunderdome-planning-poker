@@ -1222,6 +1222,32 @@ definitions:
       userName:
         type: string
     type: object
+  thunderdome.UserOrganization:
+    properties:
+      createdDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      updatedDate:
+        type: string
+    type: object
+  thunderdome.UserTeam:
+    properties:
+      createdDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      updatedDate:
+        type: string
+    type: object
   thunderdome.Vote:
     properties:
       vote:
@@ -2802,6 +2828,45 @@ paths:
       summary: Get Organization
       tags:
       - organization
+    put:
+      description: Update organization
+      parameters:
+      - description: organization id
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: updated organization object
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Organization'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Organization
+      tags:
+      - organization
   /organizations/{orgId}/departments:
     get:
       description: get list of organizations departments
@@ -2926,6 +2991,46 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Department
+      tags:
+      - organization
+    put:
+      description: Update an organization department
+      parameters:
+      - description: the organization ID
+        in: path
+        name: orgId
+        required: true
+        type: string
+      - description: the department ID
+        in: path
+        name: deptId
+        required: true
+        type: string
+      - description: updated department object
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Department'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Department
       tags:
       - organization
   /organizations/{orgId}/departments/{departmentId}/teams:
@@ -4267,6 +4372,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get Team
+      tags:
+      - team
+    put:
+      description: Updates a team
+      parameters:
+      - description: the team ID
+        in: path
+        name: teamId
+        required: true
+        type: string
+      - description: updated team object
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/http.teamCreateRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.standardJsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/thunderdome.Team'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Team
       tags:
       - team
   /teams/{teamId}/battles:
@@ -5664,7 +5808,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/thunderdome.Organization'
+                    $ref: '#/definitions/thunderdome.UserOrganization'
                   type: array
               type: object
         "403":
@@ -6025,7 +6169,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/thunderdome.Team'
+                    $ref: '#/definitions/thunderdome.UserTeam'
                   type: array
               type: object
         "403":

@@ -63,7 +63,7 @@ func (s *Service) handleGetTeamByUser() http.HandlerFunc {
 // @Tags         team
 // @Produce      json
 // @Param        userId  path    string  true  "the user ID"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Team}
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.UserTeam}
 // @Success      403     object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /users/{userId}/teams [get]
@@ -159,6 +159,56 @@ func (s *Service) handleCreateTeam() http.HandlerFunc {
 		NewTeam, err := s.TeamDataSvc.TeamCreate(ctx, UserID, team.Name)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleCreateTeam error", zap.Error(err), zap.String("entity_user_id", UserID),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, NewTeam, nil)
+	}
+}
+
+// handleTeamUpdate handles updating a team
+// @Summary      Update Team
+// @Description  Updates a team
+// @Tags         team
+// @Produce      json
+// @Param        teamId  path    string                 true  "the team ID"
+// @Param        team    body    teamCreateRequestBody  true  "updated team object"
+// @Success      200     object  standardJsonResponse{data=thunderdome.Team}
+// @Success      403     object  standardJsonResponse{}
+// @Success      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /teams/{teamId} [put]
+func (s *Service) handleTeamUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		TeamID := vars["teamId"]
+
+		var team = teamCreateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &team)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		inputErr := validate.Struct(team)
+		if inputErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, inputErr.Error()))
+		}
+
+		NewTeam, err := s.TeamDataSvc.TeamUpdate(ctx, TeamID, team.Name)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamUpdate error", zap.Error(err),
+				zap.String("team_id", TeamID),
 				zap.String("session_user_id", SessionUserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return

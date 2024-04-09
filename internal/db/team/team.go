@@ -63,10 +63,10 @@ func (d *Service) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team
 }
 
 // TeamListByUser gets a list of teams the user is on
-func (d *Service) TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.Team {
-	var teams = make([]*thunderdome.Team, 0)
+func (d *Service) TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserTeam {
+	var teams = make([]*thunderdome.UserTeam, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT t.id, t.name, t.created_date, t.updated_date
+		`SELECT t.id, t.name, t.created_date, t.updated_date, tu.role
         FROM thunderdome.team_user tu
         LEFT JOIN thunderdome.team t ON tu.team_id = t.id
         WHERE tu.user_id = $1
@@ -81,13 +81,14 @@ func (d *Service) TeamListByUser(ctx context.Context, UserID string, Limit int, 
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var team thunderdome.Team
+			var team thunderdome.UserTeam
 
 			if err := rows.Scan(
 				&team.Id,
 				&team.Name,
 				&team.CreatedDate,
 				&team.UpdatedDate,
+				&team.Role,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("team_list_by_user query scan error", zap.Error(err))
 			} else {
@@ -112,6 +113,25 @@ func (d *Service) TeamCreate(ctx context.Context, UserID string, TeamName string
 
 	if err != nil {
 		return nil, fmt.Errorf("create team query error: %v", err)
+	}
+
+	return t, nil
+}
+
+// TeamUpdate updates a team
+func (d *Service) TeamUpdate(ctx context.Context, TeamId string, TeamName string) (*thunderdome.Team, error) {
+	t := &thunderdome.Team{}
+	err := d.DB.QueryRowContext(ctx, `
+		UPDATE thunderdome.team
+		SET name = $1, updated_date = NOW()
+		WHERE id = $2
+		RETURNING id, name, created_date, updated_date;`,
+		TeamName,
+		TeamId,
+	).Scan(&t.Id, &t.Name, &t.CreatedDate, &t.UpdatedDate)
+
+	if err != nil {
+		return nil, fmt.Errorf("team update query error: %v", err)
 	}
 
 	return t, nil
