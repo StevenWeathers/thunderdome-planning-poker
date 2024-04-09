@@ -19,7 +19,7 @@
   import InviteUser from '../../components/poker/InviteUser.svelte';
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
 
   export let battleId: string;
   export let notifications;

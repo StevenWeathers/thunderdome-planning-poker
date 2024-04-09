@@ -4,7 +4,7 @@
   import { validatePasswords } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
 
   export let xfetch;
   export let router;

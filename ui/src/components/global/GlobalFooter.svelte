@@ -2,8 +2,8 @@
   import GithubIcon from '../icons/Github.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import FullLogoVertical from './FullLogo.svelte';
-  import FullLogoVerticalDarkText from './FullLogoLight.svelte';
+  import FullLogoVertical from '../logos/FullLogo.svelte';
+  import FullLogoVerticalDarkText from '../logos/FullLogoLight.svelte';
 
   const { AppVersion, RepoURL, PathPrefix } = AppConfig;
   const footerLinkClasses =

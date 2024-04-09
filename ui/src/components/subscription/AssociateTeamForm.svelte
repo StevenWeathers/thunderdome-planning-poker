@@ -2,7 +2,7 @@
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
   import { user } from '../../stores';
 
   export let handleUpdate = () => {};

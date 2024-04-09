@@ -4,7 +4,7 @@
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import TextInput from '../global/TextInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
 
   export let handleApiKeyCreate = () => {};
   export let toggleCreateApiKey = () => {};

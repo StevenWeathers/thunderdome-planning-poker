@@ -6,8 +6,8 @@
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import { onMount } from 'svelte';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
 
   const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];

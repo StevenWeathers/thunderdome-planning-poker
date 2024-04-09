@@ -8,8 +8,8 @@
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import CsvImport from './CsvImport.svelte';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
 
   export let notifications;
   export let eventTag;

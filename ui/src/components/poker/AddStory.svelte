@@ -9,9 +9,9 @@
   import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig } from '../../config';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
-  import Editor from '../Editor.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import Editor from '../forms/Editor.svelte';
 
   export let handlePlanAdd = () => {};
   export let toggleAddPlan = () => {};

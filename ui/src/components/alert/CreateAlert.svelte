@@ -2,8 +2,8 @@
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import SolidButton from '../global/SolidButton.svelte';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
 
   export let toggleCreate = () => {};
   export let handleCreate = () => {};

@@ -6,7 +6,7 @@
   import HollowButton from '../global/HollowButton.svelte';
   import UserAvatar from '../user/UserAvatar.svelte';
   import TrashIcon from '../icons/TrashIcon.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
 
   export let toggleEdit = () => {};
   export let handleEdit = action => {};

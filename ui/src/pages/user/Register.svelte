@@ -6,7 +6,7 @@
   import { AppConfig, appRoutes } from '../../config';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import UserRegisterForm from '../../components/user/UserRegisterForm.svelte';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
   import { onMount } from 'svelte';
 
   export let router;

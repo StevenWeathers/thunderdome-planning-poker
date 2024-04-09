@@ -9,8 +9,8 @@
   import NavUserMenu from './NavUserMenu.svelte';
   import ArrowRight from '../icons/ArrowRight.svelte';
   import LocaleMenu from './LocaleMenu.svelte';
-  import DomeLogo from './DomeLogo.svelte';
-  import DomeLogoLight from './DomeLogoLight.svelte';
+  import DomeLogo from '../logos/DomeLogo.svelte';
+  import DomeLogoLight from '../logos/DomeLogoLight.svelte';
 
   export let xfetch;
   export let router;

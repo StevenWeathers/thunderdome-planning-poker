@@ -2,7 +2,7 @@
   import Modal from '../global/Modal.svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import Editor from '../Editor.svelte';
+  import Editor from '../forms/Editor.svelte';
 
   export let toggleCheckin = () => {};
   export let handleCheckin = () => {};

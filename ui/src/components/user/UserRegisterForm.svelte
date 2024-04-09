@@ -2,7 +2,7 @@
   import { validateName, validatePasswords } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
   import SolidButton from '../global/SolidButton.svelte';
-  import TextInput from '../global/TextInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
 
   export let notifications;
   export let handleSubmit;
