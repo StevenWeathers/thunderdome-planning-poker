@@ -384,11 +384,10 @@
 
   let showRetroActionEdit = false;
   let selectedAction = null;
-  let selectedActionRetroId = null;
   const toggleRetroActionEdit = (retroId, id) => () => {
     showRetroActionEdit = !showRetroActionEdit;
-    selectedAction = retroActions.find(r => r.id === id);
-    selectedActionRetroId = retroId;
+    selectedAction =
+      retroId !== null ? retroActions.find(r => r.id === id) : {};
   };
 
   function handleRetroActionEdit(action) {
@@ -871,7 +870,6 @@
       action="{selectedAction}"
       handleAssigneeAdd="{handleRetroActionAssigneeAdd}"
       handleAssigneeRemove="{handleRetroActionAssigneeRemove}"
-      retroId="{selectedActionRetroId}"
     />
   {/if}
 

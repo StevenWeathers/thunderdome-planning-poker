@@ -139,6 +139,42 @@
       });
   }
 
+  let defaultTeam = {
+    id: '',
+    name: '',
+  };
+  let selectedTeam = { ...defaultTeam };
+  let showTeamUpdate = false;
+
+  function toggleUpdateTeam(team) {
+    return () => {
+      selectedTeam = team;
+      showTeamUpdate = !showTeamUpdate;
+    };
+  }
+
+  function updateTeamHandler(name) {
+    const body = {
+      name,
+    };
+
+    xfetch(
+      `/api/organizations/${organizationId}/departments/${departmentId}/teams/${selectedTeam.id}`,
+      { body, method: 'PUT' },
+    )
+      .then(res => res.json())
+      .then(function () {
+        eventTag('update_department_team', 'engagement', 'success');
+        getTeams();
+        toggleUpdateTeam(defaultTeam)();
+        notifications.success(`${$LL.teamUpdateSuccess()}`);
+      })
+      .catch(function () {
+        notifications.danger(`${$LL.teamUpdateError()}`);
+        eventTag('update_department_team', 'engagement', 'failure');
+      });
+  }
+
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
@@ -218,7 +254,7 @@
               <RowCol type="action">
                 {#if isAdmin}
                   <CrudActions
-                    editBtnEnabled="{false}"
+                    editBtnClickHandler="{toggleUpdateTeam(team)}"
                     deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
                   />
                 {/if}
@@ -245,6 +281,14 @@
     <CreateTeam
       toggleCreate="{toggleCreateTeam}"
       handleCreate="{createTeamHandler}"
+    />
+  {/if}
+
+  {#if showTeamUpdate}
+    <CreateTeam
+      teamName="{selectedTeam.name}"
+      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
+      handleCreate="{updateTeamHandler}"
     />
   {/if}
 

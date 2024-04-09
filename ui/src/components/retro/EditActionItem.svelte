@@ -13,10 +13,10 @@
   export let handleDelete = () => {};
   export let handleAssigneeAdd = (retroId, actionId, userId) => {};
   export let handleAssigneeRemove = (retroId, actionId, userId) => () => {};
-  export let retroId = '';
   export let assignableUsers = [];
   export let action = {
     id: '',
+    retroId: '',
     content: '',
     completed: false,
     assignees: [],
@@ -26,6 +26,7 @@
 
   let editAction = {
     id: action.id,
+    retroId: action.retroId,
     content: action.content,
     completed: action.completed,
   };
@@ -36,7 +37,7 @@
     handleEdit(editAction);
   };
   const addAssignee = () => {
-    handleAssigneeAdd(retroId, action.id, selectedAssignee);
+    handleAssigneeAdd(action.retroId, action.id, selectedAssignee);
     selectedAssignee = '';
   };
 </script>
@@ -135,7 +136,7 @@
               <HollowButton
                 color="red"
                 onClick="{handleAssigneeRemove(
-                  retroId,
+                  action.retroId,
                   action.id,
                   assignee.id,
                 )}"
