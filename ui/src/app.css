@@ -1,6 +1,92 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+[type='checkbox'],
+[type='radio'] {
+  --tw-shadow: 0 0 #0000;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  background-origin: border-box;
+  border-color: #6b7280;
+  border-width: 1px;
+  color: #1c64f2;
+  display: inline-block;
+  flex-shrink: 0;
+  height: 1rem;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  vertical-align: middle;
+  width: 1rem;
+}
+
+[type='checkbox'] {
+  border-radius: 0;
+}
+
+[type='radio'] {
+  border-radius: 100%;
+}
+
+[type='checkbox']:focus,
+[type='radio']:focus {
+  --tw-ring-inset: var(--tw-empty, /*!*/ /*!*/);
+  --tw-ring-offset-width: 2px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: #1c64f2;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
+    var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0
+    calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+    var(--tw-shadow);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.dark [type='checkbox']:checked,
+.dark [type='radio']:checked,
+[type='checkbox']:checked,
+[type='radio']:checked {
+  background-color: currentColor;
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: 0.55em 0.55em;
+  border-color: transparent;
+}
+
+[type='checkbox']:checked {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 12'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M1 5.917 5.724 10.5 15 1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 0.55em 0.55em;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.dark [type='radio']:checked,
+[type='radio']:checked {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 16 16' fill='%23fff' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='8' cy='8' r='3'/%3E%3C/svg%3E");
+  background-size: 1em 1em;
+}
+
+[type='checkbox']:indeterminate {
+  background-color: currentColor;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 12'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M.5 6h14'/%3E%3C/svg%3E");
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: 0.55em 0.55em;
+  border-color: transparent;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+[type='checkbox']:indeterminate:focus,
+[type='checkbox']:indeterminate:hover {
+  background-color: currentColor;
+  border-color: transparent;
+}
 
 .font-rajdhani {
   font-family: 'Rajdhani', 'Arial Narrow', sans-serif;
@@ -20,22 +106,6 @@ input[type='search']::-webkit-search-cancel-button {
 
 [dir='ltr'] ::-webkit-calendar-picker-indicator {
   margin-right: 0px;
-}
-
-.toggle-checkbox:checked {
-  border-color: #68d391;
-}
-
-[dir='ltr'] .toggle-checkbox:checked {
-  right: 0;
-}
-
-[dir='rtl'] .toggle-checkbox:checked {
-  left: -0;
-}
-
-.toggle-checkbox:checked + .toggle-label {
-  background-color: #68d391;
 }
 
 .text-yellow-thunder {

@@ -7,8 +7,8 @@
   import { AppConfig, appRoutes } from '../../config';
   import { user } from '../../stores';
   import { onMount } from 'svelte';
-  import SelectInput from '../global/SelectInput.svelte';
-  import TextInput from '../global/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
 
   export let notifications;
   export let eventTag;

@@ -4,8 +4,8 @@
   import UserIcon from '../icons/UserIcon.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../global/TextInput.svelte';
-  import Editor from '../Editor.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import Editor from '../forms/Editor.svelte';
 
   export let toggleStoryForm = () => {};
   export let sendSocketEvent = () => {};

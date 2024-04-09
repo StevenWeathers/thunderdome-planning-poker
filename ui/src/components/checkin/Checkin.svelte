@@ -2,7 +2,8 @@
   import Modal from '../global/Modal.svelte';
   import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import Editor from '../Editor.svelte';
+  import Editor from '../forms/Editor.svelte';
+  import Toggle from '../forms/Toggle.svelte';
 
   export let toggleCheckin = () => {};
   export let handleCheckin = () => {};
@@ -59,27 +60,12 @@
           </div>
         </div>
         <div class="mb-4">
-          <div
-            class="text-gray-600 dark:text-gray-400 uppercase font-rajdhani text-xl tracking-wide mb-2"
-          >
-            {$LL.checkinMeetYesterdayGoalsQuestion()}
-          </div>
-          <div
-            class="relative inline-block w-16 me-2 align-middle select-none transition duration-200 ease-in"
-          >
-            <input
-              type="checkbox"
-              name="goalsMet"
-              id="goalsMet"
-              bind:checked="{goalsMet}"
-              class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow"
-            />
-            <label
-              for="goalsMet"
-              class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-300 cursor-pointer transition-colors duration-200 ease-in-out"
-            >
-            </label>
-          </div>
+          <Toggle
+            name="goalsMet"
+            id="goalsMet"
+            bind:checked="{goalsMet}"
+            label="{$LL.checkinMeetYesterdayGoalsQuestion()}"
+          />
         </div>
       </div>
       <div>

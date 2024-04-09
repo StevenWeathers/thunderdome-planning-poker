@@ -2,7 +2,7 @@
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
   import HollowButton from '../global/HollowButton.svelte';
-  import TextInput from '../global/TextInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
 
   export let toggleColumnEdit = () => {};
   export let handleColumnRevision = () => {};
