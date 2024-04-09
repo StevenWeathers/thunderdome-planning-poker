@@ -188,7 +188,9 @@ const fr: Translation = {
     'is designed and developed by {authorOpen}Steven Weathers{authorClose}.',
   footerLicense:
     'Le code source est sous licence {licenseOpen}Apache 2.0{licenseClose}.',
-  forgotPassword: 'Forgot Password',
+  forgotPassword: 'Forgot Your Password?',
+  forgotPasswordSubtext: `Don't fret! Just enter your email and we will send you instructions to reset your password.`,
+  returnToLogin: 'Return to Login',
   getAlertsError: 'Error getting alerts',
   getApikeysError: 'Error getting apikeys',
   getBattleError:
@@ -396,7 +398,6 @@ const fr: Translation = {
   selectTeam: 'Select a Team',
   selfHostedDesc:
     'Alternatively you can {linkOpen}run it on your own server{linkClose}.',
-  sendResetEmail: 'Send Reset Email',
   sessionDuplicate:
     '{friendly|{false:Un doublon de bataille existe pour votre ID, true:Un doublon de jeu existe pour votre ID}}',
   showActiveBattles:
@@ -521,6 +522,7 @@ const fr: Translation = {
   passwordUpdateError: 'Erreur lors de la mise à jour du mot de passe',
   profileDeleteError: 'Erreur lors de la suppression de votre compte.',
   profileTitle: 'Votre Profil',
+  profile: 'Profile',
   updatePassword: 'Mettre à jour le mot de passe',
   deleteAccount: 'Supprimer le compte',
   deleteAccountWarningStatement:
@@ -581,7 +583,6 @@ const fr: Translation = {
   reset: 'Reset',
   passwordResetError: 'Error encountered attempting to reset password',
   resetPassword: 'Reset Password',
-  forgotPasswordCheckboxLabel: 'Forgot Password?',
   registerAsGuest: 'Register as Guest',
   registrationDisabled: 'Registration is disabled.',
   userNamePlaceholder: 'Enter your name',
@@ -631,6 +632,12 @@ const fr: Translation = {
   expireDate: 'Expire Date',
   addUserWillInviteNotFoundFieldNote:
     'If user is not registered an invite to register and join the {pageType} will be sent.',
+  teamUpdateSuccess: 'Team updated successfully',
+  teamUpdateError: 'Error updating Team',
+  orgUpdateSuccess: 'Organization updated successfully',
+  orgUpdateError: 'Error updating Organization',
+  deptUpdateSuccess: 'Department updated successfully',
+  deptUpdateError: 'Error updating Department',
 };
 
 export default fr;

@@ -261,7 +261,19 @@ func (s *Service) handleJiraStoryJQLSearch() http.HandlerFunc {
 				zap.String("session_user_id", SessionUserID), zap.String("jira_instance_id", instanceId),
 				zap.Int("start_at", req.StartAt), zap.Int("max_results", req.MaxResults),
 				zap.Any("jira_fields", fields))
-			s.Failure(w, r, http.StatusInternalServerError, err)
+
+			result := &standardJsonResponse{
+				Success: false,
+				Error:   err.Error(),
+				Data:    map[string]interface{}{},
+				Meta:    map[string]interface{}{},
+			}
+
+			response, _ := json.Marshal(result)
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(response)
 			return
 		}
 

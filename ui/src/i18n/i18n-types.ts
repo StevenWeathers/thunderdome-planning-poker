@@ -424,6 +424,10 @@ type RootTranslation = {
    */
   createAccount: string;
   /**
+   * D​o​n​'​t​ ​h​a​v​e​ ​a​n​ ​a​c​c​o​u​n​t​?
+   */
+  createAccountTagline: string;
+  /**
    * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​c​r​e​a​t​i​n​g​ ​a​l​e​r​t
    */
   createAlertError: string;
@@ -1315,18 +1319,6 @@ type RootTranslation = {
    * R​e​g​i​s​t​e​r
    */
   register: string;
-  /**
-   * o​r​ ​{​r​e​g​i​s​t​e​r​O​p​e​n​}​R​e​g​i​s​t​e​r​{​r​e​g​i​s​t​e​r​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​R​e​t​r​o
-   * @param {unknown} registerClose
-   * @param {unknown} registerOpen
-   */
-  registerForRetro: RequiredParams<'registerClose' | 'registerOpen'>;
-  /**
-   * o​r​ ​{​r​e​g​i​s​t​e​r​O​p​e​n​}​R​e​g​i​s​t​e​r​{​r​e​g​i​s​t​e​r​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​S​t​o​r​y​b​o​a​r​d
-   * @param {unknown} registerClose
-   * @param {unknown} registerOpen
-   */
-  registerForStoryboard: RequiredParams<'registerClose' | 'registerOpen'>;
   /**
    * O​o​p​s​,​ ​r​e​l​o​a​d​i​n​g​ ​R​e​t​r​o​.​.​.
    */
@@ -2248,20 +2240,6 @@ type RootTranslation = {
    * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​s​e​n​d​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t
    */
   sendResetPasswordError: string;
-  registerForBattle: {
-    /**
-     * o​r​ ​{​r​e​g​i​s​t​e​r​O​p​e​n​}​R​e​g​i​s​t​e​r​{​r​e​g​i​s​t​e​r​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​G​a​m​e
-     * @param {unknown} registerClose
-     * @param {unknown} registerOpen
-     */
-    true: RequiredParams<'registerClose' | 'registerOpen'>;
-    /**
-     * o​r​ ​{​r​e​g​i​s​t​e​r​O​p​e​n​}​R​e​g​i​s​t​e​r​{​r​e​g​i​s​t​e​r​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​B​a​t​t​l​e
-     * @param {unknown} registerClose
-     * @param {unknown} registerOpen
-     */
-    false: RequiredParams<'registerClose' | 'registerOpen'>;
-  };
   /**
    * C​h​o​o​s​e​ ​y​o​u​r​ ​c​o​u​n​t​r​y​ ​(​o​p​t​i​o​n​a​l​)
    */
@@ -2786,6 +2764,10 @@ export type TranslationFunctions = {
    * Create Account
    */
   createAccount: () => LocalizedString;
+  /**
+   * Don't have an account?
+   */
+  createAccountTagline: () => LocalizedString;
   /**
    * Error encountered creating alert
    */
@@ -3664,20 +3646,6 @@ export type TranslationFunctions = {
    * Register
    */
   register: () => LocalizedString;
-  /**
-   * or {registerOpen}Register{registerClose} to join the Retro
-   */
-  registerForRetro: (arg: {
-    registerClose: unknown;
-    registerOpen: unknown;
-  }) => LocalizedString;
-  /**
-   * or {registerOpen}Register{registerClose} to join the Storyboard
-   */
-  registerForStoryboard: (arg: {
-    registerClose: unknown;
-    registerOpen: unknown;
-  }) => LocalizedString;
   /**
    * Oops, reloading Retro...
    */
@@ -4579,22 +4547,6 @@ export type TranslationFunctions = {
    * Error encountered attempting to send password reset
    */
   sendResetPasswordError: () => LocalizedString;
-  registerForBattle: {
-    /**
-     * or {registerOpen}Register{registerClose} to join the Game
-     */
-    true: (arg: {
-      registerClose: unknown;
-      registerOpen: unknown;
-    }) => LocalizedString;
-    /**
-     * or {registerOpen}Register{registerClose} to join the Battle
-     */
-    false: (arg: {
-      registerClose: unknown;
-      registerOpen: unknown;
-    }) => LocalizedString;
-  };
   /**
    * Choose your country (optional)
    */

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import { user } from '../../stores';
   import { validateName } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import UserRegisterForm from '../../components/user/UserRegisterForm.svelte';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
   import { onMount } from 'svelte';
 
   export let router;

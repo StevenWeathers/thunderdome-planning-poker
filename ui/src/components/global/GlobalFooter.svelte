@@ -2,8 +2,10 @@
   import GithubIcon from '../icons/Github.svelte';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
+  import FullLogoVertical from '../logos/FullLogo.svelte';
+  import FullLogoVerticalDarkText from '../logos/FullLogoLight.svelte';
 
-  const { AppVersion, RepoURL, PathPrefix } = AppConfig;
+  const { AppVersion, RepoURL, PathPrefix, SubscriptionsEnabled } = AppConfig;
   const footerLinkClasses =
     'no-underline text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600';
 </script>
@@ -18,21 +20,24 @@
         href="{appRoutes.landing}"
         class="hidden md:inline-block flex items-center mb-4 md:mb-0 space-x-3 rtl:space-x-reverse"
       >
-        <img
-          src="{PathPrefix}/img/logo.svg"
-          class="h-8 lg:h-12 grayscale"
-          alt="Thunderdome Logo"
+        <FullLogoVertical
+          class="hidden h-8 lg:h-12 dark:block grayscale hover:grayscale-0"
+        />
+        <FullLogoVerticalDarkText
+          class="h-8 lg:h-12 dark:hidden grayscale hover:grayscale-0"
         />
       </a>
       <ul
         class="text-sm md:text-base flex flex-wrap items-center mb-6 font-medium text-gray-500 md:mb-0 dark:text-gray-400"
       >
-        <li>
-          <a
-            href="{appRoutes.subscriptionPricing}"
-            class="hover:underline me-4 md:me-6">Pricing</a
-          >
-        </li>
+        {#if SubscriptionsEnabled}
+          <li>
+            <a
+              href="{appRoutes.subscriptionPricing}"
+              class="hover:underline me-4 md:me-6">Pricing</a
+            >
+          </li>
+        {/if}
         <li>
           <a
             href="{RepoURL}/blob/main/docs/GUIDE.md"

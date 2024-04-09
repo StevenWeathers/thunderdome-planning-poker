@@ -1,19 +1,21 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import HollowButton from '../../components/global/HollowButton.svelte';
   import { activeAlerts, user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import CreateAlert from '../../components/alert/CreateAlert.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
   import CheckIcon from '../../components/icons/CheckIcon.svelte';
-  import Table from '../../components/global/table/Table.svelte';
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableFooter from '../../components/table/TableFooter.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -142,21 +144,13 @@
 </svelte:head>
 
 <AdminPageLayout activePage="alerts">
-  <div class="text-center px-2 mb-4">
-    <h1
-      class="text-3xl md:text-4xl font-semibold font-rajdhani uppercase dark:text-white"
-    >
-      {$LL.alerts()}
-    </h1>
-  </div>
-
-  <div class="w-full">
-    <div class="text-right mb-4">
-      <HollowButton onClick="{toggleCreateAlert}">
-        {$LL.alertCreate()}
-      </HollowButton>
-    </div>
-
+  <TableContainer>
+    <TableNav
+      title="{$LL.alerts()}"
+      createBtnText="{$LL.alertCreate()}"
+      createButtonHandler="{toggleCreateAlert}"
+      createBtnTestId="alert-create"
+    />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -215,29 +209,22 @@
               {new Date(alert.updatedDate).toLocaleString()}
             </RowCol>
             <RowCol type="action">
-              <HollowButton onClick="{toggleUpdateAlert(alert)}" color="blue">
-                {$LL.edit()}
-              </HollowButton>
-              <HollowButton onClick="{toggleDeleteAlert(alert.id)}" color="red">
-                {$LL.delete()}
-              </HollowButton>
+              <CrudActions
+                editBtnClickHandler="{toggleUpdateAlert(alert)}"
+                deleteBtnClickHandler="{toggleDeleteAlert(alert.id)}"
+              />
             </RowCol>
           </TableRow>
         {/each}
       </tbody>
     </Table>
-
-    {#if alertCount > alertsPageLimit}
-      <div class="pt-6 flex justify-center">
-        <Pagination
-          bind:current="{alertsPage}"
-          num_items="{alertCount}"
-          per_page="{alertsPageLimit}"
-          on:navigate="{changePage}"
-        />
-      </div>
-    {/if}
-  </div>
+    <TableFooter
+      bind:current="{alertsPage}"
+      num_items="{alertCount}"
+      per_page="{alertsPageLimit}"
+      on:navigate="{changePage}"
+    />
+  </TableContainer>
 
   {#if showAlertCreate}
     <CreateAlert

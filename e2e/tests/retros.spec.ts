@@ -10,8 +10,8 @@ test.describe("Retros page", () => {
       const retrosPage = new RetrosPage(page);
       await retrosPage.goto();
 
-      const title = retrosPage.page.locator('[data-formtitle="login"]');
-      await expect(title).toHaveText("Login");
+      const loginForm = retrosPage.page.locator('form[name="login"]');
+      await expect(loginForm).toBeVisible();
     });
   });
 

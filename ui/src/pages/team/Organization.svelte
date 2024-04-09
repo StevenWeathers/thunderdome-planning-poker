@@ -1,22 +1,24 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
-  import SolidButton from '../../components/global/SolidButton.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import RowCol from '../../components/global/table/RowCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import Table from '../../components/global/table/Table.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import Table from '../../components/table/Table.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
   import CreateDepartment from '../../components/team/CreateDepartment.svelte';
   import CreateTeam from '../../components/team/CreateTeam.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
 
   export let xfetch;
   export let router;
@@ -216,6 +218,78 @@
       });
   }
 
+  let defaultDepartment = {
+    id: '',
+    name: '',
+  };
+  let selectedDepartment = { ...defaultDepartment };
+  let showDepartmentUpdate = false;
+
+  function toggleUpdateDepartment(dept) {
+    return () => {
+      selectedDepartment = dept;
+      showDepartmentUpdate = !showDepartmentUpdate;
+    };
+  }
+
+  let defaultTeam = {
+    id: '',
+    name: '',
+  };
+  let selectedTeam = { ...defaultTeam };
+  let showTeamUpdate = false;
+
+  function toggleUpdateTeam(team) {
+    return () => {
+      selectedTeam = team;
+      showTeamUpdate = !showTeamUpdate;
+    };
+  }
+
+  function updateDepartmentHandler(name) {
+    const body = {
+      name,
+    };
+
+    xfetch(
+      `/api/organizations/${organizationId}/departments/${selectedDepartment.id}`,
+      { body, method: 'PUT' },
+    )
+      .then(res => res.json())
+      .then(function (result) {
+        eventTag('update_department', 'engagement', 'success');
+        getDepartments();
+        toggleUpdateDepartment(defaultDepartment)();
+        notifications.success(`${$LL.deptUpdateSuccess()}`);
+      })
+      .catch(function () {
+        notifications.danger(`${$LL.deptUpdateError()}`);
+        eventTag('update_department', 'engagement', 'failure');
+      });
+  }
+
+  function updateTeamHandler(name) {
+    const body = {
+      name,
+    };
+
+    xfetch(`/api/organizations/${organizationId}/teams/${selectedTeam.id}`, {
+      body,
+      method: 'PUT',
+    })
+      .then(res => res.json())
+      .then(function () {
+        eventTag('create_organization_team', 'engagement', 'success');
+        toggleUpdateTeam(defaultTeam)();
+        getTeams();
+        notifications.success(`${$LL.teamUpdateSuccess()}`);
+      })
+      .catch(function () {
+        notifications.danger(`${$LL.teamUpdateError()}`);
+        eventTag('create_organization_team', 'engagement', 'failure');
+      });
+  }
+
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
@@ -240,26 +314,14 @@
   </h1>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.departments()}
-        </h2>
-      </div>
-      <div class="w-1/5">
-        <div class="text-right">
-          {#if isAdmin}
-            <SolidButton onClick="{toggleCreateDepartment}">
-              {$LL.departmentCreate()}
-            </SolidButton>
-          {/if}
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav
+        title="{$LL.departments()}"
+        createBtnEnabled="{isAdmin}"
+        createBtnText="{$LL.departmentCreate()}"
+        createButtonHandler="{toggleCreateDepartment}"
+        createBtnTestId="department-create"
+      />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -294,42 +356,30 @@
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin}
-                  <HollowButton
-                    onClick="{toggleDeleteDepartment(department.id)}"
-                    color="red"
-                  >
-                    {$LL.delete()}
-                  </HollowButton>
+                  <CrudActions
+                    editBtnClickHandler="{toggleUpdateDepartment(department)}"
+                    deleteBtnClickHandler="{toggleDeleteDepartment(
+                      department.id,
+                    )}"
+                  />
                 {/if}
               </RowCol>
             </TableRow>
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
   <div class="w-full mb-6 lg:mb-8">
-    <div class="flex w-full">
-      <div class="w-4/5">
-        <h2
-          class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-        >
-          {$LL.teams()}
-        </h2>
-      </div>
-      <div class="w-1/5">
-        <div class="text-right">
-          {#if isAdmin}
-            <SolidButton onClick="{toggleCreateTeam}">
-              {$LL.teamCreate()}
-            </SolidButton>
-          {/if}
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full">
+    <TableContainer>
+      <TableNav
+        title="{$LL.teams()}"
+        createBtnEnabled="{isAdmin}"
+        createBtnText="{$LL.teamCreate()}"
+        createButtonHandler="{toggleCreateTeam}"
+        createBtnTestId="team-create"
+      />
       <Table>
         <tr slot="header">
           <HeadCol>
@@ -364,19 +414,17 @@
               </RowCol>
               <RowCol type="action">
                 {#if isAdmin}
-                  <HollowButton
-                    onClick="{toggleDeleteTeam(team.id)}"
-                    color="red"
-                  >
-                    {$LL.delete()}
-                  </HollowButton>
+                  <CrudActions
+                    editBtnClickHandler="{toggleUpdateTeam(team)}"
+                    deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
+                  />
                 {/if}
               </RowCol>
             </TableRow>
           {/each}
         </tbody>
       </Table>
-    </div>
+    </TableContainer>
   </div>
 
   <UsersList
@@ -405,10 +453,26 @@
     />
   {/if}
 
+  {#if showDepartmentUpdate}
+    <CreateDepartment
+      departmentName="{selectedDepartment.name}"
+      toggleCreate="{toggleUpdateDepartment(defaultDepartment)}"
+      handleCreate="{updateDepartmentHandler}"
+    />
+  {/if}
+
   {#if showCreateTeam}
     <CreateTeam
       toggleCreate="{toggleCreateTeam}"
       handleCreate="{createTeamHandler}"
+    />
+  {/if}
+
+  {#if showTeamUpdate}
+    <CreateTeam
+      teamName="{selectedTeam.name}"
+      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
+      handleCreate="{updateTeamHandler}"
     />
   {/if}
 

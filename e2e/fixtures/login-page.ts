@@ -7,7 +7,7 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.emailField = page.getByPlaceholder("Enter your email");
-    this.passwordField = page.getByPlaceholder("Enter a password");
+    this.passwordField = page.getByPlaceholder("Enter your password");
     this.page = page;
   }
 

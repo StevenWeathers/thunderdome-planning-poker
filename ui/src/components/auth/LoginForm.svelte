@@ -3,7 +3,8 @@
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import SolidButton from '../global/SolidButton.svelte';
-  import TextInput from '../global/TextInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import LockIcon from '../icons/LockIcon.svelte';
 
   export let registerLink = '';
   export let targetPage = appRoutes.landing;
@@ -69,8 +70,10 @@
           user.create(newUser);
           if (u.theme !== 'auto') {
             localStorage.setItem('theme', u.theme);
-            window.setTheme();
+          } else {
+            localStorage.removeItem('theme');
           }
+          window.setTheme();
           eventTag('login', 'engagement', 'success', () => {
             // setupI18n({
             //     withLocale: newUser.locale,
@@ -177,7 +180,7 @@
           autocomplete="current-password"
           required
           class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-300 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 sm:text-sm"
-          placeholder="{$LL.passwordPlaceholder()}"
+          placeholder="{$LL.yourPasswordPlaceholder()}"
           bind:value="{password}"
         />
       </div>
@@ -186,7 +189,7 @@
       <div class="flex items-center">
         <!--                        <input id="remember_me" name="remember_me" type="checkbox"-->
         <!--                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:text-white dark:border-gray-600 dark:focus:ring-indigo-400 disabled:cursor-wait disabled:opacity-50">-->
-        <!--                        <label for="remember_me" class="ml-2 block text-sm text-gray-900 dark:text-white">Remember-->
+        <!--                        <label for="remember_me" class="ms-2 block text-sm text-gray-900 dark:text-white">Remember-->
         <!--                            me</label>-->
       </div>
       <div class="text-sm">
@@ -195,7 +198,7 @@
             class="font-medium text-indigo-400 hover:text-indigo-500 cursor-pointer"
             on:click="{toggleForgotPassword}"
           >
-            {$LL.forgotPasswordCheckboxLabel()}
+            {$LL.forgotPassword()}
           </a>
         {/if}
       </div>
@@ -207,18 +210,9 @@
         class="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-700 dark:border-transparent dark:hover:bg-indigo-600 dark:focus:ring-indigo-400 dark:focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
       >
         <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-          <svg
+          <LockIcon
             class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-              clip-rule="evenodd"></path>
-          </svg>
+          />
         </span>
         {$LL.login()}
       </button>
@@ -297,6 +291,16 @@
 
 {#if forgotPassword}
   <form on:submit="{sendPasswordReset}" class="space-y-6" name="resetPassword">
+    <div class="mb-4">
+      <h2
+        class="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
+      >
+        {$LL.forgotPassword()}
+      </h2>
+      <p class="font-light text-gray-600 dark:text-gray-300">
+        {$LL.forgotPasswordSubtext()}
+      </p>
+    </div>
     <div>
       <label
         for="yourResetEmail"
@@ -321,14 +325,17 @@
       <button
         type="button"
         class="inline-block align-baseline font-bold text-sm
-                            text-blue-500 hover:text-blue-800 me-4"
+                            text-indigo-400 hover:text-indigo-500 me-4"
         on:click="{toggleForgotPassword}"
       >
-        {$LL.cancel()}
+        {$LL.returnToLogin()}
       </button>
-      <SolidButton type="submit">
-        {$LL.sendResetEmail()}
-      </SolidButton>
+      <button
+        type="submit"
+        class="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-700 dark:border-transparent dark:hover:bg-indigo-600 dark:focus:ring-indigo-400 dark:focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50"
+      >
+        {$LL.resetPassword()}
+      </button>
     </div>
   </form>
 {/if}

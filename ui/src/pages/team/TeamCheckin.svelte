@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import Sockette from 'sockette';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import Checkin from '../../components/checkin/Checkin.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
@@ -21,7 +21,8 @@
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import BlockedPing from '../../components/checkin/BlockedPing.svelte';
   import EditIcon from '../../components/icons/EditIcon.svelte';
-  import Picker from '../../components/global/timezone-picker/Picker.svelte';
+  import Picker from '../../components/timezone-picker/Picker.svelte';
+  import Toggle from '../../components/forms/Toggle.svelte';
 
   export let xfetch;
   export let router;
@@ -549,28 +550,13 @@
   <div
     class="mt-8 mb-4 w-full text-right bg-white dark:bg-gray-800 p-3 shadow-lg rounded-lg"
   >
-    <div
-      class="inline-block align-middle me-2 text-gray-600 dark:text-gray-400 uppercase font-rajdhani text-xl tracking-wide"
-    >
-      {$LL.showBlockedCheckins()}
-    </div>
-    <div
-      class="relative inline-block w-16 align-middle select-none transition duration-200 ease-in"
-    >
-      <input
-        type="checkbox"
-        name="showOnlyDiscussionItems"
-        id="showOnlyDiscussionItems"
-        bind:checked="{showOnlyDiscussionItems}"
-        on:change="{filterCheckins}"
-        class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow"
-      />
-      <label
-        for="showOnlyDiscussionItems"
-        class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-300 cursor-pointer transition-colors duration-200 ease-in-out"
-      >
-      </label>
-    </div>
+    <Toggle
+      name="showOnlyDiscussionItems"
+      id="showOnlyDiscussionItems"
+      bind:checked="{showOnlyDiscussionItems}"
+      changeHandler="{filterCheckins}"
+      label="{$LL.showBlockedCheckins()}"
+    />
   </div>
 
   <div class="relative">

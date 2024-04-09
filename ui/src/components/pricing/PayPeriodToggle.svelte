@@ -53,7 +53,7 @@
   <button
     on:click="{togglePaymentPeriod}"
     type="button"
-    class="toggle ml-0.5 {selectedPaymentPeriod === 'year' ? 'active' : ''}"
+    class="toggle ms-0.5 {selectedPaymentPeriod === 'year' ? 'active' : ''}"
   >
     Yearly billing
   </button>

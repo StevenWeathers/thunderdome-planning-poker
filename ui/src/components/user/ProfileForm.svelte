@@ -10,11 +10,12 @@
   import SetupMFA from './SetupMFA.svelte';
   import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
   import { user } from '../../stores';
-  import LocaleSwitcher from '../global/LocaleSwitcher.svelte';
+  import LocaleSwitcher from '../forms/LocaleInput.svelte';
   import type { Locales } from '../../i18n/i18n-types';
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);
@@ -285,18 +286,12 @@
   </div>
 
   <div class="mb-4">
-    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2">
-      <input
-        bind:checked="{profile.notificationsEnabled}"
-        type="checkbox"
-        class="w-4 h-4 dark:accent-lime-400 me-1"
-      />
-      <span>
-        {$LL.enableBattleNotifications({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}
-      </span>
-    </label>
+    <Checkbox
+      bind:checked="{profile.notificationsEnabled}"
+      label="{$LL.enableBattleNotifications({
+        friendly: AppConfig.FriendlyUIVerbs,
+      })}"
+    />
   </div>
 
   {#if isAvatarConfigurable}

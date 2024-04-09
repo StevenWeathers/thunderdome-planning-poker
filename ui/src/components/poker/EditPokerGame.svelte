@@ -6,8 +6,9 @@
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
   import { onMount } from 'svelte';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   const allowedPointValues = AppConfig.AllowedPointValues;
   const allowedPointAverages = ['ceil', 'round', 'floor'];
@@ -158,32 +159,24 @@
     </div>
 
     <div class="mb-4">
-      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">
-        <input
-          type="checkbox"
-          bind:checked="{autoFinishVoting}"
-          id="autoFinishVoting"
-          name="autoFinishVoting"
-          disabled="{!votingLocked}"
-          class="w-4 h-4 dark:accent-lime-400 me-1"
-        />
-        {$LL.autoFinishVotingLabel({
+      <Checkbox
+        bind:checked="{autoFinishVoting}"
+        id="autoFinishVoting"
+        name="autoFinishVoting"
+        disabled="{!votingLocked}"
+        label="{$LL.autoFinishVotingLabel({
           friendly: AppConfig.FriendlyUIVerbs,
-        })}
-      </label>
+        })}"
+      />
     </div>
 
     <div class="mb-4">
-      <label class="text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">
-        <input
-          type="checkbox"
-          bind:checked="{hideVoterIdentity}"
-          id="hideVoterIdentity"
-          name="hideVoterIdentity"
-          class="w-4 h-4 dark:accent-lime-400 me-1"
-        />
-        Hide Voter Identity
-      </label>
+      <Checkbox
+        bind:checked="{hideVoterIdentity}"
+        id="hideVoterIdentity"
+        name="hideVoterIdentity"
+        label="Hide Voter Identity"
+      />
     </div>
 
     <div class="mb-4">

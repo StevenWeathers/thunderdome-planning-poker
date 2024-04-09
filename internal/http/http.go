@@ -54,21 +54,25 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
 		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:     a.Config.AppDomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.PokerDataSvc)
 	retroSvc := retro.New(retro.Config{
 		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
 		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:     a.Config.AppDomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.RetroDataSvc, a.Email)
 	storyboardSvc := storyboard.New(storyboard.Config{
 		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
 		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:     a.Config.AppDomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.StoryboardDataSvc)
 	checkinSvc := checkin.New(checkin.Config{
 		WriteWaitSec:  a.Config.WebsocketConfig.WriteWaitSec,
 		PongWaitSec:   a.Config.WebsocketConfig.PongWaitSec,
 		PingPeriodSec: a.Config.WebsocketConfig.PingPeriodSec,
+		AppDomain:     a.Config.AppDomain,
 	}, a.Logger, a.Cookie.ValidateSessionCookie, a.Cookie.ValidateUserCookie, a.UserDataSvc, a.AuthDataSvc, a.CheckinDataSvc, a.TeamDataSvc)
 	swaggerJsonPath := "/" + a.Config.PathPrefix + "swagger/doc.json"
 	validate = validator.New()
@@ -138,11 +142,13 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	}
 	// org
 	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgUserOnly(a.handleGetOrganizationByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationUpdate()))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}", a.userOnly(a.orgAdminOnly(a.handleDeleteOrganization()))).Methods("DELETE")
 	// org departments(s)
 	orgRouter.HandleFunc("/{orgId}/departments", a.userOnly(a.orgUserOnly(a.handleGetOrganizationDepartments()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/departments", a.userOnly(a.orgAdminOnly(a.handleCreateDepartment()))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.orgAdminOnly(a.handleDepartmentUpdate()))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.orgAdminOnly(a.handleDeleteDepartment()))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentUsers()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentAdminOnly(a.handleDepartmentAddUser()))).Methods("POST")
@@ -151,6 +157,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentTeams()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams", a.userOnly(a.departmentAdminOnly(a.handleCreateDepartmentTeam()))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentTeamUserOnly(a.handleDepartmentTeamByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentAdminOnly(a.handleTeamUpdate()))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/invites", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamUserInvites()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/invites/{inviteId}", a.userOnly(a.departmentTeamAdminOnly(a.handleDeleteTeamUserInvite()))).Methods("DELETE")
@@ -169,6 +176,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}/teams", a.userOnly(a.orgUserOnly(a.handleGetOrganizationTeams()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/teams", a.userOnly(a.orgAdminOnly(a.handleCreateOrganizationTeam()))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.orgTeamOnly(a.handleGetOrganizationTeamByUser()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.orgAdminOnly(a.handleTeamUpdate()))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.orgAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/invites", a.userOnly(a.orgTeamOnly(a.handleGetTeamUserInvites()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/invites/{inviteId}", a.userOnly(a.orgTeamAdminOnly(a.handleDeleteTeamUserInvite()))).Methods("DELETE")
@@ -192,6 +200,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}/invites/{inviteId}", a.userOnly(a.orgAdminOnly(a.handleDeleteOrganizationUserInvite()))).Methods("DELETE")
 	// teams(s)
 	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamUserOnly(a.handleGetTeamByUser()))).Methods("GET")
+	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamAdminOnly(a.handleTeamUpdate()))).Methods("PUT")
 	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
 	teamRouter.HandleFunc("/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleGetTeamUserInvites()))).Methods("GET")
 	teamRouter.HandleFunc("/{teamId}/invites/{inviteId}", a.userOnly(a.teamAdminOnly(a.handleDeleteTeamUserInvite()))).Methods("DELETE")

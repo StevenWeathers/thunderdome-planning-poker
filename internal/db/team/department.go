@@ -113,6 +113,26 @@ func (d *OrganizationService) DepartmentCreate(ctx context.Context, OrgID string
 	return od, nil
 }
 
+// DepartmentUpdate updates an organization department
+func (d *OrganizationService) DepartmentUpdate(ctx context.Context, DeptId string, DeptName string) (*thunderdome.Department, error) {
+	od := &thunderdome.Department{}
+
+	err := d.DB.QueryRowContext(ctx, `
+		UPDATE thunderdome.organization_department
+		SET name = $1, updated_date = NOW()
+		WHERE id = $2
+		RETURNING id, name, created_date, updated_date;`,
+		DeptName,
+		DeptId,
+	).Scan(&od.Id, &od.Name, &od.CreatedDate, &od.UpdatedDate)
+
+	if err != nil {
+		return nil, fmt.Errorf("department update query error: %v", err)
+	}
+
+	return od, nil
+}
+
 // DepartmentTeamList gets a list of department teams
 func (d *OrganizationService) DepartmentTeamList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.Team {
 	var teams = make([]*thunderdome.Team, 0)

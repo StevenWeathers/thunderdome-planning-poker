@@ -17,7 +17,9 @@
 {#if AvatarService === 'gravatar'}
   {#if gravatarHash !== ''}
     <img
-      src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar}&r=g"
+      src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar !== ''
+        ? avatar
+        : 'mp'}&r=g"
       alt="{$LL.avatarAltText()}"
       class="{klass}"
       title="{userName}"
@@ -25,7 +27,9 @@
     />
   {:else}
     <img
-      src="https://gravatar.com/avatar/{warriorId}?s={width}&d={avatar}&r=g"
+      src="https://gravatar.com/avatar/{warriorId}?s={width}&d={avatar !== ''
+        ? avatar
+        : 'mp'}&r=g"
       alt="{$LL.avatarAltText()}"
       class="{klass}"
       title="{userName}"

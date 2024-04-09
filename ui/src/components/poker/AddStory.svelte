@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { quill } from '../../quill';
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
   import NoSymbol from '../icons/NoSymbol.svelte';
@@ -10,8 +9,9 @@
   import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig } from '../../config';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import Editor from '../forms/Editor.svelte';
 
   export let handlePlanAdd = () => {};
   export let toggleAddPlan = () => {};
@@ -186,15 +186,12 @@
       {#if descriptionExpanded}
         <div class="mb-2">
           <div class="bg-white">
-            <div
-              class="w-full bg-white"
-              use:quill="{{
-                placeholder: $LL.planDescriptionPlaceholder(),
-                content: description,
-              }}"
-              on:text-change="{e => (description = e.detail.html)}"
-              id="description"
-            ></div>
+            <Editor
+              content="{description}"
+              placeholder="{$LL.planDescriptionPlaceholder()}"
+              id="storyDescription"
+              handleTextChange="{c => (description = c)}"
+            />
           </div>
         </div>
       {/if}
@@ -218,15 +215,12 @@
       {#if acceptanceExpanded}
         <div class="mb-2">
           <div class="bg-white">
-            <div
-              class="w-full"
-              use:quill="{{
-                placeholder: $LL.planAcceptanceCriteriaPlaceholder(),
-                content: acceptanceCriteria,
-              }}"
-              on:text-change="{e => (acceptanceCriteria = e.detail.html)}"
+            <Editor
+              content="{acceptanceCriteria}"
+              placeholder="{$LL.planAcceptanceCriteriaPlaceholder()}"
               id="acceptanceCriteria"
-            ></div>
+              handleTextChange="{c => (acceptanceCriteria = c)}"
+            />
           </div>
         </div>
       {/if}

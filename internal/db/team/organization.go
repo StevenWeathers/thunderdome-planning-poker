@@ -63,10 +63,10 @@ func (d *OrganizationService) OrganizationUserRole(ctx context.Context, UserID s
 }
 
 // OrganizationListByUser gets a list of organizations the user is apart of
-func (d *OrganizationService) OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.Organization {
-	var organizations = make([]*thunderdome.Organization, 0)
+func (d *OrganizationService) OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserOrganization {
+	var organizations = make([]*thunderdome.UserOrganization, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT o.id, o.name, o.created_date, o.updated_date
+		`SELECT o.id, o.name, o.created_date, o.updated_date, ou.role
         FROM thunderdome.organization_user ou
         LEFT JOIN thunderdome.organization o ON ou.organization_id = o.id
         WHERE ou.user_id = $1
@@ -81,13 +81,14 @@ func (d *OrganizationService) OrganizationListByUser(ctx context.Context, UserID
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
-			var org thunderdome.Organization
+			var org thunderdome.UserOrganization
 
 			if err := rows.Scan(
 				&org.Id,
 				&org.Name,
 				&org.CreatedDate,
 				&org.UpdatedDate,
+				&org.Role,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("organization_list_by_user query scan error", zap.Error(err))
 			} else {
@@ -113,6 +114,24 @@ func (d *OrganizationService) OrganizationCreate(ctx context.Context, UserID str
 
 	if err != nil {
 		return nil, fmt.Errorf("organization create query error :%v", err)
+	}
+
+	return o, nil
+}
+
+// OrganizationUpdate updates an organization
+func (d *OrganizationService) OrganizationUpdate(ctx context.Context, OrgId string, OrgName string) (*thunderdome.Organization, error) {
+	o := &thunderdome.Organization{}
+
+	err := d.DB.QueryRowContext(ctx, `
+		UPDATE thunderdome.organization
+		SET name = $1, updated_date = NOW()
+		WHERE id = $2
+		RETURNING id, name, created_date, updated_date;`,
+		OrgName, OrgId,
+	).Scan(&o.Id, &o.Name, &o.CreatedDate, &o.UpdatedDate)
+	if err != nil {
+		return nil, fmt.Errorf("organization update query error :%v", err)
 	}
 
 	return o, nil

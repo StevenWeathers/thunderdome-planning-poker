@@ -6,8 +6,8 @@ test.describe("User Profile page", () => {
     const profilePage = new ProfilePage(page);
     await profilePage.goto();
 
-    const title = profilePage.page.locator('[data-formtitle="login"]');
-    await expect(title).toHaveText("Login");
+    const loginForm = profilePage.page.locator('form[name="login"]');
+    await expect(loginForm).toBeVisible();
   });
 
   test("Guest user successfully loads", async ({ guestPage }) => {
@@ -36,7 +36,9 @@ test.describe("User Profile page", () => {
     const profilePage = new ProfilePage(guestPage.page);
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
     await profilePage.page.locator('[data-testid="apikey-create"]').click();
     await profilePage.page
       .locator("[name=keyName]")
@@ -79,7 +81,9 @@ test.describe("User Profile page", () => {
     const profilePage = new ProfilePage(registeredPage.page);
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
     await profilePage.page.locator('[data-testid="apikey-create"]').click();
     await profilePage.page
       .locator("[name=keyName]")
@@ -185,7 +189,9 @@ test.describe("User Profile page", () => {
 
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
 
     await expect(
       profilePage.page.locator(
@@ -209,7 +215,9 @@ test.describe("User Profile page", () => {
     const profilePage = new ProfilePage(verifiedPage.page);
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
     await profilePage.page.locator('[data-testid="apikey-create"]').click();
     await profilePage.page.locator("[name=keyName]").fill(apiKeyName);
     await profilePage.page.locator("[name=createApiKey] [type=submit]").click();
@@ -233,7 +241,9 @@ test.describe("User Profile page", () => {
 
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
 
     await expect(
       profilePage.page.locator(
@@ -261,7 +271,9 @@ test.describe("User Profile page", () => {
 
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
 
     await expect(
       profilePage.page.locator(
@@ -291,7 +303,9 @@ test.describe("User Profile page", () => {
 
     await profilePage.goto();
 
-    await expect(profilePage.page.locator("h2")).toHaveText("API Keys");
+    await expect(
+      profilePage.page.locator("h2").filter({ hasText: "API Keys" }),
+    ).toBeVisible();
 
     await profilePage.page.locator('[data-testid="apikey-create"]').click();
     await profilePage.page.locator("[name=keyName]").fill(apiKeyName);
@@ -322,7 +336,7 @@ test.describe("User Profile page", () => {
 
     await expect(profilePage.page.locator("h1")).toHaveText("Your Profile");
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).toHaveText(registeredPage.user.name);
   });
 
@@ -333,7 +347,7 @@ test.describe("User Profile page", () => {
     await expect(profilePage.page.locator("h1")).toHaveText("Your Profile");
 
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).toBeVisible();
 
     await profilePage.page
@@ -346,7 +360,7 @@ test.describe("User Profile page", () => {
       "Thunderdome is an Agile Planning Poker app with a fun theme",
     );
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).not.toBeVisible();
   });
 
@@ -359,7 +373,7 @@ test.describe("User Profile page", () => {
     await expect(profilePage.page.locator("h1")).toHaveText("Your Profile");
 
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).toBeVisible();
 
     await profilePage.page
@@ -372,7 +386,7 @@ test.describe("User Profile page", () => {
       "Thunderdome is an Agile Planning Poker app with a fun theme",
     );
     await expect(
-      profilePage.page.locator("data-testid=userprofile-link"),
+      profilePage.page.locator("data-testid=usernav-name"),
     ).not.toBeVisible();
   });
 });

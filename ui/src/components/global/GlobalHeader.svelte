@@ -1,14 +1,16 @@
 <script lang="ts">
-  import HollowButton from './HollowButton.svelte';
-  import UserIcon from '../icons/UserIcon.svelte';
   import { validateUserIsAdmin } from '../../validationUtils';
   import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL, { locale, setLocale } from '../../i18n/i18n-svelte';
-  import SolidButton from './SolidButton.svelte';
   import type { Locales } from '../../i18n/i18n-types';
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
-  import LocaleSwitcher from './LocaleSwitcher.svelte';
+  import ThemeSelector from './ThemeSelector.svelte';
+  import NavUserMenu from './NavUserMenu.svelte';
+  import ArrowRight from '../icons/ArrowRight.svelte';
+  import LocaleMenu from './LocaleMenu.svelte';
+  import DomeLogo from '../logos/DomeLogo.svelte';
+  import DomeLogoLight from '../logos/DomeLogoLight.svelte';
 
   export let xfetch;
   export let router;
@@ -33,31 +35,15 @@
   } = AppConfig;
 
   const activePageClass =
-    'text-purple-700 border-purple-700 dark:text-yellow-400 dark:border-yellow-400';
+    'block lg:pt-6 lg:pb-4 px-4 border-b lg:border-b-4 lg:dark:bg-gray-800 text-indigo-600 border-indigo-600 dark:text-yellow-400 dark:border-yellow-400 transition duration-300';
   const pageClass =
-    'text-gray-700 border-white dark:border-gray-800 dark:hover:border-yellow-400 hover:text-purple-700 dark:text-gray-300 dark:hover:text-yellow-400 transition duration-300';
+    'block lg:pt-6 lg:pb-4 px-4 border-b border-gray-200 lg:border-white dark:border-gray-600 lg:dark:border-gray-800 lg:border-b-4 text-gray-700 hover:border-indigo-600 dark:hover:border-yellow-400 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-yellow-400 transition duration-300';
 
   let showMobileMenu = false;
 
   function toggleMobileMenu(e) {
     !!e && e.preventDefault();
     showMobileMenu = !showMobileMenu;
-  }
-
-  function logoutUser() {
-    xfetch('/api/auth/logout', { method: 'DELETE' })
-      .then(function () {
-        eventTag('logout', 'engagement', 'success', () => {
-          user.delete();
-          localStorage.removeItem('theme');
-          window.setTheme();
-          router.route(appRoutes.landing, true);
-        });
-      })
-      .catch(function () {
-        notifications.danger($LL.logoutError(AppConfig.FriendlyUIVerbs));
-        eventTag('logout', 'engagement', 'failure');
-      });
   }
 
   function headerLogin() {
@@ -73,17 +59,12 @@
           locale: u.locale,
           notificationsEnabled: u.notificationsEnabled,
         };
-        if (result.data.mfaRequired) {
-          mfaRequired = true;
-          mfaUser = newUser;
-          mfaSessionId = result.data.sessionId;
-        } else {
-          user.create(newUser);
-          eventTag('login', 'engagement', 'success', () => {
-            setupI18n(newUser.locale);
-            router.route(appRoutes.games, true);
-          });
-        }
+
+        user.create(newUser);
+        eventTag('login', 'engagement', 'success', () => {
+          setupI18n(newUser.locale);
+          router.route(appRoutes.games, true);
+        });
       })
       .catch(function (err) {
         notifications.danger(
@@ -94,302 +75,184 @@
   }
 </script>
 
-<style>
-  .nav-logo {
-    height: 3.5rem;
-  }
-</style>
-
-<nav class="bg-white dark:bg-gray-800" aria-label="main navigation">
-  <div class="px-8">
-    <div class="flex justify-between">
-      <div class="flex space-x-7 rtl:space-x-reverse">
-        <div>
-          <a href="{appRoutes.landing}" class="block my-3 me-10">
-            <img
-              src="{PathPrefix}/img/logo.svg"
-              alt="Thunderdome"
-              class="nav-logo"
+<header>
+  <nav
+    class="bg-white dark:bg-gray-800 px-4 lg:px-6"
+    aria-label="main navigation"
+  >
+    <div class="flex flex-wrap justify-between mx-auto max-w-screen-2xl">
+      <div class="py-2 lg:py-3">
+        <a href="{appRoutes.landing}">
+          <span
+            ><DomeLogo class="hidden dark:inline-block h-8 md:h-12 lg:h-14" />
+            <DomeLogoLight
+              class="inline-block dark:hidden h-8 md:h-12 lg:h-14"
             />
-          </a>
-        </div>
-        <nav
-          class="hidden lg:flex items-center space-x-1 rtl:space-x-reverse font-semibold font-rajdhani uppercase text-lg lg:text-xl"
-        >
-          {#if $user.name}
-            {#if FeaturePoker}
-              <a
-                href="{appRoutes.games}"
-                class="pt-6 pb-4 px-4 border-b-4 {currentPage === 'battles'
-                  ? activePageClass
-                  : pageClass}"
-              >
-                {$LL.battles({
-                  friendly: AppConfig.FriendlyUIVerbs,
-                })}
-              </a>
-            {/if}
-            {#if FeatureRetro}
-              <a
-                href="{appRoutes.retros}"
-                class="pt-6 pb-4 px-4 border-b-4 {currentPage === 'retros'
-                  ? activePageClass
-                  : pageClass}"
-              >
-                {$LL.retros()}
-              </a>
-            {/if}
-            {#if FeatureStoryboard}
-              <a
-                href="{appRoutes.storyboards}"
-                class="pt-6 pb-4 px-4 border-b-4 {currentPage === 'storyboards'
-                  ? activePageClass
-                  : pageClass}"
-              >
-                {$LL.storyboards()}
-              </a>
-            {/if}
-            {#if $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
-              <a
-                href="{appRoutes.teams}"
-                class="pt-6 pb-4 px-4 border-b-4 {currentPage === 'teams'
-                  ? activePageClass
-                  : pageClass}"
-              >
-                {$LL.teams()}
-              </a>
-            {/if}
-            {#if validateUserIsAdmin($user)}
-              <a
-                href="{appRoutes.admin}"
-                class="pt-6 pb-4 px-4 border-b-4 {currentPage === 'admin'
-                  ? activePageClass
-                  : pageClass}"
-              >
-                {$LL.admin()}
-              </a>
-            {/if}
-          {/if}
-          {#if SubscriptionsEnabled && !$user.subscribed}
-            <a
-              href="{appRoutes.subscriptionPricing}"
-              class="pt-6 pb-4 px-4 border-b-4 {currentPage === 'pricing'
-                ? activePageClass
-                : pageClass}"
-            >
-              Pricing
-            </a>
-          {/if}
-        </nav>
+          </span>
+        </a>
       </div>
-      <div
-        class="hidden lg:flex items-center space-x-3 rtl:space-x-reverse font-rajdhani font-semibold dark:text-gray-300"
+
+      <ul
+        class="flex items-center flex-shrink-0 space-x-2 rtl:space-x-reverse lg:order-2"
       >
-        {#if !$user.name}
-          <div class="uppercase">
+        {#if !$user.id}
+          <li>
+            <LocaleMenu
+              xfetch="{xfetch}"
+              notifications="{notifications}"
+              router="{router}"
+              eventTag="{eventTag}"
+              currentPage="{currentPage}"
+              selectedLocale="{$locale}"
+              on:locale-changed="{e => setupI18n(e.detail)}"
+            />
+          </li>
+          <li class="flex">
+            <ThemeSelector
+              xfetch="{xfetch}"
+              notifications="{notifications}"
+              router="{router}"
+              eventTag="{eventTag}"
+              currentPage="{currentPage}"
+            />
+          </li>
+          <li>
             {#if HeaderAuthEnabled}
-              <SolidButton
-                additionalClasses="uppercase text-md lg:text-lg"
-                onClick="{headerLogin}">{$LL.login()}</SolidButton
-              >
+              <button
+                on:click="{headerLogin}"
+                class="text-sm md:text-base block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
+                >{$LL.login()}
+                <ArrowRight class="ms-2 inline-block" />
+              </button>
             {:else}
               <a
                 href="{appRoutes.login}"
-                class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 text-lg lg:text-xl"
-                >{$LL.login()}</a
-              >
+                class="text-sm md:text-base block py-2 px-4 rounded transition duration-300 bg-indigo-600 hover:bg-indigo-800 text-white"
+                >{$LL.login()}
+                <ArrowRight class="ms-2 inline-block" />
+              </a>
             {/if}
-            {#if AllowRegistration}
-              <SolidButton
-                href="{appRoutes.register}"
-                additionalClasses="uppercase text-md lg:text-lg"
-                >{$LL.createAccount()}</SolidButton
-              >
-            {/if}
-          </div>
-        {:else}
-          <span
-            class="font-bold me-2 text-lg lg:text-xl inline-block max-w-48 truncate"
-          >
-            <UserIcon class="h-5 w-5" />
-            <a href="{appRoutes.profile}" data-testid="userprofile-link"
-              >{$user.name}</a
-            >
-          </span>
-          {#if !$user.rank || $user.rank === 'GUEST' || $user.rank === 'PRIVATE'}
-            <a
-              href="{appRoutes.login}"
-              class="py-2 px-2 text-gray-700 dark:text-gray-300 hover:text-green-600 transition duration-300 uppercase text-xl"
-              >{$LL.login()}</a
-            >
-            {#if AllowRegistration}
-              <SolidButton
-                href="{appRoutes.register}"
-                additionalClasses="uppercase text-md lg:text-lg"
-                >{$LL.createAccount()}</SolidButton
-              >
-            {/if}
-          {:else}
-            <HollowButton
-              color="red"
-              onClick="{logoutUser}"
-              additionalClasses="uppercase text-md lg:text-lg"
-            >
-              {$LL.logout()}
-            </HollowButton>
-          {/if}
-        {/if}
-        <LocaleSwitcher
-          class="ms-2 text-lg lg:text-xl"
-          selectedLocale="{$locale}"
-          on:locale-changed="{e => setupI18n(e.detail)}"
-        />
-      </div>
-      <div class="lg:hidden flex items-center">
-        <button
-          class="outline-none mobile-menu-button"
-          on:click="{toggleMobileMenu}"
-        >
-          <svg
-            class="w-6 h-6 text-gray-500 dark:text-200 hover:text-green-500 dark:hover:text-yellow-400"
-            x-show="!showMenu"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-  {#if showMobileMenu}
-    <div class="lg:hidden py-2 border-t-2 border-gray-200 dark:border-gray-700">
-      <ul class="font-rajdhani font-semibold uppercase text-lg dark:text-white">
-        {#if $user.name}
-          {#if FeaturePoker}
-            <li>
-              <a
-                href="{appRoutes.games}"
-                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
-              >
-                {$LL.battles({
-                  friendly: AppConfig.FriendlyUIVerbs,
-                })}
-              </a>
-            </li>
-          {/if}
-          {#if FeatureRetro}
-            <li>
-              <a
-                href="{appRoutes.retros}"
-                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
-              >
-                {$LL.retros()}
-              </a>
-            </li>
-          {/if}
-          {#if FeatureStoryboard}
-            <li>
-              <a
-                href="{appRoutes.storyboards}"
-                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
-              >
-                {$LL.storyboards()}
-              </a>
-            </li>
-          {/if}
-          {#if $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
-            <li>
-              <a
-                href="{appRoutes.teams}"
-                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
-              >
-                {$LL.teams()}
-              </a>
-            </li>
-          {/if}
-          {#if validateUserIsAdmin($user)}
-            <li>
-              <a
-                href="{appRoutes.admin}"
-                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
-              >
-                {$LL.admin()}
-              </a>
-            </li>
-          {/if}
-        {:else}
-          <li>
-            <a
-              href="{appRoutes.login}"
-              class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
-            >
-              {$LL.login()}
-            </a>
-          </li>
-          {#if AllowRegistration}
-            <li>
-              <a
-                href="{appRoutes.register}"
-                class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
-              >
-                {$LL.createAccount()}
-              </a>
-            </li>
-          {/if}
-        {/if}
-        {#if SubscriptionsEnabled && !$user.subscribed}
-          <li>
-            <a
-              href="{appRoutes.subscriptionPricing}"
-              class="block p-4 hover:bg-green-500 dark:hover:bg-yellow-400 hover:text-white dark:hover:text-gray-800 transition duration-300"
-            >
-              Pricing
-            </a>
           </li>
         {/if}
+        {#if $user.id}
+          <li class="relative">
+            <NavUserMenu
+              xfetch="{xfetch}"
+              notifications="{notifications}"
+              router="{router}"
+              eventTag="{eventTag}"
+              currentPage="{currentPage}"
+            />
+          </li>
+        {/if}
+        <li>
+          <button
+            on:click="{toggleMobileMenu}"
+            type="button"
+            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+          >
+            <span class="sr-only">Open main menu</span>
+            <svg
+              class="w-6 h-6"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </li>
       </ul>
-      <div class="font-rajdhani font-semibold mx-4 my-2 dark:text-white">
-        {#if $user.name}
-          <span class="font-bold me-2 text-lg lg:text-xl">
-            <UserIcon class="h-5 w-5" />
-            <a href="{appRoutes.profile}" data-testid="m-userprofile-link"
-              >{$user.name}</a
-            >
-          </span>
-          {#if !$user.rank || $user.rank === 'GUEST' || $user.rank === 'PRIVATE'}
-            <a
-              href="{appRoutes.login}"
-              class="py-2 px-2 text-gray-700 dark:text-gray-400 hover:text-green-600 transition duration-300 uppercase text-lg uppercase"
-              >{$LL.login()}</a
-            >
-            {#if AllowRegistration}
-              <SolidButton
-                href="{appRoutes.register}"
-                additionalClasses="uppercase text-md lg:text-lg"
-                >{$LL.createAccount()}</SolidButton
-              >
+
+      <div
+        class="{showMobileMenu
+          ? ''
+          : 'hidden'} justify-between items-center w-full lg:flex lg:w-auto lg:order-1 font-semibold font-rajdhani uppercase text-lg lg:text-xl"
+      >
+        <ul
+          class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-1 lg:mt-0 pb-2 lg:pb-0 rtl:space-x-reverse"
+        >
+          {#if $user.name}
+            {#if FeaturePoker}
+              <li>
+                <a
+                  href="{appRoutes.games}"
+                  class="{currentPage === 'battles'
+                    ? activePageClass
+                    : pageClass}"
+                >
+                  {$LL.battles({
+                    friendly: AppConfig.FriendlyUIVerbs,
+                  })}
+                </a>
+              </li>
             {/if}
-          {:else}
-            <HollowButton
-              color="red"
-              onClick="{logoutUser}"
-              additionalClasses="uppercase text-md lg:text-lg"
-            >
-              {$LL.logout()}
-            </HollowButton>
+            {#if FeatureRetro}
+              <li>
+                <a
+                  href="{appRoutes.retros}"
+                  class="{currentPage === 'retros'
+                    ? activePageClass
+                    : pageClass}"
+                >
+                  {$LL.retros()}
+                </a>
+              </li>
+            {/if}
+            {#if FeatureStoryboard}
+              <li>
+                <a
+                  href="{appRoutes.storyboards}"
+                  class="{currentPage === 'storyboards'
+                    ? activePageClass
+                    : pageClass}"
+                >
+                  {$LL.storyboards()}
+                </a>
+              </li>
+            {/if}
+            {#if $user.rank !== 'GUEST' && $user.rank !== 'PRIVATE'}
+              <li>
+                <a
+                  href="{appRoutes.teams}"
+                  class="{currentPage === 'teams'
+                    ? activePageClass
+                    : pageClass}"
+                >
+                  {$LL.teams()}
+                </a>
+              </li>
+            {/if}
+            {#if validateUserIsAdmin($user)}
+              <li>
+                <a
+                  href="{appRoutes.admin}"
+                  class="{currentPage === 'admin'
+                    ? activePageClass
+                    : pageClass}"
+                >
+                  {$LL.admin()}
+                </a>
+              </li>
+            {/if}
           {/if}
-        {/if}
-        <LocaleSwitcher
-          class="mt-4 block text-xl w-full"
-          selectedLocale="{$locale}"
-          on:locale-changed="{e => setupI18n(e.detail)}"
-        />
+          {#if SubscriptionsEnabled && !$user.subscribed}
+            <li>
+              <a
+                href="{appRoutes.subscriptionPricing}"
+                class="{currentPage === 'pricing'
+                  ? activePageClass
+                  : pageClass}"
+              >
+                Pricing
+              </a>
+            </li>
+          {/if}
+        </ul>
       </div>
     </div>
-  {/if}
-</nav>
+  </nav>
+</header>

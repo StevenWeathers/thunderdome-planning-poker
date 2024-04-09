@@ -1,8 +1,9 @@
 <script lang="ts">
   import Modal from '../global/Modal.svelte';
   import SolidButton from '../global/SolidButton.svelte';
-  import { quill } from '../../quill';
   import LL from '../../i18n/i18n-svelte';
+  import Editor from '../forms/Editor.svelte';
+  import Toggle from '../forms/Toggle.svelte';
 
   export let toggleCheckin = () => {};
   export let handleCheckin = () => {};
@@ -50,39 +51,21 @@
             {$LL.yesterday()}
           </div>
           <div class="bg-white">
-            <div
-              class="w-full"
-              use:quill="{{
-                placeholder: `${$LL.yesterdayPlaceholder()}`,
-                content: yesterday,
-              }}"
-              on:text-change="{e => (yesterday = e.detail.html)}"
+            <Editor
+              content="{yesterday}"
+              placeholder="{$LL.yesterdayPlaceholder()}"
               id="yesterday"
-            ></div>
+              handleTextChange="{c => (yesterday = c)}"
+            />
           </div>
         </div>
         <div class="mb-4">
-          <div
-            class="text-gray-600 dark:text-gray-400 uppercase font-rajdhani text-xl tracking-wide mb-2"
-          >
-            {$LL.checkinMeetYesterdayGoalsQuestion()}
-          </div>
-          <div
-            class="relative inline-block w-16 me-2 align-middle select-none transition duration-200 ease-in"
-          >
-            <input
-              type="checkbox"
-              name="goalsMet"
-              id="goalsMet"
-              bind:checked="{goalsMet}"
-              class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow"
-            />
-            <label
-              for="goalsMet"
-              class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-300 cursor-pointer transition-colors duration-200 ease-in-out"
-            >
-            </label>
-          </div>
+          <Toggle
+            name="goalsMet"
+            id="goalsMet"
+            bind:checked="{goalsMet}"
+            label="{$LL.checkinMeetYesterdayGoalsQuestion()}"
+          />
         </div>
       </div>
       <div>
@@ -93,15 +76,12 @@
             {$LL.today()}
           </div>
           <div class="bg-white">
-            <div
-              class="w-full"
-              use:quill="{{
-                placeholder: `${$LL.todayPlaceholder()}`,
-                content: today,
-              }}"
-              on:text-change="{e => (today = e.detail.html)}"
+            <Editor
+              content="{today}"
+              placeholder="{$LL.todayPlaceholder()}"
               id="today"
-            ></div>
+              handleTextChange="{c => (today = c)}"
+            />
           </div>
         </div>
       </div>
@@ -114,15 +94,12 @@
         {$LL.blockers()}
       </div>
       <div class="bg-white">
-        <div
-          class="w-full"
-          use:quill="{{
-            placeholder: `${$LL.blockersPlaceholder()}`,
-            content: blockers,
-          }}"
-          on:text-change="{e => (blockers = e.detail.html)}"
+        <Editor
+          content="{blockers}"
+          placeholder="{$LL.blockersPlaceholder()}"
           id="blockers"
-        ></div>
+          handleTextChange="{c => (blockers = c)}"
+        />
       </div>
     </div>
 
@@ -133,15 +110,12 @@
         {$LL.discuss()}
       </div>
       <div class="bg-white">
-        <div
-          class="w-full"
-          use:quill="{{
-            placeholder: `${$LL.discussPlaceholder()}`,
-            content: discuss,
-          }}"
-          on:text-change="{e => (discuss = e.detail.html)}"
+        <Editor
+          content="{discuss}"
+          placeholder="{$LL.discussPlaceholder()}"
           id="discuss"
-        ></div>
+          handleTextChange="{c => (discuss = c)}"
+        />
       </div>
     </div>
 
