@@ -108,22 +108,6 @@ input[type='search']::-webkit-search-cancel-button {
   margin-right: 0px;
 }
 
-.toggle-checkbox:checked {
-  border-color: #68d391;
-}
-
-[dir='ltr'] .toggle-checkbox:checked {
-  right: 0;
-}
-
-[dir='rtl'] .toggle-checkbox:checked {
-  left: -0;
-}
-
-.toggle-checkbox:checked + .toggle-label {
-  background-color: #68d391;
-}
-
 .text-yellow-thunder {
   color: #ffdd57;
 }
