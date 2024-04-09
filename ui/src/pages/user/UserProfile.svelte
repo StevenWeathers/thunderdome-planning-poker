@@ -269,7 +269,10 @@
     if (ExternalAPIEnabled) {
       getApiKeys();
     }
-    if ((SubscriptionsEnabled && $user.subscribed) || !SubscriptionsEnabled) {
+    if (
+      (SubscriptionsEnabled && $user.subscribed) ||
+      (!SubscriptionsEnabled && $user.rank !== 'GUEST')
+    ) {
       getJiraInstances();
     }
   });
@@ -512,7 +515,7 @@
               Jira Instances
             </h2>
           </div>
-          {#if (SubscriptionsEnabled && $user.subscribed) || !SubscriptionsEnabled}
+          {#if (SubscriptionsEnabled && $user.subscribed) || (!SubscriptionsEnabled && $user.rank !== 'GUEST')}
             <div class="flex-1">
               <div class="text-right">
                 <HollowButton
@@ -536,6 +539,10 @@
                 {#if SubscriptionsEnabled && !$user.subscribed}
                   <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
                     Must be subscribed to setup Jira integrations
+                  </p>
+                {:else if !SubscriptionsEnabled && $user.rank === 'GUEST'}
+                  <p class="bg-sky-300 p-4 rounded text-gray-700 font-bold">
+                    Must be logged in to setup Jira integrations
                   </p>
                 {:else}
                   <table
