@@ -5,7 +5,7 @@
   import FullLogoVertical from '../logos/FullLogo.svelte';
   import FullLogoVerticalDarkText from '../logos/FullLogoLight.svelte';
 
-  const { AppVersion, RepoURL, PathPrefix } = AppConfig;
+  const { AppVersion, RepoURL, PathPrefix, SubscriptionsEnabled } = AppConfig;
   const footerLinkClasses =
     'no-underline text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600';
 </script>
@@ -30,12 +30,14 @@
       <ul
         class="text-sm md:text-base flex flex-wrap items-center mb-6 font-medium text-gray-500 md:mb-0 dark:text-gray-400"
       >
-        <li>
-          <a
-            href="{appRoutes.subscriptionPricing}"
-            class="hover:underline me-4 md:me-6">Pricing</a
-          >
-        </li>
+        {#if SubscriptionsEnabled}
+          <li>
+            <a
+              href="{appRoutes.subscriptionPricing}"
+              class="hover:underline me-4 md:me-6">Pricing</a
+            >
+          </li>
+        {/if}
         <li>
           <a
             href="{RepoURL}/blob/main/docs/GUIDE.md"

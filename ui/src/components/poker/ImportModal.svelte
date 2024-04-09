@@ -160,7 +160,7 @@
   function importStory(idx) {
     return function () {
       const story = jiraStories[idx];
-      const link = handlePlanAdd({
+      handlePlanAdd({
         planName: story.fields.summary,
         type: findPlanType(story.fields.issuetype.name),
         referenceId: story.key,
@@ -174,7 +174,10 @@
   }
 
   onMount(() => {
-    if ($user.subscribed) {
+    if (
+      (AppConfig.SubscriptionsEnabled && $user.subscribed) ||
+      !AppConfig.SubscriptionsEnabled
+    ) {
       getJiraInstances();
     }
   });
@@ -184,7 +187,7 @@
   <div class="mt-8 mb-4">
     <div class="mb-4 dark:text-gray-300">
       <h3 class="font-bold mb-2 text-xl">Import from Jira Cloud</h3>
-      {#if !$user.subscribed}
+      {#if AppConfig.SubscriptionsEnabled && !$user.subscribed}
         <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
           Must be <a
             href="{appRoutes.subscriptionPricing}"
