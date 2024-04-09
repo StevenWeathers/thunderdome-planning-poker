@@ -14,6 +14,8 @@
   import Table from '../../components/table/Table.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import TableContainer from '../../components/table/TableContainer.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
+  import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
 
   export let xfetch;
   export let router;
@@ -23,6 +25,11 @@
   const organizationsPageLimit = 1000;
   const teamsPageLimit = 1000;
   const { OrganizationsEnabled } = AppConfig;
+
+  let defaultOrganization = {
+    id: '',
+    name: '',
+  };
 
   let organizations = [];
   let teams = [];
@@ -35,9 +42,25 @@
     showCreateOrganization = !showCreateOrganization;
   }
 
+  let showOrganizationUpdate = false;
+  let selectedOrganization = { ...defaultOrganization };
+
+  function toggleUpdateOrganization(selectedOrg) {
+    return () => {
+      selectedOrganization = selectedOrg;
+      showOrganizationUpdate = !showOrganizationUpdate;
+    };
+  }
+
   function toggleCreateTeam() {
     showCreateTeam = !showCreateTeam;
   }
+
+  let showDeleteOrganization = false;
+  const toggleDeleteOrganization = selectedOrg => () => {
+    selectedOrganization = selectedOrg;
+    showDeleteOrganization = !showDeleteOrganization;
+  };
 
   function getOrganizations() {
     const orgsOffset = (organizationsPage - 1) * organizationsPageLimit;
@@ -103,6 +126,102 @@
       });
   }
 
+  function updateOrganizationHandler(name) {
+    const body = {
+      name,
+    };
+
+    xfetch(`/api/organizations/${selectedOrganization.id}`, {
+      method: 'PUT',
+      body,
+    })
+      .then(res => res.json())
+      .then(function (result) {
+        eventTag('update_organization', 'engagement', 'success');
+        notifications.success(`${$LL.orgUpdateSuccess()}`);
+        getOrganizations();
+        toggleUpdateOrganization(defaultOrganization)();
+      })
+      .catch(function () {
+        notifications.danger(`${$LL.orgUpdateError()}`);
+        eventTag('update_organization', 'engagement', 'failure');
+      });
+  }
+
+  function handleDeleteOrganization() {
+    xfetch(`/api/organizations/${selectedOrganization.id}`, {
+      method: 'DELETE',
+    })
+      .then(function () {
+        eventTag('organization_delete', 'engagement', 'success');
+        getOrganizations();
+        toggleDeleteOrganization(defaultOrganization)();
+        notifications.success($LL.organizationDeleteSuccess());
+      })
+      .catch(function () {
+        notifications.danger($LL.organizationDeleteError());
+        eventTag('organization_delete', 'engagement', 'failure');
+      });
+  }
+
+  let defaultTeam = {
+    id: '',
+    name: '',
+  };
+  let selectedTeam = { ...defaultTeam };
+  let showTeamUpdate = false;
+
+  function toggleUpdateTeam(team) {
+    return () => {
+      selectedTeam = team;
+      showTeamUpdate = !showTeamUpdate;
+    };
+  }
+
+  let showDeleteTeam = false;
+  const toggleDeleteTeam = team => () => {
+    selectedTeam = team;
+    showDeleteTeam = !showDeleteTeam;
+  };
+
+  function updateTeamHandler(name) {
+    const body = {
+      name,
+    };
+
+    xfetch(`/api/teams/${selectedTeam.id}`, {
+      method: 'PUT',
+      body,
+    })
+      .then(res => res.json())
+      .then(function (result) {
+        eventTag('update_team', 'engagement', 'success');
+        notifications.success(`${$LL.teamUpdateSuccess()}`);
+        getTeams();
+        toggleUpdateTeam(defaultTeam)();
+      })
+      .catch(function () {
+        notifications.danger(`${$LL.teamUpdateError()}`);
+        eventTag('update_team', 'engagement', 'failure');
+      });
+  }
+
+  function handleDeleteTeam() {
+    xfetch(`/api/teams/${selectedTeam.id}`, {
+      method: 'DELETE',
+    })
+      .then(function () {
+        eventTag('team_delete', 'engagement', 'success');
+        getTeams();
+        toggleDeleteTeam(defaultTeam)();
+        notifications.success($LL.teamDeleteSuccess());
+      })
+      .catch(function () {
+        notifications.danger($LL.teamDeleteError());
+        eventTag('team_delete', 'engagement', 'failure');
+      });
+  }
+
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
@@ -141,6 +260,7 @@
             <HeadCol>
               {$LL.dateUpdated()}
             </HeadCol>
+            <HeadCol type="action" />
           </tr>
           <tbody slot="body" let:class="{className}" class="{className}">
             {#each organizations as organization, i}
@@ -158,6 +278,18 @@
                 </RowCol>
                 <RowCol>
                   {new Date(organization.updatedDate).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  {#if organization.role === 'ADMIN'}
+                    <CrudActions
+                      editBtnClickHandler="{toggleUpdateOrganization(
+                        organization,
+                      )}"
+                      deleteBtnClickHandler="{toggleDeleteOrganization(
+                        organization,
+                      )}"
+                    />
+                  {/if}
                 </RowCol>
               </TableRow>
             {/each}
@@ -185,6 +317,7 @@
         <HeadCol>
           {$LL.dateUpdated()}
         </HeadCol>
+        <HeadCol type="action" />
       </tr>
       <tbody slot="body" let:class="{className}" class="{className}">
         {#each teams as team, i}
@@ -203,6 +336,14 @@
             <RowCol>
               {new Date(team.updatedDate).toLocaleString()}
             </RowCol>
+            <RowCol type="action">
+              {#if team.role === 'ADMIN'}
+                <CrudActions
+                  editBtnClickHandler="{toggleUpdateTeam(team)}"
+                  deleteBtnClickHandler="{toggleDeleteTeam(team)}"
+                />
+              {/if}
+            </RowCol>
           </TableRow>
         {/each}
       </tbody>
@@ -216,10 +357,44 @@
     />
   {/if}
 
+  {#if showOrganizationUpdate}
+    <CreateOrganization
+      toggleCreate="{toggleUpdateOrganization(defaultOrganization)}"
+      organizationName="{selectedOrganization.name}"
+      handleCreate="{updateOrganizationHandler}"
+    />
+  {/if}
+
+  {#if showDeleteOrganization}
+    <DeleteConfirmation
+      toggleDelete="{toggleDeleteOrganization(defaultOrganization)}"
+      handleDelete="{handleDeleteOrganization}"
+      confirmText="{$LL.deleteOrganizationConfirmText()}"
+      confirmBtnText="{$LL.deleteOrganization()}"
+    />
+  {/if}
+
   {#if showCreateTeam}
     <CreateTeam
       toggleCreate="{toggleCreateTeam}"
       handleCreate="{createTeamHandler}"
+    />
+  {/if}
+
+  {#if showTeamUpdate}
+    <CreateTeam
+      teamName="{selectedTeam.name}"
+      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
+      handleCreate="{updateTeamHandler}"
+    />
+  {/if}
+
+  {#if showDeleteTeam}
+    <DeleteConfirmation
+      toggleDelete="{toggleDeleteTeam(defaultTeam)}"
+      handleDelete="{handleDeleteTeam}"
+      confirmText="{$LL.deleteTeamConfirmText()}"
+      confirmBtnText="{$LL.deleteTeam()}"
     />
   {/if}
 </PageLayout>

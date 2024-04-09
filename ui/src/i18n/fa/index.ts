@@ -621,6 +621,12 @@ const fa: Translation = {
   expireDate: 'Expire Date',
   addUserWillInviteNotFoundFieldNote:
     'If user is not registered an invite to register and join the {pageType} will be sent.',
+  teamUpdateSuccess: 'Team updated successfully',
+  teamUpdateError: 'Error updating Team',
+  orgUpdateSuccess: 'Organization updated successfully',
+  orgUpdateError: 'Error updating Organization',
+  deptUpdateSuccess: 'Department updated successfully',
+  deptUpdateError: 'Error updating Department',
 };
 
 export default fa;

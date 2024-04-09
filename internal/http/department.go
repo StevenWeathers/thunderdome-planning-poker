@@ -159,6 +159,59 @@ func (s *Service) handleCreateDepartment() http.HandlerFunc {
 	}
 }
 
+// handleDepartmentUpdate handles updating an organization department
+// @Summary      Update Department
+// @Description  Update an organization department
+// @Tags         organization
+// @Produce      json
+// @Param        orgId       path    string                 true  "the organization ID"
+// @Param        deptId       path    string                 true  "the department ID"
+// @Param        department  body    teamCreateRequestBody  true  "updated department object"
+// @Success      200         object  standardJsonResponse{data=thunderdome.Department}
+// @Failure      500         object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/departments/{departmentId} [put]
+func (s *Service) handleDepartmentUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		DeptID := vars["departmentId"]
+
+		var team = teamCreateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &team)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		NewDepartment, err := s.OrganizationDataSvc.DepartmentUpdate(r.Context(), DeptID, team.Name)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDepartmentUpdate error", zap.Error(err),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID),
+				zap.String("department_id", DeptID),
+				zap.String("department_name", team.Name))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, NewDepartment, nil)
+	}
+}
+
 // handleGetDepartmentTeams gets a list of teams associated to the department
 // @Summary      Get Department Teams
 // @Description  Gets a list of organization department teams

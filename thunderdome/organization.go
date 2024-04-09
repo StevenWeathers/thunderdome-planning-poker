@@ -13,6 +13,11 @@ type Organization struct {
 	UpdatedDate time.Time `json:"updatedDate"`
 }
 
+type UserOrganization struct {
+	Organization
+	Role string `json:"role"`
+}
+
 type OrganizationUser struct {
 	Id           string `json:"id"`
 	Name         string `json:"name"`
@@ -50,8 +55,9 @@ type DepartmentUser struct {
 type OrganizationDataSvc interface {
 	OrganizationGet(ctx context.Context, OrgID string) (*Organization, error)
 	OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error)
-	OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*Organization
+	OrganizationListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*UserOrganization
 	OrganizationCreate(ctx context.Context, UserID string, OrgName string) (*Organization, error)
+	OrganizationUpdate(ctx context.Context, OrgId string, OrgName string) (*Organization, error)
 	OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*OrganizationUser
 	OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
 	OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
@@ -70,6 +76,7 @@ type OrganizationDataSvc interface {
 	DepartmentGet(ctx context.Context, DepartmentID string) (*Department, error)
 	OrganizationDepartmentList(ctx context.Context, OrgID string, Limit int, Offset int) []*Department
 	DepartmentCreate(ctx context.Context, OrgID string, OrgName string) (*Department, error)
+	DepartmentUpdate(ctx context.Context, DeptId string, DeptName string) (*Department, error)
 	DepartmentTeamList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*Team
 	DepartmentTeamCreate(ctx context.Context, DepartmentID string, TeamName string) (*Team, error)
 	DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*DepartmentUser

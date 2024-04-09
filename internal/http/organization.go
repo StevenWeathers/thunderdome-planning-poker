@@ -35,7 +35,7 @@ type orgTeamResponse struct {
 // @Param        userId  path    string  true   "the user ID to get organizations for"
 // @Param        limit   query   int     false  "Max number of results to return"
 // @Param        offset  query   int     false  "Starting point to return rows from, should be multiplied by limit or 0"
-// @Success      200     object  standardJsonResponse{data=[]thunderdome.Organization}
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.UserOrganization}
 // @Failure      403     object  standardJsonResponse{}
 // @Security     ApiKeyAuth
 // @Router       /users/{userId}/organizations [get]
@@ -139,6 +139,57 @@ func (s *Service) handleCreateOrganization() http.HandlerFunc {
 			s.Logger.Ctx(ctx).Error(
 				"handleCreateOrganization error", zap.Error(err), zap.String("entity_user_id", UserID),
 				zap.String("session_user_id", SessionUserID), zap.String("organization_name", team.Name))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, Organization, nil)
+	}
+}
+
+// handleOrganizationUpdate handles updating an organization
+// @Summary      Update Organization
+// @Description  Update organization
+// @Tags         organization
+// @Produce      json
+// @Param        orgId        path    string                 true  "organization id"
+// @Param        organization  body    teamCreateRequestBody  true  "updated organization object"
+// @Success      200           object  standardJsonResponse{data=thunderdome.Organization}
+// @Failure      403           object  standardJsonResponse{}
+// @Failure      500           object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId} [put]
+func (s *Service) handleOrganizationUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+
+		var team = teamCreateRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &team)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		Organization, err := s.OrganizationDataSvc.OrganizationUpdate(ctx, OrgID, team.Name)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleCreateOrganization error", zap.Error(err),
+				zap.String("organization_id", OrgID),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("organization_name", team.Name))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}

@@ -218,6 +218,78 @@
       });
   }
 
+  let defaultDepartment = {
+    id: '',
+    name: '',
+  };
+  let selectedDepartment = { ...defaultDepartment };
+  let showDepartmentUpdate = false;
+
+  function toggleUpdateDepartment(dept) {
+    return () => {
+      selectedDepartment = dept;
+      showDepartmentUpdate = !showDepartmentUpdate;
+    };
+  }
+
+  let defaultTeam = {
+    id: '',
+    name: '',
+  };
+  let selectedTeam = { ...defaultTeam };
+  let showTeamUpdate = false;
+
+  function toggleUpdateTeam(team) {
+    return () => {
+      selectedTeam = team;
+      showTeamUpdate = !showTeamUpdate;
+    };
+  }
+
+  function updateDepartmentHandler(name) {
+    const body = {
+      name,
+    };
+
+    xfetch(
+      `/api/organizations/${organizationId}/departments/${selectedDepartment.id}`,
+      { body, method: 'PUT' },
+    )
+      .then(res => res.json())
+      .then(function (result) {
+        eventTag('update_department', 'engagement', 'success');
+        getDepartments();
+        toggleUpdateDepartment(defaultDepartment)();
+        notifications.success(`${$LL.deptUpdateSuccess()}`);
+      })
+      .catch(function () {
+        notifications.danger(`${$LL.deptUpdateError()}`);
+        eventTag('update_department', 'engagement', 'failure');
+      });
+  }
+
+  function updateTeamHandler(name) {
+    const body = {
+      name,
+    };
+
+    xfetch(`/api/organizations/${organizationId}/teams/${selectedTeam.id}`, {
+      body,
+      method: 'PUT',
+    })
+      .then(res => res.json())
+      .then(function () {
+        eventTag('create_organization_team', 'engagement', 'success');
+        toggleUpdateTeam(defaultTeam)();
+        getTeams();
+        notifications.success(`${$LL.teamUpdateSuccess()}`);
+      })
+      .catch(function () {
+        notifications.danger(`${$LL.teamUpdateError()}`);
+        eventTag('create_organization_team', 'engagement', 'failure');
+      });
+  }
+
   onMount(() => {
     if (!$user.id || !validateUserIsRegistered($user)) {
       router.route(appRoutes.login);
@@ -285,7 +357,7 @@
               <RowCol type="action">
                 {#if isAdmin}
                   <CrudActions
-                    editBtnEnabled="{false}"
+                    editBtnClickHandler="{toggleUpdateDepartment(department)}"
                     deleteBtnClickHandler="{toggleDeleteDepartment(
                       department.id,
                     )}"
@@ -343,7 +415,7 @@
               <RowCol type="action">
                 {#if isAdmin}
                   <CrudActions
-                    editBtnEnabled="{false}"
+                    editBtnClickHandler="{toggleUpdateTeam(team)}"
                     deleteBtnClickHandler="{toggleDeleteTeam(team.id)}"
                   />
                 {/if}
@@ -381,10 +453,26 @@
     />
   {/if}
 
+  {#if showDepartmentUpdate}
+    <CreateDepartment
+      departmentName="{selectedDepartment.name}"
+      toggleCreate="{toggleUpdateDepartment(defaultDepartment)}"
+      handleCreate="{updateDepartmentHandler}"
+    />
+  {/if}
+
   {#if showCreateTeam}
     <CreateTeam
       toggleCreate="{toggleCreateTeam}"
       handleCreate="{createTeamHandler}"
+    />
+  {/if}
+
+  {#if showTeamUpdate}
+    <CreateTeam
+      teamName="{selectedTeam.name}"
+      toggleCreate="{toggleUpdateTeam(defaultTeam)}"
+      handleCreate="{updateTeamHandler}"
     />
   {/if}
 
