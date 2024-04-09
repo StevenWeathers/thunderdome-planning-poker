@@ -3,14 +3,13 @@
 
   import SolidButton from '../global/SolidButton.svelte';
   import HollowButton from '../global/HollowButton.svelte';
-  import JiraImport from './JiraImport.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
-  import CsvImport from './CsvImport.svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Checkbox from '../forms/Checkbox.svelte';
+  import ImportModal from './ImportModal.svelte';
 
   export let notifications;
   export let eventTag;
@@ -33,9 +32,9 @@
   let hideVoterIdentity = false;
 
   let checkedPointColor =
-    'border-green-500 bg-green-100 text-green-600 dark:bg-gray-900 dark:text-lime-500 dark:border-lime-500';
+    'border-green-500 bg-green-50 text-green-700 dark:bg-lime-50 dark:text-lime-700 dark:border-lime-500';
   let uncheckedPointColor =
-    'border-gray-300 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300';
+    'border-gray-300 bg-white text-gray-700 dark:bg-gray-900 dark:border-gray-500 dark:text-gray-300';
 
   function addPlan() {
     plans.unshift({
@@ -131,6 +130,12 @@
       });
   }
 
+  let showImport = false;
+
+  const toggleImport = () => {
+    showImport = !showImport;
+  };
+
   onMount(() => {
     if (!$user.id) {
       router.route(appRoutes.register);
@@ -188,14 +193,13 @@
     <h3 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">
       {$LL.pointValuesAllowed()}
     </h3>
-    <div class="control relative -me-2 md:-me-1">
+    <div class="control relative flex flex-wrap gap-1">
       {#each allowedPointValues as point, pi}
         <label
           class="{points.includes(point)
             ? checkedPointColor
             : uncheckedPointColor}
-                    cursor-pointer font-bold border p-2 me-2 xl:me-1 mb-2
-                    xl:mb-0 rounded inline-block"
+                    cursor-pointer font-bold border p-2 rounded inline-block"
         >
           <input
             type="checkbox"
@@ -214,21 +218,21 @@
       {$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}
     </h3>
     <div class="control mb-4">
-      <JiraImport
-        handlePlanAdd="{handlePlanImport}"
-        notifications="{notifications}"
-        eventTag="{eventTag}"
-      />
+      <HollowButton onClick="{toggleImport}" color="blue">
+        {$LL.importPlans({ friendly: AppConfig.FriendlyUIVerbs })}
+      </HollowButton>
       <HollowButton onClick="{addPlan}">
         {$LL.addPlan({ friendly: AppConfig.FriendlyUIVerbs })}
       </HollowButton>
-    </div>
-    <div class="control mb-4">
-      <CsvImport
-        handlePlanAdd="{handlePlanImport}"
-        notifications="{notifications}"
-        eventTag="{eventTag}"
-      />
+      {#if showImport}
+        <ImportModal
+          notifications="{notifications}"
+          toggleImport="{toggleImport}"
+          handlePlanAdd="{handlePlanImport}"
+          xfetch="{xfetch}"
+          eventTag="{eventTag}"
+        />
+      {/if}
     </div>
 
     {#each plans as plan, i}
