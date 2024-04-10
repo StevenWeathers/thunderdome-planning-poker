@@ -20,17 +20,17 @@
       <div
         class="relative shadow-xl bg-white dark:bg-gray-800 rounded-lg p-4 xl:p-6 max-h-full"
       >
-        <div class="absolute top-4 end-4">
-          <button
-            aria-label="close"
-            on:click="{closeModal}"
-            class="text-gray-800 dark:text-gray-400 hover:bg-red-500 hover:text-white dark:hover:text-gray-800 p-1 rounded-full"
-          >
-            <CloseIcon class="w-7 h-7" />
-          </button>
-        </div>
-
-        <div class="mt-8">
+        <button
+          on:click="{closeModal}"
+          aria-label="close"
+          type="button"
+          class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+          data-modal-toggle="deleteModal"
+        >
+          <CloseIcon class="w-5 h-5" />
+          <span class="sr-only">Close modal</span>
+        </button>
+        <div>
           <slot />
         </div>
       </div>
