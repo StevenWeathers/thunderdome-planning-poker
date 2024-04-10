@@ -73,7 +73,7 @@
             class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900 p-2 flex items-center justify-center mx-auto mb-3.5"
           >
             <AlertIcon class="w-8 h-8 text-red-500 dark:text-red-400" />
-            <span class="sr-only">Success</span>
+            <span class="sr-only">Failure</span>
           </div>
           <div class="text-lg font-semibold text-gray-900 dark:text-white">
             Error processing invite<br />
