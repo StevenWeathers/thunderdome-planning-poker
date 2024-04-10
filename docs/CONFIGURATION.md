@@ -26,7 +26,7 @@ For Thunderdome to work correctly the following configuration items are required
 
 | Option                | Environment Variable | Description                                                                                                                                         | Default Value     |
 |-----------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for functional cookies (guest and registered user sessions), WebSocket origin check,  and creating URLs in emails. | thunderdome.dev   |
+| `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for functional cookies (guest and registered user sessions), WebSocket origin check, and creating URLs in emails. | thunderdome.dev   |
 | `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                                                                                          | strongest-avenger |
 | `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Battle JoinCode, LeaderCode).                                                                          | therevengers      |
 
@@ -74,9 +74,19 @@ set that user as ADMIN role.
 Thunderdome has a built-in `normal` authentication with user/password as well as supports `header` and `ldap`
 authentications.
 
-| Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
-|---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `auth.method`                         | AUTH_METHOD                         | Choose `normal`, `header` or `ldap` as authentication method. See separate sections on LDAP/header configurations.   | normal                                                     |
+| Option                                | Environment Variable                | Description                                                                                                   | Default Value                                              |
+|---------------------------------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| `auth.method`                         | AUTH_METHOD                         | Choose `normal`, `header` or `ldap` as authentication method. See respective sections on auth configurations. | normal                                                     |
+
+### Google OAuth
+
+Thunderdome has support for Google OAuth authentication when the `auth.method` is set to `normal` and not `header`
+or `ldap`. Google Auth accounts are separate of internal users/password accounts even if they have the same email.
+
+| Option                      | Environment Variable      | Description                | Default Value |
+|-----------------------------|---------------------------|----------------------------|---------------|
+| `auth.google.client_id`     | AUTH_GOOGLE_CLIENT_ID     | Google OAuth Client ID     |               |
+| `auth.google.client_secret` | AUTH_GOOGLE_CLIENT_SECRET | Google OAuth Client Secret |               |
 
 ### LDAP Configuration
 

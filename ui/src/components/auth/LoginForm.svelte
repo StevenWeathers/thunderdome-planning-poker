@@ -19,7 +19,12 @@
     }
   }
 
-  const { AllowRegistration, LdapEnabled, GoogleAuthEnabled } = AppConfig;
+  const {
+    AllowRegistration,
+    LdapEnabled,
+    GoogleAuthEnabled,
+    HeaderAuthEnabled,
+  } = AppConfig;
   const authEndpoint = LdapEnabled ? '/api/auth/ldap' : '/api/auth';
 
   let email = '';
@@ -222,7 +227,7 @@
       </button>
     </div>
   </form>
-  {#if GoogleAuthEnabled}
+  {#if GoogleAuthEnabled && !HeaderAuthEnabled && !LdapEnabled}
     <div class="mt-6">
       <div class="relative">
         <div class="absolute inset-0 flex items-center">
