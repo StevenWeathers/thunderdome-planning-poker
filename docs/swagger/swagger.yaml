@@ -463,8 +463,6 @@ definitions:
         type: string
       name:
         type: string
-      orgInviteId:
-        type: string
       password1:
         maxLength: 72
         minLength: 6
@@ -472,8 +470,6 @@ definitions:
       password2:
         maxLength: 72
         minLength: 6
-        type: string
-      teamInviteId:
         type: string
     required:
     - email
@@ -5618,6 +5614,66 @@ paths:
       summary: Create Poker Game
       tags:
       - poker
+  /users/{userId}/invite/organization/{inviteId}:
+    post:
+      description: Processes an organization invite for the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: User Organization Invite
+      tags:
+      - user
+  /users/{userId}/invite/team/{inviteId}:
+    post:
+      description: Processes a team invite for the user
+      parameters:
+      - description: the user ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: the invite ID
+        in: path
+        name: inviteId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.standardJsonResponse'
+      summary: User Team Invite
+      tags:
+      - user
   /users/{userId}/jira-instances:
     get:
       description: get list of Jira instances associated to user

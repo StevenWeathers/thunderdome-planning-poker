@@ -6574,6 +6574,96 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{userId}/invite/organization/{inviteId}": {
+            "post": {
+                "description": "Processes an organization invite for the user",
+                "tags": [
+                    "user"
+                ],
+                "summary": "User Organization Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}/invite/team/{inviteId}": {
+            "post": {
+                "description": "Processes a team invite for the user",
+                "tags": [
+                    "user"
+                ],
+                "summary": "User Team Invite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the invite ID",
+                        "name": "inviteId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.standardJsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{userId}/jira-instances": {
             "get": {
                 "security": [
@@ -8782,9 +8872,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "orgInviteId": {
-                    "type": "string"
-                },
                 "password1": {
                     "type": "string",
                     "maxLength": 72,
@@ -8794,9 +8881,6 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 72,
                     "minLength": 6
-                },
-                "teamInviteId": {
-                    "type": "string"
                 }
             }
         },

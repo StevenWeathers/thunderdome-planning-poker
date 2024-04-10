@@ -459,7 +459,7 @@ const de: Translation = {
   userAddError: 'Fehler beim Versuch, den Benutzer anzulegen.',
   userAddSuccess: 'Benutzer erfolgreich hinzugefügt.',
   userEmail: 'Benutzer E-Mail',
-  userEmailPlaceholder: 'E-Mail-Adresse eines registrierten Benutzers eingeben',
+  userEmailPlaceholder: 'Enter the users email',
   userName: 'User Name',
   userRemoveError: 'Fehler beim Versuch, den Benutzer zu entfernen.',
   userRemoveSuccess: 'Benutzer erfolgreich entfernt.',
@@ -631,6 +631,8 @@ const de: Translation = {
   expireDate: 'Expire Date',
   addUserWillInviteNotFoundFieldNote:
     'If user is not registered an invite to register and join the {pageType} will be sent.',
+  inviteUserFieldNote: 'An invite to join the {pageType} will be sent.',
+  requiresOrganizationMember: 'User must already be in Organization.',
   teamUpdateSuccess: 'Team updated successfully',
   teamUpdateError: 'Error updating Team',
   orgUpdateSuccess: 'Organization updated successfully',

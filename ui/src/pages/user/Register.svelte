@@ -32,6 +32,12 @@
   function targetPage() {
     let tp = appRoutes.games;
 
+    if (teamInviteId) {
+      tp = `${appRoutes.invite}/team/${teamInviteId}`;
+    }
+    if (orgInviteId) {
+      tp = `${appRoutes.invite}/organization/${orgInviteId}`;
+    }
     if (subscription) {
       tp = `${appRoutes.subscriptionPricing}`;
     }
@@ -99,8 +105,6 @@
       email: warriorEmail,
       password1: warriorPassword1,
       password2: warriorPassword2,
-      teamInviteId,
-      orgInviteId,
     };
 
     xfetch('/api/auth/register', { body })

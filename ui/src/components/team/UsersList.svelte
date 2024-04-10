@@ -18,6 +18,7 @@
   export let notifications;
   export let eventTag;
   export let teamPrefix = '';
+  export let requiresOrgMember = false;
   export let isAdmin = false;
   export let pageType = '';
   export let users = [];
@@ -182,6 +183,7 @@
       toggleAdd="{toggleAddUser}"
       handleAdd="{handleUserAdd}"
       pageType="{pageType}"
+      requiresOrgMember="{requiresOrgMember}"
     />
   {/if}
 

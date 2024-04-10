@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
+
 	"go.uber.org/zap"
 
 	"github.com/anthonynsimon/bild/transform"
@@ -322,5 +324,149 @@ func (s *Service) handleUserAvatar() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+	}
+}
+
+// handleUserOrganizationInvite processes an organization invite for the user
+// @Summary      User Organization Invite
+// @Description  Processes an organization invite for the user
+// @Tags         user
+// @Param        userId  path    string  true  "the user ID"
+// @Param        inviteId  path    string  true  "the invite ID"
+// @Success      200     object  standardJsonResponse{}
+// @Success      400     object  standardJsonResponse{}
+// @Success      500     object  standardJsonResponse{}
+// @Router       /users/{userId}/invite/organization/{inviteId} [post]
+func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
+		InviteID := vars["inviteId"]
+
+		user, err := s.UserDataSvc.GetUser(ctx, UserID)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		orgInvite, err := s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, InviteID)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		if user.Email != orgInvite.Email {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		orgId, inviteErr := s.OrganizationDataSvc.OrganizationAddUser(ctx, orgInvite.OrganizationId, UserID, orgInvite.Role)
+		if inviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error adding invited user to organization",
+				zap.Error(inviteErr),
+				zap.String("session_user_id", *SessionUserID),
+				zap.String("invite_id", orgInvite.InviteId))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, orgInvite.InviteId)
+		if delInviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error deleting user invite to organization",
+				zap.Error(delInviteErr),
+				zap.String("session_user_id", *SessionUserID),
+				zap.String("invite_id", orgInvite.InviteId))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		organization, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, orgId)
+		if orgErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error getting organization",
+				zap.Error(delInviteErr),
+				zap.String("session_user_id", *SessionUserID),
+				zap.String("invite_id", orgInvite.InviteId))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		result := thunderdome.UserOrganization{
+			Organization: *organization,
+			Role:         orgInvite.Role,
+		}
+
+		s.Success(w, r, http.StatusOK, result, nil)
+	}
+}
+
+// handleUserTeamInvite processes a team invite for the user
+// @Summary      User Team Invite
+// @Description  Processes a team invite for the user
+// @Tags         user
+// @Param        userId  path    string  true  "the user ID"
+// @Param        inviteId  path    string  true  "the invite ID"
+// @Success      200     object  standardJsonResponse{}
+// @Success      400     object  standardJsonResponse{}
+// @Success      500     object  standardJsonResponse{}
+// @Router       /users/{userId}/invite/team/{inviteId} [post]
+func (s *Service) handleUserTeamInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
+		InviteID := vars["inviteId"]
+
+		user, err := s.UserDataSvc.GetUser(ctx, UserID)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		teamInvite, err := s.TeamDataSvc.TeamUserGetInviteByID(ctx, InviteID)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		if user.Email != teamInvite.Email {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		teamId, inviteErr := s.TeamDataSvc.TeamAddUser(ctx, teamInvite.TeamId, UserID, teamInvite.Role)
+		if inviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserRegistration error adding invited user to team", zap.Error(inviteErr),
+				zap.String("session_user_id", *SessionUserID),
+				zap.String("invite_id", teamInvite.InviteId))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		delInviteErr := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamInvite.InviteId)
+		if delInviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to team", zap.Error(delInviteErr),
+				zap.String("session_user_id", *SessionUserID),
+				zap.String("invite_id", teamInvite.InviteId))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		team, orgErr := s.TeamDataSvc.TeamGet(ctx, teamId)
+		if orgErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error getting organization",
+				zap.Error(delInviteErr),
+				zap.String("session_user_id", *SessionUserID),
+				zap.String("invite_id", teamInvite.InviteId))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		result := thunderdome.UserTeam{
+			Team: *team,
+			Role: teamInvite.Role,
+		}
+
+		s.Success(w, r, http.StatusOK, result, nil)
 	}
 }

@@ -798,6 +798,7 @@
     isAdmin="{isAdmin}"
     pageType="team"
     teamPrefix="{teamPrefix}"
+    requiresOrgMember="{organizationId || departmentId}"
   />
 
   {#if isAdmin && !organizationId && !departmentId}

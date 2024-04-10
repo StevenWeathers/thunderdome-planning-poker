@@ -464,7 +464,7 @@ const fr: Translation = {
   userAddError: "Erreur lors de l'ajout de l'utilisateur.",
   userAddSuccess: 'Utilisateur ajouté avec succès.',
   userEmail: "Email de l'Utilisateur",
-  userEmailPlaceholder: "Entrer l'email d'un utilisateur enregistré",
+  userEmailPlaceholder: 'Enter the users email',
   userName: 'User Name',
   userRemoveError: "Erreur lors de la suppression de l'utilisateur.",
   userRemoveSuccess: 'Utilisateur supprimé avec succès.',
@@ -632,6 +632,8 @@ const fr: Translation = {
   expireDate: 'Expire Date',
   addUserWillInviteNotFoundFieldNote:
     'If user is not registered an invite to register and join the {pageType} will be sent.',
+  inviteUserFieldNote: 'An invite to join the {pageType} will be sent.',
+  requiresOrganizationMember: 'User must already be in Organization.',
   teamUpdateSuccess: 'Team updated successfully',
   teamUpdateError: 'Error updating Team',
   orgUpdateSuccess: 'Organization updated successfully',

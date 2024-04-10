@@ -468,7 +468,7 @@ const pt: Translation = {
   userAddError: 'Erro ao tentar adicionar usuário.',
   userAddSuccess: 'Usuário adicionado com sucesso.',
   userEmail: 'E-mail do usuário',
-  userEmailPlaceholder: 'Insira o e-mail de um usuário registrado',
+  userEmailPlaceholder: 'Enter the users email',
   userName: 'Nome de Usuário',
   userRemoveError: 'Erro ao tentar remover usuário.',
   userRemoveSuccess: 'Usuário removido com sucesso.',
@@ -637,6 +637,8 @@ const pt: Translation = {
   expireDate: 'Expire Date',
   addUserWillInviteNotFoundFieldNote:
     'If user is not registered an invite to register and join the {pageType} will be sent.',
+  inviteUserFieldNote: 'An invite to join the {pageType} will be sent.',
+  requiresOrganizationMember: 'User must already be in Organization.',
   teamUpdateSuccess: 'Team updated successfully',
   teamUpdateError: 'Error updating Team',
   orgUpdateSuccess: 'Organization updated successfully',

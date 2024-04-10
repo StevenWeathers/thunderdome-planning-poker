@@ -456,7 +456,7 @@ const ru: Translation = {
   userAddError: 'Error attempting to add user.',
   userAddSuccess: 'User added successfully.',
   userEmail: 'User Email',
-  userEmailPlaceholder: 'Enter a registered users email',
+  userEmailPlaceholder: 'Enter the users email',
   userName: 'User Name',
   userRemoveError: 'Error attempting to remove user.',
   userRemoveSuccess: 'User removed successfully.',
@@ -621,6 +621,8 @@ const ru: Translation = {
   expireDate: 'Expire Date',
   addUserWillInviteNotFoundFieldNote:
     'If user is not registered an invite to register and join the {pageType} will be sent.',
+  inviteUserFieldNote: 'An invite to join the {pageType} will be sent.',
+  requiresOrganizationMember: 'User must already be in Organization.',
   teamUpdateSuccess: 'Team updated successfully',
   teamUpdateError: 'Error updating Team',
   orgUpdateSuccess: 'Organization updated successfully',

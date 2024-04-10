@@ -364,12 +364,10 @@ func (s *Service) handleCreateGuestUser() http.HandlerFunc {
 }
 
 type userRegisterRequestBody struct {
-	Name                 string `json:"name" validate:"required"`
-	Email                string `json:"email" validate:"required,email"`
-	Password1            string `json:"password1" validate:"required,min=6,max=72"`
-	Password2            string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
-	TeamInviteId         string `json:"teamInviteId"`
-	OrganizationInviteId string `json:"orgInviteId"`
+	Name      string `json:"name" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password1 string `json:"password1" validate:"required,min=6,max=72"`
+	Password2 string `json:"password2" validate:"required,min=6,max=72,eqfield=Password1"`
 }
 
 // handleUserRegistration registers a new authenticated user
@@ -412,34 +410,6 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 		ActiveUserID, _ := s.Cookie.ValidateUserCookie(w, r)
 
 		userEmail := u.Email
-		var teamInvite thunderdome.TeamUserInvite
-		var orgInvite thunderdome.OrganizationUserInvite
-
-		if u.TeamInviteId != "" {
-			var err error
-			teamInvite, err = s.TeamDataSvc.TeamUserGetInviteByID(ctx, u.TeamInviteId)
-			if err != nil {
-				s.Failure(w, r, http.StatusInternalServerError, err)
-				return
-			}
-			if userEmail != teamInvite.Email {
-				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
-				return
-			}
-		}
-
-		if u.OrganizationInviteId != "" {
-			var err error
-			orgInvite, err = s.OrganizationDataSvc.OrganizationUserGetInviteByID(ctx, u.OrganizationInviteId)
-			if err != nil {
-				s.Failure(w, r, http.StatusInternalServerError, err)
-				return
-			}
-			if userEmail != orgInvite.Email {
-				s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, err.Error()))
-				return
-			}
-		}
 
 		UserName, UserEmail, UserPassword, accountErr := validateUserAccountWithPasswords(
 			u.Name,
@@ -463,38 +433,6 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 		}
 
 		_ = s.Email.SendWelcome(UserName, UserEmail, VerifyID)
-
-		if u.TeamInviteId != "" {
-			_, inviteErr := s.TeamDataSvc.TeamAddUser(ctx, teamInvite.TeamId, newUser.Id, teamInvite.Role)
-			if inviteErr != nil {
-				s.Logger.Ctx(ctx).Error("handleUserRegistration error adding invited user to team", zap.Error(inviteErr),
-					zap.String("session_user_id", newUser.Id),
-					zap.String("invite_id", teamInvite.InviteId))
-			}
-
-			delInviteErr := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamInvite.InviteId)
-			if delInviteErr != nil {
-				s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to team", zap.Error(delInviteErr),
-					zap.String("session_user_id", newUser.Id),
-					zap.String("invite_id", teamInvite.InviteId))
-			}
-		}
-
-		if u.OrganizationInviteId != "" {
-			_, inviteErr := s.OrganizationDataSvc.OrganizationAddUser(ctx, orgInvite.OrganizationId, newUser.Id, orgInvite.Role)
-			if inviteErr != nil {
-				s.Logger.Ctx(ctx).Error("handleUserRegistration error adding invited user to organization", zap.Error(inviteErr),
-					zap.String("session_user_id", newUser.Id),
-					zap.String("invite_id", orgInvite.InviteId))
-			}
-
-			delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, orgInvite.InviteId)
-			if delInviteErr != nil {
-				s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to organization", zap.Error(delInviteErr),
-					zap.String("session_user_id", newUser.Id),
-					zap.String("invite_id", orgInvite.InviteId))
-			}
-		}
 
 		if ActiveUserID != "" {
 			s.Cookie.ClearUserCookies(w)

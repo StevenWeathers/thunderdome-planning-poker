@@ -59,6 +59,7 @@
   import TermsConditions from './pages/support/TermsConditions.svelte';
   import Support from './pages/support/Support.svelte';
   import { loadLocale } from './i18n/i18n-util.sync';
+  import Invite from './pages/team/Invite.svelte';
 
   const {
     FeaturePoker,
@@ -139,6 +140,20 @@
       name: 'login',
     };
   });
+  router.on(`${appRoutes.login}/team/:teamInviteId`, params => {
+    currentPage = {
+      route: Login,
+      params,
+      name: 'login',
+    };
+  });
+  router.on(`${appRoutes.login}/organization/:orgInviteId`, params => {
+    currentPage = {
+      route: Login,
+      params,
+      name: 'login',
+    };
+  });
   router.on(`${appRoutes.resetPwd}/:resetId`, params => {
     currentPage = {
       route: ResetPassword,
@@ -200,6 +215,20 @@
       route: Register,
       params,
       name: 'register',
+    };
+  });
+  router.on(`${appRoutes.invite}/organization/:orgInviteId`, params => {
+    currentPage = {
+      route: Invite,
+      params,
+      name: 'invite',
+    };
+  });
+  router.on(`${appRoutes.invite}/team/:teamInviteId`, params => {
+    currentPage = {
+      route: Invite,
+      params,
+      name: 'invite',
     };
   });
   router.on(`${appRoutes.organization}/:organizationId`, params => {
