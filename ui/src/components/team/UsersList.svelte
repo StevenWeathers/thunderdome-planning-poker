@@ -46,7 +46,7 @@
         toggleAddUser();
         if (result.meta.user_invited) {
           dispatch('user-invited');
-          notifications.success($LL.userNotFoundInviteSent());
+          notifications.success($LL.userInviteSent());
         } else {
           dispatch('user-added');
           notifications.success($LL.userAddSuccess());

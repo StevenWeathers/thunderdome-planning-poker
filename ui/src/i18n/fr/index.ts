@@ -626,7 +626,7 @@ const fr: Translation = {
   userUpdateSuccess: 'Successfully updated user.',
   userUpdateError: 'Error updating user.',
   userInvites: 'User Invites',
-  userNotFoundInviteSent: 'User not found, invite sent',
+  userInviteSent: 'User invite sent',
   userInviteConfirmDelete: 'Are you sure you want to delete this user invite?',
   userInviteDelete: 'Delete Invite',
   expireDate: 'Expire Date',
