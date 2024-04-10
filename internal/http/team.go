@@ -302,12 +302,11 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusInternalServerError, teamErr)
 			return
 		}
+
 		emailErr := s.Email.SendTeamInvite(team.Name, UserEmail, inviteID)
 		if emailErr != nil {
 			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(emailErr),
 				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, emailErr)
-			return
 		}
 
 		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
