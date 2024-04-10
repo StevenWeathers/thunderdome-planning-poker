@@ -376,7 +376,7 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 			s.Failure(w, r, http.StatusInternalServerError, orgErr)
 			return
 		}
-		
+
 		emailErr := s.Email.SendOrganizationInvite(org.Name, UserEmail, inviteID)
 		if emailErr != nil {
 			s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(emailErr),
