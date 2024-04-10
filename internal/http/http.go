@@ -41,6 +41,7 @@ import (
 func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	staticHandler := http.FileServer(HFS)
 	var a = &apiService
+	authProviderConfigs := make([]thunderdome.AuthProviderConfig, 0)
 	a.Router = mux.NewRouter()
 	a.Router.Use(a.panicRecovery)
 
@@ -95,6 +96,14 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	} else if a.Config.HeaderAuthEnabled {
 		apiRouter.HandleFunc("/auth", a.handleHeaderLogin()).Methods("GET")
 	} else {
+		if a.Config.GoogleAuth.Enabled {
+			authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
+				ProviderName: a.Config.GoogleAuth.ProviderName,
+				ProviderURL:  a.Config.GoogleAuth.ProviderURL,
+				ClientID:     a.Config.GoogleAuth.ClientID,
+				ClientSecret: a.Config.GoogleAuth.ClientSecret,
+			})
+		}
 		apiRouter.HandleFunc("/auth", a.handleLogin()).Methods("POST")
 		apiRouter.HandleFunc("/auth/forgot-password", a.handleForgotPassword()).Methods("POST")
 		apiRouter.HandleFunc("/auth/reset-password", a.handleResetPassword()).Methods("PATCH")
@@ -321,7 +330,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		a.Router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
 	}
 
-	a.registerOauthProviderEndpoints()
+	a.registerOauthProviderEndpoints(authProviderConfigs)
 
 	// static assets
 	a.Router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
@@ -333,7 +342,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	return a
 }
 
-func (s *Service) registerOauthProviderEndpoints() {
+func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthProviderConfig) {
 	ctx := context.Background()
 	var redirectBaseURL string
 	var port string
@@ -349,29 +358,20 @@ func (s *Service) registerOauthProviderEndpoints() {
 		redirectBaseURL = fmt.Sprintf("http://%s%s%s", s.Config.AppDomain, port, s.Config.PathPrefix)
 	}
 
-	// @TODO - get providers from app config
-	authProviderConfigs := make([]thunderdome.AuthProviderConfig, 0)
-	authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
-		ProviderName: "google",
-		ProviderURL:  "https://accounts.google.com",
-		ClientID:     "",
-		ClientSecret: "",
-	})
-
-	for _, c := range authProviderConfigs {
+	for _, c := range providers {
 		oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/login")
 		oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/callback")
 		callbackRedirectURL, _ := url.JoinPath(redirectBaseURL, oauthCallbackPathPrefix)
-		googleAuthProvider, err := oauth.New(oauth.Config{
-			AuthProviderConfig:  authProviderConfigs[0],
+		authProvider, err := oauth.New(oauth.Config{
+			AuthProviderConfig:  c,
 			CallbackRedirectURL: callbackRedirectURL,
 			UIRedirectURL:       fmt.Sprintf("%s/", s.Config.PathPrefix),
 		}, s.Cookie, s.Logger, s.AuthDataSvc, s.SubscriptionDataSvc, ctx)
 		if err != nil {
 			panic(err)
 		}
-		s.Router.HandleFunc(oauthLoginPathPrefix, googleAuthProvider.HandleOAuth2Redirect()).Methods("GET")
-		s.Router.HandleFunc(oauthCallbackPathPrefix, googleAuthProvider.HandleOAuth2Callback()).Methods("GET")
+		s.Router.HandleFunc(oauthLoginPathPrefix, authProvider.HandleOAuth2Redirect()).Methods("GET")
+		s.Router.HandleFunc(oauthCallbackPathPrefix, authProvider.HandleOAuth2Callback()).Methods("GET")
 	}
 }
 

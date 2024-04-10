@@ -111,6 +111,7 @@ type Auth struct {
 	Method string
 	Ldap   AuthLdap
 	Header AuthHeader
+	Google thunderdome.AuthProviderConfig `mapstructure:"google"`
 }
 
 type AuthHeader struct {

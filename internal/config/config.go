@@ -126,6 +126,10 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("auth.ldap.cn_attr", "cn")
 	viper.SetDefault("auth.header.usernameHeader", "Remote-User")
 	viper.SetDefault("auth.header.emailHeader", "Remote-Email")
+	viper.SetDefault("auth.google.provider_name", "google")
+	viper.SetDefault("auth.google.provider_url", "https://accounts.google.com")
+	viper.SetDefault("auth.google.client_id", "")
+	viper.SetDefault("auth.google.client_secret", "")
 
 	// automatically load matching envs
 	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))

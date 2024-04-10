@@ -181,6 +181,10 @@ func main() {
 			AllowRegistration:         c.Config.AllowRegistration,
 			ShowActiveCountries:       c.Config.ShowActiveCountries,
 			SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
+			GoogleAuth: http.AuthProvider{
+				Enabled:            c.Auth.Google.ClientID != "",
+				AuthProviderConfig: c.Auth.Google,
+			},
 			WebsocketConfig: http.WebsocketConfig{
 				WriteWaitSec:  c.Http.WebsocketWriteWaitSec,
 				PingPeriodSec: c.Http.WebsocketPingPeriodSec,
@@ -232,6 +236,7 @@ func main() {
 				ShowActiveCountries:       c.Config.ShowActiveCountries,
 				LdapEnabled:               ldapEnabled,
 				HeaderAuthEnabled:         headerAuthEnabled,
+				GoogleAuthEnabled:         c.Auth.Google.ClientID != "",
 				FeaturePoker:              c.Feature.Poker,
 				FeatureRetro:              c.Feature.Retro,
 				FeatureStoryboard:         c.Feature.Storyboard,

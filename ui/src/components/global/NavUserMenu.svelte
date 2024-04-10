@@ -95,6 +95,7 @@
   >
     <UserAvatar
       warriorId="{$user.id}"
+      pictureUrl="{profile.picture_url}"
       gravatarHash="{profile.gravatarHash}"
       class="object-cover w-10 h-10 rounded-full"
     />
