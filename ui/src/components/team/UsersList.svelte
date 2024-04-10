@@ -13,6 +13,7 @@
   import TableContainer from '../table/TableContainer.svelte';
   import TableNav from '../table/TableNav.svelte';
   import CrudActions from '../table/CrudActions.svelte';
+  import { createEventDispatcher } from 'svelte';
 
   export let xfetch;
   export let notifications;
@@ -23,6 +24,9 @@
   export let pageType = '';
   export let users = [];
   export let getUsers = () => {};
+
+  const dispatch = createEventDispatcher();
+
   let showAddUser = false;
   let showUpdateUser = false;
   let updateUser = {};
@@ -41,8 +45,10 @@
         eventTag(`${pageType}_add_user`, 'engagement', 'success');
         toggleAddUser();
         if (result.meta.user_invited) {
+          dispatch('user-invited');
           notifications.success($LL.userNotFoundInviteSent());
         } else {
+          dispatch('user-added');
           notifications.success($LL.userAddSuccess());
         }
 

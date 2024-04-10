@@ -3344,7 +3344,7 @@ paths:
       parameters:
       - description: the org ID
         in: path
-        name: organizationId
+        name: orgId
         required: true
         type: string
       produces:

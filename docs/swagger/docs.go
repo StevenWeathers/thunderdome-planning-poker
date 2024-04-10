@@ -2902,7 +2902,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "the org ID",
-                        "name": "organizationId",
+                        "name": "orgId",
                         "in": "path",
                         "required": true
                     }

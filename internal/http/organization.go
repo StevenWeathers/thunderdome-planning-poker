@@ -656,7 +656,7 @@ func (s *Service) handleDeleteOrganization() http.HandlerFunc {
 // @Description  Get a list of user invites associated to the team
 // @Tags         organization
 // @Produce      json
-// @Param        organizationId  path    string  true  "the org ID"
+// @Param        orgId  path    string  true  "the org ID"
 // @Success      200     object  standardJsonResponse{data=[]thunderdome.OrganizationUserInvite}
 // @Security     ApiKeyAuth
 // @Router       /organizations/{orgId}/invites [get]
@@ -665,7 +665,7 @@ func (s *Service) handleGetOrganizationUserInvites() http.HandlerFunc {
 		ctx := r.Context()
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		orgId := vars["organizationId"]
+		orgId := vars["orgId"]
 
 		invites, err := s.OrganizationDataSvc.OrganizationGetUserInvites(ctx, orgId)
 		if err != nil {
