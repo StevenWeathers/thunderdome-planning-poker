@@ -85,6 +85,7 @@ or `ldap`. Google Auth accounts are separate of internal users/password accounts
 
 | Option                      | Environment Variable      | Description                | Default Value |
 |-----------------------------|---------------------------|----------------------------|---------------|
+| `auth.google.enabled`       | AUTH_GOOGLE_ENABLED       | Google OAuth Enabled       | false         |
 | `auth.google.client_id`     | AUTH_GOOGLE_CLIENT_ID     | Google OAuth Client ID     |               |
 | `auth.google.client_secret` | AUTH_GOOGLE_CLIENT_SECRET | Google OAuth Client Secret |               |
 

@@ -182,8 +182,13 @@ func main() {
 			ShowActiveCountries:       c.Config.ShowActiveCountries,
 			SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
 			GoogleAuth: http.AuthProvider{
-				Enabled:            c.Auth.Google.ClientID != "",
-				AuthProviderConfig: c.Auth.Google,
+				Enabled: c.Auth.Google.Enabled,
+				AuthProviderConfig: thunderdome.AuthProviderConfig{
+					ProviderName: "google",
+					ProviderURL:  "https://accounts.google.com",
+					ClientID:     c.Auth.Google.ClientID,
+					ClientSecret: c.Auth.Google.ClientSecret,
+				},
 			},
 			WebsocketConfig: http.WebsocketConfig{
 				WriteWaitSec:  c.Http.WebsocketWriteWaitSec,
@@ -236,7 +241,7 @@ func main() {
 				ShowActiveCountries:       c.Config.ShowActiveCountries,
 				LdapEnabled:               ldapEnabled,
 				HeaderAuthEnabled:         headerAuthEnabled,
-				GoogleAuthEnabled:         c.Auth.Google.ClientID != "",
+				GoogleAuthEnabled:         c.Auth.Google.Enabled,
 				FeaturePoker:              c.Feature.Poker,
 				FeatureRetro:              c.Feature.Retro,
 				FeatureStoryboard:         c.Feature.Storyboard,

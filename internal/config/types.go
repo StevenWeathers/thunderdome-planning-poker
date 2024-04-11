@@ -107,11 +107,17 @@ type Feature struct {
 	Storyboard bool
 }
 
+type Google struct {
+	Enabled      bool   `mapstructure:"enabled"`
+	ClientID     string `mapstructure:"client_id"`
+	ClientSecret string `mapstructure:"client_secret"`
+}
+
 type Auth struct {
 	Method string
 	Ldap   AuthLdap
 	Header AuthHeader
-	Google thunderdome.AuthProviderConfig `mapstructure:"google"`
+	Google
 }
 
 type AuthHeader struct {
