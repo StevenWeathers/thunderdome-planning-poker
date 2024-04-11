@@ -5,6 +5,7 @@
   const { PathPrefix, AvatarService } = AppConfig;
   let klass = '';
 
+  export let pictureUrl = '';
   export let warriorId = '';
   export let gravatarHash = '';
   export let avatar = '';
@@ -14,7 +15,15 @@
   export let options = {};
 </script>
 
-{#if AvatarService === 'gravatar'}
+{#if pictureUrl !== ''}
+  <img
+    src="{pictureUrl}"
+    alt="{$LL.avatarAltText()}"
+    class="{klass}"
+    title="{userName}"
+    {...options}
+  />
+{:else if AvatarService === 'gravatar'}
   {#if gravatarHash !== ''}
     <img
       src="https://gravatar.com/avatar/{gravatarHash}?s={width}&d={avatar !== ''

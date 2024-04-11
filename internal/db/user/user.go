@@ -25,7 +25,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 	var Count int
 
 	err := d.DB.QueryRowContext(ctx,
-		"SELECT COUNT(*) FROM thunderdome.users WHERE email IS NOT NULL;",
+		"SELECT COUNT(*) FROM thunderdome.users WHERE type <> 'GUEST';",
 	).Scan(
 		&Count,
 	)
@@ -36,9 +36,9 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 	rows, err := d.DB.QueryContext(ctx,
 		`
 		SELECT u.id, u.name, COALESCE(u.email, ''), u.type, u.avatar, u.verified, COALESCE(u.country, ''),
-		 COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled
+		 COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled, COALESCE(u.picture, '')
 		FROM thunderdome.users u
-		WHERE u.email IS NOT NULL
+		WHERE u.type <> 'GUEST'
 		ORDER BY u.created_date
 		LIMIT $1
 		OFFSET $2;`,
@@ -64,6 +64,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 			&w.Company,
 			&w.JobTitle,
 			&w.Disabled,
+			&w.Picture,
 		); err != nil {
 			d.Logger.Ctx(ctx).Error("registered_users_list query scan error", zap.Error(err))
 		} else {
@@ -82,7 +83,7 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, COALESCE(email, ''), type, avatar, verified,
 			notifications_enabled, COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''), 
-			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, mfa_enabled, theme
+			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, theme, COALESCE(picture, '')
 			FROM thunderdome.users WHERE id = $1`,
 		UserID,
 	).Scan(
@@ -101,8 +102,8 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 		&w.UpdatedDate,
 		&w.LastActive,
 		&w.Disabled,
-		&w.MFAEnabled,
 		&w.Theme,
+		&w.Picture,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("get user query error: %v", err)
@@ -160,7 +161,10 @@ func (d *Service) GetUserByEmail(ctx context.Context, UserEmail string) (*thunde
 	var w thunderdome.User
 
 	err := d.DB.QueryRowContext(ctx,
-		"SELECT id, name, email, type, verified, disabled FROM thunderdome.users WHERE LOWER(email) = $1",
+		`SELECT u.id, u.name, u.email, u.type, c.verified, u.disabled
+				FROM thunderdome.auth_crednetial c
+				JOIN thunderdome.users u ON c.user_id = u.id
+				WHERE c.email = $1`,
 		db.SanitizeEmail(UserEmail),
 	).Scan(
 		&w.Id,
@@ -187,7 +191,7 @@ func (d *Service) CreateUserGuest(ctx context.Context, UserName string) (*thunde
 		return nil, fmt.Errorf("create guest user query error: %v", err)
 	}
 
-	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: db.CreateGravatarHash(UserID), Type: "GUEST"}, nil
+	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: db.CreateGravatarHash(UserID), Type: thunderdome.GuestUserType}, nil
 }
 
 // CreateUserRegistered adds a new registered user
@@ -198,7 +202,7 @@ func (d *Service) CreateUserRegistered(ctx context.Context, UserName string, Use
 	}
 
 	var verifyID string
-	UserType := "REGISTERED"
+	UserType := thunderdome.RegisteredUserType
 	UserAvatar := "robohash"
 	sanitizedEmail := db.SanitizeEmail(UserEmail)
 	User := &thunderdome.User{
@@ -245,7 +249,7 @@ func (d *Service) CreateUser(ctx context.Context, UserName string, UserEmail str
 	}
 
 	var verifyID string
-	UserType := "REGISTERED"
+	UserType := thunderdome.RegisteredUserType
 	UserAvatar := "robohash"
 	sanitizedEmail := db.SanitizeEmail(UserEmail)
 	User := &thunderdome.User{

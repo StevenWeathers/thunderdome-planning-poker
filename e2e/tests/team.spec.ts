@@ -63,7 +63,7 @@ test.describe("Team page", () => {
     await expect(teamPage.page.locator("h1")).toContainText(testTeamName);
   });
 
-  test("can add user to team", async ({ registeredPage }) => {
+  test("can invite user to team", async ({ registeredPage }) => {
     const verifiedEmail = "e2everified@thunderdome.dev";
     const testTeamName = "E2E TEST TEAM";
     const teamPage = new TeamPage(registeredPage.page);
@@ -80,7 +80,7 @@ test.describe("Team page", () => {
     await teamPage.page.locator('[data-testid="useradd-confirm"]').click();
 
     await expect(
-      teamPage.page.locator('[data-testid="user-email"]', {
+      teamPage.page.locator('[data-testid="invite-user-email"]', {
         hasText: verifiedEmail,
       }),
     ).toBeVisible();

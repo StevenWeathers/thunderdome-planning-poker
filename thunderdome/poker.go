@@ -15,6 +15,7 @@ type PokerUser struct {
 	Abandoned    bool   `json:"abandoned"`
 	Spectator    bool   `json:"spectator"`
 	GravatarHash string `json:"gravatarHash"`
+	PictureURL   string `json:"pictureUrl"`
 }
 
 // Poker aka arena

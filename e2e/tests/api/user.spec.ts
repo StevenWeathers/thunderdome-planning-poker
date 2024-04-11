@@ -50,7 +50,6 @@ test.describe("registered user", () => {
       rank: "REGISTERED",
       verified: true,
       disabled: false,
-      mfaEnabled: false,
     });
   });
 });

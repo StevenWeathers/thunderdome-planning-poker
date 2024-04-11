@@ -16,6 +16,7 @@ type RetroUser struct {
 	Active       bool   `json:"active"`
 	Avatar       string `json:"avatar"`
 	GravatarHash string `json:"gravatarHash"`
+	PictureURL   string `json:"pictureUrl"`
 }
 
 // Retro A story mapping board

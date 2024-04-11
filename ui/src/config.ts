@@ -61,6 +61,7 @@ const defaultAppRoutes = {
   privacyPolicy: `${PathPrefix}/privacy-policy`,
   termsConditions: `${PathPrefix}/terms-conditions`,
   support: `${PathPrefix}/support`,
+  invite: `${PathPrefix}/invite`,
 };
 const friendlyAppRoutes = {
   ...defaultAppRoutes,

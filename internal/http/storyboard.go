@@ -134,7 +134,7 @@ func (s *Service) handleStoryboardGet() http.HandlerFunc {
 		// don't allow retrieving storyboard details if storyboard has JoinCode and user hasn't joined yet
 		if sb.JoinCode != "" {
 			UserErr := s.StoryboardDataSvc.GetStoryboardUserActiveStatus(StoryboardID, SessionUserID)
-			if UserErr != nil && UserType != adminUserType {
+			if UserErr != nil && UserType != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "USER_MUST_JOIN_STORYBOARD"))
 				return
 			}

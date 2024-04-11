@@ -193,7 +193,7 @@ func (d *OrganizationService) DepartmentTeamCreate(ctx context.Context, Departme
 func (d *OrganizationService) DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*thunderdome.DepartmentUser {
 	var users = make([]*thunderdome.DepartmentUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT u.id, u.name, COALESCE(u.email, ''), du.role, u.avatar
+		`SELECT u.id, u.name, COALESCE(u.email, ''), du.role, u.avatar, COALESCE(u.picture, '')
         FROM thunderdome.department_user du
         LEFT JOIN thunderdome.users u ON du.user_id = u.id
         WHERE du.department_id = $1
@@ -216,6 +216,7 @@ func (d *OrganizationService) DepartmentUserList(ctx context.Context, Department
 				&usr.Email,
 				&usr.Role,
 				&usr.Avatar,
+				&usr.PictureURL,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("department_user_list query scan error", zap.Error(err))
 			} else {

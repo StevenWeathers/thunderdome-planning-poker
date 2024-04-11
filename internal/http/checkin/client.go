@@ -217,7 +217,7 @@ func (b *Service) ServeWs() http.HandlerFunc {
 		c := &connection{config: &b.config, send: make(chan []byte, 256), ws: ws}
 
 		SessionId, cookieErr := b.validateSessionCookie(w, r)
-		if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
+		if cookieErr != nil && cookieErr.Error() != "COOKIE_NOT_FOUND" {
 			b.handleSocketClose(ctx, ws, 4001, "unauthorized")
 			return
 		}

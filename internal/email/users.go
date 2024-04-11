@@ -351,23 +351,24 @@ func (s *Service) SendMergedUpdate(UserName string, UserEmail string) error {
 	return nil
 }
 
-// SendTeamInvite sends the team invite email to unregistered user
+// SendTeamInvite sends the team invite email to user
 func (s *Service) SendTeamInvite(TeamName string, UserEmail string, InviteID string) error {
+	subject := fmt.Sprintf("Join team %s on Thunderdome", TeamName)
 	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: "",
 			Intros: []string{
-				"Register to join your team on Thunderdome!",
+				subject,
 			},
 			Actions: []hermes.Action{
 				{
 					Instructions: fmt.Sprintf(
-						"Please register for Thunderdome using the following link (expires in 24 hours) to join the %s Team.",
+						"Please use the following link (expires in 24 hours) to join team %s on Thunderdome today.",
 						TeamName),
 					Button: hermes.Button{
 						Color: "#22BC66",
-						Text:  "Register Account",
-						Link:  s.Config.AppURL + "register/team/" + InviteID,
+						Text:  "Join Team",
+						Link:  s.Config.AppURL + "invite/team/" + InviteID,
 					},
 				},
 				{
@@ -390,7 +391,7 @@ func (s *Service) SendTeamInvite(TeamName string, UserEmail string, InviteID str
 	sendErr := s.send(
 		"",
 		UserEmail,
-		fmt.Sprintf("Join team %s on Thunderdome!", TeamName),
+		subject,
 		emailBody,
 	)
 	if sendErr != nil {
@@ -403,23 +404,24 @@ func (s *Service) SendTeamInvite(TeamName string, UserEmail string, InviteID str
 	return nil
 }
 
-// SendOrganizationInvite sends the organization invite email to unregistered user
+// SendOrganizationInvite sends the organization invite email to user
 func (s *Service) SendOrganizationInvite(OrganizationName string, UserEmail string, InviteID string) error {
+	subject := fmt.Sprintf("Join %s organization on Thunderdome", OrganizationName)
 	emailBody, err := s.generateBody(
 		hermes.Body{
 			Name: "",
 			Intros: []string{
-				"Register to join your organization on Thunderdome!",
+				subject,
 			},
 			Actions: []hermes.Action{
 				{
 					Instructions: fmt.Sprintf(
-						"Please register for Thunderdome using the following link (expires in 24 hours) to join the %s Organization.",
+						"Please use the following link (expires in 24 hours) to join the %s organization on Thunderdome today.",
 						OrganizationName),
 					Button: hermes.Button{
 						Color: "#22BC66",
-						Text:  "Register Account",
-						Link:  s.Config.AppURL + "register/organization/" + InviteID,
+						Text:  "Join Organization",
+						Link:  s.Config.AppURL + "invite/organization/" + InviteID,
 					},
 				},
 				{
@@ -442,7 +444,7 @@ func (s *Service) SendOrganizationInvite(OrganizationName string, UserEmail stri
 	sendErr := s.send(
 		"",
 		UserEmail,
-		fmt.Sprintf("Join %s organization on Thunderdome!", OrganizationName),
+		subject,
 		emailBody,
 	)
 	if sendErr != nil {

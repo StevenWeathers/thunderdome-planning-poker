@@ -238,199 +238,195 @@
 </style>
 
 <Modal closeModal="{toggleStoryForm}" widthClasses="w-full md:w-2/3">
-  <div class="flex w-full mt-8">
-    <div class="w-3/4">
-      <div class="mx-4">
-        <div class="mb-4">
-          <label
-            class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
-            for="storyName"
-          >
-            Story Name
-          </label>
-          <TextInput
-            id="storyName"
-            on:change="{updateName}"
-            value="{story.name}"
-            placeholder="Enter a story name e.g. Ricky Bobby"
-            name="storyName"
+  <div class="md:flex w-full md:gap-4 lg:gap-6">
+    <div class="md:w-3/4">
+      <div class="mb-4">
+        <label
+          class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
+          for="storyName"
+        >
+          Story Name
+        </label>
+        <TextInput
+          id="storyName"
+          on:change="{updateName}"
+          value="{story.name}"
+          placeholder="Enter a story name e.g. Ricky Bobby"
+          name="storyName"
+        />
+      </div>
+      <div class="mb-4">
+        <label
+          class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
+          for="storyLink"
+        >
+          Story Link
+        </label>
+        <TextInput
+          id="storyLink"
+          on:change="{updateLink}"
+          value="{story.link}"
+          placeholder="Enter a story link"
+          name="storyLink"
+        />
+      </div>
+      <div class="mb-4">
+        <label
+          class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
+          for="storyDescription"
+        >
+          Story Content
+        </label>
+        <div class="bg-white">
+          <Editor
+            content="{story.content}"
+            placeholder="Enter story content"
+            id="storyDescription"
+            handleTextChange="{c => {
+              story.content = c;
+              updateContent();
+            }}"
           />
         </div>
-        <div class="mb-4">
-          <label
-            class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
-            for="storyLink"
-          >
-            Story Link
-          </label>
-          <TextInput
-            id="storyLink"
-            on:change="{updateLink}"
-            value="{story.link}"
-            placeholder="Enter a story link"
-            name="storyLink"
-          />
+      </div>
+      <div class="mb-4">
+        <div class="text-gray-700 dark:text-gray-400 font-bold text-lg mb-2">
+          Discussion{story.comments ? ` (${story.comments.length})` : ''}
         </div>
-        <div class="mb-4">
-          <label
-            class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
-            for="storyDescription"
-          >
-            Story Content
-          </label>
-          <div class="bg-white">
-            <Editor
-              content="{story.content}"
-              placeholder="Enter story content"
-              id="storyDescription"
-              handleTextChange="{c => {
-                story.content = c;
-                updateContent();
-              }}"
-            />
-          </div>
-        </div>
-        <div class="mb-4">
-          <div class="text-gray-700 dark:text-gray-400 font-bold text-lg mb-2">
-            Discussion{story.comments ? ` (${story.comments.length})` : ''}
-          </div>
-          <div class="mb-2">
-            {#if story.comments}
-              {#each story.comments as comment}
-                <div
-                  class="w-full mb-4 text-gray-700 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700"
-                  data-commentid="{comment.id}"
-                >
-                  <div class="font-bold">
-                    <UserIcon class="h-4 w-4" />&nbsp;{userMap[comment.user_id]}
-                  </div>
-                  {#if selectedComment !== null && selectedComment.id === comment.id}
-                    <div class="w-full my-2">
-                      <textarea
-                        class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+        <div class="mb-2">
+          {#if story.comments}
+            {#each story.comments as comment}
+              <div
+                class="w-full mb-4 text-gray-700 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700"
+                data-commentid="{comment.id}"
+              >
+                <div class="font-bold">
+                  <UserIcon class="h-4 w-4" />&nbsp;{userMap[comment.user_id]}
+                </div>
+                {#if selectedComment !== null && selectedComment.id === comment.id}
+                  <div class="w-full my-2">
+                    <textarea
+                      class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
                             rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
                             focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
-                        bind:value="{selectedCommentContent}"></textarea>
-                      <div class="text-right">
-                        <HollowButton
-                          color="blue"
-                          onClick="{toggleCommentEdit(null)}"
-                        >
-                          {$LL.cancel()}
-                        </HollowButton>
-                        <HollowButton
-                          color="green"
-                          onClick="{handleCommentEdit}"
-                          disabled="{selectedCommentContent === ''}"
-                        >
-                          {$LL.updateComment()}
-                        </HollowButton>
-                      </div>
-                    </div>
-                  {:else}
-                    <div class="py-2">
-                      {comment.comment}
-                    </div>
-                  {/if}
-                  {#if comment.user_id === $user.id && !(selectedComment !== null && selectedComment.id === comment.id)}
-                    <div class="mb-2 text-right">
-                      <button
-                        class="text-blue-500 hover:text-blue-300 me-1"
-                        on:click="{toggleCommentEdit(comment)}"
+                      bind:value="{selectedCommentContent}"></textarea>
+                    <div class="text-right">
+                      <HollowButton
+                        color="blue"
+                        onClick="{toggleCommentEdit(null)}"
                       >
-                        {$LL.edit()}
-                      </button>
-                      <button
-                        class="text-red-500 hover:text-red-300"
-                        on:click="{handleCommentDelete(comment.id)}"
+                        {$LL.cancel()}
+                      </HollowButton>
+                      <HollowButton
+                        color="green"
+                        onClick="{handleCommentEdit}"
+                        disabled="{selectedCommentContent === ''}"
                       >
-                        {$LL.delete()}
-                      </button>
+                        {$LL.updateComment()}
+                      </HollowButton>
                     </div>
-                  {/if}
-                </div>
-              {/each}
-            {/if}
-          </div>
-          <div class="w-full">
-            <textarea
-              class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+                  </div>
+                {:else}
+                  <div class="py-2">
+                    {comment.comment}
+                  </div>
+                {/if}
+                {#if comment.user_id === $user.id && !(selectedComment !== null && selectedComment.id === comment.id)}
+                  <div class="mb-2 text-right">
+                    <button
+                      class="text-blue-500 hover:text-blue-300 me-1"
+                      on:click="{toggleCommentEdit(comment)}"
+                    >
+                      {$LL.edit()}
+                    </button>
+                    <button
+                      class="text-red-500 hover:text-red-300"
+                      on:click="{handleCommentDelete(comment.id)}"
+                    >
+                      {$LL.delete()}
+                    </button>
+                  </div>
+                {/if}
+              </div>
+            {/each}
+          {/if}
+        </div>
+        <div class="w-full">
+          <textarea
+            class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400 mb-2"
-              placeholder="Write a comment..."
-              bind:value="{userComment}"></textarea>
-            <div class="text-right">
-              <HollowButton
-                color="teal"
-                onClick="{handleCommentSubmit}"
-                disabled="{userComment === ''}"
-              >
-                Post comment
-              </HollowButton>
-            </div>
+            placeholder="Write a comment..."
+            bind:value="{userComment}"></textarea>
+          <div class="text-right">
+            <HollowButton
+              color="teal"
+              onClick="{handleCommentSubmit}"
+              disabled="{userComment === ''}"
+            >
+              Post comment
+            </HollowButton>
           </div>
         </div>
       </div>
     </div>
-    <div class="w-1/4">
-      <div class="mx-4">
-        <div class="mb-4">
-          <label
-            class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
-            for="storyPoints"
-          >
-            Story Points
-          </label>
-          <input
-            class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
+    <div class="md:w-1/4">
+      <div class="mb-4">
+        <label
+          class="block text-sm text-gray-700 dark:text-gray-400 font-bold mb-2"
+          for="storyPoints"
+        >
+          Story Points
+        </label>
+        <input
+          class="bg-gray-100 dark:bg-gray-900 dark:focus:bg-gray-800 border-gray-200 dark:border-gray-600 border-2 appearance-none
         rounded w-full py-2 px-3 text-gray-700 dark:text-gray-400 leading-tight
         focus:outline-none focus:bg-white focus:border-indigo-500 focus:caret-indigo-500 dark:focus:border-yellow-400 dark:focus:caret-yellow-400"
-            id="storyPoints"
-            type="number"
-            min="0"
-            max="999"
-            bind:value="{story.points}"
-            on:change="{updatePoints}"
-            placeholder="Enter story points e.g. 1, 2, 3, 5,
+          id="storyPoints"
+          type="number"
+          min="0"
+          max="999"
+          bind:value="{story.points}"
+          on:change="{updatePoints}"
+          placeholder="Enter story points e.g. 1, 2, 3, 5,
                         8"
-            name="storyPoints"
-          />
+          name="storyPoints"
+        />
+      </div>
+      <div class="mb-2">
+        <div class="text-gray-700 dark:text-gray-400 font-bold">
+          Storycard Color
         </div>
-        <div class="mb-2">
-          <div class="text-gray-700 dark:text-gray-400 font-bold">
-            Storycard Color
-          </div>
-          <div>
-            {#each colorLegend as color}
-              <button
-                on:click="{changeColor(color.color)}"
-                class="p-4 me-2 mb-2 colorcard-{color.color}
+        <div>
+          {#each colorLegend as color}
+            <button
+              on:click="{changeColor(color.color)}"
+              class="p-4 me-2 mb-2 colorcard-{color.color}
                                 border-2 border-solid {story.color ===
-                color.color
-                  ? `border-${color.color}-800`
-                  : 'border-transparent'}"
-                title="{color.color}{color.legend !== ''
-                  ? ` - ${color.legend}`
-                  : ''}"></button>
-            {/each}
-          </div>
+              color.color
+                ? `border-${color.color}-800`
+                : 'border-transparent'}"
+              title="{color.color}{color.legend !== ''
+                ? ` - ${color.legend}`
+                : ''}"></button>
+          {/each}
         </div>
-        <div class="mb-4">
-          {#if !story.closed}
-            <HollowButton color="orange" onClick="{markClosed}">
-              Mark story as Closed
-            </HollowButton>
-          {:else}
-            <HollowButton color="green" onClick="{markOpen}"
-              >Reopen story
-            </HollowButton>
-          {/if}
-        </div>
-        <div class="text-right">
-          <HollowButton color="red" onClick="{handleStoryDelete}">
-            Delete Story
+      </div>
+      <div class="mb-4">
+        {#if !story.closed}
+          <HollowButton color="orange" onClick="{markClosed}">
+            Mark story as Closed
           </HollowButton>
-        </div>
+        {:else}
+          <HollowButton color="green" onClick="{markOpen}"
+            >Reopen story
+          </HollowButton>
+        {/if}
+      </div>
+      <div class="text-right">
+        <HollowButton color="red" onClick="{handleStoryDelete}">
+          Delete Story
+        </HollowButton>
       </div>
     </div>
   </div>

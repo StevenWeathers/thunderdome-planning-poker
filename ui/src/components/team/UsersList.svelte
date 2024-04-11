@@ -13,15 +13,20 @@
   import TableContainer from '../table/TableContainer.svelte';
   import TableNav from '../table/TableNav.svelte';
   import CrudActions from '../table/CrudActions.svelte';
+  import { createEventDispatcher } from 'svelte';
 
   export let xfetch;
   export let notifications;
   export let eventTag;
   export let teamPrefix = '';
+  export let requiresOrgMember = false;
   export let isAdmin = false;
   export let pageType = '';
   export let users = [];
   export let getUsers = () => {};
+
+  const dispatch = createEventDispatcher();
+
   let showAddUser = false;
   let showUpdateUser = false;
   let updateUser = {};
@@ -40,8 +45,10 @@
         eventTag(`${pageType}_add_user`, 'engagement', 'success');
         toggleAddUser();
         if (result.meta.user_invited) {
-          notifications.success($LL.userNotFoundInviteSent());
+          dispatch('user-invited');
+          notifications.success($LL.userInviteSent());
         } else {
+          dispatch('user-added');
           notifications.success($LL.userAddSuccess());
         }
 
@@ -182,6 +189,7 @@
       toggleAdd="{toggleAddUser}"
       handleAdd="{handleUserAdd}"
       pageType="{pageType}"
+      requiresOrgMember="{requiresOrgMember}"
     />
   {/if}
 

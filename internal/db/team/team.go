@@ -270,7 +270,7 @@ func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Of
 	}
 
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT u.id, u.name, COALESCE(u.email, ''), tu.role, u.avatar
+		`SELECT u.id, u.name, COALESCE(u.email, ''), tu.role, u.avatar, COALESCE(u.picture, '')
         FROM thunderdome.team_user tu
         LEFT JOIN thunderdome.users u ON tu.user_id = u.id
         WHERE tu.team_id = $1
@@ -293,6 +293,7 @@ func (d *Service) TeamUserList(ctx context.Context, TeamID string, Limit int, Of
 				&usr.Email,
 				&usr.Role,
 				&usr.Avatar,
+				&usr.PictureURL,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("team_user_list query scan error", zap.Error(err))
 			} else {

@@ -274,6 +274,7 @@
     notifications="{notifications}"
     isAdmin="{isAdmin}"
     pageType="department"
+    requiresOrgMember="{true}"
     teamPrefix="/api/organizations/{organizationId}/departments/{departmentId}"
   />
 

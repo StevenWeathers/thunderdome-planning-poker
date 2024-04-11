@@ -428,7 +428,7 @@ func (d *Service) ConfirmFacilitator(PokerID string, UserID string) error {
 	}
 
 	e := d.DB.QueryRow("SELECT user_id FROM thunderdome.poker_facilitator WHERE poker_id = $1 AND user_id = $2", PokerID, UserID).Scan(&facilitatorID)
-	if e != nil && role != "ADMIN" {
+	if e != nil && role != thunderdome.AdminUserType {
 		return fmt.Errorf("confirm poker facilitator query error: %v", err)
 	}
 
@@ -466,7 +466,7 @@ func (d *Service) GetUsers(PokerID string) []*thunderdome.PokerUser {
 	var users = make([]*thunderdome.PokerUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
-			u.id, u.name, u.type, u.avatar, pu.active, pu.spectator, COALESCE(u.email, '')
+			u.id, u.name, u.type, u.avatar, pu.active, pu.spectator, COALESCE(u.email, ''), COALESCE(u.picture, '')
 		FROM thunderdome.poker_user pu
 		LEFT JOIN thunderdome.users u ON pu.user_id = u.id
 		WHERE pu.poker_id = $1
@@ -477,7 +477,7 @@ func (d *Service) GetUsers(PokerID string) []*thunderdome.PokerUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w thunderdome.PokerUser
-			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
+			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash, &w.PictureURL); err != nil {
 				d.Logger.Error("error getting poker users", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
@@ -498,7 +498,7 @@ func (d *Service) GetActiveUsers(PokerID string) []*thunderdome.PokerUser {
 	var users = make([]*thunderdome.PokerUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
-			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, '')
+			w.id, w.name, w.type, w.avatar, bw.active, bw.spectator, COALESCE(w.email, ''), COALESCE(w.picture, '')
 		FROM thunderdome.poker_user bw
 		LEFT JOIN thunderdome.users w ON bw.user_id = w.id
 		WHERE bw.poker_id = $1 AND bw.active = true
@@ -509,7 +509,7 @@ func (d *Service) GetActiveUsers(PokerID string) []*thunderdome.PokerUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w thunderdome.PokerUser
-			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash); err != nil {
+			if err := rows.Scan(&w.Id, &w.Name, &w.Type, &w.Avatar, &w.Active, &w.Spectator, &w.GravatarHash, &w.PictureURL); err != nil {
 				d.Logger.Error("error getting active poker users", zap.Error(err))
 			} else {
 				if w.GravatarHash != "" {
