@@ -39,7 +39,7 @@ type AuthProviderSvc interface {
 }
 
 type AuthDataSvc interface {
-	AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*User, string, error)
+	AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*User, *Credential, string, error)
 	OauthCreateNonce(ctx context.Context) (string, error)
 	OauthValidateNonce(ctx context.Context, nonceId string) error
 	OauthAuthUser(ctx context.Context, provider string, sub string, email string, emailVerified bool, name string, pictureUrl string) (*User, string, error)
@@ -52,7 +52,7 @@ type AuthDataSvc interface {
 	MFASetupValidate(ctx context.Context, UserID string, secret string, passcode string) error
 	MFARemove(ctx context.Context, UserID string) error
 	MFATokenValidate(ctx context.Context, SessionId string, passcode string) error
-	CreateSession(ctx context.Context, UserId string) (string, error)
+	CreateSession(ctx context.Context, UserId string, enabled bool) (string, error)
 	EnableSession(ctx context.Context, SessionId string) error
 	GetSessionUser(ctx context.Context, SessionId string) (*User, error)
 	DeleteSession(ctx context.Context, SessionId string) error

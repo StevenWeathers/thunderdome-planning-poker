@@ -9968,9 +9968,6 @@ const docTemplate = `{
                 "locale": {
                     "type": "string"
                 },
-                "mfaEnabled": {
-                    "type": "boolean"
-                },
                 "name": {
                     "type": "string"
                 },

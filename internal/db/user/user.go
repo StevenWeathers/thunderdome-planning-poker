@@ -25,7 +25,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 	var Count int
 
 	err := d.DB.QueryRowContext(ctx,
-		"SELECT COUNT(*) FROM thunderdome.users WHERE email IS NOT NULL;",
+		"SELECT COUNT(*) FROM thunderdome.users WHERE type <> 'GUEST';",
 	).Scan(
 		&Count,
 	)
@@ -38,7 +38,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 		SELECT u.id, u.name, COALESCE(u.email, ''), u.type, u.avatar, u.verified, COALESCE(u.country, ''),
 		 COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled, COALESCE(u.picture_url, '')
 		FROM thunderdome.users u
-		WHERE u.email IS NOT NULL
+		WHERE u.type <> 'GUEST'
 		ORDER BY u.created_date
 		LIMIT $1
 		OFFSET $2;`,
@@ -83,7 +83,7 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, COALESCE(email, ''), type, avatar, verified,
 			notifications_enabled, COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''), 
-			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, mfa_enabled, theme, COALESCE(picture_url, '')
+			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, theme, COALESCE(picture_url, '')
 			FROM thunderdome.users WHERE id = $1`,
 		UserID,
 	).Scan(
@@ -102,7 +102,6 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 		&w.UpdatedDate,
 		&w.LastActive,
 		&w.Disabled,
-		&w.MFAEnabled,
 		&w.Theme,
 		&w.PictureURL,
 	)
@@ -162,7 +161,10 @@ func (d *Service) GetUserByEmail(ctx context.Context, UserEmail string) (*thunde
 	var w thunderdome.User
 
 	err := d.DB.QueryRowContext(ctx,
-		"SELECT id, name, email, type, verified, disabled FROM thunderdome.users WHERE LOWER(email) = $1",
+		`SELECT u.id, u.name, u.email, u.type, c.verified, u.disabled
+				FROM thunderdome.auth_crednetial c
+				JOIN thunderdome.users u ON c.user_id = u.id
+				WHERE c.email = $1`,
 		db.SanitizeEmail(UserEmail),
 	).Scan(
 		&w.Id,

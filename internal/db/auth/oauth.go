@@ -80,7 +80,7 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
 		return nil, "", errors.New("USER_DISABLED")
 	}
 
-	SessionId, sessErr := d.CreateSession(ctx, user.Id)
+	SessionId, sessErr := d.CreateSession(ctx, user.Id, true)
 	if sessErr != nil {
 		return nil, "", sessErr
 	}

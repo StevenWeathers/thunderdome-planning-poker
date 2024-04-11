@@ -33,7 +33,6 @@ type User struct {
 	UpdatedDate          time.Time `json:"updatedDate"`
 	LastActive           time.Time `json:"lastActive"`
 	Disabled             bool      `json:"disabled"`
-	MFAEnabled           bool      `json:"mfaEnabled"`
 	Theme                string    `json:"theme"`
 	PictureURL           string    `json:"picture_url"`
 }

@@ -227,7 +227,7 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		SessionId, err = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id)
+		SessionId, err = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id, true)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return AuthedUser, SessionId, err
@@ -237,7 +237,7 @@ func (s *Service) authAndCreateUserLdap(ctx context.Context, UserName string, Us
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id)
+		SessionId, sessErr = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id, true)
 		if sessErr != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err
@@ -267,7 +267,7 @@ func (s *Service) authAndCreateUserHeader(ctx context.Context, username string, 
 			s.Logger.Ctx(ctx).Error("Failed verifying new user", zap.Error(err))
 			return AuthedUser, SessionId, err
 		}
-		SessionId, err = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id)
+		SessionId, err = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id, true)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return AuthedUser, SessionId, err
@@ -277,7 +277,7 @@ func (s *Service) authAndCreateUserHeader(ctx context.Context, username string, 
 			return nil, "", fmt.Errorf("user is disabled")
 		}
 
-		SessionId, sessErr = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id)
+		SessionId, sessErr = s.AuthDataSvc.CreateSession(ctx, AuthedUser.Id, true)
 		if sessErr != nil {
 			s.Logger.Ctx(ctx).Error("Failed creating user session", zap.Error(err))
 			return nil, "", err

@@ -58,7 +58,7 @@ func (s *Service) handleLogin() http.HandlerFunc {
 			return
 		}
 
-		authedUser, sessionId, err := s.AuthDataSvc.AuthUser(ctx, u.Email, u.Password)
+		authedUser, credential, sessionId, err := s.AuthDataSvc.AuthUser(ctx, u.Email, u.Password)
 		if err != nil {
 			userErr := err.Error()
 			if userErr == "USER_NOT_FOUND" || userErr == "INVALID_PASSWORD" || userErr == "USER_DISABLED" {
@@ -76,11 +76,11 @@ func (s *Service) handleLogin() http.HandlerFunc {
 		res := loginResponse{
 			User:        authedUser,
 			SessionId:   sessionId,
-			MFARequired: authedUser.MFAEnabled,
+			MFARequired: credential.MFAEnabled,
 			Subscribed:  subscribed == nil,
 		}
 
-		if authedUser.MFAEnabled {
+		if res.MFARequired {
 			s.Success(w, r, http.StatusOK, res, nil)
 			return
 		}
@@ -142,10 +142,10 @@ func (s *Service) handleLdapLogin() http.HandlerFunc {
 		res := loginResponse{
 			User:        authedUser,
 			SessionId:   sessionId,
-			MFARequired: authedUser.MFAEnabled,
+			MFARequired: false,
 		}
 
-		if authedUser.MFAEnabled {
+		if res.MFARequired {
 			s.Success(w, r, http.StatusOK, res, nil)
 			return
 		}
@@ -196,10 +196,10 @@ func (s *Service) handleHeaderLogin() http.HandlerFunc {
 		res := loginResponse{
 			User:        authedUser,
 			SessionId:   sessionId,
-			MFARequired: authedUser.MFAEnabled,
+			MFARequired: false,
 		}
 
-		if authedUser.MFAEnabled {
+		if res.MFARequired {
 			s.Success(w, r, http.StatusOK, res, nil)
 			return
 		}
@@ -438,7 +438,7 @@ func (s *Service) handleUserRegistration() http.HandlerFunc {
 			s.Cookie.ClearUserCookies(w)
 		}
 
-		SessionID, err := s.AuthDataSvc.CreateSession(ctx, newUser.Id)
+		SessionID, err := s.AuthDataSvc.CreateSession(ctx, newUser.Id, true)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error("handleUserRegistration error", zap.Error(err),
 				zap.String("session_user_id", newUser.Id))
