@@ -295,7 +295,7 @@ func (d *Service) ConfirmStoryboardFacilitator(StoryboardID string, UserID strin
 	err = d.DB.QueryRow(
 		`SELECT user_id FROM thunderdome.storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
 		StoryboardID, UserID).Scan(&facilitatorId)
-	if err != nil && role != "ADMIN" {
+	if err != nil && role != thunderdome.AdminUserType {
 		return fmt.Errorf("confirm storyboard facilitator query error:%v", err)
 	}
 
@@ -307,7 +307,7 @@ func (d *Service) GetStoryboardUsers(StoryboardID string) []*thunderdome.Storybo
 	var users = make([]*thunderdome.StoryboardUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
-			w.id, w.name, su.active, w.avatar, COALESCE(w.email, ''), COALESCE(w.picture_url, '')
+			w.id, w.name, su.active, w.avatar, COALESCE(w.email, ''), COALESCE(w.picture, '')
 		FROM thunderdome.storyboard_user su
 		LEFT JOIN thunderdome.users w ON su.user_id = w.id
 		WHERE su.storyboard_id = $1

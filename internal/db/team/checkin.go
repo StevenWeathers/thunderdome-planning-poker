@@ -28,7 +28,7 @@ func (d *CheckinService) CheckinList(ctx context.Context, TeamId string, Date st
 	Checkins := make([]*thunderdome.TeamCheckin, 0)
 
 	rows, err := d.DB.QueryContext(ctx, `SELECT
- 		tc.id, u.id, u.name, u.email, u.avatar, COALESCE(u.picture_url, ''),
+ 		tc.id, u.id, u.name, u.email, u.avatar, COALESCE(u.picture, ''),
  		COALESCE(tc.yesterday, ''), COALESCE(tc.today, ''),
  		COALESCE(tc.blockers, ''), coalesce(tc.discuss, ''),
  		tc.goals_met, tc.created_date, tc.updated_date,

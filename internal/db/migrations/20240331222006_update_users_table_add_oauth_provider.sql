@@ -35,7 +35,7 @@ BEGIN
         FROM thunderdome.users
         WHERE type <> 'GUEST';
 END $$;
-ALTER TABLE thunderdome.users ADD COLUMN picture_url TEXT;
+ALTER TABLE thunderdome.users ADD COLUMN picture TEXT;
 DROP INDEX thunderdome.email_unique_idx;
 CREATE OR REPLACE FUNCTION thunderdome.prune_auth_nonces() RETURNS trigger
     LANGUAGE plpgsql
@@ -299,7 +299,7 @@ ALTER TABLE thunderdome.users ADD COLUMN mfa_enabled boolean NOT NULL DEFAULT fa
 CREATE UNIQUE INDEX IF NOT EXISTS email_unique_idx ON thunderdome.users USING btree (lower((email)::text));
 DROP TRIGGER prune_auth_nonces ON thunderdome.auth_nonce;
 DROP FUNCTION thunderdome.prune_auth_nonces();
-ALTER TABLE thunderdome.users DROP COLUMN picture_url;
+ALTER TABLE thunderdome.users DROP COLUMN picture;
 DROP TABLE thunderdome.auth_nonce;
 DROP TABLE thunderdome.auth_credential;
 DROP TABLE thunderdome.auth_identity;

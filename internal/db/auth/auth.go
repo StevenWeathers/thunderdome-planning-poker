@@ -34,7 +34,7 @@ func (d *Service) AuthUser(ctx context.Context, UserEmail string, UserPassword s
 
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT u.id, u.name, c.email, u.type, c.password, u.avatar, c.verified, u.notifications_enabled,
- 			COALESCE(u.locale, ''), u.disabled, c.mfa_enabled, u.theme, COALESCE(u.picture_url, '')
+ 			COALESCE(u.locale, ''), u.disabled, c.mfa_enabled, u.theme, COALESCE(u.picture, '')
 			FROM thunderdome.auth_credential c
 			JOIN thunderdome.users u ON c.user_id = u.id 
 			WHERE c.email = $1`,
@@ -52,7 +52,7 @@ func (d *Service) AuthUser(ctx context.Context, UserEmail string, UserPassword s
 		&user.Disabled,
 		&cred.MFAEnabled,
 		&user.Theme,
-		&user.PictureURL,
+		&user.Picture,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

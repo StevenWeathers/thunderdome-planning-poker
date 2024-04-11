@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+const (
+	GuestUserType      = "GUEST"
+	RegisteredUserType = "REGISTERED"
+	AdminUserType      = "ADMIN"
+)
+
 type UserUICookie struct {
 	Id                   string `json:"id"`
 	Name                 string `json:"name"`
@@ -34,7 +40,7 @@ type User struct {
 	LastActive           time.Time `json:"lastActive"`
 	Disabled             bool      `json:"disabled"`
 	Theme                string    `json:"theme"`
-	PictureURL           string    `json:"picture_url"`
+	Picture              string    `json:"picture"`
 }
 
 type UserDataSvc interface {

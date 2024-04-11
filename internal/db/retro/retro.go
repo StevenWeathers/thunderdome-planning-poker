@@ -318,7 +318,7 @@ func (d *Service) RetroConfirmFacilitator(RetroID string, userID string) error {
 	err = d.DB.QueryRow(
 		"SELECT user_id FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2",
 		RetroID, userID).Scan(&facilitatorId)
-	if err != nil && role != "ADMIN" {
+	if err != nil && role != thunderdome.AdminUserType {
 		return fmt.Errorf("get retro facilitator error: %v", err)
 	}
 
@@ -330,7 +330,7 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 	var users = make([]*thunderdome.RetroUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
-			u.id, u.name, su.active, u.avatar, COALESCE(u.email, ''), COALESCE(u.picture_url, '')
+			u.id, u.name, su.active, u.avatar, COALESCE(u.email, ''), COALESCE(u.picture, '')
 		FROM thunderdome.retro_user su
 		LEFT JOIN thunderdome.users u ON su.user_id = u.id
 		WHERE su.retro_id = $1

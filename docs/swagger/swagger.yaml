@@ -1194,7 +1194,7 @@ definitions:
         type: string
       notificationsEnabled:
         type: boolean
-      picture_url:
+      picture:
         type: string
       rank:
         type: string

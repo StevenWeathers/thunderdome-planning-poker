@@ -36,7 +36,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 	rows, err := d.DB.QueryContext(ctx,
 		`
 		SELECT u.id, u.name, COALESCE(u.email, ''), u.type, u.avatar, u.verified, COALESCE(u.country, ''),
-		 COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled, COALESCE(u.picture_url, '')
+		 COALESCE(u.company, ''), COALESCE(u.job_title, ''), u.disabled, COALESCE(u.picture, '')
 		FROM thunderdome.users u
 		WHERE u.type <> 'GUEST'
 		ORDER BY u.created_date
@@ -64,7 +64,7 @@ func (d *Service) GetRegisteredUsers(ctx context.Context, Limit int, Offset int)
 			&w.Company,
 			&w.JobTitle,
 			&w.Disabled,
-			&w.PictureURL,
+			&w.Picture,
 		); err != nil {
 			d.Logger.Ctx(ctx).Error("registered_users_list query scan error", zap.Error(err))
 		} else {
@@ -83,7 +83,7 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT id, name, COALESCE(email, ''), type, avatar, verified,
 			notifications_enabled, COALESCE(country, ''), COALESCE(locale, ''), COALESCE(company, ''), 
-			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, theme, COALESCE(picture_url, '')
+			COALESCE(job_title, ''), created_date, updated_date, last_active, disabled, theme, COALESCE(picture, '')
 			FROM thunderdome.users WHERE id = $1`,
 		UserID,
 	).Scan(
@@ -103,7 +103,7 @@ func (d *Service) GetUser(ctx context.Context, UserID string) (*thunderdome.User
 		&w.LastActive,
 		&w.Disabled,
 		&w.Theme,
-		&w.PictureURL,
+		&w.Picture,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("get user query error: %v", err)
@@ -191,7 +191,7 @@ func (d *Service) CreateUserGuest(ctx context.Context, UserName string) (*thunde
 		return nil, fmt.Errorf("create guest user query error: %v", err)
 	}
 
-	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: db.CreateGravatarHash(UserID), Type: "GUEST"}, nil
+	return &thunderdome.User{Id: UserID, Name: UserName, Avatar: "robohash", NotificationsEnabled: true, Locale: "en", GravatarHash: db.CreateGravatarHash(UserID), Type: thunderdome.GuestUserType}, nil
 }
 
 // CreateUserRegistered adds a new registered user
@@ -202,7 +202,7 @@ func (d *Service) CreateUserRegistered(ctx context.Context, UserName string, Use
 	}
 
 	var verifyID string
-	UserType := "REGISTERED"
+	UserType := thunderdome.RegisteredUserType
 	UserAvatar := "robohash"
 	sanitizedEmail := db.SanitizeEmail(UserEmail)
 	User := &thunderdome.User{
@@ -249,7 +249,7 @@ func (d *Service) CreateUser(ctx context.Context, UserName string, UserEmail str
 	}
 
 	var verifyID string
-	UserType := "REGISTERED"
+	UserType := thunderdome.RegisteredUserType
 	UserAvatar := "robohash"
 	sanitizedEmail := db.SanitizeEmail(UserEmail)
 	User := &thunderdome.User{

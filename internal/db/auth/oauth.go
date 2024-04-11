@@ -52,7 +52,7 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
 
 	err := d.DB.QueryRowContext(ctx,
 		`SELECT u.id, u.name, ai.email, u.type, ai.verified, u.notifications_enabled,
- 				 COALESCE(u.locale, ''), u.disabled, u.theme, COALESCE(u.picture_url, '')
+ 				 COALESCE(u.locale, ''), u.disabled, u.theme, COALESCE(ai.picture, u.picture, '')
  				 FROM thunderdome.auth_identity ai
  				 JOIN thunderdome.users u ON u.id = ai.user_id
  				 WHERE ai.provider = $1 AND ai.sub = $2`,
@@ -67,10 +67,20 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
 		&user.Locale,
 		&user.Disabled,
 		&user.Theme,
-		&user.PictureURL,
+		&user.Picture,
 	)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		// @TODO - INSERT NEW USER and Identity
+		err := d.DB.QueryRowContext(ctx,
+			`INSERT INTO thunderdome.users (name, email, type, verified) 
+					VALUES ($1, $2, $3, $4)`,
+			name, email, thunderdome.RegisteredUserType, emailVerified,
+		).Scan(
+			&user.Id,
+			&user.Name,
+			&user.Email,
+			&user.Type,
+		)
+
 		return nil, "", err
 	} else if err != nil {
 		return nil, "", err

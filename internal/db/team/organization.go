@@ -141,7 +141,7 @@ func (d *OrganizationService) OrganizationUpdate(ctx context.Context, OrgId stri
 func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.OrganizationUser {
 	var users = make([]*thunderdome.OrganizationUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT u.id, u.name, COALESCE(u.email, ''), ou.role, u.avatar, COALESCE(u.picture_url, '')
+		`SELECT u.id, u.name, COALESCE(u.email, ''), ou.role, u.avatar, COALESCE(u.picture, '')
         FROM thunderdome.organization_user ou
         LEFT JOIN thunderdome.users u ON ou.user_id = u.id
         WHERE ou.organization_id = $1
