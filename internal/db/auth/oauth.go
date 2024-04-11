@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -46,17 +47,16 @@ func (d *Service) OauthValidateNonce(ctx context.Context, nonceId string) error 
 }
 
 // OauthAuthUser authenticate the oauth user or creates a new user
-func (d *Service) OauthAuthUser(ctx context.Context, provider string, email string, emailVerified bool, name string, pictureUrl string) (*thunderdome.User, string, error) {
+func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string, email string, emailVerified bool, name string, pictureUrl string) (*thunderdome.User, string, error) {
 	var user thunderdome.User
 
 	err := d.DB.QueryRowContext(ctx,
-		`INSERT INTO thunderdome.users (type, provider, email, verified, name, picture_url)
-				VALUES ('REGISTERED', $1, $2, $3, $4, $5)
-				ON CONFLICT (provider, lower((email)::text)) DO UPDATE
-				SET verified = EXCLUDED.verified
- 				RETURNING id, name, email, type, verified, notifications_enabled,
- 				 COALESCE(locale, ''), disabled, theme, COALESCE(picture_url, '')`,
-		provider, email, emailVerified, name, pictureUrl,
+		`SELECT u.id, u.name, ai.email, u.type, ai.verified, u.notifications_enabled,
+ 				 COALESCE(u.locale, ''), u.disabled, u.theme, COALESCE(u.picture_url, '')
+ 				 FROM thunderdome.auth_identity ai
+ 				 JOIN thunderdome.users u ON u.id = ai.user_id
+ 				 WHERE ai.provider = $1 AND ai.sub = $2`,
+		provider, sub,
 	).Scan(
 		&user.Id,
 		&user.Name,
@@ -69,7 +69,10 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, email stri
 		&user.Theme,
 		&user.PictureURL,
 	)
-	if err != nil {
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		// @TODO - INSERT NEW USER and Identity
+		return nil, "", err
+	} else if err != nil {
 		return nil, "", err
 	}
 

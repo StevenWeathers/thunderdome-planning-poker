@@ -141,7 +141,10 @@ func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 			return
 		}
 
-		user, sessionId, userErr := s.authDataSvc.OauthAuthUser(ctx, s.config.ProviderName, claims.Email, claims.EmailVerified, claims.Name, claims.Picture)
+		user, sessionId, userErr := s.authDataSvc.OauthAuthUser(
+			ctx, s.config.ProviderName, idToken.Subject, claims.Email,
+			claims.EmailVerified, claims.Name, claims.Picture,
+		)
 		if userErr != nil {
 			logger.Error("error authenticating oauth user", zap.Error(userErr))
 			ue := err.Error()
@@ -154,7 +157,8 @@ func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 		}
 
 		if scErr := s.cookie.CreateSessionCookie(w, sessionId); scErr != nil {
-			logger.Error("error creating oauth user session cookie", zap.Error(scErr), zap.String("userId", user.Id))
+			logger.Error("error creating oauth user session cookie", zap.Error(scErr),
+				zap.String("userId", user.Id))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -170,7 +174,8 @@ func (s *Service) HandleOAuth2Callback() http.HandlerFunc {
 			NotificationsEnabled: user.NotificationsEnabled,
 			Subscribed:           subscribedErr == nil,
 		}); err != nil {
-			logger.Error("error creating oauth user ui cookie", zap.Error(err), zap.String("userId", user.Id))
+			logger.Error("error creating oauth user ui cookie", zap.Error(err),
+				zap.String("userId", user.Id))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

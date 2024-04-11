@@ -3,6 +3,7 @@ package thunderdome
 import (
 	"context"
 	"net/http"
+	"time"
 )
 
 type AuthProviderConfig struct {
@@ -10,6 +11,26 @@ type AuthProviderConfig struct {
 	ProviderURL  string `mapstructure:"provider_url"`
 	ClientID     string `mapstructure:"client_id"`
 	ClientSecret string `mapstructure:"client_secret"`
+}
+
+type Credential struct {
+	UserID      string    `json:"user_id"`
+	Email       string    `json:"email"`
+	Password    string    `json:"-"`
+	Verified    bool      `json:"verified"`
+	MFAEnabled  bool      `json:"mfa_enabled"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
+}
+
+type Identity struct {
+	UserID      string    `json:"user_id"`
+	Provider    string    `json:"provider"`
+	Sub         string    `json:"-"`
+	Email       string    `json:"email"`
+	Verified    bool      `json:"verified"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
 }
 
 type AuthProviderSvc interface {
@@ -21,7 +42,7 @@ type AuthDataSvc interface {
 	AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*User, string, error)
 	OauthCreateNonce(ctx context.Context) (string, error)
 	OauthValidateNonce(ctx context.Context, nonceId string) error
-	OauthAuthUser(ctx context.Context, provider string, email string, emailVerified bool, name string, pictureUrl string) (*User, string, error)
+	OauthAuthUser(ctx context.Context, provider string, sub string, email string, emailVerified bool, name string, pictureUrl string) (*User, string, error)
 	UserResetRequest(ctx context.Context, UserEmail string) (resetID string, UserName string, resetErr error)
 	UserResetPassword(ctx context.Context, ResetID string, UserPassword string) (UserName string, UserEmail string, resetErr error)
 	UserUpdatePassword(ctx context.Context, UserID string, UserPassword string) (Name string, Email string, resetErr error)

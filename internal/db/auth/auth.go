@@ -35,7 +35,7 @@ func (d *Service) AuthUser(ctx context.Context, UserEmail string, UserPassword s
 		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled,
  			COALESCE(locale, ''), disabled, mfa_enabled, theme, COALESCE(picture_url, '')
 			FROM thunderdome.users
-			WHERE provider = 'internal' AND LOWER(email) = $1`,
+			WHERE LOWER(email) = $1`,
 		sanitizedEmail,
 	).Scan(
 		&user.Id,
