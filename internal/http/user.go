@@ -128,7 +128,7 @@ func (s *Service) handleUserProfileUpdate() http.HandlerFunc {
 			return
 		}
 
-		if SessionUserType == adminUserType {
+		if SessionUserType == thunderdome.AdminUserType {
 			_, _, vErr := validateUserAccount(profile.Name, profile.Email)
 			if vErr != nil {
 				s.Failure(w, r, http.StatusBadRequest, vErr)

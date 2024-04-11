@@ -294,11 +294,11 @@ func isTeamUserOrAnAdmin(r *http.Request) bool {
 	OrgRole := r.Context().Value(contextKeyOrgRole)
 	DepartmentRole := r.Context().Value(contextKeyDepartmentRole)
 	TeamRole := r.Context().Value(contextKeyTeamRole).(string)
-	var isAdmin = UserType == adminUserType
-	if DepartmentRole != nil && DepartmentRole.(string) == adminUserType {
+	var isAdmin = UserType == thunderdome.AdminUserType
+	if DepartmentRole != nil && DepartmentRole.(string) == thunderdome.AdminUserType {
 		isAdmin = true
 	}
-	if OrgRole != nil && OrgRole.(string) == adminUserType {
+	if OrgRole != nil && OrgRole.(string) == thunderdome.AdminUserType {
 		isAdmin = true
 	}
 
