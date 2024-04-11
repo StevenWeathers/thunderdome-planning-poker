@@ -33,7 +33,6 @@ BEGIN
     SELECT id, LOWER(email), password, verified, mfa_enabled, created_date, updated_date
         FROM thunderdome.users
         WHERE type <> 'GUEST';
-    COMMIT;
 END $$;
 ALTER TABLE thunderdome.users ADD COLUMN picture_url TEXT;
 DROP INDEX thunderdome.email_unique_idx;
