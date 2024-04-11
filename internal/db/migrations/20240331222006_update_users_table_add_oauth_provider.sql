@@ -20,6 +20,7 @@ CREATE TABLE thunderdome.auth_identity (
     provider character varying(64) NOT NULL,
     sub TEXT NOT NULL,
     email character varying(320) NOT NULL,
+    picture TEXT,
     verified boolean NOT NULL DEFAULT false,
     created_date timestamp with time zone NOT NULL DEFAULT now(),
     updated_date timestamp with time zone NOT NULL DEFAULT now(),
@@ -174,6 +175,8 @@ BEGIN
     COMMIT;
 END;
 $procedure$;
+ALTER TABLE thunderdome.users DROP COLUMN password;
+ALTER TABLE thunderdome.users DROP COLUMN mfa_enabled;
 -- +goose StatementEnd
 
 -- +goose Down
@@ -291,6 +294,8 @@ BEGIN
     COMMIT;
 END;
 $procedure$;
+ALTER TABLE thunderdome.users ADD COLUMN password TEXT;
+ALTER TABLE thunderdome.users ADD COLUMN mfa_enabled boolean NOT NULL DEFAULT false;
 CREATE UNIQUE INDEX IF NOT EXISTS email_unique_idx ON thunderdome.users USING btree (lower((email)::text));
 DROP TRIGGER prune_auth_nonces ON thunderdome.auth_nonce;
 DROP FUNCTION thunderdome.prune_auth_nonces();
