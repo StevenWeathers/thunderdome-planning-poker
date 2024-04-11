@@ -55,7 +55,7 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
  				 COALESCE(u.locale, ''), u.disabled, u.theme, COALESCE(ai.picture, u.picture, '')
  				 FROM thunderdome.auth_identity ai
  				 JOIN thunderdome.users u ON u.id = ai.user_id
- 				 WHERE ai.provider = $1 AND ai.sub = $2`,
+ 				 WHERE ai.provider = $1 AND ai.sub = $2;`,
 		provider, sub,
 	).Scan(
 		&user.Id,
@@ -70,18 +70,44 @@ func (d *Service) OauthAuthUser(ctx context.Context, provider string, sub string
 		&user.Picture,
 	)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		err := d.DB.QueryRowContext(ctx,
-			`INSERT INTO thunderdome.users (name, email, type, verified) 
-					VALUES ($1, $2, $3, $4)`,
-			name, email, thunderdome.RegisteredUserType, emailVerified,
+		tx, txErr := d.DB.BeginTx(ctx, nil)
+		if txErr != nil {
+			return nil, "", txErr
+		}
+		userInsertErr := tx.QueryRowContext(ctx,
+			`INSERT INTO thunderdome.users (name, email, type, verified, picture) 
+					VALUES ($1, $2, $3, $4, $5)
+					RETURNING id, name, email, type, verified, picture;`,
+			name, email, thunderdome.RegisteredUserType, emailVerified, pictureUrl,
 		).Scan(
 			&user.Id,
 			&user.Name,
 			&user.Email,
 			&user.Type,
+			&user.Verified,
+			&user.Picture,
 		)
+		if userInsertErr != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				return nil, "", fmt.Errorf("insert failed: %v, unable to rollback: %v\n", userInsertErr, rollbackErr)
+			}
+			return nil, "", userInsertErr
+		}
 
-		return nil, "", err
+		_, identityInsertErr := tx.ExecContext(ctx,
+			`INSERT INTO thunderdome.auth_identity (user_id, provider, sub, email, picture, verified) 
+					VALUES ($1, $2, $3, $4, $5, $6);`,
+			user.Id, provider, sub, email, pictureUrl, emailVerified,
+		)
+		if identityInsertErr != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				return nil, "", fmt.Errorf("insert failed: %v, unable to rollback: %v\n", identityInsertErr, rollbackErr)
+			}
+			return nil, "", fmt.Errorf("update failed: %v", identityInsertErr)
+		}
+		if err := tx.Commit(); err != nil {
+			return nil, "", err
+		}
 	} else if err != nil {
 		return nil, "", err
 	}
