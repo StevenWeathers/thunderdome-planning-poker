@@ -3,6 +3,11 @@
   import GithubIcon from '../../components/icons/Github.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig } from '../../config';
+  import SupportForm from '../../components/support/SupportForm.svelte';
+
+  export let xfetch = () => {};
+  export let notifications = () => {};
+  export let eventTag = () => {};
 
   const { AppVersion, RepoURL } = AppConfig;
 </script>
@@ -15,14 +20,16 @@
   <div class="dark:text-gray-200">
     <div class="mb-4">
       <h1
-        class="text-3xl font-semibold font-rajdhani dark:text-white uppercase"
+        class="text-3xl lg:text-4xl font-semibold font-rajdhani dark:text-white uppercase"
       >
         {$LL.support()}
       </h1>
     </div>
 
     <div class="mb-8">
-      <h2 class="py-2 text-2xl font-semibold font-rajdhani dark:text-white">
+      <h2
+        class="py-2 text-2xl lg:text-3xl font-semibold font-rajdhani dark:text-white"
+      >
         Have a bug or issue you want to report?
       </h2>
       <p>
@@ -42,16 +49,18 @@
         >
       </p>
     </div>
-    <div>
+    <div class="max-w-full lg:max-w-2xl">
       <h2
-        class="py-2 text-2xl font-semibold font-rajdhani dark:text-white uppercase"
+        class="py-2 text-2xl lg:text-3xl font-semibold font-rajdhani dark:text-white uppercase"
       >
         Contact Us
       </h2>
-      <div
-        class="py-4 font-rajdhani text-2xl text-center font-bold text-green-500"
-      >
-        coming soon...
+      <div class="py-4">
+        <SupportForm
+          xfetch="{xfetch}"
+          notifications="{notifications}"
+          eventTag="{eventTag}"
+        />
       </div>
     </div>
   </div>

@@ -26,6 +26,60 @@ func (s *Service) panicRecovery(h http.Handler) http.Handler {
 	})
 }
 
+// userOptional checks if the request was made by a session user or guest user
+func (s *Service) userOptional(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		apiKey := r.Header.Get(apiKeyHeaderName)
+		apiKey = strings.TrimSpace(apiKey)
+		ctx := r.Context()
+		User := &thunderdome.User{}
+
+		if apiKey != "" && s.Config.ExternalAPIEnabled {
+			var apiKeyErr error
+			User, apiKeyErr = s.ApiKeyDataSvc.GetApiKeyUser(ctx, apiKey)
+			if apiKeyErr != nil {
+				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_APIKEY"))
+				return
+			}
+		} else {
+			SessionId, cookieErr := s.Cookie.ValidateSessionCookie(w, r)
+			if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
+				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+				return
+			}
+
+			if SessionId != "" {
+				var userErr error
+				User, userErr = s.AuthDataSvc.GetSessionUser(ctx, SessionId)
+				if userErr != nil {
+					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					return
+				}
+			} else {
+				UserID, err := s.Cookie.ValidateUserCookie(w, r)
+				if err != nil && err.Error() != "NO_USER_COOKIE" {
+					s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+					return
+				}
+
+				if UserID != "" {
+					var userErr error
+					User, userErr = s.UserDataSvc.GetGuestUser(ctx, UserID)
+					if userErr != nil {
+						s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
+						return
+					}
+				}
+			}
+		}
+
+		ctx = context.WithValue(ctx, contextKeyUserID, User.Id)
+		ctx = context.WithValue(ctx, contextKeyUserType, User.Type)
+
+		h(w, r.WithContext(ctx))
+	}
+}
+
 // userOnly validates that the request was made by a valid user
 func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
