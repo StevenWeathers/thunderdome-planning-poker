@@ -661,6 +661,9 @@ const de: Translation = {
   orgUpdateError: 'Fehler beim Aktualisieren der Organisation',
   deptUpdateSuccess: 'Abteilung erfolgreich aktualisiert',
   deptUpdateError: 'Fehler beim Aktualisieren der Abteilung',
+  hideVoterIdentity: 'Identität des Schätzers verbergen',
+  storyboardName: 'Storyboard Name',
+  storyboardNamePlaceholder: 'Geben Sie einen Storyboard-Namen ein',
 };
 
 export default de;
