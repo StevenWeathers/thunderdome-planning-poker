@@ -24,11 +24,7 @@ const AppConfig =
         DefaultLocale: 'en',
         Subscription: {},
       };
-const {
-  PathPrefix,
-  DefaultLocale: fallbackLocale,
-  FriendlyUIVerbs,
-} = AppConfig;
+const { PathPrefix, DefaultLocale, FriendlyUIVerbs } = AppConfig;
 
 const defaultAppRoutes = {
   landing: `${PathPrefix}/`,
@@ -71,7 +67,7 @@ const appRoutes = FriendlyUIVerbs ? friendlyAppRoutes : defaultAppRoutes;
 
 export {
   locales,
-  fallbackLocale,
+  DefaultLocale,
   appRoutes,
   PathPrefix,
   AppConfig,
