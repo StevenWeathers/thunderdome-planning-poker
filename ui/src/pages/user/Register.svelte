@@ -29,6 +29,9 @@
     email: '',
   };
 
+  /** @type {TextInput} */
+  let warriorNameTextInput;
+
   function targetPage() {
     let tp = appRoutes.games;
 
@@ -148,6 +151,9 @@
       wasInvited = true;
       getInviteDetails();
     }
+
+    // Focus the warrior name input field
+    warriorNameTextInput.focus();
   });
 </script>
 
@@ -235,6 +241,7 @@
               {$LL.name()}
             </label>
             <TextInput
+              bind:this="{warriorNameTextInput}"
               bind:value="{warriorName}"
               placeholder="{$LL.yourNamePlaceholder()}"
               id="yourName1"
