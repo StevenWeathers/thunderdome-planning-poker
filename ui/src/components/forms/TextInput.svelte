@@ -4,12 +4,18 @@
   let klass: string = '';
   export { klass as class };
 
+  let inputElement;
+  export function focus() {
+    inputElement.focus();
+  }
+
   // works around "svelte(invalid-type)" warning, i.e., can't have a dynamic type AND bind:value...keep an eye on https://github.com/sveltejs/svelte/issues/3921
   const typeWorkaround = node => (node.type = type);
 </script>
 
 <input
   use:typeWorkaround
+  bind:this="{inputElement}"
   bind:value="{value}"
   on:change
   on:input

@@ -22,6 +22,9 @@
   let teams = [];
   let selectedTeam = '';
 
+  /** @type {TextInput} */
+  let retroNameTextInput;
+
   const brainstormVisibilityOptions = [
     {
       label: $LL.brainstormVisibilityLabelVisible(),
@@ -90,6 +93,9 @@
       router.route(appRoutes.register);
     }
     getTeams();
+
+    // Focus the retro name input field
+    retroNameTextInput.focus();
   });
 </script>
 
@@ -105,6 +111,7 @@
       <TextInput
         name="retroName"
         bind:value="{retroName}"
+        bind:this="{retroNameTextInput}"
         placeholder="{$LL.retroNamePlaceholder()}"
         id="retroName"
         required
