@@ -152,8 +152,8 @@
       getInviteDetails();
     }
 
-    // Focus the warrior name input field
-    warriorNameTextInput.focus();
+    // Focus the warrior name input field if it exists
+    warriorNameTextInput?.focus();
   });
 </script>
 
