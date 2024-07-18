@@ -52,6 +52,7 @@
   import AdminSubscriptions from './pages/admin/Subscriptions.svelte';
   import AdminSubscription from './pages/admin/Subscription.svelte';
   import { setLocale } from './i18n/i18n-svelte';
+  import { detectLocale } from './i18n/i18n-util';
   import Confirmation from './pages/subscription/Confirmation.svelte';
   import Pricing from './pages/subscription/Pricing.svelte';
   import PrivacyPolicy from './pages/support/PrivacyPolicy.svelte';
@@ -64,6 +65,7 @@
     FeatureRetro,
     FeatureStoryboard,
     SubscriptionsEnabled,
+    DefaultLocale,
   } = AppConfig;
 
   let notifications;
@@ -73,7 +75,8 @@
     activeWarrior = w;
   });
 
-  const detectedLocale = activeWarrior.locale || AppConfig.DefaultLocale;
+  const detectedLocale =
+    activeWarrior.locale || detectLocale() || DefaultLocale;
   loadLocale(detectedLocale);
   setLocale(detectedLocale);
 
