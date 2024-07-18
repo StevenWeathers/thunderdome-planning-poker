@@ -85,14 +85,14 @@
       class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
       for="storyboardName"
     >
-      Storyboard Name
+      {$LL.storyboardName()}
     </label>
     <div class="control">
       <TextInput
         name="storyboardName"
         bind:value="{storyboardName}"
         bind:this="{storyboardNameTextInput}"
-        placeholder="Enter a storyboard name"
+        placeholder="{$LL.storyboardNamePlaceholder()}"
         id="storyboardName"
         required
       />
@@ -159,6 +159,6 @@
   </div>
 
   <div class="text-right">
-    <SolidButton type="submit">Create Storyboard</SolidButton>
+    <SolidButton type="submit">{$LL.createStoryboard()}</SolidButton>
   </div>
 </form>
