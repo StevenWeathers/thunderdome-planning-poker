@@ -46,7 +46,7 @@ test.describe("The Admin Poker Games Page", () => {
       await ap.goto();
 
       const title = ap.page.locator('[data-testid="tablenav-title"]');
-      await expect(title).toHaveText("Battles");
+      await expect(title).toHaveText("Games");
     });
   });
 });

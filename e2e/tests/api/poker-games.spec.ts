@@ -49,7 +49,7 @@ test.describe("registered user", () => {
 
   test(`POST /users/{userId}/battles should create game`, async () => {
     const pointValuesAllowed = ["0", "0.5", "1", "2", "3", "5", "8", "13"];
-    const battleName = "Test API Create Battle";
+    const battleName = "Test API Create Game";
     const pointAverageRounding = "floor";
     const autoFinishVoting = false;
 

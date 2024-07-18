@@ -9,7 +9,7 @@ test.describe("The Login Page", () => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
     await loginPage.login(registeredUser.email, registeredUser.password);
-    await expect(loginPage.page.locator("h1")).toHaveText("My Battles");
+    await expect(loginPage.page.locator("h1")).toHaveText("My Games");
 
     // UI should reflect this user being logged in
     await expect(
