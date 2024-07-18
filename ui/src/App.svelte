@@ -372,9 +372,7 @@
       router.route(appRoutes.games);
     });
     router.on(`${appRoutes.battle}/:battleId`, params => {
-      router.on(appRoutes.battles, () => {
-        router.route(`${appRoutes.battle}/${params.battleId}`);
-      });
+      router.route(`${appRoutes.game}/${params.battleId}`);
     });
     router.on(appRoutes.games, () => {
       currentPage = {
