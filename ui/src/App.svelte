@@ -65,6 +65,7 @@
     FeatureRetro,
     FeatureStoryboard,
     SubscriptionsEnabled,
+    DefaultLocale,
   } = AppConfig;
 
   let notifications;
@@ -74,7 +75,8 @@
     activeWarrior = w;
   });
 
-  const detectedLocale = activeWarrior.locale || detectLocale();
+  const detectedLocale =
+    activeWarrior.locale || detectLocale() || DefaultLocale;
   loadLocale(detectedLocale);
   setLocale(detectedLocale);
 
