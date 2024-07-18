@@ -78,11 +78,7 @@
         battleCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger(
-          $LL.getBattlesError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.danger($LL.getBattlesError());
       });
   }
 
@@ -266,10 +262,7 @@
   {#if FeaturePoker}
     <div class="mb-6 lg:mb-8">
       <TableContainer>
-        <TableNav
-          title="{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}"
-          createBtnEnabled="{false}"
-        />
+        <TableNav title="{$LL.battles()}" createBtnEnabled="{false}" />
         <Table>
           <tr slot="header">
             <HeadCol>
@@ -303,9 +296,7 @@
                 </RowCol>
                 <RowCol type="action">
                   <HollowButton href="{appRoutes.game}/{battle.id}">
-                    {$LL.battleJoin({
-                      friendly: AppConfig.FriendlyUIVerbs,
-                    })}
+                    {$LL.battleJoin()}
                   </HollowButton>
                 </RowCol>
               </TableRow>

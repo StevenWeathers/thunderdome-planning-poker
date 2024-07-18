@@ -296,7 +296,7 @@
       <div class="md:grid md:grid-cols-2 md:gap-4">
         <div class="mb-4">
           <h3 class="font-bold mb-2 dark:text-gray-300 text-lg">
-            {$LL.importJiraXML({ friendly: AppConfig.FriendlyUIVerbs })}
+            {$LL.importJiraXML()}
           </h3>
           <JiraImport
             handlePlanAdd="{handleAdd}"
@@ -307,7 +307,7 @@
         </div>
         <div class="mb-4">
           <h3 class="font-bold mb-2 dark:text-gray-300 text-lg">
-            {$LL.importCsv({ friendly: AppConfig.FriendlyUIVerbs })}
+            {$LL.importCsv()}
           </h3>
           <p class="dark:text-gray-400 mb-2">
             The CSV file must include all the following fields with no header

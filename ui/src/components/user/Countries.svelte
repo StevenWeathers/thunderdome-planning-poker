@@ -1,7 +1,6 @@
 <script lang="ts">
   import LL from '../../i18n/i18n-svelte';
   import CountryFlag from './CountryFlag.svelte';
-  import { AppConfig } from '../../config';
 
   export let xfetch;
   export let eventTag;
@@ -23,7 +22,7 @@
   <h2
     class="text-5xl font-semibold mb-12 font-rajdhani uppercase dark:text-white"
   >
-    {$LL.landingCountries[AppConfig.FriendlyUIVerbs]({
+    {$LL.landingCountries({
       count: activeCountries.length,
     })}
   </h2>

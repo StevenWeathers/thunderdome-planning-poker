@@ -183,7 +183,7 @@
         class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
                 dark:text-white"
       >
-        {@html $LL.loginForBattle[AppConfig.FriendlyUIVerbs]({
+        {@html $LL.loginForBattle({
           loginOpen: `<a href="${appRoutes.login}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
           loginClose: `</a>`,
         })}

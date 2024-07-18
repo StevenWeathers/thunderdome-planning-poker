@@ -26,7 +26,7 @@ For Thunderdome to work correctly the following configuration items are required
 
 | Option                | Environment Variable | Description                                                                                                                                         | Default Value     |
 |-----------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for functional cookies (guest and registered user sessions), WebSocket origin check,  and creating URLs in emails. | thunderdome.dev   |
+| `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for functional cookies (guest and registered user sessions), WebSocket origin check, and creating URLs in emails. | thunderdome.dev   |
 | `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                                                                                          | strongest-avenger |
 | `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Battle JoinCode, LeaderCode).                                                                          | therevengers      |
 
@@ -179,7 +179,6 @@ needs.
 | `config.allow_jira_import`            | CONFIG_ALLOW_JIRA_IMPORT            | Whether or not to allow import plans from JIRA XML.                                                                  | true                                                       |
 | `config.allow_csv_import`             | CONFIG_ALLOW_CSV_IMPORT             | Whether or not to allow import plans from a csv file                                                                 | true                                                       |
 | `config.default_locale`               | CONFIG_DEFAULT_LOCALE               | The default locale (language) for the UI                                                                             | en                                                         |
-| `config.friendly_ui_verbs`            | CONFIG_FRIENDLY_UI_VERBS            | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly                  | false                                                      |
 | `config.allow_external_api`           | CONFIG_ALLOW_EXTERNAL_API           | Whether or not to allow External API access                                                                          | true                                                       |
 | `config.external_api_verify_required` | CONFIG_EXTERNAL_API_VERIFY_REQUIRED | Whether External API access requires user to be email verified                                                       | true                                                       |
 | `config.user_apikey_limit`            | CONFIG_USER_APIKEY_LIMIT            | Limit users number of API keys                                                                                       | 5                                                          |

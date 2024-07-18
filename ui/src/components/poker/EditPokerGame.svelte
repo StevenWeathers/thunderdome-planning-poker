@@ -81,15 +81,13 @@
         class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
         for="battleName"
       >
-        {$LL.battleName({ friendly: AppConfig.FriendlyUIVerbs })}
+        {$LL.battleName()}
       </label>
       <div class="control">
         <TextInput
           name="battleName"
           bind:value="{battleName}"
-          placeholder="{$LL.battleNamePlaceholder({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}"
+          placeholder="{$LL.battleNamePlaceholder()}"
           id="battleName"
           required
         />
@@ -164,9 +162,7 @@
         id="autoFinishVoting"
         name="autoFinishVoting"
         disabled="{!votingLocked}"
-        label="{$LL.autoFinishVotingLabel({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}"
+        label="{$LL.autoFinishVotingLabel()}"
       />
     </div>
 

@@ -1,7 +1,6 @@
 <script lang="ts">
   import SolidButton from '../global/SolidButton.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig } from '../../config';
   import SelectInput from '../forms/SelectInput.svelte';
 
   export let sendSocketEvent = () => {};
@@ -52,7 +51,7 @@
       onClick="{skipPlan}"
       testid="voting-skip"
     >
-      {$LL.planSkip({ friendly: AppConfig.FriendlyUIVerbs })}
+      {$LL.planSkip()}
     </SolidButton>
     {#if !votingLocked}
       <SolidButton
