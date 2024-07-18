@@ -12,6 +12,7 @@
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
   import Editor from '../forms/Editor.svelte';
+  import { onMount } from 'svelte';
 
   export let handlePlanAdd = () => {};
   export let toggleAddPlan = () => {};
@@ -56,6 +57,9 @@
   export let acceptanceCriteria = '';
   export let priority = 99;
 
+  /** @type {TextInput} */
+  let planNameTextInput;
+
   const isAbsolute = new RegExp('^([a-z]+://|//)', 'i');
   let descriptionExpanded = false;
   let acceptanceExpanded = false;
@@ -91,6 +95,11 @@
       toggleAddPlan();
     }
   }
+
+  // Focus the plan name input field when the modal is opened
+  onMount(() => {
+    planNameTextInput.focus();
+  });
 </script>
 
 <Modal closeModal="{toggleAddPlan}" widthClasses="md:w-2/3 lg:w-3/5 xl:w-1/2">
@@ -122,6 +131,7 @@
       <TextInput
         id="planName"
         name="planName"
+        bind:this="{planNameTextInput}"
         bind:value="{planName}"
         placeholder="{$LL.planNamePlaceholder({
           friendly: AppConfig.FriendlyUIVerbs,
