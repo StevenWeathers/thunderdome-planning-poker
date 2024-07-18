@@ -609,6 +609,9 @@ const it: Translation = {
   orgUpdateError: 'Error updating Organization',
   deptUpdateSuccess: 'Department updated successfully',
   deptUpdateError: 'Error updating Department',
+  hideVoterIdentity: 'Hide Voter Identity',
+  storyboardName: 'Storyboard Name',
+  storyboardNamePlaceholder: 'Enter a storyboard name',
 };
 
 export default it;

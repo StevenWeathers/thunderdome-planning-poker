@@ -2299,6 +2299,18 @@ type RootTranslation = {
    * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​D​e​p​a​r​t​m​e​n​t
    */
   deptUpdateError: string;
+  /**
+   * H​i​d​e​ ​V​o​t​e​r​ ​I​d​e​n​t​i​t​y
+   */
+  hideVoterIdentity: string;
+  /**
+   * S​t​o​r​y​b​o​a​r​d​ ​N​a​m​e
+   */
+  storyboardName: string;
+  /**
+   * E​n​t​e​r​ ​a​ ​s​t​o​r​y​b​o​a​r​d​ ​n​a​m​e
+   */
+  storyboardNamePlaceholder: string;
 };
 
 export type TranslationFunctions = {
@@ -4578,6 +4590,18 @@ export type TranslationFunctions = {
    * Error updating Department
    */
   deptUpdateError: () => LocalizedString;
+  /**
+   * Hide Voter Identity
+   */
+  hideVoterIdentity: () => LocalizedString;
+  /**
+   * Storyboard Name
+   */
+  storyboardName: () => LocalizedString;
+  /**
+   * Enter a storyboard name
+   */
+  storyboardNamePlaceholder: () => LocalizedString;
 };
 
 export type Formatters = {};

@@ -31,6 +31,9 @@
   let teams = [];
   let hideVoterIdentity = false;
 
+  /** @type {TextInput} */
+  let battleNameTextInput;
+
   let checkedPointColor =
     'border-green-500 bg-green-50 text-green-700 dark:bg-lime-50 dark:text-lime-700 dark:border-lime-500';
   let uncheckedPointColor =
@@ -135,6 +138,9 @@
       router.route(appRoutes.register);
     }
     getTeams();
+
+    // Focus the battle name input field
+    battleNameTextInput.focus();
   });
 </script>
 
@@ -149,6 +155,7 @@
     <div class="control">
       <TextInput
         name="battleName"
+        bind:this="{battleNameTextInput}"
         bind:value="{battleName}"
         placeholder="{$LL.battleNamePlaceholder()}"
         id="battleName"
@@ -281,7 +288,7 @@
       bind:checked="{hideVoterIdentity}"
       id="hideVoterIdentity"
       name="hideVoterIdentity"
-      label="Hide Voter Identity"
+      label="{$LL.hideVoterIdentity()}"
     />
   </div>
 
