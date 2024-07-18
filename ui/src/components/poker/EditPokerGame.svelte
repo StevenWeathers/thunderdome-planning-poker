@@ -175,7 +175,7 @@
         bind:checked="{hideVoterIdentity}"
         id="hideVoterIdentity"
         name="hideVoterIdentity"
-        label="Hide Voter Identity"
+        label="{$LL.hideVoterIdentity()}"
       />
     </div>
 
