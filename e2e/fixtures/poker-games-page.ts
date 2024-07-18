@@ -14,7 +14,7 @@ export class PokerGamesPage {
   }
 
   async goto() {
-    await this.page.goto("/battles");
+    await this.page.goto("/games");
   }
 
   async createBattle({ name }) {
