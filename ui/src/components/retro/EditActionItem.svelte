@@ -2,21 +2,21 @@
   import SolidButton from '../global/SolidButton.svelte';
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import CheckboxIcon from '../icons/CheckboxIcon.svelte';
   import HollowButton from '../global/HollowButton.svelte';
   import UserAvatar from '../user/UserAvatar.svelte';
   import TrashIcon from '../icons/TrashIcon.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   export let toggleEdit = () => {};
   export let handleEdit = action => {};
   export let handleDelete = () => {};
   export let handleAssigneeAdd = (retroId, actionId, userId) => {};
   export let handleAssigneeRemove = (retroId, actionId, userId) => () => {};
-  export let retroId = '';
   export let assignableUsers = [];
   export let action = {
     id: '',
+    retroId: '',
     content: '',
     completed: false,
     assignees: [],
@@ -26,6 +26,7 @@
 
   let editAction = {
     id: action.id,
+    retroId: action.retroId,
     content: action.content,
     completed: action.completed,
   };
@@ -36,7 +37,7 @@
     handleEdit(editAction);
   };
   const addAssignee = () => {
-    handleAssigneeAdd(retroId, action.id, selectedAssignee);
+    handleAssigneeAdd(action.retroId, action.id, selectedAssignee);
     selectedAssignee = '';
   };
 </script>
@@ -66,29 +67,13 @@
     </div>
 
     <div class="mb-4">
-      <label
-        class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
-        for="Completed"
-      >
-        {$LL.completed()}
-      </label>
       <div class="control">
         <div class="flex-shrink">
-          <input
-            type="checkbox"
+          <Checkbox
             id="Completed"
             bind:checked="{editAction.completed}"
-            class="opacity-0 absolute h-6 w-6"
+            label="{$LL.completed()}"
           />
-          <div
-            class="bg-white dark:bg-gray-800 border-2 rounded-md
-                                                border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                                justify-center items-center me-2
-                                                focus-within:border-blue-500 dark:focus-within:border-sky-500"
-          >
-            <CheckboxIcon />
-          </div>
-          <label for="Completed" class="select-none"></label>
         </div>
       </div>
     </div>
@@ -151,7 +136,7 @@
               <HollowButton
                 color="red"
                 onClick="{handleAssigneeRemove(
-                  retroId,
+                  action.retroId,
                   action.id,
                   assignee.id,
                 )}"

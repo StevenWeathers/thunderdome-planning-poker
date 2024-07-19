@@ -10,8 +10,8 @@ test.describe("Poker Games page", () => {
       const battlesPage = new PokerGamesPage(page);
       await battlesPage.goto();
 
-      const title = battlesPage.page.locator('[data-formtitle="login"]');
-      await expect(title).toHaveText("Login");
+      const loginForm = battlesPage.page.locator('form[name="login"]');
+      await expect(loginForm).toBeVisible();
     });
   });
 

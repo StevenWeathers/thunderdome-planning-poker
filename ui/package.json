@@ -23,7 +23,8 @@
     "test:watch": "npm run test -- --watch",
     "test:snapshot": "npm test -- -u",
     "locales": "npx typesafe-i18n --no-watch",
-    "locales:watch": "typesafe-i18n"
+    "locales:watch": "typesafe-i18n",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
     "compute-scroll-into-view": "^3.1.0",

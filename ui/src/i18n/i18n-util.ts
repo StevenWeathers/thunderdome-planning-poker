@@ -11,7 +11,10 @@ import type {
   LocaleTranslationFunctions,
   TranslateByString,
 } from 'typesafe-i18n';
-import { detectLocale as detectLocaleFn } from 'typesafe-i18n/detectors';
+import {
+  detectLocale as detectLocaleFn,
+  navigatorDetector,
+} from 'typesafe-i18n/detectors';
 import { initExtendDictionary } from 'typesafe-i18n/utils';
 import type {
   Formatters,
@@ -69,4 +72,4 @@ export const i18n = (): LocaleTranslationFunctions<
   );
 
 export const detectLocale = (...detectors: LocaleDetector[]): Locales =>
-  detectLocaleFn<Locales>(baseLocale, locales, ...detectors);
+  detectLocaleFn<Locales>(baseLocale, locales, navigatorDetector, ...detectors);

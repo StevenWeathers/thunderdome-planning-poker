@@ -22,9 +22,9 @@
   import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import UserCard from '../../components/retro/UserCard.svelte';
   import InviteUser from '../../components/retro/InviteUser.svelte';
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
 
   export let retroId;
   export let notifications;

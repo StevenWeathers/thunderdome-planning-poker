@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import AdminPageLayout from '../../components/global/AdminPageLayout.svelte';
+  import AdminPageLayout from '../../components/AdminPageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import UserIcon from '../../components/icons/UserIcon.svelte';
   import UserRankRegisteredIcon from '../../components/icons/UserRankRegisteredIcon.svelte';

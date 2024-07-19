@@ -424,6 +424,10 @@ type RootTranslation = {
    */
   createAccount: string;
   /**
+   * D​o​n​'​t​ ​h​a​v​e​ ​a​n​ ​a​c​c​o​u​n​t​?
+   */
+  createAccountTagline: string;
+  /**
    * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​c​r​e​a​t​i​n​g​ ​a​l​e​r​t
    */
   createAlertError: string;
@@ -709,9 +713,17 @@ type RootTranslation = {
    */
   footerLicense: RequiredParams<'licenseClose' | 'licenseOpen'>;
   /**
-   * F​o​r​g​o​t​ ​P​a​s​s​w​o​r​d
+   * F​o​r​g​o​t​ ​Y​o​u​r​ ​P​a​s​s​w​o​r​d​?
    */
   forgotPassword: string;
+  /**
+   * D​o​n​'​t​ ​f​r​e​t​!​ ​J​u​s​t​ ​e​n​t​e​r​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​n​d​ ​w​e​ ​w​i​l​l​ ​s​e​n​d​ ​y​o​u​ ​i​n​s​t​r​u​c​t​i​o​n​s​ ​t​o​ ​r​e​s​e​t​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​.
+   */
+  forgotPasswordSubtext: string;
+  /**
+   * R​e​t​u​r​n​ ​t​o​ ​L​o​g​i​n
+   */
+  returnToLogin: string;
   /**
    * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​a​l​e​r​t​s
    */
@@ -1316,18 +1328,6 @@ type RootTranslation = {
    */
   register: string;
   /**
-   * o​r​ ​{​r​e​g​i​s​t​e​r​O​p​e​n​}​R​e​g​i​s​t​e​r​{​r​e​g​i​s​t​e​r​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​R​e​t​r​o
-   * @param {unknown} registerClose
-   * @param {unknown} registerOpen
-   */
-  registerForRetro: RequiredParams<'registerClose' | 'registerOpen'>;
-  /**
-   * o​r​ ​{​r​e​g​i​s​t​e​r​O​p​e​n​}​R​e​g​i​s​t​e​r​{​r​e​g​i​s​t​e​r​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​S​t​o​r​y​b​o​a​r​d
-   * @param {unknown} registerClose
-   * @param {unknown} registerOpen
-   */
-  registerForStoryboard: RequiredParams<'registerClose' | 'registerOpen'>;
-  /**
    * O​o​p​s​,​ ​r​e​l​o​a​d​i​n​g​ ​R​e​t​r​o​.​.​.
    */
   reloadingRetro: string;
@@ -1499,10 +1499,6 @@ type RootTranslation = {
    * @param {unknown} linkOpen
    */
   selfHostedDesc: RequiredParams<'linkClose' | 'linkOpen'>;
-  /**
-   * S​e​n​d​ ​R​e​s​e​t​ ​E​m​a​i​l
-   */
-  sendResetEmail: string;
   /**
    * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​D​u​p​l​i​c​a​t​e​ ​b​a​t​t​l​e​ ​s​e​s​s​i​o​n​ ​e​x​i​s​t​s​ ​f​o​r​ ​y​o​u​r​ ​I​D​,​ ​t​r​u​e​:​D​u​p​l​i​c​a​t​e​ ​g​a​m​e​ ​s​e​s​s​i​o​n​ ​e​x​i​s​t​s​ ​f​o​r​ ​y​o​u​r​ ​I​D​}​}
    * @param {'false' | 'true'} friendly
@@ -1968,6 +1964,10 @@ type RootTranslation = {
    */
   profileTitle: string;
   /**
+   * P​r​o​f​i​l​e
+   */
+  profile: string;
+  /**
    * U​p​d​a​t​e​ ​P​a​s​s​w​o​r​d
    */
   updatePassword: string;
@@ -2188,10 +2188,6 @@ type RootTranslation = {
    */
   resetPassword: string;
   /**
-   * F​o​r​g​o​t​ ​P​a​s​s​w​o​r​d​?
-   */
-  forgotPasswordCheckboxLabel: string;
-  /**
    * R​e​g​i​s​t​e​r​ ​a​s​ ​G​u​e​s​t
    */
   registerAsGuest: string;
@@ -2248,20 +2244,6 @@ type RootTranslation = {
    * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​s​e​n​d​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t
    */
   sendResetPasswordError: string;
-  registerForBattle: {
-    /**
-     * o​r​ ​{​r​e​g​i​s​t​e​r​O​p​e​n​}​R​e​g​i​s​t​e​r​{​r​e​g​i​s​t​e​r​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​G​a​m​e
-     * @param {unknown} registerClose
-     * @param {unknown} registerOpen
-     */
-    true: RequiredParams<'registerClose' | 'registerOpen'>;
-    /**
-     * o​r​ ​{​r​e​g​i​s​t​e​r​O​p​e​n​}​R​e​g​i​s​t​e​r​{​r​e​g​i​s​t​e​r​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​B​a​t​t​l​e
-     * @param {unknown} registerClose
-     * @param {unknown} registerOpen
-     */
-    false: RequiredParams<'registerClose' | 'registerOpen'>;
-  };
   /**
    * C​h​o​o​s​e​ ​y​o​u​r​ ​c​o​u​n​t​r​y​ ​(​o​p​t​i​o​n​a​l​)
    */
@@ -2391,6 +2373,42 @@ type RootTranslation = {
    * @param {unknown} pageType
    */
   addUserWillInviteNotFoundFieldNote: RequiredParams<'pageType'>;
+  /**
+   * T​e​a​m​ ​u​p​d​a​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
+   */
+  teamUpdateSuccess: string;
+  /**
+   * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​T​e​a​m
+   */
+  teamUpdateError: string;
+  /**
+   * O​r​g​a​n​i​z​a​t​i​o​n​ ​u​p​d​a​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
+   */
+  orgUpdateSuccess: string;
+  /**
+   * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​O​r​g​a​n​i​z​a​t​i​o​n
+   */
+  orgUpdateError: string;
+  /**
+   * D​e​p​a​r​t​m​e​n​t​ ​u​p​d​a​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
+   */
+  deptUpdateSuccess: string;
+  /**
+   * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​D​e​p​a​r​t​m​e​n​t
+   */
+  deptUpdateError: string;
+  /**
+   * H​i​d​e​ ​V​o​t​e​r​ ​I​d​e​n​t​i​t​y
+   */
+  hideVoterIdentity: string;
+  /**
+   * S​t​o​r​y​b​o​a​r​d​ ​N​a​m​e
+   */
+  storyboardName: string;
+  /**
+   * E​n​t​e​r​ ​a​ ​s​t​o​r​y​b​o​a​r​d​ ​n​a​m​e
+   */
+  storyboardNamePlaceholder: string;
 };
 
 export type TranslationFunctions = {
@@ -2787,6 +2805,10 @@ export type TranslationFunctions = {
    */
   createAccount: () => LocalizedString;
   /**
+   * Don't have an account?
+   */
+  createAccountTagline: () => LocalizedString;
+  /**
    * Error encountered creating alert
    */
   createAlertError: () => LocalizedString;
@@ -3073,9 +3095,17 @@ export type TranslationFunctions = {
     licenseOpen: unknown;
   }) => LocalizedString;
   /**
-   * Forgot Password
+   * Forgot Your Password?
    */
   forgotPassword: () => LocalizedString;
+  /**
+   * Don't fret! Just enter your email and we will send you instructions to reset your password.
+   */
+  forgotPasswordSubtext: () => LocalizedString;
+  /**
+   * Return to Login
+   */
+  returnToLogin: () => LocalizedString;
   /**
    * Error getting alerts
    */
@@ -3665,20 +3695,6 @@ export type TranslationFunctions = {
    */
   register: () => LocalizedString;
   /**
-   * or {registerOpen}Register{registerClose} to join the Retro
-   */
-  registerForRetro: (arg: {
-    registerClose: unknown;
-    registerOpen: unknown;
-  }) => LocalizedString;
-  /**
-   * or {registerOpen}Register{registerClose} to join the Storyboard
-   */
-  registerForStoryboard: (arg: {
-    registerClose: unknown;
-    registerOpen: unknown;
-  }) => LocalizedString;
-  /**
    * Oops, reloading Retro...
    */
   reloadingRetro: () => LocalizedString;
@@ -3851,10 +3867,6 @@ export type TranslationFunctions = {
     linkClose: unknown;
     linkOpen: unknown;
   }) => LocalizedString;
-  /**
-   * Send Reset Email
-   */
-  sendResetEmail: () => LocalizedString;
   /**
    * {friendly|{false:Duplicate battle session exists for your ID, true:Duplicate game session exists for your ID}}
    */
@@ -4314,6 +4326,10 @@ export type TranslationFunctions = {
    */
   profileTitle: () => LocalizedString;
   /**
+   * Profile
+   */
+  profile: () => LocalizedString;
+  /**
    * Update Password
    */
   updatePassword: () => LocalizedString;
@@ -4520,10 +4536,6 @@ export type TranslationFunctions = {
    */
   resetPassword: () => LocalizedString;
   /**
-   * Forgot Password?
-   */
-  forgotPasswordCheckboxLabel: () => LocalizedString;
-  /**
    * Register as Guest
    */
   registerAsGuest: () => LocalizedString;
@@ -4579,22 +4591,6 @@ export type TranslationFunctions = {
    * Error encountered attempting to send password reset
    */
   sendResetPasswordError: () => LocalizedString;
-  registerForBattle: {
-    /**
-     * or {registerOpen}Register{registerClose} to join the Game
-     */
-    true: (arg: {
-      registerClose: unknown;
-      registerOpen: unknown;
-    }) => LocalizedString;
-    /**
-     * or {registerOpen}Register{registerClose} to join the Battle
-     */
-    false: (arg: {
-      registerClose: unknown;
-      registerOpen: unknown;
-    }) => LocalizedString;
-  };
   /**
    * Choose your country (optional)
    */
@@ -4721,6 +4717,42 @@ export type TranslationFunctions = {
   addUserWillInviteNotFoundFieldNote: (arg: {
     pageType: unknown;
   }) => LocalizedString;
+  /**
+   * Team updated successfully
+   */
+  teamUpdateSuccess: () => LocalizedString;
+  /**
+   * Error updating Team
+   */
+  teamUpdateError: () => LocalizedString;
+  /**
+   * Organization updated successfully
+   */
+  orgUpdateSuccess: () => LocalizedString;
+  /**
+   * Error updating Organization
+   */
+  orgUpdateError: () => LocalizedString;
+  /**
+   * Department updated successfully
+   */
+  deptUpdateSuccess: () => LocalizedString;
+  /**
+   * Error updating Department
+   */
+  deptUpdateError: () => LocalizedString;
+  /**
+   * Hide Voter Identity
+   */
+  hideVoterIdentity: () => LocalizedString;
+  /**
+   * Storyboard Name
+   */
+  storyboardName: () => LocalizedString;
+  /**
+   * Enter a storyboard name
+   */
+  storyboardNamePlaceholder: () => LocalizedString;
 };
 
 export type Formatters = {};

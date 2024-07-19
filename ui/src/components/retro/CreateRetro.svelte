@@ -5,8 +5,8 @@
   import { user } from '../../stores';
   import { AppConfig, appRoutes } from '../../config';
   import LL from '../../i18n/i18n-svelte';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
 
   export let xfetch;
   export let notifications;
@@ -21,6 +21,9 @@
   let brainstormVisibility = 'visible';
   let teams = [];
   let selectedTeam = '';
+
+  /** @type {TextInput} */
+  let retroNameTextInput;
 
   const brainstormVisibilityOptions = [
     {
@@ -90,6 +93,9 @@
       router.route(appRoutes.register);
     }
     getTeams();
+
+    // Focus the retro name input field
+    retroNameTextInput.focus();
   });
 </script>
 
@@ -105,6 +111,7 @@
       <TextInput
         name="retroName"
         bind:value="{retroName}"
+        bind:this="{retroNameTextInput}"
         placeholder="{$LL.retroNamePlaceholder()}"
         id="retroName"
         required

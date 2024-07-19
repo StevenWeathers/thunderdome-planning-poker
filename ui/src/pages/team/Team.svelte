@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import HollowButton from '../../components/global/HollowButton.svelte';
   import DeleteConfirmation from '../../components/global/DeleteConfirmation.svelte';
   import ChevronRight from '../../components/icons/ChevronRight.svelte';
@@ -14,18 +14,22 @@
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import { validateUserIsRegistered } from '../../validationUtils';
-  import Table from '../../components/global/table/Table.svelte';
-  import HeadCol from '../../components/global/table/HeadCol.svelte';
-  import TableRow from '../../components/global/table/TableRow.svelte';
-  import RowCol from '../../components/global/table/RowCol.svelte';
+  import Table from '../../components/table/Table.svelte';
+  import HeadCol from '../../components/table/HeadCol.svelte';
+  import TableRow from '../../components/table/TableRow.svelte';
+  import RowCol from '../../components/table/RowCol.svelte';
   import Modal from '../../components/global/Modal.svelte';
-  import Pagination from '../../components/global/Pagination.svelte';
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
   import BoxList from '../../components/BoxList.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
+  import TableContainer from '../../components/table/TableContainer.svelte';
+  import TableNav from '../../components/table/TableNav.svelte';
+  import TableFooter from '../../components/table/TableFooter.svelte';
+  import CrudActions from '../../components/table/CrudActions.svelte';
+  import Toggle from '../../components/forms/Toggle.svelte';
 
   export let xfetch;
   export let router;
@@ -381,11 +385,10 @@
 
   let showRetroActionEdit = false;
   let selectedAction = null;
-  let selectedActionRetroId = null;
   const toggleRetroActionEdit = (retroId, id) => () => {
     showRetroActionEdit = !showRetroActionEdit;
-    selectedAction = retroActions.find(r => r.id === id);
-    selectedActionRetroId = retroId;
+    selectedAction =
+      retroId !== null ? retroActions.find(r => r.id === id) : null;
   };
 
   function handleRetroActionEdit(action) {
@@ -599,112 +602,90 @@
 
       {#if retros.length}
         <div class="w-full pt-4 px-4">
-          <div class="w-full">
-            <h3
-              class="text-xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
+          <TableContainer>
+            <TableNav
+              title="{$LL.retroActionItems()}"
+              createBtnEnabled="{false}"
             >
-              {$LL.retroActionItems()}
-            </h3>
-
-            <div class="text-right mb-4">
-              <div
-                class="relative inline-block w-10 me-2 align-middle select-none transition duration-200 ease-in"
-              >
-                <input
-                  type="checkbox"
-                  name="completedActionItems"
-                  id="completedActionItems"
-                  bind:checked="{completedActionItems}"
-                  on:change="{changeRetroActionCompletedToggle}"
-                  class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                />
-                <label
-                  for="completedActionItems"
-                  class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                >
-                </label>
-              </div>
-              <label for="completedActionItems" class="dark:text-gray-300"
-                >{$LL.showCompletedActionItems()}</label
-              >
-            </div>
-          </div>
-
-          <Table>
-            <tr slot="header">
-              <HeadCol>{$LL.actionItem()}</HeadCol>
-              <HeadCol>{$LL.completed()}</HeadCol>
-              <HeadCol>{$LL.comments()}</HeadCol>
-              <HeadCol />
-            </tr>
-            <tbody slot="body" let:class="{className}" class="{className}">
-              {#each retroActions as item, i}
-                <TableRow itemIndex="{i}">
-                  <RowCol>
-                    <div class="whitespace-pre-wrap">
-                      {#each item.assignees as assignee}
-                        <UserAvatar
-                          warriorId="{assignee.id}"
-                          gravatarHash="{assignee.gravatarHash}"
-                          avatar="{assignee.avatar}"
-                          userName="{assignee.name}"
-                          width="24"
-                          class="inline-block me-2"
-                        />
-                      {/each}{item.content}
-                    </div>
-                  </RowCol>
-                  <RowCol>
-                    <input
-                      type="checkbox"
-                      id="{i}Completed"
-                      checked="{item.completed}"
-                      class="opacity-0 absolute h-6 w-6"
-                      disabled
-                    />
-                    <div
-                      class="bg-white dark:bg-gray-800 border-2 rounded-md
+              <Toggle
+                name="completedActionItems"
+                id="completedActionItems"
+                bind:checked="{completedActionItems}"
+                changeHandler="{changeRetroActionCompletedToggle}"
+                label="{$LL.showCompletedActionItems()}"
+              />
+            </TableNav>
+            <Table>
+              <tr slot="header">
+                <HeadCol>{$LL.actionItem()}</HeadCol>
+                <HeadCol>{$LL.completed()}</HeadCol>
+                <HeadCol>{$LL.comments()}</HeadCol>
+                <HeadCol />
+              </tr>
+              <tbody slot="body" let:class="{className}" class="{className}">
+                {#each retroActions as item, i}
+                  <TableRow itemIndex="{i}">
+                    <RowCol>
+                      <div class="whitespace-pre-wrap">
+                        {#each item.assignees as assignee}
+                          <UserAvatar
+                            warriorId="{assignee.id}"
+                            gravatarHash="{assignee.gravatarHash}"
+                            avatar="{assignee.avatar}"
+                            userName="{assignee.name}"
+                            width="24"
+                            class="inline-block me-2"
+                          />
+                        {/each}{item.content}
+                      </div>
+                    </RowCol>
+                    <RowCol>
+                      <input
+                        type="checkbox"
+                        id="{i}Completed"
+                        checked="{item.completed}"
+                        class="opacity-0 absolute h-6 w-6"
+                        disabled
+                      />
+                      <div
+                        class="bg-white dark:bg-gray-800 border-2 rounded-md
                                             border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
                                             justify-center items-center me-2
                                             focus-within:border-blue-500 dark:focus-within:border-sky-500"
-                    >
-                      <CheckboxIcon />
-                    </div>
-                    <label for="{i}Completed" class="select-none"></label>
-                  </RowCol>
-                  <RowCol>
-                    <CommentIcon width="22" height="22" />
-                    <button
-                      class="text-lg text-blue-400 dark:text-sky-400"
-                      on:click="{toggleRetroActionComments(item.id)}"
-                    >
-                      &nbsp;{item.comments.length}
-                    </button>
-                  </RowCol>
-                  <RowCol>
-                    <div class="text-right">
-                      <HollowButton
-                        color="teal"
-                        onClick="{toggleRetroActionEdit(item.retroId, item.id)}"
-                        >{$LL.edit()}
-                      </HollowButton>
-                    </div>
-                  </RowCol>
-                </TableRow>
-              {/each}
-            </tbody>
-          </Table>
-
-          {#if totalRetroActions > retroActionsPageLimit}
-            <div class="pt-6 flex justify-center">
-              <Pagination
-                bind:current="{retroActionsPage}"
-                num_items="{totalRetroActions}"
-                per_page="{retroActionsPageLimit}"
-                on:navigate="{changeRetroActionPage}"
-              />
-            </div>
-          {/if}
+                      >
+                        <CheckboxIcon />
+                      </div>
+                      <label for="{i}Completed" class="select-none"></label>
+                    </RowCol>
+                    <RowCol>
+                      <CommentIcon width="22" height="22" />
+                      <button
+                        class="text-lg text-blue-400 dark:text-sky-400"
+                        on:click="{toggleRetroActionComments(item.id)}"
+                      >
+                        &nbsp;{item.comments.length}
+                      </button>
+                    </RowCol>
+                    <RowCol type="action">
+                      <CrudActions
+                        editBtnClickHandler="{toggleRetroActionEdit(
+                          item.retroId,
+                          item.id,
+                        )}"
+                        deleteBtnEnabled="{false}"
+                      />
+                    </RowCol>
+                  </TableRow>
+                {/each}
+              </tbody>
+            </Table>
+            <TableFooter
+              bind:current="{retroActionsPage}"
+              num_items="{totalRetroActions}"
+              per_page="{retroActionsPageLimit}"
+              on:navigate="{changeRetroActionPage}"
+            />
+          </TableContainer>
         </div>
       {/if}
     </div>
@@ -769,60 +750,42 @@
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <div class="flex w-full">
-        <div class="flex-1">
-          <h2
-            class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
-          >
-            {$LL.userInvites()}
-          </h2>
-        </div>
-        <!--            <div class="flex-1 text-right">-->
-        <!--                {#if isAdmin}-->
-        <!--                    <SolidButton onClick="{toggleInviteUser}"-->
-        <!--                    >Invite User-->
-        <!--                    </SolidButton>-->
-        <!--                {/if}-->
-        <!--            </div>-->
-      </div>
-
-      <Table>
-        <tr slot="header">
-          <HeadCol>{$LL.email()}</HeadCol>
-          <HeadCol>{$LL.role()}</HeadCol>
-          <HeadCol>{$LL.dateCreated()}</HeadCol>
-          <HeadCol>{$LL.expireDate()}</HeadCol>
-          <HeadCol />
-        </tr>
-        <tbody slot="body" let:class="{className}" class="{className}">
-          {#each invites as item, i}
-            <TableRow itemIndex="{i}">
-              <RowCol>
-                {item.email}
-              </RowCol>
-              <RowCol>
-                {item.role}
-              </RowCol>
-              <RowCol>
-                {new Date(item.created_date).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                {new Date(item.expire_date).toLocaleString()}
-              </RowCol>
-              <RowCol>
-                <div class="text-right">
-                  <HollowButton
-                    onClick="{toggleDeleteInvite(item.invite_id)}"
-                    color="red"
-                  >
-                    {$LL.delete()}
-                  </HollowButton>
-                </div>
-              </RowCol>
-            </TableRow>
-          {/each}
-        </tbody>
-      </Table>
+      <TableContainer>
+        <TableNav title="{$LL.userInvites()}" createBtnEnabled="{false}" />
+        <Table>
+          <tr slot="header">
+            <HeadCol>{$LL.email()}</HeadCol>
+            <HeadCol>{$LL.role()}</HeadCol>
+            <HeadCol>{$LL.dateCreated()}</HeadCol>
+            <HeadCol>{$LL.expireDate()}</HeadCol>
+            <HeadCol />
+          </tr>
+          <tbody slot="body" let:class="{className}" class="{className}">
+            {#each invites as item, i}
+              <TableRow itemIndex="{i}">
+                <RowCol>
+                  {item.email}
+                </RowCol>
+                <RowCol>
+                  {item.role}
+                </RowCol>
+                <RowCol>
+                  {new Date(item.created_date).toLocaleString()}
+                </RowCol>
+                <RowCol>
+                  {new Date(item.expire_date).toLocaleString()}
+                </RowCol>
+                <RowCol type="action">
+                  <CrudActions
+                    editBtnEnabled="{false}"
+                    deleteBtnClickHandler="{toggleDeleteInvite(item.invite_id)}"
+                  />
+                </RowCol>
+              </TableRow>
+            {/each}
+          </tbody>
+        </Table>
+      </TableContainer>
     </div>
   {/if}
 
@@ -897,7 +860,6 @@
       action="{selectedAction}"
       handleAssigneeAdd="{handleRetroActionAssigneeAdd}"
       handleAssigneeRemove="{handleRetroActionAssigneeRemove}"
-      retroId="{selectedActionRetroId}"
     />
   {/if}
 

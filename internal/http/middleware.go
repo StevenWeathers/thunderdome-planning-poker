@@ -239,6 +239,11 @@ func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc 
 			return
 		}
 
+		if !s.Config.SubscriptionsEnabled {
+			h(w, r)
+			return
+		}
+
 		// admins can bypass active subscriber functions
 		if UserType != adminUserType {
 			subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, EntityUserID)

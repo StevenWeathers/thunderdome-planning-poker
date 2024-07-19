@@ -3,7 +3,8 @@
   import Modal from '../global/Modal.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { user } from '../../stores';
-  import TextInput from '../global/TextInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   export let handleUpdate = () => {};
   export let toggleClose = () => {};
@@ -175,16 +176,12 @@
       />
     </div>
     <div class="mb-4">
-      <label class="text-gray-700 font-bold mb-2 dark:text-gray-400">
-        <input
-          type="checkbox"
-          bind:checked="{active}"
-          id="active"
-          name="active"
-          class="w-4 h-4 dark:accent-lime-400 me-1"
-        />
-        {$LL.active()}
-      </label>
+      <Checkbox
+        bind:checked="{active}"
+        id="active"
+        name="active"
+        label="{$LL.active()}"
+      />
     </div>
     <div class="mb-4">
       <label class="block dark:text-gray-400 font-bold mb-2" for="expires">

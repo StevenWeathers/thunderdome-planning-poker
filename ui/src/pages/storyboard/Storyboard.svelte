@@ -23,9 +23,9 @@
   import UsersIcon from '../../components/icons/UsersIcon.svelte';
   import EditIcon from '../../components/icons/EditIcon.svelte';
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
 
   export let storyboardId;
   export let notifications;

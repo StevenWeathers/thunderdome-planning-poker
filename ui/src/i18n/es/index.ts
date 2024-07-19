@@ -105,6 +105,7 @@ const es: Translation = {
   conciseVotingResults: 'Concise Voting Results',
   confirmDeleteRetro: 'Are you sure you want to delete this retrospective?',
   createAccount: 'Create Account',
+  createAccountTagline: `Don't have an account?`,
   createAlertError: 'Error encountered creating alert',
   createAlertSuccess: 'Alert created successfully',
   createARetro: 'Create a Retro',
@@ -182,7 +183,9 @@ const es: Translation = {
     'is designed and developed by {authorOpen}Steven Weathers{authorClose}.',
   footerLicense:
     'The source code is licensed {licenseOpen}Apache 2.0{licenseClose}.',
-  forgotPassword: 'Forgot Password',
+  forgotPassword: 'Forgot Your Password?',
+  forgotPasswordSubtext: `Don't fret! Just enter your email and we will send you instructions to reset your password.`,
+  returnToLogin: 'Return to Login',
   getAlertsError: 'Error getting alerts',
   getApikeysError: 'Error getting apikeys',
   getBattleError:
@@ -342,10 +345,6 @@ const es: Translation = {
   promoteUserError: 'Error encountered promoting user',
   questions: 'Questions',
   register: 'Register',
-  registerForRetro:
-    'or {registerOpen}Register{registerClose} to join the Retro',
-  registerForStoryboard:
-    'or {registerOpen}Register{registerClose} to join the Storyboard',
   reloadingRetro: 'Oops, reloading Retro...',
   reloadingStoryboard: 'Oops, reloading Storyboard...',
   remove: 'Remove',
@@ -391,7 +390,6 @@ const es: Translation = {
   selectTeam: 'Select a Team',
   selfHostedDesc:
     'Alternatively you can {linkOpen}run it on your own server{linkClose}.',
-  sendResetEmail: 'Send Reset Email',
   sessionDuplicate:
     '{friendly|{false:Duplicate battle session exists for your ID, true:Duplicate game session exists for your ID}}',
   showActiveBattles:
@@ -513,6 +511,7 @@ const es: Translation = {
   passwordUpdateError: 'Error encountered attempting to update password',
   profileDeleteError: 'Error encountered attempting to delete your account.',
   profileTitle: 'Your Profile',
+  profile: 'Profile',
   updatePassword: 'Update Password',
   deleteAccount: 'Delete Account',
   deleteAccountWarningStatement:
@@ -573,7 +572,6 @@ const es: Translation = {
   reset: 'Reset',
   passwordResetError: 'Error encountered attempting to reset password',
   resetPassword: 'Reset Password',
-  forgotPasswordCheckboxLabel: 'Forgot Password?',
   registerAsGuest: 'Register as Guest',
   registrationDisabled: 'Registration is disabled.',
   userNamePlaceholder: 'Enter your name',
@@ -589,10 +587,6 @@ const es: Translation = {
     'Create an Account {optionalOpen}(optional){optionalClose}',
   sendResetPasswordSuccess: 'Password reset instructions sent to {email}',
   sendResetPasswordError: 'Error encountered attempting to send password reset',
-  registerForBattle: {
-    true: 'or {registerOpen}Register{registerClose} to join the Game',
-    false: 'or {registerOpen}Register{registerClose} to join the Battle',
-  },
   chooseCountryPlaceholder: 'Choose your country (optional)',
   locale: 'Locale',
   companyPlaceholder: 'Enter your company (optional)',
@@ -627,6 +621,15 @@ const es: Translation = {
   expireDate: 'Expire Date',
   addUserWillInviteNotFoundFieldNote:
     'If user is not registered an invite to register and join the {pageType} will be sent.',
+  teamUpdateSuccess: 'Team updated successfully',
+  teamUpdateError: 'Error updating Team',
+  orgUpdateSuccess: 'Organization updated successfully',
+  orgUpdateError: 'Error updating Organization',
+  deptUpdateSuccess: 'Department updated successfully',
+  deptUpdateError: 'Error updating Department',
+  hideVoterIdentity: 'Hide Voter Identity',
+  storyboardName: 'Storyboard Name',
+  storyboardNamePlaceholder: 'Enter a storyboard name',
 };
 
 export default es;

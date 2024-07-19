@@ -1,12 +1,12 @@
 <script lang="ts">
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import { user } from '../../stores';
   import { validateName } from '../../validationUtils';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig, appRoutes } from '../../config';
   import SolidButton from '../../components/global/SolidButton.svelte';
   import UserRegisterForm from '../../components/user/UserRegisterForm.svelte';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
   import { onMount } from 'svelte';
 
   export let router;
@@ -28,6 +28,9 @@
   let inviteDetails = {
     email: '',
   };
+
+  /** @type {TextInput} */
+  let warriorNameTextInput;
 
   function targetPage() {
     let tp = appRoutes.games;
@@ -148,6 +151,9 @@
       wasInvited = true;
       getInviteDetails();
     }
+
+    // Focus the warrior name input field if it exists
+    warriorNameTextInput?.focus();
   });
 </script>
 
@@ -235,6 +241,7 @@
               {$LL.name()}
             </label>
             <TextInput
+              bind:this="{warriorNameTextInput}"
               bind:value="{warriorName}"
               placeholder="{$LL.yourNamePlaceholder()}"
               id="yourName1"

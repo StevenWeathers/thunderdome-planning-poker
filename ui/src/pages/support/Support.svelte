@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import GithubIcon from '../../components/icons/Github.svelte';
   import LL from '../../i18n/i18n-svelte';
   import { AppConfig } from '../../config';
@@ -44,7 +44,7 @@
         >
         and mention the <span class="font-semibold">current version</span>
         <span
-          class="ml-2 font-bold dark:text-gray-800 bg-lime-800 dark:bg-lime-200 py-1 px-2 rounded inline-block"
+          class="ms-2 font-bold dark:text-gray-800 bg-lime-800 dark:bg-lime-200 py-1 px-2 rounded inline-block"
           >{AppVersion}</span
         >
       </p>

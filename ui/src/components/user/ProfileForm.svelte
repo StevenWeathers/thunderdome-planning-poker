@@ -10,11 +10,12 @@
   import SetupMFA from './SetupMFA.svelte';
   import DeleteConfirmation from '../global/DeleteConfirmation.svelte';
   import { user } from '../../stores';
-  import LocaleSwitcher from '../global/LocaleSwitcher.svelte';
+  import LocaleSwitcher from '../forms/LocaleInput.svelte';
   import type { Locales } from '../../i18n/i18n-types';
   import { loadLocaleAsync } from '../../i18n/i18n-util.async';
-  import TextInput from '../global/TextInput.svelte';
-  import SelectInput from '../global/SelectInput.svelte';
+  import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   const setupI18n = async (locale: Locales) => {
     await loadLocaleAsync(locale);
@@ -285,18 +286,12 @@
   </div>
 
   <div class="mb-4">
-    <label class="block text-gray-700 dark:text-gray-400 font-bold mb-2">
-      <input
-        bind:checked="{profile.notificationsEnabled}"
-        type="checkbox"
-        class="w-4 h-4 dark:accent-lime-400 me-1"
-      />
-      <span>
-        {$LL.enableBattleNotifications({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}
-      </span>
-    </label>
+    <Checkbox
+      bind:checked="{profile.notificationsEnabled}"
+      label="{$LL.enableBattleNotifications({
+        friendly: AppConfig.FriendlyUIVerbs,
+      })}"
+    />
   </div>
 
   {#if isAvatarConfigurable}
@@ -308,33 +303,32 @@
       >
         {$LL.avatar()}
       </label>
-      <div class="flex">
-        <div class="md:w-2/3 lg:w-3/4">
-          {#if AvatarService !== 'gravatar' || (AvatarService === 'gravatar' && profile.email === '')}
-            <SelectInput
-              bind:value="{profile.avatar}"
-              id="yourAvatar"
-              name="yourAvatar"
-            >
-              {#each avatars as item}
-                <option value="{item}">
-                  {item}
-                </option>
-              {/each}
-            </SelectInput>
+      <div class="flex items-center content-center">
+        <div class="grow">
+          {#if AvatarService === 'gravatar'}
+            <span class="dark:text-gray-300">Optional Gravatar Fallback</span>
           {/if}
+          <SelectInput
+            bind:value="{profile.avatar}"
+            id="yourAvatar"
+            name="yourAvatar"
+          >
+            {#each avatars as item}
+              <option value="{item}">
+                {item}
+              </option>
+            {/each}
+          </SelectInput>
         </div>
-        <div class="md:w-1/3 lg:w-1/4 ms-1">
-          <span class="float-right">
-            <UserAvatar
-              warriorId="{profile.id}"
-              avatar="{profile.avatar}"
-              gravatarHash="{profile.gravatarHash}"
-              userName="{profile.name}"
-              width="48"
-              class="rounded-full"
-            />
-          </span>
+        <div class="shrink ms-4">
+          <UserAvatar
+            warriorId="{profile.id}"
+            avatar="{profile.avatar}"
+            gravatarHash="{profile.gravatarHash}"
+            userName="{profile.name}"
+            width="48"
+            class="rounded-full"
+          />
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import Sockette from 'sockette';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import PointCard from '../../components/poker/PointCard.svelte';
   import PokerStories from '../../components/poker/PokerStories.svelte';
   import VoteResults from '../../components/poker/VoteResults.svelte';
@@ -19,7 +19,7 @@
   import InviteUser from '../../components/poker/InviteUser.svelte';
   import VoteTimer from '../../components/poker/VoteTimer.svelte';
   import type { PokerGame, PokerStory } from '../../types/poker';
-  import TextInput from '../../components/global/TextInput.svelte';
+  import TextInput from '../../components/forms/TextInput.svelte';
 
   export let battleId: string;
   export let notifications;

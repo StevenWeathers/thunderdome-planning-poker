@@ -1,10 +1,11 @@
 <script lang="ts">
   import './app.css';
+  import './tailwind.css';
   import './unreset.css';
   import '../node_modules/quill/dist/quill.core.css';
   import '../node_modules/quill/dist/quill.snow.css';
   import Navaid from 'navaid';
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
 
   import { AppConfig, appRoutes } from './config';
   import apiclient from './apiclient';
@@ -52,18 +53,19 @@
   import AdminSubscription from './pages/admin/Subscription.svelte';
   import { setLocale } from './i18n/i18n-svelte';
   import { detectLocale } from './i18n/i18n-util';
-  import { loadLocaleAsync } from './i18n/i18n-util.async';
   import Confirmation from './pages/subscription/Confirmation.svelte';
   import Pricing from './pages/subscription/Pricing.svelte';
   import PrivacyPolicy from './pages/support/PrivacyPolicy.svelte';
   import TermsConditions from './pages/support/TermsConditions.svelte';
   import Support from './pages/support/Support.svelte';
+  import { loadLocale } from './i18n/i18n-util.sync';
 
   const {
     FeaturePoker,
     FeatureRetro,
     FeatureStoryboard,
     SubscriptionsEnabled,
+    DefaultLocale,
   } = AppConfig;
 
   let notifications;
@@ -72,6 +74,11 @@
   user.subscribe(w => {
     activeWarrior = w;
   });
+
+  const detectedLocale =
+    activeWarrior.locale || detectLocale() || DefaultLocale;
+  loadLocale(detectedLocale);
+  setLocale(detectedLocale);
 
   $: if (document.dir !== $dir) {
     document.dir = $dir;
@@ -159,7 +166,7 @@
     currentPage = {
       route: Teams,
       params: {},
-      name: 'Teams',
+      name: 'teams',
     };
   });
   router.on(appRoutes.subscriptionPricing, () => {
@@ -173,7 +180,7 @@
     currentPage = {
       route: Confirmation,
       params: {},
-      name: 'Subscription Confirmation',
+      name: 'subscription-confirmation',
     };
   });
   router.on(`${appRoutes.register}/subscription`, () => {
@@ -201,7 +208,7 @@
     currentPage = {
       route: Organization,
       params,
-      name: 'organizations',
+      name: 'organization',
     };
   });
   router.on(
@@ -220,7 +227,7 @@
       currentPage = {
         route: TeamCheckin,
         params,
-        name: 'team',
+        name: 'team-checkin',
       };
     },
   );
@@ -250,7 +257,7 @@
       currentPage = {
         route: TeamCheckin,
         params,
-        name: 'team',
+        name: 'team-checkin',
       };
     },
   );
@@ -265,7 +272,7 @@
     currentPage = {
       route: TeamCheckin,
       params,
-      name: 'team',
+      name: 'team-checkin',
     };
   });
   router.on(appRoutes.admin, () => {
@@ -279,28 +286,28 @@
     currentPage = {
       route: AdminUser,
       params: params,
-      name: 'admin',
+      name: 'admin-user',
     };
   });
   router.on(`${appRoutes.adminUsers}`, () => {
     currentPage = {
       route: AdminUsers,
       params: {},
-      name: 'admin',
+      name: 'admin-users',
     };
   });
   router.on(`${appRoutes.adminOrganizations}`, () => {
     currentPage = {
       route: AdminOrganizations,
       params: {},
-      name: 'admin',
+      name: 'admin-organizations',
     };
   });
   router.on(`${appRoutes.adminOrganizations}/:organizationId`, params => {
     currentPage = {
       route: AdminOrganization,
       params: params,
-      name: 'admin',
+      name: 'admin-organization',
     };
   });
   router.on(
@@ -309,7 +316,7 @@
       currentPage = {
         route: AdminTeam,
         params: params,
-        name: 'admin',
+        name: 'admin-team',
       };
     },
   );
@@ -319,7 +326,7 @@
       currentPage = {
         route: AdminDepartment,
         params: params,
-        name: 'admin',
+        name: 'admin-department',
       };
     },
   );
@@ -329,7 +336,7 @@
       currentPage = {
         route: AdminTeam,
         params: params,
-        name: 'admin',
+        name: 'admin-team',
       };
     },
   );
@@ -337,28 +344,28 @@
     currentPage = {
       route: AdminTeams,
       params: {},
-      name: 'admin',
+      name: 'admin-teams',
     };
   });
   router.on(`${appRoutes.adminTeams}/:teamId`, params => {
     currentPage = {
       route: AdminTeam,
       params: params,
-      name: 'admin',
+      name: 'admin-team',
     };
   });
   router.on(`${appRoutes.adminApiKeys}`, () => {
     currentPage = {
       route: AdminApikeys,
       params: {},
-      name: 'admin',
+      name: 'admin-apikeys',
     };
   });
   router.on(`${appRoutes.adminAlerts}`, () => {
     currentPage = {
       route: AdminAlerts,
       params: {},
-      name: 'admin',
+      name: 'admin-alerts',
     };
   });
 
@@ -381,14 +388,14 @@
       currentPage = {
         route: AdminBattles,
         params: {},
-        name: 'admin',
+        name: 'admin-games',
       };
     });
     router.on(`${appRoutes.adminPokerGames}/:battleId`, params => {
       currentPage = {
         route: AdminBattle,
         params: params,
-        name: 'admin',
+        name: 'admin-poker',
       };
     });
     router.on(`${appRoutes.register}/battle/:battleId`, params => {
@@ -426,14 +433,14 @@
       currentPage = {
         route: AdminRetros,
         params: {},
-        name: 'admin',
+        name: 'admin-retros',
       };
     });
     router.on(`${appRoutes.adminRetros}/:retroId`, params => {
       currentPage = {
         route: AdminRetro,
         params: params,
-        name: 'admin',
+        name: 'admin-retro',
       };
     });
     router.on(`${appRoutes.register}/retro/:retroId`, params => {
@@ -471,14 +478,14 @@
       currentPage = {
         route: AdminStoryboards,
         params: {},
-        name: 'admin',
+        name: 'admin-storyboards',
       };
     });
     router.on(`${appRoutes.adminStoryboards}/:storyboardId`, params => {
       currentPage = {
         route: AdminStoryboard,
         params: params,
-        name: 'admin',
+        name: 'admin-storyboard',
       };
     });
     router.on(`${appRoutes.register}/storyboard/:storyboardId`, params => {
@@ -502,14 +509,14 @@
       currentPage = {
         route: AdminSubscriptions,
         params: {},
-        name: 'admin',
+        name: 'admin-subscriptions',
       };
     });
     router.on(`${appRoutes.adminSubscriptions}/:subscriptionId`, params => {
       currentPage = {
         route: AdminSubscription,
         params,
-        name: 'admin',
+        name: 'admin-subscription',
       };
     });
   }
@@ -528,12 +535,6 @@
       }
     });
   }
-
-  onMount(async () => {
-    const detectedLocale = activeWarrior.locale || detectLocale();
-    await loadLocaleAsync(detectedLocale);
-    setLocale(detectedLocale);
-  });
 
   onDestroy(router.unlisten);
 </script>

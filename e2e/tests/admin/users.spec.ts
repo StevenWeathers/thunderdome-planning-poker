@@ -8,8 +8,8 @@ test.describe("The Admin Users Page", () => {
 
       await adminPage.goto();
 
-      const title = adminPage.page.locator('[data-formtitle="login"]');
-      await expect(title).toHaveText("Login");
+      const loginForm = adminPage.page.locator('form[name="login"]');
+      await expect(loginForm).toBeVisible();
     });
   });
 
@@ -45,8 +45,8 @@ test.describe("The Admin Users Page", () => {
 
       await ap.goto();
 
-      const title = ap.page.locator("h1");
-      await expect(title).toHaveText("Users");
+      const title = ap.page.locator('[data-testid="tablenav-title"]');
+      await expect(title).toHaveText("Registered Users");
     });
   });
 });

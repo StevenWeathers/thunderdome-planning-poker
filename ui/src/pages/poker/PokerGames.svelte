@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import PageLayout from '../../components/global/PageLayout.svelte';
+  import PageLayout from '../../components/PageLayout.svelte';
   import CreateBattle from '../../components/poker/CreatePokerGame.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
