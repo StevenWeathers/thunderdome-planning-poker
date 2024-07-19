@@ -215,7 +215,6 @@ func main() {
 				AllowJiraImport:           c.Config.AllowJiraImport,
 				AllowCsvImport:            c.Config.AllowCsvImport,
 				DefaultLocale:             c.Config.DefaultLocale,
-				FriendlyUIVerbs:           c.Config.FriendlyUiVerbs,
 				OrganizationsEnabled:      c.Config.OrganizationsEnabled,
 				ExternalAPIEnabled:        c.Config.AllowExternalApi,
 				UserAPIKeyLimit:           c.Config.UserApikeyLimit,

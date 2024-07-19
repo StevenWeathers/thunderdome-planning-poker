@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { RegisterPage } from "../fixtures/register-page";
 
 const registerPageTitle = "Register";
-const battlesPageTitle = "My Battles";
+const battlesPageTitle = "My Games";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/register");

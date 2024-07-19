@@ -5,7 +5,7 @@
   import CountryFlag from '../../components/user/CountryFlag.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
   import Table from '../../components/table/Table.svelte';
   import HeadCol from '../../components/table/HeadCol.svelte';
@@ -45,9 +45,7 @@
         battle = result.data;
       })
       .catch(function () {
-        notifications.danger(
-          $LL.getBattleError({ friendly: AppConfig.FriendlyUIVerbs }),
-        );
+        notifications.danger($LL.getBattleError());
       });
   }
 
@@ -58,11 +56,7 @@
         router.route(appRoutes.adminPokerGames);
       })
       .catch(function () {
-        notifications.danger(
-          $LL.deleteBattleError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.danger($LL.deleteBattleError());
       });
   }
 
@@ -86,7 +80,7 @@
 
 <svelte:head>
   <title
-    >{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
+    >{$LL.battles()}
     {$LL.admin()} | {$LL.appName()}</title
   >
 </svelte:head>
@@ -236,10 +230,7 @@
   </div>
 
   <TableContainer>
-    <TableNav
-      title="{$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}"
-      createBtnEnabled="{false}"
-    />
+    <TableNav title="{$LL.plans()}" createBtnEnabled="{false}" />
     <Table>
       <tr slot="header">
         <HeadCol>
@@ -304,7 +295,7 @@
       onClick="{toggleDeleteBattle}"
       testid="battle-delete"
     >
-      {$LL.battleDelete({ friendly: AppConfig.FriendlyUIVerbs })}
+      {$LL.battleDelete()}
     </HollowButton>
   </div>
 
@@ -312,12 +303,8 @@
     <DeleteConfirmation
       toggleDelete="{toggleDeleteBattle}"
       handleDelete="{deleteBattle}"
-      confirmText="{$LL.deleteBattleConfirmText({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
-      confirmBtnText="{$LL.deleteBattle({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
+      confirmText="{$LL.deleteBattleConfirmText()}"
+      confirmBtnText="{$LL.deleteBattle()}"
     />
   {/if}
 </AdminPageLayout>

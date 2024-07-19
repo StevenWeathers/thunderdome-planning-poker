@@ -5,7 +5,7 @@
   import CreateBattle from '../../components/poker/CreatePokerGame.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { appRoutes } from '../../config';
   import Pagination from '../../components/global/Pagination.svelte';
   import BoxList from '../../components/BoxList.svelte';
 
@@ -31,11 +31,7 @@
         battleCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger(
-          $LL.myBattlesError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.danger($LL.myBattlesError());
         eventTag('fetch_battles', 'engagement', 'failure');
       });
   }
@@ -55,16 +51,14 @@
 </script>
 
 <svelte:head>
-  <title
-    >{$LL.myBattles({ friendly: AppConfig.FriendlyUIVerbs })} | {$LL.appName()}</title
-  >
+  <title>{$LL.myBattles()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
   <h1
     class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
   >
-    {$LL.myBattles({ friendly: AppConfig.FriendlyUIVerbs })}
+    {$LL.myBattles()}
   </h1>
 
   <div class="flex flex-wrap">
@@ -73,9 +67,7 @@
         items="{battles}"
         itemType="battle"
         pageRoute="{appRoutes.game}"
-        joinBtnText="{$LL.battleJoin({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}"
+        joinBtnText="{$LL.battleJoin()}"
         showOwner="{false}"
         showOwnerName="{true}"
         ownerNameField="teamName"
@@ -102,7 +94,7 @@
         <h2
           class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
         >
-          {$LL.createBattle({ friendly: AppConfig.FriendlyUIVerbs })}
+          {$LL.createBattle()}
         </h2>
         <CreateBattle
           notifications="{notifications}"

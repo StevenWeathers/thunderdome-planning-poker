@@ -1,5 +1,5 @@
 import { expect, test } from "../../fixtures/user-sessions";
-import { AdminGamesPage } from "../../fixtures/admin/battles-page";
+import { AdminGamesPage } from "../../fixtures/admin/games-page";
 
 test.describe("The Admin Poker Games Page", () => {
   test.describe("Unauthenticated user", () => {
@@ -21,7 +21,7 @@ test.describe("The Admin Poker Games Page", () => {
 
       const title = adminPage.page.locator("h1");
       await expect(title).toHaveText(
-        "Thunderdome is an Agile Planning Poker app with a fun theme",
+        "Thunderdome is an Agile Planning Poker app",
       );
     });
   });
@@ -34,7 +34,7 @@ test.describe("The Admin Poker Games Page", () => {
 
       const title = adminPage.page.locator("h1");
       await expect(title).toHaveText(
-        "Thunderdome is an Agile Planning Poker app with a fun theme",
+        "Thunderdome is an Agile Planning Poker app",
       );
     });
   });
@@ -46,7 +46,7 @@ test.describe("The Admin Poker Games Page", () => {
       await ap.goto();
 
       const title = ap.page.locator('[data-testid="tablenav-title"]');
-      await expect(title).toHaveText("Battles");
+      await expect(title).toHaveText("Games");
     });
   });
 });

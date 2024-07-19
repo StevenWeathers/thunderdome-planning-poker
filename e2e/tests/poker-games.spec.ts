@@ -2,7 +2,7 @@ import { test } from "../fixtures/user-sessions";
 import { expect } from "@playwright/test";
 import { PokerGamesPage } from "../fixtures/poker-games-page";
 
-const pageTitle = "My Battles";
+const pageTitle = "My Games";
 
 test.describe("Poker Games page", () => {
   test.describe("Unauthenticated user", () => {

@@ -69,7 +69,7 @@ test.describe("Teams page", () => {
         await teamsPage.createTeam({ name: "Test Team" });
 
         await expect(
-          teamsPage.page.locator("h2", { hasText: "Battles" }),
+          teamsPage.page.locator("h2", { hasText: "Games" }),
         ).toBeVisible();
         await expect(
           teamsPage.page.locator("h2", { hasText: "Retros" }),

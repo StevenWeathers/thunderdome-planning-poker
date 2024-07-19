@@ -28,7 +28,7 @@
     },
     {
       name: 'Battles',
-      label: $LL.battles({ friendly: AppConfig.FriendlyUIVerbs }),
+      label: $LL.battles(),
       path: '/battles',
       enabled: FeaturePoker,
     },

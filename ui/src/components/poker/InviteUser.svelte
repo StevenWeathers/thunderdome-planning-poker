@@ -2,7 +2,7 @@
   import SolidButton from '../global/SolidButton.svelte';
   import ClipboardIcon from '../icons/ClipboardIcon.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { appRoutes } from '../../config';
 
   export let notifications;
   export let hostname = '';
@@ -50,7 +50,7 @@
   <h4
     class="text-2xl mb-2 leading-tight font-semibold font-rajdhani uppercase dark:text-white"
   >
-    {$LL.warriorInvite({ friendly: AppConfig.FriendlyUIVerbs })}
+    {$LL.warriorInvite()}
   </h4>
   <div class="flex flex-wrap items-stretch w-full">
     <input
