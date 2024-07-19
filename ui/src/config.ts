@@ -24,7 +24,8 @@ const AppConfig =
         DefaultLocale: 'en',
         Subscription: {},
       };
-const { PathPrefix, DefaultLocale: fallbackLocale } = AppConfig;
+
+const { PathPrefix, DefaultLocale } = AppConfig;
 
 const appRoutes = {
   landing: `${PathPrefix}/`,
@@ -63,7 +64,7 @@ const appRoutes = {
 
 export {
   locales,
-  fallbackLocale,
+  DefaultLocale,
   appRoutes,
   PathPrefix,
   AppConfig,
