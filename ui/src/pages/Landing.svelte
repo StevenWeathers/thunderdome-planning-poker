@@ -89,7 +89,7 @@
           <div>
             <img
               class="w-full rounded-b"
-              src="https://user-images.githubusercontent.com/846933/144792533-351cbc72-877e-4832-a4ce-d3b184e0c97e.png"
+              src="{PathPrefix}/img/web_poker_preview.png"
               alt="{$LL.appPreviewAlt()}"
             />
           </div>
@@ -137,7 +137,7 @@
       </div>
       <div class="mt-4 md:mt-0 md:w-1/2">
         <img
-          src="https://user-images.githubusercontent.com/846933/144793090-a0f33f90-b679-464c-89b2-9bfb27a18e10.png"
+          src="{PathPrefix}/img/poker_options.png"
           alt="customizable game options preview"
           class="w-3/4 m-auto shadow-xl"
         />
