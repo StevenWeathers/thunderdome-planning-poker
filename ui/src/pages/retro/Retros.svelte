@@ -18,6 +18,7 @@
   const retrosPageLimit = 10;
   let retroCount = 0;
   let retrosPage = 1;
+  let loading = true;
 
   function getRetros() {
     const retrosOffset = (retrosPage - 1) * retrosPageLimit;
@@ -29,10 +30,12 @@
       .then(function (result) {
         retros = result.data;
         retroCount = result.meta.count;
+        loading = false;
       })
       .catch(function () {
         notifications.danger($LL.getRetrosErrorMessage());
         eventTag('fetch_retros', 'engagement', 'failure');
+        loading = false;
       });
   }
 
@@ -62,15 +65,23 @@
 
   <div class="flex flex-wrap">
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
-      <BoxList
-        items="{retros}"
-        itemType="retro"
-        pageRoute="{appRoutes.retro}"
-        ownerField="ownerId"
-        showOwnerName="{true}"
-        ownerNameField="teamName"
-        joinBtnText="{$LL.joinRetro()}"
-      />
+      {#if retroCount > 0}
+        <BoxList
+          items="{retros}"
+          itemType="retro"
+          pageRoute="{appRoutes.retro}"
+          ownerField="ownerId"
+          showOwnerName="{true}"
+          ownerNameField="teamName"
+          joinBtnText="{$LL.joinRetro()}"
+        />
+      {:else if loading === false}
+        <div
+          class="w-full my-10 text-lg md:text-xl dark:text-white text-center"
+        >
+          {$LL.noRetrosFound()}
+        </div>
+      {/if}
       {#if retroCount > retrosPageLimit}
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
@@ -100,5 +111,9 @@
         />
       </div>
     </div>
+  </div>
+
+  <div class="w-full text-gray-600 dark:text-gray-300">
+    <p class="py-8 md:text-lg italic">{$LL.retroDescription()}</p>
   </div>
 </PageLayout>
