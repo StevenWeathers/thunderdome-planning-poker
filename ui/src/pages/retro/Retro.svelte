@@ -158,6 +158,7 @@
         retro.phase = r.phase;
         retro.phase_time_start = new Date(r.phase_time_start);
         retro.phase_time_limit_min = r.phase_time_limit_min;
+        retro.readyUsers = [];
         phaseTimeStart = new Date(r.phase_time_start);
 
         groupedItems = organizeItemsByGroup();
@@ -173,7 +174,7 @@
       case 'user_marked_ready': {
         const readyUser = retro.users.find(w => w.id === parsedEvent.userId);
         retro.readyUsers = JSON.parse(parsedEvent.value);
-
+        phaseReadyCheck();
         notifications.success(`${readyUser.name} is done brainstorming.`);
         break;
       }
@@ -538,6 +539,21 @@
         }),
       );
       eventTag('phase_time_ran_out', 'retro', '');
+    }
+  }
+
+  function phaseReadyCheck() {
+    const activeUsers = retro.users.filter(u => u.active);
+    let allReady = retro.readyUsers.length === activeUsers.length;
+
+    if (isFacilitator && retro.phase === 'brainstorm' && allReady) {
+      sendSocketEvent(
+        'phase_all_ready',
+        JSON.stringify({
+          phase: 'group',
+        }),
+      );
+      eventTag('phase_all_ready', 'retro', '');
     }
   }
 
