@@ -18,6 +18,7 @@
   export let points = '';
   export let sendSocketEvent = () => {};
   export let eventTag;
+  export let notifications;
 
   const showRank = AppConfig.ShowWarriorRank;
   let nameStyleClass = showRank ? 'text-lg' : 'text-xl';
@@ -29,6 +30,10 @@
   }
 
   function demoteLeader() {
+    if (leaders.length === 1) {
+      notifications.danger($LL.removeOnlyFacilitatorError());
+      return;
+    }
     sendSocketEvent('demote_leader', warrior.id);
     eventTag('demote_leader', 'battle', '');
   }

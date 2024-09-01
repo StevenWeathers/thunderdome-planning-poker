@@ -619,6 +619,19 @@ func (d *Service) StoryboardFacilitatorAdd(StoryboardId string, UserID string) (
 
 // StoryboardFacilitatorRemove removes a storyboard facilitator
 func (d *Service) StoryboardFacilitatorRemove(StoryboardId string, UserID string) (*thunderdome.Storyboard, error) {
+	facilitatorCount := 0
+	err := d.DB.QueryRow(
+		`SELECT count(user_id) FROM thunderdome.storyboard_facilitator WHERE storyboard_id = $1;`,
+		StoryboardId,
+	).Scan(&facilitatorCount)
+	if err != nil {
+		return nil, fmt.Errorf("storyboard remove facilitator query error: %v", err)
+	}
+
+	if facilitatorCount == 1 {
+		return nil, fmt.Errorf("ONLY_FACILITATOR")
+	}
+
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.storyboard_facilitator WHERE storyboard_id = $1 AND user_id = $2;`,
 		StoryboardId, UserID); err != nil {

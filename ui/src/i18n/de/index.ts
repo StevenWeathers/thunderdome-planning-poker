@@ -624,6 +624,7 @@ const de: Translation = {
   storyboardNamePlaceholder: 'Geben Sie einen Storyboard-Namen ein',
   retroPhaseTimeLimitMinLabel: 'Brainstorm Phase time limit in minutes',
   phaseAutoAdvanceLabel: 'Automatically advance phases',
+  removeOnlyFacilitatorError: "Can't remove the only facilitator",
 };
 
 export default de;

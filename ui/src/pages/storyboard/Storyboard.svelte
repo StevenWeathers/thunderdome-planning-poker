@@ -314,6 +314,11 @@
   };
 
   const handleRemoveFacilitator = userId => () => {
+    if (storyboard.facilitators.length === 1) {
+      notifications.danger($LL.removeOnlyFacilitatorError());
+      return;
+    }
+
     sendSocketEvent(
       'facilitator_remove',
       JSON.stringify({

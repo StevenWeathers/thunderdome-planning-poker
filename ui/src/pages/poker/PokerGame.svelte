@@ -515,8 +515,8 @@
               >[{currentStory.referenceId}]</span
             >
           {/if}
-          &nbsp;<span data-testid="currentplan-name"
-            >{#if currentStory.name === ''}[{$LL.votingNotStarted()}]{:else}{currentStory.name}{/if}</span
+          <span data-testid="currentplan-name"
+            >{#if currentStory.name === ''}[{$LL.votingNotStarted()}]{:else}&nbsp;{currentStory.name}{/if}</span
           >
         </h1>
         <h2
@@ -595,6 +595,7 @@
                 autoFinishVoting="{battle.autoFinishVoting}"
                 sendSocketEvent="{sendSocketEvent}"
                 eventTag="{eventTag}"
+                notifications="{notifications}"
               />
             {/if}
           {/each}
