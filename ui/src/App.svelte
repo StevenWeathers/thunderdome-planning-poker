@@ -370,6 +370,12 @@
   });
 
   if (FeaturePoker) {
+    router.on(appRoutes.battles, () => {
+      router.route(appRoutes.games);
+    });
+    router.on(`${appRoutes.battle}/:battleId`, params => {
+      router.route(`${appRoutes.game}/${params.battleId}`);
+    });
     router.on(appRoutes.games, () => {
       currentPage = {
         route: Battles,
@@ -399,13 +405,19 @@
       };
     });
     router.on(`${appRoutes.register}/battle/:battleId`, params => {
+      router.route(`${appRoutes.register}/game/${params.battleId}`);
+    });
+    router.on(`${appRoutes.login}/battle/:battleId`, params => {
+      router.route(`${appRoutes.login}/game/${params.battleId}`);
+    });
+    router.on(`${appRoutes.register}/game/:battleId`, params => {
       currentPage = {
         route: Register,
         params,
         name: 'register',
       };
     });
-    router.on(`${appRoutes.login}/battle/:battleId`, params => {
+    router.on(`${appRoutes.login}/game/:battleId`, params => {
       currentPage = {
         route: Login,
         params,

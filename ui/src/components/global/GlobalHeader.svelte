@@ -67,9 +67,7 @@
         });
       })
       .catch(function (err) {
-        notifications.danger(
-          $LL.authError({ friendly: AppConfig.FriendlyUIVerbs }),
-        );
+        notifications.danger($LL.authError());
         eventTag('login', 'engagement', 'failure');
       });
   }
@@ -184,9 +182,7 @@
                     ? activePageClass
                     : pageClass}"
                 >
-                  {$LL.battles({
-                    friendly: AppConfig.FriendlyUIVerbs,
-                  })}
+                  {$LL.battles()}
                 </a>
               </li>
             {/if}

@@ -21,7 +21,7 @@ test.describe("Admin page", () => {
 
       const title = adminPage.page.locator("h1");
       await expect(title).toHaveText(
-        "Thunderdome is an Agile Planning Poker app with a fun theme",
+        "Thunderdome is an Agile Planning Poker app",
       );
     });
   });
@@ -34,7 +34,7 @@ test.describe("Admin page", () => {
 
       const title = adminPage.page.locator("h1");
       await expect(title).toHaveText(
-        "Thunderdome is an Agile Planning Poker app with a fun theme",
+        "Thunderdome is an Agile Planning Poker app",
       );
     });
   });
@@ -52,7 +52,7 @@ test.describe("Admin page", () => {
       const nav = ap.page.locator('[data-testid="admin-nav-item"]');
       await expect(nav.nth(0)).toHaveText("Admin");
       await expect(nav.nth(1)).toHaveText("Alerts");
-      await expect(nav.nth(2)).toHaveText("Battles");
+      await expect(nav.nth(2)).toHaveText("Games");
       await expect(nav.nth(3)).toHaveText("Retros");
       await expect(nav.nth(4)).toHaveText("Storyboards");
       await expect(nav.nth(5)).toHaveText("Organizations");

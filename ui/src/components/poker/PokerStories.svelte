@@ -11,7 +11,6 @@
   import DoubleChevronDown from '../icons/DoubleChevronDown.svelte';
   import AddPlan from './AddStory.svelte';
   import ViewPlan from './ViewStory.svelte';
-  import { AppConfig } from '../../config';
   import ImportModal from './ImportModal.svelte';
 
   export let plans = [];
@@ -167,16 +166,16 @@
       <h3
         class="text-3xl leading-tight font-semibold font-rajdhani uppercase dark:text-white"
       >
-        {$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}
+        {$LL.plans()}
       </h3>
     </div>
     <div class="w-2/3 text-right">
       {#if isLeader}
         <HollowButton onClick="{toggleImport}" color="blue">
-          {$LL.importPlans({ friendly: AppConfig.FriendlyUIVerbs })}
+          {$LL.importPlans()}
         </HollowButton>
         <HollowButton onClick="{toggleAddPlan()}" testid="plans-add">
-          {$LL.planAdd({ friendly: AppConfig.FriendlyUIVerbs })}
+          {$LL.planAdd()}
         </HollowButton>
       {/if}
     </div>

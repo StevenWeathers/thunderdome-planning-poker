@@ -232,10 +232,9 @@ type RootTranslation = {
    */
   associateTeam: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​a​u​t​h​e​n​t​i​c​a​t​e​ ​w​a​r​r​i​o​r​,​ ​t​r​u​e​:​E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​a​u​t​h​e​n​t​i​c​a​t​e​ ​u​s​e​r​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​a​u​t​h​e​n​t​i​c​a​t​e​ ​u​s​e​r
    */
-  authError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  authError: string;
   /**
    * A​u​t​o​ ​F​i​n​i​s​h​ ​V​o​t​i​n​g
    */
@@ -249,64 +248,53 @@ type RootTranslation = {
    */
   back: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​A​b​a​n​d​o​n​ ​B​a​t​t​l​e​,​ ​t​r​u​e​:​A​b​a​n​d​o​n​ ​G​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * A​b​a​n​d​o​n​ ​G​a​m​e
    */
-  battleAbandon: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleAbandon: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​C​r​e​a​t​e​ ​B​a​t​t​l​e​,​ ​t​r​u​e​:​C​r​e​a​t​e​ ​G​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * C​r​e​a​t​e​ ​G​a​m​e
    */
-  battleCreate: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleCreate: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​D​e​l​e​t​e​ ​B​a​t​t​l​e​,​ ​t​r​u​e​:​D​e​l​e​t​e​ ​G​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * D​e​l​e​t​e​ ​G​a​m​e
    */
-  battleDelete: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleDelete: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​d​i​t​ ​B​a​t​t​l​e​,​ ​t​r​u​e​:​E​d​i​t​ ​G​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * E​d​i​t​ ​G​a​m​e
    */
-  battleEdit: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleEdit: string;
   /**
    * V​o​t​i​n​g​ ​i​s​ ​a​c​t​i​v​e​,​ ​c​a​n​n​o​t​ ​m​o​d​i​f​y​ ​a​l​l​o​w​e​d​ ​p​o​i​n​t​s​.
    */
   battleEditPointsDisabled: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​J​o​i​n​ ​B​a​t​t​l​e​,​ ​t​r​u​e​:​J​o​i​n​ ​G​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * J​o​i​n​ ​G​a​m​e
    */
-  battleJoin: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleJoin: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​B​a​t​t​l​e​ ​N​a​m​e​,​ ​t​r​u​e​:​G​a​m​e​ ​N​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * G​a​m​e​ ​N​a​m​e
    */
-  battleName: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleName: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​r​e​m​o​v​e​ ​b​a​t​t​l​e​.​,​ ​t​r​u​e​:​E​r​r​o​r​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​r​e​m​o​v​e​ ​g​a​m​e​.​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​r​e​m​o​v​e​ ​g​a​m​e​.
    */
-  battleRemoveError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleRemoveError: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​B​a​t​t​l​e​ ​r​e​m​o​v​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y​.​,​ ​t​r​u​e​:​G​a​m​e​ ​r​e​m​o​v​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y​.​}​}
-   * @param {'false' | 'true'} friendly
+   * G​a​m​e​ ​r​e​m​o​v​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y​.
    */
-  battleRemoveSuccess: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleRemoveSuccess: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​B​a​t​t​l​e​s​,​ ​t​r​u​e​:​G​a​m​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * G​a​m​e​s
    */
-  battles: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battles: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​A​c​t​i​v​e​ ​B​a​t​t​l​e​s​,​ ​t​r​u​e​:​A​c​t​i​v​e​ ​G​a​m​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * A​c​t​i​v​e​ ​G​a​m​e​s
    */
-  battlesActive: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battlesActive: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​A​c​t​i​v​e​ ​B​a​t​t​l​e​ ​U​s​e​r​s​,​ ​t​r​u​e​:​A​c​t​i​v​e​ ​S​t​o​r​y​ ​U​s​e​r​s​}​}
-   * @param {'false' | 'true'} friendly
+   * A​c​t​i​v​e​ ​G​a​m​e​ ​U​s​e​r​s
    */
-  battlesActiveUsers: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battlesActiveUsers: string;
   /**
    * B​e​c​o​m​e​ ​F​a​c​i​l​i​t​a​t​o​r
    */
@@ -444,10 +432,9 @@ type RootTranslation = {
    */
   createAStoryboard: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​c​r​e​a​t​i​n​g​ ​b​a​t​t​l​e​,​ ​t​r​u​e​:​E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​c​r​e​a​t​i​n​g​ ​g​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​c​r​e​a​t​i​n​g​ ​g​a​m​e
    */
-  createBattleError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  createBattleError: string;
   /**
    * E​r​r​o​r​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​c​r​e​a​t​e​ ​o​r​g​a​n​i​z​a​t​i​o​n
    */
@@ -469,10 +456,9 @@ type RootTranslation = {
    */
   createUserError: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​C​u​s​t​o​m​i​z​a​b​l​e​ ​B​a​t​t​l​e​ ​O​p​t​i​o​n​s​,​ ​t​r​u​e​:​C​u​s​t​o​m​i​z​a​b​l​e​ ​G​a​m​e​ ​O​p​t​i​o​n​s​}​}
-   * @param {'false' | 'true'} friendly
+   * C​u​s​t​o​m​i​z​a​b​l​e​ ​G​a​m​e​ ​O​p​t​i​o​n​s
    */
-  customizableBattleOptions: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  customizableBattleOptions: string;
   /**
    * C​r​e​a​t​e​d​ ​D​a​t​e
    */
@@ -502,20 +488,17 @@ type RootTranslation = {
    */
   deleteAlertSuccess: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​D​e​l​e​t​e​ ​B​a​t​t​l​e​,​ ​t​r​u​e​:​D​e​l​e​t​e​ ​G​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * D​e​l​e​t​e​ ​G​a​m​e
    */
-  deleteBattle: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  deleteBattle: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​b​a​t​t​l​e​?​,​ ​t​r​u​e​:​A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​g​a​m​e​?​}​}
-   * @param {'false' | 'true'} friendly
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​g​a​m​e​?
    */
-  deleteBattleConfirmText: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  deleteBattleConfirmText: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​e​r​r​o​r​ ​d​e​l​e​t​i​n​g​ ​b​a​t​t​l​e​,​ ​t​r​u​e​:​e​r​r​o​r​ ​d​e​l​e​t​i​n​g​ ​g​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * e​r​r​o​r​ ​d​e​l​e​t​i​n​g​ ​g​a​m​e
    */
-  deleteBattleError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  deleteBattleError: string;
   /**
    * E​r​r​o​r​ ​d​e​l​e​t​i​n​g​ ​c​h​e​c​k​ ​i​n
    */
@@ -733,15 +716,13 @@ type RootTranslation = {
    */
   getApikeysError: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​b​a​t​t​l​e​,​ ​t​r​u​e​:​E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​g​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​g​a​m​e
    */
-  getBattleError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  getBattleError: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​b​a​t​t​l​e​s​,​ ​t​r​u​e​:​E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​g​a​m​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​g​a​m​e​s
    */
-  getBattlesError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  getBattlesError: string;
   /**
    * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​c​h​e​c​k​ ​i​n​'​s
    */
@@ -805,10 +786,9 @@ type RootTranslation = {
    */
   hostedOrSelfHosted: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​I​m​p​o​r​t​ ​p​l​a​n​s​ ​f​r​o​m​ ​a​ ​C​S​V​ ​f​i​l​e​,​ ​t​r​u​e​:​I​m​p​o​r​t​ ​s​t​o​r​i​e​s​ ​f​r​o​m​ ​a​ ​C​S​V​ ​f​i​l​e​}​}
-   * @param {'false' | 'true'} friendly
+   * I​m​p​o​r​t​ ​s​t​o​r​i​e​s​ ​f​r​o​m​ ​a​ ​C​S​V​ ​f​i​l​e
    */
-  importCsv: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  importCsv: string;
   /**
    * E​r​r​o​r​ ​b​a​d​ ​f​i​l​e​ ​t​y​p​e
    */
@@ -818,10 +798,9 @@ type RootTranslation = {
    */
   importCsvFileReadFileError: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​I​m​p​o​r​t​ ​p​l​a​n​s​ ​f​r​o​m​ ​J​i​r​a​ ​X​M​L​,​ ​t​r​u​e​:​I​m​p​o​r​t​ ​s​t​o​r​i​e​s​ ​f​r​o​m​ ​J​i​r​a​ ​X​M​L​}​}
-   * @param {'false' | 'true'} friendly
+   * I​m​p​o​r​t​ ​s​t​o​r​i​e​s​ ​f​r​o​m​ ​J​i​r​a​ ​X​M​L
    */
-  importJiraXML: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  importJiraXML: string;
   /**
    * E​r​r​o​r​ ​b​a​d​ ​f​i​l​e​ ​t​y​p​e
    */
@@ -874,18 +853,11 @@ type RootTranslation = {
    * E​r​r​o​r​ ​j​o​i​n​i​n​g​ ​s​t​o​r​y​b​o​a​r​d​,​ ​r​e​f​r​e​s​h​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.
    */
   joinStoryboardError: string;
-  landingCountries: {
-    /**
-     * U​s​e​r​s​ ​i​n​ ​o​v​e​r​ ​{​c​o​u​n​t​}​ ​c​o​u​n​t​r​i​e​s
-     * @param {unknown} count
-     */
-    true: RequiredParams<'count'>;
-    /**
-     * W​a​r​r​i​o​r​s​ ​i​n​ ​o​v​e​r​ ​{​c​o​u​n​t​}​ ​c​o​u​n​t​r​i​e​s
-     * @param {unknown} count
-     */
-    false: RequiredParams<'count'>;
-  };
+  /**
+   * U​s​e​r​s​ ​i​n​ ​o​v​e​r​ ​{​c​o​u​n​t​}​ ​c​o​u​n​t​r​i​e​s
+   * @param {unknown} count
+   */
+  landingCountries: RequiredParams<'count'>;
   /**
    * C​h​e​c​k​ ​o​u​t​ ​t​h​e​ ​{​r​e​p​o​O​p​e​n​}​G​i​t​h​u​b​ ​r​e​p​o​s​i​t​o​r​y​{​r​e​p​o​C​l​o​s​e​}​ ​t​o​ ​r​e​q​u​e​s​t​ ​o​r​ ​c​o​n​t​r​i​b​u​t​e​ ​e​n​h​a​n​c​e​m​e​n​t​s​,​ ​l​o​c​a​l​e​ ​t​r​a​n​s​l​a​t​i​o​n​s​ ​a​n​d​ ​b​u​g​ ​f​i​x​e​s​ ​o​r​ ​t​o​ ​{​d​o​n​a​t​e​O​p​e​n​}​D​o​n​a​t​e​{​d​o​n​a​t​e​C​l​o​s​e​}​.
    * @param {unknown} donateClose
@@ -905,10 +877,9 @@ type RootTranslation = {
    */
   landingSalesPitch: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​T​h​u​n​d​e​r​d​o​m​e​ ​i​s​ ​a​n​ ​A​g​i​l​e​ ​P​l​a​n​n​i​n​g​ ​P​o​k​e​r​ ​a​p​p​ ​w​i​t​h​ ​a​ ​f​u​n​ ​t​h​e​m​e​,​ ​t​r​u​e​:​T​h​u​n​d​e​r​d​o​m​e​ ​i​s​ ​a​n​ ​A​g​i​l​e​ ​P​l​a​n​n​i​n​g​ ​P​o​k​e​r​ ​a​p​p​}​}
-   * @param {'false' | 'true'} friendly
+   * T​h​u​n​d​e​r​d​o​m​e​ ​i​s​ ​a​n​ ​A​g​i​l​e​ ​P​l​a​n​n​i​n​g​ ​P​o​k​e​r​ ​a​p​p
    */
-  landingTitle: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  landingTitle: string;
   /**
    * L​a​s​t​ ​A​c​t​i​v​e
    */
@@ -962,10 +933,9 @@ type RootTranslation = {
    */
   logout: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​l​o​g​o​u​t​ ​w​a​r​r​i​o​r​,​ ​t​r​u​e​:​E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​l​o​g​o​u​t​ ​u​s​e​r​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​a​t​t​e​m​p​t​i​n​g​ ​t​o​ ​l​o​g​o​u​t​ ​u​s​e​r
    */
-  logoutError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  logoutError: string;
   /**
    * M​a​k​e​ ​F​a​c​i​l​i​t​a​t​o​r
    */
@@ -1055,10 +1025,9 @@ type RootTranslation = {
    */
   noComments: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​c​l​e​a​n​i​n​g​ ​b​a​t​t​l​e​s​,​ ​t​r​u​e​:​E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​c​l​e​a​n​i​n​g​ ​g​a​m​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​c​l​e​a​n​i​n​g​ ​g​a​m​e​s
    */
-  oldBattleCleanError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  oldBattleCleanError: string;
   /**
    * E​r​r​o​r​ ​e​n​c​o​u​n​t​e​r​e​d​ ​c​l​e​a​n​i​n​g​ ​g​u​e​s​t​s
    */
@@ -1168,10 +1137,9 @@ type RootTranslation = {
    */
   planAcceptanceCriteriaPlaceholder: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​A​d​d​ ​P​l​a​n​,​ ​t​r​u​e​:​A​d​d​ ​S​t​o​r​i​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * A​d​d​ ​S​t​o​r​i​e​s
    */
-  planAdd: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  planAdd: string;
   /**
    * D​e​s​c​r​i​p​t​i​o​n
    */
@@ -1189,20 +1157,17 @@ type RootTranslation = {
    */
   planLinkInvalid: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​n​t​e​r​ ​a​ ​l​i​n​k​ ​t​o​ ​p​l​a​n​,​ ​t​r​u​e​:​E​n​t​e​r​ ​a​ ​l​i​n​k​ ​t​o​ ​s​t​o​r​y​}​}
-   * @param {'false' | 'true'} friendly
+   * E​n​t​e​r​ ​a​ ​l​i​n​k​ ​t​o​ ​s​t​o​r​y
    */
-  planLinkPlaceholder: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  planLinkPlaceholder: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​P​l​a​n​ ​N​a​m​e​,​ ​t​r​u​e​:​S​t​o​r​y​ ​N​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * S​t​o​r​y​ ​N​a​m​e
    */
-  planName: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  planName: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​n​t​e​r​ ​a​ ​p​l​a​n​ ​n​a​m​e​,​ ​t​r​u​e​:​E​n​t​e​r​ ​a​ ​s​t​o​r​y​ ​n​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * E​n​t​e​r​ ​a​ ​s​t​o​r​y​ ​n​a​m​e
    */
-  planNamePlaceholder: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  planNamePlaceholder: string;
   /**
    * P​r​i​o​r​i​t​y
    */
@@ -1244,20 +1209,17 @@ type RootTranslation = {
    */
   planReferenceIdPlaceholder: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​P​l​a​n​s​,​ ​t​r​u​e​:​S​t​o​r​i​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * S​t​o​r​i​e​s
    */
-  plans: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  plans: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​S​k​i​p​ ​P​l​a​n​,​ ​t​r​u​e​:​S​k​i​p​ ​S​t​o​r​y​}​}
-   * @param {'false' | 'true'} friendly
+   * S​k​i​p​ ​S​t​o​r​y
    */
-  planSkip: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  planSkip: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​P​l​a​n​ ​T​y​p​e​,​ ​t​r​u​e​:​S​t​o​r​y​ ​T​y​p​e​}​}
-   * @param {'false' | 'true'} friendly
+   * S​t​o​r​y​ ​T​y​p​e
    */
-  planType: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  planType: string;
   /**
    * B​u​g
    */
@@ -1340,15 +1302,13 @@ type RootTranslation = {
    */
   remove: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​R​e​m​o​v​e​ ​B​a​t​t​l​e​,​ ​t​r​u​e​:​R​e​m​o​v​e​ ​G​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * R​e​m​o​v​e​ ​G​a​m​e
    */
-  removeBattle: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  removeBattle: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​b​a​t​t​l​e​?​,​ ​t​r​u​e​:​A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​g​a​m​e​?​}​}
-   * @param {'false' | 'true'} friendly
+   * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​g​a​m​e​?
    */
-  removeBattleConfirmText: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  removeBattleConfirmText: string;
   /**
    * R​e​m​o​v​e​ ​R​e​t​r​o
    */
@@ -1500,15 +1460,13 @@ type RootTranslation = {
    */
   selfHostedDesc: RequiredParams<'linkClose' | 'linkOpen'>;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​D​u​p​l​i​c​a​t​e​ ​b​a​t​t​l​e​ ​s​e​s​s​i​o​n​ ​e​x​i​s​t​s​ ​f​o​r​ ​y​o​u​r​ ​I​D​,​ ​t​r​u​e​:​D​u​p​l​i​c​a​t​e​ ​g​a​m​e​ ​s​e​s​s​i​o​n​ ​e​x​i​s​t​s​ ​f​o​r​ ​y​o​u​r​ ​I​D​}​}
-   * @param {'false' | 'true'} friendly
+   * D​u​p​l​i​c​a​t​e​ ​g​a​m​e​ ​s​e​s​s​i​o​n​ ​e​x​i​s​t​s​ ​f​o​r​ ​y​o​u​r​ ​I​D
    */
-  sessionDuplicate: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  sessionDuplicate: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​S​h​o​w​ ​A​c​t​i​v​e​ ​B​a​t​t​l​e​s​,​ ​t​r​u​e​:​S​h​o​w​ ​A​c​t​i​v​e​ ​G​a​m​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * S​h​o​w​ ​A​c​t​i​v​e​ ​G​a​m​e​s
    */
-  showActiveBattles: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  showActiveBattles: string;
   /**
    * S​h​o​w​ ​a​c​t​i​v​e​ ​r​e​t​r​o​s
    */
@@ -1634,10 +1592,9 @@ type RootTranslation = {
    */
   teamDeleteSuccess: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​t​e​a​m​ ​b​a​t​t​l​e​s​,​ ​t​r​u​e​:​E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​t​e​a​m​ ​g​a​m​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​t​e​a​m​ ​g​a​m​e​s
    */
-  teamGetBattlesError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  teamGetBattlesError: string;
   /**
    * E​r​r​o​r​ ​g​e​t​t​i​n​g​ ​t​e​a​m
    */
@@ -1703,10 +1660,9 @@ type RootTranslation = {
    */
   type: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​U​n​k​n​o​w​n​ ​W​a​r​r​i​o​r​,​ ​t​r​u​e​:​U​n​k​n​o​w​n​ ​P​l​a​y​e​r​}​}
-   * @param {'false' | 'true'} friendly
+   * U​n​k​n​o​w​n​ ​P​l​a​y​e​r
    */
-  unknownWarrior: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  unknownWarrior: string;
   /**
    * U​n​p​o​i​n​t​e​d​ ​(​{​c​o​u​n​t​}​)
    * @param {unknown} count
@@ -1833,15 +1789,13 @@ type RootTranslation = {
    */
   votingRestart: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​C​r​e​a​t​e​ ​W​a​r​r​i​o​r​,​ ​t​r​u​e​:​C​r​e​a​t​e​ ​U​s​e​r​}​}
-   * @param {'false' | 'true'} friendly
+   * C​r​e​a​t​e​ ​U​s​e​r
    */
-  warriorCreate: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  warriorCreate: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​I​n​v​i​t​e​ ​a​ ​W​a​r​r​i​o​r​,​ ​t​r​u​e​:​I​n​v​i​t​e​ ​a​ ​P​l​a​y​e​r​}​}
-   * @param {'false' | 'true'} friendly
+   * I​n​v​i​t​e​ ​a​ ​P​l​a​y​e​r
    */
-  warriorInvite: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  warriorInvite: string;
   /**
    * N​u​d​g​e
    */
@@ -1871,20 +1825,17 @@ type RootTranslation = {
    */
   yourStoryboards: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​A​d​d​ ​P​l​a​n​,​ ​t​r​u​e​:​A​d​d​ ​S​t​o​r​y​}​}
-   * @param {'false' | 'true'} friendly
+   * A​d​d​ ​S​t​o​r​y
    */
-  addPlan: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  addPlan: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​n​t​e​r​ ​a​ ​b​a​t​t​l​e​ ​n​a​m​e​,​ ​t​r​u​e​:​E​n​t​e​r​ ​a​ ​g​a​m​e​ ​n​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * E​n​t​e​r​ ​a​ ​g​a​m​e​ ​n​a​m​e
    */
-  battleNamePlaceholder: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleNamePlaceholder: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​A​u​t​o​ ​F​i​n​i​s​h​ ​V​o​t​i​n​g​ ​w​h​e​n​ ​a​l​l​ ​W​a​r​r​i​o​r​s​ ​h​a​v​e​ ​v​o​t​e​d​,​ ​t​r​u​e​:​A​u​t​o​ ​F​i​n​i​s​h​ ​V​o​t​i​n​g​ ​w​h​e​n​ ​a​l​l​ ​P​l​a​y​e​r​s​ ​h​a​v​e​ ​v​o​t​e​d​}​}
-   * @param {'false' | 'true'} friendly
+   * A​u​t​o​ ​F​i​n​i​s​h​ ​V​o​t​i​n​g​ ​w​h​e​n​ ​a​l​l​ ​P​l​a​y​e​r​s​ ​h​a​v​e​ ​v​o​t​e​d
    */
-  autoFinishVotingLabel: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  autoFinishVotingLabel: string;
   averageRoundingOptions: {
     /**
      * C​e​i​l
@@ -2045,63 +1996,37 @@ type RootTranslation = {
    */
   registeredUsers: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​M​y​ ​B​a​t​t​l​e​s​,​ ​t​r​u​e​:​M​y​ ​G​a​m​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * M​y​ ​G​a​m​e​s
    */
-  myBattles: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  myBattles: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​C​r​e​a​t​e​ ​B​a​t​t​l​e​,​ ​t​r​u​e​:​C​r​e​a​t​e​ ​G​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * C​r​e​a​t​e​ ​G​a​m​e
    */
-  createBattle: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
-  countPlansPointed: {
-    /**
-     * {​t​o​t​a​l​P​o​i​n​t​e​d​}​ ​o​f​ ​{​t​o​t​a​l​P​l​a​n​s​}​ ​s​t​o​r​i​e​s​ ​p​o​i​n​t​e​d
-     * @param {unknown} totalPlans
-     * @param {unknown} totalPointed
-     */
-    true: RequiredParams<'totalPlans' | 'totalPointed'>;
-    /**
-     * {​t​o​t​a​l​P​o​i​n​t​e​d​}​ ​o​f​ ​{​t​o​t​a​l​P​l​a​n​s​}​ ​p​l​a​n​s​ ​p​o​i​n​t​e​d
-     * @param {unknown} totalPlans
-     * @param {unknown} totalPointed
-     */
-    false: RequiredParams<'totalPlans' | 'totalPointed'>;
-  };
+  createBattle: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​f​i​n​d​i​n​g​ ​y​o​u​r​ ​b​a​t​t​l​e​s​,​ ​t​r​u​e​:​E​r​r​o​r​ ​f​i​n​d​i​n​g​ ​y​o​u​r​ ​g​a​m​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * {​t​o​t​a​l​P​o​i​n​t​e​d​}​ ​o​f​ ​{​t​o​t​a​l​P​l​a​n​s​}​ ​s​t​o​r​i​e​s​ ​p​o​i​n​t​e​d
+   * @param {unknown} totalPlans
+   * @param {unknown} totalPointed
    */
-  myBattlesError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
-  warriorJoined: {
-    /**
-     * {​n​a​m​e​}​ ​h​a​s​ ​j​o​i​n​e​d​ ​t​h​e​ ​g​a​m​e
-     * @param {unknown} name
-     */
-    true: RequiredParams<'name'>;
-    /**
-     * {​n​a​m​e​}​ ​h​a​s​ ​j​o​i​n​e​d​ ​t​h​e​ ​b​a​t​t​l​e
-     * @param {unknown} name
-     */
-    false: RequiredParams<'name'>;
-  };
-  warriorRetreated: {
-    /**
-     * {​n​a​m​e​}​ ​h​a​s​ ​l​e​f​t​ ​t​h​e​ ​g​a​m​e
-     * @param {unknown} name
-     */
-    true: RequiredParams<'name'>;
-    /**
-     * {​n​a​m​e​}​ ​h​a​s​ ​r​e​t​r​e​a​t​e​d​ ​f​r​o​m​ ​t​h​e​ ​b​a​t​t​l​e
-     * @param {unknown} name
-     */
-    false: RequiredParams<'name'>;
-  };
+  countPlansPointed: RequiredParams<'totalPlans' | 'totalPointed'>;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​P​l​a​n​ ​s​k​i​p​p​e​d​,​ ​t​r​u​e​:​S​t​o​r​y​ ​s​k​i​p​p​e​d​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​f​i​n​d​i​n​g​ ​y​o​u​r​ ​g​a​m​e​s
    */
-  planSkipped: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  myBattlesError: string;
+  /**
+   * {​n​a​m​e​}​ ​h​a​s​ ​j​o​i​n​e​d​ ​t​h​e​ ​g​a​m​e
+   * @param {unknown} name
+   */
+  warriorJoined: RequiredParams<'name'>;
+  /**
+   * {​n​a​m​e​}​ ​h​a​s​ ​l​e​f​t​ ​t​h​e​ ​g​a​m​e
+   * @param {unknown} name
+   */
+  warriorRetreated: RequiredParams<'name'>;
+  /**
+   * S​t​o​r​y​ ​s​k​i​p​p​e​d
+   */
+  planSkipped: string;
   /**
    * {​n​a​m​e​}​ ​h​a​s​ ​v​o​t​e​d
    * @param {unknown} name
@@ -2113,40 +2038,34 @@ type RootTranslation = {
    */
   warriorRetractedVote: RequiredParams<'name'>;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​B​a​t​t​l​e​ ​d​e​l​e​t​e​d​,​ ​t​r​u​e​:​G​a​m​e​ ​d​e​l​e​t​e​d​}​}
-   * @param {'false' | 'true'} friendly
+   * G​a​m​e​ ​d​e​l​e​t​e​d
    */
-  battleDeleted: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleDeleted: string;
   /**
    * p​s​t​.​.​.​ ​{​n​a​m​e​}​,​ ​w​a​i​t​i​n​g​ ​o​n​ ​y​o​u​ ​t​o​ ​v​o​t​e​.
    * @param {unknown} name
    */
   warriorNudgeMessage: RequiredParams<'name'>;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​B​a​t​t​l​e​,​ ​t​r​u​e​:​G​a​m​e​}​}
-   * @param {'false' | 'true'} friendly
+   * G​a​m​e
    */
-  battle: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battle: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​W​a​r​r​i​o​r​s​,​ ​t​r​u​e​:​P​l​a​y​e​r​s​}​}
-   * @param {'false' | 'true'} friendly
+   * P​l​a​y​e​r​s
    */
-  warriors: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  warriors: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​O​o​o​p​s​ ​r​e​l​o​a​d​i​n​g​ ​B​a​t​t​l​e​ ​P​l​a​n​s​.​.​.​,​ ​t​r​u​e​:​O​o​o​p​s​ ​r​e​l​o​a​d​i​n​g​ ​G​a​m​e​.​.​.​}​}
-   * @param {'false' | 'true'} friendly
+   * O​o​o​p​s​ ​r​e​l​o​a​d​i​n​g​ ​G​a​m​e​.​.​.
    */
-  battleSocketReconnecting: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleSocketReconnecting: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​r​r​o​r​ ​j​o​i​n​i​n​g​ ​b​a​t​t​l​e​ ​r​e​f​r​e​s​h​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.​,​ ​t​r​u​e​:​E​r​r​o​r​ ​j​o​i​n​i​n​g​ ​g​a​m​e​ ​r​e​f​r​e​s​h​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.​}​}
-   * @param {'false' | 'true'} friendly
+   * E​r​r​o​r​ ​j​o​i​n​i​n​g​ ​g​a​m​e​ ​r​e​f​r​e​s​h​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.
    */
-  battleSocketError: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleSocketError: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​L​o​a​d​i​n​g​ ​B​a​t​t​l​e​ ​P​l​a​n​s​.​.​.​,​ ​t​r​u​e​:​L​o​a​d​i​n​g​ ​G​a​m​e​.​.​.​}​}
-   * @param {'false' | 'true'} friendly
+   * L​o​a​d​i​n​g​ ​G​a​m​e​.​.​.
    */
-  battleLoading: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  battleLoading: string;
   /**
    * V​o​t​i​n​g​ ​n​o​t​ ​s​t​a​r​t​e​d
    */
@@ -2211,20 +2130,12 @@ type RootTranslation = {
    * E​n​l​i​s​t​ ​t​o​ ​B​a​t​t​l​e
    */
   enlistToBattle: string;
-  loginForBattle: {
-    /**
-     * o​r​ ​{​l​o​g​i​n​O​p​e​n​}​L​o​g​i​n​{​l​o​g​i​n​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​G​a​m​e
-     * @param {unknown} loginClose
-     * @param {unknown} loginOpen
-     */
-    true: RequiredParams<'loginClose' | 'loginOpen'>;
-    /**
-     * o​r​ ​{​l​o​g​i​n​O​p​e​n​}​L​o​g​i​n​{​l​o​g​i​n​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​B​a​t​t​l​e
-     * @param {unknown} loginClose
-     * @param {unknown} loginOpen
-     */
-    false: RequiredParams<'loginClose' | 'loginOpen'>;
-  };
+  /**
+   * o​r​ ​{​l​o​g​i​n​O​p​e​n​}​L​o​g​i​n​{​l​o​g​i​n​C​l​o​s​e​}​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​G​a​m​e
+   * @param {unknown} loginClose
+   * @param {unknown} loginOpen
+   */
+  loginForBattle: RequiredParams<'loginClose' | 'loginOpen'>;
   /**
    * E​n​t​e​r​ ​y​o​u​r​ ​n​a​m​e
    */
@@ -2265,10 +2176,9 @@ type RootTranslation = {
    */
   jobTitlePlaceholder: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​E​n​a​b​l​e​ ​b​a​t​t​l​e​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​,​ ​t​r​u​e​:​E​n​a​b​l​e​ ​g​a​m​e​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​}​}
-   * @param {'false' | 'true'} friendly
+   * E​n​a​b​l​e​ ​g​a​m​e​ ​n​o​t​i​f​i​c​a​t​i​o​n​s
    */
-  enableBattleNotifications: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  enableBattleNotifications: string;
   /**
    * A​v​a​t​a​r
    */
@@ -2290,27 +2200,19 @@ type RootTranslation = {
    * @param {unknown} daysOld
    */
   cleanGuests: RequiredParams<'daysOld'>;
-  cleanBattles: {
-    /**
-     * C​l​e​a​n​ ​G​a​m​e​s​ ​o​l​d​e​r​ ​t​h​a​n​ ​{​d​a​y​s​O​l​d​}​ ​d​a​y​s
-     * @param {unknown} daysOld
-     */
-    true: RequiredParams<'daysOld'>;
-    /**
-     * C​l​e​a​n​ ​B​a​t​t​l​e​s​ ​o​l​d​e​r​ ​t​h​a​n​ ​{​d​a​y​s​O​l​d​}​ ​d​a​y​s
-     * @param {unknown} daysOld
-     */
-    false: RequiredParams<'daysOld'>;
-  };
+  /**
+   * C​l​e​a​n​ ​G​a​m​e​s​ ​o​l​d​e​r​ ​t​h​a​n​ ​{​d​a​y​s​O​l​d​}​ ​d​a​y​s
+   * @param {unknown} daysOld
+   */
+  cleanBattles: RequiredParams<'daysOld'>;
   /**
    * C​h​o​o​s​e​ ​y​o​u​r​ ​p​r​e​f​e​r​r​e​d​ ​l​o​c​a​l​e​ ​(​o​p​t​i​o​n​a​l​)
    */
   chooseLocalePlaceholder: string;
   /**
-   * {​f​r​i​e​n​d​l​y​|​{​f​a​l​s​e​:​I​m​p​o​r​t​ ​P​l​a​n​s​,​ ​t​r​u​e​:​I​m​p​o​r​t​ ​S​t​o​r​i​e​s​}​}
-   * @param {'false' | 'true'} friendly
+   * I​m​p​o​r​t​ ​S​t​o​r​i​e​s
    */
-  importPlans: RequiredParams<`friendly|{false:${string}, true:${string}}`>;
+  importPlans: string;
   /**
    * S​e​l​e​c​t​ ​f​i​l​e​.​.​.
    */
@@ -2386,7 +2288,7 @@ type RootTranslation = {
    */
   orgUpdateSuccess: string;
   /**
-   * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​O​r​g​a​n​i​z​a​t​i​o​n
+   * E​r​r​o​r​ ​u​p​d​a​t​i​n​g​ ​O​r​g​a​n​i​z​a​t​i​o​n​`
    */
   orgUpdateError: string;
   /**
@@ -2625,9 +2527,9 @@ export type TranslationFunctions = {
    */
   associateTeam: () => LocalizedString;
   /**
-   * {friendly|{false:Error encountered attempting to authenticate warrior, true:Error encountered attempting to authenticate user}}
+   * Error encountered attempting to authenticate user
    */
-  authError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  authError: () => LocalizedString;
   /**
    * Auto Finish Voting
    */
@@ -2641,53 +2543,53 @@ export type TranslationFunctions = {
    */
   back: () => LocalizedString;
   /**
-   * {friendly|{false:Abandon Battle, true:Abandon Game}}
+   * Abandon Game
    */
-  battleAbandon: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleAbandon: () => LocalizedString;
   /**
-   * {friendly|{false:Create Battle, true:Create Game}}
+   * Create Game
    */
-  battleCreate: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleCreate: () => LocalizedString;
   /**
-   * {friendly|{false:Delete Battle, true:Delete Game}}
+   * Delete Game
    */
-  battleDelete: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleDelete: () => LocalizedString;
   /**
-   * {friendly|{false:Edit Battle, true:Edit Game}}
+   * Edit Game
    */
-  battleEdit: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleEdit: () => LocalizedString;
   /**
    * Voting is active, cannot modify allowed points.
    */
   battleEditPointsDisabled: () => LocalizedString;
   /**
-   * {friendly|{false:Join Battle, true:Join Game}}
+   * Join Game
    */
-  battleJoin: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleJoin: () => LocalizedString;
   /**
-   * {friendly|{false:Battle Name, true:Game Name}}
+   * Game Name
    */
-  battleName: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleName: () => LocalizedString;
   /**
-   * {friendly|{false:Error attempting to remove battle., true:Error attempting to remove game.}}
+   * Error attempting to remove game.
    */
-  battleRemoveError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleRemoveError: () => LocalizedString;
   /**
-   * {friendly|{false:Battle removed successfully., true:Game removed successfully.}}
+   * Game removed successfully.
    */
-  battleRemoveSuccess: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleRemoveSuccess: () => LocalizedString;
   /**
-   * {friendly|{false:Battles, true:Games}}
+   * Games
    */
-  battles: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battles: () => LocalizedString;
   /**
-   * {friendly|{false:Active Battles, true:Active Games}}
+   * Active Games
    */
-  battlesActive: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battlesActive: () => LocalizedString;
   /**
-   * {friendly|{false:Active Battle Users, true:Active Story Users}}
+   * Active Game Users
    */
-  battlesActiveUsers: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battlesActiveUsers: () => LocalizedString;
   /**
    * Become Facilitator
    */
@@ -2825,9 +2727,9 @@ export type TranslationFunctions = {
    */
   createAStoryboard: () => LocalizedString;
   /**
-   * {friendly|{false:Error encountered creating battle, true:Error encountered creating game}}
+   * Error encountered creating game
    */
-  createBattleError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  createBattleError: () => LocalizedString;
   /**
    * Error attempting to create organization
    */
@@ -2849,11 +2751,9 @@ export type TranslationFunctions = {
    */
   createUserError: () => LocalizedString;
   /**
-   * {friendly|{false:Customizable Battle Options, true:Customizable Game Options}}
+   * Customizable Game Options
    */
-  customizableBattleOptions: (arg: {
-    friendly: 'false' | 'true';
-  }) => LocalizedString;
+  customizableBattleOptions: () => LocalizedString;
   /**
    * Created Date
    */
@@ -2883,19 +2783,17 @@ export type TranslationFunctions = {
    */
   deleteAlertSuccess: () => LocalizedString;
   /**
-   * {friendly|{false:Delete Battle, true:Delete Game}}
+   * Delete Game
    */
-  deleteBattle: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  deleteBattle: () => LocalizedString;
   /**
-   * {friendly|{false:Are you sure you want to delete this battle?, true:Are you sure you want to delete this game?}}
+   * Are you sure you want to delete this game?
    */
-  deleteBattleConfirmText: (arg: {
-    friendly: 'false' | 'true';
-  }) => LocalizedString;
+  deleteBattleConfirmText: () => LocalizedString;
   /**
-   * {friendly|{false:error deleting battle, true:error deleting game}}
+   * error deleting game
    */
-  deleteBattleError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  deleteBattleError: () => LocalizedString;
   /**
    * Error deleting check in
    */
@@ -3115,13 +3013,13 @@ export type TranslationFunctions = {
    */
   getApikeysError: () => LocalizedString;
   /**
-   * {friendly|{false:Error getting battle, true:Error getting game}}
+   * Error getting game
    */
-  getBattleError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  getBattleError: () => LocalizedString;
   /**
-   * {friendly|{false:Error getting battles, true:Error getting games}}
+   * Error getting games
    */
-  getBattlesError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  getBattlesError: () => LocalizedString;
   /**
    * Error getting check in's
    */
@@ -3186,9 +3084,9 @@ export type TranslationFunctions = {
    */
   hostedOrSelfHosted: () => LocalizedString;
   /**
-   * {friendly|{false:Import plans from a CSV file, true:Import stories from a CSV file}}
+   * Import stories from a CSV file
    */
-  importCsv: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  importCsv: () => LocalizedString;
   /**
    * Error bad file type
    */
@@ -3198,9 +3096,9 @@ export type TranslationFunctions = {
    */
   importCsvFileReadFileError: () => LocalizedString;
   /**
-   * {friendly|{false:Import plans from Jira XML, true:Import stories from Jira XML}}
+   * Import stories from Jira XML
    */
-  importJiraXML: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  importJiraXML: () => LocalizedString;
   /**
    * Error bad file type
    */
@@ -3253,16 +3151,10 @@ export type TranslationFunctions = {
    * Error joining storyboard, refresh and try again.
    */
   joinStoryboardError: () => LocalizedString;
-  landingCountries: {
-    /**
-     * Users in over {count} countries
-     */
-    true: (arg: { count: unknown }) => LocalizedString;
-    /**
-     * Warriors in over {count} countries
-     */
-    false: (arg: { count: unknown }) => LocalizedString;
-  };
+  /**
+   * Users in over {count} countries
+   */
+  landingCountries: (arg: { count: unknown }) => LocalizedString;
   /**
    * Check out the {repoOpen}Github repository{repoClose} to request or contribute enhancements, locale translations and bug fixes or to {donateOpen}Donate{donateClose}.
    */
@@ -3281,9 +3173,9 @@ export type TranslationFunctions = {
    */
   landingSalesPitch: () => LocalizedString;
   /**
-   * {friendly|{false:Thunderdome is an Agile Planning Poker app with a fun theme, true:Thunderdome is an Agile Planning Poker app}}
+   * Thunderdome is an Agile Planning Poker app
    */
-  landingTitle: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  landingTitle: () => LocalizedString;
   /**
    * Last Active
    */
@@ -3339,9 +3231,9 @@ export type TranslationFunctions = {
    */
   logout: () => LocalizedString;
   /**
-   * {friendly|{false:Error encountered attempting to logout warrior, true:Error encountered attempting to logout user}}
+   * Error encountered attempting to logout user
    */
-  logoutError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  logoutError: () => LocalizedString;
   /**
    * Make Facilitator
    */
@@ -3431,9 +3323,9 @@ export type TranslationFunctions = {
    */
   noComments: () => LocalizedString;
   /**
-   * {friendly|{false:Error encountered cleaning battles, true:Error encountered cleaning games}}
+   * Error encountered cleaning games
    */
-  oldBattleCleanError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  oldBattleCleanError: () => LocalizedString;
   /**
    * Error encountered cleaning guests
    */
@@ -3543,9 +3435,9 @@ export type TranslationFunctions = {
    */
   planAcceptanceCriteriaPlaceholder: () => LocalizedString;
   /**
-   * {friendly|{false:Add Plan, true:Add Stories}}
+   * Add Stories
    */
-  planAdd: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  planAdd: () => LocalizedString;
   /**
    * Description
    */
@@ -3563,17 +3455,17 @@ export type TranslationFunctions = {
    */
   planLinkInvalid: () => LocalizedString;
   /**
-   * {friendly|{false:Enter a link to plan, true:Enter a link to story}}
+   * Enter a link to story
    */
-  planLinkPlaceholder: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  planLinkPlaceholder: () => LocalizedString;
   /**
-   * {friendly|{false:Plan Name, true:Story Name}}
+   * Story Name
    */
-  planName: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  planName: () => LocalizedString;
   /**
-   * {friendly|{false:Enter a plan name, true:Enter a story name}}
+   * Enter a story name
    */
-  planNamePlaceholder: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  planNamePlaceholder: () => LocalizedString;
   /**
    * Priority
    */
@@ -3615,17 +3507,17 @@ export type TranslationFunctions = {
    */
   planReferenceIdPlaceholder: () => LocalizedString;
   /**
-   * {friendly|{false:Plans, true:Stories}}
+   * Stories
    */
-  plans: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  plans: () => LocalizedString;
   /**
-   * {friendly|{false:Skip Plan, true:Skip Story}}
+   * Skip Story
    */
-  planSkip: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  planSkip: () => LocalizedString;
   /**
-   * {friendly|{false:Plan Type, true:Story Type}}
+   * Story Type
    */
-  planType: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  planType: () => LocalizedString;
   /**
    * Bug
    */
@@ -3707,15 +3599,13 @@ export type TranslationFunctions = {
    */
   remove: () => LocalizedString;
   /**
-   * {friendly|{false:Remove Battle, true:Remove Game}}
+   * Remove Game
    */
-  removeBattle: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  removeBattle: () => LocalizedString;
   /**
-   * {friendly|{false:Are you sure you want to remove this battle?, true:Are you sure you want to remove this game?}}
+   * Are you sure you want to remove this game?
    */
-  removeBattleConfirmText: (arg: {
-    friendly: 'false' | 'true';
-  }) => LocalizedString;
+  removeBattleConfirmText: () => LocalizedString;
   /**
    * Remove Retro
    */
@@ -3868,13 +3758,13 @@ export type TranslationFunctions = {
     linkOpen: unknown;
   }) => LocalizedString;
   /**
-   * {friendly|{false:Duplicate battle session exists for your ID, true:Duplicate game session exists for your ID}}
+   * Duplicate game session exists for your ID
    */
-  sessionDuplicate: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  sessionDuplicate: () => LocalizedString;
   /**
-   * {friendly|{false:Show Active Battles, true:Show Active Games}}
+   * Show Active Games
    */
-  showActiveBattles: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  showActiveBattles: () => LocalizedString;
   /**
    * Show active retros
    */
@@ -4000,9 +3890,9 @@ export type TranslationFunctions = {
    */
   teamDeleteSuccess: () => LocalizedString;
   /**
-   * {friendly|{false:Error getting team battles, true:Error getting team games}}
+   * Error getting team games
    */
-  teamGetBattlesError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  teamGetBattlesError: () => LocalizedString;
   /**
    * Error getting team
    */
@@ -4068,9 +3958,9 @@ export type TranslationFunctions = {
    */
   type: () => LocalizedString;
   /**
-   * {friendly|{false:Unknown Warrior, true:Unknown Player}}
+   * Unknown Player
    */
-  unknownWarrior: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  unknownWarrior: () => LocalizedString;
   /**
    * Unpointed ({count})
    */
@@ -4196,13 +4086,13 @@ export type TranslationFunctions = {
    */
   votingRestart: () => LocalizedString;
   /**
-   * {friendly|{false:Create Warrior, true:Create User}}
+   * Create User
    */
-  warriorCreate: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  warriorCreate: () => LocalizedString;
   /**
-   * {friendly|{false:Invite a Warrior, true:Invite a Player}}
+   * Invite a Player
    */
-  warriorInvite: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  warriorInvite: () => LocalizedString;
   /**
    * Nudge
    */
@@ -4232,21 +4122,17 @@ export type TranslationFunctions = {
    */
   yourStoryboards: () => LocalizedString;
   /**
-   * {friendly|{false:Add Plan, true:Add Story}}
+   * Add Story
    */
-  addPlan: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  addPlan: () => LocalizedString;
   /**
-   * {friendly|{false:Enter a battle name, true:Enter a game name}}
+   * Enter a game name
    */
-  battleNamePlaceholder: (arg: {
-    friendly: 'false' | 'true';
-  }) => LocalizedString;
+  battleNamePlaceholder: () => LocalizedString;
   /**
-   * {friendly|{false:Auto Finish Voting when all Warriors have voted, true:Auto Finish Voting when all Players have voted}}
+   * Auto Finish Voting when all Players have voted
    */
-  autoFinishVotingLabel: (arg: {
-    friendly: 'false' | 'true';
-  }) => LocalizedString;
+  autoFinishVotingLabel: () => LocalizedString;
   averageRoundingOptions: {
     /**
      * Ceil
@@ -4406,57 +4292,36 @@ export type TranslationFunctions = {
    */
   registeredUsers: () => LocalizedString;
   /**
-   * {friendly|{false:My Battles, true:My Games}}
+   * My Games
    */
-  myBattles: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  myBattles: () => LocalizedString;
   /**
-   * {friendly|{false:Create Battle, true:Create Game}}
+   * Create Game
    */
-  createBattle: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
-  countPlansPointed: {
-    /**
-     * {totalPointed} of {totalPlans} stories pointed
-     */
-    true: (arg: {
-      totalPlans: unknown;
-      totalPointed: unknown;
-    }) => LocalizedString;
-    /**
-     * {totalPointed} of {totalPlans} plans pointed
-     */
-    false: (arg: {
-      totalPlans: unknown;
-      totalPointed: unknown;
-    }) => LocalizedString;
-  };
+  createBattle: () => LocalizedString;
   /**
-   * {friendly|{false:Error finding your battles, true:Error finding your games}}
+   * {totalPointed} of {totalPlans} stories pointed
    */
-  myBattlesError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
-  warriorJoined: {
-    /**
-     * {name} has joined the game
-     */
-    true: (arg: { name: unknown }) => LocalizedString;
-    /**
-     * {name} has joined the battle
-     */
-    false: (arg: { name: unknown }) => LocalizedString;
-  };
-  warriorRetreated: {
-    /**
-     * {name} has left the game
-     */
-    true: (arg: { name: unknown }) => LocalizedString;
-    /**
-     * {name} has retreated from the battle
-     */
-    false: (arg: { name: unknown }) => LocalizedString;
-  };
+  countPlansPointed: (arg: {
+    totalPlans: unknown;
+    totalPointed: unknown;
+  }) => LocalizedString;
   /**
-   * {friendly|{false:Plan skipped, true:Story skipped}}
+   * Error finding your games
    */
-  planSkipped: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  myBattlesError: () => LocalizedString;
+  /**
+   * {name} has joined the game
+   */
+  warriorJoined: (arg: { name: unknown }) => LocalizedString;
+  /**
+   * {name} has left the game
+   */
+  warriorRetreated: (arg: { name: unknown }) => LocalizedString;
+  /**
+   * Story skipped
+   */
+  planSkipped: () => LocalizedString;
   /**
    * {name} has voted
    */
@@ -4466,35 +4331,33 @@ export type TranslationFunctions = {
    */
   warriorRetractedVote: (arg: { name: unknown }) => LocalizedString;
   /**
-   * {friendly|{false:Battle deleted, true:Game deleted}}
+   * Game deleted
    */
-  battleDeleted: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleDeleted: () => LocalizedString;
   /**
    * pst... {name}, waiting on you to vote.
    */
   warriorNudgeMessage: (arg: { name: unknown }) => LocalizedString;
   /**
-   * {friendly|{false:Battle, true:Game}}
+   * Game
    */
-  battle: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battle: () => LocalizedString;
   /**
-   * {friendly|{false:Warriors, true:Players}}
+   * Players
    */
-  warriors: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  warriors: () => LocalizedString;
   /**
-   * {friendly|{false:Ooops reloading Battle Plans..., true:Ooops reloading Game...}}
+   * Ooops reloading Game...
    */
-  battleSocketReconnecting: (arg: {
-    friendly: 'false' | 'true';
-  }) => LocalizedString;
+  battleSocketReconnecting: () => LocalizedString;
   /**
-   * {friendly|{false:Error joining battle refresh and try again., true:Error joining game refresh and try again.}}
+   * Error joining game refresh and try again.
    */
-  battleSocketError: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleSocketError: () => LocalizedString;
   /**
-   * {friendly|{false:Loading Battle Plans..., true:Loading Game...}}
+   * Loading Game...
    */
-  battleLoading: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  battleLoading: () => LocalizedString;
   /**
    * Voting not started
    */
@@ -4559,19 +4422,13 @@ export type TranslationFunctions = {
    * Enlist to Battle
    */
   enlistToBattle: () => LocalizedString;
-  loginForBattle: {
-    /**
-     * or {loginOpen}Login{loginClose} to join the Game
-     */
-    true: (arg: { loginClose: unknown; loginOpen: unknown }) => LocalizedString;
-    /**
-     * or {loginOpen}Login{loginClose} to join the Battle
-     */
-    false: (arg: {
-      loginClose: unknown;
-      loginOpen: unknown;
-    }) => LocalizedString;
-  };
+  /**
+   * or {loginOpen}Login{loginClose} to join the Game
+   */
+  loginForBattle: (arg: {
+    loginClose: unknown;
+    loginOpen: unknown;
+  }) => LocalizedString;
   /**
    * Enter your name
    */
@@ -4612,11 +4469,9 @@ export type TranslationFunctions = {
    */
   jobTitlePlaceholder: () => LocalizedString;
   /**
-   * {friendly|{false:Enable battle notifications, true:Enable game notifications}}
+   * Enable game notifications
    */
-  enableBattleNotifications: (arg: {
-    friendly: 'false' | 'true';
-  }) => LocalizedString;
+  enableBattleNotifications: () => LocalizedString;
   /**
    * Avatar
    */
@@ -4637,24 +4492,18 @@ export type TranslationFunctions = {
    * Clean Guests older than {daysOld} days
    */
   cleanGuests: (arg: { daysOld: unknown }) => LocalizedString;
-  cleanBattles: {
-    /**
-     * Clean Games older than {daysOld} days
-     */
-    true: (arg: { daysOld: unknown }) => LocalizedString;
-    /**
-     * Clean Battles older than {daysOld} days
-     */
-    false: (arg: { daysOld: unknown }) => LocalizedString;
-  };
+  /**
+   * Clean Games older than {daysOld} days
+   */
+  cleanBattles: (arg: { daysOld: unknown }) => LocalizedString;
   /**
    * Choose your preferred locale (optional)
    */
   chooseLocalePlaceholder: () => LocalizedString;
   /**
-   * {friendly|{false:Import Plans, true:Import Stories}}
+   * Import Stories
    */
-  importPlans: (arg: { friendly: 'false' | 'true' }) => LocalizedString;
+  importPlans: () => LocalizedString;
   /**
    * Select file...
    */
@@ -4730,7 +4579,7 @@ export type TranslationFunctions = {
    */
   orgUpdateSuccess: () => LocalizedString;
   /**
-   * Error updating Organization
+   * Error updating Organization`
    */
   orgUpdateError: () => LocalizedString;
   /**

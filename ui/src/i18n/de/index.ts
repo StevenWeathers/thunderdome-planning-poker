@@ -1,4 +1,5 @@
 import type { Translation } from '../i18n-types';
+
 const de: Translation = {
   userGuide: 'Benutzerhandbuch',
   privacyPolicy: 'Datenschutz-Bestimmungen',
@@ -59,26 +60,23 @@ const de: Translation = {
   appVersion: 'Version {version}',
   associateTeam: 'Team verknüpfen',
   authError:
-    '{friendly|{false:Beim Versuch, den Krieger zu authentifizieren, ist ein Fehler aufgetreten, true:Beim Versuch, den Benutzer zu authentifizieren, ist ein Fehler aufgetreten}}',
+    'Beim Versuch, den Benutzer zu authentifizieren, ist ein Fehler aufgetreten',
   autoFinishVoting: 'Automatisches Beenden der Abstimmung',
   avatarAltText: 'Avatar Platzhalter',
   back: 'Zurück',
-  battleAbandon: '{friendly|{false:Schlacht verlassen, true:Partie verlassen}}',
-  battleCreate: '{friendly|{false:Schlacht erstellen, true:Partie erstellen}}',
-  battleDelete: '{friendly|{false:Schlacht löschen, true:Partie löschen}}',
-  battleEdit: '{friendly|{false:Schlacht bearbeiten, true:Partie bearbeiten}}',
+  battleAbandon: 'Partie verlassen',
+  battleCreate: 'Partie erstellen',
+  battleDelete: 'Partie löschen',
+  battleEdit: 'Partie bearbeiten',
   battleEditPointsDisabled:
     'Schätzung ist aktiv, zulässige Punkte können nicht geändert werden.',
-  battleJoin: '{friendly|{false:Schlacht beitreten, true:Partie beitreten}}',
-  battleName: '{friendly|{false:Name der Schlacht, true:Name der Partie}}',
-  battleRemoveError:
-    '{friendly|{false:Fehler beim Entfernen der Schlacht aufgetreten., true:Fehler beim Entfernen der Partie aufgetreten.}}',
-  battleRemoveSuccess:
-    '{friendly|{false:Schlacht erfolgreich entfernt., true:Partie erfolgreich entfernt.}}',
-  battles: '{friendly|{false:Schlachten, true:Partien}}',
-  battlesActive: '{friendly|{false:Aktive Schlachten, true:Aktive Partien}}',
-  battlesActiveUsers:
-    '{friendly|{false:Aktive Benutzer in der Schlacht, true:Aktive Benutzer in der Partie}}',
+  battleJoin: 'Partie beitreten',
+  battleName: 'Name der Partie',
+  battleRemoveError: 'Fehler beim Entfernen der Partie aufgetreten.',
+  battleRemoveSuccess: 'Partie erfolgreich entfernt.',
+  battles: 'Partien',
+  battlesActive: 'Aktive Partien',
+  battlesActiveUsers: 'Aktive Benutzer in der Partie',
   becomeFacilitator: 'Moderator werden',
   becomeLeader: 'Anführer werden',
   becomeParticipant: 'Teilnehmer werden',
@@ -115,15 +113,13 @@ const de: Translation = {
   createAlertSuccess: 'Benachrichtigung erfolgreich erstellt',
   createARetro: 'Erstellen Sie eine Retro',
   createAStoryboard: 'Erstellen Sie ein Storyboard',
-  createBattleError:
-    '{friendly|{false:Fehler beim Erstellen einer Schlacht, true:Fehler beim Erstellen einer Partie}}',
+  createBattleError: 'Fehler beim Erstellen einer Partie',
   createOrgError: 'Fehler beim Versuch, eine Organisation zu erstellen',
   createRetro: 'Retro erstellen',
   createRetroErrorMessage: 'Fehler beim Erstellen der Retro',
   createStoryboard: 'Storyboard erstellen',
   createUserError: 'Fehler beim Erstellen des Benutzers',
-  customizableBattleOptions:
-    '{friendly|{false:Anpassbare Schlachtoptionen, true:Anpassbare Partieoptionen}}',
+  customizableBattleOptions: 'Anpassbare Partieoptionen',
   dateCreated: 'Erstellungsdatum',
   dateUpdated: 'Aktualisierungsdatum',
   delete: 'Löschen',
@@ -131,11 +127,10 @@ const de: Translation = {
   deleteActionItemSuccess: 'Action Item erfolgreich gelöscht',
   deleteAlertError: 'Fehler beim Versuch, die Benachrichtigung zu löschen',
   deleteAlertSuccess: 'Benachrichtigung erfolgreich gelöscht',
-  deleteBattle: '{friendly|{false:Schlacht löschen, true:Partie löschen}}',
+  deleteBattle: 'Partie löschen',
   deleteBattleConfirmText:
-    '{friendly|{false:Sind Sie sicher, dass Sie diese Schlacht löschen möchten?, true:Sind Sie sicher, dass Sie diese Partie löschen möchten?}}',
-  deleteBattleError:
-    '{friendly|{false:Fehler beim Löschen der Schlacht, true:Fehler beim Löschen der Partie}}',
+    'Sind Sie sicher, dass Sie diese Partie löschen möchten?',
+  deleteBattleError: 'Fehler beim Löschen der Partie',
   deleteCheckinError: 'Fehler beim Löschen des Check-ins',
   deleteDepartment: 'Abteilung löschen',
   deleteDepartmentConfirmText:
@@ -195,10 +190,8 @@ const de: Translation = {
   returnToLogin: 'Zurück zum Login',
   getAlertsError: 'Fehler beim Abrufen der Benachrichtigungen',
   getApikeysError: 'Fehler beim Abrufen der API-Schlüssel',
-  getBattleError:
-    '{friendly|{false:Fehler beim Abrufen der Schlacht, true:Fehler beim Abrufen der Partie}}',
-  getBattlesError:
-    '{friendly|{false:Fehler beim Abrufen der Schlachten, true:Fehler beim Abrufen der Partien}}',
+  getBattleError: 'Fehler beim Abrufen der Partie',
+  getBattlesError: 'Fehler beim Abrufen der Partien',
   getCheckinsError: 'Fehler beim Abrufen der Check-ins',
   getOrganizationsError: 'Fehler beim Abrufen der Organisationen',
   getRetroErrorMessage: 'Fehler beim Abrufen der Retro',
@@ -216,12 +209,10 @@ const de: Translation = {
   hostedDesc:
     '{linkOpen}Thunderdome.dev{linkClose} ist ein kostenloser gehosteter Dienst (SaaS) ohne Werbung.',
   hostedOrSelfHosted: 'Gehosteter Dienst oder selbst gehostet',
-  importCsv:
-    '{friendly|{false:Pläne aus einer CSV-Datei importieren, true:Stories aus einer CSV-Datei importieren}}',
+  importCsv: 'Stories aus einer CSV-Datei importieren',
   importCsvFileBadFileTypeError: 'Fehler: falscher Dateityp',
   importCsvFileReadFileError: 'Fehler beim Lesen der Datei',
-  importJiraXML:
-    '{friendly|{false:Pläne aus Jira XML importieren, true:Stories aus Jira XML importieren}}',
+  importJiraXML: 'Stories aus Jira XML importieren',
   importJiraXMLBadFileTypeError: 'Fehler: falscher Dateityp',
   importJiraXMLReadFileError: 'Fehler beim Lesen der Datei',
   incorrectPassCode: 'Falscher Passcode',
@@ -238,17 +229,13 @@ const de: Translation = {
   joinStoryboard: 'Storyboard beitreten',
   joinStoryboardError:
     'Fehler beim Beitritt zum Storyboard, aktualisieren Sie die Seite und versuchen Sie es erneut.',
-  landingCountries: {
-    true: 'Benutzer in über {count} Ländern',
-    false: 'Krieger in über {count} Ländern',
-  },
+  landingCountries: 'Benutzer in über {count} Ländern',
   landingFeatureOpenSourceText:
     'Schauen Sie sich das {repoOpen}Github Repository{repoClose} an, um Verbesserungen, Übersetzungen und Fehlerbehebungen anzufordern oder beizutragen, oder um zu {donateOpen}Spenden{donateClose}.',
   landingFeatureOpenSourceTitle: 'Open Source',
   landingSalesPitch:
     'Remote-Team-Zusammenarbeit mit agiler Story-Punktbewertung, Sprint-Retrospektive, Story-Mapping und asynchronem Team-Check-In.',
-  landingTitle:
-    '{friendly|{false:Thunderdome ist eine Agile Planning Poker App mit einem lustigen Thema, true:Thunderdome ist eine Agile Planning Poker App}}',
+  landingTitle: 'Thunderdome ist eine Agile Planning Poker App',
   lastActive: 'Zuletzt aktiv',
   leader: 'Anführer',
   leaderPasscode: 'Anführer Passcode',
@@ -263,8 +250,7 @@ const de: Translation = {
   loginForStoryboard:
     'oder {loginOpen}Anmelden{loginClose} um dem Storyboard beizutreten',
   logout: 'Abmelden',
-  logoutError:
-    '{friendly|{false:Fehler beim Abmelden des Kriegers, true:Fehler beim Abmelden des Benutzers}}',
+  logoutError: 'Fehler beim Abmelden des Benutzers',
   makeFacilitator: 'Moderator ernennen',
   mfa2faLabel: '2FA/MFA Auth',
   mfa2faRemove: '2FA/MFA entfernen',
@@ -288,8 +274,7 @@ const de: Translation = {
   needsImprovement: 'Verbesserungsbedarf',
   nextPhase: 'Nächste Phase',
   noComments: 'Keine Kommentare...',
-  oldBattleCleanError:
-    '{friendly|{false:Fehler beim Bereinigen von Schlachten, true:Fehler beim Bereinigen von Partien}}',
+  oldBattleCleanError: 'Fehler beim Bereinigen von Partien',
   oldGuestsCleanError: 'Fehler beim Bereinigen von Gästen',
   oldRetrosCleanError: 'Fehler beim Bereinigen von Retros',
   oldStoryboardsCleanError: 'Fehler beim Bereinigen von Storyboards',
@@ -320,17 +305,15 @@ const de: Translation = {
   personas: 'Personas',
   planAcceptanceCriteria: 'Akzeptanzkriterien',
   planAcceptanceCriteriaPlaceholder: 'Akzeptanzkriterien eingeben',
-  planAdd: '{friendly|{false:Plan hinzufügen, true:Stories hinzufügen}}',
+  planAdd: 'Stories hinzufügen',
   planDescription: 'Beschreibung',
   planDescriptionPlaceholder: 'Beschreibung eingeben',
   planLink: 'Link',
   planLinkInvalid:
     'Der Link ist keine gültige absolute URL, beinhaltet z.B. das Protokoll (HTTP/HTTPS)',
-  planLinkPlaceholder:
-    '{friendly|{false:Link zum Plan eingeben, true:Link zur Story eingeben}}',
-  planName: '{friendly|{false:Plan Name, true:Story Name}}',
-  planNamePlaceholder:
-    '{friendly|{false:Planname eingeben, true:Story-Name eingeben}}',
+  planLinkPlaceholder: 'Link zur Story eingeben',
+  planName: 'Story Name',
+  planNamePlaceholder: 'Story-Name eingeben',
   planPriority: 'Priorität',
   planPriorityBlocker: 'Blocker',
   planPriorityHigh: 'Hoch',
@@ -341,9 +324,9 @@ const de: Translation = {
   planPriorityPlaceholder: 'Wählen Sie eine Priorität',
   planReferenceId: 'Referenz ID',
   planReferenceIdPlaceholder: 'Referenz ID eingeben',
-  plans: '{friendly|{false:Pläne, true:Stories}}',
-  planSkip: '{friendly|{false:Plan überspringen, true:Story überspringen}}',
-  planType: '{friendly|{false:Plan Typ, true:Story Typ}}',
+  plans: 'Stories',
+  planSkip: 'Story überspringen',
+  planType: 'Story Typ',
   planTypeBug: 'Bug',
   planTypeEpic: 'Epic',
   planTypePlaceholder: 'Typ auswählen',
@@ -364,9 +347,9 @@ const de: Translation = {
   reloadingRetro: 'Ups, Retro wird neu geladen...',
   reloadingStoryboard: 'Ups, Storyboard wird neu geladen...',
   remove: 'Entfernen',
-  removeBattle: '{friendly|{false:Kampf entfernen, true:Partie entfernen}}',
+  removeBattle: 'Partie entfernen',
   removeBattleConfirmText:
-    '{friendly|{false:Sind Sie sicher, dass Sie diesen Kampf entfernen möchten?, true:Sind Sie sicher, dass Sie diese Partie entfernen möchten?}}',
+    'Sind Sie sicher, dass Sie diese Partie entfernen möchten?',
   removeRetro: 'Retro entfernen',
   removeRetroConfirmText:
     'Sind Sie sicher, dass Sie dieses Retro entfernen möchten?',
@@ -414,10 +397,8 @@ const de: Translation = {
   selectTeam: 'Wählen Sie ein Team',
   selfHostedDesc:
     'Alternativ können Sie es {linkOpen}auf Ihrem eigenen Server ausführen{linkClose}.',
-  sessionDuplicate:
-    '{friendly|{false:Es existiert bereits eine Schlacht-Sitzung für Ihre ID, true:Es existiert bereits eine Partie-Sitzung für Ihre ID}}',
-  showActiveBattles:
-    '{friendly|{false:Aktive Schlachten anzeigen, true:Aktive Partien anzeigen}}',
+  sessionDuplicate: 'Es existiert bereits eine Partie-Sitzung für Ihre ID',
+  showActiveBattles: 'Aktive Partien anzeigen',
   showActiveRetros: 'Aktive Retros anzeigen',
   showActiveStoryboards: 'Aktive Storyboards anzeigen',
   showBlockedCheckins: 'Nur Checkins anzeigen, die eine Diskussion erfordern',
@@ -449,8 +430,7 @@ const de: Translation = {
   teamCreateSuccess: 'Team erfolgreich angelegt.',
   teamDeleteError: 'Fehler beim Löschen des Teams',
   teamDeleteSuccess: 'Team erfolgreich gelöscht',
-  teamGetBattlesError:
-    '{friendly|{false:Fehler beim Ermitteln der Schlachten des Teams, true:Fehler beim Ermitteln der Partien des Teams}}',
+  teamGetBattlesError: 'Fehler beim Ermitteln der Partien des Teams',
   teamGetError: 'Fehler beim Ermitteln des Teams',
   teamGetRetroActionsError: 'Fehler beim Abrufen der Retro-Aktionen',
   teamGetRetrosError: 'Fehler beim Abrufen der Team-Retros',
@@ -467,8 +447,7 @@ const de: Translation = {
   totalPoints: 'Gesamtpunkte',
   totalVotes: 'Gesamtabstimmungen',
   type: 'Typ',
-  unknownWarrior:
-    '{friendly|{false:Unbekannter Krieger, true:Unbekannter Benutzer}}',
+  unknownWarrior: 'Unbekannter Benutzer',
   unpointed: 'Nicht geschätzt ({count})',
   updateActionItemError: 'Fehler beim Aktualisieren des Action Items',
   updateActionItemSuccess: 'Action Item erfolgreich aktualisiert',
@@ -503,9 +482,8 @@ const de: Translation = {
   votingFinish: 'Schätzung beenden',
   votingLocked: 'Abstimmung gesperrt',
   votingRestart: 'Schätzung neu starten',
-  warriorCreate:
-    '{friendly|{false:Krieger erstellen, true:Benutzer erstellen}}',
-  warriorInvite: '{friendly|{false:Krieger einladen, true:Benutzer einladen}}',
+  warriorCreate: 'Benutzer erstellen',
+  warriorInvite: 'Benutzer einladen',
   warriorNudge: 'Anstubsen',
   works: 'Funktioniert',
   writeCommentPlaceholder: 'Einen Kommentar schreiben...',
@@ -513,11 +491,10 @@ const de: Translation = {
   yesterdayPlaceholder: 'Gestern habe ich...',
   yourRetros: 'Ihre Retros',
   yourStoryboards: 'Ihre Storyboards',
-  addPlan: '{friendly|{false:Plan hinzufügen, true:Story hinzufügen}}',
-  battleNamePlaceholder:
-    '{friendly|{false:Geben Sie den Namen der Schlacht ein, true:Geben Sie den Namen der Partie ein}}',
+  addPlan: 'Story hinzufügen',
+  battleNamePlaceholder: 'Geben Sie den Namen der Partie ein',
   autoFinishVotingLabel:
-    '{friendly|{false:Schätzung automatisch beenden, wenn alle Krieger abgestimmt haben, true:Schätzung automatisch beenden, wenn alle Benutzer abgestimmt haben}}',
+    'Schätzung automatisch beenden, wenn alle Benutzer abgestimmt haben',
   averageRoundingOptions: {
     ceil: 'Aufrunden',
     floor: 'Abrunden',
@@ -563,36 +540,23 @@ const de: Translation = {
   company: 'Unternehmen',
   verified: 'Best\u00E4tigt',
   registeredUsers: 'Registrierte Benutzer',
-  myBattles: '{friendly|{false:Meine Schlachten, true:Meine Partien}}',
-  createBattle: '{friendly|{false:Schlacht erstellen, true:Partie erstellen}}',
-  countPlansPointed: {
-    true: '{totalPointed} von {totalPlans} Stories geschätzt',
-    false: '{totalPointed} von {totalPlans} Plänen geschätzt',
-  },
-  myBattlesError:
-    '{friendly|{false:Fehler: Keine Schlacht gefunden, true:Fehler: Keine Partie gefunden}}',
-  warriorJoined: {
-    true: '{name} hat die Partie betreten',
-    false: '{name} hat das Schlachtfeld betreten',
-  },
-  warriorRetreated: {
-    true: '{name} hat die Partie verlassen',
-    false: '{name} hat das Schlachtfeld verlassen',
-  },
-  planSkipped: '{friendly|{false:Plan \u00FCbersprungen, true:Story skipped}}',
+  myBattles: 'Meine Partien',
+  createBattle: 'Partie erstellen',
+  countPlansPointed: '{totalPointed} von {totalPlans} Stories geschätzt',
+  myBattlesError: 'Fehler: Keine Partie gefunden',
+  warriorJoined: '{name} hat die Partie betreten',
+  warriorRetreated: '{name} hat die Partie verlassen',
+  planSkipped: 'Story skipped',
   warriorVoted: '{name} hat eine Sch\u00E4tzung abegeben',
   warriorRetractedVote: '{name} hat die Sch\u00E4tzung zur\u00FCckgezogen',
-  battleDeleted:
-    '{friendly|{false:Schlacht gel\u00F6scht, true:Partie gel\u00F6scht}}',
+  battleDeleted: 'Partie gel\u00F6scht',
   warriorNudgeMessage: 'pst... {name}, wir warten auf eine Sch\u00E4tzung',
-  battle: '{friendly|{false:Schlacht, true:Partie}}',
-  warriors: '{friendly|{false:Krieger, true:Benutzer}}',
-  battleSocketReconnecting:
-    '{friendly|{false:Ooops Schlachtpl\u00E4ne werden neu geladen..., true:Ooops Partien werden neu geladen...}}',
+  battle: 'Partie',
+  warriors: 'Benutzer',
+  battleSocketReconnecting: 'Ooops Partien werden neu geladen...',
   battleSocketError:
-    '{friendly|{false:Fehler beim Eintritt in die Schlacht, bitte aktualisieren und nochmals versuchen., true:Fehler beim Eintritt in die Partie, bitte aktualisieren und nochmals versuchen.}}',
-  battleLoading:
-    '{friendly|{false:Lade Schlachtpl\u00E4ne..., true:Lade Partien...}}',
+    'Fehler beim Eintritt in die Partie, bitte aktualisieren und nochmals versuchen.',
+  battleLoading: 'Lade Partien...',
   votingNotStarted: 'Sch\u00E4tzung noch nicht gestartet',
   password: 'Passwort',
   passwordPlaceholder: 'Geben Sie ein Passwort ein',
@@ -609,10 +573,8 @@ const de: Translation = {
   guestRegisterError: 'Fehler beim Versuch, sich als Gast zu registrieren',
   registerError: 'Fehler beim Versuch, das Konto zu registrieren',
   enlistToBattle: 'Zur Schlacht anmelden',
-  loginForBattle: {
-    true: 'oder {loginOpen}Anmelden{loginClose} um der Partie beizutreten',
-    false: 'oder {loginOpen}Anmelden{loginClose} um der Schlacht beizutreten',
-  },
+  loginForBattle:
+    'oder {loginOpen}Anmelden{loginClose} um der Partie beizutreten',
   yourNamePlaceholder: 'Geben Sie Ihren Namen ein',
   createAccountFormTitle:
     'Konto erstellen {optionalOpen}(optional){optionalClose}',
@@ -625,19 +587,15 @@ const de: Translation = {
   companyPlaceholder: 'Geben Sie Ihr Unternehmen ein (optional)',
   jobTitle: 'Berufsbezeichnung',
   jobTitlePlaceholder: 'Geben Sie Ihre Berufsbezeichnung ein (optional)',
-  enableBattleNotifications:
-    '{friendly|{false:Schlachtmeldungen aktivieren, true:Partiemeldungen aktivieren}}',
+  enableBattleNotifications: 'Partiemeldungen aktivieren',
   avatar: 'Avatar',
   updateProfile: 'Profil aktualisieren',
   guestUsers: 'Gastbenutzer',
   maintenance: 'Wartung',
   cleanGuests: 'Gäste löschen, die älter als {daysOld} Tage sind',
-  cleanBattles: {
-    true: 'Partien löschen, die älter als {daysOld} Tage sind',
-    false: 'Schlachten löschen, die älter als {daysOld} Tage sind',
-  },
+  cleanBattles: 'Partien löschen, die älter als {daysOld} Tage sind',
   chooseLocalePlaceholder: 'Wählen Sie Ihre bevorzugte Sprache (optional)',
-  importPlans: '{friendly|{false:Pläne importieren, true:Stories importieren}}',
+  importPlans: 'Stories importieren',
   selectFile: 'Datei auswählen...',
   theme: 'Thema',
   assignees: 'Zuweisungen',
@@ -664,6 +622,8 @@ const de: Translation = {
   hideVoterIdentity: 'Identität des Schätzers verbergen',
   storyboardName: 'Storyboard Name',
   storyboardNamePlaceholder: 'Geben Sie einen Storyboard-Namen ein',
+  retroPhaseTimeLimitMinLabel: 'Brainstorm Phase time limit in minutes',
+  phaseAutoAdvanceLabel: 'Automatically advance phases',
 };
 
 export default de;

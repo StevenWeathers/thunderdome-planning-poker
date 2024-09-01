@@ -227,11 +227,7 @@
           battles = result.data;
         })
         .catch(function () {
-          notifications.danger(
-            $LL.teamGetBattlesError({
-              friendly: AppConfig.FriendlyUIVerbs,
-            }),
-          );
+          notifications.danger($LL.teamGetBattlesError());
         });
     }
   }
@@ -294,19 +290,11 @@
       .then(function () {
         eventTag('team_remove_battle', 'engagement', 'success');
         toggleRemoveBattle(null)();
-        notifications.success(
-          $LL.battleRemoveSuccess({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.success($LL.battleRemoveSuccess());
         getBattles();
       })
       .catch(function () {
-        notifications.danger(
-          $LL.battleRemoveError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.danger($LL.battleRemoveError());
         eventTag('team_remove_battle', 'engagement', 'failure');
       });
   }
@@ -527,15 +515,13 @@
           <h2
             class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
           >
-            {$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
+            {$LL.battles()}
           </h2>
         </div>
         <div class="flex-1 text-right">
           {#if isTeamMember}
             <SolidButton onClick="{toggleCreateBattle}"
-              >{$LL.battleCreate({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
+              >{$LL.battleCreate()}
             </SolidButton>
           {/if}
         </div>
@@ -546,9 +532,7 @@
           items="{battles}"
           itemType="battle"
           pageRoute="{appRoutes.game}"
-          joinBtnText="{$LL.battleJoin({
-            friendly: AppConfig.FriendlyUIVerbs,
-          })}"
+          joinBtnText="{$LL.battleJoin()}"
           isAdmin="{isAdmin}"
           toggleRemove="{toggleRemoveBattle}"
         />
@@ -813,12 +797,8 @@
       toggleDelete="{toggleRemoveBattle(null)}"
       handleDelete="{handleBattleRemove}"
       permanent="{false}"
-      confirmText="{$LL.removeBattleConfirmText({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
-      confirmBtnText="{$LL.removeBattle({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
+      confirmText="{$LL.removeBattleConfirmText()}"
+      confirmBtnText="{$LL.removeBattle()}"
     />
   {/if}
 

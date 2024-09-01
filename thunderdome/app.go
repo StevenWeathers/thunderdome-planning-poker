@@ -28,7 +28,6 @@ type AppConfig struct {
 	AllowJiraImport           bool
 	AllowCsvImport            bool
 	DefaultLocale             string
-	FriendlyUIVerbs           bool
 	OrganizationsEnabled      bool
 	AppVersion                string
 	CookieName                string

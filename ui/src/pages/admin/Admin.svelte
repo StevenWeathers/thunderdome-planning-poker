@@ -85,11 +85,7 @@
         getAppStats();
       })
       .catch(function () {
-        notifications.danger(
-          $LL.oldBattleCleanError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.danger($LL.oldBattleCleanError());
         eventTag('admin_clean_battles', 'engagement', 'failure');
       });
   }
@@ -231,9 +227,7 @@
           </div>
           <div class="flex-1 text-right md:text-center">
             <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.battles({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
+              {$LL.battles()}
             </h5>
             <h3 class="font-bold text-3xl dark:text-white">
               {appStats.battleCount}
@@ -252,9 +246,7 @@
           </div>
           <div class="flex-1 text-right md:text-center">
             <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.plans({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
+              {$LL.plans()}
             </h5>
             <h3 class="font-bold text-3xl dark:text-white">
               {appStats.planCount}
@@ -273,9 +265,7 @@
           </div>
           <div class="flex-1 text-right md:text-center">
             <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.battlesActive({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
+              {$LL.battlesActive()}
             </h5>
             <h3 class="font-bold text-3xl dark:text-white">
               {appStats.activeBattleCount}
@@ -294,9 +284,7 @@
           </div>
           <div class="flex-1 text-right md:text-center">
             <h5 class="font-bold uppercase text-gray-500 dark:text-gray-400">
-              {$LL.battlesActiveUsers({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
+              {$LL.battlesActiveUsers()}
             </h5>
             <h3 class="font-bold text-3xl dark:text-white">
               {appStats.activeBattleUserCount}
@@ -653,7 +641,7 @@
               <h5
                 class="font-bold uppercase text-gray-500 dark:text-gray-400 mb-2"
               >
-                {$LL.cleanBattles[AppConfig.FriendlyUIVerbs]({
+                {$LL.cleanBattles({
                   daysOld: CleanupBattlesDaysOld,
                 })}
               </h5>

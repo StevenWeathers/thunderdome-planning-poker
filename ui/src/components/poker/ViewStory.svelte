@@ -8,7 +8,6 @@
   import ChevronDown from '../icons/ChevronDown.svelte';
   import ChevronUp from '../icons/ChevronUp.svelte';
   import Bars2 from '../icons/Bars2.svelte';
-  import { AppConfig } from '../../config';
 
   export let togglePlanView = () => {};
 
@@ -55,13 +54,13 @@
 <Modal closeModal="{togglePlanView}" widthClasses="md:w-2/3 lg:w-3/5">
   <div class="mb-4 dark:text-white">
     <div class="font-bold mb-2 dark:text-gray-400">
-      {$LL.planType({ friendly: AppConfig.FriendlyUIVerbs })}
+      {$LL.planType()}
     </div>
     {planType}
   </div>
   <div class="mb-4 dark:text-white">
     <div class="font-bold mb-2 dark:text-gray-400">
-      {$LL.planName({ friendly: AppConfig.FriendlyUIVerbs })}
+      {$LL.planName()}
     </div>
     {planName}
   </div>

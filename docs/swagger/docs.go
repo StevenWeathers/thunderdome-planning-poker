@@ -8675,6 +8675,15 @@ const docTemplate = `{
                     "maximum": 9,
                     "minimum": 1
                 },
+                "phaseAutoAdvance": {
+                    "type": "boolean"
+                },
+                "phaseTimeLimitMin": {
+                    "type": "integer",
+                    "maximum": 59,
+                    "minimum": 0,
+                    "example": 10
+                },
                 "retroName": {
                     "type": "string",
                     "example": "sprint 10 retro"
@@ -9407,6 +9416,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phase": {
+                    "type": "string"
+                },
+                "phase_auto_advance": {
+                    "type": "boolean"
+                },
+                "phase_time_limit_min": {
+                    "type": "integer"
+                },
+                "phase_time_start": {
                     "type": "string"
                 },
                 "readyUsers": {

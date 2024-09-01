@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
   import HeadCol from '../../components/table/HeadCol.svelte';
   import AdminPageLayout from '../../components/AdminPageLayout.svelte';
@@ -37,11 +37,7 @@
         battleCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger(
-          $LL.getBattlesError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.danger($LL.getBattlesError());
       });
   }
 
@@ -71,7 +67,7 @@
 
 <svelte:head>
   <title
-    >{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}
+    >{$LL.battles()}
     {$LL.admin()} | {$LL.appName()}</title
   >
 </svelte:head>
@@ -84,18 +80,13 @@
   </div>
 
   <TableContainer>
-    <TableNav
-      title="{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}"
-      createBtnEnabled="{false}"
-    >
+    <TableNav title="{$LL.battles()}" createBtnEnabled="{false}">
       <Toggle
         name="activeBattles"
         id="activeBattles"
         bind:checked="{activeBattles}"
         changeHandler="{changeActiveBattlesToggle}"
-        label="{$LL.showActiveBattles({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}"
+        label="{$LL.showActiveBattles()}"
       />
     </TableNav>
     <Table>
@@ -118,7 +109,7 @@
           <TableRow itemIndex="{i}">
             <RowCol>
               <a
-                href="{appRoutes.admin}/battles/{battle.id}"
+                href="{appRoutes.adminPokerGames}/{battle.id}"
                 class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                 >{battle.name}</a
               >
@@ -131,9 +122,7 @@
             </RowCol>
             <RowCol type="action">
               <HollowButton href="{appRoutes.game}/{battle.id}">
-                {$LL.battleJoin({
-                  friendly: AppConfig.FriendlyUIVerbs,
-                })}
+                {$LL.battleJoin()}
               </HollowButton>
             </RowCol>
           </TableRow>

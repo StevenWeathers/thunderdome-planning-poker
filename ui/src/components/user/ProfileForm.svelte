@@ -288,9 +288,7 @@
   <div class="mb-4">
     <Checkbox
       bind:checked="{profile.notificationsEnabled}"
-      label="{$LL.enableBattleNotifications({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
+      label="{$LL.enableBattleNotifications()}"
     />
   </div>
 

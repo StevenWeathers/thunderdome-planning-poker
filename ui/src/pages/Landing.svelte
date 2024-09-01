@@ -57,7 +57,7 @@
         <h1
           class="mb-2 lg:mb-4 text-5xl font-rajdhani uppercase font-semibold leading-none"
         >
-          {$LL.landingTitle({ friendly: AppConfig.FriendlyUIVerbs })}
+          {$LL.landingTitle()}
         </h1>
 
         <p class="py-2 lg:py-4 text-2xl lg:text-3xl mb-4 font-rajdhani">
@@ -73,9 +73,7 @@
                         hover:border-gray-800 border-transparent rounded font-rajdhani uppercase"
             href="{$user.id ? appRoutes.games : appRoutes.register}"
           >
-            {$LL.battleCreate({
-              friendly: AppConfig.FriendlyUIVerbs,
-            })}
+            {$LL.battleCreate()}
           </a>
         </div>
       </div>
@@ -91,7 +89,7 @@
           <div>
             <img
               class="w-full rounded-b"
-              src="https://user-images.githubusercontent.com/846933/144792533-351cbc72-877e-4832-a4ce-d3b184e0c97e.png"
+              src="{PathPrefix}/img/web_poker_preview.png"
               alt="{$LL.appPreviewAlt()}"
             />
           </div>
@@ -112,9 +110,7 @@
           <h3
             class="text-4xl font-semibold font-rajdhani uppercase dark:text-white"
           >
-            {$LL.customizableBattleOptions({
-              friendly: AppConfig.FriendlyUIVerbs,
-            })}
+            {$LL.customizableBattleOptions()}
           </h3>
         </div>
 
@@ -129,20 +125,20 @@
           </li>
           <li class="mb-2">
             <CheckIcon />
-            Although every battle has a secure unique ID optionally set a passcode
+            Although every game has a secure unique ID optionally set a passcode
             to join
           </li>
           <li class="mb-2">
             <CheckIcon />
-            Leader code &amp; multiple leader features allow team members to continue
-            in your absence
+            Leader code &amp; multiple facilitator features allow team members to
+            continue in your absence
           </li>
         </ul>
       </div>
       <div class="mt-4 md:mt-0 md:w-1/2">
         <img
-          src="https://user-images.githubusercontent.com/846933/144793090-a0f33f90-b679-464c-89b2-9bfb27a18e10.png"
-          alt="customizable battle options preview"
+          src="{PathPrefix}/img/poker_options.png"
+          alt="customizable game options preview"
           class="w-3/4 m-auto shadow-xl"
         />
       </div>

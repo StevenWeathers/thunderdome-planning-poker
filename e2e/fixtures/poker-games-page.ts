@@ -14,7 +14,7 @@ export class PokerGamesPage {
   }
 
   async goto() {
-    await this.page.goto("/battles");
+    await this.page.goto("/games");
   }
 
   async createBattle({ name }) {
@@ -28,10 +28,13 @@ export class PokerGamesPage {
     for (const story of stories) {
       await this.page
         .getByRole("button", {
-          name: "Add Plan",
+          name: "Add Story",
         })
         .click();
-      await this.page.getByPlaceholder("Enter a plan name").first().fill(story);
+      await this.page
+        .getByPlaceholder("Enter a story name")
+        .first()
+        .fill(story);
     }
 
     await this.gameNameFormField.press("Enter");
