@@ -267,49 +267,49 @@ func (s *Service) handleTeamAddUser() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil && errors.Is(UserErr, sql.ErrNoRows) {
-			inviteID, inviteErr := s.TeamDataSvc.TeamInviteUser(ctx, TeamID, UserEmail, u.Role)
-			if inviteErr != nil {
-				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(inviteErr),
+		if s.Config.LdapEnabled || s.Config.HeaderAuthEnabled {
+			User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
+			if UserErr == nil {
+				_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
+				if err != nil {
+					s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(err), zap.String("team_id", TeamID),
+						zap.String("user_id", User.Id), zap.String("team_role", u.Role),
+						zap.String("session_user_id", SessionUserID))
+					s.Failure(w, r, http.StatusInternalServerError, err)
+					return
+				}
+				s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: false, Added: true})
+				return
+			} else if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
+				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(UserErr),
 					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
 				s.Failure(w, r, http.StatusInternalServerError, UserErr)
 				return
 			}
-			team, teamErr := s.TeamDataSvc.TeamGet(ctx, TeamID)
-			if teamErr != nil {
-				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(teamErr),
-					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, teamErr)
-				return
-			}
-			emailErr := s.Email.SendTeamInvite(team.Name, UserEmail, inviteID)
-			if emailErr != nil {
-				s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(emailErr),
-					zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, emailErr)
-				return
-			}
+		}
 
-			s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
-			return
-		} else if UserErr != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(UserErr),
+		inviteID, inviteErr := s.TeamDataSvc.TeamInviteUser(ctx, TeamID, UserEmail, u.Role)
+		if inviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(inviteErr),
 				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, UserErr)
+			s.Failure(w, r, http.StatusInternalServerError, inviteErr)
+			return
+		}
+		team, teamErr := s.TeamDataSvc.TeamGet(ctx, TeamID)
+		if teamErr != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(teamErr),
+				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, teamErr)
 			return
 		}
 
-		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
-		if err != nil {
-			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(err), zap.String("team_id", TeamID),
-				zap.String("user_id", User.Id), zap.String("team_role", u.Role),
-				zap.String("session_user_id", SessionUserID))
-			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
+		emailErr := s.Email.SendTeamInvite(team.Name, UserEmail, inviteID)
+		if emailErr != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamAddUser error", zap.Error(emailErr),
+				zap.String("team_id", TeamID), zap.String("session_user_id", SessionUserID))
 		}
 
-		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: false, Added: true})
+		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
 	}
 }
 

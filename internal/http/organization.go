@@ -339,50 +339,51 @@ func (s *Service) handleOrganizationAddUser() http.HandlerFunc {
 
 		UserEmail := strings.ToLower(u.Email)
 
-		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil && errors.Is(UserErr, sql.ErrNoRows) {
-			inviteID, inviteErr := s.OrganizationDataSvc.OrganizationInviteUser(ctx, OrgID, UserEmail, u.Role)
-			if inviteErr != nil {
-				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(inviteErr),
-					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, UserErr)
+		if s.Config.LdapEnabled || s.Config.HeaderAuthEnabled {
+			User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
+			if UserErr == nil {
+				_, err := s.OrganizationDataSvc.OrganizationAddUser(ctx, OrgID, User.Id, u.Role)
+				if err != nil {
+					s.Logger.Ctx(ctx).Error(
+						"handleOrganizationAddUser error", zap.Error(err), zap.String("user_id", User.Id),
+						zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID),
+						zap.String("user_role", u.Role))
+					s.Failure(w, r, http.StatusInternalServerError, err)
+					return
+				}
+				s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: false, Added: true})
+				return
+			} else if UserErr != nil && !errors.Is(UserErr, sql.ErrNoRows) {
+				s.Logger.Ctx(ctx).Error(
+					"handleOrganizationAddUser error", zap.Error(UserErr), zap.String("user_email", UserEmail),
+					zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID))
+				s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
 				return
 			}
-			org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
-			if orgErr != nil {
-				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(orgErr),
-					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, orgErr)
-				return
-			}
-			emailErr := s.Email.SendOrganizationInvite(org.Name, UserEmail, inviteID)
-			if emailErr != nil {
-				s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(emailErr),
-					zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
-				s.Failure(w, r, http.StatusInternalServerError, emailErr)
-				return
-			}
-			s.Success(w, r, http.StatusOK, nil, nil)
+		}
+
+		inviteID, inviteErr := s.OrganizationDataSvc.OrganizationInviteUser(ctx, OrgID, UserEmail, u.Role)
+		if inviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(inviteErr),
+				zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, inviteErr)
 			return
-		} else if UserErr != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleOrganizationAddUser error", zap.Error(UserErr), zap.String("user_email", UserEmail),
-				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID))
-			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
+		}
+		org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
+		if orgErr != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(orgErr),
+				zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, orgErr)
 			return
 		}
 
-		_, err := s.OrganizationDataSvc.OrganizationAddUser(ctx, OrgID, User.Id, u.Role)
-		if err != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleOrganizationAddUser error", zap.Error(err), zap.String("user_id", User.Id),
-				zap.String("session_user_id", SessionUserID), zap.String("organization_id", OrgID),
-				zap.String("user_role", u.Role))
-			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
+		emailErr := s.Email.SendOrganizationInvite(org.Name, UserEmail, inviteID)
+		if emailErr != nil {
+			s.Logger.Ctx(ctx).Error("handleOrganizationAddUser error", zap.Error(emailErr),
+				zap.String("organization_id", OrgID), zap.String("session_user_id", SessionUserID))
 		}
 
-		s.Success(w, r, http.StatusOK, nil, nil)
+		s.Success(w, r, http.StatusOK, nil, userAddMeta{Invited: true, Added: false})
 	}
 }
 
@@ -654,7 +655,7 @@ func (s *Service) handleDeleteOrganization() http.HandlerFunc {
 // @Description  Get a list of user invites associated to the team
 // @Tags         organization
 // @Produce      json
-// @Param        organizationId  path    string  true  "the org ID"
+// @Param        orgId  path    string  true  "the org ID"
 // @Success      200     object  standardJsonResponse{data=[]thunderdome.OrganizationUserInvite}
 // @Security     ApiKeyAuth
 // @Router       /organizations/{orgId}/invites [get]
@@ -663,7 +664,7 @@ func (s *Service) handleGetOrganizationUserInvites() http.HandlerFunc {
 		ctx := r.Context()
 		SessionUserID := ctx.Value(contextKeyUserID).(string)
 		vars := mux.Vars(r)
-		orgId := vars["organizationId"]
+		orgId := vars["orgId"]
 
 		invites, err := s.OrganizationDataSvc.OrganizationGetUserInvites(ctx, orgId)
 		if err != nil {

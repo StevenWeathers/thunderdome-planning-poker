@@ -60,6 +60,7 @@ const appRoutes = {
   privacyPolicy: `${PathPrefix}/privacy-policy`,
   termsConditions: `${PathPrefix}/terms-conditions`,
   support: `${PathPrefix}/support`,
+  invite: `${PathPrefix}/invite`,
 };
 
 export {

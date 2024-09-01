@@ -79,6 +79,7 @@ func main() {
 
 	ldapEnabled := c.Auth.Method == "ldap"
 	headerAuthEnabled := c.Auth.Method == "header"
+	//oidcEnabled := c.Auth.Method == "oidc"
 
 	d := db.New(c.Admin.Email, &db.Config{
 		Host:            c.Db.Host,
@@ -109,14 +110,15 @@ func main() {
 	adminService := &admin.Service{DB: d.DB, Logger: logger}
 	subscriptionDataSvc := &subscriptionData.Service{DB: d.DB, Logger: logger}
 	jiraDataSvc := &jiraData.Service{DB: d.DB, Logger: logger, AESHashKey: d.Config.AESHashkey}
-	cookie := cookie.New(cookie.Config{
-		AppDomain:          c.Http.Domain,
-		PathPrefix:         c.Http.PathPrefix,
-		CookieHashKey:      c.Http.CookieHashkey,
-		FrontendCookieName: c.Http.FrontendCookieName,
-		SecureCookieName:   c.Http.BackendCookieName,
-		SecureCookieFlag:   c.Http.SecureCookie,
-		SessionCookieName:  c.Http.SessionCookieName,
+	cook := cookie.New(cookie.Config{
+		AppDomain:           c.Http.Domain,
+		PathPrefix:          c.Http.PathPrefix,
+		CookieHashKey:       c.Http.CookieHashkey,
+		FrontendCookieName:  c.Http.FrontendCookieName,
+		SecureCookieName:    c.Http.BackendCookieName,
+		SecureCookieFlag:    c.Http.SecureCookie,
+		SessionCookieName:   c.Http.SessionCookieName,
+		AuthStateCookieName: c.Http.AuthStateCookieName,
 	})
 	emailSvc := email.New(&email.Config{
 		AppURL:            "https://" + c.Http.Domain + c.Http.PathPrefix + "/",
@@ -147,6 +149,7 @@ func main() {
 			HttpIdleTimeout:           c.Http.IdleTimeout,
 			HttpReadHeaderTimeout:     c.Http.ReadHeaderTimeout,
 			AppDomain:                 c.Http.Domain,
+			SecureProtocol:            c.Http.SecureProtocol,
 			PathPrefix:                c.Http.PathPrefix,
 			ExternalAPIEnabled:        c.Config.AllowExternalApi,
 			ExternalAPIVerifyRequired: c.Config.ExternalApiVerifyRequired,
@@ -178,6 +181,15 @@ func main() {
 			AllowRegistration:         c.Config.AllowRegistration,
 			ShowActiveCountries:       c.Config.ShowActiveCountries,
 			SubscriptionsEnabled:      c.Config.SubscriptionsEnabled,
+			GoogleAuth: http.AuthProvider{
+				Enabled: c.Auth.Google.Enabled,
+				AuthProviderConfig: thunderdome.AuthProviderConfig{
+					ProviderName: "google",
+					ProviderURL:  "https://accounts.google.com",
+					ClientID:     c.Auth.Google.ClientID,
+					ClientSecret: c.Auth.Google.ClientSecret,
+				},
+			},
 			WebsocketConfig: http.WebsocketConfig{
 				WriteWaitSec:  c.Http.WebsocketWriteWaitSec,
 				PingPeriodSec: c.Http.WebsocketPingPeriodSec,
@@ -185,7 +197,7 @@ func main() {
 			},
 		},
 		Email:               emailSvc,
-		Cookie:              cookie,
+		Cookie:              cook,
 		Logger:              logger,
 		UserDataSvc:         userService,
 		ApiKeyDataSvc:       apkService,
@@ -228,6 +240,7 @@ func main() {
 				ShowActiveCountries:       c.Config.ShowActiveCountries,
 				LdapEnabled:               ldapEnabled,
 				HeaderAuthEnabled:         headerAuthEnabled,
+				GoogleAuthEnabled:         c.Auth.Google.Enabled,
 				FeaturePoker:              c.Feature.Poker,
 				FeatureRetro:              c.Feature.Retro,
 				FeatureStoryboard:         c.Feature.Storyboard,

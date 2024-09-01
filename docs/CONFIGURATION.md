@@ -24,11 +24,11 @@ db:
 
 For Thunderdome to work correctly the following configuration items are required:
 
-| Option                | Environment Variable | Description                                                                                                                                                                  | Default Value     |
-|-----------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| Option                | Environment Variable | Description                                                                                                                                         | Default Value     |
+|-----------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
 | `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for functional cookies (guest and registered user sessions), WebSocket origin check, and creating URLs in emails. | thunderdome.dev   |
-| `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                                                                                                                   | strongest-avenger |
-| `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Game JoinCode, LeaderCode).                                                                                                     | therevengers      |
+| `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                                                                                          | strongest-avenger |
+| `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Game JoinCode, LeaderCode).                                                                          | therevengers      |
 
 ### Database configuration
 
@@ -74,9 +74,20 @@ set that user as ADMIN role.
 Thunderdome has a built-in `normal` authentication with user/password as well as supports `header` and `ldap`
 authentications.
 
-| Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
-|---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `auth.method`                         | AUTH_METHOD                         | Choose `normal`, `header` or `ldap` as authentication method. See separate sections on LDAP/header configurations.   | normal                                                     |
+| Option                                | Environment Variable                | Description                                                                                                   | Default Value                                              |
+|---------------------------------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| `auth.method`                         | AUTH_METHOD                         | Choose `normal`, `header` or `ldap` as authentication method. See respective sections on auth configurations. | normal                                                     |
+
+### Google OAuth
+
+Thunderdome has support for Google OAuth authentication when the `auth.method` is set to `normal` and not `header`
+or `ldap`. Google Auth accounts are separate of internal users/password accounts even if they have the same email.
+
+| Option                      | Environment Variable      | Description                | Default Value |
+|-----------------------------|---------------------------|----------------------------|---------------|
+| `auth.google.enabled`       | AUTH_GOOGLE_ENABLED       | Google OAuth Enabled       | false         |
+| `auth.google.client_id`     | AUTH_GOOGLE_CLIENT_ID     | Google OAuth Client ID     |               |
+| `auth.google.client_secret` | AUTH_GOOGLE_CLIENT_SECRET | Google OAuth Client Secret |               |
 
 ### LDAP Configuration
 
@@ -127,20 +138,22 @@ The following configuration options are specific to the LDAP authentication meth
 
 Configuring http settings allows for fine-tuning your self-hosted instance of Thunderdome to fit your infrastructure.
 
-| Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
-|---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `http.port`                           | PORT                                | Which port to listen for HTTP connections.                                                                           | 8080                                                       |
-| `http.path_prefix`                    | PATH_PREFIX                         | Prefix added to all application urls for shared domain use, in format of `/{prefix}` e.g. `/thunderdome`             |                                                            |
-| `http.secure_cookie`                  | COOKIE_SECURE                       | Use secure cookies or not.                                                                                           | true                                                       |
-| `http.backend_cookie_name`            | BACKEND_COOKIE_NAME                 | The name of the backend cookie utilized for actual auth/validation                                                   | warriorId                                                  |
-| `http.frontend_cookie_name`           | FRONTEND_COOKIE_NAME                | The name of the cookie utilized by the UI (purely for convenience not auth)                                          | warrior                                                    |
-| `http.write_timeout`                  | HTTP_WRITE_TIMEOUT                  | HTTP response write timeout in seconds                                                                               | 5                                                          |
-| `http.read_timeout`                   | HTTP_READ_TIMEOUT                   | HTTP request read timeout in seconds                                                                                 | 5                                                          |
-| `http.idle_timeout`                   | HTTP_IDLE_TIMEOUT                   | HTTP request idle timeout in seconds                                                                                 | 30                                                         |
-| `http.read_header_timeout`            | HTTP_READ_HEADER_TIMEOUT            | HTTP read header timeout in seconds                                                                                  | 2                                                          |
-| `http.websocket_write_wait_sec`       | HTTP_WEBSOCKET_WRITE_WAIT_SEC       | Time allowed to write a message to the peer for Websocket connections                                                | 10                                                         |
-| `http.websocket_pong_wait_sec`        | HTTP_WEBSOCKET_PONG_WAIT_SEC        | Time allowed to read the next pong message from the peer for Websocket connections                                   | 60                                                         |
-| `http.websocket_ping_period_sec`      | HTTP_WEBSOCKET_PING_PERIOD_SEC      | Send pings to peer with this period for Websocket connections. Must be less than pongWait.                           | 54                                                         |
+| Option                           | Environment Variable           | Description                                                                                              | Default Value |
+|----------------------------------|--------------------------------|----------------------------------------------------------------------------------------------------------|---------------|
+| `http.port`                      | PORT                           | Which port to listen for HTTP connections.                                                               | 8080          |
+| `http.path_prefix`               | PATH_PREFIX                    | Prefix added to all application urls for shared domain use, in format of `/{prefix}` e.g. `/thunderdome` |               |
+| `http.secure_protocol`           | HTTP_SECURE_PROTOCOL           | Whether app is accessed through HTTPS, used in OAUTH2 redirects                                          | true          |
+| `http.secure_cookie`             | COOKIE_SECURE                  | Use secure cookies or not.                                                                               | true          |
+| `http.backend_cookie_name`       | BACKEND_COOKIE_NAME            | The name of the backend cookie utilized for actual auth/validation                                       | warriorId     |
+| `http.frontend_cookie_name`      | FRONTEND_COOKIE_NAME           | The name of the cookie utilized by the UI (purely for convenience not auth)                              | warrior       |
+| `http.auth_state_cookie_name`    | HTTP_AUTH_STATE_COOKIE_NAME    | The name of the cookie utilized by the by auth state validation                                          | authState     |
+| `http.write_timeout`             | HTTP_WRITE_TIMEOUT             | HTTP response write timeout in seconds                                                                   | 5             |
+| `http.read_timeout`              | HTTP_READ_TIMEOUT              | HTTP request read timeout in seconds                                                                     | 5             |
+| `http.idle_timeout`              | HTTP_IDLE_TIMEOUT              | HTTP request idle timeout in seconds                                                                     | 30            |
+| `http.read_header_timeout`       | HTTP_READ_HEADER_TIMEOUT       | HTTP read header timeout in seconds                                                                      | 2             |
+| `http.websocket_write_wait_sec`  | HTTP_WEBSOCKET_WRITE_WAIT_SEC  | Time allowed to write a message to the peer for Websocket connections                                    | 10            |
+| `http.websocket_pong_wait_sec`   | HTTP_WEBSOCKET_PONG_WAIT_SEC   | Time allowed to read the next pong message from the peer for Websocket connections                       | 60            |
+| `http.websocket_ping_period_sec` | HTTP_WEBSOCKET_PING_PERIOD_SEC | Send pings to peer with this period for Websocket connections. Must be less than pongWait.               | 54            |
 
 ## Analytics configuration
 

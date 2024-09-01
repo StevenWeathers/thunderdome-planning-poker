@@ -23,7 +23,9 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("http.backend_cookie_name", "warriorId")
 	viper.SetDefault("http.session_cookie_name", "sessionId")
 	viper.SetDefault("http.frontend_cookie_name", "warrior")
+	viper.SetDefault("http.auth_state_cookie_name", "authState")
 	viper.SetDefault("http.domain", "thunderdome.dev")
+	viper.SetDefault("http.secure_protocol", true)
 	viper.SetDefault("http.path_prefix", "")
 	viper.SetDefault("http.write_timeout", 5)
 	viper.SetDefault("http.read_timeout", 5)
@@ -124,6 +126,9 @@ func InitConfig(logger *otelzap.Logger) Config {
 	viper.SetDefault("auth.ldap.cn_attr", "cn")
 	viper.SetDefault("auth.header.usernameHeader", "Remote-User")
 	viper.SetDefault("auth.header.emailHeader", "Remote-Email")
+	viper.SetDefault("auth.google.enabled", false)
+	viper.SetDefault("auth.google.client_id", "")
+	viper.SetDefault("auth.google.client_secret", "")
 
 	// automatically load matching envs
 	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))

@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/oauth"
 
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
@@ -19,7 +22,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
-	httpSwagger "github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 // New initializes the http handlers
@@ -38,6 +41,7 @@ import (
 func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	staticHandler := http.FileServer(HFS)
 	var a = &apiService
+	authProviderConfigs := make([]thunderdome.AuthProviderConfig, 0)
 	a.Router = mux.NewRouter()
 	a.Router.Use(a.panicRecovery)
 
@@ -92,6 +96,14 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	} else if a.Config.HeaderAuthEnabled {
 		apiRouter.HandleFunc("/auth", a.handleHeaderLogin()).Methods("GET")
 	} else {
+		if a.Config.GoogleAuth.Enabled {
+			authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
+				ProviderName: a.Config.GoogleAuth.ProviderName,
+				ProviderURL:  a.Config.GoogleAuth.ProviderURL,
+				ClientID:     a.Config.GoogleAuth.ClientID,
+				ClientSecret: a.Config.GoogleAuth.ClientSecret,
+			})
+		}
 		apiRouter.HandleFunc("/auth", a.handleLogin()).Methods("POST")
 		apiRouter.HandleFunc("/auth/forgot-password", a.handleForgotPassword()).Methods("POST")
 		apiRouter.HandleFunc("/auth/reset-password", a.handleResetPassword()).Methods("PATCH")
@@ -113,6 +125,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserProfileUpdate()))).Methods("PUT")
 	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserDelete()))).Methods("DELETE")
 	userRouter.HandleFunc("/{userId}/request-verify", a.userOnly(a.entityUserOnly(a.handleVerifyRequest()))).Methods("POST")
+	userRouter.HandleFunc("/{userId}/invite/team/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserTeamInvite()))).Methods("POST")
+	userRouter.HandleFunc("/{userId}/invite/organization/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserOrganizationInvite()))).Methods("POST")
 	userRouter.HandleFunc("/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleGetOrganizationsByUser()))).Methods("GET")
 	userRouter.HandleFunc("/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleCreateOrganization()))).Methods("POST")
 	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUser()))).Methods("GET")
@@ -318,6 +332,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 		a.Router.PathPrefix("/webhooks/subscriptions").Handler(a.SubscriptionSvc.HandleWebhook()).Methods("POST")
 	}
 
+	a.registerOauthProviderEndpoints(authProviderConfigs)
+
 	// static assets
 	a.Router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 	a.Router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
@@ -326,6 +342,39 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	a.Router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))
 
 	return a
+}
+
+func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthProviderConfig) {
+	ctx := context.Background()
+	var redirectBaseURL string
+	var port string
+
+	// redirect with port for localhost
+	if s.Config.AppDomain == "localhost" {
+		port = fmt.Sprintf(":%s", s.Config.Port)
+	}
+
+	if s.Config.SecureProtocol {
+		redirectBaseURL = fmt.Sprintf("https://%s%s", s.Config.AppDomain, port)
+	} else {
+		redirectBaseURL = fmt.Sprintf("http://%s%s%s", s.Config.AppDomain, port, s.Config.PathPrefix)
+	}
+
+	for _, c := range providers {
+		oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/login")
+		oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/callback")
+		callbackRedirectURL, _ := url.JoinPath(redirectBaseURL, oauthCallbackPathPrefix)
+		authProvider, err := oauth.New(oauth.Config{
+			AuthProviderConfig:  c,
+			CallbackRedirectURL: callbackRedirectURL,
+			UIRedirectURL:       fmt.Sprintf("%s/", s.Config.PathPrefix),
+		}, s.Cookie, s.Logger, s.AuthDataSvc, s.SubscriptionDataSvc, ctx)
+		if err != nil {
+			panic(err)
+		}
+		s.Router.HandleFunc(oauthLoginPathPrefix, authProvider.HandleOAuth2Redirect()).Methods("GET")
+		s.Router.HandleFunc(oauthCallbackPathPrefix, authProvider.HandleOAuth2Callback()).Methods("GET")
+	}
 }
 
 func (s *Service) ListenAndServe() error {

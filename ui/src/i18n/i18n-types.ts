@@ -1709,7 +1709,7 @@ type RootTranslation = {
    */
   userEmail: string;
   /**
-   * E​n​t​e​r​ ​a​ ​r​e​g​i​s​t​e​r​e​d​ ​u​s​e​r​s​ ​e​m​a​i​l
+   * E​n​t​e​r​ ​t​h​e​ ​u​s​e​r​s​ ​e​m​a​i​l
    */
   userEmailPlaceholder: string;
   /**
@@ -2255,9 +2255,9 @@ type RootTranslation = {
    */
   userInvites: string;
   /**
-   * U​s​e​r​ ​n​o​t​ ​f​o​u​n​d​,​ ​i​n​v​i​t​e​ ​s​e​n​t
+   * U​s​e​r​ ​i​n​v​i​t​e​ ​s​e​n​t
    */
-  userNotFoundInviteSent: string;
+  userInviteSent: string;
   /**
    * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​u​s​e​r​ ​i​n​v​i​t​e​?
    */
@@ -2275,6 +2275,15 @@ type RootTranslation = {
    * @param {unknown} pageType
    */
   addUserWillInviteNotFoundFieldNote: RequiredParams<'pageType'>;
+  /**
+   * A​n​ ​i​n​v​i​t​e​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​{​p​a​g​e​T​y​p​e​}​ ​w​i​l​l​ ​b​e​ ​s​e​n​t​.
+   * @param {unknown} pageType
+   */
+  inviteUserFieldNote: RequiredParams<'pageType'>;
+  /**
+   * U​s​e​r​ ​m​u​s​t​ ​a​l​r​e​a​d​y​ ​b​e​ ​i​n​ ​O​r​g​a​n​i​z​a​t​i​o​n​.
+   */
+  requiresOrganizationMember: string;
   /**
    * T​e​a​m​ ​u​p​d​a​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y
    */
@@ -2311,6 +2320,42 @@ type RootTranslation = {
    * E​n​t​e​r​ ​a​ ​s​t​o​r​y​b​o​a​r​d​ ​n​a​m​e
    */
   storyboardNamePlaceholder: string;
+  /**
+   * B​r​a​i​n​s​t​o​r​m​ ​P​h​a​s​e​ ​t​i​m​e​ ​l​i​m​i​t​ ​i​n​ ​m​i​n​u​t​e​s
+   */
+  retroPhaseTimeLimitMinLabel: string;
+  /**
+   * A​u​t​o​m​a​t​i​c​a​l​l​y​ ​a​d​v​a​n​c​e​ ​p​h​a​s​e​s
+   */
+  phaseAutoAdvanceLabel: string;
+  /**
+   * C​a​n​'​t​ ​r​e​m​o​v​e​ ​t​h​e​ ​o​n​l​y​ ​f​a​c​i​l​i​t​a​t​o​r
+   */
+  removeOnlyFacilitatorError: string;
+  /**
+   * N​o​ ​g​a​m​e​s​ ​f​o​u​n​d​,​ ​t​r​y​ ​c​r​e​a​t​i​n​g​ ​o​n​e​.
+   */
+  noGamesFound: string;
+  /**
+   * N​o​ ​r​e​t​r​o​s​ ​f​o​u​n​d​,​ ​t​r​y​ ​c​r​e​a​t​i​n​g​ ​o​n​e​.
+   */
+  noRetrosFound: string;
+  /**
+   * N​o​ ​s​t​o​r​y​b​o​a​r​d​s​ ​f​o​u​n​d​,​ ​t​r​y​ ​c​r​e​a​t​i​n​g​ ​o​n​e​.
+   */
+  noStoryboardsFound: string;
+  /**
+   * A​ ​s​p​r​i​n​t​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​ ​i​s​ ​a​ ​r​e​v​i​e​w​ ​c​o​n​d​u​c​t​e​d​ ​a​f​t​e​r​ ​a​ ​s​p​r​i​n​t​ ​t​h​a​t​ ​p​l​a​y​s​ ​a​ ​k​e​y​ ​r​o​l​e​ ​i​n​ ​t​h​e​ ​A​g​i​l​e​ ​m​e​t​h​o​d​o​l​o​g​y​.​ ​A​ ​s​p​r​i​n​t​ ​r​e​t​r​o​s​p​e​c​t​i​v​e​ ​a​i​m​s​ ​t​o​ ​d​e​t​e​r​m​i​n​e​ ​w​h​a​t​ ​w​e​n​t​ ​w​e​l​l​ ​a​n​d​ ​w​h​e​r​e​ ​y​o​u​ ​h​a​d​ ​p​r​o​b​l​e​m​s​ ​a​n​d​ ​i​d​e​n​t​i​f​y​ ​a​r​e​a​s​ ​w​h​e​r​e​ ​y​o​u​ ​c​a​n​ ​i​m​p​r​o​v​e​.
+   */
+  retroDescription: string;
+  /**
+   * S​c​r​u​m​ ​p​o​k​e​r​,​ ​a​l​s​o​ ​k​n​o​w​n​ ​a​s​ ​“​p​l​a​n​n​i​n​g​ ​p​o​k​e​r​”​ ​a​n​d​ ​“​p​o​i​n​t​i​n​g​ ​p​o​k​e​r​”​,​ ​i​s​ ​a​ ​g​a​m​i​f​i​e​d​ ​t​e​c​h​n​i​q​u​e​ ​t​h​a​t​ ​d​e​v​e​l​o​p​m​e​n​t​ ​t​e​a​m​s​ ​u​s​e​ ​t​o​ ​g​u​e​s​s​ ​t​h​e​ ​e​f​f​o​r​t​ ​o​f​ ​p​r​o​j​e​c​t​ ​m​a​n​a​g​e​m​e​n​t​ ​t​a​s​k​s​.​ ​T​h​e​s​e​ ​e​s​t​i​m​a​t​i​o​n​s​ ​a​r​e​ ​b​a​s​e​d​ ​o​n​ ​t​h​e​ ​e​n​t​i​r​e​ ​g​r​o​u​p​’​s​ ​i​n​p​u​t​ ​a​n​d​ ​c​o​n​s​e​n​s​u​s​,​ ​m​a​k​i​n​g​ ​t​h​e​m​ ​m​o​r​e​ ​e​n​g​a​g​i​n​g​ ​a​n​d​ ​a​c​c​u​r​a​t​e​ ​t​h​a​n​ ​o​t​h​e​r​ ​m​e​t​h​o​d​s​.
+   */
+  pokerDescription: string;
+  /**
+   * U​s​e​r​ ​s​t​o​r​y​ ​m​a​p​p​i​n​g​ ​(​s​t​o​r​y​b​o​a​r​d​)​ ​i​s​ ​a​ ​v​i​s​u​a​l​i​z​a​t​i​o​n​ ​o​f​ ​t​h​e​ ​j​o​u​r​n​e​y​ ​a​ ​c​u​s​t​o​m​e​r​ ​t​a​k​e​s​ ​w​i​t​h​ ​a​ ​p​r​o​d​u​c​t​,​ ​f​r​o​m​ ​b​e​g​i​n​n​i​n​g​ ​t​o​ ​e​n​d​.​ ​I​t​ ​i​n​c​l​u​d​e​s​ ​a​l​l​ ​t​h​e​ ​t​a​s​k​s​ ​t​h​e​y​’​d​ ​t​y​p​i​c​a​l​l​y​ ​c​o​m​p​l​e​t​e​ ​a​s​ ​p​a​r​t​ ​o​f​ ​t​h​a​t​ ​j​o​u​r​n​e​y​.
+   */
+  storyboardDescription: string;
 };
 
 export type TranslationFunctions = {
@@ -4006,7 +4051,7 @@ export type TranslationFunctions = {
    */
   userEmail: () => LocalizedString;
   /**
-   * Enter a registered users email
+   * Enter the users email
    */
   userEmailPlaceholder: () => LocalizedString;
   /**
@@ -4545,9 +4590,9 @@ export type TranslationFunctions = {
    */
   userInvites: () => LocalizedString;
   /**
-   * User not found, invite sent
+   * User invite sent
    */
-  userNotFoundInviteSent: () => LocalizedString;
+  userInviteSent: () => LocalizedString;
   /**
    * Are you sure you want to delete this user invite?
    */
@@ -4566,6 +4611,14 @@ export type TranslationFunctions = {
   addUserWillInviteNotFoundFieldNote: (arg: {
     pageType: unknown;
   }) => LocalizedString;
+  /**
+   * An invite to join the {pageType} will be sent.
+   */
+  inviteUserFieldNote: (arg: { pageType: unknown }) => LocalizedString;
+  /**
+   * User must already be in Organization.
+   */
+  requiresOrganizationMember: () => LocalizedString;
   /**
    * Team updated successfully
    */
@@ -4602,6 +4655,42 @@ export type TranslationFunctions = {
    * Enter a storyboard name
    */
   storyboardNamePlaceholder: () => LocalizedString;
+  /**
+   * Brainstorm Phase time limit in minutes
+   */
+  retroPhaseTimeLimitMinLabel: () => LocalizedString;
+  /**
+   * Automatically advance phases
+   */
+  phaseAutoAdvanceLabel: () => LocalizedString;
+  /**
+   * Can't remove the only facilitator
+   */
+  removeOnlyFacilitatorError: () => LocalizedString;
+  /**
+   * No games found, try creating one.
+   */
+  noGamesFound: () => LocalizedString;
+  /**
+   * No retros found, try creating one.
+   */
+  noRetrosFound: () => LocalizedString;
+  /**
+   * No storyboards found, try creating one.
+   */
+  noStoryboardsFound: () => LocalizedString;
+  /**
+   * A sprint retrospective is a review conducted after a sprint that plays a key role in the Agile methodology. A sprint retrospective aims to determine what went well and where you had problems and identify areas where you can improve.
+   */
+  retroDescription: () => LocalizedString;
+  /**
+   * Scrum poker, also known as “planning poker” and “pointing poker”, is a gamified technique that development teams use to guess the effort of project management tasks. These estimations are based on the entire group’s input and consensus, making them more engaging and accurate than other methods.
+   */
+  pokerDescription: () => LocalizedString;
+  /**
+   * User story mapping (storyboard) is a visualization of the journey a customer takes with a product, from beginning to end. It includes all the tasks they’d typically complete as part of that journey.
+   */
+  storyboardDescription: () => LocalizedString;
 };
 
 export type Formatters = {};

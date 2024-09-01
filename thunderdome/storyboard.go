@@ -10,6 +10,7 @@ type StoryboardUser struct {
 	Avatar       string `json:"avatar"`
 	Abandoned    bool   `json:"abandoned"`
 	GravatarHash string `json:"gravatarHash"`
+	PictureURL   string `json:"pictureUrl"`
 }
 
 // Storyboard A story mapping board
