@@ -21,6 +21,8 @@ type retroCreateRequestBody struct {
 	FacilitatorCode      string `json:"facilitatorCode" example:"likeaboss"`
 	MaxVotes             int    `json:"maxVotes" validate:"required,min=1,max=9"`
 	BrainstormVisibility string `json:"brainstormVisibility" validate:"required,oneof=visible concealed hidden"`
+	PhaseTimeLimitMin    int    `json:"phaseTimeLimitMin" validate:"min=0,max=59" example:"10"`
+	PhaseAutoAdvance     bool   `json:"phaseAutoAdvance"`
 }
 
 // handleRetroCreate handles creating a retro
@@ -79,7 +81,7 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 		// if retro created with team association
 		if teamIdExists {
 			if isTeamUserOrAnAdmin(r) {
-				newRetro, err = s.RetroDataSvc.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+				newRetro, err = s.RetroDataSvc.TeamRetroCreate(ctx, TeamID, UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility, nr.PhaseTimeLimitMin, nr.PhaseAutoAdvance)
 				if err != nil {
 					s.Logger.Ctx(ctx).Error("handleRetroCreate error", zap.Error(err), zap.String("entity_user_id", UserID),
 						zap.String("team_id", TeamID), zap.String("retro_name", nr.RetroName),
@@ -92,7 +94,7 @@ func (s *Service) handleRetroCreate() http.HandlerFunc {
 				return
 			}
 		} else {
-			newRetro, err = s.RetroDataSvc.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility)
+			newRetro, err = s.RetroDataSvc.RetroCreate(UserID, nr.RetroName, nr.Format, nr.JoinCode, nr.FacilitatorCode, nr.MaxVotes, nr.BrainstormVisibility, nr.PhaseTimeLimitMin, nr.PhaseAutoAdvance)
 			if err != nil {
 				s.Logger.Ctx(ctx).Error("handleRetroCreate error", zap.Error(err), zap.String("entity_user_id", UserID),
 					zap.String("retro_name", nr.RetroName), zap.String("session_user_id", SessionUserID))

@@ -1,6 +1,9 @@
 package thunderdome
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // Color is a color legend
 type Color struct {
@@ -32,6 +35,9 @@ type Retro struct {
 	Facilitators         []string       `json:"facilitators"`
 	Format               string         `json:"format" db:"format"`
 	Phase                string         `json:"phase" db:"phase"`
+	PhaseTimeLimitMin    int            `json:"phase_time_limit_min" db:"phase_time_limit_min"`
+	PhaseTimeStart       time.Time      `json:"phase_time_start" db:"phase_time_start"`
+	PhaseAutoAdvance     bool           `json:"phase_auto_advance" db:"phase_auto_advance"`
 	JoinCode             string         `json:"joinCode" db:"join_code"`
 	FacilitatorCode      string         `json:"facilitatorCode" db:"facilitator_code"`
 	MaxVotes             int            `json:"maxVotes" db:"max_votes"`
@@ -83,9 +89,9 @@ type RetroVote struct {
 }
 
 type RetroDataSvc interface {
-	RetroCreate(OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*Retro, error)
-	TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string) (*Retro, error)
-	EditRetro(RetroID string, RetroName string, JoinCode string, FacilitatorCode string, maxVotes int, brainstormVisibility string) error
+	RetroCreate(OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool) (*Retro, error)
+	TeamRetroCreate(ctx context.Context, TeamID string, OwnerID string, RetroName string, Format string, JoinCode string, FacilitatorCode string, MaxVotes int, BrainstormVisibility string, PhaseTimeLimitMin int, PhaseAutoAdvance bool) (*Retro, error)
+	EditRetro(RetroID string, RetroName string, JoinCode string, FacilitatorCode string, maxVotes int, brainstormVisibility string, phaseAutoAdvance bool) error
 	RetroGet(RetroID string, UserID string) (*Retro, error)
 	RetroGetByUser(UserID string, Limit int, Offset int) ([]*Retro, int, error)
 	RetroConfirmFacilitator(RetroID string, userID string) error
