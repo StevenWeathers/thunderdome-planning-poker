@@ -78,11 +78,7 @@
         battleCount = result.meta.count;
       })
       .catch(function () {
-        notifications.danger(
-          $LL.getBattlesError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        notifications.danger($LL.getBattlesError());
       });
   }
 
@@ -266,10 +262,7 @@
   {#if FeaturePoker}
     <div class="mb-6 lg:mb-8">
       <TableContainer>
-        <TableNav
-          title="{$LL.battles({ friendly: AppConfig.FriendlyUIVerbs })}"
-          createBtnEnabled="{false}"
-        />
+        <TableNav title="{$LL.battles()}" createBtnEnabled="{false}" />
         <Table>
           <tr slot="header">
             <HeadCol>
@@ -290,7 +283,7 @@
               <TableRow itemIndex="{i}">
                 <RowCol>
                   <a
-                    href="{appRoutes.admin}/battles/{battle.id}"
+                    href="{appRoutes.adminPokerGames}/{battle.id}"
                     class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                     >{battle.name}</a
                   >
@@ -303,9 +296,7 @@
                 </RowCol>
                 <RowCol type="action">
                   <HollowButton href="{appRoutes.game}/{battle.id}">
-                    {$LL.battleJoin({
-                      friendly: AppConfig.FriendlyUIVerbs,
-                    })}
+                    {$LL.battleJoin()}
                   </HollowButton>
                 </RowCol>
               </TableRow>
@@ -346,7 +337,7 @@
               <TableRow itemIndex="{i}">
                 <RowCol>
                   <a
-                    href="{appRoutes.admin}/retros/{retro.id}"
+                    href="{appRoutes.adminRetros}/{retro.id}"
                     class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                     >{retro.name}</a
                   >
@@ -400,7 +391,7 @@
               <TableRow itemIndex="{i}">
                 <RowCol>
                   <a
-                    href="{appRoutes.admin}/storyboards/{storyboard.id}"
+                    href="{appRoutes.adminStoryboards}/{storyboard.id}"
                     class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                     >{storyboard.name}</a
                   >

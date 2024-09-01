@@ -3,7 +3,7 @@
   import HollowButton from '../../components/global/HollowButton.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { appRoutes } from '../../config';
   import { validateUserIsAdmin } from '../../validationUtils';
   import Table from '../../components/table/Table.svelte';
   import HeadCol from '../../components/table/HeadCol.svelte';
@@ -227,9 +227,7 @@
   <TableContainer>
     <TableNav
       title="{$LL.registeredUsers()}"
-      createBtnText="{$LL.warriorCreate({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
+      createBtnText="{$LL.warriorCreate()}"
       createButtonHandler="{toggleCreateUser}"
       createBtnTestId="user-create"
       searchEnabled="{true}"

@@ -31,6 +31,12 @@ export const subtractDays = function (date, days) {
   );
 };
 
+export const addMinutesToDate = (date, n) => {
+  const d = new Date(date);
+  d.setTime(d.getTime() + n * 60000);
+  return d;
+};
+
 export const addTimeLeadZero = function (time) {
   return ('0' + time).slice(-2);
 };

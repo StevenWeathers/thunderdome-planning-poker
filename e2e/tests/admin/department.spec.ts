@@ -27,7 +27,7 @@ test.describe("The Admin Department Page", () => {
 
       const title = adminPage.page.locator("h1");
       await expect(title).toHaveText(
-        "Thunderdome is an Agile Planning Poker app with a fun theme",
+        "Thunderdome is an Agile Planning Poker app",
       );
     });
   });
@@ -43,7 +43,7 @@ test.describe("The Admin Department Page", () => {
 
       const title = adminPage.page.locator("h1");
       await expect(title).toHaveText(
-        "Thunderdome is an Agile Planning Poker app with a fun theme",
+        "Thunderdome is an Agile Planning Poker app",
       );
     });
   });

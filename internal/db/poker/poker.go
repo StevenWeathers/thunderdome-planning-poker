@@ -611,6 +611,18 @@ func (d *Service) AddFacilitator(PokerID string, UserID string) ([]string, error
 // RemoveFacilitator removes a user from game facilitators
 func (d *Service) RemoveFacilitator(PokerID string, UserID string) ([]string, error) {
 	facilitators := make([]string, 0)
+	facilitatorCount := 0
+	err := d.DB.QueryRow(
+		`SELECT count(user_id) FROM thunderdome.poker_facilitator WHERE poker_id = $1;`,
+		PokerID,
+	).Scan(&facilitatorCount)
+	if err != nil {
+		return nil, fmt.Errorf("poker remove facilitator query error: %v", err)
+	}
+
+	if facilitatorCount == 1 {
+		return nil, fmt.Errorf("ONLY_FACILITATOR")
+	}
 
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.poker_facilitator WHERE poker_id = $1 AND user_id = $2;`,

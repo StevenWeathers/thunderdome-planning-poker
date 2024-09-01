@@ -357,7 +357,7 @@ test.describe("User Profile page", () => {
 
     // should be on landing page and no longer authenticated
     await expect(profilePage.page.locator("h1")).toHaveText(
-      "Thunderdome is an Agile Planning Poker app with a fun theme",
+      "Thunderdome is an Agile Planning Poker app",
     );
     await expect(
       profilePage.page.locator("data-testid=usernav-name"),
@@ -383,7 +383,7 @@ test.describe("User Profile page", () => {
 
     // should be on landing page and no longer authenticated
     await expect(profilePage.page.locator("h1")).toHaveText(
-      "Thunderdome is an Agile Planning Poker app with a fun theme",
+      "Thunderdome is an Agile Planning Poker app",
     );
     await expect(
       profilePage.page.locator("data-testid=usernav-name"),

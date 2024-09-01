@@ -28,7 +28,7 @@ For Thunderdome to work correctly the following configuration items are required
 |-----------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
 | `http.domain`         | APP_DOMAIN           | The domain/base URL for this instance of Thunderdome. Used for functional cookies (guest and registered user sessions), WebSocket origin check, and creating URLs in emails. | thunderdome.dev   |
 | `http.cookie_hashkey` | COOKIE_HASHKEY       | Secret used to make secure cookies secure.                                                                                                          | strongest-avenger |
-| `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Battle JoinCode, LeaderCode).                                                                          | therevengers      |
+| `config.aes_hashkey`  | CONFIG_AES_HASHKEY   | Secret used to encrypt passcode fields (e.g. Game JoinCode, LeaderCode).                                                                          | therevengers      |
 
 ### Database configuration
 
@@ -182,9 +182,9 @@ needs.
 
 | Option                                | Environment Variable                | Description                                                                                                          | Default Value                                              |
 |---------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `config.allowedPointValues`           | CONFIG_POINTS_ALLOWED               | List of available point values for creating battles.                                                                 | 0, 1/2, 1, 2, 3, 5, 8, 13, 20, 21, 34, 40, 55, 100, ?, ☕️  |
-| `config.defaultPointValues`           | CONFIG_POINTS_DEFAULT               | List of default selected points for new battles.                                                                     | 1, 2, 3, 5, 8 , 13, ?                                      |
-| `config.show_warrior_rank`            | CONFIG_SHOW_RANK                    | Set to enable an icon showing the rank of a warrior during battle.                                                   | false                                                      |
+| `config.allowedPointValues`           | CONFIG_POINTS_ALLOWED               | List of available point values for creating games.                                                                   | 0, 1/2, 1, 2, 3, 5, 8, 13, 20, 21, 34, 40, 55, 100, ?, ☕️  |
+| `config.defaultPointValues`           | CONFIG_POINTS_DEFAULT               | List of default selected points for new games.                                                                       | 1, 2, 3, 5, 8 , 13, ?                                      |
+| `config.show_warrior_rank`            | CONFIG_SHOW_RANK                    | Set to enable an icon showing the rank of a user during game.                                                        | false                                                      |
 | `config.avatar_service`               | CONFIG_AVATAR_SERVICE               | Avatar service used, possible values see next paragraph                                                              | gravatar                                                   |
 | `config.toast_timeout`                | CONFIG_TOAST_TIMEOUT                | Number of milliseconds before notifications are hidden.                                                              | 1000                                                       |
 | `config.allow_guests`                 | CONFIG_ALLOW_GUESTS                 | Whether or not to allow guest (anonymous) users.                                                                     | true                                                       |
@@ -192,17 +192,16 @@ needs.
 | `config.allow_jira_import`            | CONFIG_ALLOW_JIRA_IMPORT            | Whether or not to allow import plans from JIRA XML.                                                                  | true                                                       |
 | `config.allow_csv_import`             | CONFIG_ALLOW_CSV_IMPORT             | Whether or not to allow import plans from a csv file                                                                 | true                                                       |
 | `config.default_locale`               | CONFIG_DEFAULT_LOCALE               | The default locale (language) for the UI                                                                             | en                                                         |
-| `config.friendly_ui_verbs`            | CONFIG_FRIENDLY_UI_VERBS            | Whether or not to use more friendly UI verbs like Users instead of Warrior, e.g. Corporate friendly                  | false                                                      |
 | `config.allow_external_api`           | CONFIG_ALLOW_EXTERNAL_API           | Whether or not to allow External API access                                                                          | true                                                       |
 | `config.external_api_verify_required` | CONFIG_EXTERNAL_API_VERIFY_REQUIRED | Whether External API access requires user to be email verified                                                       | true                                                       |
 | `config.user_apikey_limit`            | CONFIG_USER_APIKEY_LIMIT            | Limit users number of API keys                                                                                       | 5                                                          |
 | `config.show_active_countries`        | CONFIG_SHOW_ACTIVE_COUNTRIES        | Whether or not to show active countries on landing page                                                              | false                                                      |
-| `config.cleanup_battles_days_old`     | CONFIG_CLEANUP_BATTLES_DAYS_OLD     | How many days back to clean up old battles, e.g. battles older than 180 days. Triggered manually by Admins .         | 180                                                        |
+| `config.cleanup_battles_days_old`     | CONFIG_CLEANUP_BATTLES_DAYS_OLD     | How many days back to clean up old games, e.g. games older than 180 days. Triggered manually by Admins .             | 180                                                        |
 | `config.cleanup_retros_days_old`      | CONFIG_CLEANUP_RETROS_DAYS_OLD      | How many days back to clean up old retros, e.g. retros older than 180 days. Triggered manually by Admins .           | 180                                                        |
 | `config.cleanup_storyboards_days_old` | CONFIG_CLEANUP_STORYBOARDS_DAYS_OLD | How many days back to clean up old storyboards, e.g. storyboards older than 180 days. Triggered manually by Admins . | 180                                                        |
 | `config.cleanup_guests_days_old`      | CONFIG_CLEANUP_GUESTS_DAYS_OLD      | How many days back to clean up old guests, e.g. guests older than 180 days. Triggered manually by Admins.            | 180                                                        |
 | `config.organizations_enabled`        | CONFIG_ORGANIZATIONS_ENABLED        | Whether or not creating organizations (with departments) are enabled                                                 | true                                                       |
-| `config.require_teams`                | CONFIG_REQUIRE_TEAMS                | Whether or not creating battles, retros, and storyboards require being associated to a Team                          | false                                                      |
+| `config.require_teams`                | CONFIG_REQUIRE_TEAMS                | Whether or not creating games, retros, and storyboards require being associated to a Team                            | false                                                      |
 | `feature.poker`                       | FEATURE_POKER                       | Enable or Disable Agile Story Pointing (Poker) feature                                                               | true                                                       |
 | `feature.retro`                       | FEATURE_RETRO                       | Enable or Disable Agile Retrospectives feature                                                                       | true                                                       |
 | `feature.storyboard`                  | FEATURE_STORYBOARD                  | Enable or Disable Agile Storyboard feature                                                                           | true                                                       |
@@ -210,7 +209,7 @@ needs.
 ### Avatar Service configuration
 
 Use the name from table below to configure a service - if not set, `gravatar` is used. Each service provides further
-options which then can be configured by a warrior on the profile page. Once a service is configured, drop downs with the
+options which then can be configured by a user on the profile page. Once a service is configured, drop downs with the
 different sprites become available. The table shows all supported services and their sprites.
 
 | Name                                                     |           |           |           |           |           |           |           |           |           |

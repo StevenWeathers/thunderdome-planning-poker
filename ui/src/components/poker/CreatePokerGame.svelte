@@ -31,6 +31,9 @@
   let teams = [];
   let hideVoterIdentity = false;
 
+  /** @type {TextInput} */
+  let battleNameTextInput;
+
   let checkedPointColor =
     'border-green-500 bg-green-50 text-green-700 dark:bg-lime-50 dark:text-lime-700 dark:border-lime-500';
   let uncheckedPointColor =
@@ -103,17 +106,11 @@
         if (Array.isArray(error)) {
           error[1].json().then(function (result) {
             notifications.danger(
-              `${$LL.createBattleError({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })} : ${result.error}`,
+              `${$LL.createBattleError()} : ${result.error}`,
             );
           });
         } else {
-          notifications.danger(
-            $LL.createBattleError({
-              friendly: AppConfig.FriendlyUIVerbs,
-            }),
-          );
+          notifications.danger($LL.createBattleError());
         }
         eventTag('create_battle', 'engagement', 'failure');
       });
@@ -141,6 +138,9 @@
       router.route(appRoutes.register);
     }
     getTeams();
+
+    // Focus the battle name input field
+    battleNameTextInput.focus();
   });
 </script>
 
@@ -150,15 +150,14 @@
       class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
       for="battleName"
     >
-      {$LL.battleName({ friendly: AppConfig.FriendlyUIVerbs })}
+      {$LL.battleName()}
     </label>
     <div class="control">
       <TextInput
         name="battleName"
+        bind:this="{battleNameTextInput}"
         bind:value="{battleName}"
-        placeholder="{$LL.battleNamePlaceholder({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}"
+        placeholder="{$LL.battleNamePlaceholder()}"
         id="battleName"
         required
       />
@@ -215,14 +214,14 @@
 
   <div class="mb-4">
     <h3 class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2">
-      {$LL.plans({ friendly: AppConfig.FriendlyUIVerbs })}
+      {$LL.plans()}
     </h3>
     <div class="control mb-4">
       <HollowButton onClick="{toggleImport}" color="blue">
-        {$LL.importPlans({ friendly: AppConfig.FriendlyUIVerbs })}
+        {$LL.importPlans()}
       </HollowButton>
       <HollowButton onClick="{addPlan}">
-        {$LL.addPlan({ friendly: AppConfig.FriendlyUIVerbs })}
+        {$LL.addPlan()}
       </HollowButton>
       {#if showImport}
         <ImportModal
@@ -240,9 +239,7 @@
         <div class="w-3/4">
           <TextInput
             bind:value="{plan.name}"
-            placeholder="{$LL.planNamePlaceholder({
-              friendly: AppConfig.FriendlyUIVerbs,
-            })}"
+            placeholder="{$LL.planNamePlaceholder()}"
             required
           />
         </div>
@@ -282,9 +279,7 @@
       bind:checked="{autoFinishVoting}"
       id="autoFinishVoting"
       name="autoFinishVoting"
-      label="{$LL.autoFinishVotingLabel({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}"
+      label="{$LL.autoFinishVotingLabel()}"
     />
   </div>
 
@@ -293,7 +288,7 @@
       bind:checked="{hideVoterIdentity}"
       id="hideVoterIdentity"
       name="hideVoterIdentity"
-      label="Hide Voter Identity"
+      label="{$LL.hideVoterIdentity()}"
     />
   </div>
 
@@ -332,10 +327,6 @@
   </div>
 
   <div class="text-right">
-    <SolidButton type="submit"
-      >{$LL.battleCreate({
-        friendly: AppConfig.FriendlyUIVerbs,
-      })}</SolidButton
-    >
+    <SolidButton type="submit">{$LL.battleCreate()}</SolidButton>
   </div>
 </form>

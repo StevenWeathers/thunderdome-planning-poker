@@ -29,6 +29,9 @@
     email: '',
   };
 
+  /** @type {TextInput} */
+  let warriorNameTextInput;
+
   function targetPage() {
     let tp = appRoutes.games;
 
@@ -152,6 +155,9 @@
       wasInvited = true;
       getInviteDetails();
     }
+
+    // Focus the warrior name input field if it exists
+    warriorNameTextInput?.focus();
   });
 </script>
 
@@ -187,7 +193,7 @@
         class="font-semibold font-rajdhani uppercase text-md md:text-lg mb-2 md:mb-6 md:leading-tight
                 dark:text-white"
       >
-        {@html $LL.loginForBattle[AppConfig.FriendlyUIVerbs]({
+        {@html $LL.loginForBattle({
           loginOpen: `<a href="${appRoutes.login}/battle/${battleId}" class="font-bold text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600">`,
           loginClose: `</a>`,
         })}
@@ -239,6 +245,7 @@
               {$LL.name()}
             </label>
             <TextInput
+              bind:this="{warriorNameTextInput}"
               bind:value="{warriorName}"
               placeholder="{$LL.yourNamePlaceholder()}"
               id="yourName1"

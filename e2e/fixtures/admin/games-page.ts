@@ -8,6 +8,6 @@ export class AdminGamesPage {
   }
 
   async goto() {
-    await this.page.goto(`/admin/battles`);
+    await this.page.goto(`/admin/games`);
   }
 }

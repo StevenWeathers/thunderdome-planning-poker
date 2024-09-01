@@ -28,8 +28,8 @@
     },
     {
       name: 'Battles',
-      label: $LL.battles({ friendly: AppConfig.FriendlyUIVerbs }),
-      path: '/battles',
+      label: $LL.battles(),
+      path: '/games',
       enabled: FeaturePoker,
     },
     {

@@ -2,7 +2,6 @@
   import PointCard from './PointCard.svelte';
   import WarriorIcon from '../icons/UserIcon.svelte';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig } from '../../config';
 
   export let activePlanId = '';
   export let plans = [];
@@ -62,9 +61,7 @@
         count: 0,
         voters: [],
       };
-      let warriorName = $LL.unknownWarrior({
-        friendly: AppConfig.FriendlyUIVerbs,
-      });
+      let warriorName = $LL.unknownWarrior();
 
       if (warriors.length) {
         const warrior = warriors.find(w => w.id === v.warriorId) || {

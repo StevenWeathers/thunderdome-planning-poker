@@ -58,28 +58,23 @@ const it: Translation = {
   appSubtitle: 'App Open Source Agile Planning Poker',
   appVersion: 'Versione {version}',
   associateTeam: 'Associa Team',
-  authError:
-    "{friendly|{false:Errore durante l'autenticazione del guerriero, true:Errore durante l'autenticazione del giocatore}}",
+  authError: "Errore durante l'autenticazione del giocatore",
   autoFinishVoting: 'Votazione Automatica',
   avatarAltText: 'Avatar segnaposto',
   back: 'Indietro',
-  battleAbandon: '{friendly|{false:Abbandona Battaglia, true:Abbandona Gioco}}',
-  battleCreate: '{friendly|{false:Crea Battaglia, true:Crea Gioco}}',
-  battleDelete: '{friendly|{false:Elimina Battaglia, true:Elimina Gioco}}',
-  battleEdit: '{friendly|{false:Modifica Battaglia, true:Modifica Gioco}}',
+  battleAbandon: 'Abbandona Gioco',
+  battleCreate: 'Crea Gioco',
+  battleDelete: 'Elimina Gioco',
+  battleEdit: 'Modifica Gioco',
   battleEditPointsDisabled:
     'La votazione è attiva, non può modificare i punti consentiti.',
-  battleJoin:
-    '{friendly|{false:Entra in Battaglia, true:Unisciti alla partita}}',
-  battleName: '{friendly|{false:Nome Battaglia, true:Nome partita}}',
-  battleRemoveError:
-    "{friendly|{false:Errore durante l'eliminazione della Battaglia., true:Errore durante la rimozione della partita.}}",
-  battleRemoveSuccess:
-    '{friendly|{false:Battaglia eliminata con successo., true:Partita rimossa con successo.}}',
-  battles: '{friendly|{false:Battaglie, true:Partite}}',
-  battlesActive: '{friendly|{false:Battaglie attive, true:Partite attive}}',
-  battlesActiveUsers:
-    '{friendly|{false:Guerrieri attivi nelle Battaglie, true:Utenti attivi in partite}}',
+  battleJoin: 'Unisciti alla partita',
+  battleName: 'Nome partita',
+  battleRemoveError: 'Errore durante la rimozione della partita.',
+  battleRemoveSuccess: 'Partita rimossa con successo.',
+  battles: 'Partite',
+  battlesActive: 'Partite attive',
+  battlesActiveUsers: 'Utenti attivi in partite',
   becomeFacilitator: 'Diventa Facilitatore',
   becomeLeader: 'Diventa Leader',
   becomeParticipant: 'Diventa Partecipante',
@@ -115,15 +110,13 @@ const it: Translation = {
   createAlertSuccess: 'Avviso creato con successo',
   createARetro: 'Crea un retro',
   createAStoryboard: 'Crea uno storyboard',
-  createBattleError:
-    '{friendly|{false:Si è verificato un errore durante la creazione della battaglia, true:Errore durante la creazione della partita}}',
+  createBattleError: 'Errore durante la creazione della partita',
   createOrgError: "Errore durante la creazione dell'organizzazione",
   createRetro: 'Crea Retro',
   createRetroErrorMessage: 'Errore durante la creazione del retro',
   createStoryboard: 'Crea uno storyboard',
   createUserError: "Errore durante la creazione dell'utente",
-  customizableBattleOptions:
-    '{friendly|{false:Opzioni di Battaglia personalizzabili, true:Opzioni di gioco personalizzabili}}',
+  customizableBattleOptions: 'Opzioni di gioco personalizzabili',
   dateCreated: 'Data di Creazione',
   dateUpdated: 'Data di Aggiornamento',
   delete: 'Elimina',
@@ -131,11 +124,9 @@ const it: Translation = {
   deleteActionItemSuccess: 'Elemento azione eliminato con successo',
   deleteAlertError: "Errore durante l'eliminazione dell'avviso",
   deleteAlertSuccess: 'Avviso eliminato con successo',
-  deleteBattle: '{friendly|{false:Elimina Battaglia, true:Elimina partita}}',
-  deleteBattleConfirmText:
-    '{friendly|{false:Sei sicuro di voler eliminare questa Battaglia?, true:Sei sicuro di voler eliminare questa partita?}}',
-  deleteBattleError:
-    "{friendly|{false:Errore durante l'eliminazione della Battaglia, true:Errore durante l'eliminazione della partita}}",
+  deleteBattle: 'Elimina partita',
+  deleteBattleConfirmText: 'Sei sicuro di voler eliminare questa partita?',
+  deleteBattleError: "Errore durante l'eliminazione della partita",
   deleteCheckinError: "Errore nell'eliminazione del check-in",
   deleteDepartment: 'Elimina Dipartimento',
   deleteDepartmentConfirmText:
@@ -198,10 +189,8 @@ const it: Translation = {
   returnToLogin: 'Return to Login',
   getAlertsError: 'Errore durante il recupero degli avvisi',
   getApikeysError: 'Errore durante il recupero delle chiavi API',
-  getBattleError:
-    '{friendly|{false:Errore durante la visualizzazione della Battaglia, true:Errore durante il recupero delle partite}}',
-  getBattlesError:
-    '{friendly|{false:Errore durante la visualizzazione delle Battaglie, true:Errore durante il recupero delle partite}}',
+  getBattleError: 'Errore durante il recupero delle partite',
+  getBattlesError: 'Errore durante il recupero delle partite',
   getCheckinsError: 'Errore nel recupero dei check-in',
   getOrganizationsError: "Errore durante l'ottenimento delle organizzazioni",
   getRetroErrorMessage: 'errore nel recupero del retro',
@@ -218,12 +207,10 @@ const it: Translation = {
   hostedDesc:
     '{linkOpen}Thunderdome.dev{linkClose} è un servizio ospitato gratuito (SaaS) senza pubblicità.',
   hostedOrSelfHosted: 'Servizio Ospitato o Auto-Ospitato',
-  importCsv:
-    '{friendly|{false:Importa piani da un file CSV, true:Import stories from a CSV file}}',
+  importCsv: 'Import stories from a CSV file',
   importCsvFileBadFileTypeError: 'Errore Tipo di file cattivo',
   importCsvFileReadFileError: 'File di lettura degli errori',
-  importJiraXML:
-    '{friendly|{false:Importa piani da Jira XML, true:Importa storie da Jira XML}}',
+  importJiraXML: 'Importa storie da Jira XML',
   importJiraXMLBadFileTypeError: 'Errore Tipo di file cattivo',
   importJiraXMLReadFileError: 'Errore di lettura del file ',
   incorrectPassCode: 'Codice di accesso errato',
@@ -238,17 +225,13 @@ const it: Translation = {
   joinRetro: 'Partecipa al retro',
   joinStoryboard: 'Partecipa allo storyboard',
   joinStoryboardError: "Errore nell'unirsi al storyboard, ricarica e riprova.",
-  landingCountries: {
-    true: 'Utenti in oltre {count} paesi',
-    false: 'Guerrieri in oltre {count} paesi',
-  },
+  landingCountries: 'Utenti in oltre {count} paesi',
   landingFeatureOpenSourceText:
     "Dai un'occhiata al{repoOpen}Github repository{repoClose}per richiedere o contribuire a miglioramenti, traduzioni locali e correzioni di bug o a{donateOpen}Donate{donateClose}.",
   landingFeatureOpenSourceTitle: 'Open source',
   landingSalesPitch:
     'Remote team collaboration with agile story pointing, sprint retrospective, story mapping and async team check-in.',
-  landingTitle:
-    "{friendly|{false:Thunderdome è un'app Agile Planning Poker con un tema divertente, true:Thunderdome è un'app di Agile Planning Poker}}",
+  landingTitle: "Thunderdome è un'app di Agile Planning Poker",
   lastActive: 'Ultima Attività',
   leader: 'Leader',
   leaderPasscode: 'Codice del Leader',
@@ -262,8 +245,7 @@ const it: Translation = {
   loginForStoryboard:
     'o {loginOpen}Accedi{loginClose} per partecipare allo storyboard',
   logout: 'Disconnettersi',
-  logoutError:
-    "{friendly|{false:Si è verificato un errore durante il logout del guerriero, true:Si è verificato un errore durante il logout dell'utente}}",
+  logoutError: "Si è verificato un errore durante il logout dell'utente",
   makeFacilitator: 'Rendi Facilitatore',
   mfa2faLabel: 'Autenticazione 2FA/MFA',
   mfa2faRemove: 'Rimuovi 2FA/MFA',
@@ -287,8 +269,7 @@ const it: Translation = {
   needsImprovement: 'Migliorabile',
   nextPhase: 'Prossima azione',
   noComments: 'Nessun commento...',
-  oldBattleCleanError:
-    '{friendly|{false:Errore durante la pulizia delle Battaglie vecchie, true:Errore durante la pulizia delle partite}}',
+  oldBattleCleanError: 'Errore durante la pulizia delle partite',
   oldGuestsCleanError: 'Errore durante la pulizia degli ospiti',
   oldRetrosCleanError: "Errore durante l'eliminazione dei retros.",
   oldStoryboardsCleanError: "Errore durante l'eliminazione dei storyboards.",
@@ -320,17 +301,15 @@ const it: Translation = {
   personas: 'Persona',
   planAcceptanceCriteria: 'Criteri di accettazione',
   planAcceptanceCriteriaPlaceholder: 'Immettere i criteri di accettazione',
-  planAdd: '{friendly|{false:Aggiungi Piano, true:Aggiungi Storia}}',
+  planAdd: 'Aggiungi Storia',
   planDescription: 'Descrizione',
   planDescriptionPlaceholder: 'Immettere una descrizione',
   planLink: 'Link',
   planLinkInvalid:
     'Link non è un URL assoluto valido, ad es.Include il protocollo (http/https) ',
-  planLinkPlaceholder:
-    '{friendly|{false:Inserisci un link al piano, true:Inserisci un link alla storia}}',
-  planName: '{friendly|{false:Nome Piano, true:Nome Storia}}',
-  planNamePlaceholder:
-    '{friendly|{false:Inserisci un nome per il piano, true:Inserisci un nome per la storia}}',
+  planLinkPlaceholder: 'Inserisci un link alla storia',
+  planName: 'Nome Storia',
+  planNamePlaceholder: 'Inserisci un nome per la storia',
   planPriority: 'Priorità',
   planPriorityBlocker: 'Blocker',
   planPriorityHigh: 'Alto',
@@ -341,9 +320,9 @@ const it: Translation = {
   planPriorityPlaceholder: 'Seleziona una priorità',
   planReferenceId: 'ID di riferimento',
   planReferenceIdPlaceholder: 'Immettere un ID di riferimento',
-  plans: '{friendly|{false:Piani di Battaglia, true:Storie}}',
-  planSkip: '{friendly|{false:Salta Piano, true:Salta Storia}}',
-  planType: '{friendly|{false:Tipo Piano, true:Tipo Storia}}',
+  plans: 'Storie',
+  planSkip: 'Salta Storia',
+  planType: 'Tipo Storia',
   planTypeBug: 'Bug',
   planTypeEpic: 'Epic',
   planTypePlaceholder: 'Types',
@@ -364,9 +343,8 @@ const it: Translation = {
   reloadingRetro: 'Oops, ricaricamento della retrospettiva...',
   reloadingStoryboard: 'Oops, ricaricamento del storyboard...',
   remove: 'Rimuovi',
-  removeBattle: '{friendly|{false:Rimuovi Battaglia, true:Rimuovi partita}}',
-  removeBattleConfirmText:
-    '{friendly|{false:Sei sicuro di voler rimuovere questa Battaglia?, true:Sei sicuro di voler rimuovere questa partita?}}',
+  removeBattle: 'Rimuovi partita',
+  removeBattleConfirmText: 'Sei sicuro di voler rimuovere questa partita?',
   removeRetro: 'Rimuovi Retrospettiva',
   removeRetroConfirmText: 'Sei sicuro di voler rimuovere questa retrospettiva?',
   removeStoryboard: 'Rimuovi Storyboard',
@@ -411,10 +389,8 @@ const it: Translation = {
   selectTeam: 'Seleziona un Team',
   selfHostedDesc:
     'In alternativa, puoi {linkOpen}eseguirlo sul tuo server{linkClose}.',
-  sessionDuplicate:
-    '{friendly|{false:Esiste già una sessione di battaglia duplicata per il tuo ID, true:Esiste una sessione di gioco duplicata per il tuo ID}}',
-  showActiveBattles:
-    '{friendly|{false:Mostra Battaglie Attive, true:Mostra partite attive}}',
+  sessionDuplicate: 'Esiste una sessione di gioco duplicata per il tuo ID',
+  showActiveBattles: 'Mostra partite attive',
   showActiveRetros: 'Mostra i retros attivi',
   showActiveStoryboards: 'Mostra gli storyboard attivi',
   showBlockedCheckins: 'Mostra solo checkin che richiedono discussione',
@@ -446,8 +422,7 @@ const it: Translation = {
   teamCreateSuccess: 'Team creato con successo',
   teamDeleteError: "Errore durante l'eliminazione del team",
   teamDeleteSuccess: 'Team eliminato con successo',
-  teamGetBattlesError:
-    '{friendly|{false:Errore durante la visualizzazione delle Battaglie del team, true:Errore durante il recupero delle partite del team}}',
+  teamGetBattlesError: 'Errore durante il recupero delle partite del team',
   teamGetError: 'Errore durante il recupero del team',
   teamGetRetroActionsError: 'errore nel recupero delle azioni del retro',
   teamGetRetrosError:
@@ -468,8 +443,7 @@ const it: Translation = {
   totalPoints: 'Totale',
   totalVotes: 'Voti Totali',
   type: 'Tipo',
-  unknownWarrior:
-    '{friendly|{false:Guerriero sconosciuto, true:Giocatore sconosciuto}}',
+  unknownWarrior: 'Giocatore sconosciuto',
   unpointed: 'Non puntato ({count})',
   updateActionItemError: "Errore nell'aggiornamento dell'elemento azione",
   updateActionItemSuccess: 'Elemento azione aggiornato con successo',
@@ -502,9 +476,8 @@ const it: Translation = {
   votingFinish: 'Finire il voto',
   votingLocked: 'Votazione Bloccata',
   votingRestart: 'Riavvia il voto',
-  warriorCreate: '{friendly|{false:Crea Guerriero, true:Crea Utente}}',
-  warriorInvite:
-    '{friendly|{false:Invita un Guerriero, true:Invita un giocatore}}',
+  warriorCreate: 'Crea Utente',
+  warriorInvite: 'Invita un giocatore',
   warriorNudge: 'Spuntare',
   works: 'Funziona',
   writeCommentPlaceholder: 'Scrivi un commento...',
@@ -512,11 +485,10 @@ const it: Translation = {
   yesterdayPlaceholder: 'Ieri ho...',
   yourRetros: 'I tuoi retros',
   yourStoryboards: 'I tuoi storyboard',
-  addPlan: '{friendly|{false:Aggiungi Piano, true:Aggiungi storia}}',
-  battleNamePlaceholder:
-    '{friendly|{false:Inserisci un nome per la battaglia, true:Inserisci il nome della partita}}',
+  addPlan: 'Aggiungi storia',
+  battleNamePlaceholder: 'Inserisci il nome della partita',
   autoFinishVotingLabel:
-    '{friendly|{false:Termina automaticamente il voto quando tutti i guerrieri hanno votato, true:Termina automaticamente il voto quando tutti i giocatori hanno votato}}',
+    'Termina automaticamente il voto quando tutti i giocatori hanno votato',
   averageRoundingOptions: {
     ceil: 'Ceil',
     floor: 'Floor',
@@ -562,36 +534,23 @@ const it: Translation = {
   company: 'Azienda',
   verified: 'Verificato',
   registeredUsers: 'Registered Users',
-  myBattles: '{friendly|{false:Le mie Battaglie, true:Mie partite}}',
-  createBattle: '{friendly|{false:Crea una Battaglia, true:Crea una partita}}',
-  countPlansPointed: {
-    true: '{totalPointed} di {totalPlans} storie puntate',
-    false: '{totalPointed} di {totalPlans} piani assegnati',
-  },
-  myBattlesError:
-    '{friendly|{false:Si è verificato un errore nel trovare le tue battaglie, true:Errore durante la ricerca delle tue partite}}',
-  warriorJoined: {
-    true: '{name} si è unito alla partita',
-    false: '{name} si è unito alla Battaglia',
-  },
-  warriorRetreated: {
-    true: '{name} ha lasciato la partita',
-    false: '{name} si è ritirato dalla Battaglia',
-  },
-  planSkipped: '{friendly|{false:Piano saltato, true:Storia saltata}}',
+  myBattles: 'Mie partite',
+  createBattle: 'Crea una partita',
+  countPlansPointed: '{totalPointed} di {totalPlans} storie puntate',
+  myBattlesError: 'Errore durante la ricerca delle tue partite',
+  warriorJoined: '{name} si è unito alla partita',
+  warriorRetreated: '{name} ha lasciato la partita',
+  planSkipped: 'Storia saltata',
   warriorVoted: '{name} havotato',
   warriorRetractedVote: '{name} haritirato il voto',
-  battleDeleted:
-    '{friendly|{false:Battaglia eliminata, true:Partita eliminata}}',
+  battleDeleted: 'Partita eliminata',
   warriorNudgeMessage: 'pst... {name}, ti stiamo aspettando per il voto.',
-  battle: '{friendly|{false:Battaglia, true:Partita}}',
-  warriors: '{friendly|{false:Guerrieri, true:Giocatori}}',
-  battleSocketReconnecting:
-    '{friendly|{false:Ops, ricarico i Piani di Battaglia..., true:Ops, caricamento della partita...}}',
+  battle: 'Partita',
+  warriors: 'Giocatori',
+  battleSocketReconnecting: 'Ops, caricamento della partita...',
   battleSocketError:
-    '{friendly|{false:Errore durante la connessione alla Battaglia ricarica la pagina e riprova., true:Errore durante la connessione alla partita ricaricare e riprovare.}}',
-  battleLoading:
-    '{friendly|{false:Caricamento Piani di Battaglia..., true:Caricamento partita...}}',
+    'Errore durante la connessione alla partita ricaricare e riprovare.',
+  battleLoading: 'Caricamento partita...',
   votingNotStarted: 'l voto non è ancora iniziato',
   password: 'Password',
   passwordPlaceholder: 'Enter a password',
@@ -608,10 +567,7 @@ const it: Translation = {
   guestRegisterError: 'Error encountered trying to register as guest',
   registerError: 'Error encountered trying to register account',
   enlistToBattle: 'Enlist to Battle',
-  loginForBattle: {
-    true: 'or {loginOpen}Login{loginClose} to join the Game',
-    false: 'or {loginOpen}Login{loginClose} to join the Battle',
-  },
+  loginForBattle: 'or {loginOpen}Login{loginClose} to join the Game',
   yourNamePlaceholder: 'Enter your name',
   createAccountFormTitle:
     'Create an Account {optionalOpen}(optional){optionalClose}',
@@ -622,19 +578,15 @@ const it: Translation = {
   companyPlaceholder: 'Enter your company (optional)',
   jobTitle: 'Job Title',
   jobTitlePlaceholder: 'Enter your job title (optional)',
-  enableBattleNotifications:
-    '{friendly|{false:Enable battle notifications, true:Enable game notifications}}',
+  enableBattleNotifications: 'Enable game notifications',
   avatar: 'Avatar',
   updateProfile: 'Update Profile',
   guestUsers: 'Guest Users',
   maintenance: 'Maintenance',
   cleanGuests: 'Clean Guests older than {daysOld} days',
-  cleanBattles: {
-    true: 'Clean Games older than {daysOld} days',
-    false: 'Clean Battles older than {daysOld} days',
-  },
+  cleanBattles: 'Clean Games older than {daysOld} days',
   chooseLocalePlaceholder: 'Choose your preferred locale (optional)',
-  importPlans: '{friendly|{false:Import Plans, true:Import Stories}}',
+  importPlans: 'Import Stories',
   selectFile: 'Select file...',
   theme: 'Theme',
   assignees: 'Assignees',
@@ -659,6 +611,21 @@ const it: Translation = {
   orgUpdateError: 'Error updating Organization',
   deptUpdateSuccess: 'Department updated successfully',
   deptUpdateError: 'Error updating Department',
+  hideVoterIdentity: 'Hide Voter Identity',
+  storyboardName: 'Storyboard Name',
+  storyboardNamePlaceholder: 'Enter a storyboard name',
+  retroPhaseTimeLimitMinLabel: 'Brainstorm Phase time limit in minutes',
+  phaseAutoAdvanceLabel: 'Automatically advance phases',
+  removeOnlyFacilitatorError: "Can't remove the only facilitator",
+  noGamesFound: 'No games found, try creating one.',
+  noRetrosFound: 'No retros found, try creating one.',
+  noStoryboardsFound: 'No storyboards found, try creating one.',
+  retroDescription:
+    'A sprint retrospective is a review conducted after a sprint that plays a key role in the Agile methodology. A sprint retrospective aims to determine what went well and where you had problems and identify areas where you can improve.',
+  pokerDescription:
+    'Scrum poker, also known as “planning poker” and “pointing poker”, is a gamified technique that development teams use to guess the effort of project management tasks. These estimations are based on the entire group’s input and consensus, making them more engaging and accurate than other methods.',
+  storyboardDescription:
+    'User story mapping (storyboard) is a visualization of the journey a customer takes with a product, from beginning to end. It includes all the tasks they’d typically complete as part of that journey.',
 };
 
 export default it;

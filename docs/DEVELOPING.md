@@ -84,7 +84,7 @@ npm run autobuild --prefix ui
 make dev-go
 ```
 
-## Let the Pointing Battles begin!
+## Let the Pointing Games begin!
 
 Run the server and visit [http://localhost:8080](http://localhost:8080)
 

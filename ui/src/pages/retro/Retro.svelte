@@ -25,6 +25,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import UserAvatar from '../../components/user/UserAvatar.svelte';
   import TextInput from '../../components/forms/TextInput.svelte';
+  import PhaseTimer from '../../components/retro/PhaseTimer.svelte';
 
   export let retroId;
   export let notifications;
@@ -43,6 +44,9 @@
     name: '',
     ownerId: '',
     phase: 'brainstorm',
+    phase_time_limit_min: 0,
+    phase_time_start: new Date(),
+    phase_auto_advance: false,
     users: [],
     items: [],
     groups: [],
@@ -63,6 +67,8 @@
   let joinPasscode = '';
   let voteLimitReached = false;
   let showEditRetro = false;
+  let phaseTimeStart = new Date();
+  let phaseTimeLimitMin = 0;
 
   function organizeItemsByGroup() {
     const groupMap = retro.groups.reduce((prev, g) => {
@@ -123,6 +129,8 @@
         if (retro.phase != 'brainstorm') {
           groupedItems = organizeItemsByGroup();
         }
+        phaseTimeStart = new Date(retro.phase_time_start);
+        phaseTimeLimitMin = retro.phase_time_limit_min;
         eventTag('join', 'retro', '');
         break;
       case 'user_joined': {
@@ -138,10 +146,6 @@
         notifications.danger(`${leftUser.name} left.`);
         break;
       }
-      case 'retro_updated':
-        retro = JSON.parse(parsedEvent.value);
-        groupedItems = organizeItemsByGroup();
-        break;
       case 'phase_updated':
         let r = JSON.parse(parsedEvent.value);
         retro.items = r.items;
@@ -149,6 +153,11 @@
         retro.votes = r.votes;
         retro.actionItems = r.actionItems;
         retro.phase = r.phase;
+        retro.phase_time_start = new Date(r.phase_time_start);
+        retro.phase_time_limit_min = r.phase_time_limit_min;
+        retro.readyUsers = [];
+        phaseTimeStart = new Date(r.phase_time_start);
+
         groupedItems = organizeItemsByGroup();
         break;
       case 'items_updated': {
@@ -162,7 +171,7 @@
       case 'user_marked_ready': {
         const readyUser = retro.users.find(w => w.id === parsedEvent.userId);
         retro.readyUsers = JSON.parse(parsedEvent.value);
-
+        phaseReadyCheck();
         notifications.success(`${readyUser.name} is done brainstorming.`);
         break;
       }
@@ -178,13 +187,10 @@
       case 'item_moved': {
         const parsedValue = JSON.parse(parsedEvent.value);
         const updatedItems = [...retro.items];
-        console.log(updatedItems);
         const idx = updatedItems.findIndex(item => {
           return item.id === parsedValue.id;
         });
-        console.log(idx);
         updatedItems[idx].groupId = parsedValue.groupId;
-        console.log(updatedItems);
         retro.items = updatedItems;
         groupedItems = organizeItemsByGroup();
         break;
@@ -230,6 +236,7 @@
         retro.joinCode = revisedRetro.joinCode;
         retro.brainstormVisibility = revisedRetro.brainstormVisibility;
         retro.maxVotes = revisedRetro.maxVotes;
+        retro.phase_auto_advance = revisedRetro.phase_auto_advance;
         break;
       case 'conceded':
         // retro over, goodbye.
@@ -488,6 +495,11 @@
   };
 
   const handleRemoveFacilitator = userId => () => {
+    if (retro.facilitators.length === 1) {
+      notifications.danger($LL.removeOnlyFacilitatorError());
+      return;
+    }
+
     sendSocketEvent(
       'remove_facilitator',
       JSON.stringify({
@@ -519,6 +531,38 @@
     sendSocketEvent('self_facilitator', facilitatorCode);
     eventTag('become_facilitator', 'retro', '');
     toggleBecomeFacilitator();
+  }
+
+  function phaseTimeRanOut() {
+    if (isFacilitator) {
+      sendSocketEvent(
+        'phase_time_ran_out',
+        JSON.stringify({
+          phase: 'group',
+        }),
+      );
+      eventTag('phase_time_ran_out', 'retro', '');
+    }
+  }
+
+  function phaseReadyCheck() {
+    const activeUsers = retro.users.filter(u => u.active);
+    let allReady = retro.readyUsers.length === activeUsers.length;
+
+    if (
+      isFacilitator &&
+      retro.phase_auto_advance &&
+      retro.phase === 'brainstorm' &&
+      allReady
+    ) {
+      sendSocketEvent(
+        'phase_all_ready',
+        JSON.stringify({
+          phase: 'group',
+        }),
+      );
+      eventTag('phase_all_ready', 'retro', '');
+    }
   }
 
   function toggleBecomeFacilitator() {
@@ -597,6 +641,14 @@
                 {$LL.export()}
               {/if}
             </SolidButton>
+          {/if}
+          {#if retro.phase === 'brainstorm' && phaseTimeLimitMin > 0}
+            <PhaseTimer
+              retroId="{retro.id}"
+              timeLimitMin="{phaseTimeLimitMin}"
+              timeStart="{phaseTimeStart}"
+              on:ended="{phaseTimeRanOut}"
+            />
           {/if}
           {#if isFacilitator}
             {#if retro.phase !== 'completed'}
@@ -995,6 +1047,7 @@
     facilitatorCode="{retro.facilitatorCode}"
     maxVotes="{retro.maxVotes}"
     brainstormVisibility="{retro.brainstormVisibility}"
+    phaseAutoAdvance="{retro.phase_auto_advance}"
   />
 {/if}
 

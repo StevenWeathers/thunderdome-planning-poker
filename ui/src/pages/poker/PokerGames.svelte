@@ -5,7 +5,7 @@
   import CreateBattle from '../../components/poker/CreatePokerGame.svelte';
   import { user } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { AppConfig, appRoutes } from '../../config';
+  import { appRoutes } from '../../config';
   import Pagination from '../../components/global/Pagination.svelte';
   import BoxList from '../../components/BoxList.svelte';
 
@@ -18,6 +18,7 @@
   let battleCount = 0;
   let battlesPage = 1;
   let battles = [];
+  let loading = true;
 
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
@@ -29,13 +30,11 @@
       .then(function (result) {
         battles = result.data;
         battleCount = result.meta.count;
+        loading = false;
       })
       .catch(function () {
-        notifications.danger(
-          $LL.myBattlesError({
-            friendly: AppConfig.FriendlyUIVerbs,
-          }),
-        );
+        loading = false;
+        notifications.danger($LL.myBattlesError());
         eventTag('fetch_battles', 'engagement', 'failure');
       });
   }
@@ -55,34 +54,38 @@
 </script>
 
 <svelte:head>
-  <title
-    >{$LL.myBattles({ friendly: AppConfig.FriendlyUIVerbs })} | {$LL.appName()}</title
-  >
+  <title>{$LL.myBattles()} | {$LL.appName()}</title>
 </svelte:head>
 
 <PageLayout>
   <h1
     class="mb-4 text-4xl font-semibold font-rajdhani uppercase dark:text-white"
   >
-    {$LL.myBattles({ friendly: AppConfig.FriendlyUIVerbs })}
+    {$LL.myBattles()}
   </h1>
 
   <div class="flex flex-wrap">
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
-      <BoxList
-        items="{battles}"
-        itemType="battle"
-        pageRoute="{appRoutes.game}"
-        joinBtnText="{$LL.battleJoin({
-          friendly: AppConfig.FriendlyUIVerbs,
-        })}"
-        showOwner="{false}"
-        showOwnerName="{true}"
-        ownerNameField="teamName"
-        showFacilitatorIcon="{true}"
-        facilitatorsKey="leaders"
-        showCompletedStories="{true}"
-      />
+      {#if battleCount > 0}
+        <BoxList
+          items="{battles}"
+          itemType="battle"
+          pageRoute="{appRoutes.game}"
+          joinBtnText="{$LL.battleJoin()}"
+          showOwner="{false}"
+          showOwnerName="{true}"
+          ownerNameField="teamName"
+          showFacilitatorIcon="{true}"
+          facilitatorsKey="leaders"
+          showCompletedStories="{true}"
+        />
+      {:else if loading === false}
+        <div
+          class="w-full my-10 text-lg md:text-xl dark:text-white text-center"
+        >
+          {$LL.noGamesFound()}
+        </div>
+      {/if}
       {#if battleCount > battlesPageLimit}
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
@@ -102,7 +105,7 @@
         <h2
           class="mb-4 text-3xl font-semibold font-rajdhani uppercase leading-tight"
         >
-          {$LL.createBattle({ friendly: AppConfig.FriendlyUIVerbs })}
+          {$LL.createBattle()}
         </h2>
         <CreateBattle
           notifications="{notifications}"
@@ -112,5 +115,9 @@
         />
       </div>
     </div>
+  </div>
+
+  <div class="w-full text-gray-600 dark:text-gray-300">
+    <p class="py-8 md:text-lg italic">{$LL.pokerDescription()}</p>
   </div>
 </PageLayout>

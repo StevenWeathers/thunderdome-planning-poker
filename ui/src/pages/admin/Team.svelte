@@ -125,11 +125,7 @@
           battles = result.data;
         })
         .catch(function () {
-          notifications.danger(
-            $LL.teamGetBattlesError({
-              friendly: AppConfig.FriendlyUIVerbs,
-            }),
-          );
+          notifications.danger($LL.teamGetBattlesError());
         });
     }
   }
@@ -302,9 +298,7 @@
             <h2
               class="text-2xl font-semibold font-rajdhani uppercase mb-4 dark:text-white"
             >
-              {$LL.battles({
-                friendly: AppConfig.FriendlyUIVerbs,
-              })}
+              {$LL.battles()}
             </h2>
           </div>
         </div>
@@ -324,9 +318,7 @@
                 </div>
                 <div class="w-full md:w-1/2 md:mb-0 md:text-right">
                   <HollowButton href="{appRoutes.game}/{battle.id}">
-                    {$LL.battleJoin({
-                      friendly: AppConfig.FriendlyUIVerbs,
-                    })}
+                    {$LL.battleJoin()}
                   </HollowButton>
                 </div>
               </div>

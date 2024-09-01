@@ -187,140 +187,143 @@
 </script>
 
 <Modal closeModal="{toggleImport}" widthClasses="md:w-full md:mx-4 lg:w-3/5">
-  <div class="dark:text-gray-300">
-    <h3 class="font-bold mb-2 text-xl">Import from Jira Cloud</h3>
-    {#if AppConfig.SubscriptionsEnabled && !$user.subscribed}
-      <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
-        Must be <a
-          href="{appRoutes.subscriptionPricing}"
-          class="underline"
-          target="_blank">subscribed</a
-        >
-        to import from Jira Cloud.
-      </p>
-    {:else if jiraInstances.length === 0}
-      <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
-        Visit your <a
-          href="{appRoutes.profile}"
-          class="underline"
-          target="_blank">profile page</a
-        > to setup instances of Jira Cloud.
-      </p>
-    {:else}
-      <div class="mb-4">
-        <SelectInput
-          id="jirainstance"
-          bind:value="{selectedJiraInstance}"
-          on:change="{displayJiraCloudSearch}"
-        >
+  <div class="mt-8 mb-4">
+    <div class="mb-4 dark:text-gray-300">
+      <h3 class="font-bold mb-2 text-xl">Import from Jira Cloud</h3>
+      {#if AppConfig.SubscriptionsEnabled && !$user.subscribed}
+        <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
+          Must be <a
+            href="{appRoutes.subscriptionPricing}"
+            class="underline"
+            target="_blank">subscribed</a
           >
-          <option value="" disabled
-            >Select Jira Instance to import from
-          </option>
-          {#each jiraInstances as ji, idx}
-            <option value="{idx}">{ji.host}</option>
-          {/each}
-        </SelectInput>
-      </div>
-
-      {#if showJiraCloudSearch}
-        <form on:submit="{handleJQLSearch}" class="mb-4">
-          <label
-            for="jql-search"
-            class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-            >Search</label
+          to import from Jira Cloud.
+        </p>
+      {:else if jiraInstances.length === 0}
+        <p class="bg-yellow-thunder text-gray-900 p-4 rounded font-bold">
+          Visit your <a
+            href="{appRoutes.profile}"
+            class="underline"
+            target="_blank">profile page</a
+          > to setup instances of Jira Cloud.
+        </p>
+      {:else}
+        <div class="mb-4">
+          <SelectInput
+            id="jirainstance"
+            bind:value="{selectedJiraInstance}"
+            on:change="{displayJiraCloudSearch}"
           >
-          <div class="relative">
-            <div
-              class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
             >
-              <svg
-                class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"></path>
-              </svg>
-            </div>
-            <input
-              type="search"
-              id="jql-search"
-              class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Enter Search JQL..."
-              bind:value="{searchJQL}"
-              required
-            />
-            <button
-              type="submit"
-              class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Search
-            </button>
-          </div>
-        </form>
-
-        <div class="flex flex-wrap">
-          {#if jqlError !== ''}
-            <div
-              class="p-4 bg-red-50 border-red-500 text-red-800 font-semibold rounded"
-            >
-              {jqlError}
-            </div>
-          {/if}
-          {#each jiraStories as story, idx}
-            <div
-              class="p-2 w-full flex flex-wrap justify-between bg-gray-200 dark:bg-gray-900 dark:text-white rounded shadow mb-2 items-center"
-            >
-              <div>
-                [{story.key}] {story.fields.summary}
-              </div>
-              <div>
-                <SolidButton onClick="{importStory(idx)}">Import</SolidButton>
-              </div>
-            </div>
-          {/each}
+            <option value="" disabled
+              >Select Jira Instance to import from
+            </option>
+            {#each jiraInstances as ji, idx}
+              <option value="{idx}">{ji.host}</option>
+            {/each}
+          </SelectInput>
         </div>
+
+        {#if showJiraCloudSearch}
+          <form on:submit="{handleJQLSearch}" class="mb-4">
+            <label
+              for="jql-search"
+              class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+              >Search</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+              >
+                <svg
+                  class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"></path>
+                </svg>
+              </div>
+              <input
+                type="search"
+                id="jql-search"
+                class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Enter Search JQL..."
+                bind:value="{searchJQL}"
+                required
+              />
+              <button
+                type="submit"
+                class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+
+          <div class="flex flex-wrap">
+            {#if jqlError !== ''}
+              <div
+                class="p-4 bg-red-50 border-red-500 text-red-800 font-semibold rounded"
+              >
+                {jqlError}
+              </div>
+            {/if}
+            {#each jiraStories as story, idx}
+              <div
+                class="p-2 w-full flex flex-wrap justify-between bg-gray-200 dark:bg-gray-900 dark:text-white rounded shadow mb-2 items-center"
+              >
+                <div>
+                  [{story.key}] {story.fields.summary}
+                </div>
+                <div>
+                  <SolidButton onClick="{importStory(idx)}">Import</SolidButton>
+                </div>
+              </div>
+            {/each}
+          </div>
+        {/if}
       {/if}
+    </div>
+
+    {#if !showJiraCloudSearch}
+      <div class="md:grid md:grid-cols-2 md:gap-4">
+        <div class="mb-4">
+          <h3 class="font-bold mb-2 dark:text-gray-300 text-lg">
+            {$LL.importJiraXML()}
+          </h3>
+          <JiraImport
+            handlePlanAdd="{handleAdd}"
+            notifications="{notifications}"
+            eventTag="{eventTag}"
+            testid="plans-importjira"
+          />
+        </div>
+        <div class="mb-4">
+          <h3 class="font-bold mb-2 dark:text-gray-300 text-lg">
+            {$LL.importCsv()}
+          </h3>
+          <p class="dark:text-gray-400 mb-2">
+            The CSV file must include all the following fields with no header
+            row:
+          </p>
+          <div class="mb-2 dark:text-gray-300">
+            Type,Title,ReferenceId,Link,Description,AcceptanceCriteria
+          </div>
+          <CsvImport
+            handlePlanAdd="{handleAdd}"
+            notifications="{notifications}"
+            eventTag="{eventTag}"
+            testid="plans-Csvimport"
+          />
+        </div>
+      </div>
     {/if}
   </div>
-
-  {#if !showJiraCloudSearch}
-    <div class="md:grid md:grid-cols-2 md:gap-4">
-      <div class="mb-4">
-        <h3 class="font-bold mb-2 dark:text-gray-300 text-lg">
-          {$LL.importJiraXML({ friendly: AppConfig.FriendlyUIVerbs })}
-        </h3>
-        <JiraImport
-          handlePlanAdd="{handleAdd}"
-          notifications="{notifications}"
-          eventTag="{eventTag}"
-          testid="plans-importjira"
-        />
-      </div>
-      <div>
-        <h3 class="font-bold mb-2 dark:text-gray-300 text-lg">
-          {$LL.importCsv({ friendly: AppConfig.FriendlyUIVerbs })}
-        </h3>
-        <p class="dark:text-gray-400 mb-2">
-          The CSV file must include all the following fields with no header row:
-        </p>
-        <div class="mb-2 dark:text-gray-300">
-          Type,Title,ReferenceId,Link,Description,AcceptanceCriteria
-        </div>
-        <CsvImport
-          handlePlanAdd="{handleAdd}"
-          notifications="{notifications}"
-          eventTag="{eventTag}"
-          testid="plans-Csvimport"
-        />
-      </div>
-    </div>
-  {/if}
 </Modal>

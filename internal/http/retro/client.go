@@ -30,6 +30,8 @@ var ownerOnlyOperations = map[string]struct{}{
 	"remove_facilitator": {},
 	"edit_retro":         {},
 	"concede_retro":      {},
+	"phase_time_ran_out": {},
+	"phase_all_ready":    {},
 }
 
 // connection is a middleman between the websocket connection and the hub.

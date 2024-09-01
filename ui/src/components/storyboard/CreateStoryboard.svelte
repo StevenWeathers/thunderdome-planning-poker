@@ -20,6 +20,9 @@
   let selectedTeam = '';
   let teams = [];
 
+  /** @type {TextInput} */
+  let storyboardNameTextInput;
+
   function createStoryboard(e) {
     e.preventDefault();
     let endpoint = `${apiPrefix}/users/${$user.id}/storyboards`;
@@ -70,6 +73,9 @@
       router.route(appRoutes.register);
     }
     getTeams();
+
+    // Focus the storyboard name input field
+    storyboardNameTextInput.focus();
   });
 </script>
 
@@ -79,13 +85,14 @@
       class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
       for="storyboardName"
     >
-      Storyboard Name
+      {$LL.storyboardName()}
     </label>
     <div class="control">
       <TextInput
         name="storyboardName"
         bind:value="{storyboardName}"
-        placeholder="Enter a storyboard name"
+        bind:this="{storyboardNameTextInput}"
+        placeholder="{$LL.storyboardNamePlaceholder()}"
         id="storyboardName"
         required
       />
@@ -152,6 +159,6 @@
   </div>
 
   <div class="text-right">
-    <SolidButton type="submit">Create Storyboard</SolidButton>
+    <SolidButton type="submit">{$LL.createStoryboard()}</SolidButton>
   </div>
 </form>
