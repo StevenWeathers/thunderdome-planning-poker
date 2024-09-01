@@ -426,6 +426,19 @@ func (d *Service) RetroFacilitatorAdd(RetroID string, UserID string) ([]string, 
 
 // RetroFacilitatorRemove removes a retro facilitator
 func (d *Service) RetroFacilitatorRemove(RetroID string, UserID string) ([]string, error) {
+	facilitatorCount := 0
+	err := d.DB.QueryRow(
+		`SELECT count(user_id) FROM thunderdome.retro_facilitator WHERE retro_id = $1;`,
+		RetroID,
+	).Scan(&facilitatorCount)
+	if err != nil {
+		return nil, fmt.Errorf("retro remove facilitator query error: %v", err)
+	}
+
+	if facilitatorCount == 1 {
+		return nil, fmt.Errorf("ONLY_FACILITATOR")
+	}
+
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2;`,
 		RetroID, UserID); err != nil {

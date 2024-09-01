@@ -586,6 +586,7 @@ const fa: Translation = {
   storyboardNamePlaceholder: 'Enter a storyboard name',
   retroPhaseTimeLimitMinLabel: 'Brainstorm Phase time limit in minutes',
   phaseAutoAdvanceLabel: 'Automatically advance phases',
+  removeOnlyFacilitatorError: "Can't remove the only facilitator",
 };
 
 export default fa;
