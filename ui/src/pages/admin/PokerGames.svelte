@@ -109,7 +109,7 @@
           <TableRow itemIndex="{i}">
             <RowCol>
               <a
-                href="{appRoutes.admin}/battles/{battle.id}"
+                href="{appRoutes.adminPokerGames}/{battle.id}"
                 class="text-blue-500 hover:text-blue-800 dark:text-sky-400 dark:hover:text-sky-600"
                 >{battle.name}</a
               >
