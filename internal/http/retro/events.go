@@ -301,6 +301,27 @@ func (b *Service) AdvancePhase(ctx context.Context, RetroID string, UserID strin
 	return msg, nil, false
 }
 
+// PhaseTimeout advances a retro phase after time countdown
+func (b *Service) PhaseTimeout(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		Phase string `json:"phase"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
+
+	retro, err := b.RetroService.RetroAdvancePhase(RetroID, rs.Phase)
+	if err != nil {
+		return nil, err, false
+	}
+
+	updatedItems, _ := json.Marshal(retro)
+	msg := createSocketEvent("phase_updated", string(updatedItems), "")
+
+	return msg, nil, false
+}
+
 // FacilitatorAdd adds a user as facilitator of the retro
 func (b *Service) FacilitatorAdd(ctx context.Context, RetroID string, UserID string, EventValue string) ([]byte, error, bool) {
 	var rs struct {

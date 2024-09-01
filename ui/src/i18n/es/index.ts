@@ -584,6 +584,7 @@ const es: Translation = {
   hideVoterIdentity: 'Hide Voter Identity',
   storyboardName: 'Storyboard Name',
   storyboardNamePlaceholder: 'Enter a storyboard name',
+  retroPhaseTimeLimitMinLabel: 'Brainstorm Phase time limit in minutes',
 };
 
 export default es;

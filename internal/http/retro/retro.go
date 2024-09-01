@@ -83,6 +83,7 @@ func New(
 		"action_assignee_add":    rs.ActionAddAssignee,
 		"action_assignee_remove": rs.ActionRemoveAssignee,
 		"advance_phase":          rs.AdvancePhase,
+		"phase_time_ran_out":     rs.PhaseTimeout,
 		"add_facilitator":        rs.FacilitatorAdd,
 		"remove_facilitator":     rs.FacilitatorRemove,
 		"self_facilitator":       rs.FacilitatorSelf,

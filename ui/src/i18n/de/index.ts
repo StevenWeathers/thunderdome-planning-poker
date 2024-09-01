@@ -622,6 +622,7 @@ const de: Translation = {
   hideVoterIdentity: 'Identität des Schätzers verbergen',
   storyboardName: 'Storyboard Name',
   storyboardNamePlaceholder: 'Geben Sie einen Storyboard-Namen ein',
+  retroPhaseTimeLimitMinLabel: 'Brainstorm Phase time limit in minutes',
 };
 
 export default de;

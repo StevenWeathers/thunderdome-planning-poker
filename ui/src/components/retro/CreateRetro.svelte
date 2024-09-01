@@ -14,6 +14,8 @@
   export let router;
   export let apiPrefix = '/api';
 
+  const maxPhaseTimeLimitMin = 59;
+
   let retroName = '';
   let joinCode = '';
   let facilitatorCode = '';
@@ -21,6 +23,7 @@
   let brainstormVisibility = 'visible';
   let teams = [];
   let selectedTeam = '';
+  let phaseTimeLimitMin = 0;
 
   /** @type {TextInput} */
   let retroNameTextInput;
@@ -43,6 +46,12 @@
   function createRetro(e) {
     e.preventDefault();
     let endpoint = `${apiPrefix}/users/${$user.id}/retros`;
+
+    if (phaseTimeLimitMin > maxPhaseTimeLimitMin || phaseTimeLimitMin < 0) {
+      notifications.danger('Phase Time Limit minutes must be between 0-59');
+      return;
+    }
+
     const body = {
       retroName,
       format: 'worked_improve_question',
@@ -50,6 +59,7 @@
       facilitatorCode,
       maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
+      phaseTimeLimitMin: parseInt(`${phaseTimeLimitMin}`, 10),
     };
 
     if (selectedTeam !== '') {
@@ -216,6 +226,26 @@
         </option>
       {/each}
     </SelectInput>
+  </div>
+
+  <div class="mb-4">
+    <label
+      class="block text-gray-700 dark:text-gray-400 text-sm font-bold mb-2"
+      for="phaseTimeLimitMin"
+    >
+      {$LL.retroPhaseTimeLimitMinLabel()}
+    </label>
+    <div class="control">
+      <TextInput
+        name="phaseTimeLimitMin"
+        bind:value="{phaseTimeLimitMin}"
+        id="phaseTimeLimitMin"
+        type="number"
+        min="0"
+        max="{maxPhaseTimeLimitMin}"
+        required
+      />
+    </div>
   </div>
 
   <div class="text-right">
