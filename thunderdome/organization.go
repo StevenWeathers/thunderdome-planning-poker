@@ -18,6 +18,11 @@ type UserOrganization struct {
 	Role string `json:"role"`
 }
 
+type UserDepartment struct {
+	Department
+	Role string `json:"role"`
+}
+
 type OrganizationUser struct {
 	Id           string `json:"id"`
 	Name         string `json:"name"`
@@ -38,10 +43,11 @@ type OrganizationUserInvite struct {
 }
 
 type Department struct {
-	Id          string    `json:"id"`
-	Name        string    `json:"name"`
-	CreatedDate time.Time `json:"createdDate"`
-	UpdatedDate time.Time `json:"updatedDate"`
+	Id             string    `json:"id"`
+	Name           string    `json:"name"`
+	OrganizationId string    `json:"organization_id"`
+	CreatedDate    time.Time `json:"createdDate"`
+	UpdatedDate    time.Time `json:"updatedDate"`
 }
 
 type DepartmentUser struct {
@@ -54,6 +60,15 @@ type DepartmentUser struct {
 	PictureURL   string `json:"pictureUrl"`
 }
 
+type DepartmentUserInvite struct {
+	InviteId     string    `json:"invite_id"`
+	DepartmentId string    `json:"department_id"`
+	Email        string    `json:"email"`
+	Role         string    `json:"role"`
+	CreatedDate  time.Time `json:"created_date"`
+	ExpireDate   time.Time `json:"expire_date"`
+}
+
 type OrganizationDataSvc interface {
 	OrganizationGet(ctx context.Context, OrgID string) (*Organization, error)
 	OrganizationUserRole(ctx context.Context, UserID string, OrgID string) (string, error)
@@ -62,6 +77,7 @@ type OrganizationDataSvc interface {
 	OrganizationUpdate(ctx context.Context, OrgId string, OrgName string) (*Organization, error)
 	OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*OrganizationUser
 	OrganizationAddUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
+	OrganizationUpsertUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
 	OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error)
 	OrganizationRemoveUser(ctx context.Context, OrganizationID string, UserID string) error
 	OrganizationInviteUser(ctx context.Context, OrgID string, Email string, Role string) (string, error)
@@ -83,8 +99,13 @@ type OrganizationDataSvc interface {
 	DepartmentTeamCreate(ctx context.Context, DepartmentID string, TeamName string) (*Team, error)
 	DepartmentUserList(ctx context.Context, DepartmentID string, Limit int, Offset int) []*DepartmentUser
 	DepartmentAddUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error)
+	DepartmentUpsertUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error)
 	DepartmentUpdateUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error)
 	DepartmentRemoveUser(ctx context.Context, DepartmentID string, UserID string) error
 	DepartmentTeamUserRole(ctx context.Context, UserID string, OrgID string, DepartmentID string, TeamID string) (string, string, string, error)
 	DepartmentDelete(ctx context.Context, DepartmentID string) error
+	DepartmentInviteUser(ctx context.Context, DeptID string, Email string, Role string) (string, error)
+	DepartmentUserGetInviteByID(ctx context.Context, InviteID string) (DepartmentUserInvite, error)
+	DepartmentDeleteUserInvite(ctx context.Context, InviteID string) error
+	DepartmentGetUserInvites(ctx context.Context, deptId string) ([]DepartmentUserInvite, error)
 }

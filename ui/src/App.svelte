@@ -219,17 +219,24 @@
       name: 'register',
     };
   });
-  router.on(`${appRoutes.invite}/organization/:orgInviteId`, params => {
+  router.on(`${appRoutes.invite}/organization/:inviteId`, params => {
     currentPage = {
       route: Invite,
-      params,
+      params: { inviteType: 'organization', ...params },
       name: 'invite',
     };
   });
-  router.on(`${appRoutes.invite}/team/:teamInviteId`, params => {
+  router.on(`${appRoutes.invite}/department/:inviteId`, params => {
     currentPage = {
       route: Invite,
-      params,
+      params: { inviteType: 'department', ...params },
+      name: 'invite',
+    };
+  });
+  router.on(`${appRoutes.invite}/team/:inviteId`, params => {
+    currentPage = {
+      route: Invite,
+      params: { inviteType: 'team', ...params },
       name: 'invite',
     };
   });

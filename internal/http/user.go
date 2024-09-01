@@ -400,6 +400,100 @@ func (s *Service) handleUserOrganizationInvite() http.HandlerFunc {
 	}
 }
 
+// handleUserDepartmentInvite processes an department invite for the user
+// @Summary      User Department Invite
+// @Description  Processes an department invite for the user
+// @Tags         user
+// @Param        userId  path    string  true  "the user ID"
+// @Param        inviteId  path    string  true  "the invite ID"
+// @Success      200     object  standardJsonResponse{}
+// @Success      400     object  standardJsonResponse{}
+// @Success      500     object  standardJsonResponse{}
+// @Router       /users/{userId}/invite/department/{inviteId} [post]
+func (s *Service) handleUserDepartmentInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID, _ := ctx.Value(contextKeyUserID).(*string)
+		vars := mux.Vars(r)
+		UserID := vars["userId"]
+		InviteID := vars["inviteId"]
+
+		user, err := s.UserDataSvc.GetUser(ctx, UserID)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		deptInvite, err := s.OrganizationDataSvc.DepartmentUserGetInviteByID(ctx, InviteID)
+		if err != nil {
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		if user.Email != deptInvite.Email {
+			s.Failure(w, r, http.StatusInternalServerError, Errorf(EINVALID, err.Error()))
+			return
+		}
+
+		dept, deptErr := s.OrganizationDataSvc.DepartmentGet(ctx, deptInvite.DepartmentId)
+		if deptErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite get department error", zap.Error(deptErr),
+				zap.String("department_id", dept.Id),
+				zap.String("session_user_id", *SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, deptErr)
+			return
+		}
+
+		org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, dept.OrganizationId)
+		if orgErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite get organization error", zap.Error(orgErr),
+				zap.String("organization_id", org.Id),
+				zap.String("department_id", dept.Id),
+				zap.String("session_user_id", *SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, orgErr)
+			return
+		}
+
+		_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.Id, UserID, "MEMBER")
+		if orgAddErr != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleUserDepartmentInvite upsert organization user error", zap.Error(orgAddErr),
+				zap.String("session_user_id", *SessionUserID),
+				zap.String("organization_id", org.Id),
+				zap.String("department_id", dept.Id),
+				zap.String("user_id", UserID), zap.String("user_role", "MEMBER"))
+			s.Failure(w, r, http.StatusInternalServerError, orgAddErr)
+			return
+		}
+
+		_, inviteErr := s.OrganizationDataSvc.DepartmentAddUser(ctx, deptInvite.DepartmentId, UserID, deptInvite.Role)
+		if inviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite error adding invited user to organization",
+				zap.Error(inviteErr),
+				zap.String("session_user_id", *SessionUserID),
+				zap.String("invite_id", deptInvite.InviteId))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		delInviteErr := s.OrganizationDataSvc.OrganizationDeleteUserInvite(ctx, deptInvite.InviteId)
+		if delInviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleUserDepartmentInvite error deleting user invite to organization",
+				zap.Error(delInviteErr),
+				zap.String("session_user_id", *SessionUserID),
+				zap.String("invite_id", deptInvite.InviteId))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		result := thunderdome.UserDepartment{
+			Department: *dept,
+			Role:       deptInvite.Role,
+		}
+
+		s.Success(w, r, http.StatusOK, result, nil)
+	}
+}
+
 // handleUserTeamInvite processes a team invite for the user
 // @Summary      User Team Invite
 // @Description  Processes a team invite for the user
@@ -434,7 +528,76 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 			return
 		}
 
-		teamId, inviteErr := s.TeamDataSvc.TeamAddUser(ctx, teamInvite.TeamId, UserID, teamInvite.Role)
+		team, teamErr := s.TeamDataSvc.TeamGet(ctx, teamInvite.TeamId)
+		if teamErr != nil {
+			s.Logger.Ctx(ctx).Error("handleTeamInviteUser error", zap.Error(teamErr),
+				zap.String("team_id", teamInvite.TeamId), zap.String("session_user_id", *SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, teamErr)
+			return
+		}
+
+		// team is associated to organization, upsert user to organization
+		if team.OrganizationId != "" {
+			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, team.OrganizationId, UserID, "MEMBER")
+			if orgAddErr != nil {
+				s.Logger.Ctx(ctx).Error(
+					"handleTeamInviteUser upsert organization user error", zap.Error(orgAddErr),
+					zap.String("session_user_id", *SessionUserID),
+					zap.String("organization_id", team.OrganizationId),
+					zap.String("user_id", UserID), zap.String("user_role", "MEMBER"))
+				s.Failure(w, r, http.StatusInternalServerError, orgAddErr)
+				return
+			}
+		}
+
+		// team is associated to department, upsert user to department and organization
+		if team.DepartmentId != "" {
+			dept, deptErr := s.OrganizationDataSvc.DepartmentGet(ctx, team.DepartmentId)
+			if deptErr != nil {
+				s.Logger.Ctx(ctx).Error("handleTeamInviteUser get department error", zap.Error(deptErr),
+					zap.String("department_id", dept.Id),
+					zap.String("session_user_id", *SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, deptErr)
+				return
+			}
+
+			org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, dept.OrganizationId)
+			if orgErr != nil {
+				s.Logger.Ctx(ctx).Error("handleTeamInviteUser get organization error", zap.Error(orgErr),
+					zap.String("organization_id", org.Id),
+					zap.String("department_id", dept.Id),
+					zap.String("session_user_id", *SessionUserID))
+				s.Failure(w, r, http.StatusInternalServerError, orgErr)
+				return
+			}
+
+			team.OrganizationId = org.Id
+
+			_, orgAddErr := s.OrganizationDataSvc.OrganizationUpsertUser(ctx, org.Id, UserID, "MEMBER")
+			if orgAddErr != nil {
+				s.Logger.Ctx(ctx).Error(
+					"handleTeamInviteUser upsert organization user error", zap.Error(orgAddErr),
+					zap.String("session_user_id", *SessionUserID),
+					zap.String("organization_id", org.Id),
+					zap.String("department_id", dept.Id),
+					zap.String("user_id", UserID), zap.String("user_role", "MEMBER"))
+				s.Failure(w, r, http.StatusInternalServerError, orgAddErr)
+				return
+			}
+
+			_, deptAddErr := s.OrganizationDataSvc.DepartmentUpsertUser(ctx, team.DepartmentId, UserID, "MEMBER")
+			if deptAddErr != nil {
+				s.Logger.Ctx(ctx).Error(
+					"handleTeamInviteUser upsert department user error", zap.Error(deptAddErr),
+					zap.String("session_user_id", *SessionUserID),
+					zap.String("department_id", team.DepartmentId),
+					zap.String("user_id", UserID), zap.String("user_role", "MEMBER"))
+				s.Failure(w, r, http.StatusInternalServerError, deptAddErr)
+				return
+			}
+		}
+
+		_, inviteErr := s.TeamDataSvc.TeamAddUser(ctx, teamInvite.TeamId, UserID, teamInvite.Role)
 		if inviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserRegistration error adding invited user to team", zap.Error(inviteErr),
 				zap.String("session_user_id", *SessionUserID),
@@ -446,16 +609,6 @@ func (s *Service) handleUserTeamInvite() http.HandlerFunc {
 		delInviteErr := s.TeamDataSvc.TeamDeleteUserInvite(ctx, teamInvite.InviteId)
 		if delInviteErr != nil {
 			s.Logger.Ctx(ctx).Error("handleUserRegistration error deleting user invite to team", zap.Error(delInviteErr),
-				zap.String("session_user_id", *SessionUserID),
-				zap.String("invite_id", teamInvite.InviteId))
-			s.Failure(w, r, http.StatusInternalServerError, err)
-			return
-		}
-
-		team, orgErr := s.TeamDataSvc.TeamGet(ctx, teamId)
-		if orgErr != nil {
-			s.Logger.Ctx(ctx).Error("handleUserOrganizationInvite error getting organization",
-				zap.Error(delInviteErr),
 				zap.String("session_user_id", *SessionUserID),
 				zap.String("invite_id", teamInvite.InviteId))
 			s.Failure(w, r, http.StatusInternalServerError, err)

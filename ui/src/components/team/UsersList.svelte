@@ -18,8 +18,9 @@
   export let xfetch;
   export let notifications;
   export let eventTag;
+  export let orgId = '';
+  export let deptId = '';
   export let teamPrefix = '';
-  export let requiresOrgMember = false;
   export let isAdmin = false;
   export let pageType = '';
   export let users = [];
@@ -33,30 +34,46 @@
   let showRemoveUser = false;
   let removeUserId = null;
 
-  function handleUserAdd(email, role) {
+  function handleUserAdd({ id, email, role }) {
     const body = {
-      email,
+      user_id: id,
       role,
     };
 
     xfetch(`${teamPrefix}/users`, { body })
       .then(result => result.json())
-      .then(function (result) {
+      .then(function () {
         eventTag(`${pageType}_add_user`, 'engagement', 'success');
         toggleAddUser();
-        if (result.meta.user_invited) {
-          dispatch('user-invited');
-          notifications.success($LL.userInviteSent());
-        } else {
-          dispatch('user-added');
-          notifications.success($LL.userAddSuccess());
-        }
+        dispatch('user-added');
+        notifications.success($LL.userAddSuccess());
 
         getUsers();
       })
       .catch(function () {
         notifications.danger($LL.userAddError());
         eventTag(`${pageType}_add_user`, 'engagement', 'failure');
+      });
+  }
+
+  function handleUserInvite({ id, email, role }) {
+    const body = {
+      email,
+      role,
+    };
+
+    xfetch(`${teamPrefix}/invites`, { body })
+      .then(result => result.json())
+      .then(function (result) {
+        eventTag(`${pageType}_invite_user`, 'engagement', 'success');
+        toggleAddUser();
+        dispatch('user-invited');
+        notifications.success($LL.userInviteSent());
+        getUsers();
+      })
+      .catch(function () {
+        notifications.danger($LL.userAddError());
+        eventTag(`${pageType}_invite_user`, 'engagement', 'failure');
       });
   }
 
@@ -188,8 +205,12 @@
     <AddUser
       toggleAdd="{toggleAddUser}"
       handleAdd="{handleUserAdd}"
+      handleInvite="{handleUserInvite}"
       pageType="{pageType}"
-      requiresOrgMember="{requiresOrgMember}"
+      orgId="{orgId}"
+      deptId="{deptId}"
+      xfetch="{xfetch}"
+      notifications="{notifications}"
     />
   {/if}
 

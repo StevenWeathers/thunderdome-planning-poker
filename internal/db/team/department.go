@@ -2,6 +2,8 @@ package team
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/db"
@@ -40,13 +42,14 @@ func (d *OrganizationService) DepartmentGet(ctx context.Context, DepartmentID st
 	var org = &thunderdome.Department{}
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT od.id, od.name, od.created_date, od.updated_date
+		`SELECT od.id, od.name, od.organization_id, od.created_date, od.updated_date
         FROM thunderdome.organization_department od
         WHERE od.id = $1;`,
 		DepartmentID,
 	).Scan(
 		&org.Id,
 		&org.Name,
+		&org.OrganizationId,
 		&org.CreatedDate,
 		&org.UpdatedDate,
 	)
@@ -61,7 +64,7 @@ func (d *OrganizationService) DepartmentGet(ctx context.Context, DepartmentID st
 func (d *OrganizationService) OrganizationDepartmentList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.Department {
 	var departments = make([]*thunderdome.Department, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT d.id, d.name, d.created_date, d.updated_date
+		`SELECT d.id, d.name, d.organization_id, d.created_date, d.updated_date
         FROM thunderdome.organization_department d
         WHERE d.organization_id = $1
         ORDER BY d.created_date
@@ -80,6 +83,7 @@ func (d *OrganizationService) OrganizationDepartmentList(ctx context.Context, Or
 			if err := rows.Scan(
 				&department.Id,
 				&department.Name,
+				&department.OrganizationId,
 				&department.CreatedDate,
 				&department.UpdatedDate,
 			); err != nil {
@@ -121,10 +125,10 @@ func (d *OrganizationService) DepartmentUpdate(ctx context.Context, DeptId strin
 		UPDATE thunderdome.organization_department
 		SET name = $1, updated_date = NOW()
 		WHERE id = $2
-		RETURNING id, name, created_date, updated_date;`,
+		RETURNING id, name, organization_id, created_date, updated_date;`,
 		DeptName,
 		DeptId,
-	).Scan(&od.Id, &od.Name, &od.CreatedDate, &od.UpdatedDate)
+	).Scan(&od.Id, &od.Name, &od.OrganizationId, &od.CreatedDate, &od.UpdatedDate)
 
 	if err != nil {
 		return nil, fmt.Errorf("department update query error: %v", err)
@@ -247,6 +251,22 @@ func (d *OrganizationService) DepartmentAddUser(ctx context.Context, DepartmentI
 	return DepartmentID, nil
 }
 
+// DepartmentUpsertUser adds a user to an organization department if not existing otherwise does nothing
+func (d *OrganizationService) DepartmentUpsertUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error) {
+	_, err := d.DB.ExecContext(ctx,
+		`INSERT INTO thunderdome.department_user (department_id, user_id, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;`,
+		DepartmentID,
+		UserID,
+		Role,
+	)
+
+	if err != nil {
+		return "", fmt.Errorf("department add user query error: %v", err)
+	}
+
+	return DepartmentID, nil
+}
+
 // DepartmentUpdateUser updates an organization department user
 func (d *OrganizationService) DepartmentUpdateUser(ctx context.Context, DepartmentID string, UserID string, Role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
@@ -318,4 +338,87 @@ func (d *OrganizationService) DepartmentDelete(ctx context.Context, DepartmentID
 	}
 
 	return nil
+}
+
+// DepartmentInviteUser invites a user to an organization
+func (d *OrganizationService) DepartmentInviteUser(ctx context.Context, DeptID string, Email string, Role string) (string, error) {
+	var inviteId string
+	err := d.DB.QueryRowContext(ctx,
+		`INSERT INTO thunderdome.department_user_invite (department_id, email, role) VALUES ($1, $2, $3) RETURNING invite_id;`,
+		DeptID,
+		Email,
+		Role,
+	).Scan(&inviteId)
+
+	if err != nil {
+		return "", fmt.Errorf("department invite user query error: %v", err)
+	}
+
+	return inviteId, nil
+}
+
+// DepartmentUserGetInviteByID gets a departments user invite
+func (d *OrganizationService) DepartmentUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.DepartmentUserInvite, error) {
+	oui := thunderdome.DepartmentUserInvite{}
+	err := d.DB.QueryRowContext(ctx,
+		`SELECT invite_id, department_id, email, role, created_date, expire_date
+ 				FROM thunderdome.department_user_invite WHERE invite_id = $1;`,
+		InviteID,
+	).Scan(&oui.InviteId, &oui.DepartmentId, &oui.Email, &oui.Role, &oui.CreatedDate, &oui.ExpireDate)
+
+	if err != nil {
+		return oui, fmt.Errorf("department get user invite query error: %v", err)
+	}
+
+	return oui, nil
+}
+
+// DepartmentDeleteUserInvite deletes a user department invite
+func (d *OrganizationService) DepartmentDeleteUserInvite(ctx context.Context, InviteID string) error {
+	_, err := d.DB.ExecContext(ctx,
+		`DELETE FROM thunderdome.department_user_invite where invite_id = $1;`,
+		InviteID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("department delete user invite query error: %v", err)
+	}
+
+	return nil
+}
+
+// DepartmentGetUserInvites gets departments user invites
+func (d *OrganizationService) DepartmentGetUserInvites(ctx context.Context, deptId string) ([]thunderdome.DepartmentUserInvite, error) {
+	var invites = make([]thunderdome.DepartmentUserInvite, 0)
+	rows, err := d.DB.QueryContext(ctx,
+		`SELECT invite_id, department_id, email, role, created_date, expire_date
+ 				FROM thunderdome.department_user_invite WHERE department_id = $1;`,
+		deptId,
+	)
+
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var invite thunderdome.DepartmentUserInvite
+
+			if err := rows.Scan(
+				&invite.InviteId,
+				&invite.DepartmentId,
+				&invite.Email,
+				&invite.Role,
+				&invite.CreatedDate,
+				&invite.ExpireDate,
+			); err != nil {
+				d.Logger.Ctx(ctx).Error("DepartmentGetUserInvites query scan error", zap.Error(err))
+			} else {
+				invites = append(invites, invite)
+			}
+		}
+	} else {
+		if !errors.Is(err, sql.ErrNoRows) {
+			d.Logger.Ctx(ctx).Error("DepartmentGetUserInvites query error", zap.Error(err))
+		}
+	}
+
+	return invites, nil
 }

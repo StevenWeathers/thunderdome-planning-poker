@@ -45,13 +45,15 @@ func (d *Service) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team
 	var team = &thunderdome.Team{}
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT o.id, o.name, o.created_date, o.updated_date
+		`SELECT o.id, o.name, COALESCE(o.organization_id::TEXT, ''), COALESCE(o.department_id::TEXT, ''), o.created_date, o.updated_date
         FROM thunderdome.team o
         WHERE o.id = $1;`,
 		TeamID,
 	).Scan(
 		&team.Id,
 		&team.Name,
+		&team.OrganizationId,
+		&team.DepartmentId,
 		&team.CreatedDate,
 		&team.UpdatedDate,
 	)
@@ -66,7 +68,7 @@ func (d *Service) TeamGet(ctx context.Context, TeamID string) (*thunderdome.Team
 func (d *Service) TeamListByUser(ctx context.Context, UserID string, Limit int, Offset int) []*thunderdome.UserTeam {
 	var teams = make([]*thunderdome.UserTeam, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT t.id, t.name, t.created_date, t.updated_date, tu.role
+		`SELECT t.id, t.name, COALESCE(t.organization_id::TEXT, ''), COALESCE(t.department_id::TEXT, ''), t.created_date, t.updated_date, tu.role
         FROM thunderdome.team_user tu
         LEFT JOIN thunderdome.team t ON tu.team_id = t.id
         WHERE tu.user_id = $1
@@ -86,6 +88,8 @@ func (d *Service) TeamListByUser(ctx context.Context, UserID string, Limit int, 
 			if err := rows.Scan(
 				&team.Id,
 				&team.Name,
+				&team.OrganizationId,
+				&team.DepartmentId,
 				&team.CreatedDate,
 				&team.UpdatedDate,
 				&team.Role,
@@ -546,7 +550,7 @@ func (d *Service) TeamList(ctx context.Context, Limit int, Offset int) ([]*thund
     FROM thunderdome.team t
     WHERE t.department_id IS NULL AND t.organization_id IS NULL;`).Scan(&count)
 	if err != nil {
-		d.Logger.Ctx(ctx).Error("Unable to get application stats", zap.Error(err))
+		d.Logger.Ctx(ctx).Error("Unable to get TeamList", zap.Error(err))
 		return teams, count
 	}
 

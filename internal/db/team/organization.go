@@ -195,6 +195,22 @@ func (d *OrganizationService) OrganizationAddUser(ctx context.Context, OrgID str
 	return OrgID, nil
 }
 
+// OrganizationUpsertUser adds a user to an organization if not existing otherwise does nothing
+func (d *OrganizationService) OrganizationUpsertUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
+	_, err := d.DB.ExecContext(ctx,
+		`INSERT INTO thunderdome.organization_user (organization_id, user_id, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;`,
+		OrgID,
+		UserID,
+		Role,
+	)
+
+	if err != nil {
+		return "", fmt.Errorf("organization upsert user query error: %v", err)
+	}
+
+	return OrgID, nil
+}
+
 // OrganizationUpdateUser updates an organization user
 func (d *OrganizationService) OrganizationUpdateUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
 	_, err := d.DB.ExecContext(ctx,
@@ -243,7 +259,7 @@ func (d *OrganizationService) OrganizationInviteUser(ctx context.Context, OrgID 
 	return inviteId, nil
 }
 
-// OrganizationUserGetInviteByID gets a organization user invite
+// OrganizationUserGetInviteByID gets an organization user invite
 func (d *OrganizationService) OrganizationUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.OrganizationUserInvite, error) {
 	oui := thunderdome.OrganizationUserInvite{}
 	err := d.DB.QueryRowContext(ctx,

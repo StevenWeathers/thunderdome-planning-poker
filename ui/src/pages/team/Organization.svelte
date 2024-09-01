@@ -448,6 +448,7 @@
     notifications="{notifications}"
     isAdmin="{isAdmin}"
     pageType="organization"
+    orgId="{organizationId}"
     teamPrefix="/api/organizations/{organizationId}"
     on:user-invited="{() => {
       invitesList.f('user-invited');

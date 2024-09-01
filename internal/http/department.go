@@ -324,7 +324,7 @@ func (s *Service) handleCreateDepartmentTeam() http.HandlerFunc {
 // @Produce      json
 // @Param        orgId         path    string                  true  "the organization ID"
 // @Param        departmentId  path    string                  true  "the department ID"
-// @Param        user          body    teamAddUserRequestBody  true  "new department user object"
+// @Param        user          body    addUserRequestBody  true  "new department user object"
 // @Success      200           object  standardJsonResponse{}
 // @Failure      500           object  standardJsonResponse{}
 // @Security     ApiKeyAuth
@@ -341,7 +341,7 @@ func (s *Service) handleDepartmentAddUser() http.HandlerFunc {
 		OrgID := vars["orgId"]
 		DepartmentId := vars["departmentId"]
 
-		var u = teamAddUserRequestBody{}
+		var u = addUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -354,24 +354,12 @@ func (s *Service) handleDepartmentAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := strings.ToLower(u.Email)
-
-		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleDepartmentAddUser error", zap.Error(UserErr), zap.String("session_user_id", SessionUserID),
-				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentId),
-				zap.String("user_email", UserEmail))
-			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
-			return
-		}
-
-		_, err := s.OrganizationDataSvc.DepartmentAddUser(ctx, DepartmentId, User.Id, u.Role)
+		_, err := s.OrganizationDataSvc.DepartmentAddUser(ctx, DepartmentId, u.UserID, u.Role)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleDepartmentAddUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
 				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentId),
-				zap.String("user_id", User.Id), zap.String("user_role", u.Role))
+				zap.String("user_id", u.UserID), zap.String("user_role", u.Role))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -485,7 +473,7 @@ func (s *Service) handleDepartmentRemoveUser() http.HandlerFunc {
 // @Param        orgId         path    string                  true  "the organization ID"
 // @Param        departmentId  path    string                  true  "the department ID"
 // @Param        teamId        path    string                  true  "the team ID"
-// @Param        user          body    teamAddUserRequestBody  true  "new team user object"
+// @Param        user          body    addUserRequestBody  true  "new team user object"
 // @Success      200           object  standardJsonResponse{}
 // @Failure      500           object  standardJsonResponse{}
 // @Security     ApiKeyAuth
@@ -503,7 +491,7 @@ func (s *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 		DepartmentID := vars["departmentId"]
 		TeamID := vars["teamId"]
 
-		var u = teamAddUserRequestBody{}
+		var u = addUserRequestBody{}
 		body, bodyErr := io.ReadAll(r.Body)
 		if bodyErr != nil {
 			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
@@ -516,34 +504,22 @@ func (s *Service) handleDepartmentTeamAddUser() http.HandlerFunc {
 			return
 		}
 
-		UserEmail := u.Email
-
-		User, UserErr := s.UserDataSvc.GetUserByEmail(ctx, UserEmail)
-		if UserErr != nil {
-			s.Logger.Ctx(ctx).Error(
-				"handleDepartmentTeamAddUser error", zap.Error(UserErr), zap.String("session_user_id", SessionUserID),
-				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
-				zap.String("team_id", TeamID), zap.String("user_email", UserEmail))
-			s.Failure(w, r, http.StatusInternalServerError, Errorf(ENOTFOUND, "USER_NOT_FOUND"))
-			return
-		}
-
-		_, DepartmentRole, roleErr := s.OrganizationDataSvc.DepartmentUserRole(ctx, User.Id, OrgID, DepartmentID)
+		_, DepartmentRole, roleErr := s.OrganizationDataSvc.DepartmentUserRole(ctx, u.UserID, OrgID, DepartmentID)
 		if DepartmentRole == "" || roleErr != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleDepartmentTeamAddUser error", zap.Error(roleErr), zap.String("session_user_id", SessionUserID),
 				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
-				zap.String("team_id", TeamID), zap.String("user_id", User.Id))
+				zap.String("team_id", TeamID), zap.String("user_id", u.UserID))
 			s.Failure(w, r, http.StatusInternalServerError, Errorf(EUNAUTHORIZED, "DEPARTMENT_USER_REQUIRED"))
 			return
 		}
 
-		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, User.Id, u.Role)
+		_, err := s.TeamDataSvc.TeamAddUser(ctx, TeamID, u.UserID, u.Role)
 		if err != nil {
 			s.Logger.Ctx(ctx).Error(
 				"handleDepartmentTeamAddUser error", zap.Error(err), zap.String("session_user_id", SessionUserID),
 				zap.String("organization_id", OrgID), zap.String("department_id", DepartmentID),
-				zap.String("team_id", TeamID), zap.String("user_id", User.Id))
+				zap.String("team_id", TeamID), zap.String("user_id", u.UserID))
 			s.Failure(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -656,6 +632,170 @@ func (s *Service) handleDeleteDepartment() http.HandlerFunc {
 			return
 		}
 
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleGetDepartmentUserInvites gets a list of user invites associated to the department
+// @Summary      Get Department User Invites
+// @Description  Get a list of user invites associated to the department
+// @Tags         organization
+// @Produce      json
+// @Param        organizationId  path    string  true  "the org ID"
+// @Param        departmentId  path    string  true  "the dept ID"
+// @Success      200     object  standardJsonResponse{data=[]thunderdome.DepartmentUserInvite}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/departments/{departmentId}/invites [get]
+func (s *Service) handleGetDepartmentUserInvites() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		deptId := vars["departmentId"]
+
+		invites, err := s.OrganizationDataSvc.DepartmentGetUserInvites(ctx, deptId)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error("handleGetDepartmentUserInvites error", zap.Error(err), zap.String("department_id", deptId),
+				zap.String("session_user_id", SessionUserID))
+			s.Failure(w, r, http.StatusInternalServerError, err)
+		}
+
+		s.Success(w, r, http.StatusOK, invites, nil)
+	}
+}
+
+// handleDeleteDepartmentUserInvite handles deleting user invite from an department
+// @Summary      Delete Department User Invite
+// @Description  Delete user invite from department
+// @Tags         organization
+// @Produce      json
+// @Param        orgId   path    string  true  "organization id"
+// @Param        departmentId  path    string  true  "the dept ID"
+// @Param        inviteId  path    string  true  "invite id"
+// @Success      200     object  standardJsonResponse{}
+// @Failure      403     object  standardJsonResponse{}
+// @Failure      500     object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/departments/{departmentId}/invites/{inviteId} [delete]
+func (s *Service) handleDeleteDepartmentUserInvite() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		DeptID := vars["departmentId"]
+		InviteID := vars["inviteId"]
+		idErr := validate.Var(InviteID, "required,uuid")
+		if idErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, idErr.Error()))
+			return
+		}
+
+		err := s.OrganizationDataSvc.DepartmentDeleteUserInvite(ctx, InviteID)
+		if err != nil {
+			s.Logger.Ctx(ctx).Error(
+				"handleDeleteDepartmentUserInvite error", zap.Error(err),
+				zap.String("invite_id", InviteID),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("organization_id", OrgID),
+				zap.String("department_id", DeptID),
+			)
+			s.Failure(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.Success(w, r, http.StatusOK, nil, nil)
+	}
+}
+
+// handleDepartmentInviteUser handles inviting user to an organization department
+// @Summary      Invite Department User
+// @Description  Invite a department User
+// @Tags         organization
+// @Produce      json
+// @Param        orgId         path    string                  true  "the organization ID"
+// @Param        departmentId  path    string                  true  "the department ID"
+// @Param        user          body    teamInviteUserRequestBody  true  "new department user object"
+// @Success      200           object  standardJsonResponse{}
+// @Failure      500           object  standardJsonResponse{}
+// @Security     ApiKeyAuth
+// @Router       /organizations/{orgId}/departments/{departmentId}/invites [post]
+func (s *Service) handleDepartmentInviteUser() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !s.Config.OrganizationsEnabled {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, "ORGANIZATIONS_DISABLED"))
+			return
+		}
+		ctx := r.Context()
+		SessionUserID := ctx.Value(contextKeyUserID).(string)
+		vars := mux.Vars(r)
+		OrgID := vars["orgId"]
+		DepartmentId := vars["departmentId"]
+
+		var u = teamInviteUserRequestBody{}
+		body, bodyErr := io.ReadAll(r.Body)
+		if bodyErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, bodyErr.Error()))
+			return
+		}
+
+		jsonErr := json.Unmarshal(body, &u)
+		if jsonErr != nil {
+			s.Failure(w, r, http.StatusBadRequest, Errorf(EINVALID, jsonErr.Error()))
+			return
+		}
+
+		UserEmail := strings.ToLower(u.Email)
+
+		inviteID, inviteErr := s.OrganizationDataSvc.DepartmentInviteUser(ctx, DepartmentId, UserEmail, u.Role)
+		if inviteErr != nil {
+			s.Logger.Ctx(ctx).Error("handleDepartmentInviteUser error", zap.Error(inviteErr),
+				zap.String("organization_id", OrgID),
+				zap.String("department_id", DepartmentId),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("user_email", UserEmail),
+			)
+			s.Failure(w, r, http.StatusInternalServerError, inviteErr)
+			return
+		}
+
+		org, orgErr := s.OrganizationDataSvc.OrganizationGet(ctx, OrgID)
+		if orgErr != nil {
+			s.Logger.Ctx(ctx).Error("handleDepartmentInviteUser error", zap.Error(orgErr),
+				zap.String("organization_id", OrgID),
+				zap.String("department_id", DepartmentId),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("user_email", UserEmail),
+			)
+			s.Failure(w, r, http.StatusInternalServerError, orgErr)
+			return
+		}
+		dept, deptErr := s.OrganizationDataSvc.DepartmentGet(ctx, DepartmentId)
+		if deptErr != nil {
+			s.Logger.Ctx(ctx).Error("handleDepartmentInviteUser error", zap.Error(orgErr),
+				zap.String("organization_id", OrgID),
+				zap.String("department_id", DepartmentId),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("user_email", UserEmail),
+			)
+			s.Failure(w, r, http.StatusInternalServerError, orgErr)
+			return
+		}
+		emailErr := s.Email.SendDepartmentInvite(org.Name, dept.Name, UserEmail, inviteID)
+		if emailErr != nil {
+			s.Logger.Ctx(ctx).Error("handleDepartmentInviteUser error", zap.Error(emailErr),
+				zap.String("organization_id", OrgID),
+				zap.String("department_id", DepartmentId),
+				zap.String("session_user_id", SessionUserID),
+				zap.String("user_email", UserEmail),
+			)
+			s.Failure(w, r, http.StatusInternalServerError, emailErr)
+			return
+		}
 		s.Success(w, r, http.StatusOK, nil, nil)
 	}
 }
