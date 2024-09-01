@@ -29,7 +29,7 @@
     {
       name: 'Battles',
       label: $LL.battles(),
-      path: '/battles',
+      path: '/games',
       enabled: FeaturePoker,
     },
     {
