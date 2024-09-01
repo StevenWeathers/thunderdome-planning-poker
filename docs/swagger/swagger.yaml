@@ -311,6 +311,8 @@ definitions:
         maximum: 9
         minimum: 1
         type: integer
+      phaseAutoAdvance:
+        type: boolean
       phaseTimeLimitMin:
         example: 10
         maximum: 59
@@ -803,6 +805,8 @@ definitions:
         type: string
       phase:
         type: string
+      phase_auto_advance:
+        type: boolean
       phase_time_limit_min:
         type: integer
       phase_time_start:

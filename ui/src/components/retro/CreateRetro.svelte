@@ -7,6 +7,7 @@
   import LL from '../../i18n/i18n-svelte';
   import TextInput from '../forms/TextInput.svelte';
   import SelectInput from '../forms/SelectInput.svelte';
+  import Checkbox from '../forms/Checkbox.svelte';
 
   export let xfetch;
   export let notifications;
@@ -24,6 +25,7 @@
   let teams = [];
   let selectedTeam = '';
   let phaseTimeLimitMin = 0;
+  let phaseAutoAdvance = true;
 
   /** @type {TextInput} */
   let retroNameTextInput;
@@ -60,6 +62,7 @@
       maxVotes: parseInt(maxVotes, 10),
       brainstormVisibility,
       phaseTimeLimitMin: parseInt(`${phaseTimeLimitMin}`, 10),
+      phaseAutoAdvance,
     };
 
     if (selectedTeam !== '') {
@@ -246,6 +249,15 @@
         required
       />
     </div>
+  </div>
+
+  <div class="mb-4">
+    <Checkbox
+      bind:checked="{phaseAutoAdvance}"
+      id="phaseAutoAdvance"
+      name="phaseAutoAdvance"
+      label="{$LL.phaseAutoAdvanceLabel()}"
+    />
   </div>
 
   <div class="text-right">

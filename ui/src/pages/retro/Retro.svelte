@@ -46,6 +46,7 @@
     phase: 'brainstorm',
     phase_time_limit_min: 0,
     phase_time_start: new Date(),
+    phase_auto_advance: false,
     users: [],
     items: [],
     groups: [],
@@ -145,10 +146,6 @@
         notifications.danger(`${leftUser.name} left.`);
         break;
       }
-      case 'retro_updated':
-        retro = JSON.parse(parsedEvent.value);
-        groupedItems = organizeItemsByGroup();
-        break;
       case 'phase_updated':
         let r = JSON.parse(parsedEvent.value);
         retro.items = r.items;
@@ -239,6 +236,7 @@
         retro.joinCode = revisedRetro.joinCode;
         retro.brainstormVisibility = revisedRetro.brainstormVisibility;
         retro.maxVotes = revisedRetro.maxVotes;
+        retro.phase_auto_advance = revisedRetro.phase_auto_advance;
         break;
       case 'conceded':
         // retro over, goodbye.
@@ -546,7 +544,12 @@
     const activeUsers = retro.users.filter(u => u.active);
     let allReady = retro.readyUsers.length === activeUsers.length;
 
-    if (isFacilitator && retro.phase === 'brainstorm' && allReady) {
+    if (
+      isFacilitator &&
+      retro.phase_auto_advance &&
+      retro.phase === 'brainstorm' &&
+      allReady
+    ) {
       sendSocketEvent(
         'phase_all_ready',
         JSON.stringify({
@@ -1039,6 +1042,7 @@
     facilitatorCode="{retro.facilitatorCode}"
     maxVotes="{retro.maxVotes}"
     brainstormVisibility="{retro.brainstormVisibility}"
+    phaseAutoAdvance="{retro.phase_auto_advance}"
   />
 {/if}
 

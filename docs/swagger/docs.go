@@ -8560,6 +8560,9 @@ const docTemplate = `{
                     "maximum": 9,
                     "minimum": 1
                 },
+                "phaseAutoAdvance": {
+                    "type": "boolean"
+                },
                 "phaseTimeLimitMin": {
                     "type": "integer",
                     "maximum": 59,
@@ -9285,6 +9288,9 @@ const docTemplate = `{
                 },
                 "phase": {
                     "type": "string"
+                },
+                "phase_auto_advance": {
+                    "type": "boolean"
                 },
                 "phase_time_limit_min": {
                     "type": "integer"

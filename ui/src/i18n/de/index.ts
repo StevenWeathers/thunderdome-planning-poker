@@ -623,6 +623,7 @@ const de: Translation = {
   storyboardName: 'Storyboard Name',
   storyboardNamePlaceholder: 'Geben Sie einen Storyboard-Namen ein',
   retroPhaseTimeLimitMinLabel: 'Brainstorm Phase time limit in minutes',
+  phaseAutoAdvanceLabel: 'Automatically advance phases',
 };
 
 export default de;
