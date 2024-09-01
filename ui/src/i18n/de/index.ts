@@ -459,7 +459,7 @@ const de: Translation = {
   userAddError: 'Fehler beim Versuch, den Benutzer hinzuzufügen',
   userAddSuccess: 'Benutzer erfolgreich hinzugefügt',
   userEmail: 'Benutzer E-Mail',
-  userEmailPlaceholder: 'E-Mail-Adresse eines registrierten Benutzers eingeben',
+  userEmailPlaceholder: 'Enter the users email',
   userName: 'Benutzername',
   userRemoveError: 'Fehler beim Versuch, den Benutzer zu entfernen',
   userRemoveSuccess: 'Benutzer erfolgreich entfernt',
