@@ -26,13 +26,18 @@ type Service struct {
 }
 
 // AuthUser authenticate the user
-func (d *Service) AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*thunderdome.User, string, error) {
+func (d *Service) AuthUser(ctx context.Context, UserEmail string, UserPassword string) (*thunderdome.User, *thunderdome.Credential, string, error) {
 	var user thunderdome.User
+	var cred thunderdome.Credential
 	var passHash string
 	sanitizedEmail := db.SanitizeEmail(UserEmail)
 
 	err := d.DB.QueryRowContext(ctx,
-		`SELECT id, name, email, type, password, avatar, verified, notifications_enabled, COALESCE(locale, ''), disabled, mfa_enabled, theme FROM thunderdome.users WHERE LOWER(email) = $1`,
+		`SELECT u.id, u.name, c.email, u.type, c.password, u.avatar, c.verified, u.notifications_enabled,
+ 			COALESCE(u.locale, ''), u.disabled, c.mfa_enabled, u.theme, COALESCE(u.picture, '')
+			FROM thunderdome.auth_credential c
+			JOIN thunderdome.users u ON c.user_id = u.id 
+			WHERE c.email = $1`,
 		sanitizedEmail,
 	).Scan(
 		&user.Id,
@@ -41,47 +46,48 @@ func (d *Service) AuthUser(ctx context.Context, UserEmail string, UserPassword s
 		&user.Type,
 		&passHash,
 		&user.Avatar,
-		&user.Verified,
+		&cred.Verified,
 		&user.NotificationsEnabled,
 		&user.Locale,
 		&user.Disabled,
-		&user.MFAEnabled,
+		&cred.MFAEnabled,
 		&user.Theme,
+		&user.Picture,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			d.Logger.Ctx(ctx).Error("Unable to auth user not found", zap.Error(err), zap.String("email", sanitizedEmail))
-			return nil, "", errors.New("USER_NOT_FOUND")
+			return nil, nil, "", errors.New("USER_NOT_FOUND")
 		} else {
-			return nil, "", err
+			return nil, nil, "", err
 		}
 	}
 
 	if !db.ComparePasswords(passHash, UserPassword) {
-		return nil, "", errors.New("INVALID_PASSWORD")
+		return nil, nil, "", errors.New("INVALID_PASSWORD")
 	}
 
 	if user.Disabled {
-		return nil, "", errors.New("USER_DISABLED")
+		return nil, nil, "", errors.New("USER_DISABLED")
 	}
 
 	// check to see if the bcrypt cost has been updated, if not do so
 	if db.CheckPasswordCost(passHash) {
 		hashedPassword, hashErr := db.HashSaltPassword(UserPassword)
 		if hashErr == nil {
-			_, updateErr := d.DB.Exec(`UPDATE thunderdome.users SET password = $2, last_active = NOW(), updated_date = NOW() WHERE id = $1;`, user.Id, hashedPassword)
+			_, updateErr := d.DB.Exec(`UPDATE thunderdome.auth_credential SET password = $2, updated_date = NOW() WHERE user_id = $1;`, user.Id, hashedPassword)
 			if updateErr != nil {
 				d.Logger.Error("Unable to update password cost", zap.Error(updateErr), zap.String("email", sanitizedEmail))
 			}
 		}
 	}
 
-	SessionId, sessErr := d.CreateSession(ctx, user.Id)
+	SessionId, sessErr := d.CreateSession(ctx, user.Id, !cred.MFAEnabled)
 	if sessErr != nil {
-		return nil, "", sessErr
+		return nil, nil, "", sessErr
 	}
 
-	return &user, SessionId, nil
+	return &user, &cred, SessionId, nil
 }
 
 // UserResetRequest inserts a new user reset request
@@ -157,9 +163,15 @@ func (d *Service) UserUpdatePassword(ctx context.Context, UserID string, UserPas
 	}
 
 	if _, err := d.DB.ExecContext(ctx,
-		`UPDATE thunderdome.users SET password = $2, last_active = NOW(), updated_date = NOW() WHERE id = $1;`,
+		`UPDATE thunderdome.auth_credential SET password = $2, updated_date = NOW() WHERE user_id = $1;`,
 		UserID, hashedPassword); err != nil {
 		return "", "", fmt.Errorf("update password query error: %v", err)
+	}
+
+	if _, err := d.DB.ExecContext(ctx,
+		`UPDATE thunderdome.users SET last_active = NOW() WHERE id = $1;`,
+		UserID, hashedPassword); err != nil {
+		return "", "", fmt.Errorf("update user last_active query error: %v", err)
 	}
 
 	return UserName.String, UserEmail.String, nil

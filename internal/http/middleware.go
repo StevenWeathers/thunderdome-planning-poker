@@ -97,7 +97,7 @@ func (s *Service) userOnly(h http.HandlerFunc) http.HandlerFunc {
 			}
 		} else {
 			SessionId, cookieErr := s.Cookie.ValidateSessionCookie(w, r)
-			if cookieErr != nil && cookieErr.Error() != "NO_SESSION_COOKIE" {
+			if cookieErr != nil && cookieErr.Error() != "COOKIE_NOT_FOUND" {
 				s.Failure(w, r, http.StatusUnauthorized, Errorf(EINVALID, "INVALID_USER"))
 				return
 			}
@@ -146,7 +146,7 @@ func (s *Service) entityUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if UserType != adminUserType && EntityUserID != UserID {
+		if UserType != thunderdome.AdminUserType && EntityUserID != UserID {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -160,7 +160,7 @@ func (s *Service) registeredUserOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		if UserType == guestUserType {
+		if UserType == thunderdome.GuestUserType {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "REGISTERED_USER_ONLY"))
 			return
 		}
@@ -174,7 +174,7 @@ func (s *Service) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		UserType := r.Context().Value(contextKeyUserType).(string)
 
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ADMIN"))
 			return
 		}
@@ -197,7 +197,7 @@ func (s *Service) verifiedUserOnly(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if UserType != adminUserType && (EntityUserID != SessionUserID) {
+		if UserType != thunderdome.AdminUserType && (EntityUserID != SessionUserID) {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -234,7 +234,7 @@ func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc 
 			return
 		}
 
-		if UserType != adminUserType && (EntityUserID != UserID) {
+		if UserType != thunderdome.AdminUserType && (EntityUserID != UserID) {
 			s.Failure(w, r, http.StatusForbidden, Errorf(EINVALID, "INVALID_USER"))
 			return
 		}
@@ -245,7 +245,7 @@ func (s *Service) subscribedEntityUserOnly(h http.HandlerFunc) http.HandlerFunc 
 		}
 
 		// admins can bypass active subscriber functions
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			subscriberErr := s.SubscriptionDataSvc.CheckActiveSubscriber(ctx, EntityUserID)
 			if subscriberErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_SUBSCRIBED_USER"))
@@ -272,7 +272,7 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		var Role string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			Role, UserErr = s.OrganizationDataSvc.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
@@ -280,7 +280,7 @@ func (s *Service) orgUserOnly(h http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 		} else {
-			Role = adminUserType
+			Role = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, Role)
@@ -304,19 +304,19 @@ func (s *Service) orgAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		var Role string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			Role, UserErr := s.OrganizationDataSvc.OrganizationUserRole(ctx, UserID, OrgID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "ORGANIZATION_USER_REQUIRED"))
 				return
 			}
-			if Role != adminUserType {
+			if Role != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_ORG_ADMIN"))
 				return
 			}
 		} else {
-			Role = adminUserType
+			Role = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, Role)
@@ -347,7 +347,7 @@ func (s *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		var OrgRole string
 		var TeamRole string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			OrgRole, TeamRole, UserErr = s.OrganizationDataSvc.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
@@ -355,8 +355,8 @@ func (s *Service) orgTeamOnly(h http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 		} else {
-			OrgRole = adminUserType
-			TeamRole = adminUserType
+			OrgRole = thunderdome.AdminUserType
+			TeamRole = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
@@ -388,20 +388,20 @@ func (s *Service) orgTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		var OrgRole string
 		var TeamRole string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			OrgRole, TeamRole, UserErr := s.OrganizationDataSvc.OrganizationTeamUserRole(ctx, UserID, OrgID, TeamID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
-			if TeamRole != adminUserType && OrgRole != adminUserType {
+			if TeamRole != thunderdome.AdminUserType && OrgRole != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_ORGANIZATION_ADMIN"))
 				return
 			}
 		} else {
-			OrgRole = adminUserType
-			TeamRole = adminUserType
+			OrgRole = thunderdome.AdminUserType
+			TeamRole = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
@@ -433,7 +433,7 @@ func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		var OrgRole string
 		var DepartmentRole string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			OrgRole, DepartmentRole, UserErr = s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
@@ -441,8 +441,8 @@ func (s *Service) departmentUserOnly(h http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 		} else {
-			OrgRole = adminUserType
-			DepartmentRole = adminUserType
+			OrgRole = thunderdome.AdminUserType
+			DepartmentRole = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
@@ -474,20 +474,20 @@ func (s *Service) departmentAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 
 		var OrgRole string
 		var DepartmentRole string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			OrgRole, DepartmentRole, UserErr := s.OrganizationDataSvc.DepartmentUserRole(ctx, UserID, OrgID, DepartmentID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_USER"))
 				return
 			}
-			if DepartmentRole != adminUserType && OrgRole != adminUserType {
+			if DepartmentRole != thunderdome.AdminUserType && OrgRole != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
 				return
 			}
 		} else {
-			OrgRole = adminUserType
-			DepartmentRole = adminUserType
+			OrgRole = thunderdome.AdminUserType
+			DepartmentRole = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
@@ -526,7 +526,7 @@ func (s *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		var OrgRole string
 		var DepartmentRole string
 		var TeamRole string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationDataSvc.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
@@ -534,9 +534,9 @@ func (s *Service) departmentTeamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 		} else {
-			OrgRole = adminUserType
-			DepartmentRole = adminUserType
-			TeamRole = adminUserType
+			OrgRole = thunderdome.AdminUserType
+			DepartmentRole = thunderdome.AdminUserType
+			TeamRole = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
@@ -576,7 +576,7 @@ func (s *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		var OrgRole string
 		var DepartmentRole string
 		var TeamRole string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			OrgRole, DepartmentRole, TeamRole, UserErr = s.OrganizationDataSvc.DepartmentTeamUserRole(ctx, UserID, OrgID, DepartmentID, TeamID)
 			if UserErr != nil {
@@ -584,14 +584,14 @@ func (s *Service) departmentTeamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 
-			if TeamRole != adminUserType && DepartmentRole != adminUserType && OrgRole != adminUserType {
+			if TeamRole != thunderdome.AdminUserType && DepartmentRole != thunderdome.AdminUserType && OrgRole != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_OR_DEPARTMENT_OR_ORGANIZATION_ADMIN"))
 				return
 			}
 		} else {
-			OrgRole = adminUserType
-			DepartmentRole = adminUserType
-			TeamRole = adminUserType
+			OrgRole = thunderdome.AdminUserType
+			DepartmentRole = thunderdome.AdminUserType
+			TeamRole = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyOrgRole, OrgRole)
@@ -617,15 +617,15 @@ func (s *Service) teamUserOnly(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		var Role string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			Role, UserErr = s.TeamDataSvc.TeamUserRole(ctx, UserID, TeamID)
-			if UserType != adminUserType && UserErr != nil {
+			if UserType != thunderdome.AdminUserType && UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
 		} else {
-			Role = adminUserType
+			Role = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyTeamRole, Role)
@@ -649,19 +649,19 @@ func (s *Service) teamAdminOnly(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		var Role string
-		if UserType != adminUserType {
+		if UserType != thunderdome.AdminUserType {
 			var UserErr error
 			Role, UserErr = s.TeamDataSvc.TeamUserRole(ctx, UserID, TeamID)
 			if UserErr != nil {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_USER"))
 				return
 			}
-			if Role != adminUserType {
+			if Role != thunderdome.AdminUserType {
 				s.Failure(w, r, http.StatusForbidden, Errorf(EUNAUTHORIZED, "REQUIRES_TEAM_ADMIN"))
 				return
 			}
 		} else {
-			Role = adminUserType
+			Role = thunderdome.AdminUserType
 		}
 
 		ctx = context.WithValue(ctx, contextKeyTeamRole, Role)

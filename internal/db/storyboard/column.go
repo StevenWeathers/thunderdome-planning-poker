@@ -12,7 +12,7 @@ func (d *Service) CreateStoryboardColumn(StoryboardID string, GoalID string, use
 		VALUES ($1, $2, ((SELECT coalesce(MAX(sort_order), 0) FROM thunderdome.storyboard_column WHERE goal_id = $2) + 1));`,
 		StoryboardID, GoalID,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.create_storyboard_column error", zap.Error(err))
+		d.Logger.Error("CreateStoryboardColumn error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -27,7 +27,7 @@ func (d *Service) ReviseStoryboardColumn(StoryboardID string, UserID string, Col
 		ColumnID,
 		ColumnName,
 	); err != nil {
-		d.Logger.Error("CALL thunderdome.revise_storyboard_column error", zap.Error(err))
+		d.Logger.Error("ReviseStoryboardColumn error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)
@@ -40,6 +40,35 @@ func (d *Service) DeleteStoryboardColumn(StoryboardID string, userID string, Col
 	if _, err := d.DB.Exec(
 		`CALL thunderdome.sb_column_delete($1);`, ColumnID); err != nil {
 		d.Logger.Error("CALL thunderdome.sb_column_delete error", zap.Error(err))
+	}
+
+	goals := d.GetStoryboardGoals(StoryboardID)
+
+	return goals, nil
+}
+
+// ColumnPersonaAdd adds a persona column to a Storyboard column
+func (d *Service) ColumnPersonaAdd(StoryboardID string, ColumnID string, PersonaID string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
+		`INSERT INTO thunderdome.storyboard_column_persona (column_id, persona_id, created_date) 
+		VALUES ($1, $2, NOW());`,
+		ColumnID, PersonaID,
+	); err != nil {
+		d.Logger.Error("ColumnPersonaAdd error", zap.Error(err))
+	}
+
+	goals := d.GetStoryboardGoals(StoryboardID)
+
+	return goals, nil
+}
+
+// ColumnPersonaRemove removes a persona column from a Storyboard column
+func (d *Service) ColumnPersonaRemove(StoryboardID string, ColumnID string, PersonaID string) ([]*thunderdome.StoryboardGoal, error) {
+	if _, err := d.DB.Exec(
+		`DELETE FROM thunderdome.storyboard_column_persona WHERE column_id = $1 AND persona_id = $2;`,
+		ColumnID, PersonaID,
+	); err != nil {
+		d.Logger.Error("ColumnPersonaRemove error", zap.Error(err))
 	}
 
 	goals := d.GetStoryboardGoals(StoryboardID)

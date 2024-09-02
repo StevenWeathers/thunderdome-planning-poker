@@ -10,6 +10,7 @@ type StoryboardUser struct {
 	Avatar       string `json:"avatar"`
 	Abandoned    bool   `json:"abandoned"`
 	GravatarHash string `json:"gravatarHash"`
+	PictureURL   string `json:"pictureUrl"`
 }
 
 // Storyboard A story mapping board
@@ -113,6 +114,8 @@ type StoryboardDataSvc interface {
 	CreateStoryboardColumn(StoryboardID string, GoalID string, userID string) ([]*StoryboardGoal, error)
 	ReviseStoryboardColumn(StoryboardID string, UserID string, ColumnID string, ColumnName string) ([]*StoryboardGoal, error)
 	DeleteStoryboardColumn(StoryboardID string, userID string, ColumnID string) ([]*StoryboardGoal, error)
+	ColumnPersonaAdd(StoryboardID string, ColumnID string, PersonaID string) ([]*StoryboardGoal, error)
+	ColumnPersonaRemove(StoryboardID string, ColumnID string, PersonaID string) ([]*StoryboardGoal, error)
 
 	CreateStoryboardStory(StoryboardID string, GoalID string, ColumnID string, userID string) ([]*StoryboardGoal, error)
 	ReviseStoryName(StoryboardID string, userID string, StoryID string, StoryName string) ([]*StoryboardGoal, error)

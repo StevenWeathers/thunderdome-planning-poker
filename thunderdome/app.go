@@ -41,6 +41,7 @@ type AppConfig struct {
 	ShowActiveCountries       bool
 	LdapEnabled               bool
 	HeaderAuthEnabled         bool
+	GoogleAuthEnabled         bool
 	FeaturePoker              bool
 	FeatureRetro              bool
 	FeatureStoryboard         bool

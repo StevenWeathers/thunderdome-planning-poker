@@ -10,17 +10,18 @@ import (
 )
 
 // CreateSession creates a new user authenticated session
-func (d *Service) CreateSession(ctx context.Context, UserId string) (string, error) {
+func (d *Service) CreateSession(ctx context.Context, UserId string, enabled bool) (string, error) {
 	SessionId, err := db.RandomBase64String(32)
 	if err != nil {
 		return "", err
 	}
 
 	if _, sessionErr := d.DB.ExecContext(ctx, `
-		INSERT INTO thunderdome.user_session (session_id, user_id, disabled) VALUES ($1, $2, (SELECT mfa_enabled FROM thunderdome.users WHERE id = $2));
+		INSERT INTO thunderdome.user_session (session_id, user_id, disabled) VALUES ($1, $2, $3);
 		`,
 		SessionId,
 		UserId,
+		enabled,
 	); sessionErr != nil {
 		return "", fmt.Errorf("create user session query error: %v", sessionErr)
 	}
@@ -52,12 +53,12 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
         u.email,
         u.type,
         u.avatar,
-        u.verified,
         u.notifications_enabled,
         COALESCE(u.country, ''),
         COALESCE(u.locale, ''),
         COALESCE(u.company, ''),
         COALESCE(u.job_title, ''),
+        COALESCE(u.picture, ''),
         u.created_date,
         u.updated_date,
         u.last_active
@@ -71,12 +72,12 @@ func (d *Service) GetSessionUser(ctx context.Context, SessionId string) (*thunde
 		&User.Email,
 		&User.Type,
 		&User.Avatar,
-		&User.Verified,
 		&User.NotificationsEnabled,
 		&User.Country,
 		&User.Locale,
 		&User.Company,
 		&User.JobTitle,
+		&User.Picture,
 		&User.CreatedDate,
 		&User.UpdatedDate,
 		&User.LastActive,

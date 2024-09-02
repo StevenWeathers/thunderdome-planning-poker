@@ -21,7 +21,6 @@
   import Modal from '../../components/global/Modal.svelte';
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
-  import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
   import BoxList from '../../components/BoxList.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
@@ -30,6 +29,8 @@
   import TableFooter from '../../components/table/TableFooter.svelte';
   import CrudActions from '../../components/table/CrudActions.svelte';
   import Toggle from '../../components/forms/Toggle.svelte';
+  import InvitesList from '../../components/team/InvitesList.svelte';
+  import Checkmark from '../../components/pricing/Checkmark.svelte';
 
   export let xfetch;
   export let router;
@@ -46,6 +47,8 @@
   const retroActionsPageLimit = 5;
   const storyboardsPageLimit = 1000;
   const usersPageLimit = 1000;
+
+  let invitesList;
 
   let team = {
     id: teamId,
@@ -65,7 +68,6 @@
   let retros = [];
   let retroActions = [];
   let storyboards = [];
-  let invites = [];
   let showCreateBattle = false;
   let showCreateRetro = false;
   let showCreateStoryboard = false;
@@ -83,9 +85,6 @@
   let storyboardsPage = 1;
   let totalRetroActions = 0;
   let completedActionItems = false;
-  let showInviteUser = false;
-  let showDeleteInvite = false;
-  let deleteInviteId = '';
 
   let organizationRole = '';
   let departmentRole = '';
@@ -138,15 +137,6 @@
     showDeleteTeam = !showDeleteTeam;
   };
 
-  const toggleInviteUser = () => {
-    showInviteUser = !showInviteUser;
-  };
-
-  const toggleDeleteInvite = inviteId => () => {
-    showDeleteInvite = !showDeleteInvite;
-    deleteInviteId = inviteId;
-  };
-
   let showRetroActionComments = false;
   let selectedRetroAction = null;
   const toggleRetroActionComments = id => () => {
@@ -190,26 +180,12 @@
       });
   }
 
-  function getInvites() {
-    xfetch(`${teamPrefix}/invites`)
-      .then(res => res.json())
-      .then(function (result) {
-        invites = result.data;
-      })
-      .catch(function () {
-        notifications.danger('error getting team invites');
-      });
-  }
-
   function getUsers() {
     const usersOffset = (usersPage - 1) * usersPageLimit;
     xfetch(`${teamPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`)
       .then(res => res.json())
       .then(function (result) {
         users = result.data;
-        if (isAdmin) {
-          getInvites();
-        }
       })
       .catch(function () {
         notifications.danger($LL.teamGetUsersError());
@@ -326,22 +302,6 @@
       .catch(function () {
         notifications.danger($LL.storyboardRemoveError());
         eventTag('team_remove_storyboard', 'engagement', 'failure');
-      });
-  }
-
-  function handleDeleteInvite() {
-    xfetch(`${teamPrefix}/invites/${deleteInviteId}`, {
-      method: 'DELETE',
-    })
-      .then(function () {
-        eventTag('team_delete_invite', 'engagement', 'success');
-        toggleDeleteInvite(null)();
-        notifications.success('Successfully deleted user invite');
-        getInvites();
-      })
-      .catch(function () {
-        notifications.danger('Error deleting user invite');
-        eventTag('team_delete_invite', 'engagement', 'failure');
       });
   }
 
@@ -624,22 +584,9 @@
                       </div>
                     </RowCol>
                     <RowCol>
-                      <input
-                        type="checkbox"
-                        id="{i}Completed"
-                        checked="{item.completed}"
-                        class="opacity-0 absolute h-6 w-6"
-                        disabled
-                      />
-                      <div
-                        class="bg-white dark:bg-gray-800 border-2 rounded-md
-                                            border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                            justify-center items-center me-2
-                                            focus-within:border-blue-500 dark:focus-within:border-sky-500"
-                      >
-                        <CheckboxIcon />
-                      </div>
-                      <label for="{i}Completed" class="select-none"></label>
+                      {#if item.completed}
+                        <Checkmark class="text-green-600" />
+                      {/if}
                     </RowCol>
                     <RowCol>
                       <CommentIcon width="22" height="22" />
@@ -734,42 +681,14 @@
 
   {#if isAdmin}
     <div class="w-full mb-6 lg:mb-8">
-      <TableContainer>
-        <TableNav title="{$LL.userInvites()}" createBtnEnabled="{false}" />
-        <Table>
-          <tr slot="header">
-            <HeadCol>{$LL.email()}</HeadCol>
-            <HeadCol>{$LL.role()}</HeadCol>
-            <HeadCol>{$LL.dateCreated()}</HeadCol>
-            <HeadCol>{$LL.expireDate()}</HeadCol>
-            <HeadCol />
-          </tr>
-          <tbody slot="body" let:class="{className}" class="{className}">
-            {#each invites as item, i}
-              <TableRow itemIndex="{i}">
-                <RowCol>
-                  {item.email}
-                </RowCol>
-                <RowCol>
-                  {item.role}
-                </RowCol>
-                <RowCol>
-                  {new Date(item.created_date).toLocaleString()}
-                </RowCol>
-                <RowCol>
-                  {new Date(item.expire_date).toLocaleString()}
-                </RowCol>
-                <RowCol type="action">
-                  <CrudActions
-                    editBtnEnabled="{false}"
-                    deleteBtnClickHandler="{toggleDeleteInvite(item.invite_id)}"
-                  />
-                </RowCol>
-              </TableRow>
-            {/each}
-          </tbody>
-        </Table>
-      </TableContainer>
+      <InvitesList
+        xfetch="{xfetch}"
+        eventTag="{eventTag}"
+        notifications="{notifications}"
+        pageType="team"
+        teamPrefix="{teamPrefix}"
+        bind:this="{invitesList}"
+      />
     </div>
   {/if}
 
@@ -782,6 +701,11 @@
     isAdmin="{isAdmin}"
     pageType="team"
     teamPrefix="{teamPrefix}"
+    orgId="{organizationId}"
+    deptId="{departmentId}"
+    on:user-invited="{() => {
+      invitesList.f('user-invited');
+    }}"
   />
 
   {#if isAdmin && !organizationId && !departmentId}
@@ -854,15 +778,6 @@
       eventTag="{eventTag}"
       notifications="{notifications}"
       isAdmin="{isAdmin}"
-    />
-  {/if}
-
-  {#if showDeleteInvite}
-    <DeleteConfirmation
-      toggleDelete="{toggleDeleteInvite(null)}"
-      handleDelete="{handleDeleteInvite}"
-      confirmText="{$LL.userInviteConfirmDelete()}"
-      confirmBtnText="{$LL.userInviteDelete()}"
     />
   {/if}
 </PageLayout>

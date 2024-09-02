@@ -141,7 +141,7 @@ func (d *OrganizationService) OrganizationUpdate(ctx context.Context, OrgId stri
 func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID string, Limit int, Offset int) []*thunderdome.OrganizationUser {
 	var users = make([]*thunderdome.OrganizationUser, 0)
 	rows, err := d.DB.QueryContext(ctx,
-		`SELECT u.id, u.name, COALESCE(u.email, ''), ou.role, u.avatar
+		`SELECT u.id, u.name, COALESCE(u.email, ''), ou.role, u.avatar, COALESCE(u.picture, '')
         FROM thunderdome.organization_user ou
         LEFT JOIN thunderdome.users u ON ou.user_id = u.id
         WHERE ou.organization_id = $1
@@ -164,6 +164,7 @@ func (d *OrganizationService) OrganizationUserList(ctx context.Context, OrgID st
 				&usr.Email,
 				&usr.Role,
 				&usr.Avatar,
+				&usr.PictureURL,
 			); err != nil {
 				d.Logger.Ctx(ctx).Error("organization_user_list query scan error", zap.Error(err))
 			} else {
@@ -189,6 +190,22 @@ func (d *OrganizationService) OrganizationAddUser(ctx context.Context, OrgID str
 
 	if err != nil {
 		return "", fmt.Errorf("organization add user query error: %v", err)
+	}
+
+	return OrgID, nil
+}
+
+// OrganizationUpsertUser adds a user to an organization if not existing otherwise does nothing
+func (d *OrganizationService) OrganizationUpsertUser(ctx context.Context, OrgID string, UserID string, Role string) (string, error) {
+	_, err := d.DB.ExecContext(ctx,
+		`INSERT INTO thunderdome.organization_user (organization_id, user_id, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;`,
+		OrgID,
+		UserID,
+		Role,
+	)
+
+	if err != nil {
+		return "", fmt.Errorf("organization upsert user query error: %v", err)
 	}
 
 	return OrgID, nil
@@ -242,7 +259,7 @@ func (d *OrganizationService) OrganizationInviteUser(ctx context.Context, OrgID 
 	return inviteId, nil
 }
 
-// OrganizationUserGetInviteByID gets a organization user invite
+// OrganizationUserGetInviteByID gets an organization user invite
 func (d *OrganizationService) OrganizationUserGetInviteByID(ctx context.Context, InviteID string) (thunderdome.OrganizationUserInvite, error) {
 	oui := thunderdome.OrganizationUserInvite{}
 	err := d.DB.QueryRowContext(ctx,

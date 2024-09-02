@@ -333,7 +333,7 @@ func (d *Service) RetroConfirmFacilitator(RetroID string, userID string) error {
 	err = d.DB.QueryRow(
 		"SELECT user_id FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2",
 		RetroID, userID).Scan(&facilitatorId)
-	if err != nil && role != "ADMIN" {
+	if err != nil && role != thunderdome.AdminUserType {
 		return fmt.Errorf("get retro facilitator error: %v", err)
 	}
 
@@ -345,7 +345,7 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 	var users = make([]*thunderdome.RetroUser, 0)
 	rows, err := d.DB.Query(
 		`SELECT
-			u.id, u.name, su.active, u.avatar, COALESCE(u.email, '')
+			u.id, u.name, su.active, u.avatar, COALESCE(u.email, ''), COALESCE(u.picture, '')
 		FROM thunderdome.retro_user su
 		LEFT JOIN thunderdome.users u ON su.user_id = u.id
 		WHERE su.retro_id = $1
@@ -356,7 +356,7 @@ func (d *Service) RetroGetUsers(RetroID string) []*thunderdome.RetroUser {
 		defer rows.Close()
 		for rows.Next() {
 			var w thunderdome.RetroUser
-			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.Email); err != nil {
+			if err := rows.Scan(&w.ID, &w.Name, &w.Active, &w.Avatar, &w.Email, &w.PictureURL); err != nil {
 				d.Logger.Error("get retro users error", zap.Error(err))
 			} else {
 				if w.Email != "" {
@@ -426,6 +426,19 @@ func (d *Service) RetroFacilitatorAdd(RetroID string, UserID string) ([]string, 
 
 // RetroFacilitatorRemove removes a retro facilitator
 func (d *Service) RetroFacilitatorRemove(RetroID string, UserID string) ([]string, error) {
+	facilitatorCount := 0
+	err := d.DB.QueryRow(
+		`SELECT count(user_id) FROM thunderdome.retro_facilitator WHERE retro_id = $1;`,
+		RetroID,
+	).Scan(&facilitatorCount)
+	if err != nil {
+		return nil, fmt.Errorf("retro remove facilitator query error: %v", err)
+	}
+
+	if facilitatorCount == 1 {
+		return nil, fmt.Errorf("ONLY_FACILITATOR")
+	}
+
 	if _, err := d.DB.Exec(
 		`DELETE FROM thunderdome.retro_facilitator WHERE retro_id = $1 AND user_id = $2;`,
 		RetroID, UserID); err != nil {

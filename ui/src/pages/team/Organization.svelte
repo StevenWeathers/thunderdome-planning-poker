@@ -19,6 +19,7 @@
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import CrudActions from '../../components/table/CrudActions.svelte';
+  import InvitesList from '../../components/team/InvitesList.svelte';
 
   export let xfetch;
   export let router;
@@ -29,7 +30,9 @@
   const departmentsPageLimit = 1000;
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
+  const orgPrefix = `/api/organizations/${organizationId}`;
 
+  let invitesList;
   let organization = {
     id: organizationId,
     name: '',
@@ -40,6 +43,7 @@
   let users = [];
   let departments = [];
   let teams = [];
+  let invites = [];
   let showCreateDepartment = false;
   let showCreateTeam = false;
   let showDeleteTeam = false;
@@ -91,9 +95,7 @@
 
   function getUsers() {
     const usersOffset = (usersPage - 1) * usersPageLimit;
-    xfetch(
-      `/api/organizations/${organizationId}/users?limit=${usersPageLimit}&offset=${usersOffset}`,
-    )
+    xfetch(`${orgPrefix}/users?limit=${usersPageLimit}&offset=${usersOffset}`)
       .then(res => res.json())
       .then(function (result) {
         users = result.data;
@@ -106,7 +108,7 @@
   function getDepartments() {
     const departmentsOffset = (departmentsPage - 1) * departmentsPageLimit;
     xfetch(
-      `/api/organizations/${organizationId}/departments?limit=${departmentsPageLimit}&offset=${departmentsOffset}`,
+      `${orgPrefix}/departments?limit=${departmentsPageLimit}&offset=${departmentsOffset}`,
     )
       .then(res => res.json())
       .then(function (result) {
@@ -119,9 +121,7 @@
 
   function getTeams() {
     const teamsOffset = (teamsPage - 1) * teamsPageLimit;
-    xfetch(
-      `/api/organizations/${organizationId}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`,
-    )
+    xfetch(`${orgPrefix}/teams?limit=${teamsPageLimit}&offset=${teamsOffset}`)
       .then(res => res.json())
       .then(function (result) {
         teams = result.data;
@@ -136,7 +136,7 @@
       name,
     };
 
-    xfetch(`/api/organizations/${organizationId}/departments`, { body })
+    xfetch(`${orgPrefix}/departments`, { body })
       .then(res => res.json())
       .then(function (result) {
         eventTag('create_department', 'engagement', 'success', () => {
@@ -156,7 +156,7 @@
       name,
     };
 
-    xfetch(`/api/organizations/${organizationId}/teams`, { body })
+    xfetch(`${orgPrefix}/teams`, { body })
       .then(res => res.json())
       .then(function () {
         eventTag('create_organization_team', 'engagement', 'success');
@@ -171,7 +171,7 @@
   }
 
   function handleDeleteTeam() {
-    xfetch(`/api/organizations/${organizationId}/teams/${deleteTeamId}`, {
+    xfetch(`${orgPrefix}/teams/${deleteTeamId}`, {
       method: 'DELETE',
     })
       .then(function () {
@@ -187,7 +187,7 @@
   }
 
   function handleDeleteDepartment() {
-    xfetch(`/api/organizations/${organizationId}/departments/${deleteDeptId}`, {
+    xfetch(`${orgPrefix}/departments/${deleteDeptId}`, {
       method: 'DELETE',
     })
       .then(function () {
@@ -203,7 +203,7 @@
   }
 
   function handleDeleteOrganization() {
-    xfetch(`/api/organizations/${organizationId}`, {
+    xfetch(`${orgPrefix}`, {
       method: 'DELETE',
     })
       .then(function () {
@@ -427,6 +427,19 @@
     </TableContainer>
   </div>
 
+  {#if isAdmin}
+    <div class="w-full mb-6 lg:mb-8">
+      <InvitesList
+        xfetch="{xfetch}"
+        eventTag="{eventTag}"
+        notifications="{notifications}"
+        pageType="organization"
+        teamPrefix="{orgPrefix}"
+        bind:this="{invitesList}"
+      />
+    </div>
+  {/if}
+
   <UsersList
     users="{users}"
     getUsers="{getUsers}"
@@ -435,7 +448,11 @@
     notifications="{notifications}"
     isAdmin="{isAdmin}"
     pageType="organization"
+    orgId="{organizationId}"
     teamPrefix="/api/organizations/{organizationId}"
+    on:user-invited="{() => {
+      invitesList.f('user-invited');
+    }}"
   />
 
   {#if isAdmin}

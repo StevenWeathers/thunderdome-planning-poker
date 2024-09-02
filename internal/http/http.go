@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"time"
+
+	"github.com/StevenWeathers/thunderdome-planning-poker/internal/oauth"
 
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
@@ -19,7 +22,7 @@ import (
 	"github.com/StevenWeathers/thunderdome-planning-poker/internal/http/retro"
 	"github.com/StevenWeathers/thunderdome-planning-poker/thunderdome"
 	"github.com/go-playground/validator/v10"
-	httpSwagger "github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 // New initializes the http handlers
@@ -38,6 +41,7 @@ import (
 func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	staticHandler := http.FileServer(HFS)
 	var a = &apiService
+	authProviderConfigs := make([]thunderdome.AuthProviderConfig, 0)
 	a.Router = mux.NewRouter()
 	a.Router.Use(a.panicRecovery)
 
@@ -92,6 +96,14 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	} else if a.Config.HeaderAuthEnabled {
 		apiRouter.HandleFunc("/auth", a.handleHeaderLogin()).Methods("GET")
 	} else {
+		if a.Config.GoogleAuth.Enabled {
+			authProviderConfigs = append(authProviderConfigs, thunderdome.AuthProviderConfig{
+				ProviderName: a.Config.GoogleAuth.ProviderName,
+				ProviderURL:  a.Config.GoogleAuth.ProviderURL,
+				ClientID:     a.Config.GoogleAuth.ClientID,
+				ClientSecret: a.Config.GoogleAuth.ClientSecret,
+			})
+		}
 		apiRouter.HandleFunc("/auth", a.handleLogin()).Methods("POST")
 		apiRouter.HandleFunc("/auth/forgot-password", a.handleForgotPassword()).Methods("POST")
 		apiRouter.HandleFunc("/auth/reset-password", a.handleResetPassword()).Methods("PATCH")
@@ -113,6 +125,9 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserProfileUpdate()))).Methods("PUT")
 	userRouter.HandleFunc("/{userId}", a.userOnly(a.entityUserOnly(a.handleUserDelete()))).Methods("DELETE")
 	userRouter.HandleFunc("/{userId}/request-verify", a.userOnly(a.entityUserOnly(a.handleVerifyRequest()))).Methods("POST")
+	userRouter.HandleFunc("/{userId}/invite/team/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserTeamInvite()))).Methods("POST")
+	userRouter.HandleFunc("/{userId}/invite/organization/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserOrganizationInvite()))).Methods("POST")
+	userRouter.HandleFunc("/{userId}/invite/department/{inviteId}", a.userOnly(a.registeredUserOnly(a.handleUserDepartmentInvite()))).Methods("POST")
 	userRouter.HandleFunc("/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleGetOrganizationsByUser()))).Methods("GET")
 	userRouter.HandleFunc("/{userId}/organizations", a.userOnly(a.entityUserOnly(a.handleCreateOrganization()))).Methods("POST")
 	userRouter.HandleFunc("/{userId}/teams", a.userOnly(a.entityUserOnly(a.handleGetTeamsByUser()))).Methods("GET")
@@ -147,6 +162,9 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentByUser()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.orgAdminOnly(a.handleDepartmentUpdate()))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}", a.userOnly(a.orgAdminOnly(a.handleDeleteDepartment()))).Methods("DELETE")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/invites", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentUserInvites()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/invites", a.userOnly(a.departmentAdminOnly(a.handleDepartmentInviteUser()))).Methods("POST")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/invites/{inviteId}", a.userOnly(a.departmentAdminOnly(a.handleDeleteDepartmentUserInvite()))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentUserOnly(a.handleGetDepartmentUsers()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users", a.userOnly(a.departmentAdminOnly(a.handleDepartmentAddUser()))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/users/{userId}", a.userOnly(a.departmentAdminOnly(a.handleDepartmentUpdateUser()))).Methods("PUT")
@@ -157,6 +175,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentAdminOnly(a.handleTeamUpdate()))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}", a.userOnly(a.departmentAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/invites", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamUserInvites()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/invites", a.userOnly(a.departmentTeamUserOnly(a.handleTeamInviteUser()))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/invites/{inviteId}", a.userOnly(a.departmentTeamAdminOnly(a.handleDeleteTeamUserInvite()))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users", a.userOnly(a.departmentTeamUserOnly(a.handleGetTeamUsers()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/departments/{departmentId}/teams/{teamId}/users", a.userOnly(a.departmentTeamAdminOnly(a.handleDepartmentTeamAddUser()))).Methods("POST")
@@ -176,6 +195,7 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.orgAdminOnly(a.handleTeamUpdate()))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}", a.userOnly(a.orgAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/invites", a.userOnly(a.orgTeamOnly(a.handleGetTeamUserInvites()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/invites", a.userOnly(a.orgTeamOnly(a.handleTeamInviteUser()))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/invites/{inviteId}", a.userOnly(a.orgTeamAdminOnly(a.handleDeleteTeamUserInvite()))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users", a.userOnly(a.orgTeamOnly(a.handleGetTeamUsers()))).Methods("GET")
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/users", a.userOnly(a.orgTeamAdminOnly(a.handleOrganizationTeamAddUser()))).Methods("POST")
@@ -190,19 +210,19 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	orgRouter.HandleFunc("/{orgId}/teams/{teamId}/checkins/{checkinId}/comments/{commentId}", a.userOnly(a.orgTeamOnly(a.handleCheckinCommentDelete(checkinSvc)))).Methods("DELETE")
 	// org users
 	orgRouter.HandleFunc("/{orgId}/users", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUsers()))).Methods("GET")
-	orgRouter.HandleFunc("/{orgId}/users", a.userOnly(a.orgAdminOnly(a.handleOrganizationAddUser()))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/users/{userId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationUpdateUser()))).Methods("PUT")
 	orgRouter.HandleFunc("/{orgId}/users/{userId}", a.userOnly(a.orgAdminOnly(a.handleOrganizationRemoveUser()))).Methods("DELETE")
 	orgRouter.HandleFunc("/{orgId}/invites", a.userOnly(a.orgUserOnly(a.handleGetOrganizationUserInvites()))).Methods("GET")
+	orgRouter.HandleFunc("/{orgId}/invites", a.userOnly(a.orgAdminOnly(a.handleOrganizationInviteUser()))).Methods("POST")
 	orgRouter.HandleFunc("/{orgId}/invites/{inviteId}", a.userOnly(a.orgAdminOnly(a.handleDeleteOrganizationUserInvite()))).Methods("DELETE")
 	// teams(s)
 	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamUserOnly(a.handleGetTeamByUser()))).Methods("GET")
 	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamAdminOnly(a.handleTeamUpdate()))).Methods("PUT")
 	teamRouter.HandleFunc("/{teamId}", a.userOnly(a.teamAdminOnly(a.handleDeleteTeam()))).Methods("DELETE")
 	teamRouter.HandleFunc("/{teamId}/invites", a.userOnly(a.teamUserOnly(a.handleGetTeamUserInvites()))).Methods("GET")
+	teamRouter.HandleFunc("/{teamId}/invites", a.userOnly(a.teamAdminOnly(a.handleTeamInviteUser()))).Methods("POST")
 	teamRouter.HandleFunc("/{teamId}/invites/{inviteId}", a.userOnly(a.teamAdminOnly(a.handleDeleteTeamUserInvite()))).Methods("DELETE")
 	teamRouter.HandleFunc("/{teamId}/users", a.userOnly(a.teamUserOnly(a.handleGetTeamUsers()))).Methods("GET")
-	teamRouter.HandleFunc("/{teamId}/users", a.userOnly(a.teamAdminOnly(a.handleTeamAddUser()))).Methods("POST")
 	teamRouter.HandleFunc("/{teamId}/users/{userId}", a.userOnly(a.teamAdminOnly(a.handleTeamUpdateUser()))).Methods("PUT")
 	teamRouter.HandleFunc("/{teamId}/users/{userId}", a.userOnly(a.teamAdminOnly(a.handleTeamRemoveUser()))).Methods("DELETE")
 	teamRouter.HandleFunc("/{teamId}/checkin", checkinSvc.ServeWs())
@@ -321,6 +341,8 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	apiRouter.PathPrefix("/support-tickets").Handler(a.userOnly(a.adminOnly(a.handleGetSupportTickets()))).Methods("GET")
 	apiRouter.PathPrefix("/support-tickets").Handler(a.userOptional(a.handleSupportCreate())).Methods("POST")
 
+	a.registerOauthProviderEndpoints(authProviderConfigs)
+
 	// static assets
 	a.Router.PathPrefix("/static/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
 	a.Router.PathPrefix("/img/").Handler(http.StripPrefix(a.Config.PathPrefix, staticHandler))
@@ -329,6 +351,39 @@ func New(apiService Service, FSS fs.FS, HFS http.FileSystem) *Service {
 	a.Router.PathPrefix("/").HandlerFunc(a.handleIndex(FSS, a.UIConfig))
 
 	return a
+}
+
+func (s *Service) registerOauthProviderEndpoints(providers []thunderdome.AuthProviderConfig) {
+	ctx := context.Background()
+	var redirectBaseURL string
+	var port string
+
+	// redirect with port for localhost
+	if s.Config.AppDomain == "localhost" {
+		port = fmt.Sprintf(":%s", s.Config.Port)
+	}
+
+	if s.Config.SecureProtocol {
+		redirectBaseURL = fmt.Sprintf("https://%s%s", s.Config.AppDomain, port)
+	} else {
+		redirectBaseURL = fmt.Sprintf("http://%s%s%s", s.Config.AppDomain, port, s.Config.PathPrefix)
+	}
+
+	for _, c := range providers {
+		oauthLoginPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/login")
+		oauthCallbackPathPrefix, _ := url.JoinPath("/oauth/", c.ProviderName, "/callback")
+		callbackRedirectURL, _ := url.JoinPath(redirectBaseURL, oauthCallbackPathPrefix)
+		authProvider, err := oauth.New(oauth.Config{
+			AuthProviderConfig:  c,
+			CallbackRedirectURL: callbackRedirectURL,
+			UIRedirectURL:       fmt.Sprintf("%s/", s.Config.PathPrefix),
+		}, s.Cookie, s.Logger, s.AuthDataSvc, s.SubscriptionDataSvc, ctx)
+		if err != nil {
+			panic(err)
+		}
+		s.Router.HandleFunc(oauthLoginPathPrefix, authProvider.HandleOAuth2Redirect()).Methods("GET")
+		s.Router.HandleFunc(oauthCallbackPathPrefix, authProvider.HandleOAuth2Callback()).Methods("GET")
+	}
 }
 
 func (s *Service) ListenAndServe() error {

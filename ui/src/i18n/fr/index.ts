@@ -438,7 +438,7 @@ const fr: Translation = {
   userAddError: "Erreur lors de l'ajout de l'utilisateur.",
   userAddSuccess: 'Utilisateur ajouté avec succès.',
   userEmail: "Email de l'Utilisateur",
-  userEmailPlaceholder: "Entrer l'email d'un utilisateur enregistré",
+  userEmailPlaceholder: 'Enter the users email',
   userName: 'User Name',
   userRemoveError: "Erreur lors de la suppression de l'utilisateur.",
   userRemoveSuccess: 'Utilisateur supprimé avec succès.',
@@ -577,12 +577,14 @@ const fr: Translation = {
   userUpdateSuccess: 'Successfully updated user.',
   userUpdateError: 'Error updating user.',
   userInvites: 'User Invites',
-  userNotFoundInviteSent: 'User not found, invite sent',
+  userInviteSent: 'User invite sent',
   userInviteConfirmDelete: 'Are you sure you want to delete this user invite?',
   userInviteDelete: 'Delete Invite',
   expireDate: 'Expire Date',
   addUserWillInviteNotFoundFieldNote:
     'If user is not registered an invite to register and join the {pageType} will be sent.',
+  inviteUserFieldNote: 'An invite to join the {pageType} will be sent.',
+  requiresOrganizationMember: 'User must already be in Organization.',
   teamUpdateSuccess: 'Team updated successfully',
   teamUpdateError: 'Error updating Team',
   orgUpdateSuccess: 'Organization updated successfully',
@@ -594,6 +596,16 @@ const fr: Translation = {
   storyboardNamePlaceholder: 'Enter a storyboard name',
   retroPhaseTimeLimitMinLabel: 'Brainstorm Phase time limit in minutes',
   phaseAutoAdvanceLabel: 'Automatically advance phases',
+  removeOnlyFacilitatorError: "Can't remove the only facilitator",
+  noGamesFound: 'No games found, try creating one.',
+  noRetrosFound: 'No retros found, try creating one.',
+  noStoryboardsFound: 'No storyboards found, try creating one.',
+  retroDescription:
+    'A sprint retrospective is a review conducted after a sprint that plays a key role in the Agile methodology. A sprint retrospective aims to determine what went well and where you had problems and identify areas where you can improve.',
+  pokerDescription:
+    'Scrum poker, also known as “planning poker” and “pointing poker”, is a gamified technique that development teams use to guess the effort of project management tasks. These estimations are based on the entire group’s input and consensus, making them more engaging and accurate than other methods.',
+  storyboardDescription:
+    'User story mapping (storyboard) is a visualization of the journey a customer takes with a product, from beginning to end. It includes all the tasks they’d typically complete as part of that journey.',
 };
 
 export default fr;

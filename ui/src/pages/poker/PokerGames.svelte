@@ -18,6 +18,7 @@
   let battleCount = 0;
   let battlesPage = 1;
   let battles = [];
+  let loading = true;
 
   function getBattles() {
     const battlesOffset = (battlesPage - 1) * battlesPageLimit;
@@ -29,8 +30,10 @@
       .then(function (result) {
         battles = result.data;
         battleCount = result.meta.count;
+        loading = false;
       })
       .catch(function () {
+        loading = false;
         notifications.danger($LL.myBattlesError());
         eventTag('fetch_battles', 'engagement', 'failure');
       });
@@ -63,18 +66,26 @@
 
   <div class="flex flex-wrap">
     <div class="mb-4 md:mb-6 w-full md:w-1/2 lg:w-3/5 md:pe-4">
-      <BoxList
-        items="{battles}"
-        itemType="battle"
-        pageRoute="{appRoutes.game}"
-        joinBtnText="{$LL.battleJoin()}"
-        showOwner="{false}"
-        showOwnerName="{true}"
-        ownerNameField="teamName"
-        showFacilitatorIcon="{true}"
-        facilitatorsKey="leaders"
-        showCompletedStories="{true}"
-      />
+      {#if battleCount > 0}
+        <BoxList
+          items="{battles}"
+          itemType="battle"
+          pageRoute="{appRoutes.game}"
+          joinBtnText="{$LL.battleJoin()}"
+          showOwner="{false}"
+          showOwnerName="{true}"
+          ownerNameField="teamName"
+          showFacilitatorIcon="{true}"
+          facilitatorsKey="leaders"
+          showCompletedStories="{true}"
+        />
+      {:else if loading === false}
+        <div
+          class="w-full my-10 text-lg md:text-xl dark:text-white text-center"
+        >
+          {$LL.noGamesFound()}
+        </div>
+      {/if}
       {#if battleCount > battlesPageLimit}
         <div class="mt-6 pt-1 flex justify-center">
           <Pagination
@@ -104,5 +115,9 @@
         />
       </div>
     </div>
+  </div>
+
+  <div class="w-full text-gray-600 dark:text-gray-300">
+    <p class="py-8 md:text-lg italic">{$LL.pokerDescription()}</p>
   </div>
 </PageLayout>
