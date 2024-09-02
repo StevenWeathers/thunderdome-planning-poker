@@ -102,6 +102,48 @@ func (b *Service) DeleteColumn(ctx context.Context, StoryboardID string, UserID 
 	return msg, nil, false
 }
 
+// ColumnPersonaAdd handles adding a persona to a storyboard goal column
+func (b *Service) ColumnPersonaAdd(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		ColumnID  string `json:"column_id"`
+		PersonaID string `json:"persona_id"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
+
+	goals, err := b.StoryboardService.ColumnPersonaAdd(StoryboardID, rs.ColumnID, rs.PersonaID)
+	if err != nil {
+		return nil, err, false
+	}
+	updatedGoals, _ := json.Marshal(goals)
+	msg := createSocketEvent("column_updated", string(updatedGoals), "")
+
+	return msg, nil, false
+}
+
+// ColumnPersonaRemove handles removing a persona from a storyboard goal column
+func (b *Service) ColumnPersonaRemove(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
+	var rs struct {
+		ColumnID  string `json:"column_id"`
+		PersonaID string `json:"persona_id"`
+	}
+	err := json.Unmarshal([]byte(EventValue), &rs)
+	if err != nil {
+		return nil, err, false
+	}
+
+	goals, err := b.StoryboardService.ColumnPersonaRemove(StoryboardID, rs.ColumnID, rs.PersonaID)
+	if err != nil {
+		return nil, err, false
+	}
+	updatedGoals, _ := json.Marshal(goals)
+	msg := createSocketEvent("column_updated", string(updatedGoals), "")
+
+	return msg, nil, false
+}
+
 // AddStory handles adding a story to storyboard
 func (b *Service) AddStory(ctx context.Context, StoryboardID string, UserID string, EventValue string) ([]byte, error, bool) {
 	goalObj := make(map[string]string)

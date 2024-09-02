@@ -26,6 +26,7 @@
   import PageLayout from '../../components/PageLayout.svelte';
   import GoalEstimate from '../../components/storyboard/GoalEstimate.svelte';
   import TextInput from '../../components/forms/TextInput.svelte';
+  import UserIcon from '../../components/icons/UserIcon.svelte';
 
   export let storyboardId;
   export let notifications;
@@ -109,6 +110,15 @@
         break;
       case 'column_updated':
         storyboard.goals = JSON.parse(parsedEvent.value);
+        if (editColumn !== null) {
+          storyboard.goals.map(goal => {
+            goal.columns.map(column => {
+              if (column.id === editColumn.id) {
+                editColumn = column;
+              }
+            });
+          });
+        }
         break;
       case 'story_added':
         storyboard.goals = JSON.parse(parsedEvent.value);
@@ -427,6 +437,15 @@
   const handlePersonaAdd = persona => {
     sendSocketEvent('add_persona', JSON.stringify(persona));
     eventTag('persona_add', 'storyboard', '');
+  };
+
+  const handleColumnPersonaAdd = column_persona => {
+    sendSocketEvent('column_persona_add', JSON.stringify(column_persona));
+    eventTag('column_persona_add', 'storyboard', '');
+  };
+  const handleColumnPersonaRemove = column_persona => () => {
+    sendSocketEvent('column_persona_remove', JSON.stringify(column_persona));
+    eventTag('column_persona_remove', 'storyboard', '');
   };
 
   const handlePersonaRevision = persona => {
@@ -891,197 +910,216 @@
           </div>
         </div>
         {#if !collapseGoals.includes(goal.id)}
-          <section class="flex px-2" style="overflow-x: scroll">
-            {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
-              <div class="flex-none my-4 mx-2 w-40">
-                <div class="flex-none">
+          <section class="px-2" style="overflow-x: scroll">
+            <div class="flex">
+              {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+                <div class="flex-none mx-2 w-40">
                   <div class="w-full mb-2">
-                    <div class="flex">
-                      <span
-                        class="font-bold flex-grow truncate dark:text-gray-300"
-                        title="{goalColumn.name}"
-                        data-testid="column-name"
-                      >
-                        {goalColumn.name}
-                      </span>
-                      <button
-                        on:click="{toggleColumnEdit(goalColumn)}"
-                        class="flex-none font-bold text-xl
+                    {#each goalColumn.personas as persona}
+                      <div class="mt-4 dark:text-gray-300 text-right">
+                        <div class="font-bold">
+                          <UserIcon class="h-4 w-4" />
+                          {persona.name}
+                        </div>
+                        <div class="text-sm">{persona.role}</div>
+                      </div>
+                    {/each}
+                  </div>
+                </div>
+              {/each}
+            </div>
+            <div class="flex">
+              {#each goal.columns as goalColumn, columnIndex (goalColumn.id)}
+                <div class="flex-none my-4 mx-2 w-40">
+                  <div class="flex-none">
+                    <div class="w-full mb-2">
+                      <div class="flex">
+                        <span
+                          class="font-bold flex-grow truncate dark:text-gray-300"
+                          title="{goalColumn.name}"
+                          data-testid="column-name"
+                        >
+                          {goalColumn.name}
+                        </span>
+                        <button
+                          on:click="{toggleColumnEdit(goalColumn)}"
+                          class="flex-none font-bold text-xl
                                         border-dashed border-2 border-gray-400 dark:border-gray-600
                                         hover:border-green-500 text-gray-600 dark:text-gray-400
                                         hover:text-green-500 py-1 px-2"
-                        title="{$LL.storyboardEditColumn()}"
-                        data-testid="column-edit"
-                      >
-                        <EditIcon />
-                      </button>
+                          title="{$LL.storyboardEditColumn()}"
+                          data-testid="column-edit"
+                        >
+                          <EditIcon />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <div class="w-full">
-                    <div class="flex">
-                      <button
-                        on:click="{addStory(goal.id, goalColumn.id)}"
-                        class="flex-grow font-bold text-xl py-1
+                    <div class="w-full">
+                      <div class="flex">
+                        <button
+                          on:click="{addStory(goal.id, goalColumn.id)}"
+                          class="flex-grow font-bold text-xl py-1
                                         px-2 border-dashed border-2
                                         border-gray-400 dark:border-gray-600 hover:border-green-500
                                         text-gray-600 dark:text-gray-400 hover:text-green-500"
-                        title="{$LL.storyboardAddStoryToColumn()}"
-                        data-testid="story-add"
-                      >
-                        +
-                      </button>
+                          title="{$LL.storyboardAddStoryToColumn()}"
+                          data-testid="story-add"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div
-                  class="w-full relative"
-                  style="min-height: 160px;"
-                  data-goalid="{goal.id}"
-                  data-columnid="{goalColumn.id}"
-                  data-goalIndex="{goalIndex}"
-                  data-columnindex="{columnIndex}"
-                  use:dndzone="{{
-                    items: goalColumn.stories,
-                    type: 'story',
-                    dropTargetStyle: '',
-                    dropTargetClasses: [
-                      'outline',
-                      'outline-2',
-                      'outline-indigo-500',
-                      'dark:outline-yellow-400',
-                    ],
-                  }}"
-                  on:consider="{handleDndConsider}"
-                  on:finalize="{handleDndFinalize}"
-                >
-                  {#each goalColumn.stories as story (story.id)}
-                    <div
-                      class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
+                  <div
+                    class="w-full relative"
+                    style="min-height: 160px;"
+                    data-goalid="{goal.id}"
+                    data-columnid="{goalColumn.id}"
+                    data-goalIndex="{goalIndex}"
+                    data-columnindex="{columnIndex}"
+                    use:dndzone="{{
+                      items: goalColumn.stories,
+                      type: 'story',
+                      dropTargetStyle: '',
+                      dropTargetClasses: [
+                        'outline',
+                        'outline-2',
+                        'outline-indigo-500',
+                        'dark:outline-yellow-400',
+                      ],
+                    }}"
+                    on:consider="{handleDndConsider}"
+                    on:finalize="{handleDndFinalize}"
+                  >
+                    {#each goalColumn.stories as story (story.id)}
+                      <div
+                        class="relative max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
                                     story-{story.color} border my-4
                                     cursor-pointer"
-                      style="list-style: none;"
-                      role="button"
-                      tabindex="0"
-                      data-goalid="{goal.id}"
-                      data-columnid="{goalColumn.id}"
-                      data-storyid="{story.id}"
-                      on:click="{toggleStoryForm(story)}"
-                      on:keypress="{toggleStoryForm(story)}"
-                    >
-                      <div>
+                        style="list-style: none;"
+                        role="button"
+                        tabindex="0"
+                        data-goalid="{goal.id}"
+                        data-columnid="{goalColumn.id}"
+                        data-storyid="{story.id}"
+                        on:click="{toggleStoryForm(story)}"
+                        on:keypress="{toggleStoryForm(story)}"
+                      >
                         <div>
-                          <div
-                            class="h-20 p-1 text-sm
-                                                overflow-hidden {story.closed
-                              ? 'line-through'
-                              : ''}"
-                            title="{story.name}"
-                            data-testid="story-name"
-                          >
-                            {story.name}
-                          </div>
-                          <div class="h-8">
+                          <div>
                             <div
-                              class="flex content-center
-                                                    p-1 text-sm"
+                              class="h-20 p-1 text-sm
+                                                overflow-hidden {story.closed
+                                ? 'line-through'
+                                : ''}"
+                              title="{story.name}"
+                              data-testid="story-name"
                             >
+                              {story.name}
+                            </div>
+                            <div class="h-8">
                               <div
-                                class="w-1/2
-                                                        text-gray-600 dark:text-gray-300"
+                                class="flex content-center
+                                                    p-1 text-sm"
                               >
-                                {#if story.comments.length > 0}
-                                  <span
-                                    class="inline-block
+                                <div
+                                  class="w-1/2
+                                                        text-gray-600 dark:text-gray-300"
+                                >
+                                  {#if story.comments.length > 0}
+                                    <span
+                                      class="inline-block
                                                                 align-middle"
-                                  >
-                                    {story.comments.length}
-                                    <CommentIcon />
-                                  </span>
-                                {/if}
-                              </div>
-                              <div class="w-1/2 text-right">
-                                {#if story.points > 0}
-                                  <span
-                                    class="px-2
+                                    >
+                                      {story.comments.length}
+                                      <CommentIcon />
+                                    </span>
+                                  {/if}
+                                </div>
+                                <div class="w-1/2 text-right">
+                                  {#if story.points > 0}
+                                    <span
+                                      class="px-2
                                                                 bg-gray-300 dark:bg-gray-500
                                                                 inline-block
                                                                 align-middle"
-                                  >
-                                    {story.points}
-                                  </span>
-                                {/if}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
-                        <div
-                          class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
-                                    story-{story.color} border
-                                    cursor-pointer"
-                          style="list-style: none;"
-                          role="button"
-                          tabindex="0"
-                          data-goalid="{goal.id}"
-                          data-columnid="{goalColumn.id}"
-                          data-storyid="{story.id}"
-                          on:click="{toggleStoryForm(story)}"
-                          on:keypress="{toggleStoryForm(story)}"
-                        >
-                          <div>
-                            <div>
-                              <div
-                                class="h-20 p-1 text-sm
-                                                overflow-hidden {story.closed
-                                  ? 'line-through'
-                                  : ''}"
-                                title="{story.name}"
-                              >
-                                {story.name}
-                              </div>
-                              <div class="h-8">
-                                <div
-                                  class="flex content-center
-                                                    p-1 text-sm"
-                                >
-                                  <div
-                                    class="w-1/2
-                                                        text-gray-600"
-                                  >
-                                    {#if story.comments.length > 0}
-                                      <span
-                                        class="inline-block
-                                                                align-middle"
-                                      >
-                                        {story.comments.length}
-                                        <CommentIcon />
-                                      </span>
-                                    {/if}
-                                  </div>
-                                  <div class="w-1/2 text-right">
-                                    {#if story.points > 0}
-                                      <span
-                                        class="px-2
-                                                                bg-gray-300
-                                                                inline-block
-                                                                align-middle"
-                                      >
-                                        {story.points}
-                                      </span>
-                                    {/if}
-                                  </div>
+                                    >
+                                      {story.points}
+                                    </span>
+                                  {/if}
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      {/if}
-                    </div>
-                  {/each}
+                        {#if story[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
+                          <div
+                            class="opacity-50 absolute top-0 left-0 right-0 bottom-0 visible opacity-50 max-w-xs shadow bg-white dark:bg-gray-700 dark:text-white border-s-4
+                                    story-{story.color} border
+                                    cursor-pointer"
+                            style="list-style: none;"
+                            role="button"
+                            tabindex="0"
+                            data-goalid="{goal.id}"
+                            data-columnid="{goalColumn.id}"
+                            data-storyid="{story.id}"
+                            on:click="{toggleStoryForm(story)}"
+                            on:keypress="{toggleStoryForm(story)}"
+                          >
+                            <div>
+                              <div>
+                                <div
+                                  class="h-20 p-1 text-sm
+                                                overflow-hidden {story.closed
+                                    ? 'line-through'
+                                    : ''}"
+                                  title="{story.name}"
+                                >
+                                  {story.name}
+                                </div>
+                                <div class="h-8">
+                                  <div
+                                    class="flex content-center
+                                                    p-1 text-sm"
+                                  >
+                                    <div
+                                      class="w-1/2
+                                                        text-gray-600"
+                                    >
+                                      {#if story.comments.length > 0}
+                                        <span
+                                          class="inline-block
+                                                                align-middle"
+                                        >
+                                          {story.comments.length}
+                                          <CommentIcon />
+                                        </span>
+                                      {/if}
+                                    </div>
+                                    <div class="w-1/2 text-right">
+                                      {#if story.points > 0}
+                                        <span
+                                          class="px-2
+                                                                bg-gray-300
+                                                                inline-block
+                                                                align-middle"
+                                        >
+                                          {story.points}
+                                        </span>
+                                      {/if}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        {/if}
+                      </div>
+                    {/each}
+                  </div>
                 </div>
-              </div>
-            {/each}
+              {/each}
+            </div>
           </section>
         {/if}
       </div>
@@ -1156,6 +1194,9 @@
     handleColumnRevision="{handleColumnRevision}"
     toggleColumnEdit="{toggleColumnEdit()}"
     column="{editColumn}"
+    personas="{storyboard.personas}"
+    handlePersonaAdd="{handleColumnPersonaAdd}"
+    handlePersonaRemove="{handleColumnPersonaRemove}"
     deleteColumn="{deleteColumn}"
   />
 {/if}
