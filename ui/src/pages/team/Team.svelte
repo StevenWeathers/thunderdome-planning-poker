@@ -21,7 +21,6 @@
   import Modal from '../../components/global/Modal.svelte';
   import EditActionItem from '../../components/retro/EditActionItem.svelte';
   import SolidButton from '../../components/global/SolidButton.svelte';
-  import CheckboxIcon from '../../components/icons/CheckboxIcon.svelte';
   import CommentIcon from '../../components/icons/CommentIcon.svelte';
   import BoxList from '../../components/BoxList.svelte';
   import UsersList from '../../components/team/UsersList.svelte';
@@ -31,6 +30,7 @@
   import CrudActions from '../../components/table/CrudActions.svelte';
   import Toggle from '../../components/forms/Toggle.svelte';
   import InvitesList from '../../components/team/InvitesList.svelte';
+  import Checkmark from '../../components/pricing/Checkmark.svelte';
 
   export let xfetch;
   export let router;
@@ -584,22 +584,9 @@
                       </div>
                     </RowCol>
                     <RowCol>
-                      <input
-                        type="checkbox"
-                        id="{i}Completed"
-                        checked="{item.completed}"
-                        class="opacity-0 absolute h-6 w-6"
-                        disabled
-                      />
-                      <div
-                        class="bg-white dark:bg-gray-800 border-2 rounded-md
-                                            border-gray-400 dark:border-gray-300 w-6 h-6 flex flex-shrink-0
-                                            justify-center items-center me-2
-                                            focus-within:border-blue-500 dark:focus-within:border-sky-500"
-                      >
-                        <CheckboxIcon />
-                      </div>
-                      <label for="{i}Completed" class="select-none"></label>
+                      {#if item.completed}
+                        <Checkmark class="text-green-600" />
+                      {/if}
                     </RowCol>
                     <RowCol>
                       <CommentIcon width="22" height="22" />
