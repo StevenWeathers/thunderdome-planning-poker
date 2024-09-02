@@ -714,7 +714,8 @@
     isAdmin="{isAdmin}"
     pageType="team"
     teamPrefix="{teamPrefix}"
-    requiresOrgMember="{organizationId || departmentId}"
+    orgId="{organizationId}"
+    deptId="{departmentId}"
     on:user-invited="{() => {
       invitesList.f('user-invited');
     }}"

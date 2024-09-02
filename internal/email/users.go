@@ -456,3 +456,55 @@ func (s *Service) SendOrganizationInvite(OrganizationName string, UserEmail stri
 
 	return nil
 }
+
+// SendDepartmentInvite sends the department invite email to unregistered user
+func (s *Service) SendDepartmentInvite(OrganizationName string, DepartmentName string, UserEmail string, InviteID string) error {
+	emailBody, err := s.generateBody(
+		hermes.Body{
+			Name: "",
+			Intros: []string{
+				"Register to join your organization's department on Thunderdome!",
+			},
+			Actions: []hermes.Action{
+				{
+					Instructions: fmt.Sprintf(
+						"Please register for Thunderdome using the following link (expires in 24 hours) to join the %s Organization's %s department.",
+						OrganizationName, DepartmentName),
+					Button: hermes.Button{
+						Color: "#22BC66",
+						Text:  "Register Account",
+						Link:  s.Config.AppURL + "register/department/" + InviteID,
+					},
+				},
+				{
+					Instructions: "Need help, or have questions? Visit our Github page",
+					Button: hermes.Button{
+						Text: "Github Repo",
+						Link: s.Config.RepoURL,
+					},
+				},
+			},
+		},
+	)
+	if err != nil {
+		s.Logger.Error("Error Generating Department Invite Email HTML", zap.Error(err),
+			zap.String("user_email", UserEmail))
+
+		return err
+	}
+
+	sendErr := s.send(
+		"",
+		UserEmail,
+		fmt.Sprintf("Join %s organization's %s department on Thunderdome!", OrganizationName, DepartmentName),
+		emailBody,
+	)
+	if sendErr != nil {
+		s.Logger.Error("Error sending Department Invite Email", zap.Error(sendErr),
+			zap.String("user_email", UserEmail),
+			zap.String("invite_id", InviteID))
+		return sendErr
+	}
+
+	return nil
+}

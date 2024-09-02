@@ -17,6 +17,7 @@
   import TableContainer from '../../components/table/TableContainer.svelte';
   import TableNav from '../../components/table/TableNav.svelte';
   import CrudActions from '../../components/table/CrudActions.svelte';
+  import InvitesList from '../../components/team/InvitesList.svelte';
 
   export let xfetch;
   export let router;
@@ -27,7 +28,9 @@
 
   const teamsPageLimit = 1000;
   const usersPageLimit = 1000;
+  const deptPrefix = `/api/organizations/${organizationId}/departments/${departmentId}`;
 
+  let invitesList;
   let organization = {
     id: organizationId,
     name: '',
@@ -40,6 +43,7 @@
   let organizationRole = '';
   let teams = [];
   let users = [];
+  let invites = [];
   let showCreateTeam = false;
   let showDeleteTeam = false;
   let deleteTeamId = null;
@@ -266,6 +270,19 @@
     </TableContainer>
   </div>
 
+  {#if isAdmin}
+    <div class="w-full mb-6 lg:mb-8">
+      <InvitesList
+        xfetch="{xfetch}"
+        eventTag="{eventTag}"
+        notifications="{notifications}"
+        pageType="department"
+        teamPrefix="{deptPrefix}"
+        bind:this="{invitesList}"
+      />
+    </div>
+  {/if}
+
   <UsersList
     users="{users}"
     getUsers="{getUsers}"
@@ -274,7 +291,8 @@
     notifications="{notifications}"
     isAdmin="{isAdmin}"
     pageType="department"
-    requiresOrgMember="{true}"
+    orgId="{organizationId}"
+    deptId="{departmentId}"
     teamPrefix="/api/organizations/{organizationId}/departments/{departmentId}"
   />
 

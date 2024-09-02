@@ -11,19 +11,17 @@
   export let xfetch;
   export let notifications;
   export let eventTag;
-  export let orgInviteId;
-  export let teamInviteId;
+  export let inviteType;
+  export let inviteId;
 
-  const inviteType =
-    typeof teamInviteId !== 'undefined' ? 'team' : 'organization';
-  const inviteId = inviteType === 'team' ? teamInviteId : orgInviteId;
-  const targetPage =
-    inviteType === 'organization' ? appRoutes.organization : appRoutes.team;
+  let targetPage = '';
 
   let inviteDetails = {
     id: '',
     name: '',
     role: '',
+    organization_id: '',
+    department_id: '',
   };
   let inviteProcessed = false;
   let inviteErr = '';
@@ -36,6 +34,20 @@
       .then(res => res.json())
       .then(function (result) {
         inviteDetails = result.data;
+        if (inviteType === 'team') {
+          if (inviteDetails.organization_id !== '') {
+            targetPage = `${appRoutes.organization}/${inviteDetails.organization_id}/team`;
+          }
+          if (inviteDetails.department_id !== '') {
+            targetPage = `${appRoutes.organization}/${inviteDetails.organization_id}/department/${inviteDetails.department_id}/team`;
+          }
+        }
+        if (inviteType === 'department') {
+          targetPage = `${appRoutes.organization}/${inviteDetails.organization_id}/department`;
+        }
+        if (inviteType === 'organization') {
+          targetPage = `${appRoutes.organization}`;
+        }
         inviteProcessed = true;
         eventTag(`invite_${inviteType}`, 'engagement', 'success');
       })

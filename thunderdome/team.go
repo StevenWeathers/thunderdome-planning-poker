@@ -6,10 +6,12 @@ import (
 )
 
 type Team struct {
-	Id          string    `json:"id"`
-	Name        string    `json:"name"`
-	CreatedDate time.Time `json:"createdDate"`
-	UpdatedDate time.Time `json:"updatedDate"`
+	Id             string    `json:"id"`
+	Name           string    `json:"name"`
+	OrganizationId string    `json:"organization_id"`
+	DepartmentId   string    `json:"department_id"`
+	CreatedDate    time.Time `json:"createdDate"`
+	UpdatedDate    time.Time `json:"updatedDate"`
 }
 
 type UserTeam struct {
