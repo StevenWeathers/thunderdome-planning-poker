@@ -3,21 +3,39 @@
   import Modal from '../global/Modal.svelte';
   import HollowButton from '../global/HollowButton.svelte';
   import TextInput from '../forms/TextInput.svelte';
+  import SelectInput from '../forms/SelectInput.svelte';
+  import UserIcon from '../icons/UserIcon.svelte';
+  import TrashIcon from '../icons/TrashIcon.svelte';
+  import LL from '../../i18n/i18n-svelte';
 
   export let toggleColumnEdit = () => {};
   export let handleColumnRevision = () => {};
   export let deleteColumn = () => () => {};
-
+  export let handlePersonaRemove = () => () => {};
+  export let handlePersonaAdd = () => {};
+  export let personas = [];
   export let column = {
     id: '',
     name: '',
+    personas: [],
   };
+
+  let selectedPersona = '';
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    handleColumnRevision(column);
+    const c = {
+      id: column.id,
+      name: column.name,
+    };
+
+    handleColumnRevision(c);
     toggleColumnEdit();
+  }
+
+  function addPersona() {
+    handlePersonaAdd({ column_id: column.id, persona_id: selectedPersona });
   }
 </script>
 
@@ -48,4 +66,53 @@
       </div>
     </div>
   </form>
+
+  <div class="mt-4 pt-2 border-t border-gray-400 dark:border-gray-700">
+    <div class="block text-gray-700 dark:text-gray-400 font-bold mb-4">
+      {$LL.personas()}
+    </div>
+    <div class="flex w-full gap-4">
+      <div class="w-2/3">
+        <SelectInput bind:value="{selectedPersona}" id="persona" name="persona">
+          <option value="" disabled>Select a persona</option>
+          {#each personas as persona}
+            <option value="{persona.id}">
+              {persona.name} ({persona.role})
+            </option>
+          {/each}
+        </SelectInput>
+      </div>
+      <div class="w-1/3">
+        <HollowButton
+          onClick="{addPersona}"
+          disabled="{selectedPersona === ''}"
+        >
+          Add Persona
+        </HollowButton>
+      </div>
+    </div>
+    {#if column.personas.length}
+      <div class="grid grid-cols-2 gap-4 mt-4">
+        {#each column.personas as persona}
+          <div class="flex text-gray-700 dark:text-gray-400 mb-2">
+            <div class="w-1/4">
+              <UserIcon />
+            </div>
+            <div class="w-2/4 text-lg">{persona.name} ({persona.role})</div>
+            <div class="w-1/4 text-right">
+              <HollowButton
+                color="red"
+                onClick="{handlePersonaRemove({
+                  column_id: column.id,
+                  persona_id: persona.id,
+                })}"
+              >
+                <TrashIcon />
+              </HollowButton>
+            </div>
+          </div>
+        {/each}
+      </div>
+    {/if}
+  </div>
 </Modal>
